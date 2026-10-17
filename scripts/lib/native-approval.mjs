@@ -104,7 +104,7 @@ export function validateApprovalRecord(record,options={}){
  if(options.history===true||options.requireApproved===false){requireSuccess(nativeEvidenceVerify({root:rootFor(options),kind:'approval',document:record,extra:['--history'],needs:NEEDS.approval}));return{record,bucket:'history-only',execution_authorization:'not-evaluated'};}
  if(isPlan(record,options))return plan(record,options);
  const expected=record.kind==='review-bundle'?reviewBundleRows(record).map(row=>expectedFor(row,options)):expectedFor(record,options);
- return nativeApprovalRecord({root:rootFor(options),record,expected});
+ return nativeApprovalRecord({root:rootFor(options),record,expected,checkpoint:options.checkpoint});
 }
 export function validateApprovalRecordFile(file,options={}){
  const document=readApprovalDocument(file,options);
@@ -112,12 +112,12 @@ export function validateApprovalRecordFile(file,options={}){
  const record=options.gate?selectApprovalRecord(document,options.gate):document;
  if(isPlan(record,options))return plan(record,options);
  const expected=record.kind==='review-bundle'?reviewBundleRows(record).map(row=>expectedFor(row,options)):expectedFor(record,options);
- return nativeApprovalRecord({root:rootFor(options),file,gate:options.gate,expected});
+ return nativeApprovalRecord({root:rootFor(options),file,gate:options.gate,expected,checkpoint:options.checkpoint});
 }
 export const readApprovalHistory=(file,options={})=>validateApprovalRecordFile(file,{...options,history:true});
 export const assertCurrentApproval=(record,expected,options={})=>validateApprovalRecord(record,{...options,expected,history:false,requireApproved:true});
 export function assertApprovedGateHasValidApproval(gateId,state,options={}){
- if(!state?.approval_ref&&!countersignRuleForGate(currentRoles(options).gate_policy,gateId))return;
+ if(!state?.approval_ref){const identity=approvalIO(options).document('yss-project.yaml');if(identity.schema_version===2){if(state?.status==='approved')nativeCoverage(nativeContractVerify({root:rootFor(options),kind:'gate-checks',document:options.checkpoint,extra:['--gate',gateId],needs:NEEDS.gateChecks}),'gate_checks');return;}if(!countersignRuleForGate(currentRoles(options).gate_policy,gateId))return;}
  if(!state||typeof state!=='object')approvalError('APPROVAL_CONTEXT_REQUIRED','缺少门禁状态');
  if(state.status!=='approved')return;
  if(!state.approval_ref)approvalError('APPROVAL_REFERENCE_REQUIRED','已批准门禁缺少 approval_ref');
@@ -126,13 +126,15 @@ export function assertApprovedGateHasValidApproval(gateId,state,options={}){
  if(record.schema_version!==3&&!countersignRuleForGate(currentRoles(options).gate_policy,gateId))return;
  if(record.gate_id!==gateId)approvalError('APPROVAL_CURRENT_INVALID','批准记录门禁与请求门禁不一致');
  if(gateId==='gate.plan-approved'&&isPlan(record,options)){if(JSON.stringify(canonicalValue(state))!==JSON.stringify(canonicalValue(options.checkpoint?.gates?.[gateId])))approvalError('APPROVAL_CURRENT_INVALID','传入 Plan 状态与当前 checkpoint 不一致');return plan(record,options);}
- return nativeApprovalRecord({root:rootFor(options),file,gate:gateId,expected:approvalExpectationFromState(gateId,state,options)});
+ return nativeApprovalRecord({root:rootFor(options),file,gate:gateId,expected:approvalExpectationFromState(gateId,state,options),checkpoint:options.checkpoint});
 }
 export function assertCheckpointApprovals(checkpoint,checkpointPath,options={}) {
  return nativeCoverage(nativeContractVerify({root:rootFor(options),kind:'checkpoint-approvals',document:checkpoint,needs:NEEDS.checkpointApprovals}),'checkpoint_approvals');
 }
 export function assertCheckpointUserDecisions(checkpoint,options={}){return nativeCoverage(nativeContractVerify({root:rootFor(options),kind:'checkpoint-user-decisions',document:checkpoint,needs:NEEDS.checkpointUserDecisions}),'checkpoint_user_decisions');}
 export function assertStrategicWorkUnitDecision(workUnit,state,options={}){
+ const identity=approvalIO(options).document('yss-project.yaml');
+ if(identity.schema_version===2){assertCheckpointApprovals(state,options.checkpointPath,options);return assertWorkUnitUserDecision(workUnit,{user_decisions:state.user_decisions||state.human_review?.user_decisions||[],user_decision_not_applicable:state.user_decision_not_applicable||state.human_review?.not_applicable||[]},options);}
  const roles=currentRoles(options),boundaries=workUnit==='work-unit.strategic-design-handoff'?['gate.strategic-design-handoff-approved']:[...(roles.user_decision_policy.work_unit_gates?.[workUnit]||[]),...(roles.user_decision_policy.work_units?.[workUnit]?[roles.user_decision_policy.work_units[workUnit]]:[])];
  for(const boundary of boundaries){
   if(state.upstream_spec_baseline&&state.gates?.[boundary]?.status!=='approved'&&['gate.plan-approved','gate.spec-baseline-approved'].includes(boundary)){assertImportedSpecPrerequisite(state,{root:rootFor(options)});continue;}

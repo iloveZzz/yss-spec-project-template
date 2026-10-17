@@ -161,8 +161,8 @@ export function nativeUserDecisionRequirement({root,requirement,environment=proc
  if(continuation){const continued=nativeCoverage(result,'user_decision_continuation'),validated=result.envelope.result.coverage.user_decision_validated;if(!Array.isArray(validated)||!continued.continued)fail('NATIVE_PROTOCOL','缺少延续核验结果');return {validated,...continued};}
  return nativeCoverage(result,'user_decision_result');
 }
-export function nativeApprovalRecord({root,record,file,gate,expected,environment=process.env}) {
- const result=nativeEvidenceVerify({root,kind:'approval',file,document:record,documents:expected===undefined?{}:{'--expected':expected},extra:['--require-approved',...(gate?['--gate',gate]:[])],needs:NEEDS.approval,environment});
+export function nativeApprovalRecord({root,record,file,gate,expected,checkpoint,environment=process.env}) {
+ const result=nativeEvidenceVerify({root,kind:'approval',file,document:record,documents:checkpoint===undefined?(expected===undefined?{}:{'--expected':expected}):{'--checkpoint':checkpoint},extra:['--require-approved',...(gate?['--gate',gate]:[])],needs:NEEDS.approval,environment});
  if(result.exitCode!==0)throw Object.assign(new Error(result.message),{code:result.diagnostics[0]?.code??result.code,native:true});
  const rules=result.envelope.result?.coverage?.approval_validated;
  if(!Array.isArray(rules)||!rules.length)fail('NATIVE_PROTOCOL','缺少批准结果');

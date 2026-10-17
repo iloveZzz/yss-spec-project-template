@@ -554,7 +554,7 @@ profile_admission:
     release_authorized: false
     frontend_write: false
   legacy_roles:
-    source: .template-spec/agents/digital-human-roles.yaml
+    source: preserved-original-source-snapshot
     access: historical-contracts-only
     missing_file: never-a-role-independent-mode-signal
 technical_checks:

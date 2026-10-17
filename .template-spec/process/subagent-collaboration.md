@@ -1,26 +1,28 @@
-# Subagent 协作规则
+# 执行与按需协作
 
-Subagent 和其它运行时实例只接收边界清晰的任务包。主控数字人负责仓库身份、门禁计算、Ticket 状态、Git checkpoint 和完成结论。数字人角色、`runtime_id` 与 Explorer / Drafter / Worker / Reviewer / Verifier 执行态正交，任务包必须同时写明。
+新 identity2/Profile3/policy2 默认一个 Agent 连续完成技术工作并诚实自检。职责、Skill、检查和执行态不等于岗位、数字人或 Agent 数量；不预注册角色、运行时或固定审批人。用户明确要求或实际能力缺口才协作，复用已有任务、结果和授权，避免重复派发已完成工作。
 
-写入范围不得与其他执行者重叠；实现者不得同时担任同一切片的独立审查者，也不得会签自己起草的资产。写隔离以任务包为准。某运行时若共享磁盘或会话，不得把不同实例当成安全边界。
+独立复核只由当前明确用户或已知外部要求触发。核验不同真实上下文/执行轨迹、同一冻结候选和范围，复核期间只读。相同账号可有独立上下文；同一会话换名称不能独立。协作者允许写路径互不重叠，工具共享目录不构成安全沙箱。默认自检不能冒充独立或指定真人审批；必要来源不可核验只阻断依赖动作。
 
-## 任务包
+## 当前任务
 
-先按当前主控合同 `request_triage.delivery_path` 判定。已合格 `daily` 子任务复用普通 Ticket / PR 的证据段，写明角色、`runtime_id`、执行态、输入、目标、互不重叠写范围、禁止事项、预期结果与汇合点；返回实际变更、测试和独立审查证据。不强制生成下面的正式 v1 任务包、checkpoint 或 Slice，也不宣布 `approved` / `ready-for-agent`。审查者与实现者分离、只读审查和写边界仍严格；缺能力或新风险先调查并升级。此能力须本 Profile 已在唯一政策中启用且 CLI 支持 `route` / `verify-daily`；政策缺失、Profile 未启用或旧 CLI 不得自行启用。本轮模板维护和已绑定正式工作包继续使用原 schema，不按普通路径降级。
+普通任务复用同一 Ticket/PR，保存目标、AC、工程基线、范围、Skills、实际命令/结果、适用复核与回滚；不为了单执行者创建正式任务包或 checkpoint。无稳定 Agent/session ID 时记录原因和实际 tool/task/execution 引用，不伪造 ID。只读调查不创建 Ticket、批准或回归任务。
 
-凡主控向数字人角色或独立运行时正式派发生命周期工作单元，都必须使用 `.template-spec/process/schemas/digital-human-task-package.schema.json` 定义的任务包，并写明 `task_id`、`work_unit_id`、`actor_id`、数字人角色 ID、`runtime_id`、执行态、工作流状态、从 `.template-spec/agents/digital-human-roles.yaml` 复制的 `core_skills` / `forbidden_skills`（可用 `taskPackageDefaults`）、合同类型和版本、输入资产、目标、允许写路径、禁止事项、验收标准、验证命令及其实际退出码 / 执行时间 / 证据引用、下游消费者和汇合方式。`slice-implementation` 才额外绑定 Slice Implementation Contract；禁止手写第二套技能包；任务包由 `scripts/verify-digital-human-task-package` 校验；已退役的兼容入口不得继续调用。
+正式派发使用现有任务 Schema 的 task3 分支：work_unit_id、profile、policy、执行态、具体目标/验收、冻结 inputs/input_bindings、真实 baseline、provenance、允许写路径、禁止事项、预期产物/证据、验证命令、汇合与下游。`generateTaskPackageDefaults(undefined, overrides, {root})` 从当前工作单元和影响向 Go 查询 Skills/检查与实际 Git 基线；overrides 提供真实来源和明确范围，构造器不编造执行事实。Drafter/Explorer 的 expected_outputs 必须是派发前冻结的具体产出文件路径；描述放 objective/acceptance。Reviewer/Verifier 的候选来自实际完成实施任务；Worker 继续消费批准且当前的 Slice4。
 
-正式任务仍用 schema v1；Reviewer / Verifier 专业审查任务增加 `review_context`，绑定检查、所需能力、当前候选、当前策略、批准范围、依据摘要和相互独立的审查 / 起草主体。能力定义及补充只读技能只由角色表 `review_capabilities` 和检查策略编译为 `skill_source.review_skills`；不更改角色 `core_skills` / `forbidden_skills`，也不授予实施权限。缺能力、未声明当前上下文或身份相同即阻断，不能只换职称补足独立性。
+所有派发/持久化仍通过现有 writer guard 和原生 task 校验；模板与版本号本身不授予写入。准备期可先形成 Plan、Spec、必要设计、AC 和明确范围，保持 draft，不生成真人批准、就绪或实现资格。首次正式完成/实施前集中确认已经形成的方案，见用户决定协议。真实结果才填执行时间、退出码、当前候选与可读日志，not-run 或失败不能填 passed。
 
-主控按阻塞原因推进：专业等待先自主派发或检查原任务并等待，验证失败修复或路由；未知影响先调查，只有真实决定或新授权缺失才展示可审阅资产后询问。等待期间继续无依赖的已授权工作，不因需要专业审查或即将提出完成结论结束整条编排链。
+## 汇合与恢复
 
-## 汇合
+正式结果继续使用 workflow-execution-result-v1，保留实际变化、证据、命令及退出码、deferred_seams、drift、violation、new_impacts、stale_candidates、blocking_signals、next_route。检查 actual candidate、当前输入、当前范围与完整来源，不以总体 completed 掩盖逐项失败。新 approval3/review-bundle3 使用实际 review/provenance/check_ids/policy 和原字节依据，按检查逐项保留结论，不再复制角色能力表。
 
-本节结构化汇合适用于正式 `governed` / 模板维护任务。普通子任务把当前候选、变更、实际测试、独立身份、审查结论及阻断项回填同一任务记录，由 `verify-daily` 核验；不伪装 `workflow-execution-result-v1` 或通过本节关闭正式门禁。
+恢复先查看原任务和真实运行结果，复用仍有效证据；修复或输入变化只重验受影响结论和依赖。真正缺用户决定时先形成可审阅资产再询问。未授权 Git/发布/外部副作用分别停止；交付技术终点不授权整体业务验收或发布。
 
-返回结果必须符合 `workflow-execution-result-v1`，至少包括 `work_unit`、`workflow_reference`、`result`、`skill`、`changed_files` / `changed_artifacts`、`evidence_refs`、实际验证结果、`deferred_seams`、`drift`、`violation`、`new_impacts`、`stale_candidates`、`blocking_signals` 和 `next_route`。主控必须重新执行 fresh verification，并在集中 checkpoint 中保留阶段因果。会签写入配置的功能包根（示例 `.work/<feature>/gates/<gate-id>-approval.yaml`）（形状见 `.template-spec/templates/approval-record-template.yaml`），不能用聊天表情代替。恢复前校验 `scripts/verify-approval-record --require-approved --checkpoint <current checkpoint>`，期望上下文来自消费者，不复制待验记录来证明当前性。
+## 历史兼容
 
-新会签与组合审查使用 schema v2，绑定当前 `review_task_ref/digest`、`capability_ids` 和 `basis`；组合内保留逐项主体、范围、依据和结论。历史记录只读保留，`--history` 不授予当前放行；旧消费者拒绝 v2 后升级，不降级绕过。首轮完整覆盖适用检查，修复后按差异影响定向复审，复用项说明未受影响依据，并将全部消费结论重新绑定当前候选。摘要变化、UI 或 `new_impacts` 不构成全轴默认复审理由，未知先调查。
+identity1/Profile1–2 的 task1/2、approval1/2、角色及 runtime 规则按原政策只读核验。不得按新单执行者政策解释旧批准，不降版本绕过，也不把旧记录改成新批准。新任务或阶段写入先显式迁移，旧批准、Receipt、ID 和用户字节保持不变。模板源维护仍消费其明确的维护合同，不能借产品任务生成资产。
+
+以下 v2 分诊工具是历史读取/审计协议；当前只读咨询不要求创建任务包。
 
 ## 只读分诊任务包 v2
 

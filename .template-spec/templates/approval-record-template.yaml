@@ -1,31 +1,30 @@
-schema_version: 2
+# 填写实际来源后才是记录；pending 模板不授予批准或执行。
+schema_version: 3
 gate_id: gate.spec-baseline-approved
 decision: pending
-actor_kind: digital-human
-role_id: role.product-manager
-runtime_id: runtime.generic
-runtime_instance_ref: "runtime.generic:role.product-manager"
-principal_ref: "instance:role.product-manager"
-drafter_role_id: role.requirements-manager
-countersigner_role_ids:
-  - role.product-manager
+actor_kind: agent
+subject_ref: __CURRENT_SUBJECT__
+subject_digest: __ACTUAL_RAW_SHA256__
+approval_scope: [__CURRENT_SCOPE__]
+basis:
+- ref: __CURRENT_BASIS__
+  digest: __ACTUAL_RAW_SHA256__
 evidence_refs: []
-biological_veto: false
-notes: 会签必须可读取；起草者不得出现在 countersigner_role_ids。运行时表情/reaction 无效。
-# 关键门禁正式放行时必填；模板/历史结构校验不构成批准。
-subject_ref: null
-approval_scope: []
-user_decision_ref: null
-# 已有交付范围授权时可引用独立当前审查支持的延续证明；不能仅填写 approved。
-continuation_ref: null
-# 聚合门禁 / 内部专业审查绑定的当前主体字节 SHA-256（64 位十六进制）。
-subject_digest: null
-# 专业检查必须与起草者为不同执行实例；不仅仅比较职称。
-drafter_principal_ref: null
-
-# 新批准使用能力审查任务；只读 intake v2 不得作为正式审查任务。
-review_task_ref: null
-# 会话独立性：{mode: separate-session|same-session, evidence_ref?}；仅如实记录，不改变放行，缺省为未声明；声明时写成 independence: {mode: same-session}。
-review_task_digest: null
-capability_ids: []
-basis: []
+review_task_ref: __ACTUAL_REVIEW_TASK__
+review_task_digest: __ACTUAL_TASK_SHA256__
+check_ids: [__CURRENT_NATIVE_CHECK__]
+policy:
+  ref: .template-spec/process/orchestration-contract.yaml
+  version: 2
+  digest: __ACTUAL_POLICY_SHA256__
+review:
+  mode: self-check
+  provenance:
+    tool: __ACTUAL_TOOL__
+    task_ref: __ACTUAL_TASK__
+    execution_ref: __ACTUAL_EXECUTION__
+    identity:
+      status: unavailable
+      reason: __ACTUAL_UNAVAILABLE_REASON__
+# 真正需要用户决定时绑定现有 user_decision_ref 或合格 continuation_ref，不填假回复。
+# Plan 聚合仅在全部内部专业检查有据不适用时可无 review_task；仍核验真实准备产出、自检与用户决定。

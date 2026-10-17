@@ -18,7 +18,7 @@ description: 编排 YSS 研发全生命周期；当阶段、产物、门禁或 S
 | 阶段、门禁、产物、工作单元、证据及 ID | `.template-spec/process/lifecycle-registry.yaml` |
 | 执行、流转和授权合同 | `.template-spec/process/orchestration-contract.yaml` |
 | Skill 身份、能力、依赖和路由 | `.template-spec/agents/yss-skill-registry.yaml` |
-| 数字人角色、运行时和会签策略 | `.template-spec/agents/digital-human-roles.yaml` |
+| 技术检查、复核方式、真实用户决定和外部要求 | 编排合同中的 `technical_checks`、`gate_policy`、`review_modes`、`user_decision_policy`、`external_rules_policy` |
 | 影响面、裁剪与维护强度 | `.template-spec/process/harness-process-tailoring.md`、`.template-source/process/maintenance-intensity.yaml` |
 
 ```bash
@@ -29,6 +29,8 @@ scripts/query-lifecycle-context --work-unit work-unit.plan-requirements --check-
 
 技能、阅读视图与证据复用先读[查询与证据复用](references/conditional-guidance.md#查询与证据复用)。
 
+新实例只使用 Spec、Backend。默认同一 Agent 持续执行并诚实自检；专业检查按产物与影响选择，不按岗位或人数拆分。明确用户或已知外部要求触发独立复核时，消费真实独立上下文及同一冻结候选的只读结果。稳定 Agent/session ID 不可得时记录原因；不得补造身份。旧 identity1/Profile1–2 只读核验原义，新写入先显式迁移。
+
 ## 入口与模式
 
 1. 严格解析 `yss-project.yaml`，不得按目录、Git remote 或占位符猜仓库身份。
@@ -36,7 +38,7 @@ scripts/query-lifecycle-context --work-unit work-unit.plan-requirements --check-
 3. 按 `request_triage` 选 `route`、`orchestrate`、`resume`、`audit`；行动请求无需模式关键字，意图不明只读 `route`。模式、门禁及授权边界仍适用。
 4. `project-instance` 按生命周期注册表推进；`template-source` 只走模板维护流程。
 
-进入正式工作单元前先判交付路径。已合格 `daily` 以一张普通 Ticket / PR 承接范围、验收、路径、技能、实际测试和独立审查；不创建阶段 checkpoint、正式 Slice 合同、多级批准或 `ready-for-agent`，也不调用正式实现准入器来豁免缺项。当前任务已绑定正式阶段、checkpoint 或 Slice 时恢复 `governed`；无关功能资产不阻断新普通任务。缺事实先调查，发现新风险时停止受影响动作、保留已有证据并从最近可信资产升级。
+进入正式工作单元前先判交付路径。已合格 `daily` 以一张普通 Ticket / PR 承接范围、验收、路径、技能、实际测试和适用复核；不创建阶段 checkpoint、正式 Slice 合同、多级批准或 `ready-for-agent`，也不调用正式实现准入器来豁免缺项。当前任务已绑定正式阶段、checkpoint 或 Slice 时恢复 `governed`；无关功能资产不阻断新普通任务。缺事实先调查，发现新风险时停止受影响动作、保留已有证据并从最近可信资产升级。
 
 只读咨询、状态和定位不创建 Ticket、checkpoint 或审批，不运行实现回归。行动从当前可信阶段选择缺失工作，复用当前批准资产、登记及工作单元；主链是导航，未来阶段产物不计作当前缺项。按影响面完成当前工作及直接 / 传递依赖的适用验证；Fresh Verification、证据复用和边界重验按裁剪合同执行。
 
@@ -54,7 +56,7 @@ scripts/query-lifecycle-context --work-unit work-unit.plan-requirements --check-
 
 ### 流转与实现
 
-`governed` 不得越过命中的阶段、门禁、实现仓库准备或 Ticket 正式化。正式切片只接收绑定垂直切片、已批准且持久化、版本当前并通过完整 `ready-for-agent` 计算的合同；父 Ticket、`ready-for-human` 切片、`stale`、`drift`、`new_impacts`、`violation` 或缺失证据均阻断。实现仓库、脚手架、UI 还原、review input 和发布条件从对应合同子树查询，不在入口重复定义。普通路径的资格、测试、独立审查与证据失败同样阻断完成，不把 `daily` 用作正式合同降级旗标。
+`governed` 不得越过命中的阶段、门禁、实现仓库准备或 Ticket 正式化。正式切片只接收绑定垂直切片、已批准且持久化、版本当前并通过完整 `ready-for-agent` 计算的合同；父 Ticket、`ready-for-human` 切片、`stale`、`drift`、`new_impacts`、`violation` 或缺失证据均阻断。实现仓库、脚手架、UI 还原、review input 和发布条件从对应合同子树查询，不在入口重复定义。普通路径的资格、测试、适用复核与证据失败同样阻断完成，不把 `daily` 用作正式合同降级旗标。
 
 职责及后端终点见 `execution_scopes`，恢复、编译、派发须复验。保留产品设计门禁，后端交付不等于业务完成或发布。
 
@@ -62,7 +64,7 @@ scripts/query-lifecycle-context --work-unit work-unit.plan-requirements --check-
 
 ### 用户决定
 
-`governed` 按角色表 `user_decision_policy` 与 `references/user-decisions.md` 展示资产、范围、风险、后续动作，再取得提问者或指定生物人的原始回复。数字人、超时、默认项不得代答。先验 `continuation_ref`；未知先调查，实质变化或缺强制审批时重新决定。`daily` 使用已明确的任务授权，不再为普通实现创建阶段批准；外部动作、风险接受和项目明确的强制制度仍按原授权处理。缺陷/缺证据阻断，建议记待办。
+`governed` 按当前编排合同 `user_decision_policy` 与 `references/user-decisions.md` 展示资产、范围、风险、后续动作，再取得提问者或指定生物人的原始回复。Agent、超时、默认项不得代替真人回复。先验 `continuation_ref`；未知先调查，实质变化或缺强制审批时重新决定。`daily` 使用已明确的任务授权，不再为普通实现创建阶段批准；外部动作、风险接受和项目明确的强制制度仍按原授权处理。缺陷/缺证据阻断，建议记待办。
 
 ### 外部副作用与 Git
 
@@ -82,7 +84,7 @@ scripts/query-lifecycle-context --work-unit work-unit.plan-requirements --check-
 
 记录执行结果、当前 Profile 职责完成、状态查询、恢复或导入批准 Spec 时，先读[结果记录与下游交接](references/conditional-guidance.md#结果记录与下游交接)。建议不授予批准或执行。
 
-发送前核对状态、证据新鲜度、阻塞与结构化结果；见 [结果提示](references/orchestration.md#结果与友好提示)。会签保留门禁、角色/运行时、文件、推荐答案、恢复动作。恢复先验证；完成/合并/发布须同一候选通过适用审查和 fresh verification；发布须生物人决定。
+发送前核对状态、证据新鲜度、阻塞与结构化结果；见 [结果提示](references/orchestration.md#结果与友好提示)。批准记录保留真实来源、门禁、当前候选、具体范围、依据和恢复动作；不要求岗位或数字人运行时。恢复先验证；完成/合并/发布须同一候选通过适用审查和 fresh verification；发布须生物人决定。
 
 ## 条件维护与接入
 

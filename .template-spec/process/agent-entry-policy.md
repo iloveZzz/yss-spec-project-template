@@ -8,11 +8,11 @@
 
 ## 项目实例
 
-`daily` 的步骤与记录字段见[同一记录交付说明](../../.agents/skills/yss-product-lifecycle/references/daily-delivery.md)；跨会话更新同一记录，无需阶段 checkpoint、正式 Slice 合同或多级批准。用 `yss lifecycle verify-daily` 核验当前差异与证据；失败、缺独立审查或阻断问题未关闭不得宣布完成。无关正式资产不阻断日常任务；发现新风险时保留修改与证据，从最近可信阶段恢复 `governed`。
+`daily` 的步骤与记录字段见[同一记录交付说明](../../.agents/skills/yss-product-lifecycle/references/daily-delivery.md)；跨会话更新同一记录，无需阶段 checkpoint、正式 Slice 合同或多级批准。用 `yss lifecycle verify-daily` 核验当前差异与证据；失败、缺适用复核或阻断问题未关闭不得宣布完成。无关正式资产不阻断日常任务；发现新风险时保留修改与证据，从最近可信阶段恢复 `governed`。
 
 `governed`：按 `.template-spec/process/harness-process-tailoring.md` 判影响，再用 `yss-product-lifecycle` 执行当前工作单元及依赖。阶段、门禁、稳定 ID 只由 `.template-spec/process/lifecycle-registry.yaml` 定义；只验证当前资产、触发合同与依赖，不提前生成未来资产。正式切片必须消费批准且当前的 Slice Implementation Contract；编译器不批准、不授予 `ready-for-agent`。正式批准/流转核验 Context、工程接入与门禁。
 
-API 先 OAS 3.1 YAML Draft、锁定工具校验、独立审查与 Freeze，再实现和契约测试。日常兼容范围及同一 Ticket 的证据按 `AGENTS.md` 所述分流策略和 `yss-openapi-governance`；其余走正式治理。
+API 先 OAS 3.1 YAML Draft、锁定工具校验、内容复核（默认真实自检，按实际要求独立复核）与 Freeze，再实现和契约测试。日常兼容范围及同一 Ticket 的证据按 `AGENTS.md` 所述分流策略和 `yss-openapi-governance`；其余走正式治理。
 
 <!-- YSS_TEMPLATE_SOURCE_ONLY_START -->
 ## 模板源维护
@@ -31,6 +31,6 @@ API 先 OAS 3.1 YAML Draft、锁定工具校验、独立审查与 Freeze，再�
 - 分支、提交、钩子、策略、标签与推送使用支持 `yss git` 的 CLI，规则读 `.template-spec/process/git-workflow.md`；写入先计划，推送须用户确认远端。
 - 工程接入、脚手架、仓库写范围读 `.template-spec/process/implementation-repo-integration.md`。代码进入已确认实现仓；不得把空 gitlink/子模块当普通目录或覆盖既有工程。
 - 实现优先 YSS 技能；前端 `pnpm`，后端根 `./mvnw`；行为测试用 `tdd`。原型用 `yss-prototype-stage`，技术研究用 `yss-research`，竞品用 `competitive-intelligence`。
-- 协作读 `.template-spec/process/subagent-collaboration.md`，角色/会签读 `.template-spec/agents/digital-human-roles.yaml`；写范围不重叠，实施者不得自审。主控裁决状态与完成。
+- 协作读 `.template-spec/process/subagent-collaboration.md`；新实例按编排政策选择 Skills、检查及复核方式，默认一名 Agent，无岗位或数字人注册要求。需要独立复核时核验独立上下文与只读证据；写范围不重叠。旧角色表仅用于原政策历史核验。主控裁决状态与完成。
 - 验证保留实际命令、退出码、范围与未覆盖项；字节、规则、参数或仓库变化使受影响证据失效。局部完成不等于可合并/可发布。
 - 决定/授权消费 [.agents/skills/yss-product-lifecycle/references/user-decisions.md](.agents/skills/yss-product-lifecycle/references/user-decisions.md)。复用有效范围授权；新决定、外部强制审批和外部动作按实际边界处理。提交、推送、发布须用户授权。

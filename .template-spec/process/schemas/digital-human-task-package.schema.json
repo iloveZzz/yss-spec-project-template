@@ -1416,6 +1416,9 @@
             },
             "review": {
               "$ref": "governance-evidence.schema.json#/$defs/review"
+            },
+            "plan_review_binding": {
+              "$ref": "plan-review-control.schema.json#/$defs/binding"
             }
           }
         },

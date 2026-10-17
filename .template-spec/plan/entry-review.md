@@ -45,3 +45,11 @@ Plan 的轮次、稳定问题、无进展诊断和异常关闭只由生命周期
 审阅包、注册表、Plan、词汇、依据或批准来源变化均要求重新校验；摘要漂移时先展示差异并按用户决定协议重验：排版、措辞或派生内容变化，经独立等价审查证明决定依据与授权范围未变，且原始决定和适用外部审批仍有效时，可用 `plan_continuation_ref` 延续；范围、关键规则、验收、契约承诺、授权或风险接受发生实质变化时重新取得决定。未知影响先补分析，不能视为等价。检查器保证结构、引用、摘要和回复绑定，不证明业务事实或身份来源绝对真实；主控仍须按证据核查影响面，不能为了放行而填 false 或空问题列表。
 
 批准延续使用 `yss-product-lifecycle/references/user-decisions.md` 的 `approved-scope-continuation-v1`：绑定当前审阅包、原始真实决定、实际差异与独立审查；禁止链式延续、修改旧回复或跳过检查。`scripts/plan-spec-entry prepare` 只起草候选，`diff` 只报告原始字节变化；两者均不判定等价或批准。
+
+## 政策2执行与来源
+
+授权准备可连续形成 Plan、Spec、必要设计、AC 与具体范围，不等待早期用户批准。已形成完整方案后集中确认一次；正式完成/实现仍须当前真实决定、当前合同与全部适用检查。默认真实自检，不要求数字人岗位。
+
+当前 `prepare-review-package --review-input <事实.json>` 消费同一份 task3 事实（输入中的 task），不传 role/actor/runtime 资格；候选须已形成，来源绑定真实完成准备任务。Plan 周期绑定放当前任务/控制槽中，不为填入未来周期而改写已完成产出的原始字节。派发保存 task-issued.json 原始快照；实际完成后现有 result_ref 使用 schema2、kind: plan-review-result，保留 plan_review_binding/outcome/check_results/findings，并以 issued_task 绑定原 task_digest、completed_task 绑定实际 resolved task3 的当前字节。Go 对输入、候选、范围、检查和汇合字段比较冻结一致性，允许实际执行状态/日志/结果回填，不接受借完成扩大范围。聚合复用原技术上下文，不另派第三个审查任务。
+
+全部内部专业检查有据不适用时，不制造空任务；Plan 真实自检仍绑定实际准备产出及当前用户决定。旧 task/approval/control 的原语义只读保留，不把旧批准重写成新批准。

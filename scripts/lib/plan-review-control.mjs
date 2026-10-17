@@ -7,6 +7,7 @@ import { safeFile, orchestrationRef } from './governance-io.mjs';
 import { parseAsset, canonicalValue, serializeAsset, byteDigest, validateAssetStructure, TOOL_ROOT } from './structured-assets.mjs';
 import { runAssetTransaction } from './asset-transactions.mjs';
 import { validateJsonSchema } from './json-schema.mjs';
+import {nativeContractVerify,nativeCoverage,assertGovernanceWrite} from './native-evidence.mjs';
 
 export const PLAN_REVIEW_PROTOCOL = 'bounded-plan-review-v1';
 // Routing identities are stable lifecycle IDs. Budgets and policy come exclusively from the contract.
@@ -312,17 +313,29 @@ function applyFindings(control, attempt, inputs, options) {
   return changed;
 }
 
+function completedTaskAsset(attempt,options={}) {
+ if(!attempt.result_ref)return {ref:attempt.task_ref,digest:attempt.task_digest};
+ const result=document(attempt.result_ref,options);
+ return result.schema_version===2&&result.kind==='plan-review-result'?result.completed_task:{ref:attempt.task_ref,digest:attempt.task_digest};
+}
+
 /** Consume reviewer findings without approving any lifecycle gate or user decision. */
 export function completePlanReview(input, binding, result, options = {}) {
   const control = clone(input), attempt = attemptFor(control, binding, options), policy = loadPlanReviewPolicy(options);
   ensure(attempt.status === 'dispatched', 'PLAN_REVIEW_NOT_DISPATCHED', '未实际派发或已消费，不能提交完成');
   ensure(equal(result.plan_review_binding, binding), 'PLAN_REVIEW_RESULT_MISMATCH', '审查结果必须绑定当前任务尝试');
-  combinedEvidence([{ ref: attempt.task_ref, digest: attempt.task_digest }, ...attempt.basis], attempt.resolution_evidence, options);
-  if (options.verifyEvidence !== false) assertPlanReviewTask(document(attempt.task_ref, options), { ...options, checkpoint: { feature_id: control.feature_id, plan_review_control: control } });
+  const currentResult=result.schema_version===2&&result.kind==='plan-review-result';
+  if(currentResult){
+    ensure(result.issued_task?.digest===attempt.task_digest&&result.completed_task?.ref===attempt.task_ref,'PLAN_REVIEW_RESULT_MISMATCH','结果须保留原始派发与实际完成任务');
+    combinedEvidence([result.issued_task,result.completed_task,...attempt.basis],attempt.resolution_evidence,options);
+  }else{
+    combinedEvidence([{ref:attempt.task_ref,digest:attempt.task_digest},...attempt.basis],attempt.resolution_evidence,options);
+    if(options.verifyEvidence!==false)assertPlanReviewTask(document(attempt.task_ref,options),{...options,checkpoint:{feature_id:control.feature_id,plan_review_control:control}});
+  }
   const proof = evidence([{ ref: result.result_ref, digest: result.result_digest }], options)[0];
   if (options.verifyEvidence !== false) {
     const actual = document(proof.ref, options);
-    for (const key of ['plan_review_binding', 'outcome', 'check_results', 'findings']) ensure(equal(actual[key], result[key]), 'PLAN_REVIEW_RESULT_MISMATCH', `结果文件与消费内容不同: ${key}`);
+    for (const key of ['plan_review_binding', 'outcome', 'check_results', 'findings',...(currentResult?['schema_version','kind','issued_task','completed_task']:[])]) ensure(equal(actual[key], result[key]), 'PLAN_REVIEW_RESULT_MISMATCH', `结果文件与消费内容不同: ${key}`);
   }
   ensure(['passed', 'blocked'].includes(result.outcome) && Array.isArray(result.check_results) && result.check_results.length === attempt.check_ids.length, 'PLAN_REVIEW_COVERAGE_REQUIRED', '需逐项保留适用检查结论');
   const checks = new Map(result.check_results.map(row => [row.check_id, row.status]));
@@ -361,6 +374,21 @@ export function diagnosePlanReview(input, diagnosis, options = {}) {
 
 /** Validate a task against the authoritative checkpoint, not a task's copied declaration. */
 export function assertPlanReviewTask(task, options = {}) {
+  if(task?.schema_version===3){
+    const binding=task.review_context?.plan_review_binding;
+    if(!binding)return {applicable:false};
+    const checkpoint=document(binding.checkpoint_ref,options),control=checkpoint.plan_review_control;
+    validatePlanReviewControl(control,options);const attempt=attemptFor(control,binding,options);
+    ensure(!options.requireCompleted||attempt.status==='completed','PLAN_REVIEW_NOT_COMPLETED','需要当前实际完成审查');
+    if(options.verifyEvidence!==false){
+      ensure(equal(document(attempt.task_ref,options),task),'PLAN_REVIEW_TASK_DRIFT','参数不是实际当前任务');
+      const root=source(options).root;
+      const taskResult=nativeContractVerify({root,kind:'task',file:attempt.task_ref});
+      if(taskResult.exitCode!==0)fail(taskResult.diagnostics[0]?.code||'PLAN_REVIEW_TASK_DRIFT',taskResult.message);
+      nativeCoverage(nativeContractVerify({root,kind:'plan-review-task',file:attempt.task_ref,extra:['--checkpoint',binding.checkpoint_ref]}),'plan_review_task');
+    }
+    return {applicable:true,control,binding,attempt};
+  }
   const ids = task?.review_context?.check_ids || [];
   if (!isPlanReview(ids, options)) return { applicable: false };
   const binding = task.review_context.plan_review_binding;
@@ -430,7 +458,7 @@ export function assertPlanReviewEntry(input, options = {}) {
   const last = control.attempts.at(-1);
   ensure(last?.status === 'completed' && last.outcome === 'passed', 'PLAN_REVIEW_ENTRY_BLOCKED', '缺少当前专业审查完成证据');
   ensure(counted(control) <= policy.limits.total && control.attempts.filter(row => row.phase !== 'exception').length + control.history_count <= policy.limits.regular && control.attempts.filter(row => row.phase === 'exception').length <= policy.limits.exception, 'PLAN_REVIEW_BUDGET_EXHAUSTED', '历史或当前周期超额，不能形成通过结论');
-  evidence([{ ref: last.task_ref, digest: last.task_digest }, { ref: last.result_ref, digest: last.result_digest }, ...last.basis], options);
+  evidence([completedTaskAsset(last,options), { ref: last.result_ref, digest: last.result_digest }, ...last.basis], options);
   if (options.currentCandidateDigest) ensure(last.candidate_digest === digest(options.currentCandidateDigest), 'PLAN_REVIEW_CANDIDATE_DRIFT', '当前候选与最终审查不一致');
   if (options.binding) ensure(attemptFor(control, options.binding, options).attempt_id === last.attempt_id, 'PLAN_REVIEW_ENTRY_BLOCKED', '不能使用旧成功尝试替代当前最终结论');
   if (options.verifyEvidence !== false) {
@@ -448,7 +476,7 @@ function reusableCheck(control, checkId, options) {
   const attempt = [...control.attempts].reverse().find(row => row.status === 'completed' && row.check_results?.some(check => check.check_id === checkId));
   if (!attempt || attempt.check_results.find(row => row.check_id === checkId).status !== 'passed') return false;
   if (options.verifyEvidence === false) return true;
-  evidence([{ ref: attempt.task_ref, digest: attempt.task_digest }, { ref: attempt.result_ref, digest: attempt.result_digest }], options);
+  evidence([completedTaskAsset(attempt,options), { ref: attempt.result_ref, digest: attempt.result_digest }], options);
   const result = document(attempt.result_ref, options), task = document(attempt.task_ref, options), subject = document(attempt.candidate_ref, options);
   ensure(equal(result.plan_review_binding, currentBinding(control, attempt)) && equal(result.check_results, attempt.check_results) && equal(task.review_context?.plan_review_binding, currentBinding(control, attempt)) && hash(subject.current_approvals) === attempt.candidate_digest, 'PLAN_REVIEW_RESULT_MISMATCH', '复用检查缺少原任务或结果绑定');
   const rows = subject.current_approvals?.filter(row => row.boundary === checkId);
@@ -473,6 +501,8 @@ export function summarizePlanReview(control, options = {}) {
 /** Strict JSON checkpoint mutation, preserving every field outside this protocol and all historical approval bytes. */
 export function writePlanReviewCheckpoint(checkpointRef, mutate, options = {}) {
   const root = fs.realpathSync(options.root || TOOL_ROOT);
+  const identity=parseAsset(fs.readFileSync(safeFile(root,'yss-project.yaml')));
+  if(!options.dryRun&&identity.repository_mode==='project-instance')assertGovernanceWrite(root);
   ensure(typeof checkpointRef === 'string' && checkpointRef.endsWith('.json'), 'PLAN_REVIEW_WRITE_SCOPE', '仅更新当前配置根下的 JSON checkpoint');
   readWorkLayout(root).checkpointFeature(checkpointRef);
   const file = safeFile(root, checkpointRef), beforeBytes = fs.readFileSync(file), checkpoint = parseAsset(beforeBytes, checkpointRef);
@@ -486,6 +516,9 @@ export function writePlanReviewCheckpoint(checkpointRef, mutate, options = {}) {
     const temporary = `${file}.plan-review-${process.pid}.tmp`, fd = fs.openSync(temporary, 'wx', mode);
     try { fs.writeFileSync(fd, bytes); fs.fsyncSync(fd); } finally { fs.closeSync(fd); }
     try { fs.renameSync(temporary, file); const directory = fs.openSync(path.dirname(file), 'r'); try { fs.fsyncSync(directory); } finally { fs.closeSync(directory); } } finally { if (fs.existsSync(temporary)) fs.unlinkSync(temporary); }
+    if(identity.schema_version===2){
+      for(const attempt of control.attempts.filter(row=>row.status==='completed'))assertPlanReviewTask(document(attempt.task_ref,options),{...options,root,requireCompleted:true});
+    }
   });
   return { summary: summarizePlanReview(control, options), written: true, execution_authorization: 'not-granted' };
 }

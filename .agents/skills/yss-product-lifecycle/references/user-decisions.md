@@ -8,10 +8,10 @@
 
 1. **先展示，再决定**：先完成可独立执行的检查和可审阅材料，展示资产链接、版本、关键变化、风险、推荐方案、批准范围和批准后的动作。优先使用 `renderDecisionRequest(request)` 生成完整展示文本；也接受原始消息已完整覆盖各项资产、版本、变化、风险、范围、推荐方案和后续动作的等价展示，不能因格式不同重复询问。不得请用户批准尚未形成的资产。
 2. **绑定原始回复**：保存回复人、原始消息引用、回复时间、原文、决定、对应事项、范围及请求摘要。Agent 只能整理，不得生成、推测或补造用户同意。来源记录是可追溯证据，不是密码学身份认证。
-3. **无回复就等待**：超时、默认选项、数字人同意、无反对意见和 Agent 自述均无效。依赖该决定的工作保持 `paused-human-gate` / `ready-for-human`；来源错误等使用 `blocked`。独立工作可以继续，不得借其完成清除未决决定。
+3. **无回复就等待**：超时、默认选项、Agent同意、无反对意见和 Agent 自述均无效。依赖该决定的工作保持 `paused-human-gate` / `ready-for-human`；来源错误等使用 `blocked`。独立工作可以继续，不得借其完成清除未决决定。
 4. **回复必须指向明确**：单项明确请求的“同意”有效。多项需要逐项指定、清楚的子集或“同意以上全部事项”；“继续”不算全部批准。拒绝、修改意见和撤回均保留为有效回复，但不放行。编排器结合原文判定语义；机器核验结构、明确性底线、来源和绑定，不能用自填 `approved` 覆盖相反原文。
 5. **复用已有有效确认**：同一版本、范围和依据不重复询问，不按时间自动过期。当前资产字节变化先使旧验证过期；按下述授权延续协议核验差异，决定依据未变时更新专业审查和验证证据，不要求新回复。实质变化、范围扩大或撤回时展示差异后重新确认。无关文件变化不触发重新确认。回复按来源时间追加，禁止删除拒绝、修改或撤回记录来恢复旧批准。
-6. **提问者和负责人分开**：默认回复人为提问者。其他业务、技术或发布负责人必须由提问者在原始消息中明确指定，包含对应事项和负责人；数字人不得自行代任。用户表达使用自然语言，内部 ID 和引用由 Agent 整理。
+6. **提问者和负责人分开**：默认回复人为提问者。其他业务、技术或发布负责人必须由提问者在原始消息中明确指定，包含对应事项和负责人；Agent不得自行代任。用户表达使用自然语言，内部 ID 和引用由 Agent 整理。
 
 ## 记录与来源
 
@@ -41,7 +41,7 @@ messages:
 
 `scripts/verify-user-decision --requirements <当前事项.json> <决定记录.yaml>` 校验当前消费者要求的 `boundary/subject_ref/scope`；未给 `--requirements` 时校验请求中全部事项。无回复的草案可以保存，但不能通过批准验证。局部批准只允许已明确批准的事项推进。
 
-会签记录保留 `subject_ref`、`approval_scope` 和适用的 `user_decision_ref`；checkpoint 门禁同时声明 `subject_ref/approval_scope` 并与会签记录一致。新会签及组合审查使用 schema v2；专业记录绑定当前 `review_task_ref/digest`、`capability_ids` 和 `basis`，能力与技能来源读取角色表，不在本协议复制。恢复和门禁关闭执行 `scripts/verify-approval-record --require-approved --checkpoint <current checkpoint>`，当前期望来自消费者 checkpoint / 任务，禁止复制待验记录作为期望。缺当前上下文不能放行；只有 `--history` 仅检查历史记录结构，不构成批准。历史记录可读，不自动升级为当前专业审查或用户决定；旧消费者拒绝 v2 后升级，不降级绕过。
+会签记录保留 `subject_ref`、`approval_scope` 和适用的 `user_decision_ref`；checkpoint 门禁同时声明 `subject_ref/approval_scope` 并与会签记录一致。新批准及组合审查使用 schema v3；专业记录绑定当前 `review_task_ref/digest`、实际 `check_ids`、`policy`、`review` 和 `basis`，检查与技能来源读取当前编排合同，不在本协议复制。恢复和门禁关闭执行 `scripts/verify-approval-record --require-approved --checkpoint <current checkpoint>`，当前期望来自消费者 checkpoint / 任务，禁止复制待验记录作为期望。缺当前上下文不能放行；只有 `--history` 仅检查历史记录结构，不构成批准。历史记录可读，不自动升级为当前专业审查或用户决定；旧消费者不支持新版本时先升级，不降级绕过。
 
 Workflow Execution Result 使用 `user_decisions` 保存当前要求与证据引用。`user_decision_not_applicable` 仅对未命中的既有技术条件门禁记录 `boundary/reason`，不得跳过已经执行的业务决策。完成结果通过 `validateNextRoute(..., result)` 检查；两参数调用仅检查路由结构，不能证明可以实际流转。
 
@@ -49,27 +49,27 @@ checkpoint 的 `human_review` 保存 `user_decisions`、`required_decisions`、`
 
 ## 已批准范围内连续推进
 
-优先使用已有回复；没有明确授权时先形成可审阅方案，再集中确认范围、验收标准和实施边界。Plan、Spec、产品设计和工程契约仍完成适用检查，但不重复询问同一决定。脚手架架构选择、运行时外部动作仍按各自授权边界执行；交付验收不授权 commit、push、发布或生产操作。
+普通任务复用当前明确请求，不为了执行再创建阶段批准。正式新功能先在已授权范围内连续准备 Plan、Spec、必要产品设计、AC、工程方案及具体实施范围，保留未批准状态与来源；把这些已经形成的版本、摘要、风险和后续动作集中展示一次，再取得真实回复。不得批准未来尚未形成的资产，也不在确认前宣布正式完成、`ready-for-agent` 或进入实现。
 
-`delivery-scope` 用户决定的主体可使用 `delivery-authorization` 清单：`schema_version: 1`、`kind`、不可变且有 `ref/version/digest` 的 `basis` 原始快照、`external_policy` 和 `targets`。每个 target 明确 `boundary/subject_ref/scope/decision_basis`；scope 不能超过原回复覆盖范围。`decision_basis` 必须逐项列明非空的 `business_scope/acceptance/contract_commitments/authorization/risk_acceptance/quality/external_commitments` 字符串数组；不存在的承诺明确写“无新增承诺”，不能留空。边界和资产路径明确，禁止通配授权未来未知范围。外部制度文件有 `status: confirmed|unconfirmed` 和 `requirements`；每项制度列 `id/boundaries/principals`，无额外审批只能在已确认后显式使用空数组。
+新 `delivery-authorization` 使用 schema2，`basis` 绑定原始冻结资产，`targets` 给出具体 `boundary/subject_ref/scope`。七项 `decision_basis`（business_scope、acceptance、contract_commitments、authorization、risk_acceptance、quality、external_commitments）是原已批准主体模型中实际存在的 JSON Pointer 选择器，值由原始内容决定，不能填写“无变化”等结论字符串。Markdown 模型分为 `/frontmatter/...` 与 `/body`。不得使用通配路径或把未来字段列为授权。
 
-当前 requirement 保持 `boundary/subject_ref/scope`，用 `continuation_ref` 引用 `approved-scope-continuation-v1` 证据，替代直接 `user_decision_ref`。证据包含 `schema_version: 1`、`kind`、`boundary/scope`、当前 `subject`、实际验证 `basis`、原始 `source` requirement、独立 `review` 资产和适用的 `external_decisions`。资产描述均用 `ref/version/digest`，digest 为带 `sha256:` 前缀的原字节摘要。不允许链式延续或生成新的用户回复。
+`implementation-scope` target 同时给出按 Ticket 列明的 `implementation_limits`，明确 repositories 与 allowed_write_paths；当前合同、基线、写范围仍单独核验。可延续的技术细节/证据容器，必须在首次已展示的授权中用 `continuation_paths` 列出实际已存在且不覆盖上述保护维度的路径；缺省不推定授权新增容器。
 
-`implementation-scope` target 还必须包含 `implementation_limits`，按切片 Ticket 引用登记 `repositories/allowed_write_paths`。校验器将当前实施清单逐项与原授权边界精确比较；即使重算当前摘要并声明“无语义变化”，也不能扩大仓库或写路径。
+同一 Agent 可比较原始已批准快照与当前完整内容，核验实际差异、受影响检查及当前验证，使用 schema2 / `approved-scope-continuation-v2`。`source` 只指向原始真实决定，不允许引用上一份 continuation 形成链式扩权。`comparison.before` 是可读且与原授权摘要精确相同的冻结副本，`after` 是当前主体；`differences` 逐项绑定真实差异文件及分类和理由，不能只声称“摘要已更新”。格式、技术细节及补证的可延续性由 Go 对实际内容、原选择器与范围重算。AC、权限、风险接受、仓库或写范围扩大、未知实质性、撤回，停止依赖动作并展示具体差异取得对应决定。
 
-独立 review 包含：`decision: approved`、`role_id/runtime_id/principal_ref/drafter_principal_ref`、`classification`（`within-approved-scope/presentation-only/implementation-detail`）、`material_changes: []`、`findings`、当前 `boundary/scope/subject/basis`、与原授权一致的 `decision_basis`、`reason`、`comparison.before/after`。before 必须是原授权 basis 内不可变快照，after 必须绑定当前 subject。审查者按原快照与当前完整资产比较语义，不能只比较自填摘要或声称“无变化”；机器验证来源、摘要、身份分离、范围和声明的一致性，不替代专业语义判断。
+差异由现有只读原生接口取得：`compareContinuationAssets(before, after, {root})`（`scripts/lib/native-user-decision.mjs`）运输 `yss contract verify --kind continuation-comparison`。将返回的 `difference_json` **原样按 UTF-8** 写入既有 `differences.ref` 并计算原始字节 SHA-256。不能对 parsed `difference` 再 JSON.stringify，数值会丢失精度；缺少精确字符串是工具/来源缺口，不降级为 Node 差异引擎。实际差异文件形状为 `{schema_version:1, changes:[{path,before:{present,value?},after:{present,value?}}]}`；Go 最终验证全量差异覆盖，数组整体比较，缺失不同于 null。
 
-finding 分为 `requirement-violation/missing-evidence/important-risk/suggestion`，带 `id/reason`。前三类未 `resolved` 则阻断；suggestion 必须有 `follow_up` 待办，不因个人偏好加门禁。重要风险须重新取得用户风险接受决定，不能改分类绕过。
+`review` 绑定真实 provenance、当前候选与范围；默认真实自检，不要求独立角色。原始明确独立复核要求作为条件性的 `review-requirement` 来源绑定在现有 inputs/basis 中，不能由 `review.mode` 自行选择最低要求。当前首版仅支持原消息完整匹配 `请独立复核 <scope 用顿号连接>`（可带句号）或 `Please independently review <scope joined by , >`（可带英文句号），只去除外部空白。保留实际原话；其他说法、引用、否定或不支持格式是该动作的明确来源缺口，不能改写成支持的假消息、忽略后自检或另造一次确认。普通任务没有已知要求时不创建此来源表单。
 
-外部制度有要求时，`external_decisions` 每项含 `obligation_id/principal_ref/requirement`，逐一验证当前资产、范围和指定真人原始回复；制度未确认不能自动延续。制度文件或原授权决定依据变化需要重新评估和确认，不能清空要求。
+`external_rules` 只绑定当前消费动作/目标实际适用的已知要求：none-known 无额外问卷或配置；known-verifiable 需要可读来源、当前范围和实际满足证据；known-unverifiable 保存 rule_ref/scope/reason 并停止对应动作。不得为获得 none-known 删除已知适用要求，也不把无关未来发布规则绑定到所有草稿。规则自带有效期时核验，不发明有效期。没有发布平台要求的本地草稿仍可继续；已知平台强制真人批准未取得时不能发布。相同账号的不同真实上下文可满足独立复核，同一上下文换角色/运行时名称不算。
 
-使用 `scripts/verify-user-decision --continuation <requirement.yaml>` 核验。会签记录可携带同一 `continuation_ref`；工作单元和任务包沿用 `user_decisions`，Plan 入口使用 `plan_continuation_ref`。实施仍校验当前 scope 清单、切片合同、仓库、允许写路径和工程基线，不因延续省略合同校验。旧记录维持严格读取；未登记该 capability 的接收端必须拒绝延续并升级，不能静默当普通批准。
+通过 `scripts/verify-user-decision --continuation <requirement.yaml>` 核验，不产生新用户回复或执行资格。相邻适用技术检查可共用一个 approval3/review-bundle3，保留逐项结论并复用已完成的实际技术上下文；Plan 聚合不另派第三个审查任务。全部内部专业检查有据不适用时不制造空任务，但仍核验实际准备产出的真实自检和当前真人决定。失败、未执行、开放违规/缺证据/重要风险不被总体通过掩盖；建议保留待办。修复只重验受影响结论及依赖，旧报告保持原字节。
 
-相邻专业检查可共用一个 `schema_version: 2, kind: review-bundle, reviews: [...]` 文件；同一任务、会话、角色、运行时和独立主体完成适用能力检查，每行保留唯一 gate/check ID、当前 subject/digest/scope/basis、任务 / 能力绑定与明确结论。失败项不能被总体通过掩盖。`verify-approval-record` 用消费者当前上下文检查所有行，聚合门禁按检查 ID 读取各自行。组合审查不增加用户确认次数，也不省略检查覆盖。首轮完整覆盖适用项，修复后依据差异、受影响结论 / 行为及依赖定向复审并重新绑定当前候选；摘要变化、UI 或 `new_impacts` 不默认触发全部审查轴，未知先调查。未受影响结论复用必须有比较依据，历史原记录保持只读。
+历史 authorization1/continuation1/approval1–2 只在原身份和政策下读取核验，不重写摘要、不补造当前来源，也不能据此写新任务或阶段。未知代际或缺原政策快照明确报不支持；迁移保留原记录和可核验来源。
 
 ## 实施范围与架构选择
 
-首次实施批准的主体为功能级 `implementation-scope` 清单，`slices` 每行包含：`ticket_ref`、`contract`（ref/version/digest）、`repositories`、`allowed_write_paths`、`baselines`（ref/version/digest）。仓库与写路径必须对应当前合同的实施范围（v2 `common.project_roots/allowed_write_paths`，v3 `scope.project_roots/allowed_write_paths`，通过统一读取器核验）；基线包含合同引用的工程基线。`scope` 使用批准的切片引用集合。合同、范围或基线变化时先调查差异，复核当前合同、定向审查和授权延续；实质决定变化或超出原批准边界时展示差异后确认，未查明时不沿用。已覆盖的后续切片复用原记录。
+首次实施批准的主体为功能级 `implementation-scope` 清单，`slices` 每行包含：`ticket_ref`、`contract`（ref/version/digest）、`repositories`、`allowed_write_paths`、`baselines`（ref/version/digest）。仓库与写路径必须对应当前合同的实施范围（历史 v2 的 common、新 v4 的 scope 及各仓工作单元，通过统一读取器核验）；基线包含合同引用的工程基线。`scope` 使用批准的切片引用集合。合同、范围或基线变化时先调查差异，复核当前合同、定向审查和授权延续；实质决定变化或超出原批准边界时展示差异后确认，未查明时不沿用。已覆盖的后续切片复用原记录。
 
 实施就绪和派发必须同时提供 `user_decisions`、`slice_contract_ref` 与 `vertical_slice_ticket_ref`。Worker 任务包通过 `user_decisions` 传递记录，不能只声明 `ready_for_agent=true`。
 

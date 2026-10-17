@@ -11,7 +11,7 @@ scripts/backend-standards-coverage --root /governance --input /evidence/review-s
 scripts/backend-standards-coverage --root /governance --input /evidence/review-state.json --verify
 ```
 
-第一条只输出派生 JSON，不写工程、不执行其构建命令、不批准合同；保存输出并绑定 `standards_coverage_ref` 与 SHA-256 `standards_coverage_digest`。第二条读取 `review_result_ref`，重算覆盖并核对已有独立审查。所有证据引用相对治理 root；`code_ref` 相对被审工程。证据放在工程源码范围外，避免报告把自身纳入摘要。
+第一条只输出派生 JSON，不写工程、不执行其构建命令、不批准合同；保存输出并绑定 `standards_coverage_ref` 与 SHA-256 `standards_coverage_digest`。第二条读取 `review_result_ref`，重算覆盖并核对已有适用复核。所有证据引用相对治理 root；`code_ref` 相对被审工程。证据放在工程源码范围外，避免报告把自身纳入摘要。
 
 - `baseline`：输入 `project_root`、`baseline_binding: {ref,digest}`，基线复用 `architecture_identity/source.roots/build_units.role_paths`；可以无 Slice、无 diff。未登记时可输出诊断，但未知身份、未解析类型和空业务范围不能声称合规。
 - `change`：保留批准 Slice、执行预检、工作单元与既有候选字段。`worktree` 从不可变候选读取 merge_base；`committed` 另给 40 位 `review_base_ref`。合同漏掉实际影响返回 drift/new_impacts，不能仅补审查输入掩盖合同缺口。
@@ -32,7 +32,7 @@ scripts/backend-standards-coverage --root /governance --input /evidence/review-s
 
 ## 基线报告与完成边界
 
-独立 Reviewer 始终使用 `code-review`；baseline 结果也核对 reviewer/implementer 的不同 actor 与执行 instance，以及当前覆盖摘要。`candidate_digest` 为完整派生 inventory 的 SHA-256。机器验证含 command、exit_code、executed_at、candidate_digest 和日志摘要。
+新政策使用 `code-review`，默认真实自检；明确要求独立时核验真实上下文，不要求岗位或 runtime 注册。state.review_input 用 basis 绑定实际完成实施任务，并携带 implementation_candidate（原生计算的 ref/digest）；review_result_ref 指向的实际结果用 assessment 保存 mode/provenance。Go 从当前 basis 找唯一完成任务，核对实际工程、Slice/工作单元、当前候选和已知独立/外部要求，不能由报告自选来源。历史政策继续核验原 reviewer/implementer 身份分离和原字节。`candidate_digest` 为完整派生 inventory 的 SHA-256。机器验证含 command、exit_code、executed_at、candidate_digest 和日志摘要。
 
 `axes.Standards=passed` 必须覆盖所有适用规则。缺业务 Spec 则 `axes.Spec=missing_evidence`；要声明 Spec passed，另提供 `spec_binding.ref/digest/approval_ref`，批准必须绑定当前 Spec，并逐验收项给证据。基线成功仅返回 `status=audited, execution_allowed=false`，绝不关闭实现到交付的流转。
 

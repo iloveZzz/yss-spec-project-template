@@ -3,133 +3,25 @@ status: template
 owner: ai
 ---
 
-# Digital Human Task Package：<task_id>
+# 当前工作任务事实：<task_id>
 
-> Canonical contract: `.template-spec/process/schemas/digital-human-task-package.schema.json`。本文件路径保留为兼容入口。
+只在正式工作单元、跨工作区或工具交接需要结构化包时使用 task3。普通任务复用同一 Ticket/PR，咨询不创建任务包。Schema 沿用 `.template-spec/process/schemas/digital-human-task-package.schema.json` 的新分支；历史 task1/2 只在原政策下读取，不复制岗位字段到新包。
 
-> 用于主控 Agent 派发 subagent 前固定输入、输出、写范围和验收标准。没有任务包边界时，不得派发 subagent。
-
-## 1. 基本信息
-
-| 字段 | 内容 |
+| 事实 | 填写要求 |
 |---|---|
-| schema_version | `1` |
-| task_id |  |
-| work_unit_id | 对应生命周期注册表的 `work_units[].id`；实现子任务对应 Slice Contract 的 `work_units[].id` |
-| actor_id | 当前运行时实例标识；Reviewer 必须与实现者不同 |
-| Feature / Change |  |
-| 生命周期阶段 |  |
-| 对应门禁 |  |
-| Ticket / MR / PR |  |
-| 主控 Agent |  |
-| 数字人角色 | `role.` 见 `.template-spec/agents/digital-human-roles.yaml` |
-| runtime_id | `runtime.generic` / `runtime.skill-projection` / `runtime.grok` |
-| core_skills | 从角色表复制，禁止手写 |
-| forbidden_skills | 从角色表复制，禁止手写 |
-| subagent 角色 | Explorer / Drafter / Worker / Reviewer / Verifier |
-| 任务类型 | explore / draft / work / review / verify |
-| execution_state | 与 subagent 角色一致；由主控派发 |
-| workflow_status | not-started / active / paused / resolved / failed |
+| task_id / work_unit_id / stage_id / profile | 实际任务、当前注册单元/阶段、Spec 或 Backend |
+| policy | 当前编排 ref/version/digest，由原生查询取得 |
+| execution_state / workflow_status | Explorer / Drafter / Worker / Reviewer / Verifier；派发为 not-started |
+| objective / acceptance | 具体行为、验收与边界 |
+| inputs / input_bindings | 实际可读来源及原始字节摘要 |
+| baseline | 已登记真实 Git 根、完整基线 SHA、原生 task-baseline 摘要 |
+| provenance | 实际 tool/task_ref/execution_ref；稳定 identity 可得则记录，不可得写 unavailable/reason |
+| allowed_write_paths / forbidden_actions | 明确仓库相对范围；准备不得产生 user-approval / ready-for-agent |
+| expected_outputs | Drafter/Explorer 用冻结的具体产出文件，描述放 objective/acceptance |
+| expected_evidence_files / verification_commands | 必要真实验证计划，派发 verification_results 为空，不填写未来退出码 |
+| contract / convergence / downstream_consumers | 当前生命周期/批准 Slice 合同、明确汇合与下游 |
+| review_context | 适用时绑定实际候选、basis、check_ids、policy、范围及真实 review；默认 self-check |
 
-## 2. 输入资产
+`generateTaskPackageDefaults(undefined, overrides, {root})` 从实际输入构造新草案并查询 Go 的检查/Skills 与基线；不创建执行事实。真正持久化/派发仍通过当前 writer guard 与原生 task 校验。准备期保持 draft，正式完成或实现须当前真实决定与完整合同。
 
-| 输入 | 路径 / 链接 | 用途 |
-|---|---|---|
-| Spec / Plan |  |  |
-| Product / Interaction Design |  |  |
-| OpenAPI Draft / Freeze |  |  |
-| Architecture / ADR / CONTEXT |  |  |
-| Ticket / Slice / Checklist |  |  |
-| 代码 / 命令 / 其他 |  |  |
-
-## 2.1 合同与技能来源
-
-| 字段 | 内容 |
-|---|---|
-| contract_id |  |
-| contract_version |  |
-| contract_kind | `lifecycle-work-unit` / `slice-implementation` / `template-maintenance` |
-| contract_status | `issued` / `stale` / `blocked`；不替代生命周期门禁批准 |
-| contract_ref |  |
-| lifecycle_ref | 生命周期工作单元使用 |
-| Slice Implementation Contract | 仅 `slice-implementation` 填写 |
-| maintenance_ref | 仅 `template-maintenance` 填写维护 checkpoint |
-| 技能注册表 | `.template-spec/agents/digital-human-roles.yaml` |
-| 技能默认值 | `taskPackageDefaults(<role_id>)` |
-
-## 3. 输出要求
-
-| 输出 | 路径 / 链接 | 完成标准 |
-|---|---|---|
-|  |  |  |
-| expected_evidence_files |  |  |
-
-## 3.1 下游与汇合
-
-| 字段 | 内容 |
-|---|---|
-| downstream_consumers |  |
-| parent_work_unit | `<work-unit.id>` |
-| convergence_ref |  |
-| conflict_escalation |  |
-
-## 4. 写范围
-
-| 范围 | 允许 / 禁止 | 说明 |
-|---|---|---|
-| 允许修改的文件 / 模块 |  |  |
-| 只读路径 |  |  |
-| 明确禁止修改 |  |  |
-
-## 5. 禁止事项
-
-- [ ] 不得执行 Spec baseline / requirement freeze。
-- [ ] 不得执行 OpenAPI Freeze。
-- [ ] 不得给出 Architecture Review 最终放行结论。
-- [ ] 不得替代风险 / 回滚约束人工确认。
-- [ ] 不得替代 Git checkpoint 范围裁决。
-- [ ] 不得宣布“完成 / 可合并 / 可发布”。
-- [ ] 不得 revert 或覆盖其他 Agent / 用户的改动。
-
-## 6. 验收标准
-
-- [ ] 输出与输入资产逐项对应。
-- [ ] 结论区分事实、推断和建议。
-- [ ] 写入类任务只修改授权范围。
-- [ ] 审查类任务列出 blocker / non-blocker / residual risk。
-- [ ] 验证类任务记录命令、时间、结果和残余风险。
-- [ ] 需要人工确认的事项记录范围、责任人和结论。
-
-## 7. 汇合方式
-
-| 项目 | 内容 |
-|---|---|
-| 结果回填位置 |  |
-| 冲突上报方式 |  |
-| 主控 Agent 合并动作 | 采纳 / 部分采纳 / 不采纳 / 需返工 |
-| 未采纳原因 |  |
-
-## 7.1 实际验证结果
-
-| 命令 | exit_code | executed_at | evidence_ref |
-|---|---:|---|---|
-|  |  |  |  |
-
-## 8. 子代理最终回复格式
-
-```markdown
-### 结果摘要
-- <完成了什么>
-
-### 证据
-- <文件 / 命令 / 链接>
-
-### 变更路径
-- <如无写入，填“无，只读任务”>
-
-### 风险与阻塞
-- <blocker / residual risk / 人工确认项>
-
-### 需要主控 Agent 裁决
-- <Freeze / 安全 / 范围 / 发布等事项>
-```
+独立性只按明确要求核验不同真实上下文和冻结只读结果；不填写角色、数字人团队、固定人数或 runtime 注册。Plan 适用检查复用同一周期，结果绑定原派发快照和实际完成任务；全部有据不适用时不制造空审查任务。失效、范围扩大、撤回或实际失败停止依赖动作并保留原证据。

@@ -16,7 +16,7 @@ disable-model-invocation: true
 
 - 先由 `yss-product-lifecycle` 判断产品设计影响；无行为变化的孤立视觉修复记录 `not-applicable`，不创建空资产。
 - 先读取 Spec、产品总体设计、`CONTEXT.md`、`yss-design-system`，再按 `DESIGN.md` → `.template-spec/design/design.md` → `.template-spec/design/tokens/*` 顺序消费设计基线，形成交互说明、低保真页面/流程和状态矩阵。
-- 用独立 `prototype-review` 评审低保真与状态；未通过不得选择档位或构建原型交付物。
+- 用 `prototype-review` 评审低保真与状态；未通过不得选择档位或构建原型交付物。
 - 按 [原型档位路由](references/prototype-profile-routing.md) 选择 H1/H2 中满足当前决策风险的最低档位。没有充分证据时默认 H2。
 - 默认以 `DESIGN.md`、交互说明和状态矩阵进入 YSS HTML 适配器；有已选视觉稿时才条件调用 `product-design:index` 的还原 workflow。规范直出不调用要求先有图片的 `prototype/image-to-code/design-qa`；六轴 QA 仍由本阶段合同持有，所有 Agent 交付等价证据。
 - `high-fidelity-html-prototype` 仅为历史兼容入口；新资产统一为 `artifact.prototype-deliverable`、Prototype Evidence schema v4 与 Visual Baseline schema v1。
@@ -24,7 +24,7 @@ disable-model-invocation: true
 ## 执行顺序
 
 1. 形成简短设计输入（用户任务、保持项、可调整项、状态与适用 Token），再整理内容优先级、长度变化、数据来源和动作结果。形成交互说明、低保真与状态矩阵；状态至少包含事件、转换、guard、动作与可退出路径。信息架构或交互不确定时，先按 [方案比较方法](references/concept-comparison.md) 比较三个候选并取得用户选择，再进入低保真评审。
-2. 完成独立 `prototype-review`，提取仍需由原型回答的风险。
+2. 使用 `prototype-review` 完成内容复核，提取仍需由原型回答的风险。
 3. 计算并记录 `prototype_profile`。仅视觉方向仍未确定时比较三个高保真候选并由用户选择，保持已评审行为；已解决的问题不重复探索。已有规范和页面模式足够时记录 `not-applicable`、规范依据与理由。发现行为变化，返回受影响的低保真评审。
 4. 高保真 H1/H2 优先使用 `build-shadcn-vue-prototype.mjs --profile H1|H2`（Vue 3 + shadcn-vue）；React 作者路线已退役，旧包仅显式 legacy 只读校验；轻量原生路线分别使用 `prototype-contract.mjs prepare-static` / `prepare-flow`。二者都交付 `index.html` 与本地 CSS/JS/资源。按 `references/product-design-adapter.md` 完成场景、离线复验和 `seal-project`，不把 starter 示例当作业务验收。
 5. 自动采集版本、digest、视口、截图、console 与扫描结果。截图按 `route + page + state + viewport + theme + locale + data_scenario` 写入 `Visual Baseline Bundle`，执行 `visual-baseline-contract.mjs seal` 后由 feature 级 schema v4 `prototype-evidence.yaml` 引用；人工只补决策、风险、允许差异和用户确认。
@@ -45,7 +45,7 @@ Design QA 合并 visual、layout、interaction、content、accessibility、cross
 
 用户确认必须绑定提问者或其明确指定负责人的原始回复，使用生命周期 `user_decision_policy` 和统一用户决定记录；产品数字人只提供确认建议，不能代答。正式证据追加 `user_decision_ref/decision_subject_ref`，校验原型、视觉基线和操作范围与用户所见快照一致。用户确认只描述原型确认了什么、哪些范围可操作、哪些为模拟或 gap，以及接受/拒绝结论；不要求用户确认技术栈、CLI 或构建细节。
 
-`check.prototype-reviewed` 和 `check.prototype-verified` 是 `gate.product-design-approved` 的内部检查；独立评审和验证通过后，按生命周期用户决定协议核验当前范围。已有明确授权且决定依据不变时用 `continuation_ref` 延续；新的业务体验取舍、范围或重要风险仍由用户确认。档位选择属于验证输入，不单独请求批准，也不授权实现。
+`check.prototype-reviewed` 和 `check.prototype-verified` 是 `gate.product-design-approved` 的内部检查；适用复核和验证通过后，按生命周期用户决定协议核验当前范围。已有明确授权且决定依据不变时用 `continuation_ref` 延续；新的业务体验取舍、范围或重要风险仍由用户确认。档位选择属于验证输入，不单独请求批准，也不授权实现。
 
 ## 按需读取
 

@@ -15,13 +15,13 @@ const digest=x=>hash(JSON.stringify(canon(x)));
 const root=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'task3b-native-'))),results=[];
 const write=(ref,value)=>{fs.mkdirSync(path.dirname(path.join(root,ref)),{recursive:true});fs.writeFileSync(path.join(root,ref),typeof value==='string'?value:JSON.stringify(value));};
 const run=(label,args,expected='OK')=>{const argv=[...args,'--root',root,...(args[1]==='view'?['--profile','spec']:[]),'--json'],r=spawnSync(bin,argv,{encoding:'utf8'});results.push({label,argv:[bin,...argv],exit:r.status,stdout:r.stdout,stderr:r.stderr});const parsed=JSON.parse(r.stdout);assert.equal(parsed.code,expected,`${label}: ${parsed.code}: ${JSON.stringify(parsed.result.diagnostics||parsed.result.message)}`);return parsed;};
-try{
+scenarios:try{
  fs.cpSync(path.join(source,'.template-spec/process'),path.join(root,'.template-spec/process'),{recursive:true});
  write('yss-project.yaml',{schema_version:2,repository_mode:'project-instance'});
  write('.template-spec/process/harness-profile.yaml',{schema_version:3,profile_id:'harness.spec-template',status:'active',required_capabilities:['role-independent-governance-v1'],lifecycle:{},execution:{}});
  fs.copyFileSync(path.join(source,'CONTEXT.md'),path.join(root,'CONTEXT.md'));
  const policies=loadOrchestrationContract(ref=>fs.readFileSync(path.join(root,ref)),'.template-spec/process/orchestration-contract.yaml');
- for(const [unit,route] of Object.entries(policies.value.work_unit_routes)){
+ if(!process.env.YSS_TASK_PRODUCER_ONLY&&!process.env.YSS_REVIEW_PRODUCER_ONLY)for(const [unit,route] of Object.entries(policies.value.work_unit_routes)){
   write('selection.json',{work_unit_id:unit,impacts:Object.keys(route.impact_check_ids)});
   run('spec-mapping-'+unit,['contract','verify','--kind','task-selection','--file','selection.json']);
  }
@@ -39,6 +39,16 @@ try{
  const bound={ref:'input.json',digest:hash(fs.readFileSync(path.join(root,'input.json')))},baseline={repository_root:root,commit,digest:digest({base_commit:commit,roots:['drafts'],files:[]})};
  const provenance={tool:'codex',task_ref:'task.json',execution_ref:'dispatch.json',identity:{status:'unavailable',reason:'test platform does not expose stable identifiers'}};
  const task={schema_version:3,task_id:'TASK-1',profile:'spec',policy:{ref:'.template-spec/process/orchestration-contract.yaml',version:2,digest:policies.digest},work_unit_id:'work-unit.spec-synthesis',stage_id:'stage.spec-architecture',execution_state:'Drafter',workflow_status:'not-started',objective:'起草当前Spec',acceptance:['明确范围'],inputs:['input.json'],input_bindings:[bound],baseline,provenance,skill_source:selected,allowed_write_paths:['drafts'],forbidden_actions:['user-approval','ready-for-agent'],expected_outputs:['drafts/spec.mjs'],expected_evidence_files:['drafts/check.json'],verification_commands:['node --check drafts/spec.mjs'],verification_results:[],contract:{contract_id:'contract.draft',contract_version:'v1',kind:'lifecycle-work-unit',status:'issued',contract_ref:'input.json',lifecycle_ref:'input.json'},convergence:{parent_work_unit:'work-unit.spec-synthesis',convergence_ref:'input.json'},downstream_consumers:['work-unit.technical-analysis']};
+ process.env.YSS_NATIVE_BINARY=bin;
+ const {generateTaskPackageDefaults}=await import('../../lib/task-package.mjs');
+ const draftInputs={...structuredClone(task),skill_source:{impacts:['wording']},baseline:{repository_root:root,commit}};
+ const produced=generateTaskPackageDefaults(undefined,draftInputs,{root});
+ assert.equal(produced.schema_version,3);assert.equal(produced.profile,'spec');assert.deepEqual(produced.baseline,baseline);assert.deepEqual(produced.skill_source,selected);
+ assert.equal(produced.workflow_status,'not-started');assert.equal(produced.result,undefined);assert.equal(produced.actor_id,undefined);assert.equal(produced.role_id,undefined);assert.equal(fs.existsSync(path.join(root,'task.json')),false);
+ assert.throws(()=>generateTaskPackageDefaults('role.product-manager',draftInputs,{root}),/role|岗位|旧/);
+ const missing=structuredClone(draftInputs);delete missing.provenance;
+ assert.throws(()=>generateTaskPackageDefaults(undefined,missing,{root}),/provenance|来源/);
+ if(process.env.YSS_TASK_PRODUCER_ONLY){console.log('role-independent task producer uses native selection and actual baseline, without identity registry or future execution');break scenarios;}
  write('dispatch.json',{phase:'dispatch',dispatched_at:new Date().toISOString(),tool:provenance.tool,task_ref:provenance.task_ref,identity:provenance.identity,candidate:bound,input_bindings:task.input_bindings,baseline,scope:task.allowed_write_paths,expected_outputs:task.expected_outputs});write('task.json',task);
  run('task3-draft-dispatch',['contract','verify','--kind','task','--file','task.json']);
  task.execution_state='Reviewer';task.review_context={candidate:bound,policy:task.policy,check_ids:selected.check_ids,approval_scope:selected.check_ids,basis:[bound],review:{mode:'self-check',provenance}};write('task.json',task);run('task3-selfcheck-dispatch',['contract','verify','--kind','task','--file','task.json']);delete task.review_context;
@@ -55,6 +65,16 @@ try{
  task.result={result_schema:'workflow-execution-result-v1',work_unit:task.work_unit_id,workflow_reference:'input.json',result:'completed',skill:selected.skills[0],changed_files:['drafts/check.json','drafts/spec.mjs'],context_reconciliation:{status:'reconciled',ref:'drafts/check.json'},evidence_refs:['drafts/check.json'],deferred_seams:[],drift:[],violation:[],new_impacts:[],stale_candidates:[],next_route:'work-unit.technical-analysis',blocking_signals:[]};
  write('task.json',task);
  run('task3-actual-completion',['contract','verify','--kind','task','--file','task.json']);
+ // The actual completed draft feeds the existing review package entry without role/runtime fields.
+ const candidateAsset={ref:'drafts/spec.mjs',digest:hash(fs.readFileSync(path.join(root,'drafts/spec.mjs')))};
+ write('review-checkpoint.json',{gates:{'gate.spec-baseline-approved':{status:'pending',subject_ref:candidateAsset.ref,subject_digest:candidateAsset.digest,approval_scope:['drafts'],basis:[bound,{ref:'task.json',digest:hash(fs.readFileSync(path.join(root,'task.json')))}]}}});
+ const reviewTask={...structuredClone(task),task_id:'REVIEW-1',workflow_status:'not-started',verification_status:'not-executed',verification_results:[],execution_state:'Reviewer',allowed_write_paths:['reviews'],expected_outputs:['review report'],expected_evidence_files:['reviews/result.json'],baseline:{repository_root:root,commit},skill_source:{impacts:['wording']},provenance:{...provenance,task_ref:'review-package/task.json',execution_ref:'review-dispatch.json'},inputs:['input.json','task.json'],input_bindings:[bound,{ref:'task.json',digest:hash(fs.readFileSync(path.join(root,'task.json')))}]};delete reviewTask.result;
+ reviewTask.review_context={candidate:candidateAsset,policy:task.policy,check_ids:selected.check_ids,approval_scope:['drafts'],basis:reviewTask.input_bindings,review:{mode:'self-check',provenance:reviewTask.provenance}};
+ write('review-input.json',{task:reviewTask});
+ const {buildReviewPackage}=await import('../../lib/review-package.mjs');
+ const reviewPackage=buildReviewPackage({root,checkpointRef:'review-checkpoint.json',checkIds:['gate.spec-baseline-approved'],reviewInputRef:'review-input.json',outputDir:'review-package'});
+ assert.equal(reviewPackage.task.schema_version,3);assert.equal(reviewPackage.bundle.schema_version,3);assert.equal(reviewPackage.bundle.reviews[0].decision,'pending');assert.equal(reviewPackage.task.role_id,undefined);assert.equal(reviewPackage.subject_ref,candidateAsset.ref);assert.equal(fs.existsSync(path.join(root,'review-package')),false);
+ if(process.env.YSS_REVIEW_PRODUCER_ONLY){console.log('role-independent review package reuses the completed draft and keeps pending authority');break scenarios;}
  run('completion-ref-override-refused',['contract','verify','--kind','task','--file','task.json','--task-ref','task.json'],'TASK_ORIGIN');
  write('drafts/spec.mjs','export const value = 2;' );run('output-drift-refused',['contract','verify','--kind','task','--file','task.json'],'EVIDENCE_CANDIDATE');write('drafts/spec.mjs','export const value = 1;' );
  task.verification_results[0].status='not-run';write('task.json',task);run('not-run-cannot-complete',['contract','verify','--kind','task','--file','task.json'],'SCHEMA');task.verification_results[0].status='passed';write('task.json',task);

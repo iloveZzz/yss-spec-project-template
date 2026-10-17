@@ -4,7 +4,7 @@
 
 权威接线：`.template-spec/process/orchestration-contract.yaml` 的 `work_unit_routes.work-unit.code-review.review_standards_route` 与 `review_input`。报告形状：`.template-spec/templates/review-report-template.md`。
 
-上面是 `governed` 正式审查接线。已由 Spec `request_triage.delivery_path` 政策和支持的 CLI 判为 `daily` 时，复用同一任务的验收、工程基线、适用 YSS 技能、真实单仓 diff、实际测试和独立审查身份。以下技术规则与覆盖要求仍适用；Slice `required_skills`、正式 review_input / 覆盖文件 / 模板字段、合同失效与工作单元流转要求仅对正式路径生效。普通结论可保存在任务审查段，不先生成这些文件；缺政策或能力的工具/Profile 不以此段获得普通准入。
+上面是 `governed` 正式审查接线。已由 Spec `request_triage.delivery_path` 政策和支持的 CLI 判为 `daily` 时，复用同一任务的验收、工程基线、适用 YSS 技能、真实单仓 diff、实际测试、适用复核及真实来源。以下技术规则与覆盖要求仍适用；Slice `required_skills`、正式 review_input / 覆盖文件 / 模板字段、合同失效与工作单元流转要求仅对正式路径生效。普通结论可保存在任务审查段，不先生成这些文件；缺政策或能力的工具/Profile 不以此段获得普通准入。
 
 ## 1. 编译标准源
 
@@ -85,3 +85,5 @@ YSS 页面模块约定（YTable、YFormily、页面骨架等）走 Standards，�
 不可变 tree ID，并核对当前清洁 checkout。读取结构化结果不会代替 Reviewer 的实际规则判断。
 
 `verification_results` 必须包含实际 command、executed_at、exit_code=0、candidate_digest，以及日志 evidence_ref/evidence_digest。缺少本次机器检查或日志漂移不能完成审查。
+
+政策2的正式后端复核在现有 review_input 中给出 basis 与原生 implementation_candidate，实际结果含 assessment（mode、provenance）；默认同一执行者自检，条件独立要求仍核验。真实源必须是当前完成任务；变更复核还要属于同一 Slice/工作单元与实现仓。当前覆盖、候选快照、逐规则结论、真实命令和源码映射继续核验，不能用新模式跳过这些约束。

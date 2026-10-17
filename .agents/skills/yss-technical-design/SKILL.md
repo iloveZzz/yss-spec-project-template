@@ -16,13 +16,13 @@ disable-model-invocation: true
 
 ## 输入与架构选择
 
-先读根 `CONTEXT.md`、已批准且当前的 Spec、业务规则、关键场景、适用的 API 契约、ADR 和工程约束。没有 API 或其他专项影响时记录有依据的不适用，不生成占位设计。
+先读根 `CONTEXT.md`、当前 Spec（准备期可为未批准草稿，保留状态与来源）、业务规则、关键场景、适用的 API 契约、ADR 和工程约束。没有 API 或其他专项影响时记录有依据的不适用，不生成占位设计。
 
 按项目绑定架构来源及摘要，架构族只允许 `domain-driven` 与 `layered-mvc`；不从目录推断或默认架构、Spring Boot 版本。具体 Profile 与模块边界消费技能注册表及 `.template-spec/agents/backend-architecture-profiles.md`。
 
 对象职责、命名及阿里/COLA 适配消费 `.template-spec/agents/backend-architecture-profiles.md` 的“对象命名与外部规范适配”；将实际类型与例外写入当前工程基线和设计映射，不因通用规范改变已确认 DDD/MVC、组件或 wire 协议。
 
-- 新工程先通过 `gate.backend-architecture-platform-approved`：展示 DDD / MVC 推荐依据及平台清单中的精确 Spring Boot、Java，用户在同一次决定确认架构与平台。决定持久化到 `scaffold-architecture-decisions.yaml`，设计与后续脚手架消费同一决定。
+- 新工程可先起草架构备选和技术方案；生成或实现前须通过 `gate.backend-architecture-platform-approved`，与完整已形成方案集中展示： DDD / MVC 推荐依据及平台清单中的精确 Spring Boot、Java，用户在同一次决定确认架构与平台。决定持久化到 `scaffold-architecture-decisions.yaml`，设计与后续脚手架消费同一决定。
 - 既有工程核验并沿用当前登记架构及固定工程基线/POM 的实际 Spring Boot；该门禁记录带依据的 `not-applicable`，不重复询问。架构转换或平台升级单独立项。
 
 - `domain-driven`：调用 `yss-tactical-design`，补齐适用的战略领域输入。
@@ -30,7 +30,7 @@ disable-model-invocation: true
 
 已有 Strategic Design Handoff 时，两种分支都必须先完成导入和目标词汇对账，再逐条承接规则与关键场景。没有战略交接包的项目直接消费批准需求，不能为 MVC 补造战略 DDD。
 
-既有身份 v2 的纯工程变更可显式使用 `design_scope: engineering-only`；按 `references/engineering-design.schema.json` 绑定真实构建单元、写路径、只读依赖、失败处理与测试 seam。不得更改登记业务边界、领域模型、业务规则/状态、持久化、数据库 schema 或 UI；命中这些影响回原架构设计。缺省仍保留原 DDD/MVC 规则，不自动降级。工程分支仍需当前 Spec/API/工程依据、逐条承接、独立技术审查及正式 Slice 批准。
+既有身份 v2 的纯工程变更可显式使用 `design_scope: engineering-only`；按 `references/engineering-design.schema.json` 绑定真实构建单元、写路径、只读依赖、失败处理与测试 seam。不得更改登记业务边界、领域模型、业务规则/状态、持久化、数据库 schema 或 UI；命中这些影响回原架构设计。缺省仍保留原 DDD/MVC 规则，不自动降级。工程分支仍需当前 Spec/API/工程依据、逐条承接、适用技术复核及正式 Slice 批准。
 
 ## 合同与验证
 
@@ -44,7 +44,7 @@ schema v1 战术合同只按 DDD 显式兼容读取；使用 `--legacy-ddd`，�
 
 ## 交接
 
-按现有架构审查门禁进行独立评审。批准且版本当前后交回生命周期，再交编译器；DDD 实现使用 `yss-domain`，MVC 实现按已登记 Profile 的能力与 Recipe 路由。发现 `stale`、`drift`、`new_impacts` 或路径越界时回交重路由。需要图示时按用户或合同要求调用 `archify`，图只作派生证据。
+按现有架构审查门禁进行内容复核，默认同一 Agent 自检，按明确来源满足独立复核要求。批准且版本当前后交回生命周期，再交编译器；DDD 实现使用 `yss-domain`，MVC 实现按已登记 Profile 的能力与 Recipe 路由。发现 `stale`、`drift`、`new_impacts` 或路径越界时回交重路由。需要图示时按用户或合同要求调用 `archify`，图只作派生证据。
 
 ## 后端脚手架平台承接
 

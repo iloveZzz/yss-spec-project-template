@@ -9,6 +9,9 @@ import { REVIEW_POLICY_REF, reviewDigest, reviewLocalPath, reviewAuthorityRegist
 import { isPlanReview, loadPlanReviewPolicy, planReviewRequest, bindPlanReviewAttempt } from './plan-review-control.mjs';
 import { runAssetTransaction } from './asset-transactions.mjs';
 import { serializeAsset, validateAssetStructure } from './structured-assets.mjs';
+import {generateTaskPackageDefaults,validateTaskPackage} from './task-package.mjs';
+import {loadOrchestrationContract} from './orchestration-contract.mjs';
+import {assertGovernanceWrite,nativeContractVerify} from './native-evidence.mjs';
 
 const error = message => { throw new TypeError(message); };
 const parse = (bytes, label) => { const doc = parseDocument(String(bytes), { uniqueKeys: true, maxAliasCount: 0 }); if (doc.errors.length) error(`无法解析 ${label}`); return doc.toJS({ maxAliasCount: 0 }); };
@@ -35,6 +38,8 @@ function textDiff(before, after) {
 /** Build draft evidence from current checkpoint rows. Never sets an approved decision. */
 export function buildReviewPackage({ checkpointRef, checkIds, roleId, runtimeId = 'runtime.generic', actorId, reviewerPrincipalRef, drafterPrincipalRef, implementationActorId, taskId, reviewSessionId, workUnitId, outputDir, previousSubjectRef, reviewPhase, reviewInputRef, targetFindingIds, resolutionEvidence, independence, independenceEvidenceRef, root = ROOT, registry, skillRegistry }) {
   root = fs.realpathSync(root);
+  const identity=parse(fs.readFileSync(reviewLocalPath(root,'yss-project.yaml')),'yss-project.yaml');
+  if(identity.schema_version===2&&identity.repository_mode==='project-instance')return buildReviewPackage3({...arguments[0],root});
   // 会话独立性只如实记录、不改变放行；未声明时不写字段，统计按“未声明”计。
   if (independence !== undefined && !['separate-session', 'same-session'].includes(independence)) error(`未知独立性: ${independence}`);
   if (independenceEvidenceRef !== undefined && independence === undefined) error('独立性证据须与 --independence 一起声明');
@@ -140,11 +145,13 @@ export function buildReviewPackage({ checkpointRef, checkIds, roleId, runtimeId 
   return { task, bundle, subject, files, task_ref: taskRef, task_digest: taskDigest, subject_ref: subjectRef, subject_digest: reviewDigest(subjectText), decision: 'pending', execution_authorization: 'not-granted', ...(plan ? { plan_checkpoint: planCheckpoint, checkpoint_before: { digest: 'sha256:' + reviewDigest(bytes(checkpointRef)), mode: checkpointMode } } : {}) };
 }
 export function prepareReviewPackage(options) {
-  const root = fs.realpathSync(options.root || ROOT), built = buildReviewPackage({ ...options, root });
+  const root=fs.realpathSync(options.root||ROOT),identity=parse(fs.readFileSync(reviewLocalPath(root,'yss-project.yaml')),'yss-project.yaml');
+  if(!options.dryRun&&identity.repository_mode==='project-instance')assertGovernanceWrite(root);
+  const built=buildReviewPackage({...options,root});
   if (built.reused_attempt) {
     const attempt = built.reused_attempt;
     const task = parse(fs.readFileSync(reviewLocalPath(root, attempt.task_ref)), attempt.task_ref);
-    validateReviewTaskBinding(task, { root });
+    if(task.schema_version===3)validateTaskPackage(task,{root});else validateReviewTaskBinding(task,{root});
     return { reused: true, ...(options.dryRun ? { dry_run: true } : {}), task_ref: attempt.task_ref, task_digest: attempt.task_digest, attempt_id: attempt.attempt_id, plan_review_binding: built.reservation.binding, decision: 'pending', execution_authorization: 'not-granted' };
   }
   if (options.dryRun) return { dry_run: true, task_ref: built.task_ref, subject_ref: built.subject_ref, decision: 'pending', execution_authorization: 'not-granted', plan_review_binding: built.task.review_context.plan_review_binding ?? null };
@@ -156,20 +163,32 @@ export function prepareReviewPackage(options) {
       ...Object.entries(built.files).map(([name, content]) => ({ ref: join(options.outputDir, name), before: null, after_digest: 'sha256:' + reviewDigest(content) }))];
     try { return runAssetTransaction(root, changes, () => {
       // Validate the original live input under the transaction lock before publishing the reservation.
-      const rows = currentApprovalsFromCheckpoint(options.checkpointRef, options.checkIds, { root });
-      if (currentApprovalsDigest(rows) !== built.subject.source_checkpoint.digest) error('REVIEW_BINDING_STALE: 准备期间业务输入已变更');
+      const rows=currentApprovalsFromCheckpoint(options.checkpointRef,built.task.review_context.check_ids,{root,governanceVersion:built.task.schema_version===3?2:1});
+      if (currentApprovalsDigest(rows) !== (built.source_checks_digest||built.subject.source_checkpoint.digest)) error('REVIEW_BINDING_STALE: 准备期间业务输入已变更');
       fs.mkdirSync(directory, { recursive: true });
       for (const [name, content] of Object.entries(built.files)) fs.writeFileSync(reviewLocalPath(root, join(options.outputDir, name), { missing: true }), content, { flag: 'wx' });
       const temporary = checkpointFile + '.plan-review-' + process.pid;
       try { fs.writeFileSync(temporary, checkpointText, { flag: 'wx', mode: built.checkpoint_before.mode }); fs.renameSync(temporary, checkpointFile); }
       finally { if (fs.existsSync(temporary)) fs.unlinkSync(temporary); }
       validateReviewTaskBinding(built.task, { root, registry: options.registry, skillRegistry: options.skillRegistry });
+      if(built.task.schema_version===3){const checked=nativeContractVerify({root,kind:'task',file:built.task_ref});if(checked.exitCode!==0)error(checked.message);}
       return { task_ref: built.task_ref, task_digest: built.task_digest, subject_ref: built.subject_ref, subject_digest: built.subject_digest, bundle_ref: join(options.outputDir, 'bundle-draft.yaml'), coverage_ref: join(options.outputDir, 'coverage.md'), diff_ref: join(options.outputDir, 'diff.md'), plan_review_binding: built.task.review_context.plan_review_binding, decision: 'pending', execution_authorization: 'not-granted' };
     }); } catch (failure) {
       // The transaction restores files; remove only our now-empty directory.
       if (fs.existsSync(directory) && fs.readdirSync(directory).length === 0) fs.rmdirSync(directory);
       throw failure;
     }
+  }
+  if(built.task.schema_version===3){
+    const changes=Object.entries(built.files).map(([name,content])=>({ref:join(options.outputDir,name),before:null,after_digest:'sha256:'+reviewDigest(content)}));
+    return runAssetTransaction(root,changes,()=>{
+      const rows=currentApprovalsFromCheckpoint(options.checkpointRef,built.task.review_context.check_ids,{root,governanceVersion:2});
+      if(currentApprovalsDigest(rows)!==built.source_checks_digest)error('REVIEW_BINDING_STALE: 准备期间消费者依据变化');
+      fs.mkdirSync(directory,{recursive:true});
+      for(const [name,content]of Object.entries(built.files))fs.writeFileSync(reviewLocalPath(root,join(options.outputDir,name),{missing:true}),content,{flag:'wx'});
+      validateTaskPackage(built.task,{root});
+      return{task_ref:built.task_ref,task_digest:built.task_digest,subject_ref:built.subject_ref,bundle_ref:join(options.outputDir,'bundle-draft.yaml'),coverage_ref:join(options.outputDir,'coverage.md'),decision:'pending',execution_authorization:'not-granted'};
+    });
   }
   fs.mkdirSync(path.dirname(directory), { recursive: true });
   const staging = fs.mkdtempSync(path.join(path.dirname(directory), '.review-package-'));
@@ -182,4 +201,48 @@ export function prepareReviewPackage(options) {
     fs.renameSync(staging, directory);
     return { task_ref: built.task_ref, task_digest: built.task_digest, subject_ref: built.subject_ref, subject_digest: built.subject_digest, bundle_ref: join(options.outputDir, 'bundle-draft.yaml'), coverage_ref: join(options.outputDir, 'coverage.md'), diff_ref: join(options.outputDir, 'diff.md'), decision: 'pending', execution_authorization: 'not-granted' };
   } finally { if (fs.existsSync(staging)) fs.rmSync(staging, { recursive: true }); }
+}
+
+
+// Build only pending records from already formed inputs. The publisher retains the existing transaction and writer guard.
+function buildReviewPackage3(options){
+ const {root,checkpointRef,reviewInputRef,outputDir}=options;
+ for(const [name,value]of Object.entries({checkpointRef,reviewInputRef,outputDir}))requireText(value,name);
+ if(options.roleId||options.runtimeId||options.actorId||options.reviewerPrincipalRef||options.drafterPrincipalRef||options.implementationActorId)error('新审阅包不接受旧岗位或数字人资格字段');
+ const checkpointFile=reviewLocalPath(root,checkpointRef),checkpointBytes=fs.readFileSync(checkpointFile),checkpoint=parse(checkpointBytes,checkpointRef);
+ const read=file=>path.resolve(file)===checkpointFile?checkpointBytes:fs.readFileSync(file),bytes=ref=>read(reviewLocalPath(root,ref));
+ const input=parse(bytes(reviewInputRef),reviewInputRef);
+ if(!input.task)error('新审阅输入需要真实task3事实，不能从角色或未来执行推断');
+ const task=generateTaskPackageDefaults(undefined,{...input.task,...(options.taskId?{task_id:options.taskId}:{}),...(options.workUnitId?{work_unit_id:options.workUnitId}:{}),checkpoint_ref:checkpointRef},{root});
+ if(!['Reviewer','Verifier'].includes(task.execution_state)||!task.review_context)error('新审阅包需要明确Reviewer/Verifier执行态和实际候选');
+ const taskRef=join(outputDir,'task.json');
+ if(task.provenance.task_ref!==taskRef)error('实际派发来源task_ref必须等于本次规范任务路径');
+ const checkIds=options.checkIds||task.review_context.check_ids;
+ const rows=currentApprovalsFromCheckpoint(checkpointRef,checkIds,{root,read,governanceVersion:2}),scope=[...new Set(rows.flatMap(row=>row.approval_scope))].sort();
+ if(JSON.stringify([...task.review_context.approval_scope].sort())!==JSON.stringify(scope))error('当前技术复核范围与消费者checkpoint不一致');
+ task.review_context.check_ids=[...checkIds];
+ const policy=loadOrchestrationContract(ref=>bytes(ref),'.template-spec/process/orchestration-contract.yaml').value;
+ const plan=isPlanReview(checkIds,{root,read});let reservation,planCheckpoint,subject={current_approvals:rows};
+ if(plan){
+  if(checkIds.includes('gate.plan-approved'))error('Plan聚合复用内部结论，不另派第三个技术审查');
+  const rule=policy.gate_policy.review_execution.review_bundles.find(row=>row.aggregate_gate==='gate.plan-approved');
+  if(!rule||rule.work_unit!==task.work_unit_id)error('当前Plan技术检查工作单元不匹配');
+  subject=parse(bytes(task.review_context.candidate.ref),task.review_context.candidate.ref);
+  if(subject.source_checkpoint?.ref!==checkpointRef||currentApprovalsDigest(subject.current_approvals)!==subject.source_checkpoint.digest)error('已形成候选缺少当前消费者来源');
+  const selected=subject.current_approvals.filter(row=>checkIds.includes(row.boundary));
+  if(currentApprovalsDigest(selected)!==currentApprovalsDigest(rows))error('已形成候选未覆盖当前逐项检查');
+  reservation=planReviewRequest(checkpoint,{checkpoint_ref:checkpointRef,feature_id:checkpoint.feature_id,scope_ids:checkpoint.plan_review_control?.scope_ids,scope_digest:checkpoint.plan_review_control?.scope_digest,phase:options.reviewPhase||'initial',check_ids:checkIds,candidate_ref:task.review_context.candidate.ref,candidate_digest:subject.source_checkpoint.digest,basis:task.review_context.basis,task_ref:taskRef,target_finding_ids:options.targetFindingIds||input.target_finding_ids,resolution_evidence:options.resolutionEvidence||input.resolution_evidence},{root,read});
+  if(reservation.reusedAttempt)return{reused_attempt:reservation.control.attempts.find(row=>row.attempt_id===reservation.binding.attempt_id),reservation};
+  task.review_context.plan_review_binding=reservation.binding;
+  planCheckpoint={...checkpoint,plan_review_control:reservation.control};
+ }
+ validateTaskPackageSchema(task);
+ const taskText=json(task),taskDigest=reviewDigest(taskText);
+ if(plan)planCheckpoint.plan_review_control=bindPlanReviewAttempt(reservation.control,reservation.binding.attempt_id,{task_ref:taskRef,task_digest:taskDigest},{root,read});
+ const shared={schema_version:3,review_task_ref:taskRef,review_task_digest:taskDigest,check_ids:task.review_context.check_ids,policy:task.policy,review:task.review_context.review,...(plan?{plan_review_binding:reservation.binding}:{})};
+ const bundle={...shared,kind:'review-bundle',bundle_id:plan?policy.planning.review_control.bundle_id:`review-bundle.${task.task_id.toLowerCase().replace(/[^a-z0-9-]/g,'-')}`,task_id:task.task_id,work_unit_id:task.work_unit_id,basis:task.review_context.basis,reviews:rows.map(row=>({...shared,gate_id:row.boundary,decision:'pending',actor_kind:'agent',subject_ref:row.subject_ref,subject_digest:row.subject_digest,approval_scope:row.approval_scope,basis:row.basis,evidence_refs:row.basis.map(asset=>asset.ref)})),notes:'待实际复核；本草案不授予批准、用户同意或实现资格。完成时必须补当前真实执行证据。'};
+ validateJsonSchema(bundle,path.join(ROOT,'.template-spec/process/schemas/review-bundle.schema.json'));
+ const files={'task.json':taskText,'task-issued.json':taskText,'bundle-draft.yaml':stringify(bundle,{lineWidth:0,aliasDuplicateObjects:false}),'coverage.md':['# 当前复核草案','','默认诚实自检；明确独立或外部要求按实际来源满足。','状态：pending；没有批准、执行或未来验证结论。','',...rows.map(row=>`- ${row.boundary}: ${row.subject_ref} (${row.subject_digest})`),''].join('\n')};
+ if(plan)validateAssetStructure(planCheckpoint,'checkpoint',{schemaRoot:root});
+ return {task,bundle,subject,files,task_ref:taskRef,task_digest:taskDigest,subject_ref:task.review_context.candidate.ref,subject_digest:task.review_context.candidate.digest,source_checks_digest:currentApprovalsDigest(rows),decision:'pending',execution_authorization:'not-granted',...(plan?{plan_checkpoint:planCheckpoint,checkpoint_before:{digest:'sha256:'+reviewDigest(checkpointBytes),mode:fs.statSync(checkpointFile).mode&0o777}}:{})};
 }

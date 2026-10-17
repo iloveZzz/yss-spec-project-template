@@ -18,7 +18,7 @@ const identity = parseDocument(readFileSync(identityPath, "utf8"), {
   maxAliasCount: 0,
   uniqueKeys: true,
 }).toJS({ maxAliasCount: 0 });
-if (identity?.schema_version !== 1 || identity?.repository_mode !== "project-instance") {
+if (![1,2].includes(identity?.schema_version) || identity?.repository_mode !== "project-instance") {
   throw new TypeError("verify-project-instance 仅适用于合法 project-instance");
 }
 const instance = readInstanceMetadata(root);

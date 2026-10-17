@@ -112,7 +112,9 @@
       "scripts/verify-import-direction",
       "scripts/lib/import-direction.mjs",
       ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
-      ".template-spec/process/schemas/strategic-design-handoff-v3.schema.json"
+      ".template-spec/process/schemas/strategic-design-handoff-v3.schema.json",
+      ".template-spec/agents/digital-human-roles.yaml",
+      ".template-spec/agents/digital-human-roles.md"
     ],
     "excludePathSuffixes": [
       "-scenarios"
@@ -279,8 +281,6 @@
   "common": {
     "files": [
       ".template-spec/agents/yss-skill-registry.yaml",
-      ".template-spec/agents/digital-human-roles.yaml",
-      ".template-spec/agents/digital-human-roles.md",
       ".template-spec/agents/issue-tracker.md",
       ".template-spec/agents/triage-labels.md",
       ".template-spec/process/lifecycle-registry.yaml",
@@ -342,7 +342,8 @@
       ".template-spec/process/schemas/spec-baseline-import-receipt.schema.json",
       ".template-spec/process/schemas/strategic-handoff-export.schema.json",
       ".template-spec/process/schemas/strategic-handoff-export-v2.schema.json",
-      ".template-spec/process/schemas/strategic-handoff-package.schema.json"
+      ".template-spec/process/schemas/strategic-handoff-package.schema.json",
+      ".template-spec/process/harness-profile.yaml"
     ],
     "scripts": [
       "scripts/verify-project-instance",

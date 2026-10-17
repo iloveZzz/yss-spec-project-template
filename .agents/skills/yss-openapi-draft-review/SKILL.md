@@ -4,6 +4,9 @@ description: "审查 YSS OpenAPI Draft 的需求覆盖、页面动作、响应�
 disable-model-invocation: true
 ---
 
+复核方式消费当前编排政策：默认同一 Agent 诚实自检，明确用户或已知外部要求才需独立上下文/指定真人。保持 Draft → 实际锁定校验 → 当前内容复核 → Freeze → 实现 → 契约测试；失败、未执行或旧摘要证据不能通过。技术审查不增加人工确认次数。
+
+
 功能包根只从 `.template-spec/agents/issue-tracker.md` 的 `tracker.root` 读取；本文 `.work/` 路径是新项目示例，已有项目沿用已配置的根。
 
 # YSS OpenAPI Draft Review
@@ -12,13 +15,13 @@ disable-model-invocation: true
 
 Use this skill after OpenAPI Draft creation and before Engineering Baseline / YSS DDD Review. It is a fail-closed contract review skill for design-time OpenAPI files under `.work/<feature>/api/`; it does not bundle JSON or generate Orval clients.
 
-上述工程阶段用于 `governed`。普通 API 小改只审查工具证明兼容的新增独立 operation：旧 operation、可达引用、路径继承与全局契约规范化保持完全相同。Reviewer 与实现者独立且只读，在原 Ticket API 审查段记录当前候选、结构/语义/兼容结论和未关闭项，不强制新 review 文件、校准 Spec 或 validation YAML，不写 `approved`。unknown、breaking、crossrepo、失败或过期证据返回 `blocked` 并停止受影响后续动作。
+上述工程阶段用于 `governed`。普通 API 小改只审查工具证明兼容的新增独立 operation：旧 operation、可达引用、路径继承与全局契约规范化保持完全相同。默认同一 Agent 真实自检；独立要求由真实来源触发，冻结复核期间只读，在原 Ticket API 审查段记录当前候选、结构/语义/兼容结论和未关闭项，不强制新 review 文件、校准 Spec 或 validation YAML，不写 `approved`。unknown、breaking、crossrepo、失败或过期证据返回 `blocked` 并停止受影响后续动作。
 
 先辨认当前批准协议。普通采用 YSS wrapper 的 HTTP/JSON 响应消费 DTO wire profile；下载、流式和第三方回调按批准协议审查媒体类型、状态、Header、错误及权限边界，不强套 wrapper。例外须有契约依据且仍通过本技能的结构和语义审查。
 
 ## Required Inputs
 
-普通任务输入为已合格 Ticket 的目标/验收、当前工程基线、权威 OAS 3.1 YAML 与完整基线、锁定 lint/refs/适用 YSS wire 证据和真实兼容报告。其工具/规则/日志原字节摘要及独立 `api_digest` 必须与当前 API 候选一致，reviewer 身份与 `implementation.actor_id` 不同；证据可以在同一 Ticket 的独立段。仅代码 diff 变化不使未变 API 审查失效；代码与契约测试另绑定整体 `candidate_digest`。以下独立正式资产用于 `governed`，实际 wire 与字段语义要求对两条路径同样适用。
+普通任务输入为已合格 Ticket 的目标/验收、当前工程基线、权威 OAS 3.1 YAML 与完整基线、锁定 lint/refs/适用 YSS wire 证据和真实兼容报告。其工具/规则/日志原字节摘要及独立 `api_digest` 必须与当前 API 候选一致，复核方式及实际 provenance 满足当前要求，不以 actor 标签代替来源；证据可以在同一 Ticket 的独立段。仅代码 diff 变化不使未变 API 审查失效；代码与契约测试另绑定整体 `candidate_digest`。以下独立正式资产用于 `governed`，实际 wire 与字段语义要求对两条路径同样适用。
 
 - OpenAPI Draft under `.work/<feature>/api/<feature>.yaml`，作为唯一权威的单一 OAS 3.1 YAML document；生命周期元数据和 Freeze 决策位于相邻 Markdown 记录。
 - `.work/<feature>/api/<feature>-validation.yaml`，且已由 `scripts/verify-openapi-draft-validation-record` 针对当前 Draft SHA-256 验证通过。
@@ -58,4 +61,4 @@ Block if any of these are true. Governed validation-record requirements below us
 
 ## Output Contract
 
-形成持久化结论时读取 [审查输出契约](references/review-output.md)。普通结果只有结构、语义及兼容结论和独立身份均当前且通过时可为 `passed`，否则 `blocked`，不写 `Approved`。正式 `Review Result` 仅在 `Structural Validation` 和 `Semantic Review` 均为 `Passed` 时可为 `Approved`；否则 `Blocked`，不使用条件批准。
+形成持久化结论时读取 [审查输出契约](references/review-output.md)。普通结果只有结构、语义及兼容结论和适用来源均当前且通过时可为 `passed`，否则 `blocked`，不写 `Approved`。正式 `Review Result` 仅在 `Structural Validation` 和 `Semantic Review` 均为 `Passed` 时可为 `Approved`；否则 `Blocked`，不使用条件批准。

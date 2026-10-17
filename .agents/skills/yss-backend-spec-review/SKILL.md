@@ -21,7 +21,7 @@ disable-model-invocation: true
 2. **编译适用规则**：以合同 `required_skills` 加实际影响形成 Skill 清单，按 [检查输入](references/check-inputs.md) 加载适用规则。每项 finding 关联规则、适用原因、代码位置、证据和验收方法；复用 `constraint_results`，不另建规范注册表。
 3. **形成可执行整改单元**：按业务路径和风险拆窄切片，保护现有行为，明确允许写路径、回归 seam 与回滚方式。已有授权且批准合同当前时直接推进；缺合同则由实现合同编译器起草、所属编排器批准，本 Skill 不自批、不设置 `ready-for-agent`。现有违规是修复输入，不能要求违规先消失才能提出整改。
 4. **逐单元修复并验证**：调用适用 YSS 分层/组件技能。业务行为按 `tdd`；纯配置或机械修改记录不适用原因与可执行验证。优先工程根 `./mvnw`，保留实际命令、退出码、测试执行数量和证据摘要。禁止为通过检查删除测试、缩小检查包、改弱规则或恢复退役组件。
-5. **独立复审**：修复者不能自审。由独立 Reviewer 使用唯一 `code-review`，消费当前合同、技能集、候选摘要、所有未关闭 finding 及修复影响的依赖，分别给出 Standards / Spec 结论。Reviewer 只报告，不写实现；缺独立执行条件时记录阻塞，不能自行替代签字。
+5. **适用复核**：默认修复者诚实自检，需要独立复核时由满足真实来源要求的上下文 使用唯一 `code-review`，消费当前合同、技能集、候选摘要、所有未关闭 finding 及修复影响的依赖，分别给出 Standards / Spec 结论。冻结复核期间只报告、不写实现；当前要求独立执行或指定真人而缺证据时停止对应动作，不能替代签字。
 6. **继续闭环**：`violation` 返回实施者修复；`drift` / `new_impacts` 使合同 stale 并回编译器；缺凭据或外部组件证据明确 blocked。更新候选，复验受影响项及依赖；其他项只有证据仍适用才可显式复用。同一原因连续未收敛时诊断根因、拆小整改单元，不以无限重试或增加审查轮数绕过既有 review_round 合同。
 7. **全范围对账后退出**：回到最初覆盖清单，确认没有遗漏、未解决强制违规或未经验证的整改，且当前候选上的适用机器检查和独立审查通过。阶段修复完成不等于整个系统达标；残留项必须继续或报告具体阻塞。
 
@@ -36,10 +36,10 @@ disable-model-invocation: true
 
 ## 输出与完成依据
 
-复用 `.template-spec/templates/review-report-template.md`、当前 Slice 的 YSS Skill Execution Result 和 [审计与整改流程中的记录要求](references/remediation-workflow.md#证据与交接)。报告列明审查覆盖、Standards / Spec 分轴结论、修复前后 finding、候选/规则摘要、实际验证、独立 Reviewer 身份和剩余阻塞。只对本次覆盖且有证据的范围声明符合规范，不自动证明平台已认证或允许发布。
+复用 `.template-spec/templates/review-report-template.md`、当前 Slice 的 YSS Skill Execution Result 和 [审计与整改流程中的记录要求](references/remediation-workflow.md#证据与交接)。报告列明审查覆盖、Standards / Spec 分轴结论、修复前后 finding、候选/规则摘要、实际验证、实际来源与复核方式和剩余阻塞。只对本次覆盖且有证据的范围声明符合规范，不自动证明平台已认证或允许发布。
 
 ## 必须评估、适用必审
 
 每次显式评估 Web、DTO、Domain、Application、Repository、MyBatis 六类职责；MVC 不套用 DDD，MyBatis 仅在实际使用时适用。使用 `scripts/backend-standards-coverage` 编译实际范围，合同漏列不能抵消真实影响。Java 规范通用，Validation/Exception/映射/注解处理及组件技能按事实追加。
 
-逐条消费 canonical 中 `yss-rule` 声明并返回稳定 `constraint_id`；未结构化条款仍由独立 Reviewer 全文核对。不能只写“本技能通过”。日常后端开发和存量整改共用该检查，详见 [覆盖协议](references/standards-coverage.md)。
+逐条消费 canonical 中 `yss-rule` 声明并返回稳定 `constraint_id`；未结构化条款仍由执行者或满足实际独立要求的上下文全文核对。不能只写“本技能通过”。日常后端开发和存量整改共用该检查，详见 [覆盖协议](references/standards-coverage.md)。

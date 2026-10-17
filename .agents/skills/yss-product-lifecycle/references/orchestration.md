@@ -81,7 +81,7 @@ Matt phase boundary 是工作阶段之间的上下文决策，不是新的生命
 
 `prototype_confirmation` 通过后，先判断实现仓库登记中的 backend `scaffold_status`。当状态为 `required` 时，在进入 DDD / MVC 分支设计前完成 `gate.backend-architecture-platform-approved`：Agent 按领域复杂度给出 `domain-driven` / `layered-mvc` 推荐和依据，并从 `.template-spec/engineering/backend-platforms.json` 展示可选平台的精确 Spring Boot 补丁版本与 Java 版本；用户在同一次决定中确认架构与平台。本体选择作为子项目预填默认值，用户可批量确认全部项目或逐项覆盖。选择写入 `scaffold-architecture-decisions.yaml`；处于 `undecided`、`recommended`、`awaiting-user-decision` 或 `stale` 时必须阻断，不得默认 DDD、MVC 或 Spring Boot 版本，也不得在生成器内交互。既有工程使用当前 `existing-registration` 的架构及固定工程基线/POM 中的实际 Spring Boot 版本，核验摘要和支持状态后将该门禁记录为 `not-applicable`，不重复询问；架构转换或平台升级另行立项。
 
-`gate.backend-architecture-platform-approved` 通过、选择达到 `lifecycle-approved` 且 digest 当前后，才可进入对应的 DDD 战术设计或 MVC 技术设计分支，再完成批准且当前的 Technical Design、Data Architecture Decision v1 和 API Contract Decision（新建 v2；历史 v1 只读兼容，准备与迁移见 `.template-spec/process/contract-reading.md`）。数据与 API 均按影响强制：命中则绑定设计及评审闭包，未命中则绑定评估、明确原因和证据。再由 `yss-implementation-contract-compiler` 编译脚手架 schema v4 `controlled-generation` 工作单元合同。顺序为：工程基线与架构/平台推荐 → 用户确认与选择持久化 → DDD / MVC 分支设计 → 技术/数据/API 设计 → 工程合同原子批准 → 脚手架合同持久化 → `domain-driven` 使用 `yss-ddd-scaffold-generator` 或 `layered-mvc` 使用 `yss-layered-mvc-scaffold-generator` → 对应基线/Manifest v4 校验 → 仓库准备 v2 → 实现合同编译器业务合同重编译。`existing` / `initialized` 不重复生成；架构转换或平台升级必须单独立项。schema v3 只允许历史 Manifest 的只读恢复审计，不得新生成。
+`gate.backend-architecture-platform-approved` 通过、选择达到 `lifecycle-approved` 且 digest 当前后，才可生成或实现对应分支；已授权准备期可先形成未批准的 DDD 战术设计或 MVC 技术设计草稿，再完成批准且当前的 Technical Design、Data Architecture Decision v1 和 API Contract Decision（新建 v2；历史 v1 只读兼容，准备与迁移见 `.template-spec/process/contract-reading.md`）。数据与 API 均按影响强制：命中则绑定设计及评审闭包，未命中则绑定评估、明确原因和证据。再由 `yss-implementation-contract-compiler` 编译脚手架 schema v4 `controlled-generation` 工作单元合同。顺序为：工程基线与架构/平台推荐 → 用户确认与选择持久化 → DDD / MVC 分支设计 → 技术/数据/API 设计 → 工程合同原子批准 → 脚手架合同持久化 → `domain-driven` 使用 `yss-ddd-scaffold-generator` 或 `layered-mvc` 使用 `yss-layered-mvc-scaffold-generator` → 对应基线/Manifest v4 校验 → 仓库准备 v2 → 实现合同编译器业务合同重编译。`existing` / `initialized` 不重复生成；架构转换或平台升级必须单独立项。schema v3 只允许历史 Manifest 的只读恢复审计，不得新生成。
 
 脚手架工作单元必须使用结构化 schema v4 合同 JSON，除工程身份、架构决定、Profile、模块闭包、允许路径和验证命令外，必须以原始字节 digest 绑定 Technical Design、Data Architecture Decision v1、API Contract Decision（新建 v2；历史 v1 只读兼容，准备与迁移见 `.template-spec/process/contract-reading.md`） 和 `gate.engineering-contract-approved` 的真实批准记录。API `required` 时 Draft、Validation、独立 Review、Freeze 与工程批准必须绑定同一 OpenAPI YAML 字节；`not-applicable` 时不得携带空占位资产。生成器在创建输出目录前读取并校验所有引用、版本、主体、gate、批准范围、资产绑定与摘要；虚构 URI、字符串自证或仅有 `status: approved` 均无效。三条 Wrapper 命令必须由受控工作单元真实执行并留存证据。非空目标、`--force`、旧项目迁移和模板升级均阻断。脚手架不得生成 Controller、Repository 实现、SQL、领域行为、业务规则、状态机、权限、事务、复杂查询、错误映射、用户可见行为或示例业务 API；`empty-scaffold-verified` 仍不是 `ready-for-agent`。
 
@@ -117,8 +117,8 @@ tracker 选择和冲突按 `.template-spec/agents/issue-tracker.md` 裁决：已
 ## 审查与验证
 
 - 调用 `code-review` 前先固定 review input：`review_mode`、`review_base_ref`、`implementation_candidate_ref`、`candidate_snapshot_ref`、`candidate_digest`、Spec/Ticket、Slice Implementation Contract、Build Architecture Checklist 和 YSS Skill Execution Result 引用。`committed` 模式审查不可变 `HEAD`；`worktree` 模式一次捕获 committed、staged、unstaged 和 untracked 内容。必须按 `.template-spec/process/orchestration-contract.yaml.review_input` 的 manifest 按模式必填字段及 `yss-worktree-candidate-v1` 字节流（raw path、uint64 big-endian 长度、tracked/untracked record）计算 SHA-256，所有参与审查者（人数按 `.template-spec/process/orchestration-contract.yaml.gate_consolidation`） 必须消费同一不可变快照。返回后或完成 checkpoint 摘要变化时返回 `blocked`，由编排器决定重新审查。候选为空、漏项或 fixed point 不可解析时阻断。
-- 小改动和中等变更可由同一具备所需能力的独立执行者完成 `code-review` 与 fresh verification，并在同一报告中分别记录 findings、命令、结果和残余风险。专业任务按角色表 `review_capabilities` 和检查策略编译 `review_context`、`skill_source.review_skills`，当前候选、策略、范围、依据和独立主体均须可核验；不在流程正文另定义能力表。
-- 该执行者必须独立于实现者；新模块、高风险变更、职责冲突或需双人控制时，Reviewer 与 Verifier 分开。按能力覆盖缺口、专业结论冲突或外部制度增加专家，是与此分离要求不同的条件。
+- 默认当前执行者完成 `code-review` 与 fresh verification，分别如实记录检查轴、发现、实际命令、当前结果和风险。Skills/检查只从当前工作单元、影响及编排政策选择，无岗位资格或固定人数。
+- 明确用户或已知外部要求触发独立复核时，验证不同真实上下文、当前冻结候选和只读结果；同账号可独立，同一上下文改名不算。高影响增加必要反例、验证与真实决定，不自动恢复双人审批。
 - `code-review` 是唯一默认代码审查 skill。GitLab、CI、Sonar、Alibaba Java 与 YSS 前端 / 后端 skill 作为仓库规则或专项检查输入接入 Standards 轴，由 `review_standards_route` 按影响面编译；不再叠加第二个通用审查 skill。漏掉合同 `required_skills`、适用报告行空白、mandatory `violation` 未关闭或可机器检查规则既无工具结果也无原文引用时，不得 `completed`。
 - 产品切片与模板维护共用 finding 分类；产品切片执行下述候选审查闭环，模板维护按 `.template-spec/process/harness-process-tailoring.md` 的 L1 / L2 验证强度闭合，不自动冻结候选或全轴复审。`violation`、机器检查失败、适用行空白由实现者在原合同路径修复，比较旧 / 新候选差异及受影响结论、行为和依赖，再捕获候选、定向复审 / 验证并重绑定。`drift`、`new_impacts`、`required_skills` 与真实影响不一致时合同 `stale`，先调查实际影响再回 实现合同编译器 或更早阶段更新受影响合同，禁止在旧合同上继续编码；不把这些信号升级为全轴默认或兜底。审查者不得写实现。`not-applicable` 仅当影响面未命中；命中后 mandatory 不得豁免，只允许修复或完整 `seam-deferred`。禁止为日常 Alibaba / YSS 新增生物人豁免门禁。
 - 独立 Reviewer 必须与实现者不同实例，并在能执行已登记 `pnpm` / `./mvnw` 的运行时中审查。模板源 `.cursor/environment.json` 只服务模板校验，不替代实现仓审查运行时。不为此再创建第二个 Cloud 审查环境或 `/code-review` skill。
@@ -132,11 +132,11 @@ tracker 选择和冲突按 `.template-spec/agents/issue-tracker.md` 裁决：已
 
 ## 用户决定与恢复
 
-关键决定使用 [真实用户回复协议](user-decisions.md)，消费角色注册表的 `user_decision_policy`。会签前先形成可审阅资产；恢复、阶段流转、实施派发和发布时校验原始回复及当前资产摘要。普通会签的数字人审查与用户决定分别保留，关键决定不得以数字人会签、无反对意见或超时放行。等待只阻断依赖事项；新的 `user_decisions` 引用通过 Workflow Execution Result、checkpoint 和任务包传递。
+关键决定使用 [真实用户回复协议](user-decisions.md)，消费当前编排合同的 `user_decision_policy`。会签前先形成可审阅资产；恢复、阶段流转、实施派发和发布时校验原始回复及当前资产摘要。技术复核与用户决定分别保留，关键决定不得以 Agent 自检、无反对意见或超时放行。等待只阻断依赖事项；新的 `user_decisions` 引用通过 Workflow Execution Result、checkpoint 和任务包传递。
 
 ## 按阻塞原因处理
 
-- 专业审查等待：按角色表的检查 / 能力策略自主派发任务，已有运行中任务先核对身份，不重复派发；等待结果并继续无依赖工作。会签仍保留门禁 ID、指定 `role_id`、`runtime_id`、会签文件和证据。恢复前执行 `scripts/verify-approval-record --require-approved --checkpoint <current checkpoint>`；消费者提供当前期望上下文，不能从记录反向填充。能力缺失、起草者自签、上下文过期或生物人门禁被数字人关闭时返回 `blocked`，不得标 `approved`。
+- 技术复核：默认由当前执行者诚实自检；真实独立要求才协作。已有任务先复用当前结果，不重复派发。记录门禁 ID、实际 provenance、候选、范围、依据和逐项结论，恢复时由原生验证当前绑定；当前必需独立来源或真人回复缺失则停止依赖动作，其他已授权工作继续。
 - 验证失败、证据冲突或专项结果不可验收：调查、修复、补证据或重新路由；只阻断依赖该结果的动作。专业任务未完成不等于需要用户回答。
 - 未知影响：先调查变化的行为、结论和依赖，确认复审范围和决定变化后再处理；不得默认全轴复审，也不得用扩大检查代替影响分析。
 - 真实决定、新授权或无法自主取得的必要输入缺失：先完成可独立执行检查与可审阅资产，再展示版本、差异、风险、范围及恢复动作，向提问者或其明确指定负责人询问。无真实回复保持等待；多个独立的当前决定可合并提问，不强制每次一个问题。
@@ -170,17 +170,17 @@ Matt `prototype` 的回流还必须注明 `prototype_branch`，并保留单文�
 
 生命周期外部输入问卷 未收到答案时使用 `external-input-required` 暂停，记录问卷、接收人、所需输出和恢复路由；收到答案后记录 response、重新分类影响面和更新后的权威资产，再回到 `work-unit.plan-requirements` 或 `to-spec`。
 
-Release 与 Retrospective 属于生命周期编排器拥有的工作单元。发布和复盘前都必须重新取得 fresh verification；发布还需要发布/回滚证据和独立审查，复盘还需要复盘记录和治理回流判断，再回流权威资产。
+Release 与 Retrospective 属于生命周期编排器拥有的工作单元。发布和复盘前都必须重新取得 fresh verification；发布还需要发布/回滚证据和适用复核，复盘还需要复盘记录和治理回流判断，再回流权威资产。
 
 ## 聚合门禁和检查证据
 
-`gates` 仅记录正式批准 / 验收；`checks` 记录内部专业审查、自动前置核验和就绪计算。检查职责读取角色表 `check_reviews` / `automatic_checks`，命中项失败仍阻断。Plan 内部审查使用入口审阅包的 `internal_checks`，统一以 `gate.plan-approved` 获取用户决定。工程契约审查通过并批准当前版本后同时冻结 OpenAPI，冻结准备不单独索取批准。
+`gates` 仅记录正式批准 / 验收；`checks` 记录内部专业审查、自动前置核验和就绪计算。检查职责读取当前编排合同 `gate_policy` 的适用检查，命中项失败仍阻断。Plan 内部审查使用入口审阅包的 `internal_checks`，统一以 `gate.plan-approved` 获取用户决定。工程契约审查通过并批准当前版本后同时冻结 OpenAPI，冻结准备不单独索取批准。
 
 Checkpoint 中已批准门禁必须带 `basis: [{ref, digest}]` 和按 `evidence.*` 分类的 `evidence` 引用数组；此处 digest 是实际文件字节的 64 位十六进制 SHA-256。每个适用检查带 `applicable: true`、通过状态和同样的证据绑定；不适用项须 `applicable: false`、原因和影响面证据。内部专业审查还须 `approval_ref`、`subject_ref`、`approval_scope`，审查记录带 `subject_digest` 和不同于 `principal_ref` 的 `drafter_principal_ref`。
 
 聚合门禁的 `subject_ref` 指向当前审阅包，包含 `gate_id` 和 `basis`，覆盖所有检查及其他验收依据；用户批准绑定此包，专业会签记录绑定其 `subject_digest`。检查证据、审阅包和会签记录均纳入 checkpoint 的摘要绑定，避免只改变检查结果却复用旧批准。`scripts/verify-lifecycle-checkpoint` 实际核验；旧 gate ID 只允许历史读取或按源策略校验外部冻结包，不能直接关闭当前门禁。
 
-交付验收可由测试角色完成；实际合并、推送和发布分别执行已有外部动作授权检查。阶段完成不请求发布权限。没有相关资产、依据或范围变化时复用现有批准；相关变化仅失效受影响批准。
+交付技术核验可由当前执行者完成，业务验收仍按真实决定与目标要求；实际合并、推送和发布分别执行已有外部动作授权检查。阶段完成不请求发布权限。没有相关资产、依据或范围变化时复用现有批准；相关变化仅失效受影响批准。
 
 ## 专项合同加载索引
 

@@ -1,6 +1,6 @@
 # 生命周期状态模型
 
-本文件定义 `governed` 的正式状态及兼容历史记录。已合格 `daily` 只在普通 Ticket / PR 保留结果、实际测试和独立审查，按 [普通任务交付](daily-delivery.md) 校验；不生成本文件的阶段 checkpoint、正式 Slice、`approved` 或 `ready-for-agent`。本任务已绑定正式状态时按原规则恢复，不得降级。
+本文件定义 `governed` 的正式状态及兼容历史记录。已合格 `daily` 只在普通 Ticket / PR 保留结果、实际测试和适用复核，按 [普通任务交付](daily-delivery.md) 校验；不生成本文件的阶段 checkpoint、正式 Slice、`approved` 或 `ready-for-agent`。本任务已绑定正式状态时按原规则恢复，不得降级。
 
 ## 命名空间
 
@@ -14,7 +14,7 @@
 | `tracker.kind` | `local-markdown`、`github`、`gitlab` |
 | `ticket.role` | `needs-triage`、`needs-info`、`ready-for-agent`、`ready-for-human`、`wontfix` |
 
-Matt 五态不得扩义。资产的 `ready-for-human` 与 Ticket label 必须带命名空间表达。`paused-human-gate` 表示等待 `.template-spec/agents/digital-human-roles.yaml` 指定的会签人（数字人或生物人），不是「必须是生物人」。但 `user_decision_policy` 命中的关键决定还必须有真实用户回复，数字人会签不能解除该等待。
+Matt 五态不得扩义。资产的 `ready-for-human` 与 Ticket label 必须带命名空间表达。`paused-human-gate` 表示当前确有缺失的真实用户决定或已知外部指定批准，按编排合同核验来源、候选和范围；技术自检不替代真人回复。普通专业检查不因缺岗位或额外 Agent 进入此状态。旧状态按原政策只读核验。
 
 等待态不自动产生用户问题。按编排合同 `blocking_disposition`，专业等待自主派发或核对现有任务并等待；验证失败修复 / 路由，未知影响先调查。只有真实决定、新授权或无法自主取得的必要输入缺失，才先展示可审阅材料后询问，同时继续无依赖工作。完成结论本身不新增暂停，状态值和历史记录不因该执行规则改写。
 

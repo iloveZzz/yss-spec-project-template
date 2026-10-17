@@ -138,7 +138,7 @@ export function currentApprovalsFromCheckpoint(checkpointRef, boundaries, option
   if (!strings(boundaries)) fail('APPROVAL_CONTEXT_REQUIRED', '缺少当前检查范围');
   return boundaries.map(boundary => {
     const row = checkpoint[boundary.startsWith('check.') ? 'checks' : 'gates']?.[boundary];
-    if (!row?.subject_ref || !strings(row.approval_scope) || !row.drafter_principal_ref?.trim() || !Array.isArray(row.basis) || !row.basis.length || new Set(row.basis.map(x => x.ref)).size !== row.basis.length) fail('APPROVAL_CONTEXT_REQUIRED', `${boundary} 缺少当前 subject、scope、basis 或作者来源`);
+    if (!row?.subject_ref || !strings(row.approval_scope) || (options.governanceVersion!==2&&!row.drafter_principal_ref?.trim()) || !Array.isArray(row.basis) || !row.basis.length || new Set(row.basis.map(x => x.ref)).size !== row.basis.length) fail('APPROVAL_CONTEXT_REQUIRED', `${boundary} 缺少当前 subject、scope、basis 或作者来源`);
     const subjectDigest = reviewDigest(source.bytes(row.subject_ref));
     if (row.subject_digest !== undefined && row.subject_digest !== subjectDigest) fail('REVIEW_BINDING_STALE', `${boundary} 当前 subject 摘要漂移`);
     for (const item of row.basis) if (!/^(sha256:)?[a-f0-9]{64}$/.test(item.digest || '') || reviewDigest(source.bytes(item.ref)) !== item.digest.replace(/^sha256:/,'')) fail('REVIEW_BINDING_STALE', `${boundary} 当前 basis 摘要漂移`);

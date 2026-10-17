@@ -55,7 +55,7 @@ Slice v3 的当前执行结果须按 `references/yss-skill-execution-result.md` 
 - 无工程且需要机械生成时，先读取 [脚手架合同编译](references/scaffold-compilation.md)。后端新合同起草 Project Scaffold Contract schema v5 并绑定 reference_example；前端保持 v4，历史后端 v4 保留空工程语义，由生命周期批准并持久化后运行；既有工程不重新生成。脚手架合同不能替代后续批准的 Slice Contract，业务行为必须重路由。
 
 - 专项结果中的越界路径、缺失证据、`drift`、`violation` 或 `new_impacts` 必须阻断或重路由。
-- 前后端子任务必须使用同一 `contract_id/contract_version`，并在任务包中记录 `role_id`、`runtime_id`、`execution_state`、`allowed_write_paths`、`downstream_consumers` 和 `convergence_ref`；版本不一致或汇合引用缺失时输出 `blocked`。
+- 本范围内实现工作单元必须使用同一 `contract_id/contract_version`，并在任务包中记录 实际 `provenance`、`execution_state`、`allowed_write_paths`、`downstream_consumers` 和 `convergence_ref`；版本不一致或汇合引用缺失时输出 `blocked`。
 - 长尾 skill 不可用时显式 `blocked`，不得用通用知识假装已应用 YSS 规范。
 
 ## 三级编译模式
@@ -66,7 +66,7 @@ Slice v3 的当前执行结果须按 `references/yss-skill-execution-result.md` 
 
 ## 输出
 
-输出唯一 YAML 合同草案及派生报告；报告包含 capability/Recipe 解析记录、技能依赖闭包、不适用理由、阻塞项、TDD 模式、工作单元、预期证据、验证命令、人工审查点、完整重路由触发器，以及建议的 `suggested_owner_role_id`（UI 影响 → `role.frontend-engineer`，后端影响 → `role.backend-engineer`，测试/审查 → `role.test-engineer`）。自然语言说明不能替代结构化合同字段。编译器不得自行批准合同、设置 `ready-for-agent` 或关闭会签门禁；owner 建议只供主控派活。
+输出唯一 YAML 合同草案及派生报告；报告包含 capability/Recipe 解析记录、技能依赖闭包、不适用理由、阻塞项、TDD 模式、工作单元、预期证据、验证命令、人工审查点、完整重路由触发器，以及由当前工作单元和实际影响选出的 `primary_skill` / `check_ids`。自然语言说明不能替代结构化合同字段。编译器不得自行批准合同、设置 `ready-for-agent` 或关闭会签门禁；不按岗位或固定人数派活；前端实现由独立前端规格与 CLI 维护。
 
 ## 战略交接快照包
 

@@ -3,6 +3,7 @@ import path from "node:path";
 import { parseDocument } from "../vendor/yaml.mjs";
 import { loadDigitalHumanRoles } from "./digital-human-roles.mjs";
 import { loadRegistry, ROOT } from "./lifecycle-registry.mjs";
+import { nativeContractVerify, nativeCoverage } from "./native-evidence.mjs";
 import { isTemplateSource } from "./repository-mode.mjs";
 
 export const DEFAULT_PROFILE = path.join(ROOT, ".template-spec/process/harness-profile.yaml");
@@ -96,8 +97,14 @@ export function loadHarnessProfile(filePath = DEFAULT_PROFILE) {
 
 export function validateHarnessProfile(profile = loadHarnessProfile(), {
   lifecycle = loadRegistry(),
-  roles = loadDigitalHumanRoles(),
+  roles,
 } = {}) {
+  if (profile.schema_version === 3) {
+    const checked = nativeCoverage(nativeContractVerify({root:ROOT,kind:"governance-policy",file:".template-spec/process/harness-profile.yaml"}),"governance_policy");
+    if(checked.profile !== "backend") fail("当前入口仅支持 Backend");
+    return {profile_id:profile.profile_id,cli_package:profile.instantiation.cli_package};
+  }
+  roles ??= loadDigitalHumanRoles();
   if (profile.schema_version !== 2) fail("Harness profile schema_version 必须为 2");
   if (profile.profile_id !== DEV_AGENT_PROFILE_ID) fail(`只支持 ${DEV_AGENT_PROFILE_ID}`);
   if (profile.status !== "active") fail("Harness profile status 必须为 active");

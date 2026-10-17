@@ -205,8 +205,6 @@
         "approval_scope",
         "basis",
         "evidence_refs",
-        "review_task_ref",
-        "review_task_digest",
         "check_ids",
         "policy",
         "review"
@@ -296,31 +294,27 @@
         "continuation_ref": {
           "type": "string",
           "minLength": 1
+        },
+        "review_bundle_ref": {
+          "type": "string",
+          "minLength": 1
         }
       },
       "allOf": [
         {
           "if": {
-            "properties": {
-              "actor_kind": {
-                "const": "human"
+            "not": {
+              "properties": {
+                "gate_id": {
+                  "const": "gate.plan-approved"
+                }
               }
-            },
-            "required": [
-              "actor_kind"
-            ]
+            }
           },
           "then": {
             "required": [
-              "user_decision_ref"
-            ]
-          }
-        },
-        {
-          "not": {
-            "required": [
-              "user_decision_ref",
-              "continuation_ref"
+              "review_task_ref",
+              "review_task_digest"
             ]
           }
         }

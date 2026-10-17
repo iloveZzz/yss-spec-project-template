@@ -24,11 +24,11 @@ Plan 入口读 `.template-spec/plan/README.md`、`.template-spec/process/plan-mi
 
 澄清目标、流程、责任、规则、范围和验收例子。业务总览引用权威资产，展示状态、未决项、责任人和下一步，不复制正文或新增门禁。
 
-Plan → Spec 写入前按 `.template-spec/plan/entry-review.md` 持久化审阅包，执行 `node scripts/verify-plan-spec-entry <state.yaml>`；缺项、过期或无真实回复阻断，独立调研继续。
+政策2允许在授权范围内连续准备 Plan、Spec、必要产品设计、AC 与具体实施范围，保留 draft 和来源状态，不等待前序人工批准。形成完整可审阅方案后，按 `.template-spec/plan/entry-review.md` 及用户决定协议集中展示一次、取得真实回复；正式完成、就绪或实现前仍须完整核验当前资产、决定和适用门禁。未知事实只阻断依赖部分。
 
 `checks.grill_exit=passed` 仅准备就绪；共同理解与当前 Plan 合并真实确认后，入口判定完整退出。
 
-Plan/Spec/Design 追踪见 `.template-spec/process/stage-tracking.md`。
+Plan/Spec/必要产品设计追踪见 `.template-spec/process/stage-tracking.md`。
 
 澄清读 [对账](plan-requirements.md)，外部输入读 [问卷](external-input-questionnaire.md)。
 
@@ -36,9 +36,9 @@ Spec 起草业务票，产品设计校准后完成业务 Ticket 正式化，再�
 
 ## 推进目标与后端终点
 
-Spec 是综合研发主控；Spec 文档批准只是一个里程碑。正式功能的本次终点由 `progression_target` 与独立意图文件选择，新政策默认业务验收；旧实例须显式同步支持该政策，不自动补写历史意图。改变终点保留实际 next、批准和冻结包字节。派发与生成前通过固定 CLI 核验当前目标，到达终点停止下游写入；缺能力或证据不可验证时停止受影响推进。见[推进到指定里程碑](progression-target.md)。Design、Backend、Frontend 按需协作，各自职责终点单独验核；汇总只消费显式同功能 checkpoint 和当前接收证据，不按 root 猜功能。
+Spec 是综合研发主控；Spec 文档批准只是一个里程碑。正式功能的本次终点由 `progression_target` 与独立意图文件选择，新政策默认业务验收；旧实例须显式同步支持该政策，不自动补写历史意图。改变终点保留实际 next、批准和冻结包字节。派发与生成前通过固定 CLI 核验当前目标，到达终点停止下游写入；缺能力或证据不可验证时停止受影响推进。见[推进到指定里程碑](progression-target.md)。独立 Backend 按显式消费者协作；产品设计由 Spec 承担，前端实现由独立前端规格与 CLI 维护。历史 Design/Frontend 仅按原格式读取，各自职责终点单独验核；汇总只消费显式同功能 checkpoint 和当前接收证据，不按 root 猜功能。
 
-本地 `backend-deliverable` 不派发对外交付包单元。当前验证单元完成后端实现、独立审查及真实构建部署验证后，按推进目标协议调用 `scripts/complete-backend-delivery complete` 登记同功能 `local-evidence` 终点，再复算目标；不改变 next/status、不导出战略或后端包。缺少该记录时继续补当前目标所需证据，不能越过后端终点直接推进业务验收。
+本地 `backend-deliverable` 不派发对外交付包单元。当前验证单元完成后端实现、适用复核及真实构建部署验证后，按推进目标协议调用 `scripts/complete-backend-delivery complete` 登记同功能 `local-evidence` 终点，再复算目标；不改变 next/status、不导出战略或后端包。缺少该记录时继续补当前目标所需证据，不能越过后端终点直接推进业务验收。
 
 ## 编排派发与验收
 
@@ -51,11 +51,9 @@ Spec 是综合研发主控；Spec 文档批准只是一个里程碑。正式功�
 
 ## 结果记录与下游交接
 
-`governed` 按 `workflow_execution_result` 与 `state-model.md` 记录状态、证据新鲜度、阻塞、动作、路由、Ticket / Git checkpoint。`daily` 在原任务记录补齐实际测试和独立审查，由 `verify-daily` 核验当前边界；通过只表示本普通任务证据闭合，不表示正式批准、合并或发布。
+`governed` 按 `workflow_execution_result` 与 `state-model.md` 记录状态、证据新鲜度、阻塞、动作、路由、Ticket / Git checkpoint。`daily` 在原任务记录补齐实际测试和适用复核，由 `verify-daily` 核验当前边界；通过只表示本普通任务证据闭合，不表示正式批准、合并或发布。
 
-当前 Profile 职责完成、状态查询或恢复时，消费唯一政策 `profile_guidance`，用 `yss lifecycle status --root <当前工程> --checkpoint <当前 checkpoint>` 核验明确登记的下游 Profile 与当前批准输入。Spec 默认继续当前职责；没有当前战略交接时，可由用户选择独立 Design。Spec 或 Design 已形成经核验的当前战略交接后，按其消费者路由建议 Backend、Frontend 或同时准备；设计完成声明不能替代交接及来源批准，显式交接失效时先解除阻断。目标 Design 使用 SpecBaseline Receipt，目标 Backend / Frontend 使用战略接收记录及各自消费合同。未登记状态写待核验，不按邻近目录猜初始化。明确选择后才准备或导入；建议不改变当前工作单元、不扩展当前职责、不授予批准或执行。
-
-独立 Design 承接现有批准 Spec 时，按 `.template-spec/process/spec-baseline.md` 导出、导入和核验冻结包，以新 Receipt 绑定目标 checkpoint，经目标 Context 对账后从产品设计继续；源 checkpoint 只作包内证明，不复制为目标 Plan/Spec 批准，也不重走 Plan。
+当前 Profile 职责完成、状态查询或恢复时，用 `yss lifecycle status` 核验显式登记的同功能 checkpoint、当前输入和接收证据。Spec 在本地完成必要设计；只有实际存在独立 Backend 消费者时才导出/导入冻结包，不向自身交接。Backend 终点为 `backend-deliverable`，不等于业务验收或发布。历史 Design 保留原批准、ID、Receipt 与原始字节，显式迁移到 Spec 后仍按原政策读取历史；不借接收端政策解释来源批准。
 
 ## 资产整理与工程接入
 

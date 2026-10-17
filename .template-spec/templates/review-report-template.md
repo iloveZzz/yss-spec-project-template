@@ -11,6 +11,10 @@ owner: ai
 
 Approved / Changes requested / Blocked
 
+## 复核来源
+
+当前政策、候选、范围及实际 tool/task/execution 引用；mode 为 self-check / independent-review / external-required-review。默认执行者真实自检，身份不可得写明原因；独立或指定真人要求需对应真实来源。pending、未执行或失败不能填通过。历史记录按原版本解释。
+
 ## 发现
 
 | 严重级别 | 文件 / 位置 | 问题 | 建议 |

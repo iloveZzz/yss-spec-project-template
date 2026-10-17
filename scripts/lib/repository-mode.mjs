@@ -28,9 +28,9 @@ export function readRepositoryMode(root = process.cwd()) {
   if (
     !manifest || typeof manifest !== "object" || Array.isArray(manifest) ||
     JSON.stringify(Object.keys(manifest).sort()) !== JSON.stringify(["repository_mode", "schema_version"]) ||
-    manifest.schema_version !== 1 || !VALID_MODES.has(manifest.repository_mode)
+    ![1, 2].includes(manifest.schema_version) || !VALID_MODES.has(manifest.repository_mode) || manifest.schema_version === 2 && manifest.repository_mode !== "project-instance"
   ) {
-    throw new TypeError("yss-project.yaml 必须只声明 schema_version: 1 和合法 repository_mode");
+    throw new TypeError("yss-project.yaml 必须只声明 受支持的 schema_version 和合法 repository_mode");
   }
   return manifest.repository_mode;
 }

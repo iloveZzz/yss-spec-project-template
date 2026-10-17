@@ -8,9 +8,9 @@
 
 1. 读取普通 Ticket 的目标、验收及工程基线，核对工具绑定的完整 baseline SHA、基线/当前同一 OAS 3.1 YAML 和实际新增 operation。兼容检查必须真实解析旧 operation、可达 `$ref`、路径继承和全局契约，规范化后完全相同；只添加独立 operation。breaking、crossrepo、外部引用或无法证明的解析结果停止受影响实施并升级。
 2. 用 lockfile 固定的 Redocly 执行真实 `pnpm exec redocly lint` 和引用解析，完成适用 DTO wire、响应/错误/requiredness 与契约 seam 检查。普通 Ticket API 段保存工具/版本/lock 摘要、实际 argv、exit_code、可读日志及工具返回的独立 `api_digest`；不另建 `<feature>-validation.yaml`，也不调用正式 validation-record verifier 来豁免字段。
-3. 独立 `yss-openapi-draft-review` 审查同一 API 候选及需求验收。保留兼容报告、结构与语义结论、审查者身份、`api_digest` 和未关闭项，可直接记录在本 Ticket API 审查段；审查者不得是实现者，lint/兼容失败、阻断项或过期证据不能记 `passed`。
+3. 使用 `yss-openapi-draft-review` 审查同一 API 候选及需求验收。保留兼容报告、结构与语义结论、审查者身份、`api_digest` 和未关闭项，可直接记录在本 Ticket API 审查段；默认执行者自检；需要独立复核时使用不同真实上下文，lint/兼容失败、阻断项或过期证据不能记 `passed`。
 4. 审查通过后在本 Ticket evidence 的 `api.freeze.digest` 锁定 CLI 返回的 `api_digest`（OAS、可达引用、适用 API rules 与工具锁）；不要求另建 Freeze 文件、`ref` 或 `candidate_digest`。Freeze 是字节锁定，不写 `approved` / `ready-for-agent`，不创建 API Contract Decision 或 engineering approval。YAML/引用/工具锁/规则变化使受影响校验、审查和 Freeze 失效；不得只重填摘要沿用旧结论。
-5. 实现消费同一 Freeze 摘要，执行当前契约测试和独立代码审查，由 `yss lifecycle verify-daily` 核验。需要 JSON 时才从冻结 YAML 可复现 bundle，并记录 JSON 摘要及解析/lint结果；不手改 JSON 或让它反向成为权威。日志和 review 可引用治理项目中本 Ticket 的唯一正文段，不强制新增各类资产文件；章节摘要规则消费生命周期 [普通任务交付](../../yss-product-lifecycle/references/daily-delivery.md)。
+5. 实现消费同一 Freeze 摘要，执行当前契约测试和适用代码复核，由 `yss lifecycle verify-daily` 核验。需要 JSON 时才从冻结 YAML 可复现 bundle，并记录 JSON 摘要及解析/lint结果；不手改 JSON 或让它反向成为权威。日志和 review 可引用治理项目中本 Ticket 的唯一正文段，不强制新增各类资产文件；章节摘要规则消费生命周期 [普通任务交付](../../yss-product-lifecycle/references/daily-delivery.md)。
 
 机器字段直接消费当前 CLI 的普通 Ticket evidence 格式：`api.mode`、`baseline`、`candidate`、`new_operations`、`rules`、`tools`、`lint`、`compatibility`、`review`、`freeze` 和 `contract_tests`。非空 `api.rules: [{ref,digest}]` 绑定适用 API 规则，与普通代码 inputs 分开。OAS 文件引用属于实现仓；规则、日志、锁、审查引用按工具要求属于治理项目，Freeze 摘要直接保存在同一 evidence 段。原始文件/段落摘要、`APIContractDigest` 及 `candidate_digest` 各有对象，不相互冒充；未知能力明确不支持，不手写第二套 schema。
 
@@ -35,11 +35,11 @@ API lint/compatibility/review/Freeze 绑定独立 `api_digest`，实现测试/�
    - 每个响应按实际协议落成具体 endpoint schema。采用 YSS wrapper 时，`SingleResult` 的 `data` 是具体对象或显式 nullable schema，`MultiResult` / `PageResult` 的 `data` 是数组；Java 的 `SingleResult<T>` / `PageResult<T>` 只能作为语义说明，不能直接写成 OAS type 或 `$ref`。
    - 采用 YSS wrapper 时，`code` 按 profile 只允许 `string | integer | null`，`dataType` 为 `string | null`；采用 YSS 分页协议时，`offset`、`needTotalCount`、`tempTotalCount` 不得进入客户端分页输入。`totalPages` 等计算字段只有目标 HTTP mapper / fixture 证明后才能进入契约。Spec 明确改变认证或授权行为时，把对应 `401` / `403`、资源过滤和错误语义作为普通 API 行为检查。
 
-3. **独立 Draft Review 与 Freeze**
-   - 将通过 verifier 且 SHA-256 与当前 YAML 一致的 validation record 交给 `yss-openapi-draft-review`。缺锁定 lint 时可以先做语义预审，但独立 Review 总结果必须为 `Blocked`；不能用“Freeze 前补 lint”支持 `Approved`。
+3. **Draft 内容复核 与 Freeze**
+   - 将通过 verifier 且 SHA-256 与当前 YAML 一致的 validation record 交给 `yss-openapi-draft-review`。缺锁定 lint 时可以先做语义预审，但内容复核 总结果必须为 `Blocked`；不能用“Freeze 前补 lint”支持 `Approved`。
    - YAML、validation record 或 lint ruleset 变化后，旧结构证据与旧 Review 立即失效，必须重新校验和审查。阻断项未关闭前，YAML 仍是 review-only Draft，不得生成生产客户端。
    - Freeze 记录必须引用 YAML 路径、Git ref（如适用）和 YAML SHA-256。冻结后 API 行为变更必须先回到 YAML Draft 与审查。
-   - 将同一 YAML 的版本与摘要、validation record、独立 Review 和 Freeze 写入 API Contract Decision（新建 v2；历史 v1 只读兼容，准备与迁移见 `.template-spec/process/contract-reading.md`）。`gate.engineering-contract-approved` 一次批准同时绑定 Technical Design、Data Architecture Decision、API Contract Decision；API `required` 时还必须直接绑定冻结 YAML。不得另造字符串 URI 或仅凭 `status: approved` 关闭门禁。
+   - 将同一 YAML 的版本与摘要、validation record、内容复核 和 Freeze 写入 API Contract Decision（新建 v2；历史 v1 只读兼容，准备与迁移见 `.template-spec/process/contract-reading.md`）。`gate.engineering-contract-approved` 一次批准同时绑定 Technical Design、Data Architecture Decision、API Contract Decision；API `required` 时还必须直接绑定冻结 YAML。不得另造字符串 URI 或仅凭 `status: approved` 关闭门禁。
 
 4. **从冻结 YAML 派生 JSON**
    - 使用 [锁定工具链](locked-toolchain.md) 中的 `redocly bundle` 命令生成 `.work/<feature>/api/<feature>.json`，JSON 不纳入人工编辑面。

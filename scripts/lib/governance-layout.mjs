@@ -1,5 +1,6 @@
 import { existsSync, lstatSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
+import {parseAsset} from "./structured-assets.mjs";
 import { spawnSync } from "node:child_process";
 
 const requiredShared = [
@@ -43,7 +44,9 @@ export function verifyGovernanceLayout(root, mode) {
   if (!["template-source", "project-instance"].includes(mode)) {
     throw new TypeError(`不支持的仓库身份: ${mode}`);
   }
-  for (const ref of requiredShared) {
+  const identity = parseAsset(readFileSync(path.join(root,"yss-project.yaml")),"yss-project.yaml");
+  const required = identity.schema_version === 2 && mode === "project-instance" ? requiredShared.filter(ref => !ref.endsWith("digital-human-roles.yaml")) : requiredShared;
+  for (const ref of required) {
     if (!existsSync(path.join(root, ref))) throw new TypeError(`缺少共享治理资产: ${ref}`);
   }
   let oldFiles;

@@ -11,11 +11,11 @@ Review a pinned candidate: all applicable axes initially, then affected conclusi
 - **Spec** — does the code faithfully implement the originating issue / spec?
 - **UI fidelity** (only when the change has UI impact) — does the candidate match the daily task's confirmed acceptance/current visual baseline, or the governed prototype, and `yss-design-system`? Type-check or claiming "already aligned" is not a pass. Invoke those skills' verification notes; do not collapse this axis into Standards or Spec. YSS page-module conventions stay on Standards.
 
-普通功能默认由一名与实现者独立的审查者完成 Standards、Spec 和适用的 UI fidelity 检查，分别报告结论。只有专业能力缺口、结论冲突、明确外部制度或用户指定时，才拆成多个审查者；多个无依赖审查可以并行。检查轴不等于会签人数，不能要求用户为每个轴重复确认。
+普通功能默认由当前执行者诚实自检完成 Standards、Spec 和适用的 UI fidelity 检查，分别报告结论。只有专业能力缺口、结论冲突、明确外部制度或用户指定时，才拆成多个审查者；多个无依赖审查可以并行。检查轴不等于会签人数，不能要求用户为每个轴重复确认。
 
-角色表编译 `review_context` / `skill_source.review_skills`（只读）；见协作规则，不授予实现权限。
+当前编排合同按工作单元与影响选择技术检查及 Skills；新任务使用 task3，实际来源写 provenance，不要求角色/运行时注册。明确独立或外部复核要求按真实来源执行；同账号不同真实上下文可独立，同会话改标签不算。
 
-以上正式角色接线用于 `governed`。已合格且政策启用的 Spec、Backend、Frontend `daily` 由 `request_triage.delivery_path` 政策及支持 `route` / `verify-daily` 的固定 CLI 取得资格；缺政策或能力的 Profile / 旧 CLI 明确不支持。本技能不凭标签降级正式工作包。普通审查消费同一 Ticket / PR 的验收、真实单仓路径、当前 diff、适用 YSS 技能和实际测试，审查者须与实现者独立并保持只读；缺测试、失败、未关闭阻断项或候选过期时返回 `blocked`。结论和身份可回填同一 Ticket 的审查段，由工具绑定当前候选，不强制新 review 文件、正式 review manifest、checkpoint 或 Slice，不写 `approved` / `ready-for-agent`。
+以上正式任务接线用于 `governed`。已合格且政策启用的 Spec、Backend `daily` 由 `request_triage.delivery_path` 政策及支持 `route` / `verify-daily` 的固定 CLI 取得资格；缺政策或能力的 Profile / 旧 CLI 明确不支持。本技能不凭标签降级正式工作包。普通审查消费同一 Ticket / PR 的验收、真实单仓路径、当前 diff、适用 YSS 技能和实际测试，默认执行者自检；需要独立复核时核验独立上下文，冻结候选的复核期间保持只读；缺测试、失败、未关闭阻断项或候选过期时返回 `blocked`。结论和身份可回填同一 Ticket 的审查段，由工具绑定当前候选，不强制新 review 文件、正式 review manifest、checkpoint 或 Slice，不写 `approved` / `ready-for-agent`。
 
 For governed work, if `.template-spec/agents/issue-tracker.md` is missing, tell the user to run `/setup-matt-pocock-skills`; do not invoke another user-invoked skill yourself. A qualified daily review uses its existing task record and does not require a tracker setup stage.
 
@@ -36,7 +36,7 @@ Look for the originating spec, in this order:
 1. The daily Ticket / PR goal and acceptance examples, or a spec/Ticket/contract reference supplied by the user or an upstream governed review input. A daily task with readable acceptance does not require a new calibrated Spec.
 2. Issue references in the commit messages (`#123`, `Closes #45`, GitLab `!67`, etc.) — fetch via the workflow in `.template-spec/agents/issue-tracker.md`.
 3. A spec file under `docs/`, `specs/`, or `.work/` matching the branch name or feature.
-4. If nothing is found, ask the user where the spec is. If they say there isn't one, the **Spec** sub-agent will skip and report "no spec available".
+4. If nothing is found, ask the user where the spec is. If they say there isn't one, the Spec axis will report "no spec available".
 
 ### 3. Identify the standards sources
 
@@ -50,7 +50,7 @@ Standards 检查代码 diff 时读取 [Fowler smell baseline](references/smell-b
 
 ### 4. Complete each applicable review axis
 
-默认由独立 Reviewer 完成下列两份检查提纲，按轴保留结论，不派发额外 subagent。需要多专业参与时，按角色表和协作协议派发对应提纲；只增加缺少的能力，不默认启动两个额外 Agent。下面的 sub-agent prompts 同样是单 Reviewer 的检查清单。
+当前执行者按轴完成下列检查提纲；需要独立复核时由满足实际独立要求的上下文执行。只在真实能力缺口或明确要求下协作，不按检查轴固定 Agent 数量。下列 prompts 是检查清单。
 
 执行 Standards / Spec 轴时读取 [逐轴检查提纲](references/review-axis-checklists.md)；单 Reviewer 同样使用它。实际派发时传入相同候选、证据和完整 smell baseline；Spec 缺失按提纲明确报告。
 
@@ -62,7 +62,7 @@ Standards 检查代码 diff 时读取 [Fowler smell baseline](references/smell-b
 
 #### 报告与阻断
 
-按 `## Standards`、`## Spec` 分别呈现原报告或等义整理后的结论；UI 影响另列 `## UI fidelity`。普通审查在同一任务记录保留适用规则、实际测试、候选摘要、独立身份和 findings；正式专项表填写在 `.template-spec/templates/review-report-template.md` 的 Standards 证据中。两条路径均不增加第四轴，也不合并或跨轴重排 findings。适用规则覆盖缺失、遗漏 governed `required_skills` 或 mandatory violation 未关闭时，结果为 `blocked`；普通结论只有当前证据齐备时才记录 `passed`。
+按 `## Standards`、`## Spec` 分别呈现原报告或等义整理后的结论；UI 影响另列 `## UI fidelity`。普通审查在同一任务记录保留适用规则、实际测试、候选摘要、实际来源、复核方式和 findings；正式专项表填写在 `.template-spec/templates/review-report-template.md` 的 Standards 证据中。两条路径均不增加第四轴，也不合并或跨轴重排 findings。适用规则覆盖缺失、遗漏 governed `required_skills` 或 mandatory violation 未关闭时，结果为 `blocked`；普通结论只有当前证据齐备时才记录 `passed`。
 
 #### 修复后复审
 

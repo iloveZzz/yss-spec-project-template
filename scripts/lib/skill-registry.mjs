@@ -283,11 +283,11 @@ function validateFindingDisposition(disposition) {
   if (exemption.existing_human_gates_unchanged !== true) fail("既有 TODO-HUMAN-REVIEW / 生物人门禁不得被审查闭环改写");
 }
 
-function validateReviewInputFinding(reviewInput) {
+function validateReviewInputFinding(reviewInput, policyVersion) {
   if (reviewInput.finding_disposition_required !== true) fail("review_input.finding_disposition_required 必须为 true");
   if (reviewInput.completed_requires_no_open_mandatory_violations !== true) fail("未关闭的 mandatory violation 不得 completed");
   if (reviewInput.completed_requires_no_blank_applicable_rows !== true) fail("适用报告行空白不得 completed");
-  if (reviewInput.reviewer_write_implementation !== "forbidden") fail("review_input 禁止审查者写实现");
+  if (reviewInput.reviewer_write_implementation !== (policyVersion===2?"forbidden-during-frozen-review":"forbidden")) fail("review_input 必须禁止冻结复核期间写实现");
   requireObject(reviewInput.scope_resolution, "review_input.scope_resolution");
   requireStringSet(reviewInput.scope_resolution.sources, ["candidate-project-root", "implementation-repository-registry", "slice-project-roots", "allowed-write-paths"], "review_input.scope_resolution.sources");
   requireStringSet(reviewInput.scope_resolution.backend_includes, ["project-itself", "registered-backend-development-projects"], "review_input.scope_resolution.backend_includes");
@@ -721,7 +721,7 @@ export function validateSkillRegistry(registry, { lock, compilerContract, lifecy
       }
       if (routeId === "work-unit.code-review") validateCodeReviewRoute(route, resolve);
     }
-    if (lifecycle.review_input) validateReviewInputFinding(lifecycle.review_input);
+    if (lifecycle.review_input) validateReviewInputFinding(lifecycle.review_input,lifecycle.schema_version);
   }
 
   return {

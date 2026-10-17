@@ -1,5 +1,5 @@
 import {safe,digest} from './strategic-handoff-io.mjs';
-import {nativeContractVerify} from './native-evidence.mjs';
+import {nativeContractVerify,nativeCoverage} from './native-evidence.mjs';
 import './slice-repositories.mjs'; // 登记多项目准备核验器（工作流层），见 slice-contract.mjs
 import { compileWorkUnitReviewCapabilities, compileReviewCapabilities, validateReviewTaskBinding } from './review-capabilities.mjs';
 import { validateReadOnlyIntake } from './read-only-intake.mjs';
@@ -276,7 +276,24 @@ export function validateHistoricalMaintenanceTaskPackage(value) {
   return {status:'historical-only',execution_authorization:'not-evaluated'};
 }
 
-export function generateTaskPackageDefaults(roleId, overrides = {}, { rolesDoc } = {}) {
+export function generateTaskPackageDefaults(roleId, overrides = {}, { rolesDoc, root = ROOT } = {}) {
+  const identity=parseAsset(readFileSync(safe(root,'yss-project.yaml')));
+  if(identity.schema_version===2&&identity.repository_mode==='project-instance'){
+    if(roleId||['role_id','runtime_id','actor_id'].some(key=>overrides[key]!==undefined))fail('新任务不使用旧岗位、角色或数字人运行时字段');
+    if(overrides.schema_version!==undefined&&overrides.schema_version!==3)fail('新实例只生成task3，旧任务保持原义只读');
+    if(!overrides.provenance)fail('任务必须提供实际 provenance 来源，不生成虚构身份或执行');
+    if(overrides.workflow_status&&overrides.workflow_status!=='not-started'||overrides.result||overrides.verification_results?.length)fail('派发草案不能包含未来执行结果');
+    const selection=nativeCoverage(nativeContractVerify({root,kind:'task-selection',document:{work_unit_id:overrides.work_unit_id,impacts:overrides.skill_source?.impacts}}),'task_selection');
+    const baseline=nativeCoverage(nativeContractVerify({root,kind:'task-baseline',document:{repository_root:overrides.baseline?.repository_root,commit:overrides.baseline?.commit,allowed_write_paths:overrides.allowed_write_paths}}),'task_baseline').baseline;
+    if(overrides.baseline?.digest&&overrides.baseline.digest!==baseline.digest)fail('当前实际基线与提供的冻结摘要不同');
+    const profile=parseAsset(readFileSync(safe(root,'.template-spec/process/harness-profile.yaml')));
+    const name={'harness.spec-template':'spec','harness.backend-delivery':'backend'}[profile.profile_id];
+    if(profile.schema_version!==3||!name)fail('新任务需要当前Spec或Backend Profile3');
+    const task={...overrides,schema_version:3,profile:name,policy:{ref:selection.policy_ref,version:2,digest:selection.policy_digest},skill_source:selection,baseline,workflow_status:'not-started',verification_status:'not-executed',verification_results:[]};
+    validateTaskPackageSchema(task);
+    return task;
+  }
+  if(identity.schema_version!==1)fail('不支持的任务生成身份版本');
   const registry = rolesDoc || loadDigitalHumanRoles();
   const defaults = taskPackageDefaults(roleId, registry);
   const review = overrides.review_context?.capability_ids

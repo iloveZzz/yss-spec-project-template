@@ -3,6 +3,9 @@ name: yss-openapi-governance
 description: "维护、校验、冻结或导出 YSS OpenAPI 3.1 设计合同；以冻结 YAML 生成受审查的 JSON。"
 ---
 
+复核方式消费当前编排政策：默认同一 Agent 诚实自检，明确用户或已知外部要求才需独立上下文/指定真人。保持 Draft → 实际锁定校验 → 当前内容复核 → Freeze → 实现 → 契约测试；失败、未执行或旧摘要证据不能通过。技术审查不增加人工确认次数。
+
+
 功能包根只从 `.template-spec/agents/issue-tracker.md` 的 `tracker.root` 读取；本文 `.work/` 路径是新项目示例，已有项目沿用已配置的根。
 
 # YSS OpenAPI Governance
@@ -25,7 +28,7 @@ YSS DTO 的可复用 HTTP/JSON 映射由 `.agents/skills/yss-dto/references/open
 
 ## 边界与职责
 
-普通 API 小改执行 [普通 API 交付步骤](references/governance-workflow.md#普通任务-api)。只允许 CLI 能证明旧 operation 及其可达引用、路径继承和全局契约规范化完全相同的新增独立 operation；unknown、breaking 或跨仓停止受影响实施并进入 `governed`。普通 Ticket 的 API 段保留 YAML Draft、锁定 lint / refs / YSS wire、兼容检查、独立语义审查、当前摘要 Freeze 和契约测试；不强制另建 validation YAML、API Contract Decision、工程批准包或 Slice，不写 `approved` / `ready-for-agent`。以下独立正式资产及阶段要求用于 `governed`，技术校验仍按实际 API 影响适用。
+普通 API 小改执行 [普通 API 交付步骤](references/governance-workflow.md#普通任务-api)。只允许 CLI 能证明旧 operation 及其可达引用、路径继承和全局契约规范化完全相同的新增独立 operation；unknown、breaking 或跨仓停止受影响实施并进入 `governed`。普通 Ticket 的 API 段保留 YAML Draft、锁定 lint / refs / YSS wire、兼容检查、内容复核、当前摘要 Freeze 和契约测试；不强制另建 validation YAML、API Contract Decision、工程批准包或 Slice，不写 `approved` / `ready-for-agent`。以下独立正式资产及阶段要求用于 `governed`，技术校验仍按实际 API 影响适用。
 
 使用 `yss-openapi-governance`：
 
@@ -36,7 +39,7 @@ YSS DTO 的可复用 HTTP/JSON 映射由 `.agents/skills/yss-dto/references/open
 - 在 `.work/<feature>/api/<feature>-validation.yaml` 持久化结构校验记录，并用 `scripts/verify-openapi-draft-validation-record` 复核当前 YAML SHA-256、锁定的 Redocly 版本、实际命令、退出码、执行时间和证据引用。
 - 在 OpenAPI Freeze 后，用锁定的 Redocly CLI 将 YAML bundle 为 JSON，并记录可重现证据。
 - 维护治理记录、Freeze 记录和 JSON 派生记录。
-- 在技术分析中生成 API Contract Decision（版本与历史兼容见下文第 3 步）：有 API 影响时以原始字节摘要闭包绑定权威 YAML、Validation、独立 Draft Review 和 Freeze；无 API 影响时绑定影响评估、明确原因和至少一项可读证据，且不得生成空占位资产。
+- 在技术分析中生成 API Contract Decision（版本与历史兼容见下文第 3 步）：有 API 影响时以原始字节摘要闭包绑定权威 YAML、Validation、Draft 内容复核 和 Freeze；无 API 影响时绑定影响评估、明确原因和至少一项可读证据，且不得生成空占位资产。
 - Spec Delta 影响存在时，在 `.work/<feature>/spec-delta/` 记录与冻结 YAML 的关系；没有影响时明确记录 `not-applicable`。
 
 不使用本 skill 来替代：
@@ -51,7 +54,7 @@ YSS DTO 的可复用 HTTP/JSON 映射由 `.agents/skills/yss-dto/references/open
 
 ## 治理流程
 
-当前任务涉及 Draft、结构校验、Review / Freeze 或派生交接时，读取 [治理分阶段步骤](references/governance-workflow.md) 中当前路径的步骤。两条路径均保持 Draft → 校验 → 独立 Review / Freeze → 必要 JSON → 实现/测试，任何前置证据缺失不得越过。前端 profile 仅消费后端权威，不能执行后端批准或自行启用普通路径。
+当前任务涉及 Draft、结构校验、Review / Freeze 或派生交接时，读取 [治理分阶段步骤](references/governance-workflow.md) 中当前路径的步骤。两条路径均保持 Draft → 校验 → 内容复核 / Freeze → 必要 JSON → 实现/测试，任何前置证据缺失不得越过。前端 profile 仅消费后端权威，不能执行后端批准或自行启用普通路径。
 
 ## 阻断规则
 
