@@ -12,14 +12,19 @@ export const manifest='.work/demo/reading/.manifest.json';
 const MANIFEST_SCHEMA='.template-spec/process/schemas/reading-manifest.schema.json';
 
 /**
- * manifestSchema：'current' 使用本仓的清单 schema（接受 v1 与 v2）；'embedded' 保留 yss 内置模板里的旧 schema（只接受 v1）。
+ * manifestSchema：'current' 使用本仓的清单 schema（接受 v1 与 v2）；'v1' 显式限制为 v1，不依赖 yss 内置模板版本。
  * 登记式布局：checkpoint 带 feature_id，.work/demo/map.md 登记它；yss 不支持缺 feature_id 的 legacy 布局。
  */
 export function readingInstance({profile='spec',manifestSchema='current'}={}){
   const root=makeRoot('yss-reading-',profile);
   const put=(ref,value)=>{const file=path.join(root,ref);mkdirSync(path.dirname(file),{recursive:true});writeFileSync(file,typeof value==='string'?value:stringify(value));};
   const read=ref=>readFileSync(path.join(root,ref),'utf8');
-  if(manifestSchema==='current')cpSync(path.join(repo,MANIFEST_SCHEMA),path.join(root,MANIFEST_SCHEMA));
+  cpSync(path.join(repo,MANIFEST_SCHEMA),path.join(root,MANIFEST_SCHEMA));
+  if(manifestSchema==='v1'){
+    const schema=JSON.parse(read(MANIFEST_SCHEMA));
+    schema.oneOf=schema.oneOf.filter(version=>version.properties.schema_version.const===1);
+    put(MANIFEST_SCHEMA,JSON.stringify(schema));
+  }
   const strategy=demoStrategy();
   put('.work/demo/plan/domain-strategy.yaml',strategy);
   const value=JSON.parse(readFileSync(path.join(repo,'scripts/fixtures/reading-views/checkpoint.json'),'utf8'));
