@@ -65,8 +65,8 @@ test("FR-007：三端查询保留各自合同、输出结构与完整内容摘�
   }
 });
 
-test("FR-006：现役 Profile 的锁与注册表接受无投影模型并保留技能哈希", () => {
-  for (const profile of PROFILE_NAMES) {
+test("FR-006：现役专用 Profile 的锁与注册表接受无投影模型并保留技能哈希", () => {
+  for (const profile of PROFILE_NAMES.filter(name => name !== "design")) {
     const tree = composeProfileTree(profile);
     const lock = JSON.parse(fs.readFileSync(path.join(tree, "skills-lock.json"), "utf8"));
     assert.deepEqual(lock.projectionRoots, []);

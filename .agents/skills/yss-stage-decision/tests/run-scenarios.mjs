@@ -2,7 +2,7 @@
 import {checkNativeContext} from '../../../../scripts/lib/native-context.mjs';
 import { createHash } from "node:crypto";
 import { spawnSync } from "node:child_process";
-import { realpath, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { realpath, mkdtemp, readFile, rm, writeFile, cp, mkdir } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { tmpdir } from "node:os";
@@ -145,6 +145,10 @@ context_schema_version: 1
 
 const temporaryRoot = await realpath(await mkdtemp(join(tmpdir(), "yss-stage-decision-v3-")));
 try {
+  await mkdir(join(temporaryRoot,'.template-spec/agents'),{recursive:true});
+  await cp(join(projectRoot,'.template-spec/process'),join(temporaryRoot,'.template-spec/process'),{recursive:true});
+  await cp(join(projectRoot,'.template-spec/agents/digital-human-roles.yaml'),join(temporaryRoot,'.template-spec/agents/digital-human-roles.yaml'));
+  await cp(join(projectRoot,'.template-spec/agents/yss-skill-registry.yaml'),join(temporaryRoot,'.template-spec/agents/yss-skill-registry.yaml'));
   await writeFile(join(temporaryRoot, "CONTEXT.md"), contextSource);
   await writeFile(join(temporaryRoot,'yss-project.yaml'),'schema_version: 1\nrepository_mode: template-source\n');
   const context = checkNativeContext({root:temporaryRoot,allowedContextIds:['SupplierManagement','ComplianceReview','ProcurementExecution'],termRefs:['Global/Supplier','ComplianceReview/AdmissionDecision']});
@@ -288,15 +292,15 @@ try {
       ["context-missing-basis", value => { value.approval_context.basis = []; }, null, /APPROVAL_CONTEXT_REQUIRED/],
       ["context-stale-basis", value => { value.approval_context.basis[0].digest = "0".repeat(64); }, null, /当前消费上下文.*证据过期/],
       ["context-missing-drafter", value => { delete value.approval_context.drafter_principal_ref; }, null, /独立起草者来源/],
-      ["context-drafter", value => { value.approval_context.drafter_principal_ref = "instance:other-drafter"; }, null, /起草者身份.*不匹配/],
-      ["context-scope", value => { value.approval_context.approval_scope.push("feature.other"); }, null, /审查范围不匹配/],
-      ["record-subject", null, record => { record.subject_ref = domainFile; }, /审查对象不匹配/],
-      ["record-scope", null, record => { record.approval_scope.push("feature.other"); }, /审查范围不匹配/],
-      ["record-drafter", null, record => { record.drafter_principal_ref = "instance:other-drafter"; }, /起草者身份.*不匹配/],
-      ["record-self-sign", null, record => { record.principal_ref = record.drafter_principal_ref; }, /起草者自签/],
+      ["context-drafter", value => { value.approval_context.drafter_principal_ref = "instance:other-drafter"; }, null, /独立作者\/实施者\/审查身份不匹配/],
+      ["context-scope", value => { value.approval_context.approval_scope.push("feature.other"); }, null, /审查对象或范围不匹配/],
+      ["record-subject", null, record => { record.subject_ref = domainFile; }, /审查对象或范围不匹配/],
+      ["record-scope", null, record => { record.approval_scope.push("feature.other"); }, /审查对象或范围不匹配/],
+      ["record-drafter", null, record => { record.drafter_principal_ref = "instance:other-drafter"; }, /独立作者\/实施者\/审查身份不匹配/],
+      ["record-self-sign", null, record => { record.principal_ref = record.drafter_principal_ref; }, /独立作者\/实施者\/审查身份不匹配/],
       ["record-missing-basis", null, record => { record.basis = []; }, /批准记录.*缺少当前证据摘要/],
       ["record-stale-basis", null, record => { record.basis[0].digest = "0".repeat(64); }, /批准记录.*证据过期/],
-      ["record-semantic-digest", null, record => { record.subject_digest = digestYaml(record.fixtureSource).slice(7); }, /审查资产摘要不匹配/]
+      ["record-semantic-digest", null, record => { record.subject_digest = digestYaml(record.fixtureSource).slice(7); }, /审查主体或消费边界摘要过期/]
     ]) {
       const file = join(temporaryRoot, `${kind}-${label}.yaml`);
       let bound = await writeApprovedFixture(source, file, gateId, contextDigest);

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import {nativeEvidenceVerify,nativeCoverage,NEEDS} from "../../../../scripts/lib/native-evidence.mjs";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { assertAssetTransactionIdle, assertCurrentAssetReference } from "../../../../scripts/lib/asset-transactions.mjs";
@@ -128,11 +129,15 @@ async function validate(data, contextRoot, currentRef) {
     if (mapping?.propagation && !["direct", "transitive", "not-applicable", "stale"].includes(mapping.propagation)) errors.push(`${path}.propagation 非法`);
   }
   const approval = data.approval ?? {};
-  for (const field of ["approval_ref", "approver", "persisted_ref", "current_version"]) requireString(approval, field, "approval", errors);
+  for (const field of (approval.schema_version===2?["approval_ref", "persisted_ref", "current_version"]:["approval_ref", "approver", "persisted_ref", "current_version"])) requireString(approval, field, "approval", errors);
   if (data.status === "approved" && approval.current_version !== data.package_version) errors.push("approval.current_version 必须等于 package_version");
   if (unresolved.some((item) => item?.type === "blocker") && data.status === "approved") errors.push("存在 blocker 未决项时不得 approved");
   if (data.status === "approved" && nonEmpty(approval.approval_ref)) {
     try {
+      if(approval.schema_version===2){
+        const ref=path.relative(path.resolve(contextRoot),path.resolve(currentRef)).split(path.sep).join('/');
+        nativeCoverage(nativeEvidenceVerify({root:contextRoot,group:'handoff',kind:'source-approval',document:{ref,approval_ref:approval.approval_ref,id:data.stage_decision_id,version:data.package_version,digest_kind:'canonical-json',approval_context:approval.approval_context},extra:['--gate','gate.plan-approved'],needs:NEEDS.sourceApproval}),'source_approval');
+      } else {
       const options = { root: contextRoot, review_package: false };
       const approvalPath = resolveApprovalRef(approval.approval_ref, currentRef, options);
       const expected = approvalExpectationForBoundAsset("check.stage-decision-package-approved", { ref: currentRef }, options);
@@ -140,6 +145,7 @@ async function validate(data, contextRoot, currentRef) {
       validateApprovalRecordFile(approvalPath, { gate: 'check.stage-decision-package-approved', ...options, requireApproved: true, expected });
       if (record.gate_id !== "check.stage-decision-package-approved") errors.push("approval_ref 的 gate_id 必须为 check.stage-decision-package-approved");
       if (record.role_id !== approval.approver) errors.push("approval.approver 必须与会签记录 role_id 一致");
+      }
     } catch (error) { errors.push(`approval_ref 会签记录无效: ${error.message}`); }
   }
   return errors;
