@@ -879,6 +879,8 @@ preparation_policy:
   - work-unit.prototype-design-v2
   - work-unit.technical-analysis
   - work-unit.technical-design
+  - work-unit.ticket-decomposition
+  - work-unit.slice-contract
   requires:
   - authorized-preparation-scope
   - current-input-bindings

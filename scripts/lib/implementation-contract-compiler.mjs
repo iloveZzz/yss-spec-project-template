@@ -3,12 +3,12 @@ import './slice-repositories.mjs'; // 登记多项目准备核验器（工作流
 import { resolveBackendPlatform, resolveComponentCapabilities } from "./backend-platform.mjs";
 import { executionEvidenceBlockers } from './execution-evidence.mjs';
 import { safe } from './strategic-handoff-io.mjs';
-import { selectSliceWorkUnit, normalizeSliceContract, sourceSliceContract, withinSlicePath } from './slice-contract.mjs';
+import { selectSliceWorkUnit, normalizeSliceContract, sourceSliceContract, withinSlicePath,parseSliceYaml } from './slice-contract.mjs';
 import { createApprovedExecutionContext, createApprovedRecompilationContext, assertApprovedExecutionContext } from './approved-execution-context.mjs';
 import { enforceTechnicalDesign } from './technical-design-boundary.mjs';
 import { enforceHarnessSkillScope } from "./harness-execution-scope.mjs";
 import { createHash } from "node:crypto";
-import { readFileSync } from './validation-phase.mjs';
+import { readFileSync,existsSync } from './validation-phase.mjs';
 import path from "node:path";
 import { parseDocument } from "../vendor/yaml.mjs";
 import { DEFAULT_REGISTRY, loadSkillRegistry, resolveSkillForNewUse } from "./skill-registry.mjs";
@@ -261,10 +261,13 @@ export function compileImplementationContract({
 }
 
 export function compileDefaultImplementationContract(input = {}) {
+  const root=input.root||ROOT,identityFile=path.join(root,'yss-project.yaml'),identity=existsSync(identityFile)?parseSliceYaml(readFileSync(identityFile,'utf8')):null;
+  if(identity&&![1,2].includes(identity.schema_version))fail('未知根身份版本，不能选择编译规则来源');
+  const current=identity?.schema_version===2;
   return compileImplementationContract({
     ...input,
-    registry: loadSkillRegistry(DEFAULT_REGISTRY),
-    compilerContract: loadCompilerContract()
+    registry: loadSkillRegistry(current?path.join(root,'.template-spec/agents/yss-skill-registry.yaml'):DEFAULT_REGISTRY),
+    compilerContract: loadCompilerContract(current?path.join(root,'.agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml'):DEFAULT_COMPILER_CONTRACT)
   });
 }
 

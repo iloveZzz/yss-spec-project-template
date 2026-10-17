@@ -117,7 +117,7 @@ function prepare({root=process.cwd(),ticket_ref,checkpoint_ref,sources={},refine
     if(baseline.architecture_identity&&registration.architecture_identity&&!same(baseline.architecture_identity,registration.architecture_identity))throw new TypeError('工程基线与登记架构冲突');
     const bound=key=>basis[key]?resolveSliceBasis({basis},key):undefined;
     const architecture_evidence=architecture_identity?sliceArchitectureEvidence({basis,resolution:{architecture_identity}},readSliceSources({basis},{root})):undefined;
-    const compilerRules=loadCompilerContract();
+    const compilerRules=loadCompilerContract(version===4?path.join(root,'.agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml'):undefined);
     scope.full_reroute_triggers=[...new Set([...(compilerRules.full_reroute_triggers||[]),...(scope.full_reroute_triggers||[])])];
     for(const impact of input.extensions?.backend?.component_impacts||[])if(!compilerRules.impact_to_capabilities[impact])throw new TypeError(`未知组件影响: ${impact}`);
     const componentCapabilities=(input.extensions?.backend?.component_impacts||[]).flatMap(impact=>compilerRules.impact_to_capabilities[impact]||[]);

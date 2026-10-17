@@ -722,6 +722,34 @@ profiles:
           - "scripts/lib/strategic-handoff-io.mjs"
         depends_on: []
         failure_mode: "推进意图被当作冻结战略包的批准或交付证据"
+      - id: check.role-independent-formal-current
+        run: "node --test --test-concurrency=1 scripts/fixtures/role-independent-draft/formal-plan.test.mjs scripts/fixtures/role-independent-draft/professional-plan.test.mjs scripts/fixtures/role-independent-draft/worker-chain.test.mjs"
+        group: implementation
+        resources: [native-cli]
+        inputs_complete: true
+        input_patterns:
+          - "scripts/fixtures/role-independent-draft/**"
+          - "scripts/lib/task-package.mjs"
+          - "scripts/lib/review-package.mjs"
+          - "scripts/lib/plan-review-control.mjs"
+          - "scripts/lib/slice-task-package.mjs"
+          - "scripts/lib/existing-backend-architecture.mjs"
+          - "scripts/lib/implementation-contract-compiler.mjs"
+          - "scripts/lib/slice-contract-preparation.mjs"
+          - ".template-spec/process/schemas/**"
+          - ".template-spec/process/orchestration/**"
+        depends_on: []
+        failure_mode: "新治理实际安装、连续准备、适用自检、原始用户决定或当前实现证据链未闭合"
+      - id: check.validation-native-transport
+        run: "node --test tests/validation-phase-native-transport.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - "tests/validation-phase-native-transport.test.mjs"
+          - "scripts/lib/validation-phase.mjs"
+          - "scripts/lib/native-evidence.mjs"
+        depends_on: []
+        failure_mode: "临时原生输入导致虚假漂移，或真实用户修改被当作临时输入忽略"
       - id: check.native-consumer-routing
         group: cli-sync
         inputs_complete: true
@@ -2396,6 +2424,7 @@ routing:
       - tests/go-validator-replay-delivery.test.mjs
       - tests/business-ticket-native-report.test.mjs
       - tests/ar12b-source-native.test.mjs
+      - tests/validation-phase-native-transport.test.mjs
       - tests/ar12b-retirement.test.mjs
       - tests/frontend-removed.test.mjs
       - tests/backend-delivery-terminal.test.mjs

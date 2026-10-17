@@ -76,19 +76,20 @@ function compileRoleIndependent(binding,{root=ROOT,work_unit_id,task_id,provenan
  const saved=readSliceContract(binding.ref,{root}),contract=saved.contract;
  if(contract.schema_version!==4)fail('新政策派发需要Slice4');
  if(binding.digest!==saved.binding.digest||binding.id&&binding.id!==saved.binding.id||binding.version&&binding.version!==saved.binding.version)fail('派发输入与当前持久Slice绑定不符');
+ createApprovedExecutionContext(binding,{root,work_unit_id});
  const decisions=user_decisions||readSliceDispatchApproval(root,binding.approval_ref).human_review?.user_decisions;
  const unit=contract.work_units.find(row=>row.id===work_unit_id);if(!unit)fail('未找到指定Slice工作单元');
  const bound=contract.repositories?.[unit.project_root]?.basis?.engineering_baseline||resolveSliceBasis(saved.raw,'engineering_baseline');
  const engineering=parseSliceYaml(readFileSync(safe(root,bound.ref)));
  if(!engineering.source?.roots?.length)fail('实际工程基线缺少source.roots；不能猜测代码范围');
  const selection=nativeCoverage(nativeContractVerify({root,kind:'task-selection',document:{work_unit_id:'work-unit.slice-implementation',impacts:saved.raw.scope.impacted_areas}}),'task_selection');
- const inputs=[...new Set([binding.ref,binding.approval_ref,...Object.values(contract.lifecycle_refs).filter(value=>typeof value==='string'&&value)])];
+ // The Slice pins every basis asset; the native consumer rereads its current approval checkpoint.
+ const inputs=[binding.ref];
  const task={schema_version:3,task_id,profile:parseSliceYaml(readFileSync(safe(root,'.template-spec/process/harness-profile.yaml'))).profile_id==='harness.backend-delivery'?'backend':'spec',policy:{ref:selection.policy_ref,digest:selection.policy_digest,version:2},provenance,work_unit_id,stage_id:sliceImplementationStage(root),execution_state:'Worker',workflow_status:'not-started',verification_status:'not-executed',
   contract:{kind:'slice-implementation',contract_id:contract.contract_id,contract_version:contract.contract_version,status:'issued',contract_ref:binding.ref,slice_contract_ref:binding.ref,gate_refs:[binding.approval_ref]},
   objective:unit.behavior,acceptance:unit.work_unit.acceptance_refs||unit.acceptance_refs,inputs,input_bindings:inputs.map(ref=>({ref,digest:hash(readFileSync(safe(root,ref))).replace(/^sha256:/,'')})),baseline:{repository_root:unit.project_root,commit:engineering.source.base_commit,digest:digest(engineering.source).replace(/^sha256:/,'')},skill_source:selection,
-  allowed_write_paths:unit.allowed_write_paths,forbidden_actions:unit.work_unit.forbidden_patterns,expected_outputs:[unit.behavior],expected_evidence_files:unit.work_unit.expected_evidence,verification_commands:unit.work_unit.verification_commands,verification_results:[],downstream_consumers:unit.downstream_consumers||['work-unit.code-review'],convergence:{parent_work_unit:'work-unit.slice-implementation',convergence_ref:binding.approval_ref},user_decisions:decisions};
+  allowed_write_paths:unit.allowed_write_paths,forbidden_actions:[...new Set([...unit.work_unit.forbidden_patterns,'来源过期、越界、缺证据、验证失败或新增影响时停止并回交'])],expected_outputs:[unit.behavior],expected_evidence_files:unit.work_unit.expected_evidence,verification_commands:unit.work_unit.verification_commands,verification_results:[],downstream_consumers:unit.downstream_consumers||['work-unit.code-review'],convergence:{parent_work_unit:'work-unit.slice-implementation',convergence_ref:binding.approval_ref},user_decisions:decisions};
  validateTaskPackageSchema(task);
- const verdict=nativeContractVerify({root,kind:'task',document:task,extra:['--task-ref',provenance?.task_ref||'']});
- if(verdict.exitCode!==0)fail(verdict.message);
+ // Compilation cannot invent the future dispatch log. Actual task verification still requires it.
  return task;
 }

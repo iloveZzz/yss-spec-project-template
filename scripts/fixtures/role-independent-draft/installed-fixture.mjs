@@ -40,7 +40,7 @@ export function installedFixture(profile='spec') {
   write(executionRef,log);
   task.workflow_status='resolved';task.verification_status='executed';
   task.verification_results=[{command:log.command,status:'passed',exit_code:0,executed_at:log.executed_at,candidate_digest:candidate.digest,evidence_ref:executionRef,evidence_digest:asset(executionRef).digest}];
-  task.result={result_schema:'workflow-execution-result-v1',work_unit:task.work_unit_id,workflow_reference:task.contract.contract_ref,result:'completed',skill:task.skill_source.skills[0],changed_files:changedFiles,context_reconciliation:{status:'reconciled',ref:'reconciliation.json'},evidence_refs:[executionRef,'reconciliation.json'],deferred_seams:[],drift:[],violation:[],new_impacts:[],stale_candidates:[],next_route:'work-unit.spec-synthesis',blocking_signals:[]};
+  task.result={result_schema:'workflow-execution-result-v1',work_unit:task.work_unit_id,workflow_reference:task.contract.contract_ref,result:'completed',skill:task.skill_source.skills[0],changed_files:changedFiles,context_reconciliation:{status:'reconciled',ref:'reconciliation.json'},evidence_refs:[executionRef,'reconciliation.json'],deferred_seams:[],drift:[],violation:[],new_impacts:[],stale_candidates:[],next_route:task.downstream_consumers[0],blocking_signals:[]};
   write(taskRef,task);return {task,candidate,log};
  }
  const cleanup=()=>{if(process.env.YSS_CHAIN_RECEIPT)fs.writeFileSync(process.env.YSS_CHAIN_RECEIPT,JSON.stringify({binary,sha256:hash(fs.readFileSync(binary)),pinned:false,root,calls},null,2));fs.rmSync(scratch,{recursive:true,force:true});};
