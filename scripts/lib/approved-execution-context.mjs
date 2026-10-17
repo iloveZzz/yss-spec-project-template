@@ -1,3 +1,4 @@
+import {assertGovernanceWrite,nativeContractVerify} from './native-evidence.mjs';
 import './slice-repositories.mjs'; // 登记多项目准备核验器（工作流层），见 slice-contract.mjs
 import {approvalExpectationForCheckpoint,approvalExpectationForBoundAsset} from './native-approval.mjs';
 import {validateJsonSchemas} from './json-schema.mjs';
@@ -31,12 +32,20 @@ export function assertExistingSliceStructure(contract) {
 }
 
 /** Reads original local approval; a contract's own approved status never establishes permission. */
-export function verifySliceContractApproval(binding,{root=process.cwd(),contract:expected}={}) {
+export function verifySliceContractApproval(binding,{root=process.cwd(),contract:expected,work_unit_id}={}) {
   root=path.resolve(root);
   check(binding?.ref&&binding?.digest&&binding?.approval_ref,'EXECUTION_APPROVAL_REQUIRED','需要当前持久化 Slice 的 ref/digest/approval_ref');
   const bytes=readFileSync(safe(root,binding.ref));
   check(hash(bytes)===binding.digest,'EXECUTION_CONTRACT_STALE','Slice 原始字节与绑定不一致');
   const document=parseSliceYaml(bytes),contract=normalizeSliceContract(document,{root});
+  if(contract.schema_version===4) {
+    check((!binding.id||binding.id===contract.contract_id)&&(!binding.version||binding.version===contract.contract_version),'EXECUTION_CONTRACT_CONFLICT','合同身份/版本不符');
+    if(expected)check(same(sourceSliceContract(expected),sourceSliceContract(contract)),'EXECUTION_CONTRACT_CONFLICT','调用方合同与实际文件不符');
+    const verdict=nativeContractVerify({root,kind:'slice',file:binding.ref,extra:['--approval-ref',binding.approval_ref,...(work_unit_id?['--unit',work_unit_id]:[])]});
+    check(verdict.exitCode===0,'EXECUTION_APPROVAL_INVALID',verdict.message);
+    return {contract,binding:structuredClone(binding),root,checkpoint_ref:binding.approval_ref};
+  }
+
   check([2,3].includes(contract.schema_version)&&contract.status==='approved'&&typeof contract.contract_id==='string'&&contract.contract_id&&typeof contract.contract_version==='string'&&contract.contract_version&&typeof contract.slice_id==='string'&&contract.slice_id,'EXECUTION_CONTRACT_INVALID','需要已批准且有身份的持久化 Slice v2/v3');
   assertExistingSliceStructure(contract);
   check((!binding.id||binding.id===contract.contract_id)&&(!binding.version||binding.version===contract.contract_version),'EXECUTION_CONTRACT_CONFLICT','当前合同身份或版本不匹配');
@@ -66,6 +75,7 @@ export function verifySliceContractApproval(binding,{root=process.cwd(),contract
 
 function executionBasis(verified,{allowCompilerDrift=false}={}) {
   const {contract}=verified,resolution=contract.resolution||{};
+  if(contract.schema_version===4)return verified;
   const compiler=read(safe(ROOT,'.agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml'));
   if(!allowCompilerDrift&&contract.schema_version===2)for(const [section,fields] of Object.entries(compiler.slice_contract_required))for(const field of fields)check(Object.hasOwn(section==='root'?contract:contract[section]||{},field),'EXECUTION_CONTRACT_INVALID',`合同缺少 ${section}.${field}`);
   check(Array.isArray(contract.common?.allowed_write_paths)&&contract.common.allowed_write_paths.length>0&&contract.common.allowed_write_paths.every(value=>typeof value==='string'&&value.trim()),'EXECUTION_SCOPE_MISSING','合同缺少已批准写范围');
@@ -96,11 +106,12 @@ function primeApprovalSchemas(binding,root){
   });
 }
 export function createApprovedExecutionContext(binding,options={}) {
+  if(!options.readOnly)assertGovernanceWrite(options.root||process.cwd());
   primeApprovalSchemas(binding,path.resolve(options.root||process.cwd()));
   const verified=executionBasis(verifySliceContractApproval(binding,options));
-  if(!options.readOnly)assertProgressionEntry('work-unit.slice-implementation',{root:verified.root,assetRef:verified.binding.ref});
-  assertScopeSlice(selectSliceWorkUnit(verified.contract,options.work_unit_id),{root:verified.root});
-  if(!options.readOnly)assertScopeWorkUnit('work-unit.slice-implementation',{root:verified.root});
+  if(!options.readOnly&&verified.contract.schema_version!==4)assertProgressionEntry('work-unit.slice-implementation',{root:verified.root,assetRef:verified.binding.ref});
+  if(verified.contract.schema_version!==4)assertScopeSlice(selectSliceWorkUnit(verified.contract,options.work_unit_id),{root:verified.root});
+  if(!options.readOnly&&verified.contract.schema_version!==4)assertScopeWorkUnit('work-unit.slice-implementation',{root:verified.root});
   const context=Object.freeze({kind:'approved-slice-execution-context'});
   contexts.set(context,{phase:validationPhaseToken(),binding:verified.binding,root:verified.root,work_unit_id:options.work_unit_id,allowCompilerDrift:false,readOnly:options.readOnly===true});
   return context;
@@ -108,10 +119,11 @@ export function createApprovedExecutionContext(binding,options={}) {
 
 /** A prior approved scope may authenticate bounded output while current compiler facts are recomputed. */
 export function createApprovedRecompilationContext(binding,options={}) {
+  if(!options.readOnly)assertGovernanceWrite(options.root||process.cwd());
   const verified=executionBasis(verifySliceContractApproval(binding,options),{allowCompilerDrift:true,readOnly:options.readOnly===true});
-  if(!options.readOnly)assertProgressionEntry('work-unit.slice-implementation',{root:verified.root,assetRef:verified.binding.ref});
-  assertScopeSlice(selectSliceWorkUnit(verified.contract,options.work_unit_id),{root:verified.root});
-  if(!options.readOnly)assertScopeWorkUnit('work-unit.slice-implementation',{root:verified.root});
+  if(!options.readOnly&&verified.contract.schema_version!==4)assertProgressionEntry('work-unit.slice-implementation',{root:verified.root,assetRef:verified.binding.ref});
+  if(verified.contract.schema_version!==4)assertScopeSlice(selectSliceWorkUnit(verified.contract,options.work_unit_id),{root:verified.root});
+  if(!options.readOnly&&verified.contract.schema_version!==4)assertScopeWorkUnit('work-unit.slice-implementation',{root:verified.root});
   const context=Object.freeze({kind:'approved-slice-recompilation-context'});
   contexts.set(context,{phase:validationPhaseToken(),binding:verified.binding,root:verified.root,work_unit_id:options.work_unit_id,allowCompilerDrift:true,readOnly:options.readOnly===true});
   return context;
@@ -123,9 +135,10 @@ export function assertApprovedExecutionContext(context,{root=process.cwd(),contr
   check(saved&&saved.root===path.resolve(root),'EXECUTION_CONTEXT_UNTRUSTED','只允许从当前原始 Slice 与本地批准生成的执行上下文');
   check(!saved.phase||saved.phase===validationPhaseToken(),'EXECUTION_CONTEXT_EXPIRED','不能跨验证阶段复用批准上下文');
   check(!saved.readOnly||readOnly,'EXECUTION_CONTEXT_READ_ONLY','只读检查上下文不能执行实现');
-  if(!readOnly)assertScopeWorkUnit('work-unit.slice-implementation',{root});
-  const verified=executionBasis(verifySliceContractApproval(saved.binding,{root,contract}),{allowCompilerDrift:saved.allowCompilerDrift});
-  if(!readOnly)assertProgressionEntry('work-unit.slice-implementation',{root:verified.root,assetRef:verified.binding.ref});
+  if(!readOnly)assertGovernanceWrite(root);
+  const verified=executionBasis(verifySliceContractApproval(saved.binding,{root,contract,work_unit_id:saved.work_unit_id}),{allowCompilerDrift:saved.allowCompilerDrift});
+  if(!readOnly&&verified.contract.schema_version!==4)assertProgressionEntry('work-unit.slice-implementation',{root:verified.root,assetRef:verified.binding.ref});
+  if(!readOnly&&verified.contract.schema_version!==4)assertScopeWorkUnit('work-unit.slice-implementation',{root:verified.root});
   const current=selectSliceWorkUnit(verified.contract,saved.work_unit_id),resolution=current.resolution;
   if(sliceId)check(current.slice_id===sliceId,'EXECUTION_SCOPE_CONFLICT','执行上下文属于另一切片');
   if(architectureIdentity)check(same(resolution.architecture_identity,architectureIdentity),'EXECUTION_INPUT_REPLACED','执行上下文不允许替换架构身份或固定源码输入');

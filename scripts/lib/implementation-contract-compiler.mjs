@@ -1,8 +1,9 @@
+import {nativeContractVerify,nativeCoverage} from './native-evidence.mjs';
 import './slice-repositories.mjs'; // 登记多项目准备核验器（工作流层），见 slice-contract.mjs
 import { resolveBackendPlatform, resolveComponentCapabilities } from "./backend-platform.mjs";
 import { executionEvidenceBlockers } from './execution-evidence.mjs';
 import { safe } from './strategic-handoff-io.mjs';
-import { selectSliceWorkUnit, normalizeSliceContract, withinSlicePath } from './slice-contract.mjs';
+import { selectSliceWorkUnit, normalizeSliceContract, sourceSliceContract, withinSlicePath } from './slice-contract.mjs';
 import { createApprovedExecutionContext, createApprovedRecompilationContext, assertApprovedExecutionContext } from './approved-execution-context.mjs';
 import { enforceTechnicalDesign } from './technical-design-boundary.mjs';
 import { enforceHarnessSkillScope } from "./harness-execution-scope.mjs";
@@ -271,6 +272,14 @@ export function evaluateContractFreshness(contract, { registry, compilerContract
   assertV3(registry, compilerContract);
   try { contract=normalizeSliceContract(contract,{root}); } catch(error) { return {freshness:'stale',reasons:[error.message]}; }
   if (![2,3,4].includes(contract?.schema_version)) fail("Slice Implementation Contract schema v1 已停止支持；必须重新编译 v2 合同");
+  if(contract.schema_version===4){
+    if(!approved_slice?.ref||!approved_slice?.digest||!approved_slice?.approval_ref)return {freshness:'stale',reasons:['EXECUTION_APPROVAL_REQUIRED']};
+    const actualBytes=readFileSync(safe(root,approved_slice.ref)),actualSlice=parseDocument(actualBytes.toString()).toJS();
+    if('sha256:'+createHash('sha256').update(actualBytes).digest('hex')!==approved_slice.digest||digestDocument(sourceSliceContract(contract))!==digestDocument(actualSlice.slice_contract||actualSlice))return {freshness:'stale',reasons:['EXECUTION_CONTRACT_STALE']};
+    const verdict=nativeContractVerify({root,kind:'slice-preflight',file:approved_slice.ref,extra:['--approval-ref',approved_slice.approval_ref,...(work_unit_id?['--unit',work_unit_id]:[])]});
+    const report=nativeCoverage(verdict,'slice_preflight',{allowBlocked:true});
+    return {freshness:report.execution_allowed?'current':'stale',reasons:report.blockers.length?report.blockers:report.execution_allowed?[]:['EXECUTION_APPROVAL_REQUIRED']};
+  }
   const all=contract;
   try {contract=selectSliceWorkUnit(contract,work_unit_id);} catch(error){return {freshness:'stale',reasons:[error.message]};}
   const resolution = contract.resolution ?? contract;
@@ -328,7 +337,18 @@ export function evaluateContractFreshness(contract, { registry, compilerContract
 export function validateExecutionResult(result, contract, current) {
   if (result?.schema_version !== 2) fail("YSS Skill Execution Result schema v1 已停止支持；请迁移到 v2");
   contract=normalizeSliceContract(contract,{root:current?.root || ROOT});
-  if(contract.schema_version===4)fail("CAPABILITY: Slice4执行结果消费尚未启用；草稿编译不授予执行资格");
+  if(contract.schema_version===4) {
+    if(!current?.task_ref||!current?.result_ref||!current?.approved_slice?.ref)fail('TASK_RESULT: Slice4结果需要实际完成task_ref、持久result_ref与当前approved_slice');
+    const saved=parseDocument(readFileSync(safe(current.root||ROOT,current.result_ref),'utf8')).toJS();
+    if(digestDocument(saved.execution_result||saved)!==digestDocument(result))fail('TASK_RESULT: 结果参数与持久原字节不符');
+    const task=parseDocument(readFileSync(safe(current.root||ROOT,current.task_ref),'utf8')).toJS();
+    if(task.contract?.slice_contract_ref!==current.approved_slice.ref)fail('TASK_RESULT: 完成任务属于另一Slice');
+    const actualSlice=parseDocument(readFileSync(safe(current.root||ROOT,current.approved_slice.ref),'utf8')).toJS();
+    if(digestDocument(sourceSliceContract(contract))!==digestDocument(actualSlice.slice_contract||actualSlice))fail('TASK_RESULT: 调用方合同与实际Slice不符');
+    const verdict=nativeContractVerify({root:current.root||ROOT,kind:'slice-execution-result',file:current.result_ref,extra:['--task',current.task_ref]});
+    const checked=nativeCoverage(verdict,'slice_execution_result');
+    return {status:checked.result_status,blockers:checked.blockers};
+  }
   if (![2,3].includes(contract?.schema_version)) fail("Slice Implementation Contract schema v1 已停止支持；必须重新编译 v2 合同");
   if (!EXECUTION_STATUSES.has(result.status)) fail(`未知 execution result status: ${result.status}`);
   if((contract.schema_version===3||contract.resolution?.architecture_identity?.schema_version===2)&&!current?.approved_slice)return {status:'stale',blockers:['EXECUTION_APPROVAL_REQUIRED']};

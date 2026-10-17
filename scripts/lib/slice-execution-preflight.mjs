@@ -1,3 +1,4 @@
+import {nativeContractVerify,nativeCoverage} from './native-evidence.mjs';
 import { withValidationPhase } from './validation-phase.mjs';
 import { readSliceContract } from './slice-contract.mjs';
 import { createApprovedExecutionContext } from './approved-execution-context.mjs';
@@ -11,6 +12,10 @@ export function inspectSliceContract(ref, options = {}) {
 function inspect(ref, { root = process.cwd(), approval_ref, work_unit_id } = {}) {
   const loaded = readSliceContract(ref, { root });
   const { contract, binding } = loaded;
+  if(contract.schema_version===4){
+    const verdict=nativeContractVerify({root,kind:'slice-preflight',file:ref,extra:[...(approval_ref?['--approval-ref',approval_ref]:[]),...(work_unit_id?['--unit',work_unit_id]:[])]});
+    return {...loaded,report:nativeCoverage(verdict,'slice_preflight',{allowBlocked:true})};
+  }
   const checks = { readable: 'passed', structure: 'passed', approval: 'not-checked', freshness: 'not-checked' };
   const blockers = [];
   if (loaded.raw.schema_version === 2) {

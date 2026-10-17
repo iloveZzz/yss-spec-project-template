@@ -1,7 +1,8 @@
+import {assertGovernanceWrite,nativeContractVerify,nativeCoverage} from './native-evidence.mjs';
 import {enforceHarnessTaskScope} from './harness-execution-scope.mjs';
 import { readFileSync, withValidationPhase } from './validation-phase.mjs';
 import { ROOT, hash, safe, digest } from './strategic-handoff-io.mjs';
-import { normalizeSliceContract, withinSlicePath, parseSliceYaml } from './slice-contract.mjs';
+import { normalizeSliceContract, withinSlicePath, parseSliceYaml, readSliceContract, resolveSliceBasis } from './slice-contract.mjs';
 import { createApprovedExecutionContext, assertApprovedExecutionContext } from './approved-execution-context.mjs';
 import { assertImplementationDecision } from './native-user-decision.mjs';
 import { taskPackageDefaults, loadDigitalHumanRoles } from './digital-human-roles.mjs';
@@ -19,7 +20,7 @@ function generateTaskPackageDefaults(roleId,overrides,{rolesDoc}={}) {
 }
 
 /** Compile dispatch from the approved YAML. Only runtime identity and task ID come from the caller. */
-export function compileSliceTaskPackage(binding,options={}) {return withValidationPhase({root:options.root||ROOT,purpose:'slice-dispatch',slice_id:binding.ref,work_unit_id:options.work_unit_id,readOnly:false,signal:options.signal},()=>compile(binding,options));}
+export function compileSliceTaskPackage(binding,options={}) {return withValidationPhase({root:options.root||ROOT,purpose:'slice-dispatch',slice_id:binding.ref,work_unit_id:options.work_unit_id,readOnly:false,signal:options.signal},()=>{assertGovernanceWrite(options.root||ROOT);const identity=parseSliceYaml(readFileSync(safe(options.root||ROOT,'yss-project.yaml')));return identity.schema_version===2?compileRoleIndependent(binding,options):compile(binding,options);});}
 function compile(binding,{root=ROOT,work_unit_id,task_id,actor_id,runtime_id,execution_state='Worker',rolesDoc,user_decisions}={}) {
   const actualRoles=parseSliceYaml(readFileSync(safe(root,'.template-spec/agents/digital-human-roles.yaml')));
   if(rolesDoc&&digest(rolesDoc)!==digest(actualRoles))fail('调用方不能替换接收端角色能力');
@@ -69,4 +70,25 @@ export function assertSliceV3TaskPackage(value,slice,{root=ROOT}={}) {
   for(const item of unit.work_unit.forbidden_patterns)if(!value.forbidden_actions.includes(item))fail('任务包遗漏全局约束');
   if(value.execution_state==='Worker')assertImplementationDecision({slice_contract_ref:contract.slice_contract_ref,vertical_slice_ticket_ref:current.lifecycle_refs.ticket,user_decisions:value.user_decisions},{root});
   return value;
+}
+
+function compileRoleIndependent(binding,{root=ROOT,work_unit_id,task_id,provenance,user_decisions}={}) {
+ const saved=readSliceContract(binding.ref,{root}),contract=saved.contract;
+ if(contract.schema_version!==4)fail('新政策派发需要Slice4');
+ if(binding.digest!==saved.binding.digest||binding.id&&binding.id!==saved.binding.id||binding.version&&binding.version!==saved.binding.version)fail('派发输入与当前持久Slice绑定不符');
+ const decisions=user_decisions||readSliceDispatchApproval(root,binding.approval_ref).human_review?.user_decisions;
+ const unit=contract.work_units.find(row=>row.id===work_unit_id);if(!unit)fail('未找到指定Slice工作单元');
+ const bound=contract.repositories?.[unit.project_root]?.basis?.engineering_baseline||resolveSliceBasis(saved.raw,'engineering_baseline');
+ const engineering=parseSliceYaml(readFileSync(safe(root,bound.ref)));
+ if(!engineering.source?.roots?.length)fail('实际工程基线缺少source.roots；不能猜测代码范围');
+ const selection=nativeCoverage(nativeContractVerify({root,kind:'task-selection',document:{work_unit_id:'work-unit.slice-implementation',impacts:saved.raw.scope.impacted_areas}}),'task_selection');
+ const inputs=[...new Set([binding.ref,binding.approval_ref,...Object.values(contract.lifecycle_refs).filter(value=>typeof value==='string'&&value)])];
+ const task={schema_version:3,task_id,profile:parseSliceYaml(readFileSync(safe(root,'.template-spec/process/harness-profile.yaml'))).profile_id==='harness.backend-delivery'?'backend':'spec',policy:{ref:selection.policy_ref,digest:selection.policy_digest,version:2},provenance,work_unit_id,stage_id:sliceImplementationStage(root),execution_state:'Worker',workflow_status:'not-started',verification_status:'not-executed',
+  contract:{kind:'slice-implementation',contract_id:contract.contract_id,contract_version:contract.contract_version,status:'issued',contract_ref:binding.ref,slice_contract_ref:binding.ref,gate_refs:[binding.approval_ref]},
+  objective:unit.behavior,acceptance:unit.work_unit.acceptance_refs||unit.acceptance_refs,inputs,input_bindings:inputs.map(ref=>({ref,digest:hash(readFileSync(safe(root,ref))).replace(/^sha256:/,'')})),baseline:{repository_root:unit.project_root,commit:engineering.source.base_commit,digest:digest(engineering.source).replace(/^sha256:/,'')},skill_source:selection,
+  allowed_write_paths:unit.allowed_write_paths,forbidden_actions:unit.work_unit.forbidden_patterns,expected_outputs:[unit.behavior],expected_evidence_files:unit.work_unit.expected_evidence,verification_commands:unit.work_unit.verification_commands,verification_results:[],downstream_consumers:unit.downstream_consumers||['work-unit.code-review'],convergence:{parent_work_unit:'work-unit.slice-implementation',convergence_ref:binding.approval_ref},user_decisions:decisions};
+ validateTaskPackageSchema(task);
+ const verdict=nativeContractVerify({root,kind:'task',document:task,extra:['--task-ref',provenance?.task_ref||'']});
+ if(verdict.exitCode!==0)fail(verdict.message);
+ return task;
 }

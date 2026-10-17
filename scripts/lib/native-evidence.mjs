@@ -173,3 +173,8 @@ export function nativeHandoffConsumption({root,data,sliceRef,consumer='tactical'
  const result=nativeEvidenceVerify({root,kind:'consumption',document:data,group:'handoff',extra:[...(sliceRef?['--slice',sliceRef]:[]),...(consumer==='tactical'?[]:['--consumer',consumer])],environment,needs:NEEDS.handoffConsumption});
  return nativeCoverage(result,'handoff_consumption',{allowBlocked:true});
 }
+
+export function assertGovernanceWrite(root) {
+ const verdict=nativeContractVerify({root,kind:'governance-write',file:'yss-project.yaml'});
+ if(verdict.exitCode!==0)throw Object.assign(new Error(verdict.message),{code:verdict.diagnostics[0]?.code??verdict.code,native:true});
+}

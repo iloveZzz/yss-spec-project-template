@@ -1,4 +1,4 @@
-import {nativeContractVerify,nativeCoverage} from './native-evidence.mjs';
+import {nativeContractVerify,nativeCoverage,assertGovernanceWrite} from './native-evidence.mjs';
 import { assertImplementationTicket, assertSliceBusinessSources } from './business-tickets.mjs';
 import {readContractSource,contractSourceMetadata} from './contract-source.mjs';
 import {sliceRepositories} from './slice-repositories.mjs';
@@ -176,7 +176,7 @@ import * as helpers from './slice-contract.mjs';
 
 export function persistSliceDraft(result,ref,{root=process.cwd()}={}) {
   if(!['draft','blocked','ready-for-lifecycle-review'].includes(result.slice_contract?.status))throw new TypeError('只能保存编译器草案');
-  if(result.slice_contract.schema_version===4){const guard=nativeContractVerify({root,kind:'governance-write',document:result.slice_contract});if(guard.exitCode!==0)throw new TypeError(guard.message);}
+  assertGovernanceWrite(root);
   for(const [source,expected]of Object.entries(result.report?.sources||{}))if(hash(fs.readFileSync(safe(root,source)))!==expected)throw new TypeError(`stale: 保存前来源变化 ${source}`);
   if(result.slice_contract.status!=='blocked')normalizeSliceContract(result.slice_contract,{root});
   const bytes=stringify({slice_contract:result.slice_contract});

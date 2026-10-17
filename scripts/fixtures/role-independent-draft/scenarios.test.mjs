@@ -38,13 +38,30 @@ try{
  const selected=run('draft-selection',['contract','verify','--kind','task-selection','--file','selection.json']).result.coverage.task_selection;
  const bound={ref:'input.json',digest:hash(fs.readFileSync(path.join(root,'input.json')))},baseline={repository_root:root,commit,digest:digest({base_commit:commit,roots:['drafts'],files:[]})};
  const provenance={tool:'codex',task_ref:'task.json',execution_ref:'dispatch.json',identity:{status:'unavailable',reason:'test platform does not expose stable identifiers'}};
- const task={schema_version:3,task_id:'TASK-1',profile:'spec',policy:{ref:'.template-spec/process/orchestration-contract.yaml',version:2,digest:policies.digest},work_unit_id:'work-unit.spec-synthesis',stage_id:'stage.spec-architecture',execution_state:'Drafter',workflow_status:'not-started',objective:'起草当前Spec',acceptance:['明确范围'],inputs:['input.json'],input_bindings:[bound],baseline,provenance,skill_source:selected,allowed_write_paths:['drafts'],forbidden_actions:['user-approval','ready-for-agent'],expected_outputs:['Spec草稿'],expected_evidence_files:['drafts/check.json'],verification_commands:['check draft'],verification_results:[],contract:{contract_id:'contract.draft',contract_version:'v1',kind:'lifecycle-work-unit',status:'issued',contract_ref:'input.json',lifecycle_ref:'input.json'},convergence:{parent_work_unit:'work-unit.spec-synthesis',convergence_ref:'input.json'},downstream_consumers:['work-unit.technical-analysis']};
- write('dispatch.json',{phase:'dispatch',dispatched_at:new Date().toISOString(),tool:provenance.tool,task_ref:provenance.task_ref,identity:provenance.identity,candidate:bound,input_bindings:task.input_bindings,baseline,scope:task.allowed_write_paths});write('task.json',task);
+ const task={schema_version:3,task_id:'TASK-1',profile:'spec',policy:{ref:'.template-spec/process/orchestration-contract.yaml',version:2,digest:policies.digest},work_unit_id:'work-unit.spec-synthesis',stage_id:'stage.spec-architecture',execution_state:'Drafter',workflow_status:'not-started',objective:'起草当前Spec',acceptance:['明确范围'],inputs:['input.json'],input_bindings:[bound],baseline,provenance,skill_source:selected,allowed_write_paths:['drafts'],forbidden_actions:['user-approval','ready-for-agent'],expected_outputs:['drafts/spec.mjs'],expected_evidence_files:['drafts/check.json'],verification_commands:['node --check drafts/spec.mjs'],verification_results:[],contract:{contract_id:'contract.draft',contract_version:'v1',kind:'lifecycle-work-unit',status:'issued',contract_ref:'input.json',lifecycle_ref:'input.json'},convergence:{parent_work_unit:'work-unit.spec-synthesis',convergence_ref:'input.json'},downstream_consumers:['work-unit.technical-analysis']};
+ write('dispatch.json',{phase:'dispatch',dispatched_at:new Date().toISOString(),tool:provenance.tool,task_ref:provenance.task_ref,identity:provenance.identity,candidate:bound,input_bindings:task.input_bindings,baseline,scope:task.allowed_write_paths,expected_outputs:task.expected_outputs});write('task.json',task);
  run('task3-draft-dispatch',['contract','verify','--kind','task','--file','task.json']);
  task.execution_state='Reviewer';task.review_context={candidate:bound,policy:task.policy,check_ids:selected.check_ids,approval_scope:selected.check_ids,basis:[bound],review:{mode:'self-check',provenance}};write('task.json',task);run('task3-selfcheck-dispatch',['contract','verify','--kind','task','--file','task.json']);delete task.review_context;
- task.execution_state='Worker';write('task.json',task);run('worker-not-enabled',['contract','verify','--kind','task','--file','task.json'],'CAPABILITY');task.execution_state='Drafter';task.workflow_status='active';write('task.json',task);run('execution-not-enabled',['contract','verify','--kind','task','--file','task.json'],'CAPABILITY');
+ task.execution_state='Worker';write('task.json',task);run('worker-needs-slice',['contract','verify','--kind','task','--file','task.json'],'TASK_CONTRACT');task.execution_state='Drafter';write('drafts/spec.mjs','export const value = 1;' );task.workflow_status='active';write('task.json',task);run('dispatch-is-not-execution',['contract','verify','--kind','task','--file','task.json'],'EVIDENCE_EXECUTION');
+ // Complete the same real task with current Go-computed output candidate and actual execution facts.
+ task.workflow_status='not-started';write('task.json',task);
+ const candidate=run('draft-output-candidate',['contract','verify','--kind','task-candidate','--file','task.json']).result.coverage.task_candidate.candidate;
+ assert.notEqual(candidate.digest,bound.digest);
+ const executed_at=new Date().toISOString(),execution=spawnSync(process.execPath,['--check','drafts/spec.mjs'],{cwd:root,encoding:'utf8'});
+ results.push({label:'actual-draft-check',argv:[process.execPath,'--check','drafts/spec.mjs'],cwd:root,exit:execution.status,stdout:execution.stdout,stderr:execution.stderr});assert.equal(execution.status,0);
+ const actual={phase:'execution',tool:provenance.tool,task_ref:provenance.task_ref,identity:provenance.identity,command:'node --check drafts/spec.mjs',exit_code:execution.status,executed_at,stdout:execution.stdout,stderr:execution.stderr,candidate_digest:candidate.digest,input_bindings:task.input_bindings,baseline,scope:task.allowed_write_paths,expected_outputs:task.expected_outputs,result:'passed',blocking_findings:[]};
+ write('dispatch.json',actual);write('drafts/check.json',{status:'reconciled'});
+ task.workflow_status='resolved';task.verification_status='executed';task.verification_results=[{command:actual.command,status:'passed',exit_code:0,executed_at,candidate_digest:candidate.digest,evidence_ref:'dispatch.json',evidence_digest:hash(fs.readFileSync(path.join(root,'dispatch.json')))}];
+ task.result={result_schema:'workflow-execution-result-v1',work_unit:task.work_unit_id,workflow_reference:'input.json',result:'completed',skill:selected.skills[0],changed_files:['drafts/check.json','drafts/spec.mjs'],context_reconciliation:{status:'reconciled',ref:'drafts/check.json'},evidence_refs:['drafts/check.json'],deferred_seams:[],drift:[],violation:[],new_impacts:[],stale_candidates:[],next_route:'work-unit.technical-analysis',blocking_signals:[]};
+ write('task.json',task);
+ run('task3-actual-completion',['contract','verify','--kind','task','--file','task.json']);
+ run('completion-ref-override-refused',['contract','verify','--kind','task','--file','task.json','--task-ref','task.json'],'TASK_ORIGIN');
+ write('drafts/spec.mjs','export const value = 2;' );run('output-drift-refused',['contract','verify','--kind','task','--file','task.json'],'EVIDENCE_CANDIDATE');write('drafts/spec.mjs','export const value = 1;' );
+ task.verification_results[0].status='not-run';write('task.json',task);run('not-run-cannot-complete',['contract','verify','--kind','task','--file','task.json'],'SCHEMA');task.verification_results[0].status='passed';write('task.json',task);
  const normalized=run('slice4-draft',['contract','verify','--kind','slice-draft','--file','slice.json']);assert.equal(normalized.result.coverage.slice_draft.execution_allowed,false);
  for(const view of ['review','task','full'])run(`slice4-${view}`,['contract','view','--kind','slice','--file','slice.json','--view',view,...(view==='task'?['--unit','validate']:[])]);
+ run('slice4-preflight-preview',['contract','verify','--kind','slice-preflight','--file','slice.json']);
+ run('slice4-execution-result-needs-task',['contract','verify','--kind','slice-execution-result','--file','task.json'],'TASK_RESULT');
  run('writer-activation',['contract','verify','--kind','governance-write','--file','slice.json'],'CAPABILITY');
  contract.work_units[0].check_ids=[];write('slice.json',contract);run('empty-checks',['contract','verify','--kind','slice-draft','--file','slice.json'],'SCHEMA');
  contract.work_units[0].check_ids=['gate.delivery-accepted'];contract.work_units[0].allowed_write_paths=['outside'];write('slice.json',contract);run('scope-escape',['contract','verify','--kind','slice-draft','--file','slice.json'],'PATH');
@@ -59,6 +76,15 @@ try{
  // Pure Node producer delegates the new semantic decision to the current development binary.
  process.env.YSS_NATIVE_BINARY=bin;
  const {normalizeSliceContract}=await import('../../lib/slice-contract.mjs');
+ const {inspectSliceContract}=await import('../../lib/slice-execution-preflight.mjs');
+ assert.equal(inspectSliceContract('slice.json',{root}).report.execution_allowed,false);
+ const {validateExecutionResult}=await import('../../lib/implementation-contract-compiler.mjs');
+ assert.throws(()=>validateExecutionResult({schema_version:2},contract,{root}),/TASK_RESULT: Slice4结果需要/);
+ const {compileSliceTaskPackage}=await import('../../lib/slice-task-package.mjs');
+ assert.throws(()=>compileSliceTaskPackage({ref:'slice.json'},{root}),/CAPABILITY|尚缺原生|尚未激活/);
+ const {createApprovedExecutionContext}=await import('../../lib/approved-execution-context.mjs');
+ assert.throws(()=>createApprovedExecutionContext({ref:'slice.json'},{root}),/CAPABILITY|尚缺原生|尚未激活/);
+
  contract.schema_version=4;delete contract.work_units[0].role_id;contract.work_units[0].check_ids=['gate.delivery-accepted'];write('slice.json',contract);
  assert.equal(normalizeSliceContract(contract,{root}).schema_version,4);
  const {prepareSliceImplementationContract,persistSliceDraft}=await import('../../lib/slice-contract-preparation.mjs');

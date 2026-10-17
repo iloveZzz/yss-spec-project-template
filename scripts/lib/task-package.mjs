@@ -1,3 +1,5 @@
+import {safe,digest} from './strategic-handoff-io.mjs';
+import {nativeContractVerify} from './native-evidence.mjs';
 import './slice-repositories.mjs'; // 登记多项目准备核验器（工作流层），见 slice-contract.mjs
 import { compileWorkUnitReviewCapabilities, compileReviewCapabilities, validateReviewTaskBinding } from './review-capabilities.mjs';
 import { validateReadOnlyIntake } from './read-only-intake.mjs';
@@ -243,6 +245,12 @@ function validateContract(value, registry, lifecycle, { history = false } = {}) 
 
 function validateTaskPackageInternal(value, { rolesDoc, lifecycleDoc, root = ROOT, runDir, history = false } = {}) {
   validateTaskPackageSchema(value);
+  if(value.schema_version===3){
+    const ref=value.provenance.task_ref;
+    const current=parseYaml(readFileSync(safe(root,ref),'utf8'),ref);
+    if(digest(current)!==digest(value))fail('task3校验必须使用真实任务文件的当前内容');
+    const verdict=nativeContractVerify({root,kind:'task',file:ref});if(verdict.exitCode!==0)fail(verdict.message);return value;
+  }
   if (value.schema_version === 2) {
     enforceHarnessTaskScope(value, { root });
     const registry = rolesDoc || loadDigitalHumanRoles();
