@@ -104,13 +104,15 @@ blocking_signals: []
 
 | Matt flow | 进入条件 | 生命周期结果 |
 |---|---|---|
-| `to-spec`（用户显式） | Plan work unit 或 `work-unit.plan-requirements` 已满足退出条件，且不存在未回流 runnable blocker；用户问题、MVP/非目标、成功标准、测试 seam 和术语审查均有证据 | 生命周期只准备/验收；Spec 初稿为 `ready-for-human`，不等于批准 |
+| `to-spec`（用户显式） | Plan work unit 或 `work-unit.plan-requirements` 已满足退出条件，且不存在未回流 runnable blocker；用户问题、MVP/非目标、成功标准、测试 seam 和术语审查均有证据，澄清决定已记入功能包 `clarification-log.md` | 生命周期只准备/验收；Spec 初稿为 `ready-for-human`，不等于批准；申请 Spec 基线批准前须有 `check.artifact-consistency-analyzed` 证据 |
 | `to-tickets`（用户显式） | OpenAPI Freeze 或 `no-api-impact` 记录、必要门禁、垂直切片范围和阻塞边均已明确 | 生命周期只准备/验收；只能生成垂直切片 Ticket，初始统一为 `ready-for-human`；必须留下 `ticket_decomposition_result_ref` 和 `vertical_slice_ticket_ref` |
 | `implement`（用户显式） | `ready-for-agent` 公式、实现切片拆分与合同准入结果、垂直切片引用/类型/状态、Contract 已批准/持久化/版本一致、Build Architecture Checklist、实现仓库/分支/CI/验证命令/回滚点，以及后端 Contract（适用时）均满足 | 生命周期只准备/验收；单会话实现同样适用，不得绕过门禁；父 Ticket、`ready-for-human` 切片或跳过实现切片拆分与合同准入的 `next_route` 必须 `blocked` |
 
 `grill_exit` 不是“已经聊过”的自然语言声明。它必须同时证明 frontier 为空、事实已解决或分别路由到 `yss-research` / prototype / external input、用户决策已确认、双方共同理解已确认，并且没有未回流的 runnable blocker。
 
 按 `planning.clarification_policy` 主动开始必要澄清，调查、实验和专业审查分别取得证据，分轮仅询问前提已明确的必要决定。审阅包中的 `checks.grill_exit=passed` 表示澄清准备就绪；共同理解总述与完整当前 Plan 审阅包合并展示，由同一真实回复确认。入口联合准备检查与当前 `gate.plan-approved` 决定后才判断完整退出；回复独立保存，不回写审阅包或依据，不增加批准阶段。
+
+`grilling` 每轮的问题、选项与建议、决定、影响的 FR/AC、决策人和原始回复引用，由本适配层按 `.template-spec/templates/clarification-log-template.md` 写入功能包 `clarification-log.md`，不修改上游 Skill；`to-spec` 只消费状态为 decided 的条目，open 条目留作 Spec 未决项。
 
 ## Review 候选与 Git 授权
 

@@ -384,7 +384,8 @@
       ],
       "files": [
         ".template-spec/process/plan-migration.md",
-        ".template-spec/process/plan-spec-quality.md"
+        ".template-spec/process/plan-spec-quality.md",
+        ".template-spec/templates/clarification-log-template.md"
       ],
       "scripts": [
         "scripts/verify-plan-spec-entry",
@@ -403,7 +404,8 @@
         ".template-spec/architecture/templates/functional-architecture-template.md"
       ],
       "scripts": [
-        "scripts/verify-business-tickets"
+        "scripts/verify-business-tickets",
+        "scripts/analyze-artifacts"
       ],
       "skills": []
     },

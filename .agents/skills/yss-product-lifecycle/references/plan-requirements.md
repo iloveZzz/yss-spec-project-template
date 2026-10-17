@@ -10,4 +10,4 @@
 6. 收敛时回述用户问题、目标、MVP、非目标、关键规则、验收例子、未决项结论及剩余不确定性，核对解决证据和非关键延期交接。`checks.grill_exit=passed` 表示准备就绪，仍待最终真实决定。固定完整 Plan 审阅包后，将共同理解与当前 Plan 批准范围合并展示、取得同一真实回复；回复存入外部 `plan_user_decision_ref`，不回写审阅包或其 `basis`。入口通过准备检查和当前决定后才判定完整 `grill_exit`；既有批准仅按用户决定协议核验延续。
 7. 结束时列出已确认决定、未决假设、变更文档、对账状态与引用、下一授权动作。未回流 blocker 不得进入 Spec。共同理解与变更范围未确认前不改实现合同或代码；澄清结果不能批准资产、设置 ready-for-agent 或自行推进阶段，交回当前编排器验收。
 
-起草 Plan 使用 `.template-spec/plan/templates/plan-template.md`，Spec 使用 `.template-spec/templates/spec-template.md`；显式 `to-spec` 使用同一模板。可选只读诊断及未评估项见 `.template-spec/process/plan-spec-quality.md`；申请 Spec 基线审阅前可运行 `scripts/analyze-artifacts --root . --feature <功能包>` 汇总 Plan/Spec、业务票与切片覆盖的一致性，结论是诊断证据，不增加阶段门禁。
+起草 Plan 使用 `.template-spec/plan/templates/plan-template.md`，Spec 使用 `.template-spec/templates/spec-template.md`；显式 `to-spec` 使用同一模板。可选只读诊断及未评估项见 `.template-spec/process/plan-spec-quality.md`；申请 Spec 基线批准前运行 `scripts/analyze-artifacts --root . --feature <功能包> --json`，汇总 Plan/Spec、业务票与切片覆盖的一致性，作为 `gate.spec-baseline-approved` 所需 `check.artifact-consistency-analyzed` 的证据；`incomplete` 或未处置发现不得申请批准，分析本身不授予批准。

@@ -30,7 +30,7 @@ function fixture(run) {
  } finally {rmSync(dir,{recursive:true,force:true});}
 }
 test('registry retains seven approval gates, adds a conditional handoff gate and rejects cycles',()=>{
- const r=loadRegistry();assert.equal(r.stages.length,8);assert.equal(r.gates.length,8);assert.equal(r.checks.length,12);
+ const r=loadRegistry();assert.equal(r.stages.length,8);assert.equal(r.gates.length,8);assert.equal(r.checks.length,13);
  const handoffId='gate.strategic-design-handoff-approved';
  const retainedGateIds=['gate.plan-approved','gate.spec-baseline-approved','gate.product-design-approved','gate.backend-architecture-platform-approved','gate.engineering-contract-approved','gate.slice-contract-approved','gate.delivery-accepted'];
  assert.deepEqual(r.gates.filter(gate=>gate.id!==handoffId).map(gate=>gate.id).sort(),retainedGateIds.sort());

@@ -28,7 +28,7 @@
 |---|---|---|---|---|---|
 | `gate.strategic-design-handoff-approved` | 业务方案交接验收 | `stage.product-design` | 明确绑定外部 Backend 或 Frontend 实现消费者；Design 仅消费 SpecBaseline，本地综合研发直接消费资产时不适用。 | `gate.plan-approved`、`gate.spec-baseline-approved`、`gate.product-design-approved` | `evidence.strategic-design-handoff`、`evidence.approval-record`、`evidence.fresh-verification` |
 | `gate.plan-approved` | Plan 批准 | `stage.plan` | Plan 结论进入 Spec；汇总战略检查，核验当前规划范围的原始批准或有效授权延续。 | `check.domain-strategy-approved`、`check.stage-decision-package-approved` | `evidence.approval-record` |
-| `gate.spec-baseline-approved` | Spec 基线批准 | `stage.spec-architecture` | 新功能、行为变化或范围扩大进入 Spec 基线；已授权范围内细化复用当前有效授权，实质变化重新决定。 | 无 | `evidence.approval-record` |
+| `gate.spec-baseline-approved` | Spec 基线批准 | `stage.spec-architecture` | 新功能、行为变化或范围扩大进入 Spec 基线；已授权范围内细化复用当前有效授权，实质变化重新决定。 | `check.artifact-consistency-analyzed` | `evidence.approval-record` |
 | `gate.product-design-approved` | 产品设计批准 | `stage.product-design` | 存在产品设计影响；独立原型评审与交付物验证通过后核验原批准或授权延续，新增体验取舍由用户决定。 | `check.prototype-reviewed`、`check.prototype-verified` | `evidence.prototype-confirmation` |
 | `gate.backend-architecture-platform-approved` | 后端架构与平台批准 | `stage.system-data-engineering` | 新建后端工程进入技术设计分支前，由用户在同一次决定中确认 domain-driven / layered-mvc 和精确 Spring Boot 版本；既有工程核验并复用当前登记架构及固定工程基线中的实际 Spring Boot 版本，记录 not-applicable，不重复询问。 | 无 | `evidence.approval-record` |
 | `gate.engineering-contract-approved` | 工程契约批准 | `stage.system-data-engineering` | 存在 API、架构或工程基线影响；组合适用专业审查后统一批准并核验授权，有 API 影响时同时冻结当前 OpenAPI；范围内细化不重复请求用户确认。 | `gate.backend-architecture-platform-approved`、`check.openapi-draft-reviewed`、`check.design-reviewed`、`check.architecture-reviewed`、`check.engineering-baseline-accepted`、`check.openapi-frozen` | `evidence.approval-record`、`evidence.fresh-verification` |
@@ -44,6 +44,7 @@
 | `check.repository-identity-valid` | 仓库身份校验 | `stage.entry-triage` | 每次进入流程。 |
 | `check.domain-strategy-approved` | 业务边界与规则评审 | `stage.plan` | 需要确定业务板块、业务责任区、统一业务词汇、协作关系或关键规则。 |
 | `check.stage-decision-package-approved` | 方案决策包评审 | `stage.plan` | Plan 到 Spec 入口需要稳定的阶段决策合同。 |
+| `check.artifact-consistency-analyzed` | 跨资产一致性分析 | `stage.spec-architecture` | 申请 Spec 基线批准前；结论 incomplete 或存在未处置发现时不得申请批准，分析本身不授予批准或执行资格。 |
 | `check.prototype-reviewed` | 原型评审 | `stage.product-design` | 命中产品设计影响，且低保真页面、流程、状态或 API 反推需要独立评审。 |
 | `check.prototype-verified` | 原型交付物验证 | `stage.product-design` | 产品设计影响需要通过 H1/H2 原型交付物进行视觉或流程校准；真实组件验证留到前端实现阶段。 |
 | `check.openapi-draft-reviewed` | OpenAPI Draft Review | `stage.system-data-engineering` | 有 API 影响且 Draft 已生成。 |
@@ -94,6 +95,7 @@
 |---|---|---|
 | `evidence.strategic-design-handoff` | 业务方案交接包验证证据 | 显式外部 Backend 或 Frontend 实现消费者所需 Handoff v5 来源批准、不可变交付目录与整包实际验证证据。 |
 | `evidence.context-reconciliation` | Context Reconciliation 证据 | 工作单元在批准或流转前对根目录唯一 CONTEXT.md 的稳定术语回写、作用域解析和双摘要核对结果；不新增门禁。 |
+| `evidence.artifact-consistency-analysis` | 跨资产一致性分析证据 | 申请 Spec 基线批准前，scripts/analyze-artifacts 对功能包 Plan/Spec 质量、业务票覆盖与切片验收覆盖的汇总结论、发现与未评估项；status 为 consistent，或剩余发现已逐条处置。 |
 | `evidence.impact-assessment` | 影响面分析记录 | 受影响仓库、资产、风险与最近可信阶段。 |
 | `evidence.domain-strategy-review` | 业务边界与规则评审证据 | 业务板块、业务责任区、统一业务词汇、协作与交接关系、关键场景和不可违反规则的结构化评审结果。 |
 | `evidence.technical-design-review` | 技术设计评审证据 | 按已确认 DDD 或 MVC 架构审查规则与场景承接、分层、行为、一致性和测试边界。 |

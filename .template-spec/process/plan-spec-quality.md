@@ -52,7 +52,7 @@ node scripts/inspect-plan-spec diff --root . --before docs/baseline/spec.md --af
 
 ## 跨资产一致性汇总
 
-`scripts/analyze-artifacts --root <项目> --feature <功能包> [--json]` 在同一功能包上依次运行本诊断、业务票校验（含垂直切片对业务票的实现覆盖），以及在给出 `--decisions` 与 `--package` 时的阶段决定覆盖，把发现统一为 `{check, code, file, line, message, fix}`。未指定的输入按功能包内容识别；某项无法运行记为 `unassessed`，整体为 `incomplete`（退出码 2），不当作一致。退出码 0 表示无发现、1 表示有发现。它同样只是诊断证据，不改变阶段、批准或就绪状态；语义正确性仍需人工审阅。澄清过程的决定按 `.template-spec/templates/clarification-log-template.md` 记录。
+`scripts/analyze-artifacts --root <项目> --feature <功能包> [--json]` 在同一功能包上依次运行本诊断、业务票校验（含垂直切片对业务票的实现覆盖），以及在给出 `--decisions` 与 `--package` 时的阶段决定覆盖，把发现统一为 `{check, code, file, line, message, fix}`。未指定的输入按功能包内容识别；某项无法运行记为 `unassessed`，整体为 `incomplete`（退出码 2），不当作一致。退出码 0 表示无发现、1 表示有发现。它不改变阶段、批准或就绪状态；语义正确性仍需人工审阅。申请 `gate.spec-baseline-approved` 前，其 JSON 报告是 `check.artifact-consistency-analyzed` 所需的 `evidence.artifact-consistency-analysis`：结论须为 `consistent`，或剩余发现在批准记录中逐条处置；`incomplete` 不得作为证据。澄清过程的决定按 `.template-spec/templates/clarification-log-template.md` 记录。
 
 ## 差异与下游追溯
 

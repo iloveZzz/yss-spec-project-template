@@ -280,6 +280,7 @@ gate_policy:
   automatic_checks:
     - check.repository-identity-valid
     - check.prototype-verified
+    - check.artifact-consistency-analyzed
     - check.implementation-repositories-ready
     - check.slice-ready-for-agent
     - check.openapi-frozen
