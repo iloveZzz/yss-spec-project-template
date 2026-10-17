@@ -128,6 +128,7 @@ export function normalizeSliceContract(document, options = {}) {
     const contract=nativeCoverage(verdict,'slice_draft').contract;
     if(!Object.keys(contract.repositories||{}).length)delete contract.repositories;
     originals.set(contract,{source:raw});
+    sourceSnapshots.set(contract,readSliceSources(raw,options));
     return contract;
   }
   if (raw.schema_version === 2) {
