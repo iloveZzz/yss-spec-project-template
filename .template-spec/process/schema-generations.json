@@ -59,13 +59,13 @@
       "unversioned_aliases": {
         "strategic-design-handoff.schema.json": {
           "declares_version": 5,
-          "status": "diverged",
+          "status": "aligned",
           "consumers": [
             "profiles/design/scripts/verify-strategic-design-handoff",
             "profiles/backend/scripts/lib/harness-profile.mjs",
             "profiles/*/.template-spec/process/harness-profile.yaml"
           ],
-          "note": "与 v5 共用 $id 但内容不同（缺 source_baseline、ui_baseline_kind 无 not-applicable）；对齐会改变 design/backend 校验结果，需维护者决定"
+          "note": "与 v5 同文；保留无版本路径供既有 design/backend 消费者引用"
         }
       }
     },

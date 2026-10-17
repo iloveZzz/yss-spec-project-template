@@ -243,6 +243,9 @@
                     },
                     "review_package": {
                       "type": "boolean"
+                    },
+                    "source_baseline": {
+                      "$ref": "#/$defs/specBaselineOrigin"
                     }
                   }
                 }
@@ -325,6 +328,9 @@
                     },
                     "review_package": {
                       "type": "boolean"
+                    },
+                    "source_baseline": {
+                      "$ref": "#/$defs/specBaselineOrigin"
                     }
                   }
                 }
@@ -407,6 +413,9 @@
                     },
                     "review_package": {
                       "type": "boolean"
+                    },
+                    "source_baseline": {
+                      "$ref": "#/$defs/specBaselineOrigin"
                     }
                   }
                 }
@@ -489,6 +498,9 @@
                     },
                     "review_package": {
                       "type": "boolean"
+                    },
+                    "source_baseline": {
+                      "$ref": "#/$defs/specBaselineOrigin"
                     }
                   }
                 }
@@ -571,6 +583,9 @@
                     },
                     "review_package": {
                       "type": "boolean"
+                    },
+                    "source_baseline": {
+                      "$ref": "#/$defs/specBaselineOrigin"
                     }
                   }
                 }
@@ -653,6 +668,9 @@
                     },
                     "review_package": {
                       "type": "boolean"
+                    },
+                    "source_baseline": {
+                      "$ref": "#/$defs/specBaselineOrigin"
                     }
                   }
                 }
@@ -735,6 +753,9 @@
                     },
                     "review_package": {
                       "type": "boolean"
+                    },
+                    "source_baseline": {
+                      "$ref": "#/$defs/specBaselineOrigin"
                     }
                   }
                 }
@@ -813,6 +834,9 @@
                     },
                     "review_package": {
                       "type": "boolean"
+                    },
+                    "source_baseline": {
+                      "$ref": "#/$defs/specBaselineOrigin"
                     }
                   }
                 }
@@ -903,7 +927,8 @@
         "ui_baseline_kind": {
           "enum": [
             "prototype",
-            "existing-ui-baseline"
+            "existing-ui-baseline",
+            "not-applicable"
           ]
         }
       },
@@ -935,40 +960,110 @@
             }
           },
           "else": {
-            "not": {
-              "required": [
-                "prototype"
-              ]
+            "if": {
+              "properties": {
+                "ui_baseline_kind": {
+                  "const": "existing-ui-baseline"
+                }
+              }
             },
-            "properties": {
-              "approvals": {
+            "then": {
+              "not": {
                 "required": [
-                  "existing_ui_baseline_ref"
-                ],
-                "not": {
-                  "anyOf": [
-                    {
-                      "required": [
-                        "prototype_ref"
-                      ]
-                    },
-                    {
-                      "required": [
-                        "visual_baseline_ref"
-                      ]
-                    }
-                  ]
+                  "prototype"
+                ]
+              },
+              "properties": {
+                "approvals": {
+                  "required": [
+                    "existing_ui_baseline_ref"
+                  ],
+                  "not": {
+                    "anyOf": [
+                      {
+                        "required": [
+                          "prototype_ref"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "visual_baseline_ref"
+                        ]
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "else": {
+              "not": {
+                "required": [
+                  "prototype"
+                ]
+              },
+              "properties": {
+                "approvals": {
+                  "not": {
+                    "anyOf": [
+                      {
+                        "required": [
+                          "prototype_ref"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "visual_baseline_ref"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "existing_ui_baseline_ref"
+                        ]
+                      }
+                    ]
+                  }
                 }
               }
             }
           }
         }
-      ]
+      ],
+      "$defs": {
+        "specBaselineOrigin": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "receipt_ref",
+            "receipt_digest",
+            "source_ref",
+            "context_reconciliation_ref"
+          ],
+          "properties": {
+            "receipt_ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "receipt_digest": {
+              "type": "string",
+              "pattern": "^sha256:[a-f0-9]{64}$"
+            },
+            "source_ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "context_reconciliation_ref": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
     },
     "ui_baseline_kind": {
       "enum": [
         "prototype",
-        "existing-ui-baseline"
+        "existing-ui-baseline",
+        "not-applicable"
       ]
     }
   },
@@ -1147,6 +1242,9 @@
             },
             "review_package": {
               "type": "boolean"
+            },
+            "source_baseline": {
+              "$ref": "#/$defs/specBaselineOrigin"
             }
           }
         }
@@ -1249,6 +1347,9 @@
             },
             "review_package": {
               "type": "boolean"
+            },
+            "source_baseline": {
+              "$ref": "#/$defs/specBaselineOrigin"
             }
           }
         }
@@ -1490,8 +1591,39 @@
             },
             "review_package": {
               "type": "boolean"
+            },
+            "source_baseline": {
+              "$ref": "#/$defs/specBaselineOrigin"
             }
           }
+        }
+      }
+    },
+    "specBaselineOrigin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "receipt_ref",
+        "receipt_digest",
+        "source_ref",
+        "context_reconciliation_ref"
+      ],
+      "properties": {
+        "receipt_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "receipt_digest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "source_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "context_reconciliation_ref": {
+          "type": "string",
+          "minLength": 1
         }
       }
     }
@@ -1521,24 +1653,58 @@
         }
       },
       "else": {
-        "properties": {
-          "source": {
-            "required": [
-              "existing_ui_baseline_ref"
-            ],
-            "not": {
-              "anyOf": [
-                {
-                  "required": [
-                    "prototype_ref"
-                  ]
-                },
-                {
-                  "required": [
-                    "visual_baseline_ref"
-                  ]
-                }
-              ]
+        "if": {
+          "properties": {
+            "ui_baseline_kind": {
+              "const": "existing-ui-baseline"
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "source": {
+              "required": [
+                "existing_ui_baseline_ref"
+              ],
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "prototype_ref"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "visual_baseline_ref"
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "else": {
+          "properties": {
+            "source": {
+              "not": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "prototype_ref"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "visual_baseline_ref"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "existing_ui_baseline_ref"
+                    ]
+                  }
+                ]
+              }
             }
           }
         }
