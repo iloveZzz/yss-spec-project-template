@@ -11,7 +11,7 @@ yss lifecycle route --profile spec --root /absolute/path/spec --task docs/task.m
 yss lifecycle verify-daily --profile spec --root /absolute/path/spec --task docs/task.md --implementation-root /absolute/path/implementation --base <40位完整SHA> --json
 ```
 
-第一项返回 `daily / governed / needs-info`、原因和必要检查；第二项核验当前差异、测试、独立审查与适用 API 证据。事实与实际证据保存在同一 Markdown Ticket/PR 的证据区，不生成阶段 checkpoint、批准或 `ready-for-agent`。策略只由生命周期编排合同 `request_triage.delivery_path` 定义；格式见生命周期 `references/daily-delivery.md`。旧 CLI、Profile 未启用或缺政策时返回不支持，不能套用正式校验器的豁免开关。正式任务不可降级；无关正式资产不阻断新的日常任务。
+第一项返回 `daily / standard / governed / needs-info`、原因和必要检查（`standard` 需一页 Spec-lite 和一次生物人决定，见生命周期 `references/daily-delivery.md` 的 standard 路线；固定 CLI 不支持时按 `governed`）；第二项核验当前差异、测试、独立审查与适用 API 证据。事实与实际证据保存在同一 Markdown Ticket/PR 的证据区，不生成阶段 checkpoint、批准或 `ready-for-agent`。策略只由生命周期编排合同 `request_triage.delivery_path` 定义；格式见生命周期 `references/daily-delivery.md`。旧 CLI、Profile 未启用或缺政策时返回不支持，不能套用正式校验器的豁免开关。正式任务不可降级；无关正式资产不阻断新的日常任务。
 
 ## 正式功能的可续推目标
 

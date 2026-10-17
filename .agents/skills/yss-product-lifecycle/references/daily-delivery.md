@@ -71,6 +71,15 @@ __单仓、允许路径、可逆性及实际风险判断的证据__
 
 以 `yss lifecycle route --root __GOVERNANCE_ROOT__ --task __TASK_RELATIVE_PATH__ --implementation-root __ABSOLUTE_IMPLEMENTATION_GIT_ROOT__ --base __FULL_BASE_SHA__ --profile spec --json` 取得当前候选。工具只读，不执行测试。实现后再次 route，使用其真实 `diff_digest`、`changed_files` 和 `candidate_digest` 回填 implementation、实际 tests 与独立 review；日志和审查正文可用同 Ticket 的唯一章节，填其原始字节摘要。最后将同一命令的 `route` 改为 `verify-daily` 核验，不写虚构 exit_code 或把待执行记录改成通过。CLI 缺失能力时保持不支持，先完成授权范围内的工具接入而非改用正式校验器豁免。
 
+## standard 路线
+
+条件只由 `request_triage.delivery_path.standard` 定义：需求要先确认一页，但不触及 daily 的排除影响。沿用同一张任务记录和 daily 的全部完成条件，另加两项：
+
+1. 按 `.template-spec/templates/spec-lite-template.md` 写一页 Spec-lite，证据段登记 `spec_lite: {ref, digest}`。
+2. 由一位生物人对该摘要作一次 `standard-change-approved` 决定，登记 `standard_decision: {id, decision: approved, actor_kind: human, decided_by, spec_lite_digest, response_ref, response_digest}`；`response_ref` 指向原始回复。决定人不能是实现者或审查者；数字人、超时或默认项不得代答。Spec-lite 改动后原决定失效。
+
+证据段写 `delivery_path: standard`。`route` 对 daily 记录命中 standard 影响时返回 `delivery_path: standard` 与 `standard_required: true`，补齐上述两项并改标签后重新路由；`verify-daily` 在升级前拒绝（`STANDARD_REQUIRED`）。standard 命中排除影响时升级为 `governed`；任何方向都不降级。不创建阶段 checkpoint、正式 Slice、`ready-for-agent` 或多级批准；CLI 不支持时按 `governed` 推进。
+
 ## 兼容 API 小改
 
 兼容资格按政策和固定 CLI 的保守检查取得：基线与候选为 OAS 3.1 YAML，旧 operation 及其可达 `$ref` 闭包规范化后完全相同，新增独立 operation 不改变旧行为。无法证明、破坏性变更或跨仓时进入 `governed`。
