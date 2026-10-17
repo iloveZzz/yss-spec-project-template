@@ -16,7 +16,7 @@ const parse = bytes => {
 export function preparePlanSpecEntry({ root, featureId, planRef, contextRef }) {
   if (![root, featureId, planRef, contextRef].every(value => typeof value === 'string' && value.trim())) throw new TypeError('root, feature, plan and context-reconciliation are required');
   const identity = parse(read(root, 'yss-project.yaml'));
-  if (identity.schema_version !== 1 || identity.repository_mode !== 'project-instance') throw new TypeError('Plan 入口仅适用于 project-instance');
+  if (![1,2].includes(identity.schema_version) || identity.repository_mode !== 'project-instance') throw new TypeError('Plan 入口仅适用于 project-instance');
   const registryRef = '.template-spec/process/lifecycle-registry.yaml';
   const registry = parse(read(root, registryRef));
   const policy = registry.stages?.find(stage => stage.id === 'stage.plan')?.spec_entry;

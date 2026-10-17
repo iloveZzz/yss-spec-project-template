@@ -3,9 +3,9 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { parseAsset, serializeAsset, validateAssetStructure, TOOL_ROOT } from '../../lib/structured-assets.mjs';
+import { parseAsset, serializeAsset, validateAssetStructure, byteDigest, TOOL_ROOT } from '../../lib/structured-assets.mjs';
 import { validateJsonSchema } from '../../lib/json-schema.mjs';
-import { planAssetWrite, applyAssetWrite, recoverAssetWrite, assertAssetTransactionIdle, assertCurrentAssetReference } from '../../lib/asset-transactions.mjs';
+import { planAssetWrite, applyAssetWrite, recoverAssetWrite, assertAssetTransactionIdle, assertCurrentAssetReference,runAssetTransaction } from '../../lib/asset-transactions.mjs';
 import { planStageCoverage } from '../../lib/plan-stage-coverage.mjs';
 import { planAssetMigration, prepareAssetMigrationWrite } from '../../lib/asset-migration.mjs';
 
@@ -22,6 +22,18 @@ function fixture(t) {
 }
 const verify = (root, ref, kind) => {validateAssetStructure(parseAsset(fs.readFileSync(path.join(root,ref)),ref),kind,{schemaRoot:root});return {exit_code:0};};
 const spec = (ref='docs/checkpoint.json') => ({ref,kind:'checkpoint',value:checkpoint()});
+
+test('validated writer adapter rolls back its own matching bytes after failure',t=>{
+ const root=fixture(t),ref='checkpoint.json',file=path.join(root,ref),before='{"before":true}',after='{"after":true}';
+ fs.writeFileSync(file,before);
+ assert.throws(()=>runAssetTransaction(root,[{ref,before:{digest:byteDigest(before),mode:0o644},after_digest:byteDigest(after)}],()=>{fs.writeFileSync(file,after);throw Error('injected writer failure');}),/injected writer failure; rolled-back/);
+ assert.equal(fs.readFileSync(file,'utf8'),before);assert.doesNotThrow(()=>assertAssetTransactionIdle(root));
+});
+test('validated writer adapter preserves a concurrent user edit and leaves recovery pending',t=>{
+ const root=fixture(t),ref='checkpoint.json',file=path.join(root,ref),after='{"after":true}';
+ assert.throws(()=>runAssetTransaction(root,[{ref,before:null,after_digest:byteDigest(after)}],()=>{fs.writeFileSync(file,'user edit');throw Error('injected writer failure');}),/recovery-conflict/);
+ assert.equal(fs.readFileSync(file,'utf8'),'user edit');assert.throws(()=>assertAssetTransactionIdle(root),/PENDING/);
+});
 
 test('strict JSON and lossless YAML reject ambiguous encodings',()=>{
   for (const source of ['{"a":1,"a":2}','{"a":1,}','{"a":NaN}','{a:1}']) assert.throws(()=>parseAsset(source,'a.json'));

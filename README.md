@@ -6,9 +6,9 @@ English overview: [README.en.md](README.en.md).
 
 ## 定位
 
-本模板默认作为 Harness / 研发管理仓库，保留流程文档、契约模板、Agent skills 和协作约定。前端 / 后端源码默认位于独立实现仓库；只有用户明确选择本仓库承载实现代码时，才按需创建 `apps/backend/`、`apps/frontend/`。
+本模板默认作为 Harness / 研发管理仓库，保留流程文档、契约模板、Agent skills 和协作约定。后端源码默认位于明确登记的实现仓库；前端实现由独立规格与 CLI 维护，不在本模板。
 
-默认一个 Spec 主控推进同一功能到业务验收，Design、Backend、Frontend 按需协作。Spec 文档批准、产品设计完成、后端可交付、前端验收和业务验收是可选的本次终点；终点改变保留当前批准和后续路线。专职 Profile 继续按自身职责结束，主控通过显式同功能 checkpoint 与当前接收证据汇总。见[本次推进目标与专职协作](.template-spec/process/lifecycle-progression.md)。
+默认一名 Agent 在 Spec 内连续完成需求、必要产品设计及适用后端工作，按显式目标推进；仅新建 Spec、Backend 两个 Profile。旧 Design 通过显式迁移并入 Spec，原记录与原批准保持原字节。Spec 文档批准、产品设计完成、后端可交付、前端验收和业务验收是可选的本次终点；终点改变保留当前批准和后续路线。专职 Profile 继续按自身职责结束，主控通过显式同功能 checkpoint 与当前接收证据汇总。见[本次推进目标与专职协作](.template-spec/process/lifecycle-progression.md)。
 
 ## 项目结构
 
@@ -39,7 +39,7 @@ YSS skills 的公开发布投影维护在 [iloveZzz/yss-spec-dev-skills](https:/
 
 ## 模板初始化 CLI
 
-现行 Profile（spec、design、backend）使用 [yss-cli](https://github.com/iloveZzz/yss-cli) 的原生 `yss` 入口，本模板和各 Agent 模板源独立维护。初始化、预演、事务、迁移及 Bundle 导出消费版本化协议：
+新实例 Profile（spec、backend）使用 [yss-cli](https://github.com/iloveZzz/yss-cli) 的原生 `yss` 入口，本仓的内核与 Backend 覆盖层共同维护。初始化、预演、事务、迁移及 Bundle 导出消费版本化协议：
 
 - [YSS 用户手册：CLI 能力与写入方式](./.template-spec/user-guide/用户手册.md#cli-能力与写入方式)
 - [YSS 用户手册：接管、同步与恢复](./.template-spec/user-guide/用户手册.md#接管同步与恢复)
@@ -51,7 +51,7 @@ yss init --profile spec --root /absolute/path/project --plan --out /absolute/pat
 yss init --profile spec --root /absolute/path/project --apply --plan-file /absolute/path/init-plan.json --json
 ```
 
-`init` 默认直接初始化；上述 `--plan` 路线先生成可审阅计划。使用已固定版本和 SHA-256 的二进制；稳定版发行状态以发行清单为准。旧四个 npm 包仅作为历史识别、迁移和未完成事务恢复渠道保留，不执行 unpublish。完整安装、补装、恢复及退役边界见 [统一 CLI 操作说明](.template-spec/user-guide/unified-cli.md)。
+`init` 默认直接初始化；上述 `--plan` 路线先生成可审阅计划。使用已固定版本和 SHA-256 的二进制；稳定版发行状态以发行清单为准。旧格式保持明确的读取范围；统一 metadata3 实例通过 `yss migrate --plan --out <新文件>` 显式迁移，Design 必须指定 `--profile spec`。更早或未知格式保留原件并报告不支持。完整安装、补装、恢复及退役边界见 [统一 CLI 操作说明](.template-spec/user-guide/unified-cli.md)。
 
 ## 模板配置取舍
 
@@ -82,7 +82,7 @@ scripts/verify-template-fast
 - 示例 OpenAPI YAML 是否可解析。
 - Git diff 是否存在空白错误。
 
-PR 执行 `scripts/verify-template-fast --base <完整 SHA>`；显式 main 集成与正式发布任务执行 `scripts/verify-template --base <上一正式发行完整 SHA>` 的必要检查集合，未映射路径不能静默省略。独立审查和候选冻结仅在显式采用旧兼容协议时执行。
+PR 执行 `scripts/verify-template-fast --base <完整 SHA>`；显式 main 集成与正式发布任务执行 `scripts/verify-template --base <上一正式发行完整 SHA>` 的必要检查集合，未映射路径不能静默省略。默认自检；用户明确要求或已知外部规则要求独立复核时，核验真实独立上下文、相同冻结候选及只读轨迹。
 
 ## 关键文档
 

@@ -1,3 +1,4 @@
+import {nativeContractVerify} from './native-evidence.mjs';
 import { assertLocalSkillReferences } from './harness-skill-scope.mjs';
 import {readInstanceMetadata} from './instance-metadata.mjs';
 import { loadExecutionScope, assertScopeWorkUnit } from './lifecycle-execution-scope.mjs';
@@ -31,11 +32,17 @@ function activeProfile(root) {
   const profile=loadDeliveryProfile(root);
   if (!['harness.backend-delivery'].includes(profile?.profile_id)) return null;
   const identity=read(safe(root,'yss-project.yaml'));
-  ensure(identity.schema_version===1&&['template-source','project-instance'].includes(identity.repository_mode),'专职 Harness 仓库身份无效');
+  ensure([1,2].includes(identity.schema_version)&&['template-source','project-instance'].includes(identity.repository_mode),'专职 Harness 仓库身份无效');
   return identity.repository_mode==='project-instance'?profile:null;
 }
 
 export function enforceHarnessTaskScope(task,{root=ROOT}={}) {
+  const identity=read(safe(root,'yss-project.yaml'));
+  if(identity.schema_version===2) {
+    const verdict=nativeContractVerify({root,kind:'task',document:task,extra:['--task-ref',task.provenance?.task_ref||'']});
+    ensure(verdict.exitCode===0,verdict.message);
+    return;
+  }
   const scope=loadExecutionScope(root);
   if(scope) {
     assertScopeWorkUnit(task.contract?.kind==='slice-implementation'?'work-unit.slice-implementation':task.work_unit_id,{root,readOnly:task.contract?.kind==='read-only-intake'});

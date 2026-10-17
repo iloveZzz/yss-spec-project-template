@@ -47,15 +47,12 @@ async function inspect(root, record, {checkpointRef, readOnly = false} = {}) {
     }
   }
   if (business) assertGateChecks('gate.slice-contract-approved', checkpoint,
-    {root, registry: loadRegistry(path.join(root, '.template-spec/process/lifecycle-registry.yaml')),
-      rolesDoc: read(safe(root, '.template-spec/agents/digital-human-roles.yaml'))});
+    {root, registry: loadRegistry(path.join(root, '.template-spec/process/lifecycle-registry.yaml'))});
   if (authorization.mode === 'backend-profile') {
     if (contract.raw.schema_version === 3) assertGateChecks('gate.slice-contract-approved', checkpoint,
-      {root, registry: loadRegistry(path.join(root, '.template-spec/process/lifecycle-registry.yaml')),
-        rolesDoc: read(safe(root, '.template-spec/agents/digital-human-roles.yaml'))});
+      {root, registry: loadRegistry(path.join(root, '.template-spec/process/lifecycle-registry.yaml'))});
     assertGateChecks('gate.fresh-verification-passed', checkpoint,
-      {root, registry: loadRegistry(path.join(root, '.template-spec/process/lifecycle-registry.yaml')),
-        rolesDoc: read(safe(root, '.template-spec/agents/digital-human-roles.yaml'))});
+      {root, registry: loadRegistry(path.join(root, '.template-spec/process/lifecycle-registry.yaml'))});
     const refs = checkpoint.gates['gate.fresh-verification-passed'].evidence?.['evidence.fresh-verification'];
     ensure(refs?.length, '后端专职终点缺少当前实际 Fresh Verification 报告');
     for (const ref of refs) {

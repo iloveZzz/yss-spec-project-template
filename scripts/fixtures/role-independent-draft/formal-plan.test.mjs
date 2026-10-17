@@ -1,0 +1,77 @@
+// Synthetic decision sources verify the protocol; they are not real product approval.
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+import {spawnSync} from 'node:child_process';
+import {createHash} from 'node:crypto';
+import {test} from 'node:test';
+import {preparePlanSpecEntry} from '../../lib/plan-spec-entry-view.mjs';
+import {initializePlanReview} from '../../lib/plan-review-control.mjs';
+import {assertPlanSpecEntry} from '../../lib/plan-spec-entry.mjs';
+import {buildDecisionFixture} from '../../lib/testing/user-decision-fixture.mjs';
+import {parseContextContract,resolveContextTermRefs} from '../../lib/context-contract.mjs';
+const binary=process.env.YSS_NATIVE_BINARY;
+assert.ok(binary&&path.isAbsolute(binary),'current native candidate required');
+const hash=b=>createHash('sha256').update(b).digest('hex');
+const canon=x=>Array.isArray(x)?x.map(canon):x&&typeof x==='object'?Object.fromEntries(Object.keys(x).sort().map(k=>[k,canon(x[k])])):x;
+test('installed Spec prepares Plan once, uses actual self-check and current human source without an empty review task',()=>{
+ const scratch=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'formal-plan4-'))),root=path.join(scratch,'spec'),calls=[];
+ const write=(ref,value)=>{fs.mkdirSync(path.dirname(path.join(root,ref)),{recursive:true});fs.writeFileSync(path.join(root,ref),typeof value==='string'?value:JSON.stringify(value));};
+ const asset=ref=>({ref,digest:hash(fs.readFileSync(path.join(root,ref)))});
+ const run=(label,args,expected='OK')=>{
+  const argv=[...args,'--root',root,'--json'],r=spawnSync(binary,argv,{encoding:'utf8',maxBuffer:64*1024*1024});
+  calls.push({label,argv:[binary,...argv],exit_code:r.status,stdout:r.stdout,stderr:r.stderr});
+  const d=JSON.parse(r.stdout);assert.equal(d.code,expected,`${label}: ${JSON.stringify(d.result.diagnostics||d.result.message)}`);assert.equal(r.status===0,expected==='OK');return d.result;
+ };
+ try {
+  run('actual-install',['init','--profile','spec']);
+  assert.equal(JSON.parse(fs.readFileSync(path.join(root,'.yss.json'))).schemaVersion,4);
+  assert.equal(fs.existsSync(path.join(root,'.template-spec/agents/digital-human-roles.yaml')),false);
+  for(const argv of [['init','-q'],['-c','user.name=test','-c','user.email=test@example.invalid','commit','--allow-empty','-qm','base']])assert.equal(spawnSync('git',argv,{cwd:root}).status,0);
+  const commit=spawnSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).stdout.trim();
+  write('plan.md','# 当前方案\n只调整已确认输出的文字；验收为原行为及接口保持。\n');
+  const context=parseContextContract({root});
+  write('reconciliation.json',{schema_version:1,repository_mode:'project-instance',stage:'stage.plan',work_unit:'work-unit.plan-requirements',status:'reconciled',context_snapshot:{context_ref:context.context_ref,context_schema_version:context.context_schema_version,document_digest:context.document_digest,referenced_terms_digest:resolveContextTermRefs(context,[]).referenced_terms_digest,term_refs:[]},changes:{added:[],updated:[],deprecated:[]},unresolved_terms:[],evidence_refs:['CONTEXT.md']});
+  const review=preparePlanSpecEntry({root,featureId:'feature.demo',planRef:'plan.md',contextRef:'reconciliation.json'}).review_candidate;
+  for(const row of Object.values(review.checks))Object.assign(row,{status:'passed',evidence_refs:['plan.md']});
+  for(const key of Object.keys(review.impacts))review.impacts[key]=false;
+  for(const row of Object.values(review.internal_checks))Object.assign(row,{status:'not-applicable',reason:'本次不改变业务规则或阶段合同。',evidence_refs:['plan.md']});
+  write('drafts/review.json',review);
+  const cp={feature_id:'feature.demo',repository_mode:'project-instance',checks:{},gates:{},plan_review_ref:'drafts/review.json'};
+  write('checkpoint.json',cp);
+  cp.plan_review_control=initializePlanReview(cp,{feature_id:cp.feature_id,scope_ids:[cp.feature_id],scope_digest:asset('plan.md').digest,provenance:{kind:'new-feature',source_ref:'checkpoint.json',source_digest:asset('checkpoint.json').digest}},{root});
+  write('checkpoint.json',cp);
+  write('input.json',{feature_id:cp.feature_id,scope:{impacted_areas:['wording']},status:'draft'});
+  write('selection.json',{work_unit_id:'work-unit.plan-requirements',impacts:['wording']});
+  const selection=run('actual-selection',['contract','verify','--kind','task-selection','--file','selection.json']).coverage.task_selection;
+  write('baseline-input.json',{repository_root:root,commit,allowed_write_paths:['drafts']});
+  const baseline=run('actual-baseline',['contract','verify','--kind','task-baseline','--file','baseline-input.json']).coverage.task_baseline.baseline;
+  const provenance={tool:'node',task_ref:'prepare-task.json',execution_ref:'prepare-execution.json',identity:{status:'unavailable',reason:'Node test process has no stable agent/session identifier'}};
+  const task={schema_version:3,task_id:'PLAN-PREPARE',profile:'spec',policy:{ref:selection.policy_ref,digest:selection.policy_digest,version:2},feature_id:cp.feature_id,checkpoint_ref:'checkpoint.json',work_unit_id:'work-unit.plan-requirements',stage_id:'stage.plan',execution_state:'Drafter',workflow_status:'not-started',verification_status:'not-executed',objective:'准备当前可审阅方案',acceptance:['当前方案与验收可读'],inputs:['input.json'],input_bindings:[asset('input.json')],baseline,provenance,skill_source:selection,allowed_write_paths:['drafts'],forbidden_actions:['user-approval','ready-for-agent'],expected_outputs:['drafts/review.json'],expected_evidence_files:['prepare-execution.json'],verification_commands:['node validate-plan'],verification_results:[],contract:{contract_id:'contract.plan',contract_version:'v1',kind:'lifecycle-work-unit',status:'issued',contract_ref:'input.json',lifecycle_ref:'input.json'},convergence:{parent_work_unit:'work-unit.plan-requirements',convergence_ref:'input.json'},downstream_consumers:['work-unit.spec-synthesis']};
+  write('prepare-task.json',task);
+  const candidate=run('current-prepared-candidate',['contract','verify','--kind','task-candidate','--file','prepare-task.json']).coverage.task_candidate.candidate;
+  const argv=[process.execPath,'-e',"const r=JSON.parse(require('fs').readFileSync('drafts/review.json'));if(Object.values(r.checks).some(x=>x.status!=='passed'))process.exit(1)"];
+  const executed=spawnSync(argv[0],argv.slice(1),{cwd:root,encoding:'utf8'});assert.equal(executed.status,0);
+  const log={phase:'execution',tool:provenance.tool,task_ref:provenance.task_ref,identity:provenance.identity,command:'node validate-plan',argv,exit_code:executed.status,executed_at:new Date().toISOString(),stdout:executed.stdout,stderr:executed.stderr,candidate_digest:candidate.digest,input_bindings:task.input_bindings,baseline,scope:task.allowed_write_paths,expected_outputs:task.expected_outputs,result:'passed',blocking_findings:[]};
+  write('prepare-execution.json',log);task.workflow_status='resolved';task.verification_status='executed';
+  task.verification_results=[{command:log.command,status:'passed',exit_code:0,executed_at:log.executed_at,candidate_digest:candidate.digest,evidence_ref:'prepare-execution.json',evidence_digest:asset('prepare-execution.json').digest}];
+  task.result={result_schema:'workflow-execution-result-v1',work_unit:task.work_unit_id,workflow_reference:'input.json',result:'completed',skill:selection.skills[0],changed_files:['drafts/review.json'],context_reconciliation:{status:'reconciled',ref:'reconciliation.json'},evidence_refs:['prepare-execution.json','reconciliation.json'],deferred_seams:[],drift:[],violation:[],new_impacts:[],stale_candidates:[],next_route:'work-unit.spec-synthesis',blocking_signals:[]};
+  write('prepare-task.json',task);run('actual-preparation-completed',['contract','verify','--kind','task','--file','prepare-task.json']);
+  const selfcheck={...log,scope:[cp.feature_id],candidate_digest:asset('drafts/review.json').digest,readonly:true};
+  write('plan-selfcheck.json',selfcheck);
+  const decision=buildDecisionFixture(path.join(root,'decision'),{boundary:'gate.plan-approved',scope:[cp.feature_id],subjectRef:path.join(root,'drafts/review.json')});
+  const record={schema_version:3,gate_id:'gate.plan-approved',decision:'approved',actor_kind:'agent',subject_ref:'drafts/review.json',subject_digest:asset('drafts/review.json').digest,approval_scope:[cp.feature_id],basis:[...review.basis.map(x=>({...x,digest:x.digest.replace(/^sha256:/,'')})),asset('prepare-task.json')],policy:task.policy,check_ids:selection.check_ids,review:{mode:'self-check',provenance:{...provenance,execution_ref:'plan-selfcheck.json'}},evidence_refs:['plan-selfcheck.json'],user_decision_ref:decision.ref};
+  write('plan-approval.json',record);Object.assign(cp,{plan_approval_ref:'plan-approval.json',plan_user_decision_ref:decision.ref});write('checkpoint.json',cp);
+  run('full-plan-entry',['contract','verify','--kind','plan-entry','--file','checkpoint.json']);
+  assert.equal(assertPlanSpecEntry(cp,{root}).result,'allowed');
+  assert.equal(cp.plan_review_control.attempts.length,0);assert.equal(record.review_task_ref,undefined);
+  const currentRecord=structuredClone(record);record.subject_digest='0'.repeat(64);write('plan-approval.json',record);
+  const rejected=run('stale-aggregate',['contract','verify','--kind','plan-entry','--file','checkpoint.json'],'PLAN_APPROVAL_CONTEXT');assert.equal(rejected.execution_authorization,'not-evaluated');
+  write('plan-approval.json',currentRecord);cp.plan_user_decision_ref=null;write('checkpoint.json',cp);
+  run('missing-human-source',['contract','verify','--kind','plan-entry','--file','checkpoint.json'],'USER_DECISION');
+ }finally{
+  if(process.env.YSS_FORMAL_PLAN_RECEIPT)fs.writeFileSync(process.env.YSS_FORMAL_PLAN_RECEIPT,JSON.stringify({binary,sha256:hash(fs.readFileSync(binary)),pinned:false,calls},null,2));
+  fs.rmSync(scratch,{recursive:true,force:true});
+ }
+});

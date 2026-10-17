@@ -79,7 +79,7 @@ export function refreshTracking(root, checkpoint) {
 export function assertStageTracking(checkpoint, { root, checkpointRef, currentWorkUnit, nextWorkUnit, transition = false, entering = false, now = new Date() } = {}) {
   const workUnits={...STAGE_WORK_UNITS,...(isDesign(root)?{'work-unit.business-ticket-formalization':'stage.ticket-formalization','work-unit.strategic-design-handoff':'stage.ticket-formalization'}:{})};
   const identity = parseYaml(readTracking(root, 'yss-project.yaml'));
-  if (identity?.schema_version !== 1 || !['template-source', 'project-instance'].includes(identity.repository_mode)) throw new Error('tracking-repository-identity-invalid');
+  if (![1,2].includes(identity?.schema_version) || !['template-source', 'project-instance'].includes(identity.repository_mode)) throw new Error('tracking-repository-identity-invalid');
   if ((transition || entering) && checkpoint?.stage) assertCheckpointBoundary(checkpoint, { root });
   const config = trackerConfig(root);
   const tracking = checkpoint?.stage_tracking;

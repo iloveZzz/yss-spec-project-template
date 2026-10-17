@@ -35,7 +35,7 @@ export function hasLocalImplementationInputs(root) {
   const metadata = readInstanceMetadata(root);
   if (metadata?.kind !== 'native' || !['spec'].includes(metadata.profile)) return false;
   const identity = parse(read(root, 'yss-project.yaml'));
-  if (identity.schema_version !== 1 || identity.repository_mode !== 'project-instance') return false;
+  if (![1,2].includes(identity.schema_version) || identity.repository_mode !== 'project-instance') return false;
   check(parse(read(root, '.template-spec/process/harness-profile.yaml')).profile_id === metadata.metadata.profileId, 'native Spec 与 Harness Profile 不一致');
   const policy = readOrchestrationContract(root).value.progression_target;
   if (policy?.local_implementation_inputs === undefined) return false;
@@ -156,7 +156,7 @@ function requiresGovernedFeatureBinding(root) {
   if (metadata?.kind !== 'native' || metadata.profile !== 'spec') return false;
   const identity = parse(read(root, 'yss-project.yaml'));
   if (identity.schema_version === 1 && identity.repository_mode === 'template-source') return false;
-  check(identity.schema_version === 1 && identity.repository_mode === 'project-instance', '正式目标准入缺少合法项目身份');
+  check([1,2].includes(identity.schema_version) && identity.repository_mode === 'project-instance', '正式目标准入缺少合法项目身份');
   const policy = declaredProgressionPolicy(readOrchestrationContract(root).value);
   if (policy === null) return false;
   check(policy.schema_version === 1 && policy.config_file === 'progression-target.json' && policy.writer_profiles?.includes('spec'), 'CAPABILITY: 当前 native Spec 目标政策不完整');

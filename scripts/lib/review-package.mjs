@@ -11,7 +11,7 @@ import { runAssetTransaction } from './asset-transactions.mjs';
 import { serializeAsset, validateAssetStructure } from './structured-assets.mjs';
 import {generateTaskPackageDefaults,validateTaskPackage} from './task-package.mjs';
 import {loadOrchestrationContract} from './orchestration-contract.mjs';
-import {assertGovernanceWrite,nativeContractVerify} from './native-evidence.mjs';
+import {assertGovernanceWrite,nativeContractVerify,nativePublishPendingReview} from './native-evidence.mjs';
 
 const error = message => { throw new TypeError(message); };
 const parse = (bytes, label) => { const doc = parseDocument(String(bytes), { uniqueKeys: true, maxAliasCount: 0 }); if (doc.errors.length) error(`无法解析 ${label}`); return doc.toJS({ maxAliasCount: 0 }); };
@@ -157,6 +157,12 @@ export function prepareReviewPackage(options) {
   if (options.dryRun) return { dry_run: true, task_ref: built.task_ref, subject_ref: built.subject_ref, decision: 'pending', execution_authorization: 'not-granted', plan_review_binding: built.task.review_context.plan_review_binding ?? null };
   const directory = reviewLocalPath(root, options.outputDir, { missing: true });
   if (fs.existsSync(directory)) error('审阅包输出目录必须不存在；不得覆盖历史证据');
+  if(built.task.schema_version===3){
+    const rows=currentApprovalsFromCheckpoint(options.checkpointRef,built.requested_check_ids,{root,governanceVersion:2});
+    if(currentApprovalsDigest(rows)!==built.source_checks_digest)error('REVIEW_BINDING_STALE: 准备期间消费者依据变化');
+    const result=nativePublishPendingReview({root,payload:{schema_version:1,kind:'pending-review-publication',checkpoint_ref:options.checkpointRef,checkpoint_before:built.checkpoint_before,output_dir:options.outputDir,files:built.files,...(built.plan_checkpoint?{checkpoint_after:serializeAsset(built.plan_checkpoint)}:{})}});
+    return{...result,subject_ref:built.subject_ref,subject_digest:built.subject_digest,...(built.plan_checkpoint?{plan_review_binding:built.task.review_context.plan_review_binding}:{})};
+  }
   if (built.plan_checkpoint) {
     const checkpointText = serializeAsset(built.plan_checkpoint), checkpointFile = reviewLocalPath(root, options.checkpointRef);
     const changes = [{ ref: options.checkpointRef, before: built.checkpoint_before, after_digest: 'sha256:' + reviewDigest(checkpointText) },
@@ -178,17 +184,6 @@ export function prepareReviewPackage(options) {
       if (fs.existsSync(directory) && fs.readdirSync(directory).length === 0) fs.rmdirSync(directory);
       throw failure;
     }
-  }
-  if(built.task.schema_version===3){
-    const changes=Object.entries(built.files).map(([name,content])=>({ref:join(options.outputDir,name),before:null,after_digest:'sha256:'+reviewDigest(content)}));
-    return runAssetTransaction(root,changes,()=>{
-      const rows=currentApprovalsFromCheckpoint(options.checkpointRef,built.task.review_context.check_ids,{root,governanceVersion:2});
-      if(currentApprovalsDigest(rows)!==built.source_checks_digest)error('REVIEW_BINDING_STALE: 准备期间消费者依据变化');
-      fs.mkdirSync(directory,{recursive:true});
-      for(const [name,content]of Object.entries(built.files))fs.writeFileSync(reviewLocalPath(root,join(options.outputDir,name),{missing:true}),content,{flag:'wx'});
-      validateTaskPackage(built.task,{root});
-      return{task_ref:built.task_ref,task_digest:built.task_digest,subject_ref:built.subject_ref,bundle_ref:join(options.outputDir,'bundle-draft.yaml'),coverage_ref:join(options.outputDir,'coverage.md'),decision:'pending',execution_authorization:'not-granted'};
-    });
   }
   fs.mkdirSync(path.dirname(directory), { recursive: true });
   const staging = fs.mkdtempSync(path.join(path.dirname(directory), '.review-package-'));
@@ -220,10 +215,11 @@ function buildReviewPackage3(options){
  const checkIds=options.checkIds||task.review_context.check_ids;
  const rows=currentApprovalsFromCheckpoint(checkpointRef,checkIds,{root,read,governanceVersion:2}),scope=[...new Set(rows.flatMap(row=>row.approval_scope))].sort();
  if(JSON.stringify([...task.review_context.approval_scope].sort())!==JSON.stringify(scope))error('当前技术复核范围与消费者checkpoint不一致');
- task.review_context.check_ids=[...checkIds];
+
  const policy=loadOrchestrationContract(ref=>bytes(ref),'.template-spec/process/orchestration-contract.yaml').value;
  const plan=isPlanReview(checkIds,{root,read});let reservation,planCheckpoint,subject={current_approvals:rows};
  if(plan){
+  task.review_context.check_ids=[...checkIds];
   if(checkIds.includes('gate.plan-approved'))error('Plan聚合复用内部结论，不另派第三个技术审查');
   const rule=policy.gate_policy.review_execution.review_bundles.find(row=>row.aggregate_gate==='gate.plan-approved');
   if(!rule||rule.work_unit!==task.work_unit_id)error('当前Plan技术检查工作单元不匹配');
@@ -244,5 +240,5 @@ function buildReviewPackage3(options){
  validateJsonSchema(bundle,path.join(ROOT,'.template-spec/process/schemas/review-bundle.schema.json'));
  const files={'task.json':taskText,'task-issued.json':taskText,'bundle-draft.yaml':stringify(bundle,{lineWidth:0,aliasDuplicateObjects:false}),'coverage.md':['# 当前复核草案','','默认诚实自检；明确独立或外部要求按实际来源满足。','状态：pending；没有批准、执行或未来验证结论。','',...rows.map(row=>`- ${row.boundary}: ${row.subject_ref} (${row.subject_digest})`),''].join('\n')};
  if(plan)validateAssetStructure(planCheckpoint,'checkpoint',{schemaRoot:root});
- return {task,bundle,subject,files,task_ref:taskRef,task_digest:taskDigest,subject_ref:task.review_context.candidate.ref,subject_digest:task.review_context.candidate.digest,source_checks_digest:currentApprovalsDigest(rows),decision:'pending',execution_authorization:'not-granted',...(plan?{plan_checkpoint:planCheckpoint,checkpoint_before:{digest:'sha256:'+reviewDigest(checkpointBytes),mode:fs.statSync(checkpointFile).mode&0o777}}:{})};
+ return {task,bundle,subject,files,task_ref:taskRef,task_digest:taskDigest,subject_ref:task.review_context.candidate.ref,subject_digest:task.review_context.candidate.digest,requested_check_ids:[...checkIds],source_checks_digest:currentApprovalsDigest(rows),decision:'pending',execution_authorization:'not-granted',checkpoint_before:{digest:'sha256:'+reviewDigest(checkpointBytes),mode:fs.statSync(checkpointFile).mode&0o777},...(plan?{plan_checkpoint:planCheckpoint}:{})};
 }

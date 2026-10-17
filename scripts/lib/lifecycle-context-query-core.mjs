@@ -235,7 +235,7 @@ export function createLifecycleContextQuery({ queryProfile, orchestrationContrac
     }
 
     const identity = loadYaml("yss-project.yaml", "仓库身份");
-    if (identity.schema_version !== 1 || !["template-source", "project-instance"].includes(identity.repository_mode)) {
+    if (![1,2].includes(identity.schema_version) || !["template-source", "project-instance"].includes(identity.repository_mode)) {
       throw new TypeError("仓库身份或版本无效");
     }
     const scope = queryProfile === 'lifecycle' ? loadExecutionScope() : null;

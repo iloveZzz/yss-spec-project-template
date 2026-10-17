@@ -1,3 +1,4 @@
+import {loadOrchestrationContract} from './orchestration-contract.mjs';
 import {nativeEvidenceVerify,NEEDS} from './native-evidence.mjs';
 import {withValidationPhase} from './validation-phase.mjs';
 import { verifySliceContractApproval } from './approved-execution-context.mjs';
@@ -30,8 +31,7 @@ async function approvedFile(root, binding, gate) {
   const bytes=boundFile(root,binding);
   if(gate==='gate.slice-contract-approved'){verifySliceContractApproval(binding,{root});return bytes;}
   const record=read(safe(root,binding.approval_ref));
-  const roles=sourceApprovalPolicy(read(safe(root,'.template-spec/agents/digital-human-roles.yaml')));
-  await sourceApproval(record,roles,root,binding);
+  await sourceApproval(record,undefined,root,binding);
   ensure((Array.isArray(gate)?gate:[gate]).includes(record.gate_id),`交付资产批准门禁不匹配: ${binding.ref}`);
   ensure(record.artifact_bindings?.some(x=>x.id===binding.id&&x.version===binding.version&&x.digest===binding.digest),`批准未绑定当前交付资产: ${binding.ref}`);
   return bytes;
@@ -151,7 +151,12 @@ export async function exportBackendDelivery({sourceRoot,deliveryRef,output,zip=f
   const root=project(sourceRoot), target=path.resolve(output);
   ensure(!existsSync(target)&&(!zip||!existsSync(`${target}.zip`)),'后端包输出已存在');
   const {delivery}=await inspectBackendDelivery(root,deliveryRef);
-  const refs=new Set([deliveryRef,'yss-project.yaml','CONTEXT.md','.template-spec/agents/digital-human-roles.yaml',delivery.openapi.ref,delivery.openapi.approval_ref,delivery.slice_contract.ref,delivery.slice_contract.approval_ref,delivery.environment.test_data.ref,...delivery.supporting_files]);
+  const refs=new Set([deliveryRef,'yss-project.yaml','CONTEXT.md',delivery.openapi.ref,delivery.openapi.approval_ref,delivery.slice_contract.ref,delivery.slice_contract.approval_ref,delivery.environment.test_data.ref,...delivery.supporting_files]);
+  const identity=read(safe(root,'yss-project.yaml'));
+  if(identity.schema_version===2) {
+    for(const ref of loadOrchestrationContract(ref=>readFileSync(safe(root,ref)),'.template-spec/process/orchestration-contract.yaml').refs)refs.add(ref);
+    for(const ref of ['.yss.json','.template-spec/process/harness-profile.yaml','.template-spec/process/lifecycle-registry.yaml','.template-spec/agents/yss-skill-registry.yaml'])refs.add(ref);
+  } else refs.add('.template-spec/agents/digital-human-roles.yaml');
   for(const binding of Object.values(delivery.verification)) {
     refs.add(binding.ref);
     for(const result of read(safe(root,binding.ref)).results)for(const file of result.evidence)refs.add(file.ref);

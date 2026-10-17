@@ -1,0 +1,64 @@
+// Synthetic business and decision sources; every tool execution below is real.
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {installedFixture,hash} from './installed-fixture.mjs';
+import {parseContextContract,resolveContextTermRefs} from '../../lib/context-contract.mjs';
+import {preparePlanSpecEntry} from '../../lib/plan-spec-entry-view.mjs';
+import {initializePlanReview,dispatchPlanReview,completePlanReview,writePlanReviewCheckpoint} from '../../lib/plan-review-control.mjs';
+import {currentApprovalsFromCheckpoint,currentApprovalsDigest} from '../../lib/review-capabilities.mjs';
+import {prepareReviewPackage} from '../../lib/review-package.mjs';
+import {buildDecisionFixture} from '../../lib/testing/user-decision-fixture.mjs';
+import {assertPlanSpecEntry} from '../../lib/plan-spec-entry.mjs';
+import path from 'node:path';
+
+test('installed professional Plan publishes once, completes the actual task and reuses its aggregate',()=>{
+ const f=installedFixture(),{root,write,read,asset,run}=f;
+ const cpRef='.work/feature-demo/checkpoint.json',ids=['check.domain-strategy-approved','check.stage-decision-package-approved'];
+ try {
+  write('plan.md','---\nschema_version: 1\nfeature_id: feature.demo\nversion: v1\n---\n# 合成业务方案\n输入成功时提交，非法输入拒绝；不扩展当前范围。\n');
+  write('input.json',{feature_id:'feature.demo',scope:{impacted_areas:['wording']},status:'draft'});
+  const context=parseContextContract({root});
+  write('reconciliation.json',{schema_version:1,repository_mode:'project-instance',stage:'stage.plan',work_unit:'work-unit.plan-requirements',status:'reconciled',context_snapshot:{context_ref:context.context_ref,context_schema_version:context.context_schema_version,document_digest:context.document_digest,referenced_terms_digest:resolveContextTermRefs(context,[]).referenced_terms_digest,term_refs:[]},changes:{added:[],updated:[],deprecated:[]},unresolved_terms:[],evidence_refs:['CONTEXT.md']});
+  const cp={schema_version:1,repository_mode:'project-instance',feature_id:'feature.demo',mode:'orchestrate',status:'running',stage:'stage.plan',artifacts:{},checks:{},gates:{},context_reconciliation:{status:'pending',ref:null,evidence_refs:[]},next_work_unit:'work-unit.plan-requirements',ticket_sync:{},verification:{},human_review:{},git_checkpoint:{},blockers:[],rollback:[]};
+  for(const id of ids)cp.checks[id]={status:'pending',subject_ref:'plan.md',subject_digest:asset('plan.md').digest,approval_scope:[cp.feature_id],basis:[asset('input.json'),asset('plan.md')],evidence_refs:['plan.md']};
+  write('origin-checkpoint.json',cp);
+  cp.plan_review_control=initializePlanReview(cp,{feature_id:cp.feature_id,scope_ids:[cp.feature_id],scope_digest:asset('plan.md').digest,provenance:{kind:'new-feature',source_ref:'origin-checkpoint.json',source_digest:asset('origin-checkpoint.json').digest}},{root});write(cpRef,cp);
+  const rows=currentApprovalsFromCheckpoint(cpRef,ids,{root,governanceVersion:2});
+  write('drafts/subject.json',{kind:'review-subject',source_checkpoint:{ref:cpRef,digest:currentApprovalsDigest(rows)},current_approvals:rows});
+  const prepared=f.draftTask({taskRef:'prepare.json',checkpointRef:cpRef,featureId:cp.feature_id});
+  f.finishTask(prepared);run('actual-preparation',['contract','verify','--kind','task','--file','prepare.json']);
+  const review=f.draftTask({taskRef:'professional/task.json',checkpointRef:cpRef,featureId:cp.feature_id,inputs:['input.json','plan.md','prepare.json'],outputs:['reports/professional.json'],paths:['reports']});
+  review.provenance.execution_ref='review-execution.json';review.expected_evidence_files=['review-execution.json'];
+  review.execution_state='Reviewer';review.review_context={candidate:asset('drafts/subject.json'),policy:review.policy,check_ids:ids,approval_scope:[cp.feature_id],basis:review.input_bindings,review:{mode:'self-check',provenance:review.provenance}};
+  write('review-input.json',{task:review});
+  const dispatch={phase:'dispatch',dispatched_at:new Date().toISOString(),tool:review.provenance.tool,task_ref:review.provenance.task_ref,identity:review.provenance.identity,candidate:review.review_context.candidate,input_bindings:review.input_bindings,baseline:review.baseline,scope:review.allowed_write_paths,expected_outputs:review.expected_outputs};
+  write(review.provenance.execution_ref,dispatch);
+  const published=prepareReviewPackage({root,checkpointRef:cpRef,checkIds:ids,reviewInputRef:'review-input.json',outputDir:'professional'});
+  assert.equal(published.decision,'pending');
+  const pending=JSON.parse(read('professional/task.json')),binding=pending.review_context.plan_review_binding;
+  writePlanReviewCheckpoint(cpRef,current=>dispatchPlanReview(current.plan_review_control,binding,{root}),{root});
+  write('reports/professional.json',{result:'passed',checks:ids,source:asset('drafts/subject.json')});
+  f.finishTask(pending,{scope:[cp.feature_id],candidate:pending.review_context.candidate});
+  const result={schema_version:2,kind:'plan-review-result',plan_review_binding:binding,outcome:'passed',check_results:ids.map(check_id=>({check_id,status:'passed'})),findings:[],issued_task:asset('professional/task-issued.json'),completed_task:asset('professional/task.json')};
+  write('professional/result.json',result);
+  writePlanReviewCheckpoint(cpRef,current=>completePlanReview(current.plan_review_control,binding,{...result,result_ref:'professional/result.json',result_digest:asset('professional/result.json').digest},{root}),{root});
+  run('completed-professional-task',['contract','verify','--kind','task','--file','professional/task.json']);
+  run('registered-completed-professional-task',['contract','verify','--kind','plan-review-task','--file','professional/task.json','--checkpoint',cpRef]);
+  const current=JSON.parse(read(cpRef)),bundle=(awaitParseBundle(read('professional/bundle-draft.yaml')));
+  for(const row of bundle.reviews)Object.assign(row,{decision:'approved',review_task_digest:asset('professional/task.json').digest,evidence_refs:[pending.provenance.execution_ref]});
+  Object.assign(bundle,{review_task_digest:asset('professional/task.json').digest});write('professional/bundle.json',bundle);
+  const entry=preparePlanSpecEntry({root,featureId:cp.feature_id,planRef:'plan.md',contextRef:'reconciliation.json'}).review_candidate;
+  for(const row of Object.values(entry.checks))Object.assign(row,{status:'passed',evidence_refs:['plan.md']});
+  for(const key of Object.keys(entry.impacts))entry.impacts[key]=true;
+  entry.basis.push(asset('input.json'),asset('professional/bundle.json'));
+  for(const id of ids)entry.internal_checks[id]={status:'approved',approval_ref:'professional/bundle.json',subject_ref:'plan.md',approval_scope:[cp.feature_id],evidence_refs:['plan.md','input.json']};
+  write('entry-review.json',entry);
+  const decision=buildDecisionFixture(path.join(root,'decision'),{boundary:'gate.plan-approved',scope:[cp.feature_id],subjectRef:path.join(root,'entry-review.json')});
+  const aggregate={...bundle.reviews[0],gate_id:'gate.plan-approved',subject_ref:'entry-review.json',subject_digest:asset('entry-review.json').digest,basis:entry.basis.map(b=>({...b,digest:b.digest.replace(/^sha256:/,'')})),review_bundle_ref:'professional/bundle.json',user_decision_ref:decision.ref};
+  write('plan-approval.json',aggregate);Object.assign(current,{plan_review_ref:'entry-review.json',plan_approval_ref:'plan-approval.json',plan_user_decision_ref:decision.ref});write(cpRef,current);
+  run('full-professional-plan-entry',['contract','verify','--kind','plan-entry','--file',cpRef]);
+  assert.equal(assertPlanSpecEntry(current,{root}).result,'allowed');assert.equal(current.plan_review_control.attempts.length,1);
+  const before=read(cpRef);assert.throws(()=>writePlanReviewCheckpoint(cpRef,c=>({...c.plan_review_control,history_count:99}),{root}),/PLAN_REVIEW_CONTROL_INVALID/);assert.deepEqual(read(cpRef),before);
+ } finally {f.cleanup();}
+});
+import {parseSliceYaml as awaitParseBundle} from '../../lib/slice-contract.mjs';

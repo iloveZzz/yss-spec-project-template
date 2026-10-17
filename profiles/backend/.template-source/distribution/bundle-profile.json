@@ -135,7 +135,8 @@
       ".template-spec/process/schemas/strategic-design-handoff-v3.schema.json",
       ".agents/skills/.strategic-design-skills-manifest.json",
       ".template-spec/agents/digital-human-roles.yaml",
-      ".template-spec/agents/digital-human-roles.md"
+      ".template-spec/agents/digital-human-roles.md",
+      "scripts/verify-digital-human-roles"
     ],
     "excludeRootEntries": [
       ".git",

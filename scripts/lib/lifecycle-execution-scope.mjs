@@ -39,7 +39,7 @@ export function loadExecutionScope(root = ROOT) {
     return null;
   }
   const config = read(root, SCOPE_REF), identity = read(root, 'yss-project.yaml');
-  check(identity.schema_version === 1 && identity.repository_mode === 'project-instance', '职责范围仅适用于项目实例');
+  check([1,2].includes(identity.schema_version) && identity.repository_mode === 'project-instance', '职责范围仅适用于项目实例');
   check(config.schema_version === 1 && config.scope_id === 'plan-to-backend'
     && Object.keys(config).every(key => ['schema_version', 'scope_id'].includes(key)), '未知或被扩大的职责配置');
   if (plugin) check(['yss-plan-to-backend', 'yss-backend-delivery'].includes(plugin.plugin) && plugin.execution_scope === config.scope_id, '插件与项目职责绑定不一致');
@@ -55,7 +55,7 @@ export function authorizeBackendDelivery({root = ROOT, checkpointRef, assetRef, 
   if (scope) return {mode: 'execution-scope', checkpoint_ref: checkpointRef ?? null, terminal_ref: TERMINAL_REF};
   const metadata = readInstanceMetadata(root), identity = read(root, 'yss-project.yaml');
   if (metadata?.kind === 'native' && metadata.profile === 'backend') {
-    check(identity.schema_version === 1 && identity.repository_mode === 'project-instance'
+    check([1,2].includes(identity.schema_version) && identity.repository_mode === 'project-instance'
       && read(root, '.template-spec/process/harness-profile.yaml').profile_id === 'harness.backend-delivery', '后端专职实例身份不一致');
     check(typeof checkpointRef === 'string' && checkpointRef, '后端专职交付需要明确功能 checkpoint');
     if(deliveryMode === 'local-evidence') check(readContract(root,'.template-spec/process/orchestration-contract.yaml').progression_target?.local_implementation_inputs === 'native-profile-current-feature-approved-assets','当前后端合同未支持本地业务交付证据');
@@ -69,7 +69,7 @@ export function authorizeBackendDelivery({root = ROOT, checkpointRef, assetRef, 
   if(metadata?.kind==='native'&&metadata.profile==='spec')check(read(root,'.template-spec/process/harness-profile.yaml').profile_id==='harness.spec-template','native Spec metadata 与 Harness Profile 身份不一致');
   const intent = readProgressionTarget({root, checkpointRef, assetRef, includeDefault: true});
   check(intent, '后端交付需要显式职责范围或本功能交付意图');
-  check(identity.schema_version === 1 && identity.repository_mode === 'project-instance' && metadata?.kind === 'native' && metadata.profile === 'spec', '条件后端交付仅适用于真实 native Spec 实例，不能扩专职 Profile');
+  check([1,2].includes(identity.schema_version) && identity.repository_mode === 'project-instance' && metadata?.kind === 'native' && metadata.profile === 'spec', '条件后端交付仅适用于真实 native Spec 实例，不能扩专职 Profile');
   const checkpoint = read(root, intent.checkpoint_ref);
   check(!checkpoint.profile_id || checkpoint.profile_id === 'harness.spec-template', 'checkpoint Profile 与 Spec 工程不一致');
   const contract = read(root, intent.contract_ref);

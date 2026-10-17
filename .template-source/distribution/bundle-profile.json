@@ -114,7 +114,8 @@
       ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
       ".template-spec/process/schemas/strategic-design-handoff-v3.schema.json",
       ".template-spec/agents/digital-human-roles.yaml",
-      ".template-spec/agents/digital-human-roles.md"
+      ".template-spec/agents/digital-human-roles.md",
+      "scripts/verify-digital-human-roles"
     ],
     "excludePathSuffixes": [
       "-scenarios"

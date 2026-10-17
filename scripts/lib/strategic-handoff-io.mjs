@@ -62,7 +62,7 @@ export function write(root, ref, bytes) {
 }
 export function project(root) {
   const value = read(safe(root, 'yss-project.yaml'));
-  ensure(value.schema_version === 1 && value.repository_mode === 'project-instance', '只允许 project-instance 导出或导入业务包');
+  ensure([1,2].includes(value.schema_version) && value.repository_mode === 'project-instance', '只允许 project-instance 导出或导入业务包');
   return realpathSync(root);
 }
 export function schemaBatch(items) {

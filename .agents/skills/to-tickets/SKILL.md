@@ -32,7 +32,7 @@ disable-model-invocation: true
 
 展示每票的业务结果、范围、验收、依赖与未决项，以及集合覆盖情况。按实际缺口提问；等义细化沿既有授权延续协议核验，范围、规则或验收实质变化返回原决定边界。拆分本身不增加常规人工批准节点。
 
-业务草案运行 `scripts/verify-business-tickets <集合> --mode draft`；正式化使用 `--mode formal`，并消费已有 Spec / 适用产品设计批准及当前独立专业审查。结构检查不代替语义审查或真实批准。阶段工作项完成、业务正式化和实现就绪分别回报。
+业务草案运行 `scripts/verify-business-tickets <集合> --mode draft`；正式化使用 `--mode formal`，并消费已有 Spec / 适用产品设计批准及当前适用专业检查。新治理使用 business-ticket-review2，绑定真实完成准备任务与当前集合原文，默认如实自检；只有明确用户要求或已知外部规则才要求独立或外部复核。旧 review1 继续按原政策只读核验。结构检查不代替语义审查或真实批准。阶段工作项完成、业务正式化和实现就绪分别回报。
 
 主 tracker 以 `.template-spec/agents/issue-tracker.md` 为准，不从 Git remote 猜测。配置缺失时回交主控处理，不自动调用其他显式 Skill。远程不可用或未获发布授权时保留本地待发布草案；远程发布需用户明确授权。业务票保持 `draft` / `ready-for-human`，实现票只有主控完成正式门禁和当前合同批准后才可 `ready-for-agent`。
 

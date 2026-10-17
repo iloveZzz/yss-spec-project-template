@@ -16,12 +16,15 @@ const root=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'task3b-native-'
 const write=(ref,value)=>{fs.mkdirSync(path.dirname(path.join(root,ref)),{recursive:true});fs.writeFileSync(path.join(root,ref),typeof value==='string'?value:JSON.stringify(value));};
 const run=(label,args,expected='OK')=>{const argv=[...args,'--root',root,...(args[1]==='view'?['--profile','spec']:[]),'--json'],r=spawnSync(bin,argv,{encoding:'utf8'});results.push({label,argv:[bin,...argv],exit:r.status,stdout:r.stdout,stderr:r.stderr});const parsed=JSON.parse(r.stdout);assert.equal(parsed.code,expected,`${label}: ${parsed.code}: ${JSON.stringify(parsed.result.diagnostics||parsed.result.message)}`);return parsed;};
 scenarios:try{
+ if(process.env.YSS_REVIEW_PUBLISH_ONLY) run('actual-spec-install',['init','--profile','spec']);
+ else {
  fs.cpSync(path.join(source,'.template-spec/process'),path.join(root,'.template-spec/process'),{recursive:true});
  write('yss-project.yaml',{schema_version:2,repository_mode:'project-instance'});
  write('.template-spec/process/harness-profile.yaml',{schema_version:3,profile_id:'harness.spec-template',status:'active',required_capabilities:['role-independent-governance-v1'],lifecycle:{},execution:{}});
  fs.copyFileSync(path.join(source,'CONTEXT.md'),path.join(root,'CONTEXT.md'));
+ }
  const policies=loadOrchestrationContract(ref=>fs.readFileSync(path.join(root,ref)),'.template-spec/process/orchestration-contract.yaml');
- if(!process.env.YSS_TASK_PRODUCER_ONLY&&!process.env.YSS_REVIEW_PRODUCER_ONLY)for(const [unit,route] of Object.entries(policies.value.work_unit_routes)){
+ if(!process.env.YSS_TASK_PRODUCER_ONLY&&!process.env.YSS_REVIEW_PRODUCER_ONLY&&!process.env.YSS_REVIEW_PUBLISH_ONLY)for(const [unit,route] of Object.entries(policies.value.work_unit_routes)){
   write('selection.json',{work_unit_id:unit,impacts:Object.keys(route.impact_check_ids)});
   run('spec-mapping-'+unit,['contract','verify','--kind','task-selection','--file','selection.json']);
  }
@@ -51,7 +54,7 @@ scenarios:try{
  if(process.env.YSS_TASK_PRODUCER_ONLY){console.log('role-independent task producer uses native selection and actual baseline, without identity registry or future execution');break scenarios;}
  write('dispatch.json',{phase:'dispatch',dispatched_at:new Date().toISOString(),tool:provenance.tool,task_ref:provenance.task_ref,identity:provenance.identity,candidate:bound,input_bindings:task.input_bindings,baseline,scope:task.allowed_write_paths,expected_outputs:task.expected_outputs});write('task.json',task);
  run('task3-draft-dispatch',['contract','verify','--kind','task','--file','task.json']);
- task.execution_state='Reviewer';task.review_context={candidate:bound,policy:task.policy,check_ids:selected.check_ids,approval_scope:selected.check_ids,basis:[bound],review:{mode:'self-check',provenance}};write('task.json',task);run('task3-selfcheck-dispatch',['contract','verify','--kind','task','--file','task.json']);delete task.review_context;
+ task.execution_state='Reviewer';task.review_context={candidate:bound,policy:task.policy,check_ids:selected.check_ids,approval_scope:selected.check_ids,basis:[bound],review:{mode:'self-check',provenance}};write('task.json',task);run('task3-selfcheck-needs-completed-source',['contract','verify','--kind','task','--file','task.json'],'TASK_REVIEW');delete task.review_context;
  task.execution_state='Worker';write('task.json',task);run('worker-needs-slice',['contract','verify','--kind','task','--file','task.json'],'TASK_CONTRACT');task.execution_state='Drafter';write('drafts/spec.mjs','export const value = 1;' );task.workflow_status='active';write('task.json',task);run('dispatch-is-not-execution',['contract','verify','--kind','task','--file','task.json'],'EVIDENCE_EXECUTION');
  // Complete the same real task with current Go-computed output candidate and actual execution facts.
  task.workflow_status='not-started';write('task.json',task);
@@ -74,6 +77,22 @@ scenarios:try{
  const {buildReviewPackage}=await import('../../lib/review-package.mjs');
  const reviewPackage=buildReviewPackage({root,checkpointRef:'review-checkpoint.json',checkIds:['gate.spec-baseline-approved'],reviewInputRef:'review-input.json',outputDir:'review-package'});
  assert.equal(reviewPackage.task.schema_version,3);assert.equal(reviewPackage.bundle.schema_version,3);assert.equal(reviewPackage.bundle.reviews[0].decision,'pending');assert.equal(reviewPackage.task.role_id,undefined);assert.equal(reviewPackage.subject_ref,candidateAsset.ref);assert.equal(fs.existsSync(path.join(root,'review-package')),false);
+ if(process.env.YSS_REVIEW_PUBLISH_ONLY){
+  const pending=reviewPackage.task,p=pending.provenance;
+  write(p.execution_ref,{phase:'dispatch',dispatched_at:new Date().toISOString(),tool:p.tool,task_ref:p.task_ref,identity:p.identity,candidate:pending.review_context.candidate,input_bindings:pending.input_bindings,baseline:pending.baseline,scope:pending.allowed_write_paths,expected_outputs:pending.expected_outputs});
+  const {prepareReviewPackage}=await import('../../lib/review-package.mjs');
+  const published=prepareReviewPackage({root,checkpointRef:'review-checkpoint.json',checkIds:['gate.spec-baseline-approved'],reviewInputRef:'review-input.json',outputDir:'review-package'});
+  assert.equal(published.decision,'pending');assert.equal(published.execution_authorization,'not-granted');
+  run('actual-published-pending-task',['contract','verify','--kind','task','--file','review-package/task.json']);
+  const checkpointBefore=fs.readFileSync(path.join(root,'review-checkpoint.json')),taskBefore=fs.readFileSync(path.join(root,'review-package/task.json'));
+  assert.throws(()=>prepareReviewPackage({root,checkpointRef:'review-checkpoint.json',checkIds:['gate.spec-baseline-approved'],reviewInputRef:'review-input.json',outputDir:'review-package'}),/不得覆盖历史证据/);
+  assert.deepEqual(fs.readFileSync(path.join(root,'review-package/task.json')),taskBefore);
+  const invalid=structuredClone(reviewTask);invalid.provenance.task_ref='failed-package/task.json';invalid.provenance.execution_ref='missing-dispatch.json';invalid.review_context.review.provenance=invalid.provenance;
+  write('invalid-review-input.json',{task:invalid});
+  assert.throws(()=>prepareReviewPackage({root,checkpointRef:'review-checkpoint.json',checkIds:['gate.spec-baseline-approved'],reviewInputRef:'invalid-review-input.json',outputDir:'failed-package'}),/INPUT/);
+  assert.equal(fs.existsSync(path.join(root,'failed-package')),false);assert.deepEqual(fs.readFileSync(path.join(root,'review-checkpoint.json')),checkpointBefore);
+  console.log('actual installed no-role pending review publication verified');break scenarios;
+ }
  if(process.env.YSS_REVIEW_PRODUCER_ONLY){console.log('role-independent review package reuses the completed draft and keeps pending authority');break scenarios;}
  run('completion-ref-override-refused',['contract','verify','--kind','task','--file','task.json','--task-ref','task.json'],'TASK_ORIGIN');
  write('drafts/spec.mjs','export const value = 2;' );run('output-drift-refused',['contract','verify','--kind','task','--file','task.json'],'EVIDENCE_CANDIDATE');write('drafts/spec.mjs','export const value = 1;' );

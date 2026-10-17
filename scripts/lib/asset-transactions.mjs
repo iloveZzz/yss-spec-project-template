@@ -20,7 +20,7 @@ export function runAssetTransaction(root, changes, action) {
   const directory=safeFile(root,TX);fs.mkdirSync(directory,{recursive:true});
   const lock=safeFile(root,`${TX}/lock`),fd=fs.openSync(lock,'wx');fs.writeFileSync(fd,String(process.pid));fs.fsyncSync(fd);
   const plan_id=byteDigest(serializeAsset({changes,nonce:randomUUID()})).slice(7),journal_ref=`${TX}/${plan_id}.json`,active=safeFile(root,`${TX}/active.json`);
-  const tx={schema_version:1,root,plan_id,status:'applying',changes,backups:{}};
+  const tx={schema_version:1,kind:'validated-writer-adapter',root,plan_id,status:'applying',changes,backups:{}};
   try {
     ensure(!exists(safeFile(root, `${TX}/recovery.lock`)), 'ASSET_RECOVERY_LOCKED');
     for(const change of changes){ensure(same(descriptor(safeFile(root,change.ref)),change.before),`ASSET_INPUT_DRIFT: ${change.ref}`);tx.backups[change.ref]=change.before?fs.readFileSync(safeFile(root,change.ref)).toString('base64'):null;}
@@ -227,7 +227,8 @@ export function recoverAssetWrite(root, { lockHeld = false, recoveryHeld = false
   if(tx.status==='applied') {for(const c of tx.changes)ensure(descriptor(safeFile(root,c.ref))?.digest===c.after_digest,'ASSET_RECOVERY_CONFLICT');fs.unlinkSync(active);return{status:'applied',conflicts:[]};}
   const conflicts = [];
   for (const change of [...tx.changes].reverse()) {
-    ensure(byteDigest(change.after)===change.after_digest && (change.before===null?tx.backups[change.ref]===null:byteDigest(Buffer.from(tx.backups[change.ref],'base64'))===change.before.digest),'ASSET_JOURNAL_CORRUPT');
+    const afterBound=change.after===undefined?tx.kind==='validated-writer-adapter'&&/^sha256:[a-f0-9]{64}$/.test(change.after_digest):byteDigest(change.after)===change.after_digest;
+    ensure(afterBound && (change.before===null?tx.backups[change.ref]===null:byteDigest(Buffer.from(tx.backups[change.ref],'base64'))===change.before.digest),'ASSET_JOURNAL_CORRUPT');
     const file = safeFile(root, change.ref), actual = descriptor(file);
     if (same(actual, change.before)) continue;
     if (actual?.digest !== change.after_digest) { conflicts.push(change.ref); continue; }

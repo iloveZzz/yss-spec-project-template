@@ -12,7 +12,7 @@ description: 编排后端专职 Harness 的输入接收、合同、任务派发�
 
 本入口是后端专职协作方。本端职责终点由当前后端交付合同与实际 Backend Delivery 包验证决定；不写 Spec 主控的推进意图配置，不保存第二套整体进度。主控只汇总显式同功能 checkpoint 与当前 Receipt。后端可交付不等于完整业务验收；新增 v5 交付的 `strategic_bundle_ref` 必须指向完整不可变 delivery wrapper，裸 package 仅保留历史兼容读取。
 
-正式包终点按本端明确 checkpoint 与唯一登记 map 写入功能目录的 `backend-delivery.json`，无需 Spec 目标配置或后端专用执行范围。它必须核验当前 Slice、独立审查和当前构建提交；本地批准业务输入可显式使用 `local-evidence`，核验同一功能的当前 Slice、真实构建、契约/部署与独立 Fresh Verification；不伪造战略或后端交付包。有上游交接或对外接收要求时保留原正式包。
+正式包终点按本端明确 checkpoint 与唯一登记 map 写入功能目录的 `backend-delivery.json`，无需 Spec 目标配置或后端专用执行范围。它必须核验当前 Slice、适用复核和当前构建提交；本地批准业务输入可显式使用 `local-evidence`，核验同一功能的当前 Slice、真实构建、契约/部署与当前 Fresh Verification；不伪造战略或后端交付包。有上游交接或对外接收要求时保留原正式包。
 
 正式治理的新骨架必须消费注册表 architecture_profiles，并在工程基线、登记、Manifest、Slice/work unit 和结果中保持相同 architecture_identity。DDD/MVC 都固定本地/测试 H2，生产数据库 not-bound；不得添加默认外部驱动或数据源。配套技能按 `.template-spec/agents/backend-architecture-profiles.md` 分流，MVC 不加载 yss-domain。Profile 仍为 draft 时不得 ready-for-agent，也不得把结构测试当作真实首切片兼容证明。
 
@@ -22,14 +22,14 @@ description: 编排后端专职 Harness 的输入接收、合同、任务派发�
 
 ## 边界
 
-- 不起草领域行为、前端页面、后端业务代码或测试代码。
-- 不替专业 Agent 修改技术决策；遇到领域、交互、实现或可验证性冲突时先调查实际影响并派发适用专家，阻断依赖动作；缺少真实决定或必要输入时才询问。
-- 不批准自己生成的专业资产，不把 实现合同编译器 草案当成 approved，也不以聊天消息代替证据。
+- 编排判断不代替专业验证；同一 Agent 可切换适用 YSS Skill 完成后端技术工作和真实自检，前端实现不在本模板。
+- 技术决策依当前输入、合同及适用 Skills；冲突先调查并阻断依赖动作，按需协作。缺少真实决定或必要输入时才询问，不要求预先定义岗位、数字人或运行环境。
+- 自动自检不生成用户批准。技术检查默认可由同一 Agent 完成；独立复核仅在明确用户要求或已知外部规则适用时执行，并核验真实不同上下文及只读轨迹。草案、查询与编译结果不授予实现资格。
 - Strategic Handoff v5 导入成功只表示输入可消费，固定进入 `work-unit.technical-design` 并保持 `ready_for_agent:false`；只有仓库准备完成且当前 `Slice Implementation Contract` 满足就绪公式时，才能设置 `ready-for-agent`。
 
-## 前端联合接收
+## 外部接收边界
 
-upstream 模式或显式 `frontend_delivery` 输入，按 `.template-spec/process/frontend-backend-delivery.md` 执行战略预检，再起草前端工程设计与实现计划。最终接收按实际后端依赖核验后端交付或有依据的 `backend-not-applicable`；合同批准且当前并满足就绪检查后才派发 Worker。接收、恢复与验收按规定边界重验，缺口回交权威方。通用研发 profile 未选择该路线时维持原行为。
+仅显式外部消费者触发交接。Spec 内继续设计或实现不自导出、自导入。Backend 接收当前批准上游资产后保留来源、业务验收和本端交付边界；前端由独立工具链实现，本入口不派发前端开发。
 
 ## 按影响面选择工作
 
@@ -37,14 +37,14 @@ upstream 模式或显式 `frontend_delivery` 输入，按 `.template-spec/proces
 
 ## 正式业务交付主流程
 
-1. 校验仓库身份和业务输入模式：standalone 从原始需求完成本端 Plan/Spec 的分析、独立审查与批准；upstream 核验当前上游批准输入，冲突回交权威方。随后按实际影响核验实现仓与当前合同版本。
-2. 在设计前完成 `gate.backend-architecture-platform-approved`：既有工程核验并沿用当前登记架构与固定工程基线/POM 中的实际 Spring Boot 版本，将该门禁记录为 `not-applicable`，不重复询问；新工程基于批准需求和工程约束推荐 `domain-driven` 或 `layered-mvc`，运行 `scripts/backend-platforms`，把架构、Boot 精确补丁、Java 和 YSS 父 POM/BOM 在同一次用户决定中展示；独立子项目可继承或覆盖，逐项目确认（可一次确认明确列出的多个项目），持久化 `scaffold-architecture-decisions.yaml`。不得从目录或默认值推断。
-3. 调度 `architecture-agent` 使用 `yss-technical-design`，按确认架构分别调用 DDD 或 MVC 专家，形成并审查批准且当前的 Technical Design；数据与 API 均按影响强制，API 命中时完成 OpenAPI 3.1 Draft、锁定 Redocly Validation、独立 Review 和 Freeze，不命中时形成可核验的 API Contract Decision `not-applicable`；随后由同一个 `gate.engineering-contract-approved` 原子批准技术、数据与 API 设计。
+1. 校验仓库身份和业务输入模式：standalone 连续准备本端 Plan/Spec、必要设计、验收和具体范围，方案形成后集中取得当前真实用户确认；upstream 核验当前上游批准输入，冲突回交权威方。随后按实际影响核验实现仓与当前合同版本。
+2. 草案阶段准备架构与平台选择，在生成脚手架或开始实现前满足 `gate.backend-architecture-platform-approved`：既有工程核验并沿用当前登记架构与固定工程基线/POM 中的实际 Spring Boot 版本，将该门禁记录为 `not-applicable`，不重复询问；新工程基于当前需求和工程约束推荐 `domain-driven` 或 `layered-mvc`，运行 `scripts/backend-platforms`，把架构、Boot 精确补丁、Java 和 YSS 父 POM/BOM 在同一次用户决定中展示；独立子项目可继承或覆盖，逐项目确认（可一次确认明确列出的多个项目），持久化 `scaffold-architecture-decisions.yaml`。不得从目录或默认值推断。
+3. 使用 `yss-technical-design`，按确认架构分别使用适用的 DDD 或 MVC Skills，形成并审查批准且当前的 Technical Design；数据与 API 均按影响强制，API 命中时完成 OpenAPI 3.1 Draft、锁定 Redocly Validation、适用内容审查 和 Freeze，不命中时形成可核验的 API Contract Decision `not-applicable`；随后由同一个 `gate.engineering-contract-approved` 原子批准技术、数据与 API 设计。
 4. 进入 `work-unit.implementation-repository-preparation`。新工程编译并批准 schema v4 scaffold contract，生成器在任何写入前核验技术/数据设计与批准记录，只生成机械骨架；既有工程完成 onboarding。聚合并校验 Preparation Result v2。
-5. 仓库准备完成后，汇总四角色分区并生成一个版本化 Slice Implementation Contract。
-6. 先调度 `test-agent` 建立测试 seam，再调度后端 Worker。
+5. 仓库准备完成后，汇总当前工作范围、适用 Skills、检查组和验收并生成一个版本化 Slice Implementation Contract。
+6. 使用适用测试 Skill 建立必要的测试 seam，再按批准合同执行同一真实任务；不要求单独测试 Agent。
 7. 收集每个任务包的 `workflow-execution-result-v1`，完成当前范围的 Fresh Verification；输入或边界变化时重跑受影响检查。
-8. 由独立 `test-agent` 返回验证结论；没有阻塞信号时才关闭后端任务，整体切片由统一管理方验收。
+8. 按当前候选、实际命令和适用复核证据返回验证结论；没有阻塞信号时才关闭后端任务，整体切片由统一管理方验收。
 
 ## 必须阻断的信号
 
@@ -62,7 +62,7 @@ upstream 模式或显式 `frontend_delivery` 输入，按 `.template-spec/proces
 
 ## 阶段工作追踪
 
-首次进入允许的 Plan / Spec / Design 或恢复时，读取 `.template-spec/process/stage-tracking.md`，核验 tracker 启用版本与持久 checkpoint。写阶段资产前登记当前工作项；小工作内联，跨负责人 / 独立验收 / 阻塞 / 延期时拆至 work-items。旧项目只读 check 后形成可审阅 plan，显式 apply 才启用；不补造历史完成或批准。完成时逐条关联验收证据，阶段退出回写；结果携带 checkpoint_ref。追踪不得扩大本 profile 的允许阶段，Design 不创建工程父票或实现切片。
+首次进入允许的 Plan / Spec / Design 或恢复时，读取 `.template-spec/process/stage-tracking.md`，核验 tracker 启用版本与持久 checkpoint。写阶段资产前登记当前工作项；小工作内联，跨负责人 / 独立验收 / 阻塞 / 延期时拆至 work-items。旧项目只读 check 后形成可审阅 plan，显式 apply 才启用；不补造历史完成或批准。完成时逐条关联验收证据，阶段退出回写；结果携带 checkpoint_ref。追踪不得扩大本 Profile 的允许阶段。
 
 原生需求澄清消费 [Context 对账](references/plan-requirements.md)；外部输入缺口消费 [问卷与恢复合同](references/external-input-questionnaire.md)。仅在本 profile 已授权的阶段范围内使用，不扩展默认阶段。
 
@@ -82,15 +82,15 @@ YSS CLI 安装与升级、治理工程新建与接管、实例模板同步、旧
 <!-- USER_PROGRESS_REPORT -->
 每轮返回或暂停按合同 `user_progress_report` 给出中文状态：当前阶段与本轮结果、下一阶段/单元与进入条件、问题/阻塞、已登记责任方、解除动作及复验、主控下一动作与用户待决定项。未知写“待核验”，负责人缺失写“未登记”；目标不代表批准，已授权工作继续执行。发送前核对证据、状态及结构化结果一致；写法见 `.template-spec/process/document-writing.md`。
 
-专业审查按能力和独立实例执行，正式 v1 补充只读技能、当前批准、专业等待与定向复审见 [专业审查与恢复](references/professional-review.md)。
+专业审查按当前政策选择检查组与真实自检或适用独立复核；task3 来源、当前批准、等待与定向复审见 [专业审查与恢复](references/professional-review.md)。
 
 <!-- PROFILE_GUIDANCE -->
-当前职责完成、状态查询或恢复时，消费合同 `profile_guidance` 与 `yss lifecycle status --root <当前工程> --checkpoint <当前checkpoint>` 给出下游 Profile 建议；不按邻近目录猜初始化状态。Spec 默认继续当前职责；没有当前战略交接时，可经用户明确选择交给独立 Design。Spec 或 Design 已形成经核验的当前战略交接后，按消费者路由建议 Backend、Frontend 或同时准备，两者仍在独立目录执行；设计完成声明不能替代交接及来源批准，显式交接失效时先解除阻断。目标 Design 接入已批准 Spec 走 `spec-baseline` 冻结包与 Receipt、目标 Context 对账后从设计继续，不重走 Plan，不复制源 checkpoint 批准到目标；目标 Backend / Frontend 使用战略接收记录及各自消费合同。建议不改变当前工作单元、不授予批准或执行，下游推荐不扩展本 Profile 的实现写范围。
+当前职责完成、状态查询或恢复时，消费当前 `profile_guidance` 及 `yss lifecycle status`。新建仅 Spec/Backend；Spec 保留必要产品设计，Backend 仅在存在显式外部消费者时交接。旧 Design、SpecBaseline 与原角色协议按原政策读取，不用于新任务写入。建议不改变当前工作单元，不授予批准或实现权限。
 
-当前 Slice v3 在 `stage.slice-contract` 先执行 `check.design-reviewed`，独立架构或测试审查者加载本端工程审查能力，绑定当前持久化编译合同的 ID、版本和原字节摘要。`gate.slice-contract-approved` 依赖这项审查；旧 Technical Design/Frontend Engineering 批准不能充当 Slice 审查，起草者不得自审。历史 v2 只按既有历史读取政策处理，不因此取得新的实施或交付资格。
+当前 Slice4 以本端工程检查、原始合同摘要和真实用户范围决定取得实施资格；默认同一 Agent 自检。Slice3/2 保留历史读取与明确迁移边界，不将旧批准重写为新批准。
 
 ## 本地业务分析与本端交付
 
-原始需求可在本项目完成目标与验收、Plan、业务边界和规则、Spec，再进入本端设计、实现、测试与独立审查；无需先创建独立 Spec/Design 工程。已有上游批准输入时复用当前来源，冲突回交权威方确认，禁止静默改写。小任务按主控合同 `request_triage.delivery_path` 与 `yss lifecycle route` 选择 daily；高风险或已正式绑定任务保留 governed。分析角色不授予另一端代码写入；本端交付完成不等于跨端业务验收。纯 UI 记录后端不适用的原因和当前依据；真实 API、数据与跨仓依赖必须对齐。独立脚手架只生成机械结构，不授予业务实施。
+原始需求可在本项目完成目标与验收、Plan、业务边界和规则、Spec，再进入本端设计、实现、测试与适用复核；无需先创建独立 Spec/Design 工程。已有上游批准输入时复用当前来源，冲突回交权威方确认，禁止静默改写。小任务按主控合同 `request_triage.delivery_path` 与 `yss lifecycle route` 选择 daily；高风险或已正式绑定任务保留 governed。分析活动不授予前端代码写入；本端交付完成不等于跨端业务验收。纯 UI 记录后端不适用的原因和当前依据；真实 API、数据与跨仓依赖必须对齐。独立脚手架只生成机械结构，不授予业务实施。
 
 按当前决定消费 `.template-spec/process/orchestration-policy-consumers.md` 中登记的对应策略；该清单给出逐策略 owner、事实源和代码或 Agent 执行位置。

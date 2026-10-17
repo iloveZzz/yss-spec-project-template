@@ -512,13 +512,11 @@ export function writePlanReviewCheckpoint(checkpointRef, mutate, options = {}) {
   const bytes = serializeAsset(next), mode = fs.statSync(file).mode & 0o777;
   if (options.dryRun) return { checkpoint: next, summary: summarizePlanReview(control, options), dry_run: true, written: false };
   if (equal(next, checkpoint)) return { summary: summarizePlanReview(control, options), written: false, reused: true, execution_authorization: 'not-granted' };
+  if(identity.schema_version===2)nativeCoverage(nativeContractVerify({root,kind:'plan-review-control',document:{checkpoint_ref:checkpointRef,checkpoint_digest:sha(beforeBytes),plan_review_control:control}}),'plan_review_control');
   runAssetTransaction(root, [{ ref: checkpointRef, kind: 'checkpoint', before: { digest: byteDigest(beforeBytes), mode }, after_digest: byteDigest(bytes) }], () => {
     const temporary = `${file}.plan-review-${process.pid}.tmp`, fd = fs.openSync(temporary, 'wx', mode);
     try { fs.writeFileSync(fd, bytes); fs.fsyncSync(fd); } finally { fs.closeSync(fd); }
     try { fs.renameSync(temporary, file); const directory = fs.openSync(path.dirname(file), 'r'); try { fs.fsyncSync(directory); } finally { fs.closeSync(directory); } } finally { if (fs.existsSync(temporary)) fs.unlinkSync(temporary); }
-    if(identity.schema_version===2){
-      for(const attempt of control.attempts.filter(row=>row.status==='completed'))assertPlanReviewTask(document(attempt.task_ref,options),{...options,root,requireCompleted:true});
-    }
   });
   return { summary: summarizePlanReview(control, options), written: true, execution_authorization: 'not-granted' };
 }

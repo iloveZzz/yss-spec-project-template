@@ -1,9 +1,10 @@
 import {inspectCandidateBaseCommit, candidateHasIntentMaterial} from './implementation-candidate-current.mjs';
 import {collectCountersignGateIds} from './digital-human-roles.mjs';
 import {approvalExpectationForBoundAsset} from './native-approval.mjs';
-import {assertApprovedExecutionContext} from './approved-execution-context.mjs';
+import {assertApprovedExecutionContext,approvedExecutionBinding} from './approved-execution-context.mjs';
+import {nativeContractVerify,nativeCoverage} from './native-evidence.mjs';
 import {createHash} from 'node:crypto';
-import { realpathSync } from 'node:fs';
+import { realpathSync,existsSync } from 'node:fs';
 import { readFileSync, lstatSync, readdirSync } from './validation-phase.mjs';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
@@ -42,6 +43,11 @@ function inspectMaven(root,units){
 export function verifyExistingArchitecture(identity,bindings,{root,registry,execution,readOnly=false,assetRef}={}){
  const profile=validateExistingArchitecture(identity,registry);
  requireThat(text(root),'ARCH_EVIDENCE_REF','需要治理 root');
+ const projectFile=path.join(root,'yss-project.yaml');
+ if(existsSync(projectFile)&&parse(readFileSync(projectFile)).schema_version===2){
+  const binding=execution?approvedExecutionBinding(execution):null;
+  return nativeCoverage(nativeContractVerify({root,kind:'architecture-evidence',document:{architecture_identity:identity,architecture_evidence:bindings,...(binding?{slice_ref:binding.ref,approval_ref:binding.approval_ref}:{})}}),'architecture_evidence');
+ }
  const baseline=bound(root,bindings?.engineering_baseline),registration=bound(root,bindings?.repository_registration),manifest=bound(root,bindings?.manifest);
  for(const [name,record] of Object.entries({baseline,registration,manifest})){
   same(identity,record.architecture_identity,'ARCH_IDENTITY_CONFLICT',`${name} 架构身份与合同不一致`);

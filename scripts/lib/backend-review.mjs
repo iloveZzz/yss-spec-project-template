@@ -1,4 +1,5 @@
 import {approvalExpectationForBoundAsset} from './native-approval.mjs';
+import {nativeContractVerify} from './native-evidence.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
@@ -26,6 +27,12 @@ export function backendReviewSkills(contract, actualSkills = []) {
 
 /** Validate existing code-review result and constraint_results; this is not an approval authority. */
 export function validateBackendReview(state, { root = process.cwd() } = {}) {
+  const identityFile=path.join(root,'yss-project.yaml');
+  if(fs.existsSync(identityFile)&&parseSliceYaml(fs.readFileSync(identityFile,'utf8')).schema_version===2){
+    const verdict=nativeContractVerify({root,kind:'backend-review',document:state});
+    ensure(verdict.exitCode===0,verdict.message);
+    return verdict.envelope.result.coverage;
+  }
   const input = state?.review_input;
   ensure(['baseline','change'].includes(input?.scope_kind), 'scope_kind required; historical records are read-only');
   if (input.scope_kind === 'baseline') return validateBaselineReview(state, {root});

@@ -1,11 +1,21 @@
-schema_version: 1
+schema_version: 2
 kind: business-ticket-review
 result: blocked
 subject_ref: .work/<feature>/business-ticket-set.yaml
 subject_digest: sha256:<raw-bytes>
-drafter: <drafter-runtime-id>
-reviewer: <independent-reviewer-runtime-id>
+basis:
+  - ref: .work/<feature>/actual-completed-task.json
+    digest: <raw-task-sha256>
+assessment:
+  mode: self-check
+  provenance:
+    tool: <actual-tool>
+    task_ref: .work/<feature>/actual-completed-task.json
+    execution_ref: .work/<feature>/verification/business-ticket-self-check.json
+    identity:
+      status: unavailable
+      reason: <actual-platform-limitation>
 evidence:
-  - ref: .work/<feature>/verification/business-ticket-review.md
+  - ref: .work/<feature>/verification/business-ticket-self-check.json
     version: v1
     digest: sha256:<raw-bytes>

@@ -44,7 +44,7 @@ export function lifecycleStatus({ root, checkpointRef, taskPackageRef, env }) {
   let identity;
   try {
     identity = source(root, 'yss-project.yaml').value;
-    if (identity.schema_version !== 1 || identity.repository_mode !== 'project-instance') throw new TypeError('生命周期状态仅适用于 project-instance');
+    if (![1,2].includes(identity.schema_version) || identity.repository_mode !== 'project-instance') throw new TypeError('生命周期状态仅适用于 project-instance');
   } catch (error) {
     error.lifecycle_input_ref ??= 'yss-project.yaml';
     error.lifecycle_input_kind = identity?.schema_version === 1 && identity?.repository_mode === 'template-source' ? 'template-source' : 'manifest';

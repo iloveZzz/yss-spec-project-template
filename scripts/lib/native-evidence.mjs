@@ -178,3 +178,14 @@ export function assertGovernanceWrite(root) {
  const verdict=nativeContractVerify({root,kind:'governance-write',file:'yss-project.yaml'});
  if(verdict.exitCode!==0)throw Object.assign(new Error(verdict.message),{code:verdict.diagnostics[0]?.code??verdict.code,native:true});
 }
+
+// Only the native publisher may atomically install pending review facts and their matching Plan reservation.
+export function nativePublishPendingReview({root,payload,environment=process.env}) {
+ const temporary=transport(root);
+ try {
+  const file=path.join(temporary.dir,'pending-review.json');fs.writeFileSync(file,JSON.stringify(payload));
+  const verdict=nativeInvoke({root,args:['contract','publish-review','--root',root,'--file',path.relative(root,file)],needs:['contract.pending-review-publication.v1'],environment});
+  if(verdict.exitCode!==0)fail(verdict.code,verdict.message);
+  return verdict.result;
+ } finally { temporary.cleanup(); }
+}
