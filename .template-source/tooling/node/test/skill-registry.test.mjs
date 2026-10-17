@@ -74,6 +74,20 @@ test("unknown layer is rejected", () => {
   assert.throws(() => validateSkillRegistry(data), /未知 layer/);
 });
 
+test("stack grouping is an explicit list and cross-stack context edges must declare stacks", () => {
+  const data = registry();
+  assert.equal(data.skills.find((skill) => skill.id === "theme-token-usage").stack, "vue");
+  assert.equal(data.skills.find((skill) => skill.id === "yss-backend-spec-review").stack, "java");
+  assert.equal(data.skills.find((skill) => skill.id === "yss-design-system").stack, undefined);
+  const withSkill = (id, patch) => ({ ...data, skills: data.skills.map((skill) => skill.id === id ? { ...skill, ...patch } : skill) });
+  assert.throws(() => validateSkillRegistry(withSkill("tdd", { stack: "go" })), /未知 stack/);
+  const edges = (rows) => ({ ...data, skill_dependencies: { ...data.skill_dependencies, "code-review": rows } });
+  const undeclared = data.skill_dependencies["code-review"].map(({ stacks, ...edge }) => edge);
+  assert.throws(() => validateSkillRegistry(edges(undeclared)), /须声明 stacks: \[java\]/);
+  assert.throws(() => validateSkillRegistry(edges([{ skill: "yss-ui", type: "context-required" }])), /不得 context-required 依赖 vue 栈/);
+  assert.throws(() => validateSkillRegistry(edges([{ skill: "tdd", type: "review-only", stacks: ["java"] }])), /只用于 context-conditional/);
+});
+
 test("retired harness entry reroutes new requests without a discovery alias", async () => {
   const { resolveSkillForNewUse } = await import("../../../../scripts/lib/skill-registry.mjs");
   const data = registry();
