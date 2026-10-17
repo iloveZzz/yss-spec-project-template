@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import {createHash,randomUUID} from 'node:crypto';
 import path from 'node:path';
 import {contextBinary} from './native-context.mjs';
-import {readFileSync,lstatSync,readdirSync,existsSync,withValidationPhase,acceptValidationDependencies,verifyValidationDependencies,atValidationFinish} from './validation-phase.mjs';
+import {readFileSync,lstatSync,readdirSync,existsSync,withValidationPhase,acceptValidationDependencies,verifyValidationDependencies,atValidationFinish,registerValidationTransport} from './validation-phase.mjs';
 
 const digest=bytes=>createHash('sha256').update(bytes).digest('hex');
 const inside=(root,file)=>file===root||file.startsWith(root+path.sep);
@@ -58,7 +58,7 @@ function transport(root) {
  const dir=path.join(root,'.work','native-candidates',`input-${process.pid}-${randomUUID()}`);
  const create=directory=>{try{const st=fs.lstatSync(directory);if(st.isSymbolicLink()||!st.isDirectory())fail('NATIVE_INPUT_INVALID',`传输祖先必须是普通目录: ${directory}`);if(directory!==path.parse(directory).root)create(path.dirname(directory));return;}catch(error){if(error.code!=='ENOENT')throw error;}create(path.dirname(directory));fs.mkdirSync(directory);created.push(directory);ownedTransportPaths.add(directory);};
  let initialized=false;
- return {get dir(){if(!initialized){create(dir);initialized=true;}return dir;},created,cleanup(){if(!initialized)return;fs.rmSync(dir,{recursive:true,force:true});ownedTransportPaths.delete(dir);for(const directory of [...ownedTransportPaths].sort((a,b)=>b.length-a.length)){if(!fs.existsSync(directory))ownedTransportPaths.delete(directory);else if(!fs.readdirSync(directory).length){fs.rmdirSync(directory);ownedTransportPaths.delete(directory);}}}};
+ return {get dir(){if(!initialized){create(dir);registerValidationTransport(dir,created);initialized=true;}return dir;},created,cleanup(){if(!initialized)return;fs.rmSync(dir,{recursive:true,force:true});ownedTransportPaths.delete(dir);for(const directory of [...ownedTransportPaths].sort((a,b)=>b.length-a.length)){if(!fs.existsSync(directory))ownedTransportPaths.delete(directory);else if(!fs.readdirSync(directory).length){fs.rmdirSync(directory);ownedTransportPaths.delete(directory);}}}};
 }
 function copyObserved(source,target) {
  const stat=lstatSync(source);

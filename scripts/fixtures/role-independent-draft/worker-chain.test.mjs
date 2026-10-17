@@ -1,5 +1,10 @@
 // Synthetic business sources exercise real Git, execution, approval and native consumer bindings.
 import {test} from 'node:test';
+import {spawnSync} from 'node:child_process';
+import {stringify} from '../../vendor/yaml.mjs';
+import {mvcFixture} from '../../../.agents/skills/yss-technical-design/tests/fixtures.mjs';
+import {technicalDigest} from '../../../.agents/skills/yss-technical-design/scripts/validate-technical-design.mjs';
+import {prepareSliceImplementationContract} from '../../lib/slice-contract-preparation.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -13,17 +18,35 @@ test('installed Backend consumes a role-free current engineering source',()=>{
  const f=installedFixture('backend'),e=existingFixture(),{root,write,read,asset,run}=f;
  try {
   for(const ref of ['.template-spec/engineering/backend-platforms.json','docs/engineering/evidence'])fs.cpSync(path.join(e.root,ref),path.join(root,ref),{recursive:true});
-  const feature='feature.engineering',cpRef='.work/engineering/checkpoint.json';
+  const feature='feature.engineering',cpRef='.work/engineering/checkpoint.json',project=fs.realpathSync(e.project);
+  const verifier=`import fs from 'node:fs';import os from 'node:os';import path from 'node:path';import {spawnSync} from 'node:child_process';
+const dir=fs.mkdtempSync(path.join(os.tmpdir(),'boundary-java-'));
+try{const main=path.join(dir,'BoundarySmoke.java');fs.writeFileSync(main,'public class BoundarySmoke {public static void main(String[] args){if(new web.Boundary().accept(2)!=3)throw new AssertionError();for(int n:new int[]{-1,101}){boolean rejected=false;try{new web.Boundary().accept(n);}catch(IllegalArgumentException e){rejected=true;}if(!rejected)throw new AssertionError("invalid input accepted: "+n);}}}');
+const walk=p=>fs.readdirSync(p,{withFileTypes:true}).flatMap(e=>e.isDirectory()?walk(path.join(p,e.name)):[path.join(p,e.name)]).filter(p=>p.endsWith('.java'));
+for(const [cmd,args]of [['javac',['-d',dir,...walk('src/main/java'),main]],['java',['-cp',dir,'BoundarySmoke']]]){const r=spawnSync(cmd,args,{encoding:'utf8'});process.stdout.write(r.stdout||'');process.stderr.write(r.stderr||'');if(r.status!==0)process.exitCode=1;if(process.exitCode)break;}}finally{fs.rmSync(dir,{recursive:true,force:true});}`;
+  fs.writeFileSync(path.join(project,'verify-behavior.mjs'),verifier);
+  fs.writeFileSync(path.join(project,'mvnw'),'#!/bin/sh\nexec mvn "$@"\n');fs.chmodSync(path.join(project,'mvnw'),0o755);
+  e.git('add','.');e.git('commit','-qm','Freeze actual verifier and wrapper references');
+  const files=e.git('ls-files').split('\n').map(ref=>({path:ref,base_blob:e.git('rev-parse',`HEAD:${ref}`),sha256:'sha256:'+hash(fs.readFileSync(path.join(project,ref)))}));
+  e.source={base_commit:e.git('rev-parse','HEAD'),roots:['pom.xml','src','verify-behavior.mjs','mvnw'],files};e.identity.source_digest=existingArchitectureDigest(e.source);
+  e.baseline.source=e.source;e.manifest.source=e.source;
+  const originalContext=read('CONTEXT.md'),design=mvcFixture(root);write('CONTEXT.md',originalContext);
+  write('spec.md','---\ncontent_profile: plan-spec-v1\nversion: v1\n---\n## 功能需求\n| ID | 需求 |\n|---|---|\n| FR-1 | rule.valid：仅接受0到100的输入，成功返回输入加一，scenario.submit：非法输入拒绝。 |\n## 验收标准\n| ID | 需求引用 | 验收 |\n|---|---|---|\n| AC-1 | FR-1 | 输入2返回3，输入-1或101均拒绝。 |\n');
+  const versioned=ref=>({...asset(ref),version:'v1',digest:'sha256:'+asset(ref).digest});
+  const setRef='engineering-drafts/business-ticket-set.json',businessRef='engineering-drafts/business-tickets/BT-1.md';
+  const business={schema_version:1,kind:'business-ticket',id:'BT-1',version:'v1',status:'ready-for-human',spec:versioned('spec.md'),requirement_refs:['FR-1'],acceptance_refs:['AC-1'],dependencies:[],source_refs:[],open_questions:[]};
+  write(businessRef,'---\n'+stringify(business)+'---\n# 输入校验\n## 业务结果\n仅接受有效输入。\n## 范围\n限制输入为0到100。\n## 非目标\n无其他行为。\n## 验收\nAC-1：2返回3，-1或101拒绝。\n## 风险\n非法输入不持久化。\n');
+  write(setRef,{schema_version:1,kind:'business-ticket-set',id:'business-ticket-set.worker',version:'v1',status:'ready-for-human',spec:business.spec,tickets:[{id:business.id,...versioned(businessRef)}],coverage_deferred:[],review_ref:'business-review.json'});
   const baseline=structuredClone(e.baseline);delete baseline.author;delete baseline.boundary_review;
-  write('input.json',{feature_id:feature,scope:{impacted_areas:['wording']},status:'draft'});
+  write('input.json',{feature_id:feature,scope:{impacted_areas:['backend']},status:'draft'});
   const context=parseContextContract({root});
   write('reconciliation.json',{schema_version:1,repository_mode:'project-instance',stage:'stage.slice-contract',work_unit:'work-unit.slice-contract',status:'reconciled',context_snapshot:{context_ref:context.context_ref,context_schema_version:context.context_schema_version,document_digest:context.document_digest,referenced_terms_digest:resolveContextTermRefs(context,[]).referenced_terms_digest,term_refs:[]},changes:{added:[],updated:[],deprecated:[]},unresolved_terms:[],evidence_refs:['CONTEXT.md']});
   write('engineering-drafts/baseline.json',baseline);
   const cp={feature_id:feature,repository_mode:'project-instance',checks:{},gates:{}};write(cpRef,cp);
-  const prep=f.draftTask({taskRef:'architecture-prepare.json',unit:'work-unit.technical-design',stage:'stage.technical-design',checkpointRef:cpRef,featureId:feature,paths:['engineering-drafts'],outputs:['engineering-drafts/baseline.json']});
+  const prep=f.draftTask({taskRef:'architecture-prepare.json',unit:'work-unit.technical-design',impacts:['backend'],stage:'stage.technical-design',checkpointRef:cpRef,featureId:feature,paths:['engineering-drafts'],outputs:['engineering-drafts/baseline.json',setRef,businessRef]});
   f.finishTask(prep);run('actual-engineering-preparation',['contract','verify','--kind','task','--file',prep.provenance.task_ref]);
   const manifest={...e.manifest,approval_context:{subject_ref:'engineering-drafts/baseline.json',approval_scope:[feature],basis:[asset('input.json'),asset(prep.provenance.task_ref)]}};write('manifest.json',manifest);
-  const review=f.draftTask({taskRef:'architecture-review-task.json',unit:'work-unit.slice-contract',stage:'stage.slice-contract',checkpointRef:cpRef,featureId:feature,inputs:['input.json',prep.provenance.task_ref,'manifest.json'],paths:['architecture-reports'],outputs:['architecture-reports/result.json']});
+  const review=f.draftTask({taskRef:'architecture-review-task.json',unit:'work-unit.slice-contract',impacts:['backend'],stage:'stage.slice-contract',checkpointRef:cpRef,featureId:feature,inputs:['input.json',prep.provenance.task_ref,'manifest.json'],paths:['architecture-reports'],outputs:['architecture-reports/result.json']});
   review.execution_state='Reviewer';review.review_context={candidate:asset('engineering-drafts/baseline.json'),policy:review.policy,check_ids:review.skill_source.check_ids,approval_scope:[feature],basis:review.input_bindings,review:{mode:'self-check',provenance:review.provenance}};
   write('architecture-reports/result.json',{status:'passed',scope:feature,subject:asset('engineering-drafts/baseline.json')});
   f.finishTask(review,{scope:[feature],candidate:review.review_context.candidate});
@@ -39,6 +62,21 @@ test('installed Backend consumes a role-free current engineering source',()=>{
   run('native-role-free-engineering-source',['contract','verify','--kind','architecture-evidence','--file','architecture-input.json']);
   assert.equal(verifyExistingArchitecture(e.identity,bindings,{root,registry:loadSkillRegistry(path.join(root,'.template-spec/agents/yss-skill-registry.yaml'))}).source_kind,'existing-registration');
   assert.equal(fs.existsSync(path.join(root,'.template-spec/agents/digital-human-roles.yaml')),false);
-  // Continue with the same source below; no role fixture is transplanted into the installed root.
+  const argv=[process.execPath,'-e',`if(JSON.parse(require('fs').readFileSync('${setRef}')).tickets.length!==1)process.exit(1)`],checked=spawnSync(argv[0],argv.slice(1),{cwd:root,encoding:'utf8'});assert.equal(checked.status,0);
+  const businessLog={...JSON.parse(read(prep.provenance.execution_ref)),command:'node check-business-set',argv,exit_code:checked.status,executed_at:new Date().toISOString(),stdout:checked.stdout,stderr:checked.stderr,candidate_digest:asset(setRef).digest,scope:[feature],readonly:true};
+  write('business-check.json',businessLog);
+  write('business-review.json',{schema_version:2,kind:'business-ticket-review',result:'passed',subject_ref:setRef,subject_digest:'sha256:'+asset(setRef).digest,basis:[asset(prep.provenance.task_ref)],assessment:{mode:'self-check',provenance:{...prep.provenance,execution_ref:'business-check.json'}},evidence:[versioned('business-check.json')]});
+  run('current-business-formalization-self-check',['contract','verify','--kind','business-tickets','--file',setRef,'--mode','formal']);
+  design.status='approved';design.architecture.project_id=e.identity.project_id;design.architecture.decision_digest='sha256:'+asset('registration.json').digest;
+  design.inputs=design.inputs.map(b=>({...b,digest:'sha256:'+asset(b.ref).digest}));design.digest=technicalDigest(design);write('technical-design.json',design);
+  const ticket='tickets/slice.md';write(ticket,'---\n'+stringify({kind:'vertical-slice-ticket',status:'ready-for-human',requirement_version:'v1',business_ticket_set_ref:setRef,business_ticket_refs:['BT-1'],acceptance_refs:['AC-1']})+'---\n## 验收标准\n- AC-1：2返回3，-1或101拒绝。\n');
+  write('review.md','当前架构责任与可执行验证入口已核验；合成协议证据。');write('mvnw',fs.readFileSync(path.join(project,'mvnw')));
+  write('no-api-impact.json',{status:'not-applicable',slice_id:'slice.worker',reason:'仅收紧已批准后端输入范围，无HTTP/UI变化。'});
+  const sources={ticket:{ref:ticket,version:'v1'},spec:{ref:'spec.md'},business_ticket_set:{ref:setRef},engineering_baseline:bindings.engineering_baseline,implementation_repository:bindings.repository_registration,repository_registration:'implementation_repository',manifest:bindings.manifest,technical_design:{ref:'technical-design.json',version:'v1',id:design.technical_design_id},architecture_review:{ref:'architecture-review.json'},build_architecture_checklist:{ref:'review.md'},backend_repository:'implementation_repository',maven_wrapper:{ref:'mvnw'},no_api_impact_record:{ref:'no-api-impact.json'}};
+  const refinements={contract_id:'contract.worker',contract_version:'v1',slice_id:'slice.worker',scope:{impacted_areas:['backend'],implementation_path_policy:'external-repository-native',allowed_write_paths:['src/main/java']},applicability:{frontend:{status:'not-applicable',reason:'无UI变化'},backend:{status:'required'},api:{status:'not-applicable',reason:'无HTTP变化'},cross_repo:{status:'not-applicable',reason:'单工程'}},recipe_ids:['backend.mvc-service-behavior'],verification:{test:{command:'node verify-behavior.mjs',cwd:project,expected_evidence:['results/test.log'],test_seams:['test-seam.success','test-seam.failure'],acceptance_refs:['AC-1']}},work_units:[{id:'work-unit.worker',behavior:'实现0到100输入范围并保留成功与拒绝行为',primary_skill:'yss-application',tdd_mode:'behavior-tdd',verification_refs:['test'],acceptance_refs:['AC-1']}],extensions:{backend:{affected_layers:['application'],component_impacts:[],design_refs:['pointer:/design']}}};
+  const prepared=prepareSliceImplementationContract({root,ticket_ref:ticket,sources,refinements});
+  assert.deepEqual(prepared.report.blockers,[]);write('slice.json',prepared.slice_contract);
+  run('current-backend-slice4-draft',['contract','verify','--kind','slice-draft','--file','slice.json']);
+  assert.equal(prepared.slice_contract.schema_version,4);
  } finally {e.cleanup();f.cleanup();}
 });

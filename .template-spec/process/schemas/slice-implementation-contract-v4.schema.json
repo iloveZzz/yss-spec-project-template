@@ -664,7 +664,7 @@
             "uniqueItems": true,
             "items": {
               "type": "string",
-              "pattern": "^(check|gate)\\.[a-z0-9][a-z0-9-]*$"
+              "pattern": "^(check|gate|work-unit)\\.[a-z0-9][a-z0-9-]*$"
             }
           }
         },
