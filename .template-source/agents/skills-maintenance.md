@@ -19,7 +19,6 @@
 | `anthropics/knowledge-work-plugins` | `sales/skills/competitive-intelligence` | 竞品与市场事实研究 |
 | `tt-a1i/archify` | `199360cc6687a7857b54dd188d4922b09e466a4b` / `archify` | 条件式、可验证的技术架构图；YSS 适配见 `.template-source/agents/archify-integration.md` |
 | `ayghri/i-have-adhd` | `839872f9d1cd634fed642b4589ce7226199cc15f` / `skills/i-have-adhd` | 当前文档任务的表达配套；中文规范和作用域适配见 `.agents/skills/i-have-adhd/references/yss-adaptation.md`，固定目录与先前基线字节相同 |
-| `iloveZzz/yss-ui` | `.agents/skills/.yss-skills-manifest.json` 锁定的 revision / `packages/skills` | 13 个 `categories.app` 业务前端 skills；排除组件库内部 `categories.library` 和后端提交 skill，适配见 `.template-source/agents/yss-ui-skills-integration.md` |
 | 项目本地 | `.agents/skills` 或平台专属 root | YSS 适配与项目治理 skills |
 
 `skills-lock.json` 是技能清单、来源、上游哈希和投影目标的权威记录；本地技能的当前内容哈希不再提交，验证与打包时现算：
@@ -50,7 +49,6 @@
 
    ```bash
    scripts/verify-upstream-skill-source --source=mattpocock/skills --source-root <matt-skills-checkout>
-   scripts/verify-upstream-skill-source --source=iloveZzz/yss-ui --source-root <yss-ui-checkout>
    ```
 
    新增共享 skill 时先显式登记：`scripts/update-skill-lock --add=<skill-name>`；新增平台专属 skill 使用 `scripts/update-skill-lock --add-platform=<root>:<skill-name>`。脚本不会把工作区中偶然出现的未跟踪目录自动纳入发布清单。
@@ -91,7 +89,6 @@ scripts/sync-skills --check
 scripts/update-skill-lock --check
 # 可选：对照锁文件中的 source revision 与上游目录哈希
 scripts/verify-upstream-skill-source --source=mattpocock/skills --source-root <matt-skills-checkout>
-scripts/verify-upstream-skill-source --source=iloveZzz/yss-ui --source-root <yss-ui-checkout>
 ```
 
 前者检查所有共享投影是否指向或匹配权威内容，后者检查 `skills-lock.json` 是否与当前完整目录树一致。过时技能不会保留兼容别名；旧 skill 名称和入口按 [`.template-spec/agents/skill-migrations.md`](./skill-migrations.md) 一次性迁移，项目文件升级由 `create-yss-spec attach` / `sync` 处理。

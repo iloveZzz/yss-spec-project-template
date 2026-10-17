@@ -608,6 +608,19 @@ profiles:
         input_patterns:
           - "tests/frontend-removed.test.mjs"
           - "profiles/frontend/**"
+          - ".agents/skills/yss-ui/**"
+          - ".agents/skills/yss-frontend-scaffold-generator/**"
+          - ".agents/skills/yss-formily-schema-generator/**"
+          - ".agents/skills/.yss-skills-manifest.json"
+          - ".agents/rules/yss-ai-skills.md"
+          - ".agents/mcp_config.json"
+          - ".cursor/mcp.json"
+          - ".vscode/mcp.json"
+          - ".template-source/tooling/node/test/yss-ui-skill-integration.test.mjs"
+          - "scripts/verify-yss-ui-scenarios"
+          - "scripts/verify-frontend-scaffold-generator-scenarios"
+          - "scripts/verify-retired-skill-ids"
+          - "scripts/verify-upstream-skill-source"
           - "scripts/verify-frontend-delivery"
           - "scripts/verify-frontend-strategic-preflight"
           - "scripts/verify-frontend-implementation-evidence"
@@ -718,16 +731,6 @@ profiles:
           - "tests/api-contract-decision.test.mjs"
         depends_on: []
         failure_mode: "API 决定接受缺失原生能力，丢失 Go 读取输入的漂移观察，或破坏 v1/v2 校验与迁移"
-      - id: check.yss-ui-skill-integration
-        run: "node --test .template-source/tooling/node/test/yss-ui-skill-integration.test.mjs"
-        group: skills
-        inputs_complete: true
-        input_patterns:
-          - ".template-source/tooling/node/test/yss-ui-skill-integration.test.mjs"
-          - ".agents/skills/.yss-skills-manifest.json"
-          - "scripts/lib/skill-supply-chain.mjs"
-        depends_on: []
-        failure_mode: "yss-ui 业务项目技能清单缺项、重复或校验器放过缺少上游哈希的条目"
       - id: check.profile-distribution
         run: "node --test tests/profile-distribution.test.mjs"
         group: hygiene
@@ -1536,7 +1539,6 @@ profiles:
         inputs_complete: true
         input_patterns:
           - "profiles/**"
-          - ".agents/skills/yss-frontend-scaffold-generator/scripts/scaffold-generator.test.mjs"
           - ".template-spec/process/orchestration/**"
           - ".template-spec/process/orchestration-contract.yaml"
           - ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml"
@@ -1748,15 +1750,14 @@ profiles:
         depends_on: []
         failure_mode: "迁移计划拒绝配置根或越过功能、输入证据与恢复文件边界"
       - id: check.work-layout-design-fixtures
-        run: "node --test .agents/skills/yss-stage-decision/tests/run-scenarios.mjs .agents/skills/yss-tactical-design/tests/run-scenarios.mjs .agents/skills/yss-frontend-scaffold-generator/scripts/scaffold-generator.test.mjs"
+        run: "node --test .agents/skills/yss-stage-decision/tests/run-scenarios.mjs .agents/skills/yss-tactical-design/tests/run-scenarios.mjs"
         group: work-layout
         inputs_complete: true
         input_patterns:
           - ".agents/skills/yss-stage-decision/tests/**"
           - ".agents/skills/yss-tactical-design/tests/**"
-          - ".agents/skills/yss-frontend-scaffold-generator/scripts/scaffold-generator.test.mjs"
         depends_on: []
-        failure_mode: "默认工作包样例在阶段决策、战术设计或前端脚手架中产生失效引用"
+        failure_mode: "默认工作包样例在阶段决策或战术设计中产生失效引用"
   release:
     selection: impact
 compatibility_patterns:
@@ -1877,10 +1878,6 @@ required_files:
   - AGENTS.md
   - CONTEXT.md
   - skills-lock.json
-  - .agents/skills/.yss-skills-manifest.json
-  - .agents/mcp_config.json
-  - .cursor/mcp.json
-  - .vscode/mcp.json
   - .template-spec/agents/yss-skill-registry.yaml
   - .agents/skills/yss-implementation-contract-compiler/SKILL.md
   - .agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml
@@ -1894,8 +1891,6 @@ required_files:
   - tests/implementation-contract-compiler.test.mjs
   - tests/yss-skill-source-index.test.mjs
   - .agents/skills/yss-repository/tests/profile-routing.test.mjs
-  - .template-source/agents/yss-ui-skills-integration.md
-  - .template-spec/user-guide/yss-ui-mcp.md
   - .template-spec/agents/digital-human-roles.yaml
   - .template-spec/process/lifecycle-registry.yaml
   - .template-spec/process/lifecycle-registry-baseline.json
@@ -2056,10 +2051,6 @@ syntax_files:
   - scripts/lib/lifecycle-transition.mjs
   - scripts/verify-lifecycle-scenarios
   - scripts/verify-lifecycle-transition-scenarios
-  - scripts/verify-frontend-scaffold-generator-scenarios
-  - .agents/skills/yss-frontend-scaffold-generator/scripts/generate_scaffold.mjs
-  - .agents/skills/yss-frontend-scaffold-generator/scripts/run_scaffold_verification.mjs
-  - .agents/skills/yss-frontend-scaffold-generator/scripts/generate_and_verify_scaffold.mjs
   - scripts/verify-matt-yss-integration-scenarios
   - scripts/verify-prototype-backend-scaffold-scenarios
   - scripts/verify-yss-implementation-contract-compiler-scenarios
@@ -2420,6 +2411,7 @@ routing:
       - skills
   - patterns:
       - .agents/mcp_config.json
+      - .agents/rules/yss-ai-skills.md
       - .cursor/mcp.json
       - .vscode/mcp.json
       - .template-spec/user-guide/yss-ui-mcp.md
@@ -3107,7 +3099,6 @@ gates:
       - check.skill-registry-unit
       - check.harness-upgrade-generated
       - check.skill-supply-chain-unit
-      - check.yss-ui-skill-integration
       - check.harness-skill-scope
       - check.skill-lock-readers
     audit_status: conservative-complete

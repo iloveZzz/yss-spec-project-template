@@ -4,7 +4,6 @@
   "canonical_root": ".agents/skills",
   "skills": [
     "setup-yss-harness",
-    "yss-api-integration",
     "yss-audit-log",
     "yss-application",
     "yss-cache",
@@ -15,10 +14,6 @@
     "yss-dto",
     "yss-excel-mvc",
     "yss-exception",
-    "yss-formily",
-    "yss-formily-schema-generator",
-    "yss-frontend-scaffold-generator",
-    "yss-hook",
     "yss-layered-mvc-scaffold-generator",
     "yss-mybatis",
     "yss-openapi-draft-review",
@@ -30,8 +25,6 @@
     "yss-implementation-contract-compiler",
     "yss-security-algorithm",
     "yss-skill-source-index-refresh",
-    "yss-ui",
-    "yss-ui-business-page-generation",
     "yss-up-springboot3",
     "yss-userinfo",
     "yss-validation",
@@ -65,24 +58,17 @@
       ]
     },
     {
-      "title": "前端",
-      "description": "用于 YSS Vue、Formily、页面模块和 UI 实现的技能。",
+      "title": "产品设计",
+      "description": "用于 YSS 设计系统与产品原型阶段的技能。",
       "skills": [
         "yss-design-system",
-        "yss-formily",
-        "yss-formily-schema-generator",
-        "yss-frontend-scaffold-generator",
-        "yss-hook",
-        "yss-prototype-stage",
-        "yss-ui",
-        "yss-ui-business-page-generation"
+        "yss-prototype-stage"
       ]
     },
     {
       "title": "OpenAPI",
       "description": "用于 YSS API 设计、审查、治理和生成集成的技能。",
       "skills": [
-        "yss-api-integration",
         "yss-openapi-draft-review",
         "yss-openapi-governance"
       ]

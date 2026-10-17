@@ -16,14 +16,13 @@ test("writes Node-labelled generated indexes", async () => {
     await writeFile(path.join(source,"pom.xml"),platformPom(javaVersion,bootVersion));
     await writeFile(path.join(source,"yss-microservice-components/yss-component-cache-parent/src/main/java/demo/CacheConfiguration.java"),"class CacheConfiguration {}");
   }
-  for(const name of ["yss-cache","yss-ui"])await mkdir(path.join(skills,name),{recursive:true});
+  for(const name of ["yss-cache"])await mkdir(path.join(skills,name),{recursive:true});
   await refresh({skillsRoot:skills,sources:{"boot2-java8":boot2,"boot3-java17":boot3},now:"2026-01-01T00:00:00Z"});
   assert.match(await readFile(path.join(skills,"yss-cache/references/source-index.md"),"utf8"),/backend-component-source-index-router-v1/);
   assert.match(await readFile(path.join(skills,"yss-cache/references/source-index.boot2-java8.md"),"utf8"),/Platform line: `boot2-java8`/);
   assert.match(await readFile(path.join(skills,"yss-cache/references/source-index.boot3-java17.md"),"utf8"),/Platform line: `boot3-java17`/);
-  assert.match(await readFile(path.join(skills,"yss-ui/references/frontend-docs.md"),"utf8"),/components/);
   await assert.rejects(
-    () => refresh({skillsRoot:skills,sources:{"boot3-java17":boot2},frontend:false,backendSkills:["yss-cache"]}),
+    () => refresh({skillsRoot:skills,sources:{"boot3-java17":boot2},backendSkills:["yss-cache"]}),
     /source root does not match boot3-java17/,
   );
 });
@@ -74,7 +73,6 @@ test("writes a source-backed MyBatis capability matrix without absolute paths", 
     skillsRoot: skills,
     sources: { "boot2-java8": source },
     now: "2026-01-01T00:00:00Z",
-    frontend: false,
     backendSkills: ["yss-mybatis"],
     stateResolver: () => ({
       commit: "a".repeat(40),
@@ -142,7 +140,7 @@ test("records Maven lineage and platform signals and validates the exact compone
   execFileSync("git", ["add", "."], { cwd: source });
   execFileSync("git", ["commit", "-qm", "fixture"], { cwd: source });
 
-  await refresh({ skillsRoot: skills, sources: { "boot2-java8": source }, frontend: false, backendSkills: ["yss-validation"], now: "2026-01-01T00:00:00Z" });
+  await refresh({ skillsRoot: skills, sources: { "boot2-java8": source }, backendSkills: ["yss-validation"], now: "2026-01-01T00:00:00Z" });
   const index = await readFile(path.join(skills, "yss-validation/references/source-index.boot2-java8.md"), "utf8");
   assert.match(index, /backend-component-source-index-v2/);
   assert.match(index, /GAV `com\.yss\.cloud:yss-component-validation-jsr303:2\.0\.0-SNAPSHOT`/);

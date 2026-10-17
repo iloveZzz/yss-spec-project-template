@@ -195,11 +195,7 @@ HTML 原型：
 
 YSS UI / Vue：
 
-- 业务页面实现与生命周期编排统一走 `yss-ui` 和 `yss-ui-business-page-generation`。
-- 新业务表单使用 `YFormily` schema；`YssFormily` 仅用于历史兼容。
-- 表格使用 `YTable`，列定义使用项目约定字段。
-- 高度自适应使用 `useTableHeight` / `useTreeHeight`。
-- 请求、分页、筛选参数下沉到 Hook。
+- 生产页面、表单、表格、Hook 与 API 接入的实现规范已从本模板退役，由独立的前端规格与 CLI 维护；本技能只提供设计语义与一致性门禁。
 
 ## 评审清单
 

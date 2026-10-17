@@ -49,3 +49,39 @@ test('分发验证脚本与旧试点不再依赖前端实例', () => {
     assert.doesNotMatch(text, /frontend-delivery-boundary|verify-frontend-delivery-scenarios|enforceFrontendDelivery/, ref);
   }
 });
+
+const RETIRED_FRONTEND_SKILLS = ['file-export-download', 'formily-foundation', 'formily-linkage-effects', 'formily-mode-slot-detail', 'formily-step-flow', 'frontend-commit',
+  'theme-token-usage', 'yedit-table-usage', 'yss-api-integration', 'yss-formily', 'yss-formily-schema-generator', 'yss-frontend-scaffold-generator', 'yss-hook',
+  'yss-ui', 'yss-ui-business-page-generation', 'ytable-usage', 'ytree-usage'];
+
+test('前端技能已整线退役：无目录、投影、注册表、锁或公开清单条目', () => {
+  const registry = parse(read('.template-spec/agents/yss-skill-registry.yaml'));
+  const registered = new Set(registry.skills.map((skill) => skill.id));
+  const lock = JSON.parse(read('skills-lock.json'));
+  const publicSkills = JSON.parse(read('yss-public-skills.json'));
+  const retiredIds = read('scripts/verify-retired-skill-ids');
+  for (const id of RETIRED_FRONTEND_SKILLS) {
+    for (const base of ['.agents/skills', '.claude/skills']) assert.equal(existsSync(path.join(root, base, id)), false, `${base}/${id} 不应存在`);
+    assert.equal(registered.has(id), false, `${id} 不应在注册表`);
+    assert.equal(id in lock.skills.shared, false, `${id} 不应在锁`);
+    assert.equal(publicSkills.skills.includes(id), false, `${id} 不应公开发布`);
+    assert.ok(retiredIds.includes(`"${id}"`), `${id} 必须登记在 verify-retired-skill-ids`);
+  }
+  assert.equal('iloveZzz/yss-ui' in lock.sources, false);
+  assert.equal(registry.capabilities.some((row) => row.id === 'scaffold.frontend-vue3'), false);
+  assert.equal(registry.recipes.some((row) => row.id === 'frontend.vue3-scaffold'), false);
+  assert.match(read('.template-spec/agents/skill-migrations.md'), /## 前端技能整线退役（2026-10-17）/);
+});
+
+test('YSS UI 上游清单、MCP 配置与前端场景入口已删除，校验器不再读取它们', () => {
+  for (const ref of ['.agents/skills/.yss-skills-manifest.json', '.agents/rules/yss-ai-skills.md', '.agents/mcp_config.json', '.cursor/mcp.json', '.vscode/mcp.json',
+    '.template-spec/user-guide/yss-ui-mcp.md', '.template-source/agents/yss-ui-skills-integration.md', '.template-source/tooling/node/test/yss-ui-skill-integration.test.mjs',
+    'tests/scenarios/verify-yss-ui-scenarios.mjs', 'tests/scenarios/verify-frontend-scaffold-generator-scenarios.mjs']) {
+    assert.equal(existsSync(path.join(root, ref)), false, `${ref} 不应存在`);
+  }
+  for (const ref of ['scripts/verify-upstream-skill-source', 'scripts/lib/skill-supply-chain.mjs']) {
+    assert.doesNotMatch(read(ref), /yss-skills-manifest|validateYssUiSkillManifest/, ref);
+  }
+  const route = parse(read('.template-spec/process/orchestration/workflow/work-units/work-unit.slice-implementation.yaml')).work_unit_routes['work-unit.slice-implementation'];
+  assert.equal(route.frontend_route, undefined);
+});

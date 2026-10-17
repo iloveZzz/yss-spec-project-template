@@ -44,7 +44,7 @@ work_unit_routes:
       verification_targets: not-applicable
     version_boundary:
       h2_design_standard: html-css-js-offline
-      prototype_must_not_call: yss-ui
+      prototype_must_not_call: production-component-library
       production_version_source: implementation-lockfile
     human_gate: gate.product-design-approved
     applies_when: product_design_impact

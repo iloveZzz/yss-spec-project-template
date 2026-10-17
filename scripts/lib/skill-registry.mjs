@@ -564,7 +564,7 @@ export function validateSkillRegistry(registry, { lock, compilerContract, lifecy
   requireStringSet(backendDomains.domain_ids, [...BACKEND_SKILL_DOMAINS], "backend_skill_domains.domain_ids");
   requireObject(backendDomains.assignments, "backend_skill_domains.assignments");
   const backendCapabilityOwners = [...new Set(registry.capabilities
-    .filter((capability) => capability.id !== "scaffold.frontend-vue3" && capability.primary_skill.startsWith("yss-"))
+    .filter((capability) => capability.primary_skill.startsWith("yss-"))
     .map((capability) => capability.primary_skill))];
   requireStringSet(Object.keys(backendDomains.assignments), backendCapabilityOwners, "backend_skill_domains.assignments");
   for (const [skillId, domainId] of Object.entries(backendDomains.assignments)) {
@@ -711,23 +711,8 @@ export function validateSkillRegistry(registry, { lock, compilerContract, lifecy
         if (deprecatedSkillIds.has(name)) fail(`生命周期路由不得引用 deprecated skill: ${routeId} -> ${name}`);
         if (!resolve(name)) fail(`生命周期路由引用了未登记技能: ${routeId} -> ${name}`);
       }
-      if (route.frontend_route) {
-        requireString(route.frontend_route.primary_skill, `${routeId}.frontend_route.primary_skill`);
-        requireString(route.frontend_route.page_generation_skill, `${routeId}.frontend_route.page_generation_skill`);
-        requireString(route.frontend_route.page_orchestration_skill, `${routeId}.frontend_route.page_orchestration_skill`);
-        const conditional = route.frontend_route.conditional_skills;
-        if (!conditional || typeof conditional !== "object" || Array.isArray(conditional)) fail(`${routeId}.frontend_route.conditional_skills 必须是对象`);
-        for (const [impact, names] of Object.entries(conditional)) {
-          if (!Array.isArray(names) || names.length === 0) fail(`${routeId}.frontend_route.conditional_skills.${impact} 必须是非空数组`);
-          for (const name of names) if (!resolve(name)) fail(`前端条件路由引用了未登记技能: ${routeId}.${impact} -> ${name}`);
-          if (route.frontend_route.not_applicable_reasons && typeof route.frontend_route.not_applicable_reasons[impact] !== "string") {
-            fail(`${routeId}.frontend_route.not_applicable_reasons.${impact} 必须是字符串`);
-          }
-        }
-        if (!resolve(route.frontend_route.primary_skill) || !resolve(route.frontend_route.page_generation_skill) || !resolve(route.frontend_route.page_orchestration_skill)) {
-          fail(`${routeId}.frontend_route 主入口引用了未登记技能`);
-        }
-      }
+      // 前端技能已整线退役（2026-10-17），生命周期路由不再声明前端条件路由。
+      if (route.frontend_route !== undefined) fail(`${routeId}.frontend_route 已随前端技能退役`);
       if (routeId === "work-unit.prototype-design-v2") {
         if (!route.skills.includes("prototype-review") || !route.supporting_skills.includes("prototype-review")) {
           fail("原型工作单元必须包含独立 prototype-review supporting skill");

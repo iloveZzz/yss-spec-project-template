@@ -37,7 +37,7 @@ disable-model-invocation: true
 - H1 `visual-review`：浏览器可复验的 HTML/CSS/少量 JS 或设计工具导出；不得要求接收者安装 `package.json`、lockfile、Node 或组件 CLI。
 - H2 `flow-review`：新高保真优先使用 `vue-shadcn-prebuilt`（`react-shadcn-prebuilt` 仅历史只读），轻量路线使用 `html-css-js`，主流程与关键异常状态可操作；场景可重复触发并重置。制作阶段允许必要工具，接收者无需安装 Node 或组件库，也不依赖网络。复杂控件只模拟当前决策需要的行为；简化会改变关键结论时，按 shadcn 集成说明补齐组件行为；仍无法支撑的部分列为 gap 并回到设计澄清。
 - 原型代码默认 throwaway；可复用的是项目 Token、组件语义映射、状态、测试场景和验收标准。任何源码进入生产仍需 实现合同编译器、Slice Contract 和 TDD。
-- 原型阶段不得调用 `yss-ui`，不得读取生产组件 API 来制造“真实组件原型”。需要核验真实 YSS/AntDV 组件的事项写入 `implementation_handoff`，由前端实现计划、已批准切片的实现和实现还原验证负责。
+- 原型阶段不得调用生产组件库，不得读取生产组件 API 来制造“真实组件原型”。需要核验真实 YSS/AntDV 组件的事项写入 `implementation_handoff`，交给独立维护的前端规格与 CLI 处理。
 
 ## 事实、QA 与确认
 
@@ -73,7 +73,7 @@ Design QA 合并 visual、layout、interaction、content、accessibility、cross
 - 低保真未评审就选择技术栈；用主观评分代替确定性触发规则。
 - 空填 lockfile/fact pack；把自身生成图当成独立来源，或宣称已验证生产真实组件。
 - 重复抄写机器可采集的版本、digest、截图和 console；创建第二份状态机、QA 或 handoff 资产。
-- 把原型源码直接复制进生产，或在原型阶段调用 `yss-ui`。
+- 把原型源码直接复制进生产，或在原型阶段调用生产组件库。
 
 
 ## 既有 UI 的交接入口

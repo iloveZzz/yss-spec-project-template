@@ -11,7 +11,7 @@
 | H1 | `visual-review` | 仅需确认布局、密度、层级、文案或少量关键交互；不涉及多页面导航、复杂联动、权限、恢复、冲突或真实组件差异 | shadcn-vue + 项目 Token 离线预构建；轻量页面可使用原生 HTML 或设计工具导出，必须有浏览器可复验入口 |
 | H2 | `flow-review` | 多页面/路由、复杂表单联动、权限体验、失败恢复、并发冲突或需要可操作主流程测试 | shadcn-vue 可操作流程；轻量页面可用原生 HTML，同等流程和异常验收，交付离线资源包 |
 
-真实 YSS/AntDV 组件行为、lockfile、props、slots、events 或 Storybook 状态不是第三种原型档位。它们属于前端实现计划、已批准切片的生产实现与实现还原验证。原型中发现的相关不确定性写入 `implementation_handoff`，不得为解决它调用 `yss-ui` 或把实现仓组件代码引入原型。
+真实 YSS/AntDV 组件行为、lockfile、props、slots、events 或 Storybook 状态不是第三种原型档位。它们属于独立维护的前端规格与 CLI。原型中发现的相关不确定性写入 `implementation_handoff`，不得为解决它调用生产组件库或把实现仓组件代码引入原型。
 
 ## 共同资产
 
@@ -46,7 +46,7 @@
 ### 实现阶段交接
 
 - 若原型结论依赖真实 YSS/AntDV 组件能力，在 `implementation_handoff.production_component_assumptions` 中记录假设，在 `verification_targets` 中写明待验证行为。
-- 实现合同编译器 将这些事项编入 `frontend_implementation_plan`；真实组件事实在实现准备或进入已批准切片后由 `yss-ui` 基于目标 lockfile 核验，最终写入 `frontend_implementation_verification`。
+- 这些事项随原型交付交给独立维护的前端规格与 CLI；真实组件事实由其基于目标 lockfile 核验，本模板不编入前端实现计划。
 - 原型门禁只证明设计决策、流程与状态可验证，不得声称已证明生产组件兼容性。
 
 ## 条件 ideation

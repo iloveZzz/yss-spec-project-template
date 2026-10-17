@@ -1,6 +1,0 @@
-node_modules/
-packages/dist/
-.env.local
-.env.*.local
-.npmrc
-.yss/

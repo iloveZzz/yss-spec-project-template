@@ -23,7 +23,7 @@ function fixture(t) {
     mkdirSync(path.dirname(file), { recursive: true });
     writeFileSync(file, typeof value === 'string' ? value : stringify(value));
   }
-  const ids = ['yss-product-lifecycle', 'yss-prototype-stage', 'prototype-review', 'yss-domain', 'lombok', 'yss-ui'];
+  const ids = ['yss-product-lifecycle', 'yss-prototype-stage', 'prototype-review', 'yss-domain', 'lombok'];
   const registry = { status: 'active', canonical_content_root: '.agents/skills',
     skills: ids.map(id => ({ id, maturity: 'supported', aliases: [] })),
     capabilities: [{ id: 'layer.domain', primary_skill: 'yss-domain' }],
@@ -34,7 +34,6 @@ function fixture(t) {
   const contract = { lifecycle_native_entries: { default_entry: 'yss-product-lifecycle', formal_artifact_owner: 'yss-product-lifecycle' },
     work_unit_routes: Object.fromEntries(units.map(id => [id, { primary_skill: 'yss-product-lifecycle', skills: [] }])) };
   contract.work_unit_routes['work-unit.prototype-design-v2'].skills = ['yss-prototype-stage'];
-  contract.work_unit_routes['work-unit.slice-implementation'].skills = ['yss-ui'];
   put('yss-project.yaml', { schema_version: 1, repository_mode: 'template-source' });
   put('.template-spec/agents/yss-skill-registry.yaml', registry);
   put(CONTRACT, contract);
@@ -64,7 +63,7 @@ test('planning includes prototype review and conditional backend dependencies wi
   assert.equal(data.ready_for_agent, false);
   assert.equal(data.installable, false);
   assert.equal(data.platform_status[0].status, 'blocked');
-  assert.ok(data.omitted_frontend_routes.some(x => x.skill === 'yss-ui'));
+  assert.deepEqual(data.omitted_frontend_routes, []);
   assert.ok(data.blockers.some(x => x.startsWith('M4:')));
   assert.deepEqual(run(f.source).data, data);
 });

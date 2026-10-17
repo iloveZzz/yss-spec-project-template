@@ -35,7 +35,7 @@ owner: ai
 | scaffold_verification_ref | 新建工程必填，且 status=passed |
 | scaffold_architecture | `domain-driven` / `layered-mvc` / 不适用；required 时必须由用户确认 |
 | scaffold_decision_ref | `scaffold-architecture-decisions.yaml` 的 decision_id + digest |
-| scaffold_skill | `yss-ddd-scaffold-generator` / `yss-layered-mvc-scaffold-generator` / `yss-frontend-scaffold-generator` / none |
+| scaffold_skill | `yss-ddd-scaffold-generator` / `yss-layered-mvc-scaffold-generator` / none |
 | scaffold_target_confirmed | 是 / 否 / 不适用 |
 | target_git_url_or_output_dir |  |
 | init_git | true / false；必须来自真实用户确认 |

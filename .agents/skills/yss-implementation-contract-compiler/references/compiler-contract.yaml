@@ -169,11 +169,6 @@ project_scaffold_contract_schema:
         api_required_closure: [openapi_yaml, validation_record, independent_draft_review, freeze]
         api_same_original_bytes: true
         approval_gate: gate.engineering-contract-approved
-    frontend:
-      scaffold_kinds: [frontend-yss-vue3]
-      generators: [yss-frontend-scaffold-generator]
-      requires: [frontend, repository_scope, init_git]
-      openapi_modes: [frozen, not-applicable]
   common_required: [contract_id, contract_version, status, persisted_ref, current_version, delivery_role, scaffold_kind, generator_skill, implementation_repository, target_output_dir, repository_scope, init_git, allowed_write_paths, expected_evidence_files, verification_commands, approval, generation_policy]
   approved_by: yss-product-lifecycle
   generation_mode: controlled-generation
@@ -181,7 +176,7 @@ project_scaffold_contract_schema:
   force_overwrite: forbidden
   compatibility:
     backend_schema_v3: historical-manifest-read-only-recovery-audit
-    frontend_before_v4: unsupported
+    frontend: removed
 
 scaffold_contract_schema:
   schema_version: 3

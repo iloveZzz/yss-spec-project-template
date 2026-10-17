@@ -24,13 +24,3 @@ The refresh script maps component source path hints to two generated skill refer
 | `yss-security-algorithm` | `yss-microservice-components/yss-component-security-algorithm` |
 | `yss-userinfo` | `yss-microservice-components/yss-component-userinfo-starter` |
 | `yss-exception` | `yss-microservice-components/yss-component-exception` |
-
-Frontend docs are written to these skills:
-
-| Skill | Frontend references |
-| --- | --- |
-| `yss-ui` | components, hooks, skills docs |
-| `yss-hook` | hooks docs |
-| `ytable-usage` | hooks docs |
-| `yedit-table-usage` | hooks docs |
-| `ytree-usage` | hooks docs |

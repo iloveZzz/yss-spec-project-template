@@ -79,7 +79,7 @@ test("active YSS backend skill owners are assigned to exactly one of six domains
     "platform-governance-migration"
   ]));
   const activeOwners = [...new Set(registry.capabilities
-    .filter((capability) => capability.id !== "scaffold.frontend-vue3" && capability.primary_skill.startsWith("yss-"))
+    .filter((capability) => capability.primary_skill.startsWith("yss-"))
     .map((capability) => capability.primary_skill))].sort();
   assert.deepEqual(Object.keys(taxonomy.assignments).sort(), activeOwners);
   assert.equal(new Set(Object.keys(taxonomy.assignments)).size, activeOwners.length);

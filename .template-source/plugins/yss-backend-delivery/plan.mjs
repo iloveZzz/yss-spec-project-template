@@ -19,10 +19,6 @@ const UNITS = [
   'spec-synthesis', 'prototype-design-v2', 'technical-analysis',
   'implementation-repository-preparation', 'service-project-initialization', 'ticket-decomposition', 'slice-implementation', 'code-review',
 ].map(id => `work-unit.${id}`);
-// These omissions are packaging proposals, never runtime routing exemptions.
-const FRONTEND_IMPLEMENTATION = new Set([
-  'yss-ui', 'yss-ui-business-page-generation', 'yss-frontend-scaffold-generator',
-]);
 const RESOURCE_FAMILIES = [
   '.template-spec/agents', '.template-spec/plan', '.template-spec/architecture', '.template-spec/design',
   '.template-spec/engineering', '.template-spec/process', '.template-spec/templates', 'scripts',
@@ -95,7 +91,7 @@ export function planPlugin(sourceRoot = ROOT) {
   const capabilities = uniqueIndex(registry.capabilities, 'capability');
   const lifecycle = yaml(root, '.template-spec/process/lifecycle-registry.yaml');
   const workUnits = uniqueIndex(lifecycle.work_units, 'work-unit');
-  const selected = new Map(), edges = [], omitted = [], recipeIds = [], platformDependencies = new Map();
+  const selected = new Map(), edges = [], recipeIds = [], platformDependencies = new Map();
   const add = (requested, reason) => {
     const providers = (registry.platform_skills || []).filter(item => item.id === requested || item.aliases?.includes(requested));
     if (providers.length > 1) throw new Error(`ambiguous-platform-skill: ${requested}`);
@@ -109,10 +105,6 @@ export function planPlugin(sourceRoot = ROOT) {
     }
     const skill = resolveSkillForNewUse(registry, requested);
     if (!skills.has(skill.id)) throw new Error(`external-skill-requires-adapter: ${requested}`);
-    if (FRONTEND_IMPLEMENTATION.has(skill.id)) {
-      omitted.push({ skill: skill.id, reason });
-      return;
-    }
     if (!selected.has(skill.id)) selected.set(skill.id, { id: skill.id, maturity: skill.maturity, reasons: [] });
     if (!selected.get(skill.id).reasons.includes(reason)) selected.get(skill.id).reasons.push(reason);
   };
@@ -160,7 +152,8 @@ export function planPlugin(sourceRoot = ROOT) {
     scope: { start: 'Plan', terminal: 'Backend Delivery', runtime: 'macos-codex-desktop', implementation_side: 'backend' },
     proposed_work_units: UNITS, skills: skillList, recipes: recipeIds.sort(), dependency_edges: edges,
     platform_dependencies: [...platformDependencies.values()],
-    omitted_frontend_routes: omitted,
+    // 前端实现技能已从模板退役，生命周期路由不再携带前端条目；字段保留为空以兼容既有计划形状。
+    omitted_frontend_routes: [],
     project_binding: { purpose: 'selected-contract-and-skill-equality-only', digest: digest(JSON.stringify(bindingFiles)), files: bindingFiles },
     resources: { status: 'conservative-inventory-not-validated-distribution-closure', families: RESOURCE_FAMILIES, files: candidateFiles },
     platform_status: (platform.compatibility || []).map(item => ({ id: item.id, status: item.status })),

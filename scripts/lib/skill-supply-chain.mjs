@@ -6,7 +6,6 @@ import { fileURLToPath } from "node:url";
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const SOURCE_ROOT = path.join(ROOT, ".agents/skills");
 const LOCK_PATH = path.join(ROOT, "skills-lock.json");
-const YSS_UI_MANIFEST_PATH = path.join(SOURCE_ROOT, ".yss-skills-manifest.json");
 
 // Claude Code 只从 .claude/skills 发现项目技能（不读 .agents/skills），所以保留这一个投影根。
 export const PROJECTION_ROOTS = [".claude/skills"];
@@ -26,6 +25,8 @@ OBSOLETE.add("to-questionnaire");
 OBSOLETE.add("improve-codebase-architecture");
 OBSOLETE.add("wait-what");
 OBSOLETE.add("yss-harness-upgrade");
+// 前端技能整线退役（2026-10-17）：前端改由独立规格与 CLI 维护，见 skill-migrations.md。
+for (const id of ["file-export-download", "formily-foundation", "formily-linkage-effects", "formily-mode-slot-detail", "formily-step-flow", "frontend-commit", "theme-token-usage", "yedit-table-usage", "yss-api-integration", "yss-formily", "yss-formily-schema-generator", "yss-frontend-scaffold-generator", "yss-hook", "yss-ui", "yss-ui-business-page-generation", "ytable-usage", "ytree-usage"]) OBSOLETE.add(id);
 export function obsoleteCanonicalResidues(names, obsolete = OBSOLETE) {
   return names.filter((name) => obsolete.has(name)).sort();
 }
@@ -89,61 +90,6 @@ function projectionMatchesSource(source, target) {
     name === targetNames[index] && projectionMatchesSource(path.join(source, name), path.join(target, name)));
 }
 
-/**
- * 校验并返回 YSS UI 前端 skills 与 MCP 的上游集成合同。
- *
- * @param {unknown} manifest 待校验的清单对象
- * @returns {Record<string, any>} 已校验的清单
- */
-export function validateYssUiSkillManifest(manifest) {
-  if (!manifest || typeof manifest !== "object" || Array.isArray(manifest)) throw new TypeError("yss-ui 清单必须是对象");
-  const requiredStrings = ["source", "source_type", "source_root", "source_category", "source_revision", "adaptation_ref"];
-  for (const field of requiredStrings) {
-    if (typeof manifest[field] !== "string" || !manifest[field].trim()) throw new TypeError(`yss-ui 清单缺少 ${field}`);
-  }
-  if (manifest.schema_version !== 2) throw new TypeError("yss-ui 清单 schema_version 必须为 2");
-  if (!/^[0-9a-f]{40}$/.test(manifest.source_revision)) throw new TypeError("yss-ui source_revision 必须是完整 Git SHA");
-  if (!manifest.package || typeof manifest.package.name !== "string" || typeof manifest.package.version !== "string") {
-    throw new TypeError("yss-ui 清单缺少 package name/version");
-  }
-  if (!Array.isArray(manifest.excluded_categories) || manifest.excluded_categories.some((item) => typeof item !== "string" || !item)) {
-    throw new TypeError("yss-ui 清单缺少有效 excluded_categories");
-  }
-  if (!Array.isArray(manifest.excluded_skills) || manifest.excluded_skills.some((item) => typeof item !== "string" || !item)) {
-    throw new TypeError("yss-ui 清单缺少有效 excluded_skills");
-  }
-  if (!Array.isArray(manifest.skills) || !manifest.skills.length) throw new TypeError("yss-ui 清单缺少 skills");
-  const upstreamNames = new Set();
-  const canonicalNames = new Set();
-  for (const skill of manifest.skills) {
-    if (!skill || typeof skill.upstream !== "string" || typeof skill.canonical !== "string") throw new TypeError("yss-ui skill 缺少 upstream/canonical");
-    if (skill.upstream === "java-backend-commit") throw new TypeError("yss-ui 前端清单不得包含 java-backend-commit");
-    if (manifest.excluded_skills.includes(skill.upstream)) throw new TypeError(`yss-ui 清单包含已排除 skill: ${skill.upstream}`);
-    if (upstreamNames.has(skill.upstream)) throw new TypeError(`upstream 重复: ${skill.upstream}`);
-    if (canonicalNames.has(skill.canonical)) throw new TypeError(`canonical 重复: ${skill.canonical}`);
-    if (!/^[0-9a-f]{64}$/.test(skill.upstream_hash ?? "")) throw new TypeError(`${skill.canonical} 缺少有效 upstream_hash`);
-    upstreamNames.add(skill.upstream);
-    canonicalNames.add(skill.canonical);
-  }
-  const mcp = manifest.mcp;
-  if (!mcp || typeof mcp.package !== "string" || typeof mcp.version !== "string" || typeof mcp.components_version !== "string" || typeof mcp.server_name !== "string") {
-    throw new TypeError("yss-ui 清单缺少 MCP package/version/server 信息");
-  }
-  if (!Array.isArray(mcp.project_configs) || !mcp.project_configs.length) throw new TypeError("yss-ui 清单缺少 MCP project_configs");
-  const configPaths = new Set();
-  for (const config of mcp.project_configs) {
-    if (!config || typeof config.path !== "string" || !["mcpServers", "servers"].includes(config.container)) throw new TypeError("yss-ui MCP project_config 无效");
-    if (configPaths.has(config.path)) throw new TypeError(`yss-ui MCP config path 重复: ${config.path}`);
-    configPaths.add(config.path);
-  }
-  if (typeof mcp.global_install_guide !== "string" || !mcp.global_install_guide) throw new TypeError("yss-ui MCP 缺少 global_install_guide");
-  return manifest;
-}
-
-
-function loadYssUiSkillManifest() {
-  return validateYssUiSkillManifest(JSON.parse(readFileSync(YSS_UI_MANIFEST_PATH, "utf8")));
-}
 function git(args) { return spawnSync("git", args, { cwd: ROOT, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }); }
 function trackedPaths() {
   const result = git(["ls-files", "-z", "--", ...PROJECTION_ROOTS]);
@@ -274,9 +220,6 @@ function metadata(name, skillPath, directory, previous, canonical = false, sourc
 }
 export function updateSkillLock(arguments_ = process.argv.slice(2), { hashCache = new Map() } = {}) {
   const oldLock = parseLock(); const projectionRoots = projectionRootsFor(oldLock); const previous = priorMetadata(oldLock); const sources = sourceRevisionMap(oldLock, arguments_); const upstreamRoot = option(arguments_, "upstream-root");
-  const yssUiManifest = loadYssUiSkillManifest();
-  sources[yssUiManifest.source] = { ...(sources[yssUiManifest.source] ?? {}), revision: yssUiManifest.source_revision };
-  const yssUiSkills = new Map(yssUiManifest.skills.map((skill) => [skill.canonical, skill]));
   if (upstreamRoot && !existsSync(upstreamRoot)) throw new TypeError(`--upstream-root 不存在: ${upstreamRoot}`);
   const additions = arguments_.filter((arg) => arg.startsWith("--add=")).map((arg) => arg.slice(6));
   const removals = new Set(arguments_.filter((arg) => arg.startsWith("--remove=")).map((arg) => arg.slice(9)));
@@ -290,16 +233,6 @@ export function updateSkillLock(arguments_ = process.argv.slice(2), { hashCache 
   const targets = [".agents/skills", ...projectionRoots];
   const shared = Object.fromEntries(sharedNames.map((name) => {
     const [item, effectiveHash] = metadata(name, `.agents/skills/${name}/SKILL.md`, path.join(SOURCE_ROOT, name), previous, true, sources, upstreamRoot, hashCache);
-    const yssUiSkill = yssUiSkills.get(name);
-    if (yssUiSkill) {
-      item.source = yssUiManifest.source;
-      item.sourceType = yssUiManifest.source_type;
-      item.skillPath = `${yssUiManifest.source_root}/${yssUiSkill.upstream}/SKILL.md`;
-      item.sourceRevision = yssUiManifest.source_revision;
-      item.upstreamHash = yssUiSkill.upstream_hash;
-      if (effectiveHash !== item.upstreamHash) item.adaptationRef = yssUiManifest.adaptation_ref;
-      else delete item.adaptationRef;
-    }
     item.targets = targets;
     return [name, previous[name]?.effectiveHash === undefined ? item : withEffectiveHash(item, effectiveHash)];
   }));

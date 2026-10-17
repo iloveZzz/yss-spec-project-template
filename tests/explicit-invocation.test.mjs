@@ -23,7 +23,7 @@ const explicit = registry.skills.filter((skill) => mode(skill) === "user").map((
 
 test("显式技能集合固定：增减必须是有意的改动，并同步更新本清单", () => {
   assert.deepEqual(explicit, [
-    "cross-repo-implementation-routing", "frontend-commit", "git-commit-core", "handoff", "implement", "implementation-repo-onboarding",
+    "cross-repo-implementation-routing", "git-commit-core", "handoff", "implement", "implementation-repo-onboarding",
     "java-backend-commit", "llm-wiki", "prototype-review", "publish-skills-sh", "setup-matt-pocock-skills", "to-spec", "to-tickets", "triage",
     "wayfinder", "yss-backend-spec-review", "yss-implementation-contract-compiler", "yss-openapi-draft-review", "yss-prototype-stage",
     "yss-skill-source-index-refresh", "yss-stage-decision", "yss-tactical-design", "yss-technical-design",
@@ -44,7 +44,7 @@ test("AC-013：注册表标为显式而 SKILL.md 缺 disable-model-invocation �
     return fs.existsSync(file) ? fs.readFileSync(file, "utf8") : null;
   };
   assert.doesNotThrow(() => validateSkillRegistry(registry, { skillMetadata: metadata, skillSource: source }));
-  for (const id of ["frontend-commit", "java-backend-commit", "publish-skills-sh", "yss-skill-source-index-refresh", "llm-wiki"]) {
+  for (const id of ["java-backend-commit", "publish-skills-sh", "yss-skill-source-index-refresh", "llm-wiki"]) {
     assert.throws(() => validateSkillRegistry(registry, {
       skillMetadata: metadata,
       skillSource: (target) => (target === id ? source(target).replace(/^disable-model-invocation: true\r?\n/m, "") : source(target)),

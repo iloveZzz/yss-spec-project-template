@@ -42,7 +42,6 @@ skill_source_contract:
   lock_version: 3
   source_revisions_required:
     - mattpocock/skills
-    - iloveZzz/yss-ui
   adaptation_ref_required_when_effective_diff: true
   retired_shared_skills:
     - yss-antd-design
@@ -82,6 +81,23 @@ skill_source_contract:
     - yss-domain-layer-reference
     - yss-infrastructure-layer-reference
     - yss-web-layer-reference
+    - file-export-download
+    - formily-foundation
+    - formily-linkage-effects
+    - formily-mode-slot-detail
+    - formily-step-flow
+    - frontend-commit
+    - theme-token-usage
+    - yedit-table-usage
+    - yss-api-integration
+    - yss-formily
+    - yss-formily-schema-generator
+    - yss-frontend-scaffold-generator
+    - yss-hook
+    - yss-ui
+    - yss-ui-business-page-generation
+    - ytable-usage
+    - ytree-usage
 skill_preflight:
   command: scripts/query-lifecycle-context
   enable_flag: --check-skills
