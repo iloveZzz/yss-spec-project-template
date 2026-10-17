@@ -641,21 +641,18 @@ skills:
     instance_default_discoverable: true
     aliases: []
     impacts: [backend, lifecycle]
-    stack: java
   - id: yss-tactical-design
     layer: specialist
     maturity: draft
     instance_default_discoverable: false
     aliases: []
     impacts: [backend, lifecycle]
-    stack: java
   - id: yss-dto
     layer: specialist
     maturity: supported
     instance_default_discoverable: false
     aliases: []
     impacts: [backend, api]
-    stack: java
   - id: yss-excel-mvc
     layer: specialist
     maturity: supported
