@@ -58,7 +58,7 @@ execution_plan: architecture-iteration-v1-plan.md
 分五个阶段推进，验证收缩贯穿全程。前一阶段的出口没通过，就不开始后一阶段的写入：
 
 1. **S0 版本与迁移底座**：引入语义化版本；CLI 改钉模板 tag；迁移规则支持版本区间，删除动作可以逐文件拒绝；根仓去掉 yss-cli 子模块（FR-001～FR-004）。
-2. **S1 生成物与投影**：根锁瘦身、生成物只在发布时重新生成（提交的副本由 CI 校验）；不再有任何技能投影根，只保留 `.agents/skills`（FR-005、FR-006；维护者 2026-10-12 决定连 `.claude/skills` 也不保留）。
+2. **S1 生成物与投影**：根锁瘦身、生成物只在发布时重新生成（提交的副本由 CI 校验）；不再有任何技能投影根，只保留 `.agents/skills`（FR-005、FR-006；维护者 2026-10-12 决定连 `.claude/skills` 也不保留）。**2026-10-16 修订**：Claude Code 不读取 `.agents/skills`，只从 `.claude/skills` 发现项目技能，spec Profile 因此恢复唯一投影根 `.claude/skills`（模板源为相对符号链接，Bundle 展开为副本）；`.codex/.cursor/.pi` 投影仍不恢复。见 `.template-spec/agents/skill-migrations.md`。
 3. **S2 Profile 并入**：打包时由内核与覆盖层组合；Profile 并入根仓 `profiles/*`，同步机制随之删除；AR-12c 后仅保留 design、backend 与共享覆盖层（FR-007、FR-008）。
 4. **S3 分层与单一实现**：内核分四层，不再有导入环；校验归 Go，工作流归 Node，分四步退役（FR-009～FR-011）。
 5. **S4 规则与 Agent 上下文**：编排合同拆分；Agent 通过 `yss lifecycle route` 获取规则摘录；schema 常驻两代（FR-012～FR-014）。
@@ -142,5 +142,5 @@ execution_plan: architecture-iteration-v1-plan.md
 |---|---|---|---|---|---|
 | Q-001 | 模板第一个 tag 的版本号 | **已决（2026-10-11）**：`v4.0.0` | 维护者 | 已解决 | FR-001、AC-001；计划第 6 节 |
 | Q-002 | Codex 独有的第三方插件 `product-design` 的归宿 | **已决（2026-10-11）**：从模板移出，由用户自行安装 | 维护者 | 已解决 | FR-006、AC-006；计划第 6 节 |
-| Q-003 | **已消除（2026-10-12）**：不再有 `.claude/skills` 链接，Windows 联接与 Cursor 符号链接问题不再适用。原问题：Windows 实例的 `.claude/skills` 用目录联接还是副本？ | 官方文档没写 Windows 的行为；Cursor 社区有符号链接相关的问题报告 | 实施者 | AR-04 | 实施记录，附当期官方文档链接与本机实测 |
+| Q-003 | **2026-10-16 重新适用于模板源**：实例由 Bundle 展开为副本，不受影响；在 Windows 上维护模板源时 `.claude/skills` 符号链接需要 `core.symlinks=true` 与开发者模式。此前（2026-10-12）记为已消除：不再有 `.claude/skills` 链接，Windows 联接与 Cursor 符号链接问题不再适用。原问题：Windows 实例的 `.claude/skills` 用目录联接还是副本？ | 官方文档没写 Windows 的行为；Cursor 社区有符号链接相关的问题报告 | 实施者 | AR-04 | 实施记录，附当期官方文档链接与本机实测 |
 | Q-004 | Node 独有的校验（context 对账与 UI 基线导入、handoff 消费细节等）补进 Go 的工作量有多大？ | 影响退役第 2、3 步的排期 | 实施者 | AR-09 开工前 | 实施记录 |

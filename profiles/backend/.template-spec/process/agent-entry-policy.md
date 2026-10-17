@@ -1,4 +1,4 @@
-# AGENTS.md — 后端专职 Harness 入口
+# 后端专职 Harness 详细入口政策
 
 > 本文件只保存常驻路由、硬门禁和禁止事项。本仓职责以 `.template-spec/process/harness-profile.yaml` 为准；生命周期 ID 以 `.template-spec/process/lifecycle-registry.yaml` 为准；影响面裁剪见 `.template-spec/process/harness-process-tailoring.md`。
 
@@ -130,6 +130,6 @@ README、用户指南和 `CLAUDE.md` 只解释或指向上述事实，不定义�
 
 ## 13. 专职交付边界
 
-后端仅负责当前业务切片的真实接口交付。战略原件在上游维护；Freeze 前收集前端消费需求。交付使用 `scripts/backend-delivery`，合同见 `.template-spec/process/frontend-backend-delivery.md`。本仓正式 verification 或日常本端验证通过只代表后端可交接，整体完成须统一管理方核验前端及端到端证据。
+后端仅负责当前业务切片的真实接口交付。战略原件在上游维护；Freeze 前收集前端消费需求。交付使用 `scripts/backend-delivery`。本仓正式 verification 或日常本端验证通过只代表后端可交接，整体完成须统一管理方核验前端及端到端证据。
 
 分析角色不授予另一端代码写入；本端完成不等于跨端业务验收。纯 UI 的后端不适用须有当前依据；真实 API、数据与跨仓依赖必须对齐。独立脚手架只生成机械结构，不授予业务实施。

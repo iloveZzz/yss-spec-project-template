@@ -132,6 +132,8 @@
       ".template-spec/agents/backend-architecture-profiles.md",
       ".agents/skills/yss-design-system/SKILL.md",
       ".agents/skills/yss-design-system/references/data-quality-theme.md",
+      ".claude/skills/yss-design-system/SKILL.md",
+      ".claude/skills/yss-design-system/references/data-quality-theme.md",
       "yss-project.yaml"
     ],
     "exampleDocPaths": [],
@@ -382,7 +384,8 @@
       ],
       "files": [
         ".template-spec/process/plan-migration.md",
-        ".template-spec/process/plan-spec-quality.md"
+        ".template-spec/process/plan-spec-quality.md",
+        ".template-spec/templates/clarification-log-template.md"
       ],
       "scripts": [
         "scripts/verify-plan-spec-entry",
@@ -401,7 +404,8 @@
         ".template-spec/architecture/templates/functional-architecture-template.md"
       ],
       "scripts": [
-        "scripts/verify-business-tickets"
+        "scripts/verify-business-tickets",
+        "scripts/analyze-artifacts"
       ],
       "skills": []
     },

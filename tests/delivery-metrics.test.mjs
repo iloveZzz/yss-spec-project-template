@@ -50,3 +50,22 @@ test('命令行只读输出 JSON，未知参数拒绝', t => {
   assert.throws(() => execFileSync(script, ['--bogus'], { encoding: 'utf8', stdio: 'pipe' }), /未知参数/);
   assert.deepEqual(fs.readdirSync(root), [], '不写入被检查的实例');
 });
+
+test('单记录证据按路线与进度统计，开放阻断项与 standard 决定可机读；澄清记录按状态计数', t => {
+  const root = instance(t);
+  const record = (evidence) => `# Ticket\n\n${DAILY_EVIDENCE_MARKER}\n\`\`\`json\n${JSON.stringify(evidence)}\n\`\`\`\n`;
+  write(root, '.work/a/task.md', record({ delivery_path: 'daily' }));
+  write(root, '.work/b/task.md', record({ delivery_path: 'standard', standard_decision: { decision: 'approved' }, implementation: { actor_id: 'dev' }, review: { result: 'passed', blocking_findings: [] } }));
+  write(root, '.work/c/task.md', record({ delivery_path: 'daily', implementation: { actor_id: 'dev' }, review: { result: 'failed', blocking_findings: [{ id: 'F1' }, { id: 'F2' }] } }));
+  write(root, '.work/d/task.md', `# Ticket\n\n${DAILY_EVIDENCE_MARKER}\n不是 JSON\n`);
+  write(root, '.work/b/clarification-log.md', '| 编号 | 问题 | 选项 | 决定 | 影响 | 决策人 | 回复 | 状态 |\n|---|---|---|---|---|---|---|---|\n| CQ-1 | q | a | a | AC-1 | 张三 | r | decided |\n| CQ-2 | q | a |  | AC-2 |  |  | open |\n| CQ-3 | q | a | b | AC-1 | 张三 | r | superseded |\n');
+  const m = collectDeliveryMetrics(root);
+  assert.equal(m.daily.records, 4);
+  assert.deepEqual(m.single_record.by_path, { daily: 2, standard: 1 });
+  assert.deepEqual(m.single_record.by_progress, { planned: 1, 'reviewed-passed': 1, implemented: 1 });
+  assert.equal(m.single_record.unparsed, 1, '无法解析的证据只计数，不猜字段');
+  assert.equal(m.single_record.open_blocking_findings, 2);
+  assert.equal(m.single_record.standard_decisions, 1);
+  assert.deepEqual(m.clarification, { logs: 1, open: 1, decided: 1, superseded: 1, other: 0 });
+  assert.ok(m.unavailable.rework_rounds && m.unavailable.cycle_time && m.unavailable.daily_rejection_reasons);
+});

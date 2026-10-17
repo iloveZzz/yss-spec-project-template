@@ -1,7 +1,8 @@
 import path from 'node:path';
 import {verificationCheckId,verificationPatternMatches as patternMatches,compileVerificationCheck} from '../../.template-source/scripts/lib/verification-gates.mjs';
 export {verificationCheckId,patternMatches};
-export function applyDailyVerificationSelection(plan,{selection='allowlist',config,profile='fast',mandatoryChecks=[]}) {
+// tier: slow 的日常检查在 fast 中延后：命中也不执行，记入 selection.omitted（报告列为未执行）；includeSlow 或 release 时照常执行。
+export function applyDailyVerificationSelection(plan,{selection='allowlist',config,profile='fast',mandatoryChecks=[],includeSlow=false}) {
   if(!['legacy','shadow','allowlist'].includes(selection))throw new TypeError(`未知 selection: ${selection}`);
   const definitions=new Map();
   for(const [group,value] of Object.entries(config.groups))for(const raw of value.commands){
@@ -14,6 +15,7 @@ export function applyDailyVerificationSelection(plan,{selection='allowlist',conf
     const definition=raw.run?raw:definitions.get(raw.id);
     if(!definition)throw new TypeError(`未知日常检查: ${raw.id}`);
     if(!/^check\.[a-zA-Z0-9._-]+$/.test(raw.id)||checks.has(raw.id)||raw.inputs_complete!==true||!Array.isArray(raw.input_patterns)||!raw.input_patterns.length||raw.input_patterns.some(value=>typeof value!=='string'||!value)||!Array.isArray(raw.depends_on)||raw.depends_on.some(value=>typeof value!=='string'||!value)||typeof raw.failure_mode!=='string'||!raw.failure_mode)throw new TypeError(`INCOMPLETE_VERIFICATION_INPUTS: ${raw.id}`);
+    if(raw.tier!==undefined&&raw.tier!=='slow')throw new TypeError(`日常检查 tier 只能为 slow: ${raw.id}`);
     checks.set(raw.id,{...definition,...raw});
   }
   const syntaxPackage=file=>path.basename(file)==='package.json'&&(config.syntax_files||[]).some(ref=>ref.startsWith(path.posix.dirname(file)==='.'?'':`${path.posix.dirname(file)}/`));
@@ -28,9 +30,15 @@ export function applyDailyVerificationSelection(plan,{selection='allowlist',conf
   for(const id of checks.keys())validate(id);
   const reasons=new Map();
   const select=(id,reason)=>{if(reasons.has(id))return;let item=checks.get(id);if(!item){const definition=definitions.get(id);if(!definition)throw new TypeError(`未知检查依赖: ${id}`);item={...definition,depends_on:definition.depends_on||[]};checks.set(id,item);}reasons.set(id,reason);for(const dep of item.depends_on)select(dep,`dependency-of:${id} -> ${checks.get(dep).failure_mode}`);};
-  for(const item of checks.values()) {
+  const deferred=[];
+  // includeSlow==='only'：定时/按需运行只执行全部 tier: slow 检查，不看变化路径。
+  if(profile==='fast'&&includeSlow==='only')for(const item of checks.values()){if(item.tier==='slow')select(item.id,`slow-tier: ${item.failure_mode}`);}
+  else for(const item of checks.values()) {
     const matched=plan.changed_files.filter(file=>item.input_patterns.some(pattern=>matches(file,pattern)));
-    if(matched.length)select(item.id,`input-match:${matched.join(', ')} -> ${item.failure_mode}`);
+    if(!matched.length)continue;
+    const reason=`input-match:${matched.join(', ')} -> ${item.failure_mode}`;
+    if(profile==='fast'&&item.tier==='slow'&&!includeSlow){deferred.push({...compileVerificationCheck(item,{group:item.group,profile,taskId:item.id}),selection_reason:reason,reason:'deferred-slow-check'});continue;}
+    select(item.id,reason);
   }
   for(const id of mandatoryChecks){if(!checks.has(id)){const definition=definitions.get(id);if(!definition)throw new TypeError(`未知发行必需检查: ${id}`);checks.set(id,{...definition,depends_on:definition.depends_on||[]});}select(id,'release-required');}
   if(profile==='release') {
@@ -41,5 +49,5 @@ export function applyDailyVerificationSelection(plan,{selection='allowlist',conf
   const candidate=[...checks.values()].filter(item=>reasons.has(item.id)).map(item=>({...compileVerificationCheck(item,{group:item.group,profile,taskId:item.id}),selection_reason:reasons.get(item.id)}));
   if(profile==='release')return {...plan,commands:candidate,groups:[...new Set(candidate.map(item=>item.group))],selection:{requested:'impact',effective:'impact',eligible:true,qualified:false,omitted:plan.commands.filter(item=>!candidate.some(check=>check.id===item.id)).map(item=>({id:item.id,reason:'outside-release-inputs'}))}};
   const commands=selection==='allowlist'?candidate:plan.commands.map((item,index)=>({...item,task_id:item.task_id||`daily.group.${index+1}`,resources:[...new Set([...(item.resources||[]),...(checks.get(item.id)?.resources||[])])],selection_reason:`explicit-group:${item.group}`}));
-  return {...plan,strategy:'daily-necessary',commands,groups:[...new Set(commands.map(item=>item.group))],required_files:[],supplemental_checks:[],gates:[],not_applicable:[],selection:{requested:selection,effective:selection,eligible:!unknown.length,qualified:false,baseline:plan.commands,candidate,omitted:plan.commands.filter(item=>!candidate.some(check=>check.id===item.id)).map(item=>({...item,reason:'outside-daily-inputs'})),fallback_reason:unknown.length?`incomplete-daily-inputs:${unknown.join(', ')}`:null}};
+  return {...plan,strategy:'daily-necessary',commands,groups:[...new Set(commands.map(item=>item.group))],required_files:[],supplemental_checks:[],gates:[],not_applicable:[],selection:{requested:selection,effective:selection,eligible:!unknown.length,qualified:false,baseline:plan.commands,candidate,omitted:[...plan.commands.filter(item=>!candidate.some(check=>check.id===item.id)&&!deferred.some(check=>check.id===item.id)).map(item=>({...item,reason:'outside-daily-inputs'})),...deferred.filter(item=>!candidate.some(check=>check.id===item.id))],fallback_reason:unknown.length?`incomplete-daily-inputs:${unknown.join(', ')}`:null}};
 }

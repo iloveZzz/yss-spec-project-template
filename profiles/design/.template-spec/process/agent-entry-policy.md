@@ -1,4 +1,4 @@
-# AGENTS.md — 战略设计 Harness 入口
+# 战略设计 Harness 详细入口政策
 
 > 本文件只保存常驻路由、硬门禁和禁止事项。生命周期 ID 以 `.template-spec/process/lifecycle-registry.yaml` 为准；本仓边界以 `.template-spec/process/harness-profile.yaml` 为准；影响面裁剪见 `.template-spec/process/harness-process-tailoring.md`。
 

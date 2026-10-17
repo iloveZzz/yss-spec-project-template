@@ -50,6 +50,10 @@ node scripts/inspect-plan-spec diff --root . --before docs/baseline/spec.md --af
 
 问题真实性、方案优劣、目标合理性、验收场景充分性、原规则保真与语义等价均为人工审查事项。全文正文、风险和非目标仍必须审阅，不能只读结构化表。输入新鲜度是本次读取前后字节与真实路径一致，不等于未来仍有效。
 
+## 跨资产一致性汇总
+
+`scripts/analyze-artifacts --root <项目> --feature <功能包> [--json]` 在同一功能包上依次运行本诊断、业务票校验（含垂直切片对业务票的实现覆盖），以及在给出 `--decisions` 与 `--package` 时的阶段决定覆盖，把发现统一为 `{check, code, file, line, message, fix}`。未指定的输入按功能包内容识别；某项无法运行记为 `unassessed`，整体为 `incomplete`（退出码 2），不当作一致。退出码 0 表示无发现、1 表示有发现。它不改变阶段、批准或就绪状态；语义正确性仍需人工审阅。申请 `gate.spec-baseline-approved` 前，其 JSON 报告是 `check.artifact-consistency-analyzed` 所需的 `evidence.artifact-consistency-analysis`：结论须为 `consistent`，或剩余发现在批准记录中逐条处置；`incomplete` 不得作为证据。澄清过程的决定按 `.template-spec/templates/clarification-log-template.md` 记录。
+
 ## 差异与下游追溯
 
 `diff` 按稳定 ID 展示新增、修改、删除及引用字段变化；ID 重复时该条目无法唯一比较。原始差异同时提供共同前缀 / 后缀字节数、被替换字节和新增字节的 Base64，结合旧基线可精确还原新文件；章节正文、换行、重排和格式变化不会丢失。它不声称文本变化一定改变语义。旧基线缺失显示“无法比较旧内容”，不得用空文档冒充旧版本。

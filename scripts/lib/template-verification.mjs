@@ -116,7 +116,9 @@ export function planTemplateVerification({ profile = "fast", changedFiles = [], 
   }
   const compatibilityRequired = effectiveProfile === "release" || normalized.some((file) => (config.compatibility_patterns || []).some((pattern) => matches(file, pattern)));
   const plan = { source_requirement: profile === 'fast' ? 'current' : 'committed', compatibility_required: compatibilityRequired, requested_profile: profile, effective_profile: effectiveProfile, escalation_reason: escalationReason, changed_files: normalized, unknown_files: routed.unknown, groups: orderedGroups, commands, supplemental_checks:structuredClone(config.supplemental_checks||[]), required_files: config.required_files || [], syntax_files: config.syntax_files || [], max_concurrency: config.max_concurrency || 4 };
-  if(daily)return {...applyDailyVerificationSelection(plan,{selection,config}),compatibility_required:false,policy_digest:verificationPolicyDigest(config),fallback_reasons:[]};
+  // YSS_VERIFY_SLOW=1：fast 也执行命中的 tier: slow 检查；=only：只执行全部 tier: slow 检查（定时或按需）。
+  const slow=process.env.YSS_VERIFY_SLOW;
+  if(daily)return {...applyDailyVerificationSelection(plan,{selection,config,includeSlow:slow==='only'?'only':slow==='1'}),compatibility_required:false,policy_digest:verificationPolicyDigest(config),fallback_reasons:[]};
   const mandatory=(config.gates||[]).filter(g=>g.required_at_release&&g.execution_scope==='template-verification').flatMap(g=>g.check_ids);
   return buildReleasePlan(applyDailyVerificationSelection(plan,{selection:'allowlist',config,profile:'release',mandatoryChecks:mandatory}),{config});
 }

@@ -46,13 +46,47 @@ function revisionFindings(file, lines, sources) {
   return findings;
 }
 
+// 反引号路径与 Markdown 链接目标；只检查含 `/`、带扩展名或以 `/` 结尾的路径形 token。
+const PATH_TOKEN = /`([^`\s]+)`|\]\(([^)\s#]+)(?:#[^)]*)?\)/g;
+const PATH_SHAPE = /^[\w.\-\/\u4e00-\u9fff]+$/u;
+
+function pathCandidates(root, file, ref) {
+  const candidates = [path.join(root, ref), path.join(root, path.dirname(file), ref)];
+  const profile = /^profiles\/([^/]+)\//.exec(file);
+  if (profile) candidates.push(path.join(root, 'profiles', profile[1], ref));
+  return candidates;
+}
+
+// allow 项：`path` 精确匹配（以 `/` 结尾时按目录前缀），`prefix` 按字符串前缀。
+function allowed(item, ref) {
+  if (item.prefix) return ref.startsWith(item.prefix);
+  return ref === item.path || (item.path.endsWith('/') && ref.startsWith(item.path));
+}
+
+function pathRefFindings(root, file, lines, allow) {
+  const findings = [];
+  lines.forEach((line, index) => {
+    for (const match of line.matchAll(PATH_TOKEN)) {
+      const ref = (match[1] ?? match[2]).replace(/^\.\//, '');
+      if (/^[a-z]+:/i.test(ref) || !ref.includes('/') || !PATH_SHAPE.test(ref)) continue;
+      if (!/\.[A-Za-z0-9]+$|\/$/.test(ref)) continue;
+      if (allow.some((item) => allowed(item, ref))) continue;
+      if (pathCandidates(root, file, ref).some((candidate) => fs.existsSync(candidate))) continue;
+      findings.push({ file, line: index + 1, rule: 'path-ref', text: ref, detail: '引用路径不存在', authority: 'scripts/lib/doc-facts-patterns.json#pathRefs.allow' });
+    }
+  });
+  return findings;
+}
+
 export function checkDocFacts(root, { patternsPath = DEFAULT_PATTERNS_PATH } = {}) {
   const config = JSON.parse(fs.readFileSync(patternsPath, 'utf8'));
   const patterns = config.patterns.map((pattern) => ({ ...pattern, re: new RegExp(pattern.regex, 'g') }));
   const revisionFiles = new Set(config.revisionFiles ?? []);
   const sources = lockSources(root);
+  const pathRefFiles = new Set(expandFiles(root, config.pathRefs?.files ?? []));
+  const allow = config.pathRefs?.allow ?? [];
   const findings = [];
-  for (const file of expandFiles(root, config.files)) {
+  for (const file of expandFiles(root, [...config.files, ...pathRefFiles])) {
     const lines = fs.readFileSync(path.join(root, file), 'utf8').split('\n');
     const fileFindings = [];
     lines.forEach((line, index) => {
@@ -63,11 +97,13 @@ export function checkDocFacts(root, { patternsPath = DEFAULT_PATTERNS_PATH } = {
       }
     });
     if (revisionFiles.has(file)) fileFindings.push(...revisionFindings(file, lines, sources));
+    if (pathRefFiles.has(file)) fileFindings.push(...pathRefFindings(root, file, lines, allow));
     findings.push(...fileFindings.sort((left, right) => left.line - right.line));
   }
   return findings;
 }
 
 export function formatFinding(finding) {
+  if (finding.rule === 'path-ref') return `${finding.file}:${finding.line}  ${finding.text}  ${finding.detail} → 修正路径，或在 ${finding.authority} 登记并写明原因`;
   return `${finding.file}:${finding.line}  ${finding.text}  ${finding.detail} → 应链接 ${finding.authority}`;
 }

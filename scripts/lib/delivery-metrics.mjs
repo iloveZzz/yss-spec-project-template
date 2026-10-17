@@ -27,6 +27,34 @@ function readCheckpoint(file) {
   } catch { return null; }
 }
 
+// 日常 / standard 记录的证据段：标记后紧跟一个 fenced JSON；解析失败只计入 unparsed，不猜字段。
+export function dailyEvidence(text) {
+  const at = text.indexOf(DAILY_EVIDENCE_MARKER);
+  if (at < 0) return null;
+  const match = text.slice(at + DAILY_EVIDENCE_MARKER.length).match(/^\s*```json\n([\s\S]*?)\n```/);
+  if (!match) return undefined;
+  try { const value = JSON.parse(match[1]); return value && typeof value === "object" ? value : undefined; } catch { return undefined; }
+}
+
+// 进度只按记录里已有的证据判定：无实现 → planned；有实现无通过审查 → implemented；审查通过且无开放阻断项 → reviewed-passed。
+function progress(record) {
+  const review = record.review;
+  if (review && review.result === "passed" && Array.isArray(review.blocking_findings) && review.blocking_findings.length === 0) return "reviewed-passed";
+  return record.implementation ? "implemented" : "planned";
+}
+
+// 澄清记录表格行：| CQ-n | … | 状态 |，按最后一列统计。
+function clarificationRows(text) {
+  const rows = { open: 0, decided: 0, superseded: 0, other: 0 };
+  for (const line of text.split("\n")) {
+    const cells = line.split("|").map((cell) => cell.trim());
+    if (!/^CQ-\d+$/.test(cells[1] ?? "")) continue;
+    const state = cells[cells.length - 2];
+    rows[state in rows ? state : "other"] += 1;
+  }
+  return rows;
+}
+
 export function collectDeliveryMetrics(root = process.cwd()) {
   const base = fs.realpathSync(root);
   const result = {
@@ -34,10 +62,15 @@ export function collectDeliveryMetrics(root = process.cwd()) {
     scan_roots: [],
     governed: { checkpoints: 0, by_status: {}, by_stage: {}, blocked: 0, not_applicable: {}, blockers_open: 0 },
     daily: { records: 0 },
+    single_record: {
+      by_path: {}, by_progress: {}, unparsed: 0,
+      open_blocking_findings: 0, standard_decisions: 0,
+    },
+    clarification: { logs: 0, open: 0, decided: 0, superseded: 0, other: 0 },
     unavailable: {
       daily_rejection_reasons: "路径判定是只读命令，不落盘；被拒原因只在命令输出里，这里无法统计",
-      rework_rounds: "现行记录没有返工轮次字段",
-      review_blocking_findings: "审查结论以自由文本写在任务记录里，没有可机读的阻断项计数",
+      rework_rounds: "记录只保存当前证据，不保留历次审查或测试轮次",
+      cycle_time: "记录没有开始时间，无法计算周期",
     },
   };
   const roots = workScanRoots(base).filter((ref) => fs.existsSync(path.join(base, ref)));
@@ -61,8 +94,24 @@ export function collectDeliveryMetrics(root = process.cwd()) {
           const key = typeof item === "string" ? item : item?.gate ?? item?.id ?? "unknown";
           governed.not_applicable[key] = (governed.not_applicable[key] ?? 0) + 1;
         }
-      } else if (file.endsWith(".md") && fs.readFileSync(file, "utf8").includes(DAILY_EVIDENCE_MARKER)) {
+      } else if (file.endsWith(".md")) {
+        const text = fs.readFileSync(file, "utf8");
+        if (file.endsWith("/clarification-log.md")) {
+          const rows = clarificationRows(text);
+          result.clarification.logs += 1;
+          for (const [key, count] of Object.entries(rows)) result.clarification[key] += count;
+        }
+        if (!text.includes(DAILY_EVIDENCE_MARKER)) return;
         result.daily.records += 1;
+        const record = dailyEvidence(text);
+        const single = result.single_record;
+        if (!record) { single.unparsed += 1; return; }
+        const pathName = typeof record.delivery_path === "string" ? record.delivery_path : "undeclared";
+        single.by_path[pathName] = (single.by_path[pathName] ?? 0) + 1;
+        const stage = progress(record);
+        single.by_progress[stage] = (single.by_progress[stage] ?? 0) + 1;
+        if (Array.isArray(record.review?.blocking_findings)) single.open_blocking_findings += record.review.blocking_findings.length;
+        if (record.standard_decision?.decision === "approved") single.standard_decisions += 1;
       }
     });
   }

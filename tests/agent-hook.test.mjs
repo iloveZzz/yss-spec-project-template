@@ -68,18 +68,19 @@ function lastRun(f) {
 }
 
 test("每条规则引用的 ci-gate 步骤都存在，hook 的标题与修复建议与 ci-gate 一致", () => {
-  const checks = selectChecks([".agents/skills/a/SKILL.md", ".template-spec/agents/yss-skill-registry.yaml", ".template-spec/process/lifecycle-registry.yaml", ".codex/config.toml", ".work/f/gates/g-approval.yaml"]);
-  assert.deepEqual(checks.map((check) => check.id), ["sync-skills", "skill-lock", "skill-registry", "lifecycle-registry", "approval-record", "agent-config"]);
+  const checks = selectChecks([".agents/skills/a/SKILL.md", ".template-spec/agents/yss-skill-registry.yaml", ".template-spec/process/lifecycle-registry.yaml", ".codex/config.toml", ".work/f/gates/g-approval.yaml", "AGENTS.md"]);
+  assert.deepEqual(checks.map((check) => check.id), ["sync-skills", "skill-lock", "skill-registry", "lifecycle-registry", "approval-record", "agent-config", "doc-facts"]);
   const byId = new Map(STEPS.map((step) => [step.id, step]));
   for (const check of checks.filter((item) => item.id !== "approval-record")) {
     assert.equal(check.title, byId.get(check.id).title);
     assert.equal(check.fix, byId.get(check.id).fix);
   }
-  assert.equal(RULES.length, 5);
+  assert.equal(RULES.length, 6);
 });
 
 test("路径选择：无关路径为空，多个触发路径的检查去重，批准记录逐个文件校验", () => {
-  assert.deepEqual(selectChecks(["docs/a.md", "README.md", "scripts/lib/foo.mjs"]), []);
+  assert.deepEqual(selectChecks(["docs/a.md", ".template-spec/process/schemas/a.json", "scripts/lib/foo.mjs"]), []);
+  assert.deepEqual(selectChecks(["README.md", ".template-spec/user-guide/用户手册.md", "profiles/backend/.template-spec/process/agent-entry-policy.md"]).map((check) => check.command), [["scripts/verify-doc-facts"]]);
   const skills = selectChecks([".agents/skills/a/SKILL.md", ".codex/skills/a/SKILL.md", "skills-lock.json"]);
   assert.deepEqual(skills.map((check) => check.command.join(" ")), ["scripts/sync-skills --check", "scripts/update-skill-lock --check", "scripts/verify-agent-config"]);
   const approvals = selectChecks([".work/a/gates/g1-approval.yaml", ".work/b/gates/g2-approval.json", ".work/a/gates/notes.md"]);

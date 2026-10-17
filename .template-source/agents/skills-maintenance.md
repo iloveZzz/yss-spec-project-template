@@ -71,7 +71,7 @@
 
 ## 专职 Profile 覆盖层
 
-design、backend、frontend 三个专职 Profile 不再是独立仓库，也没有同步脚本、共享工具锁或「有意定制」登记。Profile 的内容分三层，后面的覆盖前面的：内核（本仓的 `.agents/skills`、`scripts`、`.template-spec/process`、`.template-spec/templates`）、`profiles/_specialist/`（三个 Profile 共有的覆盖）、`profiles/<profile>/`（该 Profile 自己的覆盖，含它的分发清单 `.template-source/distribution/bundle-profile.json`）。yss-cli 在构建 Bundle 时按来源锁里的 `overlayPaths` 把三层组合起来；内核里不属于某个 Profile 的文件，写进它分发清单的 `excludePaths`。
+design、backend 专职 Profile 不再是独立仓库，也没有同步脚本、共享工具锁或「有意定制」登记。Profile 的内容分三层，后面的覆盖前面的：内核（本仓的 `.agents/skills`、`scripts`、`.template-spec/process`、`.template-spec/templates`）、`profiles/_specialist/`（各专职 Profile 共有的覆盖）、`profiles/<profile>/`（该 Profile 自己的覆盖，含它的分发清单 `.template-source/distribution/bundle-profile.json`）。yss-cli 在构建 Bundle 时按来源锁里的 `overlayPaths` 把三层组合起来；内核里不属于某个 Profile 的文件，写进它分发清单的 `excludePaths`。
 
 - 改内核文件，所有 Profile 的下一版 Bundle 同时带上；只想让某个 Profile 不同，就在它的覆盖层里放同一路径的文件。
 - 需要「整棵 Profile 目录」的测试和夹具用 `scripts/lib/profile-tree.mjs` 的 `composeProfileTree(profile)`，规则与 yss-cli 一致。

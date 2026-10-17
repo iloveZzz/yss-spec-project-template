@@ -8,8 +8,8 @@
         1
       ],
       "schemas": {
-        "2": "api-contract-decision-v2.schema.json",
-        "1": "api-contract-decision.schema.json"
+        "1": "api-contract-decision.schema.json",
+        "2": "api-contract-decision-v2.schema.json"
       }
     },
     "strategic-handoff-stage-decision-package": {
@@ -52,9 +52,21 @@
         4
       ],
       "schemas": {
-        "5": "strategic-design-handoff-v5.schema.json",
         "3": "strategic-design-handoff-v3.schema.json",
-        "4": "strategic-design-handoff-v4.schema.json"
+        "4": "strategic-design-handoff-v4.schema.json",
+        "5": "strategic-design-handoff-v5.schema.json"
+      },
+      "unversioned_aliases": {
+        "strategic-design-handoff.schema.json": {
+          "declares_version": 5,
+          "status": "aligned",
+          "consumers": [
+            "profiles/design/scripts/verify-strategic-design-handoff",
+            "profiles/backend/scripts/lib/harness-profile.mjs",
+            "profiles/*/.template-spec/process/harness-profile.yaml"
+          ],
+          "note": "与 v5 同文；保留无版本路径供既有 design/backend 消费者引用"
+        }
       }
     },
     "strategic-handoff-import-receipt": {

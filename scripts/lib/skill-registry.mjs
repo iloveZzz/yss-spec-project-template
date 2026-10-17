@@ -13,6 +13,7 @@ const LAYERS = new Set(["core", "specialist", "compatibility", "maintainer-only"
 const MATURITIES = new Set(["draft", "verified", "supported", "deprecated"]);
 const INVOCATION_MODES = new Set(["user", "model", "both"]);
 const DEPENDENCY_TYPES = new Set(["context-required", "context-conditional", "coordination-only", "review-only", "component-dependency"]);
+const STACKS = new Set(["java", "vue"]);
 const TASK_MODES = new Set(["guidance", "integration", "slice-implementation", "troubleshooting", "component-maintenance", "review-input", "contract-compilation", "reroute", "result-validation", "source-index-refresh"]);
 const ID_PATTERN = /^[a-z0-9][a-z0-9-]*$/;
 const CAPABILITY_ID_PATTERN = /^[a-z][a-z0-9-]*(?:\.[a-z][a-z0-9-]*)+$/;
@@ -355,9 +356,17 @@ export function validateSkillRegistry(registry, { lock, compilerContract, lifecy
   }
   const roots = registry.agent_runtime_roots;
   if (!roots || typeof roots !== "object" || Array.isArray(roots)) fail("缺少 agent_runtime_roots");
-  const extraAgents = Object.keys(roots);
+  // 期望的运行时根由本树的投影根推出：根（spec）为 claude，尚未恢复投影的专职 Profile 为空。
+  const RUNTIME_OF_ROOT = { ".claude/skills": "claude", ".codex/skills": "codex", ".cursor/skills": "cursor", ".pi/skills": "pi" };
+  const expected = Object.fromEntries(PROJECTION_ROOTS.map((root) => [RUNTIME_OF_ROOT[root], root]));
+  for (const [agent, root] of Object.entries(expected)) {
+    if (roots[agent] !== root) fail(`agent_runtime_roots.${agent} 必须为 ${root}`);
+  }
+  const extraAgents = Object.keys(roots).filter((key) => !(key in expected));
   if (extraAgents.length) fail(`未知 Agent 运行时根: ${extraAgents.join(", ")}`);
-  if (PROJECTION_ROOTS.length) fail("agent_runtime_roots 与投影根清单不一致");
+  if (JSON.stringify(Object.values(expected).sort()) !== JSON.stringify([...PROJECTION_ROOTS].sort())) {
+    fail("agent_runtime_roots 与投影根清单不一致");
+  }
 
   const skills = registry.skills;
   if (!Array.isArray(skills) || skills.length === 0) fail("skills 不能为空");
@@ -375,6 +384,7 @@ export function validateSkillRegistry(registry, { lock, compilerContract, lifecy
     const prefix = `skills[${index}]`;
     if (!LAYERS.has(skill.layer)) fail(`${skill.id} 未知 layer: ${skill.layer}`);
     if (!MATURITIES.has(skill.maturity)) fail(`${skill.id} 未知 maturity: ${skill.maturity}`);
+    if (skill.stack !== undefined && !STACKS.has(skill.stack)) fail(`${skill.id} 未知 stack: ${skill.stack}（只允许 java、vue；通用技能不写）`);
     if (typeof skill.instance_default_discoverable !== "boolean") fail(`${skill.id} 缺少 instance_default_discoverable`);
     if (skill.layer === "core" && skill.instance_default_discoverable !== true) fail(`${skill.id} 作为 core 必须默认可发现`);
     if (["specialist", "maintainer-only", "compatibility"].includes(skill.layer) && skill.instance_default_discoverable !== false) {
@@ -577,6 +587,20 @@ export function validateSkillRegistry(registry, { lock, compilerContract, lifecy
   }
 
   requireObject(registry.skill_dependencies, "skill_dependencies");
+  // 按栈裁剪（yss init --stack）只排除另一栈的技能：保留技能的上下文依赖若指向另一栈，
+  // 必须是 context-conditional 并用 stacks 声明只在该栈出现时适用；不由执行器推断放回。
+  const stackOf = new Map(skills.map((skill) => [skill.id, skill.stack]));
+  const validateStackEdge = (owner, dependency, prefix) => {
+    if (dependency.stacks !== undefined) {
+      if (!Array.isArray(dependency.stacks) || dependency.stacks.length === 0 || dependency.stacks.some((stack) => !STACKS.has(stack))) fail(`${prefix}.stacks 必须是 java、vue 的非空数组`);
+      if (dependency.type !== "context-conditional") fail(`${prefix}.stacks 只用于 context-conditional 依赖`);
+    }
+    const target = stackOf.get(dependency.skill);
+    const source = stackOf.get(owner);
+    if (!target || target === source || !["context-required", "context-conditional"].includes(dependency.type)) return;
+    if (dependency.type === "context-required") fail(`${owner} 不得 context-required 依赖 ${target} 栈技能 ${dependency.skill}`);
+    if (!dependency.stacks?.includes(target) || (source && dependency.stacks.includes(source))) fail(`${owner} 对 ${target} 栈技能 ${dependency.skill} 的条件依赖须声明 stacks: [${target}]`);
+  };
   const requiredGraph = new Map([...ids].map((id) => [id, []]));
   for (const [owner, dependencies] of Object.entries(registry.skill_dependencies)) {
     if (!ids.has(owner)) fail(`skill_dependencies 使用未知 owner: ${owner}`);
@@ -593,6 +617,7 @@ export function validateSkillRegistry(registry, { lock, compilerContract, lifecy
       if (!DEPENDENCY_TYPES.has(dependency.type)) fail(`${owner} 使用未知依赖类型: ${dependency.type}`);
       if (dependency.type === "context-conditional") requireString(dependency.when, `${prefix}.when`);
       if (dependency.when !== undefined) requireString(dependency.when, `${prefix}.when`);
+      validateStackEdge(owner, dependency, prefix);
       const edgeKey = `${dependency.skill}\0${dependency.type}\0${dependency.when ?? ""}`;
       if (edgeKeys.has(edgeKey)) fail(`${owner} 包含重复依赖: ${dependency.skill}`);
       edgeKeys.add(edgeKey);

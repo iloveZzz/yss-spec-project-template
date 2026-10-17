@@ -9,8 +9,8 @@ canonical_content_root: .agents/skills
 instance_distribution:
   schema_version: 1
   initial_skills: [yss-product-lifecycle, yss-research, i-have-adhd, setup-yss-harness]
-  runtimes: []
-  projection_roots: {}
+  runtimes: [claude]
+  projection_roots: { claude: .claude/skills }
   dependency_types_for_ensure: [context-required, context-conditional]
   initial_example_docs: false
 backend_skill_domains:
@@ -213,8 +213,8 @@ skill_dependencies:
     - { skill: i-have-adhd, type: context-conditional, when: lifecycle-document-output }
   code-review:
     - { skill: i-have-adhd, type: context-conditional, when: lifecycle-document-output }
-    - { skill: yss-repository, type: context-conditional, when: backend-persistence-impact }
-    - { skill: yss-mybatis, type: context-conditional, when: backend-persistence-impact }
+    - { skill: yss-repository, type: context-conditional, when: backend-persistence-impact, stacks: [java] }
+    - { skill: yss-mybatis, type: context-conditional, when: backend-persistence-impact, stacks: [java] }
   yss-prototype-stage:
     - { skill: i-have-adhd, type: context-conditional, when: lifecycle-document-output }
     - { skill: prototype-review, type: review-only }
@@ -380,7 +380,8 @@ invocation_contract:
       invocation_mode: user
     yss-openapi-draft-review:
       invocation_mode: user
-agent_runtime_roots: {}
+agent_runtime_roots:
+  claude: .claude/skills
 skills:
   - { id: i-have-adhd, layer: core, maturity: supported, instance_default_discoverable: true, aliases: [], impacts: [writing] }
   - id: alibaba-java-code-style
@@ -389,6 +390,7 @@ skills:
     instance_default_discoverable: false
     aliases: []
     impacts: [backend]
+    stack: java
   - id: archify
     layer: specialist
     maturity: supported
@@ -467,6 +469,7 @@ skills:
     instance_default_discoverable: false
     aliases: []
     impacts: [backend]
+    stack: java
   - id: maintaining-skills
     layer: core
     maturity: supported
@@ -485,6 +488,7 @@ skills:
     instance_default_discoverable: false
     aliases: []
     impacts: [backend]
+    stack: java
   - id: prototype
     layer: maintainer-only
     maturity: supported
@@ -575,36 +579,42 @@ skills:
     instance_default_discoverable: false
     aliases: [api-integration]
     impacts: [frontend, api]
+    stack: vue
   - id: yss-audit-log
     layer: specialist
     maturity: supported
     instance_default_discoverable: false
     aliases: []
     impacts: [backend]
+    stack: java
   - id: yss-application
     layer: specialist
     maturity: supported
     instance_default_discoverable: false
     aliases: []
     impacts: [backend]
+    stack: java
   - id: yss-cache
     layer: specialist
     maturity: supported
     instance_default_discoverable: false
     aliases: []
     impacts: [backend]
+    stack: java
   - id: yss-ddd-scaffold-generator
     layer: specialist
     maturity: supported
     instance_default_discoverable: false
     aliases: []
     impacts: [backend]
+    stack: java
   - id: yss-layered-mvc-scaffold-generator
     layer: specialist
     maturity: supported
     instance_default_discoverable: false
     aliases: []
     impacts: [backend]
+    stack: java
   - id: yss-design-system
     layer: core
     maturity: supported
@@ -617,72 +627,84 @@ skills:
     instance_default_discoverable: false
     aliases: []
     impacts: [backend]
+    stack: java
   - id: yss-domain
     layer: specialist
     maturity: supported
     instance_default_discoverable: false
     aliases: []
     impacts: [backend]
+    stack: java
   - id: yss-technical-design
     layer: core
     maturity: draft
     instance_default_discoverable: true
     aliases: []
     impacts: [backend, lifecycle]
+    stack: java
   - id: yss-tactical-design
     layer: specialist
     maturity: draft
     instance_default_discoverable: false
     aliases: []
     impacts: [backend, lifecycle]
+    stack: java
   - id: yss-dto
     layer: specialist
     maturity: supported
     instance_default_discoverable: false
     aliases: []
     impacts: [backend, api]
+    stack: java
   - id: yss-excel-mvc
     layer: specialist
     maturity: supported
     instance_default_discoverable: false
     aliases: []
     impacts: [backend]
+    stack: java
   - id: yss-exception
     layer: specialist
     maturity: supported
     instance_default_discoverable: false
     aliases: []
     impacts: [backend]
+    stack: java
   - id: yss-formily
     layer: specialist
     maturity: supported
     instance_default_discoverable: false
     aliases: []
     impacts: [frontend]
+    stack: vue
   - id: yss-formily-schema-generator
     layer: specialist
     maturity: supported
     instance_default_discoverable: false
     aliases: []
     impacts: [frontend]
+    stack: vue
   - id: yss-frontend-scaffold-generator
     layer: specialist
     maturity: supported
     instance_default_discoverable: false
     aliases: []
     impacts: [frontend]
+    stack: vue
   - id: yss-hook
     layer: specialist
     maturity: supported
     instance_default_discoverable: false
     aliases: []
     impacts: [frontend]
+    stack: vue
   - id: yss-mybatis
     layer: specialist
     maturity: supported
     instance_default_discoverable: false
     aliases: []
     impacts: [backend]
+    stack: java
   - id: yss-openapi-draft-review
     layer: core
     maturity: supported
@@ -713,12 +735,14 @@ skills:
     instance_default_discoverable: false
     aliases: []
     impacts: [backend]
+    stack: java
   - id: yss-resilience4j
     layer: specialist
     maturity: supported
     instance_default_discoverable: false
     aliases: []
     impacts: [backend]
+    stack: java
   - id: yss-implementation-contract-compiler
     layer: core
     maturity: supported
@@ -737,6 +761,7 @@ skills:
     instance_default_discoverable: false
     aliases: []
     impacts: [backend]
+    stack: java
   - id: yss-skill-source-index-refresh
     layer: maintainer-only
     maturity: supported
@@ -749,72 +774,84 @@ skills:
     instance_default_discoverable: false
     aliases: []
     impacts: [frontend]
+    stack: vue
   - id: yss-ui-business-page-generation
     layer: specialist
     maturity: supported
     instance_default_discoverable: false
     aliases: []
     impacts: [frontend]
+    stack: vue
   - id: yss-up-springboot3
     layer: specialist
     maturity: supported
     instance_default_discoverable: false
     aliases: []
     impacts: [backend]
+    stack: java
   - id: yss-backend-spec-review
     layer: specialist
     maturity: verified
     instance_default_discoverable: false
     aliases: []
     impacts: [backend, quality]
+    stack: java
   - id: yss-userinfo
     layer: specialist
     maturity: supported
     instance_default_discoverable: false
     aliases: []
     impacts: [backend]
+    stack: java
   - id: yss-validation
     layer: specialist
     maturity: supported
     instance_default_discoverable: false
     aliases: []
     impacts: [backend]
+    stack: java
   - id: yss-web-controller
     layer: specialist
     maturity: supported
     instance_default_discoverable: false
     aliases: []
     impacts: [backend, api]
+    stack: java
   - id: file-export-download
     layer: specialist
     maturity: supported
     instance_default_discoverable: false
     aliases: []
     impacts: [frontend, api]
+    stack: vue
   - id: formily-foundation
     layer: specialist
     maturity: supported
     instance_default_discoverable: false
     aliases: []
     impacts: [frontend]
+    stack: vue
   - id: formily-linkage-effects
     layer: specialist
     maturity: supported
     instance_default_discoverable: false
     aliases: []
     impacts: [frontend]
+    stack: vue
   - id: formily-mode-slot-detail
     layer: specialist
     maturity: supported
     instance_default_discoverable: false
     aliases: []
     impacts: [frontend]
+    stack: vue
   - id: formily-step-flow
     layer: specialist
     maturity: supported
     instance_default_discoverable: false
     aliases: []
     impacts: [frontend]
+    stack: vue
   - id: git-commit-core
     layer: maintainer-only
     maturity: supported
@@ -839,23 +876,27 @@ skills:
     instance_default_discoverable: false
     aliases: []
     impacts: [frontend, prototype]
+    stack: vue
   - id: yedit-table-usage
     layer: specialist
     maturity: supported
     instance_default_discoverable: false
     aliases: []
     impacts: [frontend]
+    stack: vue
   - id: ytable-usage
     layer: specialist
     maturity: supported
     instance_default_discoverable: false
     aliases: []
     impacts: [frontend]
+    stack: vue
   - id: ytree-usage
     layer: specialist
     maturity: supported
     instance_default_discoverable: false
     aliases: []
     impacts: [frontend]
+    stack: vue
 platform_skills: []
 external_skills: []

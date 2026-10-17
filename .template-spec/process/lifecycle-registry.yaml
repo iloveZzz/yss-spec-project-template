@@ -101,6 +101,9 @@ evidence:
   - id: evidence.context-reconciliation
     name: Context Reconciliation 证据
     description: 工作单元在批准或流转前对根目录唯一 CONTEXT.md 的稳定术语回写、作用域解析和双摘要核对结果；不新增门禁。
+  - id: evidence.artifact-consistency-analysis
+    name: 跨资产一致性分析证据
+    description: 申请 Spec 基线批准前，scripts/analyze-artifacts 对功能包 Plan/Spec 质量、业务票覆盖与切片验收覆盖的汇总结论、发现与未评估项；status 为 consistent，或剩余发现已逐条处置。
   - id: evidence.impact-assessment
     name: 影响面分析记录
     description: 受影响仓库、资产、风险与最近可信阶段。
@@ -193,7 +196,8 @@ gates:
     trigger: 新功能、行为变化或范围扩大进入 Spec 基线；已授权范围内细化复用当前有效授权，实质变化重新决定。
     evidence:
       - evidence.approval-record
-    requires_checks: []
+    requires_checks:
+      - check.artifact-consistency-analyzed
   - id: gate.product-design-approved
     name: 产品设计批准
     stage: stage.product-design
@@ -545,6 +549,12 @@ checks:
       - evidence.approval-record
     requires_checks:
       - check.domain-strategy-approved
+  - id: check.artifact-consistency-analyzed
+    name: 跨资产一致性分析
+    stage: stage.spec-architecture
+    trigger: 申请 Spec 基线批准前；结论 incomplete 或存在未处置发现时不得申请批准，分析本身不授予批准或执行资格。
+    evidence:
+      - evidence.artifact-consistency-analysis
   - id: check.prototype-reviewed
     name: 原型评审
     stage: stage.product-design

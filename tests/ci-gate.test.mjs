@@ -78,7 +78,7 @@ async function gate(t, options = {}, env = {}) {
 
 test("步骤集中在一个数组里，按固定顺序执行合入检查", () => {
   assert.deepEqual(STEPS.map((step) => step.id), [
-    "agent-config", "sync-skills", "skill-lock", "lifecycle-registry", "skill-registry", "doc-facts", "node-engines", "verify-template",
+    "agent-config", "sync-skills", "skill-lock", "lifecycle-registry", "skill-registry", "doc-facts", "context-budget", "node-engines", "verify-template", "verify-slow",
   ]);
   assert.equal(new Set(STEPS.map((step) => step.id)).size, STEPS.length);
   assert.ok(STEPS.every((step) => step.title && (step.command || step.run)));
@@ -135,11 +135,20 @@ test("缺少声明或写法不受支持时失败而不是静默放行", (t) => {
   assert.match(checkNodeEngines(fixture(t, { engines: "~22.1" }).root).findings[0].detail, /不支持的 engines\.node 写法/);
 });
 
+test("slow 模式只运行慢检查步骤，并以 YSS_VERIFY_SLOW=only 调用 fast", async (t) => {
+  const run = await gate(t, { mode: "slow" });
+  assert.equal(run.exitCode, 0, run.err);
+  assert.deepEqual(run.report.steps.map((step) => step.id), ["verify-slow", "repository-unchanged"]);
+  assert.equal(run.calls.length, 1);
+  assert.match(run.calls[0], /^verify-template-fast --report-dir .*verification-slow$/);
+  assert.deepEqual(STEPS.find((step) => step.id === "verify-slow").env, { YSS_VERIFY_SLOW: "only" });
+});
+
 test("AC-004：推送模式全部通过，报告在仓外，仓内没有新增文件", async (t) => {
   const run = await gate(t);
   assert.equal(run.exitCode, 0, run.err);
   assert.equal(run.report.status, "passed");
-  assert.deepEqual(run.report.steps.map((step) => step.id), [...STEPS.map((step) => step.id), "repository-unchanged"]);
+  assert.deepEqual(run.report.steps.map((step) => step.id), [...STEPS.filter((step) => !step.modes).map((step) => step.id), "repository-unchanged"]);
   assert.ok(run.report.steps.every((step) => step.status === "passed" && step.exit_code === 0 && fs.existsSync(step.log)));
   assert.equal(run.reportPath, path.join(run.reportDir, "report.json"));
   assert.ok(path.relative(run.root, run.reportDir).startsWith(".."));
@@ -190,23 +199,23 @@ test("AC-003：投影检查失败时输出步骤名、命令、日志与修复�
 });
 
 test("每个必需检查脚本失败都会让整体失败并落在报告里", async (t) => {
-  for (const name of ["verify-agent-config", "update-skill-lock", "verify-lifecycle-registry", "verify-skill-registry"]) {
+  for (const name of ["verify-agent-config", "update-skill-lock", "verify-lifecycle-registry", "verify-skill-registry", "verify-doc-facts"]) {
     const run = await gate(t, {}, { STUB_FAIL: name });
     assert.equal(run.exitCode, 1, name);
     assert.deepEqual(run.report.steps.filter((step) => step.status === "failed").map((step) => step.command.split(" ")[0]), [`scripts/${name}`], name);
   }
 });
 
-test("文档事实失败保留真实报告与日志，后续 fast 仍执行", async (t) => {
+test("文档事实失败阻断整体并保留真实报告与日志，后续 fast 不再执行", async (t) => {
   const run = await gate(t, { mode: "pr" }, { STUB_FAIL: "verify-doc-facts" });
-  assert.equal(run.exitCode, 0, run.err);
-  assert.equal(run.report.status, "passed");
+  assert.equal(run.exitCode, 1);
+  assert.equal(run.report.status, "failed");
   const observed = run.report.steps.find((step) => step.id === "doc-facts");
-  assert.equal(observed.status, "failed-nonblocking");
+  assert.equal(observed.status, "failed");
   assert.equal(observed.exit_code, 1);
   assert.match(fs.readFileSync(observed.log, "utf8"), /verify-doc-facts 失败输出/);
-  assert.equal(run.report.steps.find((step) => step.id === "verify-template").status, "passed");
-  assert.ok(run.calls.some((line) => line.startsWith("verify-template-fast ")));
+  assert.equal(run.report.steps.find((step) => step.id === "verify-template").status, "skipped");
+  assert.ok(!run.calls.some((line) => line.startsWith("verify-template-fast ")));
 });
 
 test("PR 模式 fast 失败时报告失败并保留退出码", async (t) => {

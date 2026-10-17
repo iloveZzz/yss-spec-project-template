@@ -2,6 +2,10 @@
 
 本文记录已退役技能入口的迁移路径。退役技能不保留物理目录、投影或 lock 条目；本文件是历史名称的唯一持久兼容说明。
 
+## 恢复 `.claude/skills` 投影（2026-10-16）
+
+Claude Code 只从 `.claude/skills/<名称>/SKILL.md` 发现项目技能，不读取 `.agents/skills`，也没有设置项可追加技能目录（见 Claude Code Skills 文档）。因此 spec Profile 重新登记唯一投影根 `.claude/skills`：模板源提交指向 `.agents/skills/<名称>` 的相对符号链接，Bundle 构建时展开为副本分发到实例；注册表 `runtimes: [claude]`，锁的 `projectionRoots` 与各技能 `targets` 同步。`.codex/skills`、`.cursor/skills`、`.pi/skills` 仍不恢复，这些运行时直接读取 `.agents/skills`。design、backend Profile 的投影另行恢复。
+
 ## 投影根收敛与 `product-design` 移出（2026-10-12）
 
 Codex、Cursor、Pi、Claude Code 都直接读取 `.agents/skills`，不再需要任何投影副本。模板与新实例不再分发 `.claude/skills`、`.codex/skills`、`.cursor/skills`、`.pi/skills`；注册表与锁的运行时、投影根清空，`bundle-profile.json` 随之收敛。

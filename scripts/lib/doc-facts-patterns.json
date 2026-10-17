@@ -1,31 +1,89 @@
 {
   "files": [
     "README.md",
+    "AGENTS.md",
     "docs/process/*.md",
     ".template-source/agents/*.md",
-    ".template-spec/agents/*.md"
+    ".template-spec/agents/*.md",
+    ".template-spec/process/*.md",
+    "profiles/backend/.template-spec/process/*.md",
+    "profiles/design/.template-spec/process/*.md",
+    "profiles/backend/AGENTS.md",
+    "profiles/design/AGENTS.md",
+    ".template-spec/user-guide/*.md"
   ],
-  "revisionFiles": ["README.md"],
+  "revisionFiles": [
+    "README.md"
+  ],
+  "pathRefs": {
+    "files": [
+      "AGENTS.md",
+      "profiles/backend/AGENTS.md",
+      "profiles/design/AGENTS.md",
+      ".template-spec/process/agent-entry-policy.md",
+      "profiles/backend/.template-spec/process/agent-entry-policy.md",
+      "profiles/design/.template-spec/process/agent-entry-policy.md",
+      "README.md",
+      "README.en.md",
+      ".template-spec/user-guide/用户手册索引.md"
+    ],
+    "allow": [
+      {
+        "path": ".template-spec/process/harness-profile.yaml",
+        "reason": "项目实例由 native-bundle 生成；模板源只在 profiles/<Profile>/ 下维护"
+      },
+      {
+        "path": "references/",
+        "reason": "相对当前编排技能目录的引用"
+      },
+      {
+        "path": "apps/",
+        "reason": "用户选择本仓承载实现代码时才创建的示例目录"
+      },
+      {
+        "path": "skills/",
+        "reason": "上游 skills 仓库内的路径"
+      },
+      {
+        "path": ".yss.json",
+        "reason": "项目实例元数据，模板源不提交"
+      },
+      {
+        "prefix": ".yss-",
+        "reason": "项目实例的 Profile 插件元数据，模板源不提交"
+      }
+    ]
+  },
   "patterns": [
     {
       "id": "gate-count",
-      "regex": "[0-9一二三四五六七八九十两]+ ?个(聚合)?门禁",
+      "regex": "(?:[0-9]+|[二三四五六七八九十两][一二三四五六七八九十]*) ?个(聚合)?门禁",
       "authority": ".template-spec/process/lifecycle-registry.yaml#gates"
     },
     {
       "id": "stage-count",
-      "regex": "[0-9一二三四五六七八九十两]+ ?个主阶段",
+      "regex": "(?:[0-9]+|[二三四五六七八九十两][一二三四五六七八九十]*) ?个主阶段",
       "authority": ".template-spec/process/lifecycle-registry.yaml#stages"
     },
     {
       "id": "projection-root-count",
-      "regex": "[0-9一二三四五六七八九十两]+ ?个(共享)?投影根",
+      "regex": "(?:[0-9]+|[二三四五六七八九十两][一二三四五六七八九十]*) ?个(共享)?投影根",
       "authority": ".template-spec/agents/yss-skill-registry.yaml#projection_roots"
     },
     {
       "id": "orthogonal-axis-count",
-      "regex": "[0-9一二三四五六七八九十两]+ ?条正交轴",
+      "regex": "(?:[0-9]+|[二三四五六七八九十两][一二三四五六七八九十]*) ?条正交轴",
       "authority": ".template-spec/agents/digital-human-roles.md 的轴表"
+    },
+    {
+      "id": "intensity-trigger-count",
+      "regex": "L[12] ?有 ?(?:[0-9]+|[二三四五六七八九十两][一二三四五六七八九十]*) ?项",
+      "authority": ".template-source/process/maintenance-intensity.yaml"
+    },
+    {
+      "id": "profile-count",
+      "regex": "(?:[0-9]+|[二三四五六七八九十两][一二三四五六七八九十]*) ?[种个] ?Profile",
+      "authority": "scripts/lib/profile-tree.mjs#PROFILE_NAMES"
     }
   ]
 }

@@ -110,6 +110,17 @@ GitLab 相关配置和 MR / CI 工作流见 `.template-spec/agents/gitlab-workfl
 - Apply or remove labels: `gh issue edit <number> --add-label "..."` / `--remove-label "..."`
 - Close an issue: `gh issue close <number> --comment "..."`
 
+### 用 yss 镜像五态标签
+
+固定 CLI 的 `yss capabilities --json` 含 `tracker-github-mirror-v1` 时，可用 `yss tracker` 把本地 Ticket 的 `Status:` 同步到已链接 Issue 的同名标签；本地 Markdown 仍是权威，镜像失败不改变本地状态。
+
+1. 在本文件 front matter 设 `remote_mirror: true`（主 tracker 为 `github` 时无需）。
+2. 链接：`yss tracker link --root . --ticket <tracker 根>/<feature>/parent-ticket.md --issue owner/repo#N --apply`，在 `Status:` 下写入 `Tracker-Link: github:owner/repo#N`。
+3. 规划：`yss tracker sync --root . --plan --out <项目外新文件>`，读取远端并列出要增删的标签。
+4. 应用：取得用户确认后 `yss tracker sync --root . --apply --plan-file <文件> --confirm-remote github`；本地或远端自规划后变化即拒绝，成功后在 Ticket 写入 `Tracker-Synced:`。
+
+只替换五态标签、保留其他标签，不创建、关闭或评论 Issue；读写需要 `GH_TOKEN`。只读核对用 `yss tracker status --root . --fetch`。Git 策略设 `ticket_pattern: github` 后，提交 trailer 可写 `#123` 或 `owner/repo#123`，分支名使用 `gh-123`。
+
 ## Local Markdown 操作
 
 - 创建或发布 Ticket：在配置根下创建 `<feature>/`，按上述结构写入 `parent-ticket.md`、`spec.md` 或 `issues/NN-<slug>.md`。

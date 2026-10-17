@@ -48,6 +48,20 @@ profiles:
           - ".template-spec/agents/yss-skill-registry.yaml"
         depends_on: []
         failure_mode: "维护技能层级或调用元数据的接受与拒绝语义回归"
+      - id: check.lifecycle-controls-unit
+        run: "node --test .template-source/tooling/node/test/lifecycle-controls.test.mjs"
+        group: lifecycle
+        resources: [ "native-cli" ]
+        inputs_complete: true
+        input_patterns:
+          - ".template-source/tooling/node/test/lifecycle-controls.test.mjs"
+          - ".template-spec/process/lifecycle-registry.yaml"
+          - ".template-spec/process/lifecycle-registry-baseline.json"
+          - ".template-spec/agents/digital-human-roles.yaml"
+          - "scripts/lib/lifecycle-controls.mjs"
+          - "scripts/lib/lifecycle-registry.mjs"
+        depends_on: []
+        failure_mode: "门禁、检查数量、交接门禁依赖或检查点用户决定的接受与拒绝语义回归"
       - id: check.doc-facts
         run: "node --test tests/doc-facts.test.mjs"
         group: feature-assets
@@ -58,6 +72,12 @@ profiles:
           - "scripts/lib/doc-facts-patterns.json"
           - "tests/doc-facts.test.mjs"
           - "README.md"
+          - "README.en.md"
+          - "AGENTS.md"
+          - "profiles/*/AGENTS.md"
+          - "profiles/*/.template-spec/process/*.md"
+          - ".template-spec/process/*.md"
+          - ".template-spec/user-guide/*.md"
           - ".template-source/cli-core/README.md"
           - ".template-source/agents/*.md"
           - ".template-spec/agents/*.md"
@@ -65,6 +85,17 @@ profiles:
           - ".template-source/contracts/architecture-iteration-v1*.md"
         depends_on: []
         failure_mode: "说明文档复述门禁数、阶段数、投影根数量或硬编码与 lock 不一致的上游 revision"
+      - id: check.schema-generations
+        run: "node --test tests/schema-generations.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - "tests/schema-generations.test.mjs"
+          - ".template-spec/process/schema-generations.json"
+          - ".template-spec/process/schemas/*.schema.json"
+          - ".template-source/distribution/bundle-profile.json"
+        depends_on: []
+        failure_mode: "schema 代际登记、常驻两代或分发排除与实际文件不一致"
       - id: check.specialist-business-inputs
         run: "node --test tests/specialist-business-inputs.test.mjs"
         group: feature-assets
@@ -168,6 +199,7 @@ profiles:
         depends_on: []
         failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
       - id: check.profile-consumers-reading-views-bundle
+        tier: slow  # 实测约 63s；fast 中延后，按需（YSS_VERIFY_SLOW=1）或定时执行
         resources: [native-cli]
         lane: pc-reading-views-bundle
         run: "node --test --test-skip-pattern='^backend plugin receives' scripts/fixtures/reading-views/bundle.test.mjs"
@@ -185,6 +217,7 @@ profiles:
         depends_on: []
         failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
       - id: check.profile-consumers-slice-contract-v3-round2-xrepo
+        tier: slow  # 实测约 128s；fast 中延后，按需（YSS_VERIFY_SLOW=1）或定时执行
         resources: [native-cli]
         lane: pc-slice-contract-v3-round2-xrepo
         run: "node --test --test-name-pattern='^cross-repo execution result rejects' scripts/fixtures/slice-contract-v3/round2.test.mjs"
@@ -202,6 +235,7 @@ profiles:
         depends_on: []
         failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
       - id: check.profile-consumers-slice-contract-v3-round2-rest
+        tier: slow  # 实测约 98s；fast 中延后，按需（YSS_VERIFY_SLOW=1）或定时执行
         resources: [native-cli]
         lane: pc-slice-contract-v3-round2-rest
         run: "node --test --test-skip-pattern='^backend plugin receives' --test-skip-pattern='^cross-repo execution result rejects' scripts/fixtures/slice-contract-v3/round2.test.mjs"
@@ -219,6 +253,7 @@ profiles:
         depends_on: []
         failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
       - id: check.profile-consumers-slice-contract-v3-scenarios
+        tier: slow  # 实测约 113s；fast 中延后，按需（YSS_VERIFY_SLOW=1）或定时执行
         resources: [native-cli]
         lane: pc-slice-contract-v3-scenarios
         run: "node --test --test-skip-pattern='^backend plugin receives' scripts/fixtures/slice-contract-v3/scenarios.test.mjs"
@@ -337,6 +372,7 @@ profiles:
         depends_on: []
         failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
       - id: check.profile-consumers-review-capabilities
+        tier: slow  # 实测约 99s；fast 中延后，按需（YSS_VERIFY_SLOW=1）或定时执行
         resources: [native-cli]
         lane: pc-review-capabilities
         run: "node --test --test-skip-pattern='^backend plugin receives' .template-source/tooling/node/test/review-capabilities.test.mjs"
@@ -413,7 +449,22 @@ profiles:
           - ".template-source/distribution/yss-cli-pin.json"
         depends_on: []
         failure_mode: "用户决定、批准记录与薄适配的固定通过/拒绝预期、独立期望绑定、返回字段或能力拒绝回归"
+      - id: check.artifact-analysis
+        run: "node --test tests/artifact-analysis.test.mjs"
+        group: feature-assets
+        resources: [native-cli]
+        inputs_complete: true
+        input_patterns:
+          - "scripts/analyze-artifacts"
+          - "scripts/lib/artifact-analysis.mjs"
+          - "tests/artifact-analysis.test.mjs"
+          - "scripts/lib/plan-spec-quality.mjs"
+          - "scripts/lib/business-tickets.mjs"
+          - "scripts/lib/plan-stage-coverage.mjs"
+        depends_on: []
+        failure_mode: "一致性分析漏掉某项诊断的发现、把未评估当作一致，或功能包资产识别错误"
       - id: check.business-ticket-native-report
+        tier: slow  # 实测约 74s；fast 中延后，按需（YSS_VERIFY_SLOW=1）或定时执行
         run: "node --test tests/business-ticket-native-report.test.mjs"
         group: feature-assets
         resources: [ "native-cli", "repo-root-evidence" ]
@@ -654,7 +705,7 @@ profiles:
           - ".template-source/tooling/node/test/skill-supply-chain.test.mjs"
           - "scripts/lib/skill-supply-chain.mjs"
         depends_on: []
-        failure_mode: "无投影模型被旧断言拒绝，或 Skill 派生文件和引用规范化不一致"
+        failure_mode: "根投影根偏离 .claude/skills，或 Skill 派生文件和引用规范化不一致"
       - id: check.1ebcb1124ce67eb1
         run: "node --test scripts/fixtures/contract-efficiency/api-v2.test.mjs tests/api-contract-decision.test.mjs"
         group: implementation
@@ -796,9 +847,11 @@ profiles:
         inputs_complete: true
         input_patterns:
           - ".github/workflows/template-gate.yml"
+          - ".github/workflows/template-slow-checks.yml"
           - ".github/actions/setup-template/action.yml"
           - ".gitlab-ci.yml"
           - "scripts/ci-setup"
+          - ".nvmrc"
           - "tests/ci-adapters.test.mjs"
           - ".template-source/process/github-workflows.md"
           - ".template-source/distribution/bundle-profile.json"
@@ -828,6 +881,16 @@ profiles:
           - ".template-source/distribution/bundle-profile.json"
         depends_on: []
         failure_mode: "Stop hook 对相关路径漏检、对无关路径误检或误阻断、阻断协议与 Claude Code / Codex 不一致，或 hook 文件进入实例分发"
+      - id: check.edit-hook
+        run: "node --test tests/edit-hook.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - "scripts/edit-hook"
+          - "scripts/lib/edit-hook.mjs"
+          - "tests/edit-hook.test.mjs"
+        depends_on: []
+        failure_mode: "编辑即时校验选错文件、误报通过、以工具缺口阻断编辑，或未把 yss check 的发现交给 agent"
       - id: check.claude-entry
         run: "node --test tests/claude-entry.test.mjs"
         group: feature-assets
@@ -849,7 +912,7 @@ profiles:
           - "scripts/fixtures/contract-efficiency/distribution-smoke.mjs"
           - ".template-source/distribution/bundle-profile.json"
         depends_on: []
-        failure_mode: "Claude Code 入口复制了 AGENTS.md 的内容、任何投影根（.claude/.codex/.cursor/.pi 的 skills）复活、注册表与锁重新登记运行时或投影根，或 hook 设置进入实例分发"
+        failure_mode: "Claude Code 入口复制了 AGENTS.md 的内容、.claude/skills 投影缺失或与 canonical 不一致、.codex/.cursor/.pi 投影复活、注册表与锁的 claude 运行时不一致，或 hook 设置进入实例分发"
       - id: check.explicit-invocation
         run: "node --test tests/explicit-invocation.test.mjs"
         group: feature-assets
@@ -908,8 +971,11 @@ profiles:
           - "scripts/harness-metrics"
           - "scripts/lib/harness-metrics.mjs"
           - "tests/harness-metrics.test.mjs"
+          - ".template-source/process/context-budget.json"
+          - "AGENTS.md"
+          - "CONTEXT.md"
         depends_on: []
-        failure_mode: "度量口径（管道提交占比、daily 起步必读、隐式技能 description 字符数、常驻上下文）计算错误，阶段基线与复测不可比"
+        failure_mode: "度量口径（管道提交占比、daily 起步必读、隐式技能 description 字符数、常驻上下文）计算错误，阶段基线与复测不可比，或上下文超出 context-budget.json 预算"
       - id: check.release-template
         run: "node --test tests/release-template.test.mjs"
         group: feature-assets
@@ -2243,6 +2309,7 @@ routing:
       - package.json
       - .gitignore
       - README.md
+      - README.en.md
       - .template-source/README.md
       - .template-spec/**
       - docs/**
@@ -2485,6 +2552,10 @@ routing:
       - hygiene
       - feature-assets
   - patterns:
+      - tests/schema-generations.test.mjs
+    groups:
+      - feature-assets
+  - patterns:
       - scripts/lib/profile-variants.mjs
       - .template-source/distribution/profile-variants.json
       - tests/profile-variants.test.mjs
@@ -2543,12 +2614,14 @@ routing:
       - scripts/harness-metrics
       - scripts/lib/harness-metrics.mjs
       - tests/harness-metrics.test.mjs
+      - .template-source/process/context-budget.json
       - scripts/verify-agent-config
       - scripts/lib/agent-config-safety.mjs
       - tests/agent-config-safety.test.mjs
       - .codex/config.toml
       - scripts/ci-gate
       - scripts/ci-setup
+      - .nvmrc
       - scripts/lib/ci-gate.mjs
       - tests/ci-gate.test.mjs
       - .gitlab-ci.yml
@@ -2558,6 +2631,12 @@ routing:
       - scripts/agent-hook
       - scripts/lib/agent-hook.mjs
       - tests/agent-hook.test.mjs
+      - scripts/edit-hook
+      - scripts/lib/edit-hook.mjs
+      - tests/edit-hook.test.mjs
+      - scripts/analyze-artifacts
+      - scripts/lib/artifact-analysis.mjs
+      - tests/artifact-analysis.test.mjs
       - .claude/settings.json
       - .codex/hooks.json
       - CLAUDE.md

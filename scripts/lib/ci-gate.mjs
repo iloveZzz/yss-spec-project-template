@@ -3,7 +3,7 @@ import { createWriteStream, existsSync, mkdirSync, readFileSync, readdirSync, re
 import path from "node:path";
 import { resolveMaintenanceOutput } from "./maintenance-storage.mjs";
 
-const MODES = ["pr", "push"];
+const MODES = ["pr", "push", "slow"];
 const FULL_SHA = /^[0-9a-f]{40}$/;
 /** 重步骤在任一前置步骤失败时跳过：先把便宜的失败原因交给作者，不在已知失败的候选上空耗数分钟。 */
 const SKIPPED_AFTER_FAILURE = "前置步骤失败，已跳过";
@@ -13,7 +13,8 @@ const SKIPPED_AFTER_FAILURE = "前置步骤失败，已跳过";
  * - command：相对仓库根的命令；重步骤用函数按模式生成。
  * - run：进程内检查，返回 { ok, lines }。
  * - fix：失败时打印的修复建议，优先写可直接运行的命令。
- * - modes：只在列出的模式下执行，缺省为两种模式都执行。
+ * - modes：只在列出的模式下执行，缺省为 pr 与 push 都执行；slow 模式只执行显式声明 slow 的步骤。
+ * - env：该步骤附加的环境变量。
  * - blocking：false 时失败只记录、不影响退出码。
  * - context.scopeBase：fast 的变更范围基准。PR 模式是目标分支 SHA；推送模式是 HEAD^（合并提交的第一亲本即上一个主分支顶点）。
  *   干净检出且不带 --base 时 fast 的变更文件数为 0，只会空过，所以必须带基准。
@@ -53,8 +54,13 @@ export const STEPS = [
     id: "doc-facts",
     title: "说明文档事实",
     command: ["scripts/verify-doc-facts"],
-    blocking: false,
-    fix: "改为链接权威资产，不在说明文档复述数量或 revision（模式表见 scripts/lib/doc-facts-patterns.json）",
+    fix: "改为链接权威资产，不在说明文档复述数量或 revision；引用路径不存在时修正路径，或在 scripts/lib/doc-facts-patterns.json 的 pathRefs.allow 登记原因",
+  },
+  {
+    id: "context-budget",
+    title: "Agent 上下文预算",
+    command: ["scripts/harness-metrics", "--check-budget"],
+    fix: "精简常驻入口、隐式技能描述或最大的 SKILL.md；确需上调时在 .template-source/process/context-budget.json 写明理由",
   },
   {
     id: "node-engines",
@@ -68,6 +74,15 @@ export const STEPS = [
     heavy: true,
     command: (context) => ["scripts/verify-template-fast", ...(context.scopeBase ? ["--base", context.scopeBase] : []), "--report-dir", path.join(context.reportDir, "verification")],
     fix: "查看该步骤日志与 verification 报告中第一个失败的检查；本地用同一命令复现",
+  },
+  {
+    id: "verify-slow",
+    title: "慢检查（tier: slow，按需或定时）",
+    heavy: true,
+    modes: ["slow"],
+    env: { YSS_VERIFY_SLOW: "only" },
+    command: (context) => ["scripts/verify-template-fast", "--report-dir", path.join(context.reportDir, "verification-slow")],
+    fix: "查看 verification-slow 报告中失败的慢检查；本地用 YSS_VERIFY_SLOW=only scripts/verify-template-fast 复现",
   },
 ];
 
@@ -189,7 +204,7 @@ function git(root, args) {
 }
 
 export function validateOptions({ root, mode, base, reportDir }) {
-  if (!MODES.includes(mode)) throw new TypeError("必须用 --mode pr 或 --mode push 指定模式");
+  if (!MODES.includes(mode)) throw new TypeError("必须用 --mode pr、--mode push 或 --mode slow 指定模式");
   if (mode === "pr") {
     if (!base) throw new TypeError("PR 模式需要 --base <目标分支的完整提交 SHA>");
     if (!FULL_SHA.test(base)) throw new TypeError("--base 必须是 40 位小写十六进制的完整提交 SHA，不接受分支名或缩写");
@@ -240,7 +255,7 @@ function seconds(ms) { return `${(ms / 1000).toFixed(1)}s`; }
 /** 依次执行 STEPS，记录命令、退出码、耗时与日志路径，并保证仓内没有新增改动。 */
 export async function runGate({ root, mode, base, reportDir, steps: allSteps = STEPS, env = process.env, stdout = process.stdout, stderr = process.stderr }) {
   validateOptions({ root, mode, base, reportDir });
-  const steps = allSteps.filter((step) => !step.modes || step.modes.includes(mode));
+  const steps = allSteps.filter((step) => (step.modes ?? ["pr", "push"]).includes(mode));
   const directory = reportDir ?? defaultReportDir(root, mode);
   mkdirSync(directory, { recursive: true });
   const head = git(root, ["rev-parse", "HEAD"]).stdout.trim();
@@ -276,7 +291,7 @@ export async function runGate({ root, mode, base, reportDir, steps: allSteps = S
       (outcome.ok ? stdout : stderr).write(`${outcome.lines.join("\n")}\n`);
       entry.exit_code = outcome.ok ? 0 : 1;
     } else {
-      entry.exit_code = await runCommand({ root, command, logPath: entry.log, env, stdout, stderr });
+      entry.exit_code = await runCommand({ root, command, logPath: entry.log, env: step.env ? { ...env, ...step.env } : env, stdout, stderr });
     }
     entry.duration_ms = Date.now() - stepStart;
     const passed = entry.exit_code === 0;

@@ -1,5 +1,7 @@
 # YSS 综合研发主控模板（Spec Profile）
 
+English overview: [README.en.md](README.en.md).
+
 > 可版本化的研发治理系统：Matt Pocock Engineering Skills × YSS × OpenAPI，把产品研发从需求澄清连接到实现、审查、发布与复盘。
 
 ## 定位
@@ -12,7 +14,7 @@
 
 ```text
 ├── .agents/skills/          ← 共享技能权威内容
-├── .codex/、.cursor/、.pi/  ← 技能投影与平台专属能力
+├── .claude/skills/          ← Claude Code 技能入口（指向 .agents/skills 的生成链接）
 ├── AGENTS.md                ← Agent 入口规则
 ├── CONTEXT.md               ← 唯一业务词汇表
 ├── yss-project.yaml         ← 仓库身份
@@ -26,13 +28,10 @@
 
 ## Quickstart
 
-只需后端开发脚手架时，可直接使用 `yss-layered-mvc-scaffold-generator`（MVC）或 `yss-ddd-scaffold-generator`（DDD），无需先准备需求合同、原型、设计审批或初始化治理实例。提供工程信息即可生成，命令与参数见[直接生成开发脚手架](.agents/skills/yss-ddd-scaffold-generator/references/standalone-generation.md)。以下步骤用于治理项目。
+只需后端开发脚手架时，可直接使用 `yss-layered-mvc-scaffold-generator`（MVC）或 `yss-ddd-scaffold-generator`（DDD），无需先准备需求合同、原型、设计审批或初始化治理实例。提供工程信息即可生成，命令与参数见[直接生成开发脚手架](.agents/skills/yss-ddd-scaffold-generator/references/standalone-generation.md)。
 
-1. 先读取 `yss-project.yaml`，按 `repository_mode` 选择模板维护或产品研发生命周期。
-2. 必读入口为 `AGENTS.md` 与 `CONTEXT.md`；流程事实以生命周期注册表和裁剪指南为准。
-3. `template-source` 按 `maintenance-intensity.yaml` 判定 L1 / L2，先看 `scripts/verify-template-fast --plan`，日常执行受影响依赖的定向检查达到 `implementation-ready`；投影、锁和分发在 canonical 稳定后同步。
-4. `project-instance` 先用支持能力的 `yss lifecycle route` 按 `request_triage.delivery_path` 分流。`daily` 使用一张 Ticket/PR，按需求验收、技术技能、实现、测试、独立审查推进；`governed` 从最近可信阶段恢复正式治理。日常操作见[同一记录交付说明](.agents/skills/yss-product-lifecycle/references/daily-delivery.md)。
-5. 实现仓库接入、YSS 路由、独立审查、fresh verification 和 Git checkpoint 以 `AGENTS.md` 的硬门禁为准。
+- **项目使用者**：从[从这里开始](.template-spec/user-guide/用户手册索引.md)完成第一个日常任务。Agent 的入口与硬门禁只在 `AGENTS.md`。
+- **模板维护者**：按 `.template-source/process/maintenance-intensity.yaml` 判定 L1 / L2，先看 `scripts/verify-template-fast --plan`，日常执行受影响依赖的定向检查达到 `implementation-ready`；投影、锁和分发在 canonical 稳定后同步。
 
 YSS skills 的公开发布投影维护在 [iloveZzz/yss-spec-dev-skills](https://github.com/iloveZzz/yss-spec-dev-skills)，发布清单和导出命令见 [skills 维护说明](./.template-source/agents/skills-maintenance.md)。
 
@@ -40,7 +39,7 @@ YSS UI 组件知识同时通过项目级 MCP 配置提供；支持的客户端�
 
 ## 模板初始化 CLI
 
-四种 Profile 使用 [yss-cli](https://github.com/iloveZzz/yss-cli) 的原生 `yss` 入口，模板和三个 Agent 模板源独立维护。初始化、预演、事务、迁移及 Bundle 导出消费版本化协议：
+现行 Profile（spec、design、backend）使用 [yss-cli](https://github.com/iloveZzz/yss-cli) 的原生 `yss` 入口，本模板和各 Agent 模板源独立维护。初始化、预演、事务、迁移及 Bundle 导出消费版本化协议：
 
 - [YSS 用户手册：CLI 能力与写入方式](./.template-spec/user-guide/用户手册.md#cli-能力与写入方式)
 - [YSS 用户手册：接管、同步与恢复](./.template-spec/user-guide/用户手册.md#接管同步与恢复)
@@ -56,7 +55,7 @@ yss init --profile spec --root /absolute/path/project --apply --plan-file /absol
 
 ## 模板配置取舍
 
-`.agents/skills` 是共享技能的权威内容；其他 Agent root 只保存同步投影和平台专属技能。共享技能只能在权威目录修改，随后运行：
+`.agents/skills` 是共享技能的权威内容；Codex、Cursor、Pi 直接读取它，Claude Code 读取生成的 `.claude/skills` 链接。共享技能只能在权威目录修改，随后运行：
 
 ```bash
 scripts/sync-skills
@@ -117,4 +116,4 @@ PR 执行 `scripts/verify-template-fast --base <完整 SHA>`；显式 main 集�
 
 ## 按职责使用与升级
 
-[四个现行家族用户手册](.template-spec/user-guide/用户手册.md)提供选型、初始化及升级；[设备借用贯穿案例](.template-spec/user-guide/设备借用贯穿案例.md)演示战略、后端、前端与统一验收。[全部手册](.template-spec/user-guide/用户手册索引.md)给出本体和子项目入口。GitHub 当前能力、npm 发布版本与实例模板快照分别核对。
+[现行家族用户手册](.template-spec/user-guide/用户手册.md)提供选型、初始化及升级；[设备借用贯穿案例](.template-spec/user-guide/设备借用贯穿案例.md)演示战略、后端、前端与统一验收。[全部手册](.template-spec/user-guide/用户手册索引.md)给出本体和子项目入口。GitHub 当前能力、npm 发布版本与实例模板快照分别核对。
