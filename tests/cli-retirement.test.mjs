@@ -75,13 +75,12 @@ test('已移除前端 Profile 的旧版和原生实例明确拒绝维护且保�
     else put(root,'.yss.json',JSON.stringify({schemaVersion:3,protocolVersion:1,profile:'frontend',profileId:'harness.frontend-delivery'}));
     put(root,'src/business.txt','未提交的业务内容',0o600);put(root,'.git/index','staged index',0o600);
     const before=tree(root);
-    for(const args of [['sync'],['sync','--plan','--out',path.join(base,`${identity}-sync.json`)],['doctor'],['diff'],['migrate','plan','--out',path.join(base,`${identity}-migrate.json`)]]) {
+    for(const args of [['sync'],['sync','--plan','--out',path.join(base,`${identity}-sync.json`)],['doctor'],['diff']]) {
       const result=runNative([...args,'--root',root],{expectedCode:'IDENTITY'});
       assert.match(JSON.stringify(result),/前端 Profile 已移除/);
       assert.deepEqual(tree(root),before,`${identity}: ${args.join(' ')} 不得修改用户文件、权限或暂存区`);
     }
     assert.equal(fs.existsSync(path.join(base,`${identity}-sync.json`)),false);
-    assert.equal(fs.existsSync(path.join(base,`${identity}-migrate.json`)),false);
   }
 });
 

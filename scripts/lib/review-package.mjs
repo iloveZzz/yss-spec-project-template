@@ -105,6 +105,12 @@ export function buildReviewPackage({ checkpointRef, checkIds, roleId, runtimeId 
   // review_stages is an implementation result, not part of the persisted contract.
   delete task.review_context.review_stages;
   delete task.review_context.review_skills;
+  if (workUnitId === 'work-unit.spec-synthesis') {
+    const checkpoint = parse(bytes(checkpointRef), checkpointRef);
+    for (const key of ['feature_id', 'plan_review_ref', 'plan_approval_ref', 'plan_user_decision_ref', 'plan_continuation_ref']) {
+      if (checkpoint[key] !== undefined) task[key] = checkpoint[key];
+    }
+  }
   if (plan) task.review_context.plan_review_binding = reservation.binding;
   validateTaskPackageSchema(task);
   const taskText = json(task), taskDigest = reviewDigest(taskText);

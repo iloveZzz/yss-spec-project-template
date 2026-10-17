@@ -1,14 +1,35 @@
 {
  "$schema":"https://json-schema.org/draft/2020-12/schema",
  "title":"派生阅读清单",
- "type":"object","additionalProperties":false,
- "required":["schema_version","checkpoint_ref","renderer","dependencies","outputs","navigation","diagnostics"],
- "properties":{
-  "schema_version":{"const":1},"checkpoint_ref":{"type":"string"},
-  "renderer":{"type":"object","additionalProperties":{"type":"string","pattern":"^sha256:[a-f0-9]{64}$"}},
-  "dependencies":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["scope","ref","digest"],"properties":{"scope":{"enum":["project","tool"]},"ref":{"type":"string"},"digest":{"anyOf":[{"type":"null"},{"type":"string","pattern":"^sha256:[a-f0-9]{64}$"}]}}}},
-  "outputs":{"type":"object","additionalProperties":{"type":"string","pattern":"^sha256:[a-f0-9]{64}$"}},
-  "navigation":{"type":"object","additionalProperties":false,"required":["ref","block_digest"],"properties":{"ref":{"type":"string"},"block_digest":{"type":"string","pattern":"^sha256:[a-f0-9]{64}$"}}},
+ "$defs":{
+  "sha256":{"type":"string","pattern":"^sha256:[a-f0-9]{64}$"},
+  "dependencies":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["scope","ref","digest"],"properties":{"scope":{"enum":["project","tool"]},"ref":{"type":"string"},"digest":{"anyOf":[{"type":"null"},{"$ref":"#/$defs/sha256"}]}}}},
+  "outputs":{"type":"object","additionalProperties":{"$ref":"#/$defs/sha256"}},
+  "navigation":{"type":"object","additionalProperties":false,"required":["ref","block_digest"],"properties":{"ref":{"type":"string"},"block_digest":{"$ref":"#/$defs/sha256"}}},
   "diagnostics":{"type":"array","items":{"type":"object","required":["ref","reason"],"properties":{"ref":{"type":"string"},"reason":{"type":"string"}}}}
- }
+ },
+ "oneOf":[
+  {
+   "title":"v1：Node 渲染器，renderer 登记工具闭包摘要",
+   "type":"object","additionalProperties":false,
+   "required":["schema_version","checkpoint_ref","renderer","dependencies","outputs","navigation","diagnostics"],
+   "properties":{
+    "schema_version":{"const":1},"checkpoint_ref":{"type":"string"},
+    "renderer":{"type":"object","additionalProperties":{"$ref":"#/$defs/sha256"}},
+    "dependencies":{"$ref":"#/$defs/dependencies"},"outputs":{"$ref":"#/$defs/outputs"},
+    "navigation":{"$ref":"#/$defs/navigation"},"diagnostics":{"$ref":"#/$defs/diagnostics"}
+   }
+  },
+  {
+   "title":"v2：yss 渲染，renderer 只登记规则版本，依赖只含项目文件与渲染所读 Schema",
+   "type":"object","additionalProperties":false,
+   "required":["schema_version","checkpoint_ref","renderer","dependencies","outputs","navigation","diagnostics"],
+   "properties":{
+    "schema_version":{"const":2},"checkpoint_ref":{"type":"string"},
+    "renderer":{"type":"object","additionalProperties":false,"required":["id","rules_version"],"properties":{"id":{"const":"yss-reading"},"rules_version":{"type":"integer","minimum":1}}},
+    "dependencies":{"$ref":"#/$defs/dependencies"},"outputs":{"$ref":"#/$defs/outputs"},
+    "navigation":{"$ref":"#/$defs/navigation"},"diagnostics":{"$ref":"#/$defs/diagnostics"}
+   }
+  }
+ ]
 }

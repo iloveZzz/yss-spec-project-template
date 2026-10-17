@@ -40,6 +40,28 @@ function fixture(t) {
 function prepared(t) { const f = fixture(t), result = prepareReviewPackage(f.options); return { ...f, result, task: JSON.parse(fs.readFileSync(path.join(f.root, result.task_ref))), bundle: parseDocument(fs.readFileSync(path.join(f.root, result.bundle_ref), 'utf8')).toJS() }; }
 function expected(f, boundary = checkIds[0]) { return approvalExpectedFromTask(f.task, { root: f.root, rolesDoc, registry, boundary, reviewTaskRef: f.result.task_ref, reviewTaskDigest: f.result.task_digest }); }
 
+test('Spec review forwards current Plan entry references without copying the control ledger', t => {
+  const f = fixture(t), boundary = 'gate.spec-baseline-approved';
+  Object.assign(f.checkpoint, {
+    feature_id: 'synthetic.spec-entry', plan_review_ref: '.work/feature/plan/entry.json',
+    plan_approval_ref: '.work/feature/plan/approval.json', plan_user_decision_ref: '.work/feature/plan/decision.json',
+    plan_review_control: { synthetic_fixture: true }
+  });
+  f.checkpoint.gates[boundary] = f.checkpoint.checks[checkIds[0]];
+  f.write(f.checkpointRef, JSON.stringify(f.checkpoint));
+  const options = { ...f.options, checkIds: [boundary], roleId: 'role.product-manager', workUnitId: 'work-unit.spec-synthesis' };
+  const task = buildReviewPackage(options).task;
+  for (const key of ['feature_id', 'plan_review_ref', 'plan_approval_ref', 'plan_user_decision_ref']) assert.equal(task[key], f.checkpoint[key]);
+  assert.equal(Object.hasOwn(task, 'plan_review_control'), false);
+  assert.equal(Object.hasOwn(task, 'plan_continuation_ref'), false);
+  delete f.checkpoint.plan_user_decision_ref;
+  f.checkpoint.plan_continuation_ref = '.work/feature/plan/continuation.json';
+  f.write(f.checkpointRef, JSON.stringify(f.checkpoint));
+  const continued = buildReviewPackage(options).task;
+  assert.equal(continued.plan_continuation_ref, f.checkpoint.plan_continuation_ref);
+  assert.equal(Object.hasOwn(continued, 'plan_user_decision_ref'), false);
+});
+
 test('one independent tester covers API draft and engineering baseline without changing role core/forbidden', () => {
   const before = taskPackageDefaults('role.test-engineer');
   const result = compileReviewCapabilities({ checkIds, roleId: 'role.test-engineer', rolesDoc, registry });

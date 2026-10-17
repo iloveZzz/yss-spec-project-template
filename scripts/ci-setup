@@ -162,7 +162,7 @@ fi
 if [[ -n "$yss_commit" ]]; then
   step "从固定提交 ${yss_commit} 构建 yss"
   if ((dry_run)); then
-    echo "+ git fetch --depth 1 ${YSS_CLI_REPOSITORY} ${yss_commit} → 使用提交内 Bundle 运行 node tools/build-candidate.mjs（官方候选构建配方；没有该脚本的旧提交退回 go build -trimpath）"
+    echo "+ git fetch --depth 1 ${YSS_CLI_REPOSITORY} ${yss_commit} → 按提交内来源锁运行 node tools/fetch-bundle.mjs 生成内嵌 Bundle，再运行 node tools/build-candidate.mjs（官方候选构建配方；没有该脚本的旧提交退回 go build -trimpath）"
   else
     command -v go >/dev/null || { echo "构建 yss 需要 go；请在 runner 镜像中提供" >&2; exit 1; }
     yss_source="$(work_dir)/yss-cli-${yss_commit}"
@@ -178,6 +178,10 @@ if [[ -n "$yss_commit" ]]; then
     fi
     # pin 的摘要绑定已提交资产；Bundle 在发行阶段由 artifacts 工具生成并校验，bootstrap 不重生成。
     test -z "$(git -C "$yss_source" status --porcelain --untracked-files=normal)"
+    # 内嵌 Bundle 归档自 yss-cli 78cf81a 起不入库（被忽略，不影响上面的干净检查）：构建前按其来源锁生成，并核对入库摘要。
+    if [[ -f "$yss_source/tools/fetch-bundle.mjs" ]]; then
+      node "$yss_source/tools/fetch-bundle.mjs"
+    fi
     if [[ -f "$yss_source/tools/build-candidate.mjs" ]]; then
       # yss-cli 自带的候选构建配方：固定 Go 环境、-mod=readonly -trimpath -buildvcs=false，提交号与来源状态用 -X 写入，并留下构建收据。
       yss_build_out="$(dirname "$yss_source")/yss-build-${yss_commit}"

@@ -95,7 +95,14 @@ function validateCommon(value, registry, lifecycle) {
   const readable = (ref, field, digest) => assertReadableEvidenceRef(ref, field, { maintenance, digest });
   if (value.allowed_write_paths?.length && value.contract.kind === "lifecycle-work-unit") assertTrackingEntry(value.work_unit_id, value, { root: ROOT });
   if (value.allowed_write_paths?.length && !maintenance && ['Drafter', 'Worker'].includes(value.execution_state) && !['resolved', 'failed'].includes(value.workflow_status)) assertProgressionEntry(value.work_unit_id, {root: ROOT, checkpointRef: value.checkpoint_ref || value.result?.checkpoint_ref, assetRef: value.contract.slice_contract_ref || value.contract.lifecycle_ref});
-  if (value.work_unit_id === 'work-unit.spec-synthesis') assertPlanSpecEntry(value);
+  if (value.work_unit_id === 'work-unit.spec-synthesis') {
+    const checkpointPath = safe(value.checkpoint_ref || value.contract.lifecycle_ref, 'checkpoint_ref');
+    const checkpoint = parseAsset(readFileSync(checkpointPath), checkpointPath);
+    for (const key of ['feature_id', 'plan_review_ref', 'plan_approval_ref', 'plan_user_decision_ref', 'plan_continuation_ref']) {
+      if ((value[key] ?? null) !== (checkpoint[key] ?? null)) fail(`Spec 任务的 ${key} 与当前 checkpoint 不一致`);
+    }
+    assertPlanSpecEntry(checkpoint);
+  }
   const workUnit = lifecycle.work_units.find((item) => item.id === value.work_unit_id);
   if (!workUnit && value.contract.kind !== "slice-implementation") fail(`未知 work_unit_id: ${value.work_unit_id}`);
   const roleDefaults = taskPackageDefaults(value.role_id, registry);
