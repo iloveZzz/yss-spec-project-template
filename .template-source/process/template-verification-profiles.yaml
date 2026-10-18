@@ -2896,6 +2896,7 @@ groups:
         id: check.work-layout
       - run: node scripts/verify-work-layout
         id: check.work-layout-hardcodes
+        resources: [native-cli]
   drift-identity:
     commands:
       - run: node --test tests/content-identity.test.mjs tests/drift-report.test.mjs tests/maintenance-iteration.test.mjs
