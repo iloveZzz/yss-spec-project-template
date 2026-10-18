@@ -10,6 +10,7 @@ import { enforceHarnessTaskScope, enforceHarnessSkillScope } from '../../../../s
 import { completeBackendDelivery } from '../../../../scripts/lib/backend-delivery-terminal.mjs';
 import { createApprovedExecutionContext, assertApprovedExecutionContext } from '../../../../scripts/lib/approved-execution-context.mjs';
 import { approvedFixture } from '../../../../scripts/fixtures/delivery-preflight/approved-execution-fixture.mjs';
+import { installedFixture } from '../../../../scripts/fixtures/role-independent-draft/installed-fixture.mjs';
 
 const ROOT=path.resolve(import.meta.dirname,'../../../..');
 function fixture(t) {
@@ -54,7 +55,9 @@ test('scope does not bypass Plan approval, formal Ticket, implementation approva
   assert.equal(validateNextRoute('work-unit.plan-requirements','work-unit.spec-synthesis',{}, {root}).result,'blocked');
   assert.equal(validateImplementationEntry({ready_for_agent:true},{root}).result,'blocked');
   assert.equal(validateNextRoute('work-unit.code-review','work-unit.backend-delivery',{}, {root}).result,'blocked');
-  assert.throws(()=>createApprovedExecutionContext({}, {root}),/EXECUTION_APPROVAL_REQUIRED/);
+  const current=installedFixture('backend');t.after(()=>current.cleanup());
+  current.write('.yss-execution-scope.yaml',{schema_version:1,scope_id:'plan-to-backend'});
+  assert.throws(()=>createApprovedExecutionContext({}, {root:current.root}),/EXECUTION_APPROVAL_REQUIRED/);
 });
 test('dispatch and compiler deny frontend roles and recipes; project paths cannot supply permission',t=>{
   const {root}=fixture(t);

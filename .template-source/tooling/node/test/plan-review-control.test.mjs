@@ -8,8 +8,11 @@ import { parseDocument } from '../../../../scripts/vendor/yaml.mjs';
 import { ROOT } from '../../../../scripts/lib/lifecycle-registry.mjs';
 import { makeRoot } from '../../../../tests/helpers/yss-instance.mjs';
 import { validateReviewTaskBinding } from '../../../../scripts/lib/review-capabilities.mjs';
-import { prepareReviewPackage } from '../../../../scripts/lib/review-package.mjs';
+import { buildReviewPackage, prepareReviewPackage } from '../../../../scripts/lib/review-package.mjs';
 import { buildPlanReviewFixture, PLAN_BOUNDARIES } from '../../../../scripts/fixtures/plan-review-control/build-fixture.mjs';
+import {installedFixture} from '../../../../scripts/fixtures/role-independent-draft/installed-fixture.mjs';
+import {prepareProfessionalPlanFixture} from '../../../../scripts/fixtures/role-independent-draft/professional-plan-fixture.mjs';
+import {validateTaskPackage} from '../../../../scripts/lib/task-package.mjs';
 import { buildLegacyPlanSourceFixture } from '../../../../scripts/fixtures/plan-review-control/legacy-source-fixture.mjs';
 import { localizeSyntheticPlanSource, syntheticPlanSourceContext } from '../../../../scripts/fixtures/plan-review-control/source-consumption-fixture.mjs';
 import { buildPlanFixture } from '../../../../scripts/fixtures/user-decision/plan-fixture.mjs';
@@ -32,7 +35,7 @@ const policy = {
   later_finding_origins: ['repair', 'new-evidence', 'initial-miss']
 };
 const digest = 'a'.repeat(64);
-const noIO = { policy, verifyEvidence: false };
+const noIO = { policy, read: () => Buffer.from('{}'), policyRef: '.template-spec/process/orchestration-contract.yaml', verifyEvidence: false };
 const asset = (ref = 'input/evidence.md', value = digest) => ({ ref, digest: value });
 const request = (overrides = {}) => ({
   checkpoint_ref: '.work/feature-demo/checkpoint.json', feature_id: 'feature.demo', scope_ids: ['feature.demo'], scope_digest: digest,
@@ -66,13 +69,30 @@ function fixture(t, options) {
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   return buildPlanReviewFixture(root, options);
 }
+function currentFixture(t) {
+  const installed = installedFixture(); t.after(() => installed.cleanup());
+  const prepared = prepareProfessionalPlanFixture(installed, {outputDir: '.work/feature-demo/reviews/initial'});
+  const {cpRef: checkpointRef, cp: checkpoint, options} = prepared;
+  return {...installed, checkpointRef, checkpoint, options,
+    save: () => installed.write(checkpointRef, checkpoint),
+    reload: () => Object.assign(checkpoint, JSON.parse(installed.read(checkpointRef)))};
+}
+// Materialize synthetic historical bytes without invoking a forbidden legacy writer.
+function historicalReviewSnapshot(f) {
+  assert.throws(() => prepareReviewPackage(f.options), error => error.code === 'GOVERNANCE_MIGRATION_REQUIRED');
+  const built = buildReviewPackage(f.options);
+  for (const [name, bytes] of Object.entries(built.files)) f.write(path.posix.join(f.options.outputDir, name), bytes);
+  if (built.plan_checkpoint) { Object.assign(f.checkpoint, built.plan_checkpoint); f.save(); }
+  return {...built, bundle_ref: path.posix.join(f.options.outputDir, 'bundle-draft.yaml')};
+}
 function prepareArgs(f, overrides = {}) {
   const options = { ...f.options, ...overrides };
   return [path.join(ROOT, 'scripts/prepare-review-package'), '--root', f.root, '--checkpoint', options.checkpointRef,
-    ...options.checkIds.flatMap(id => ['--check', id]), '--role', options.roleId, '--runtime', options.runtimeId,
-    '--actor', options.actorId, '--reviewer-principal', options.reviewerPrincipalRef, '--drafter-principal', options.drafterPrincipalRef,
-    '--implementation-actor', options.implementationActorId, '--task-id', options.taskId, '--review-session', options.reviewSessionId,
-    '--work-unit', options.workUnitId, '--output-dir', options.outputDir, '--review-phase', options.reviewPhase];
+    ...options.checkIds.flatMap(id => ['--check', id]),
+    ...[['role',options.roleId],['runtime',options.runtimeId],['actor',options.actorId],['reviewer-principal',options.reviewerPrincipalRef],
+      ['drafter-principal',options.drafterPrincipalRef],['implementation-actor',options.implementationActorId],['task-id',options.taskId],
+      ['review-session',options.reviewSessionId],['work-unit',options.workUnitId],['review-input',options.reviewInputRef],['review-phase',options.reviewPhase]]
+      .filter(([,value])=>value!==undefined).flatMap(([key,value])=>['--'+key,value]), '--output-dir', options.outputDir];
 }
 function run(args, cwd) { return spawnSync(process.execPath, args, { cwd, encoding: 'utf8', timeout: 30000 }); }
 function runAsync(args, cwd) {
@@ -357,56 +377,66 @@ test('rereview can target a closed finding with repair regression evidence witho
 });
 
 test('prepare CLI dry-run writes no checkpoint, task, directory or transaction receipt', t => {
-  const f = fixture(t), before = f.read(f.checkpointRef);
+  const f = currentFixture(t), before = f.read(f.checkpointRef);
+  const transactions = path.join(f.root, '.yss/transactions'), beforeTransactions = fs.readdirSync(transactions).sort();
   const dry = run([...prepareArgs(f), '--dry-run'], f.root);
   assert.equal(dry.status, 0, dry.stderr);
   const preview = JSON.parse(dry.stdout);
   assert.deepEqual(f.read(f.checkpointRef), before);
   assert.equal(fs.existsSync(path.join(f.root, f.options.outputDir)), false);
-  assert.equal(fs.existsSync(path.join(f.root, '.yss/asset-transactions')), false);
+  assert.deepEqual(fs.readdirSync(transactions).sort(), beforeTransactions);
   assert.equal(preview.execution_authorization, 'not-granted');
 });
 
 test('failed package preparation reserves no review attempt', t => {
-  const f = fixture(t), before = f.read(f.checkpointRef);
-  assert.throws(() => prepareReviewPackage({ ...f.options, roleId: 'role.frontend-engineer' }), /REVIEW_CAPABILITY_MISSING|能力/);
+  const f = currentFixture(t), before = f.read(f.checkpointRef);
+  assert.throws(() => prepareReviewPackage({ ...f.options, roleId: 'role.frontend-engineer' }), /新审阅包不接受旧岗位/);
   assert.deepEqual(f.read(f.checkpointRef), before);
   assert.equal(f.reload().plan_review_control.attempts.length, 0);
   assert.equal(fs.existsSync(path.join(f.root, f.options.outputDir)), false);
 });
 
 test('transactional preparation persists one reservation and task renaming returns the original task', t => {
-  const f = fixture(t), prepared = prepareReviewPackage(f.options);
+  const f = currentFixture(t), prepared = prepareReviewPackage(f.options);
   assert.equal(prepared.decision, 'pending');
   assert.equal(f.reload().plan_review_control.attempts.length, 1);
+  const renamedInput = JSON.parse(f.read(f.options.reviewInputRef));
+  renamedInput.task.provenance.task_ref = '.work/feature-demo/reviews/renamed/task.json';
+  renamedInput.task.provenance.execution_ref = 'renamed-dispatch.json';
+  const renamedDispatch = JSON.parse(f.read('review-execution.json'));
+  renamedDispatch.task_ref = renamedInput.task.provenance.task_ref;
+  f.write('renamed-dispatch.json', renamedDispatch);
+  f.write(f.options.reviewInputRef, renamedInput);
   const renamed = prepareReviewPackage({ ...f.options, taskId: 'synthetic.renamed', outputDir: '.work/feature-demo/reviews/renamed' });
   assert.equal(renamed.task_ref, prepared.task_ref);
   assert.equal(f.reload().plan_review_control.attempts.length, 1);
   assert.equal(fs.existsSync(path.join(f.root, '.work/feature-demo/reviews/renamed')), false);
-  const tx = path.join(f.root, '.yss/asset-transactions');
-  const receipts = fs.readdirSync(tx).filter(name => /^[a-f0-9]{64}\.json$/.test(name)).map(name => JSON.parse(fs.readFileSync(path.join(tx, name))));
-  assert.ok(receipts.some(row => row.status === 'applied' && row.changes.some(change => change.ref === f.checkpointRef)));
-  assert.equal(fs.existsSync(path.join(tx, 'active.json')), false);
-  assert.equal(fs.existsSync(path.join(tx, 'lock')), false);
+  assert.equal(prepared.transaction.status, 'applied');
+  assert.equal(prepared.transaction.kind, 'review-package');
+  const status = f.run('review-publication-recovery', ['recover']);
+  assert.equal(status.status, 'ok');
+  assert.deepEqual([...(status.pending || []), ...(status.preparations || [])], []);
 });
 
 test('concurrent prepare CLI processes leave one valid reservation with no partial task publication', async t => {
-  const f = fixture(t);
+  const f = currentFixture(t);
   const results = await Promise.all([
     runAsync(prepareArgs(f), f.root),
-    runAsync(prepareArgs(f, { taskId: 'synthetic.concurrent', outputDir: '.work/feature-demo/reviews/concurrent' }), f.root)
+    runAsync(prepareArgs(f), f.root)
   ]);
-  assert.ok(results.some(row => row.status === 0), JSON.stringify(results));
-  for (const row of results) if (row.status !== 0) assert.match(row.stderr, /lock|锁|EEXIST|DRIFT|并发|PLAN_REVIEW|ASSET_TRANSACTION_PENDING/);
+  for (const row of results) if (row.status !== 0) assert.match(row.stderr, /lock|锁|EEXIST|DRIFT|并发|PLAN_REVIEW|ASSET_TRANSACTION_PENDING|VALIDATION_INPUT_CHANGED|NATIVE_INPUT_INVALID/);
+  // Concurrent native transports may both fail closed; retry only after both exit.
+  const recovered = prepareReviewPackage(f.options);
+  assert.equal(recovered.decision, 'pending');
   assert.equal(f.reload().plan_review_control.attempts.length, 1);
   const tasks = [f.options.outputDir, '.work/feature-demo/reviews/concurrent'].filter(ref => fs.existsSync(path.join(f.root, ref, 'task.json')));
   assert.equal(tasks.length, 1);
   const task = JSON.parse(f.read(path.posix.join(tasks[0], 'task.json')));
-  assert.doesNotThrow(() => validateReviewTaskBinding(task, { root: f.root }));
+  assert.doesNotThrow(() => validateTaskPackage(task, { root: f.root }));
 });
 
 test('business subject and basis drift block current tasks while CLI and log metadata preserve their binding', t => {
-  const f = fixture(t), prepared = prepareReviewPackage(f.options);
+  const f = fixture(t), prepared = historicalReviewSnapshot(f);
   const task = JSON.parse(f.read(prepared.task_ref));
   f.write('scripts/metadata.txt', 'CLI metadata revision 2\n');
   f.write('.work/feature-demo/operation.log', '重启后恢复相同专业任务\n');
@@ -420,13 +450,15 @@ test('business subject and basis drift block current tasks while CLI and log met
   assert.throws(() => validateReviewTaskBinding(task, { root: f.root }), /REVIEW_BINDING_STALE|PLAN_REVIEW|摘要|主体/);
 });
 
-test('real CLI dispatch and complete transactions bind approval consumption to the converged attempt and source consumer', async t => {
-  const f = fixture(t), prepared = prepareReviewPackage(f.options), task = JSON.parse(f.read(prepared.task_ref));
+test('historical converged reviews remain consumable while legacy CLI mutations require migration', async t => {
+  const f = fixture(t), prepared = historicalReviewSnapshot(f), task = JSON.parse(f.read(prepared.task_ref));
   const controlArgs = command => [path.join(ROOT, 'scripts/plan-review-control'), command, '--root', f.root, '--checkpoint', f.checkpointRef];
   const beforeDispatch = run(controlArgs('check'), f.root);
   assert.equal(beforeDispatch.status, 1); assert.match(beforeDispatch.stderr, /PLAN_REVIEW_ENTRY_BLOCKED|未收敛/);
   const dispatch = run([...controlArgs('dispatch'), '--task', prepared.task_ref], f.root);
-  assert.equal(dispatch.status, 0, dispatch.stderr);
+  assert.equal(dispatch.status, 1); assert.match(dispatch.stderr, /GOVERNANCE_MIGRATION_REQUIRED/);
+  assert.equal(f.reload().plan_review_control.attempts[0].status, 'reserved');
+  f.checkpoint.plan_review_control = dispatchPlanReview(f.checkpoint.plan_review_control, task.review_context.plan_review_binding, {root: f.root}); f.save();
   assert.equal(f.reload().plan_review_control.attempts[0].status, 'dispatched');
   const bundle = parseDocument(String(f.read(prepared.bundle_ref))).toJS();
   assert.throws(() => validateApprovalRecordFile(path.join(f.root, prepared.bundle_ref), { root: f.root, checkpoint: f.checkpoint }), /APPROVAL_CURRENT_INVALID|approved/);
@@ -436,7 +468,9 @@ test('real CLI dispatch and complete transactions bind approval consumption to t
   const resultRef = '.work/feature-demo/reviews/initial/result.json';
   f.write(resultRef, { synthetic_fixture: true, plan_review_binding: task.review_context.plan_review_binding, outcome: 'passed', check_results: PLAN_BOUNDARIES.map(check_id => ({ check_id, status: 'passed' })), findings: [] });
   const complete = run([...controlArgs('complete'), '--task', prepared.task_ref, '--input', resultRef], f.root);
-  assert.equal(complete.status, 0, complete.stderr);
+  assert.equal(complete.status, 1); assert.match(complete.stderr, /GOVERNANCE_MIGRATION_REQUIRED/);
+  const completed = JSON.parse(f.read(resultRef));
+  f.checkpoint.plan_review_control = completePlanReview(f.reload().plan_review_control, task.review_context.plan_review_binding, {...completed, result_ref: resultRef, result_digest: f.asset(resultRef).digest}, {root: f.root}); f.save();
   assert.equal(f.reload().plan_review_control.status, 'converged');
   const check = run(controlArgs('check'), f.root); assert.equal(check.status, 0, check.stderr);
   for (const row of bundle.reviews) {
@@ -446,7 +480,8 @@ test('real CLI dispatch and complete transactions bind approval consumption to t
   f.save();
   assert.doesNotThrow(() => validateApprovalRecordFile(path.join(f.root, approvedRef), { root: f.root, checkpoint: f.checkpoint }));
   const repeated = run([...controlArgs('complete'), '--task', prepared.task_ref, '--input', resultRef], f.root);
-  assert.equal(repeated.status, 1); assert.match(repeated.stderr, /PLAN_REVIEW_NOT_DISPATCHED|已消费/);
+  assert.equal(repeated.status, 1); assert.match(repeated.stderr, /GOVERNANCE_MIGRATION_REQUIRED/);
+  assert.throws(() => completePlanReview(f.checkpoint.plan_review_control, task.review_context.plan_review_binding, {...completed, result_ref: resultRef, result_digest: f.asset(resultRef).digest}, {root: f.root}), /PLAN_REVIEW_NOT_DISPATCHED/);
   assert.equal(f.reload().plan_review_control.attempts.length, 1);
   assert.equal(f.checkpoint.gates['gate.plan-approved'], undefined, '专业通过不批准完整 Plan 或代替用户回复');
   const plan = buildPlanFixture(f.root);
@@ -564,7 +599,7 @@ test('new Plan source with no professional checks consumes v1 approval through i
   await assertReadonlySourceContextConsumption(root, () => consume(source.binding));
 });
 
-test('Spec review consumes current Plan checkpoint without copying its control ledger', async t => {
+test('historical Spec review consumes its Plan checkpoint without copying the control ledger', async t => {
   const root = makeRoot('yss-spec-plan-entry-');
   t.after(() => fs.rmSync(root, {recursive: true, force: true}));
   const plan = buildPlanFixture(root); localizeSyntheticPlanSource(plan);
@@ -578,16 +613,20 @@ test('Spec review consumes current Plan checkpoint without copying its control l
     status: 'running', stage: 'stage.spec-architecture', next_work_unit: 'work-unit.spec-synthesis',
     phase_boundary: {decision: 'continue', reason: 'Synthetic approved Plan enters Spec review'},
     stage_trace: {stage: 'stage.spec-architecture', upstream_refs: ['review.json'], artifact_refs: ['spec.md'], gate_decisions: [], downstream_impacts: []},
+    artifacts: {}, context_reconciliation: {status:'pending',ref:null,evidence_refs:[]}, ticket_sync:{}, verification:{}, git_checkpoint:{}, blockers:[], rollback:[],
     checks: {}, human_review: {user_decisions}, gates: {
     'gate.plan-approved': source.gate,
     [boundary]: {applicable: true, status: 'pending', subject_ref: 'spec.md', subject_digest: source.asset('spec.md').digest,
       approval_scope: [state.feature_id], drafter_principal_ref: 'synthetic.spec-author', basis: [source.asset('spec-evidence.txt')], evidence_refs: ['spec-evidence.txt']}
   }};
   plan.write(checkpointRef, checkpoint);
-  const result = prepareReviewPackage({root, checkpointRef, checkIds: [boundary], roleId: 'role.product-manager',
+  const options = {root, checkpointRef, checkIds: [boundary], roleId: 'role.product-manager',
     runtimeId: 'runtime.generic', actorId: 'agent.reviewer', reviewerPrincipalRef: 'synthetic.spec-reviewer',
     drafterPrincipalRef: 'synthetic.packet-owner', implementationActorId: 'agent.worker', taskId: 'review.synthetic-spec',
-    reviewSessionId: 'synthetic.spec-session', workUnitId: 'work-unit.spec-synthesis', outputDir: '.work/feature-demo/reviews/spec'});
+    reviewSessionId: 'synthetic.spec-session', workUnitId: 'work-unit.spec-synthesis', outputDir: '.work/feature-demo/reviews/spec'};
+  assert.throws(() => prepareReviewPackage(options), error => error.code === 'GOVERNANCE_MIGRATION_REQUIRED');
+  const result = buildReviewPackage(options);
+  for (const [name, bytes] of Object.entries(result.files)) plan.write(path.posix.join(options.outputDir, name), bytes);
   const task = JSON.parse(fs.readFileSync(path.join(root, result.task_ref)));
   const {validateTaskPackage} = await import(path.join(root, 'scripts/lib/task-package.mjs'));
   const consumeNative = value => {
@@ -597,7 +636,7 @@ test('Spec review consumes current Plan checkpoint without copying its control l
   assert.equal(Object.hasOwn(task, 'plan_review_control'), false);
   const accepted = consumeNative(task);
   assert.equal(accepted.status, 0, accepted.stderr);
-  assert.doesNotThrow(() => validateTaskPackage(task));
+  assert.doesNotThrow(() => validateTaskPackage(task, {root}));
   for (const key of ['feature_id', 'plan_review_ref', 'plan_approval_ref', 'plan_user_decision_ref', 'plan_continuation_ref']) {
     const changed = {...task, [key]: 'synthetic.unrelated'};
     assert.throws(() => validateTaskPackage(changed), new RegExp(key));
@@ -698,7 +737,7 @@ test('Spec, Design and implementation review preparation does not consume Plan r
   ]) {
     const f = fixture(t, { boundaries });
     const options = { ...f.options, roleId, workUnitId }; delete options.reviewPhase;
-    const before = f.read(f.checkpointRef), prepared = prepareReviewPackage(options);
+    const before = f.read(f.checkpointRef), prepared = historicalReviewSnapshot({...f, options});
     assert.equal(prepared.decision, 'pending');
     assert.deepEqual(f.read(f.checkpointRef), before);
     assert.equal(f.reload().plan_review_control, undefined);
@@ -714,7 +753,7 @@ test('Plan checkpoint writes follow current, custom and legacy configured roots 
     const before = f.read(f.checkpointRef);
     assert.equal(writePlanReviewCheckpoint(f.checkpointRef, value => value.plan_review_control, { root, dryRun: true }).dry_run, true);
     for (const ref of ['docs/arbitrary/checkpoint.json', '.yss/checkpoint.json', '../checkpoint.json', '.work/other/checkpoint.yaml']) {
-      assert.throws(() => writePlanReviewCheckpoint(ref, () => { throw Error('must not mutate'); }, { root }), /WORK_LAYOUT|PLAN_REVIEW_WRITE_SCOPE/);
+      assert.throws(() => writePlanReviewCheckpoint(ref, () => { throw Error('must not mutate'); }, { root, dryRun: true }), /WORK_LAYOUT|PLAN_REVIEW_WRITE_SCOPE/);
     }
     assert.equal(f.read(f.checkpointRef).equals(before), true);
   }

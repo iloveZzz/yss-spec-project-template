@@ -32,12 +32,21 @@ function fixture(t) {
     write(subject, `schema_version: 1\nsubject: ${i}\n`); write(evidence, `actual evidence ${i}\n`);
     return [id, { applicable: true, status: 'pending', subject_ref: subject, subject_digest: reviewDigest(fs.readFileSync(path.join(root, subject))), approval_scope: [`scope-${i}`], drafter_principal_ref: `instance:author-${i}`, basis: [{ ref: evidence, digest: reviewDigest(fs.readFileSync(path.join(root, evidence))) }], evidence_refs: [evidence] }];
   });
-  const checkpoint = { checks: Object.fromEntries(rows), gates: {} };
+  const checkpoint = { schema_version: 1, repository_mode: 'project-instance', feature_id: 'feature.demo', mode: 'orchestrate',
+    status: 'running', stage: 'stage.system-data-engineering', artifacts: {}, checks: Object.fromEntries(rows), gates: {},
+    context_reconciliation: {status: 'pending', ref: null, evidence_refs: []}, next_work_unit: 'work-unit.technical-analysis',
+    ticket_sync: {}, verification: {}, human_review: {}, git_checkpoint: {}, blockers: [], rollback: [] };
   write(checkpointRef, JSON.stringify(checkpoint));
   const options = { root, registry, checkpointRef, checkIds, roleId: 'role.test-engineer', runtimeId: 'runtime.generic', actorId: 'agent.reviewer', reviewerPrincipalRef: 'instance:qa', drafterPrincipalRef: 'instance:packet-owner', implementationActorId: 'agent.worker', taskId: 'review.api-baseline', reviewSessionId: 'session:one', workUnitId: 'work-unit.technical-analysis', outputDir: '.work/feature/reviews/current' };
   return { root, write, checkpointRef, checkpoint, options };
 }
-function prepared(t) { const f = fixture(t), result = prepareReviewPackage(f.options); return { ...f, result, task: JSON.parse(fs.readFileSync(path.join(f.root, result.task_ref))), bundle: parseDocument(fs.readFileSync(path.join(f.root, result.bundle_ref), 'utf8')).toJS() }; }
+// Construct historical bytes directly; legacy instances cannot publish new reviews.
+function prepared(t) {
+  const f = fixture(t), built = buildReviewPackage(f.options);
+  for (const [name, bytes] of Object.entries(built.files)) f.write(path.posix.join(f.options.outputDir, name), bytes);
+  const result = { ...built, bundle_ref: path.posix.join(f.options.outputDir, 'bundle-draft.yaml'), diff_ref: path.posix.join(f.options.outputDir, 'diff.md') };
+  return { ...f, result, task: built.task, bundle: built.bundle };
+}
 function expected(f, boundary = checkIds[0]) { return approvalExpectedFromTask(f.task, { root: f.root, rolesDoc, registry, boundary, reviewTaskRef: f.result.task_ref, reviewTaskDigest: f.result.task_digest }); }
 
 test('Spec review forwards current Plan entry references without copying the control ledger', t => {
@@ -189,7 +198,7 @@ test('current approval task rejects unknown work units and substituted lifecycle
     task=>task.convergence.parent_work_unit='work-unit.code-review',
     task=>delete task.stage_id,
   ];
-  for(const mutate of mutations){const task=clone(f.task);mutate(task);assert.throws(()=>validateReviewTaskBinding(task,{root:f.root,rolesDoc,registry}),/REVIEW_TASK_INVALID|stage_id.*required/);}
+  for(const mutate of mutations){const task=clone(f.task);mutate(task);assert.throws(()=>validateReviewTaskBinding(task,{root:f.root,rolesDoc,registry}),error=>error instanceof TypeError && /REVIEW_TASK_INVALID|not valid under any of the given schemas/.test(error.message));}
 });
 
 test('record cannot change bound role/runtime/principal, capability set or review task', t => {
@@ -220,7 +229,7 @@ test('duplicated or omitted conclusions and schema omissions cannot bypass capab
   const duplicate = clone(f.task); duplicate.review_context.current_approvals[1] = clone(duplicate.review_context.current_approvals[0]);
   assert.throws(() => validateReviewTaskBinding(duplicate, { root: f.root, rolesDoc, registry }), /APPROVAL_CONTEXT_REQUIRED/);
   const missing = clone(f.task); delete missing.review_context.policy_digest;
-  assert.throws(() => validateReviewTaskBinding(missing, { root: f.root, rolesDoc, registry }), /policy_digest/);
+  assert.throws(() => validateReviewTaskBinding(missing, { root: f.root, rolesDoc, registry }), {name:'TypeError',message:/not valid under any of the given schemas/});
   const uncompiled = clone(f.task); uncompiled.skill_source.review_skills.push('yss-domain');
   assert.throws(() => validateReviewTaskBinding(uncompiled, { root: f.root, rolesDoc, registry }), /REVIEW_CAPABILITY_MISSING/);
 });
@@ -234,14 +243,14 @@ test('core and forbidden changes, self review, source write scope and v2 read-on
   const write = clone(f.task); write.allowed_write_paths = [f.checkpointRef];
   assert.throws(() => validateReviewTaskBinding(write, { root: f.root, rolesDoc, registry }), /REVIEW_CAPABILITY_WRITE_SCOPE/);
   const worker = clone(f.task); worker.execution_state = 'Worker';
-  assert.throws(() => validateTaskPackageSchema(worker), /Reviewer|Verifier/);
+  assert.throws(() => validateTaskPackageSchema(worker), {name:'TypeError',message:/not valid under any of the given schemas/});
   const intake = clone(f.task); intake.schema_version = 2;
-  assert.throws(() => validateTaskPackageSchema(intake), /schema_version|Explorer/);
+  assert.throws(() => validateTaskPackageSchema(intake), {name:'TypeError',message:/not valid under any of the given schemas/});
 });
 
-test('prepare refuses missing independent consumer input and never overwrites existing evidence', t => {
+test('legacy prepare requires migration and preserves evidence; readers require independent consumer input', t => {
   const f = prepared(t), old = fs.readFileSync(path.join(f.root, f.result.task_ref));
-  assert.throws(() => prepareReviewPackage(f.options), /不得覆盖历史证据/);
+  assert.throws(() => prepareReviewPackage(f.options), error => error.code === 'GOVERNANCE_MIGRATION_REQUIRED');
   assert.deepEqual(fs.readFileSync(path.join(f.root, f.result.task_ref)), old);
   delete f.checkpoint.checks[checkIds[0]].drafter_principal_ref;
   f.write(f.checkpointRef, JSON.stringify(f.checkpoint));
@@ -256,12 +265,16 @@ test('symlinked subject is rejected and current bytes are never accepted through
   assert.throws(() => buildReviewPackage({ ...f.options, outputDir: '../escape' }), /APPROVAL_CONTEXT_REQUIRED/);
 });
 
-test('CLI creates a reviewable pending package and returns a nonzero exit for a missing real checkpoint', t => {
+test('legacy CLI previews pending reviews but refuses publication without migration', t => {
   const f = fixture(t);
   const args = ['--root', f.root, '--checkpoint', f.checkpointRef, '--check', checkIds[0], '--check', checkIds[1], '--role', 'role.test-engineer', '--actor', 'agent.reviewer', '--reviewer-principal', 'instance:qa', '--drafter-principal', 'instance:packet-owner', '--implementation-actor', 'agent.worker', '--task-id', 'review.api-baseline', '--review-session', 'session:one', '--work-unit', 'work-unit.technical-analysis', '--output-dir', f.options.outputDir];
-  const run = spawnSync(process.execPath, [path.join(ROOT, 'scripts/prepare-review-package'), ...args], { cwd: ROOT, encoding: 'utf8' });
+  const run = spawnSync(process.execPath, [path.join(ROOT, 'scripts/prepare-review-package'), ...args, '--dry-run'], { cwd: ROOT, encoding: 'utf8' });
   assert.equal(run.status, 0, run.stderr); assert.equal(JSON.parse(run.stdout).decision, 'pending');
-  const invalid = spawnSync(process.execPath, [path.join(ROOT, 'scripts/prepare-review-package'), ...args.map(x => x === f.checkpointRef ? 'missing.json' : x)], { cwd: ROOT, encoding: 'utf8' });
+  assert.equal(fs.existsSync(path.join(f.root, f.options.outputDir)), false);
+  const denied = spawnSync(process.execPath, [path.join(ROOT, 'scripts/prepare-review-package'), ...args], { cwd: ROOT, encoding: 'utf8' });
+  assert.equal(denied.status, 1); assert.match(denied.stderr, /GOVERNANCE_MIGRATION_REQUIRED/);
+  assert.equal(fs.existsSync(path.join(f.root, f.options.outputDir)), false);
+  const invalid = spawnSync(process.execPath, [path.join(ROOT, 'scripts/prepare-review-package'), ...args.map(x => x === f.checkpointRef ? 'missing.json' : x), '--dry-run'], { cwd: ROOT, encoding: 'utf8' });
   assert.equal(invalid.status, 1); assert.match(invalid.stderr, /APPROVAL_CONTEXT_REQUIRED/);
 });
 

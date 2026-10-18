@@ -9,7 +9,7 @@ import {buildDecisionFixture} from '../../lib/testing/user-decision-fixture.mjs'
 import {assertPlanSpecEntry} from '../../lib/plan-spec-entry.mjs';
 import path from 'node:path';
 
-export function professionalPlanFixture(f,{subjects={},extraItems=[]}={}) {
+export function prepareProfessionalPlanFixture(f,{subjects={},outputDir='professional'}={}) {
  const {root,write,read,asset,run}=f;
  const cpRef='.work/feature-demo/checkpoint.json',ids=['check.domain-strategy-approved','check.stage-decision-package-approved'];
 
@@ -25,13 +25,20 @@ export function professionalPlanFixture(f,{subjects={},extraItems=[]}={}) {
   write('drafts/subject.json',{kind:'review-subject',source_checkpoint:{ref:cpRef,digest:currentApprovalsDigest(rows)},current_approvals:rows});
   const prepared=f.draftTask({taskRef:'prepare.json',checkpointRef:cpRef,featureId:cp.feature_id});
   f.finishTask(prepared);run('actual-preparation',['contract','verify','--kind','task','--file','prepare.json']);
-  const review=f.draftTask({taskRef:'professional/task.json',checkpointRef:cpRef,featureId:cp.feature_id,inputs:[...new Set(['input.json','plan.md','prepare.json',...Object.values(subjects)])],outputs:['reports/professional.json'],paths:['reports']});
+  const review=f.draftTask({taskRef:`${outputDir}/task.json`,checkpointRef:cpRef,featureId:cp.feature_id,inputs:[...new Set(['input.json','plan.md','prepare.json',...Object.values(subjects)])],outputs:['reports/professional.json'],paths:['reports']});
+  review.task_id='review.professional';
   review.provenance.execution_ref='review-execution.json';review.expected_evidence_files=['review-execution.json'];
   review.execution_state='Reviewer';review.review_context={candidate:asset('drafts/subject.json'),policy:review.policy,check_ids:ids,approval_scope:[cp.feature_id],basis:review.input_bindings,review:{mode:'self-check',provenance:review.provenance}};
   write('review-input.json',{task:review});
   const dispatch={phase:'dispatch',dispatched_at:new Date().toISOString(),tool:review.provenance.tool,task_ref:review.provenance.task_ref,identity:review.provenance.identity,candidate:review.review_context.candidate,input_bindings:review.input_bindings,baseline:review.baseline,scope:review.allowed_write_paths,expected_outputs:review.expected_outputs};
   write(review.provenance.execution_ref,dispatch);
-  const published=prepareReviewPackage({root,checkpointRef:cpRef,checkIds:ids,reviewInputRef:'review-input.json',outputDir:'professional'});
+  return {cpRef,cp,ids,review,prepared,options:{root,checkpointRef:cpRef,checkIds:ids,reviewInputRef:'review-input.json',outputDir}};
+}
+
+export function professionalPlanFixture(f,{subjects={},extraItems=[]}={}) {
+ const {root,write,read,asset,run}=f;
+ const {cpRef,cp,ids,prepared,options}=prepareProfessionalPlanFixture(f,{subjects});
+  const published=prepareReviewPackage(options);
   assert.equal(published.decision,'pending');
   const pending=JSON.parse(read('professional/task.json')),binding=pending.review_context.plan_review_binding;
   writePlanReviewCheckpoint(cpRef,current=>dispatchPlanReview(current.plan_review_control,binding,{root}),{root});
