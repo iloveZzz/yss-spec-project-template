@@ -86,6 +86,8 @@ profiles:
           - ".template-source/contracts/architecture-iteration-v1*.md"
           - ".template-source/contracts/spec-backend-direct-consumption-design.md"
           - "docs/superpowers/plans/2026-10-18-spec-backend-material-intake-and-manual-handoff.md"
+          - "docs/superpowers/plans/2026-10-18-test-retirement-and-verification-dedup.md"
+          - "docs/superpowers/specs/2026-10-18-test-retirement-and-verification-dedup-design.md"
         depends_on: []
         failure_mode: "说明文档复述门禁数、阶段数、投影根数量或硬编码与 lock 不一致的上游 revision"
       - id: check.role-independent-contracts
@@ -550,6 +552,7 @@ profiles:
           - "tests/helpers/fixtures/native-legacy.json.gz"
           - "tests/helpers/fixtures/native-legacy.provenance.json"
           - "scripts/lib/business-tickets.mjs"
+          - "scripts/fixtures/business-tickets/business-tickets.test.mjs"
           - "scripts/fixtures/strategic-handoff/fixture.mjs"
           - "scripts/lib/strategic-handoff.mjs"
           - "scripts/lib/strategic-handoff-io.mjs"
@@ -953,19 +956,29 @@ profiles:
         depends_on: []
         failure_mode: "yss-cli 固定文件缺项、坏摘要或未知平台被放行，二进制摘要与固定版本不符时没有失败，或 CI 里接受了本地覆盖"
       - id: check.template-release-sources
-        run: "node --test --test-name-pattern '固定发行拒绝缺失|发行验证在有 yss-cli 固定文件时|浮动版本与脏树|发行来源适配器' .template-source/scripts/tests/template-ci.test.mjs tests/verification-artifacts.test.mjs"
+        run: "node --test --test-name-pattern '固定发行拒绝缺失|发行验证在有 yss-cli 固定文件时|浮动版本与脏树' .template-source/scripts/tests/template-ci.test.mjs"
         group: feature-assets
         inputs_complete: true
         input_patterns:
           - ".template-source/scripts/lib/template-release.mjs"
           - ".template-source/scripts/lib/verification-artifacts.mjs"
           - ".template-source/scripts/tests/template-ci.test.mjs"
-          - "tests/verification-artifacts.test.mjs"
           - ".gitmodules"
           # AR-02 已移除的 yss-cli gitlink：删除也算变更路径，删除提交里仍需登记；合入之后可以移除。
           - "submodules/yss-cli"
         depends_on: []
         failure_mode: "发布检出把未初始化的 yss-cli 当作允许项，发行验证接受了与固定文件不符的二进制或源码提交，或本地覆盖通过了发行验证"
+      - id: check.verification-artifacts
+        run: "node --test tests/verification-artifacts.test.mjs"
+        group: feature-assets
+        resources: [native-cli, go]
+        inputs_complete: true
+        input_patterns:
+          - ".template-source/scripts/lib/verification-artifacts.mjs"
+          - "tests/verification-artifacts.test.mjs"
+          - ".template-source/distribution/yss-cli-pin.json"
+        depends_on: []
+        failure_mode: "产物来源、安装树污染、受管升级或回退行为没有经过实际用例验证"
       - id: check.ci-gate
         run: "node --test tests/ci-gate.test.mjs"
         group: feature-assets
@@ -1549,7 +1562,7 @@ profiles:
         failure_mode: "阶段 checkpoint 越界接受或编排合同错误"
       - id: "check.daily-selection"
         resources: [ "python-jsonschema" ]
-        run: "node --test --test-name-pattern '日常|试点|unknown, mixed|path sets|dependency closure|qualification binds|missing dependency|正式 Schema|选中的 Schema|目标意图|既有补充|补充检查拒绝|CI|原始选择|重复登记合并' tests/verification-selection.test.mjs"
+        run: "node --test tests/verification-selection.test.mjs"
         group: "candidate-integrity"
         inputs_complete: true
         input_patterns:
@@ -1561,7 +1574,6 @@ profiles:
           - ".template-source/scripts/lib/verification-execution-plan.mjs"
           - ".template-source/process/template-verification-profiles.yaml"
           - "tests/verification-selection.test.mjs"
-          - "tests/verification-gates.test.mjs"
         depends_on: []
         failure_mode: "检查选择遗漏、错误扩大或依赖闭包错误"
       - id: "check.daily-execution"
@@ -1598,7 +1610,28 @@ profiles:
         failure_mode: "环境缺失未提前拒绝或无关环境被强制要求的错误"
       - id: "check.daily-report"
         resources: [ "python-jsonschema", "go" ]
-        run: "node --test tests/verification-report.test.mjs tests/verification-report-v2.test.mjs"
+        run: "node --test tests/verification-report.test.mjs"
+        group: "candidate-integrity"
+        inputs_complete: true
+        input_patterns:
+          - ".template-source/scripts/lib/template-verification-worker.mjs"
+          - "scripts/lib/ci-gate.mjs"
+          - "scripts/lib/verification-report.mjs"
+          - "scripts/lib/template-verification.mjs"
+          - "scripts/lib/verification-selection.mjs"
+          - "scripts/lib/template-verification-runner.mjs"
+          - ".template-source/scripts/lib/verification-execution-plan.mjs"
+          - ".template-source/process/template-verification-profiles.yaml"
+          - ".template-source/scripts/lib/verification-report-validator.mjs"
+          - ".template-source/process/schemas/template-verification-report.schema.json"
+          - "tests/verification-report.test.mjs"
+          - "tests/verification-selection.test.mjs"
+          - "tests/verification-report-v2.test.mjs"
+        depends_on: []
+        failure_mode: "局部报告被当作正式报告或退出、漂移证据错误"
+      - id: "check.verification-report-v2"
+        resources: [ "python-jsonschema", "go" ]
+        run: "node --test tests/verification-report-v2.test.mjs"
         group: "candidate-integrity"
         inputs_complete: true
         input_patterns:
@@ -1908,6 +1941,15 @@ profiles:
         failure_mode: "默认工作包样例在阶段决策或战术设计中产生失效引用"
   release:
     selection: impact
+    required_checks:
+      - check.release-profile-consumers
+      - check.daily-execution
+      - check.verification-script-retirement
+      - check.daily-preflight
+      - check.verification-report-v2
+      - check.verification-artifacts
+      - check.legacy-coverage
+      - check.yss-cli-pin
 compatibility_patterns:
   - .gitmodules
   - scripts/**
@@ -3185,9 +3227,15 @@ groups:
       - run: node --test .template-source/scripts/tests/template-ci.test.mjs
         when: template-source
         id: check.af45fd40af913057
-      - run: node --test tests/verification-selection.test.mjs tests/verification-report.test.mjs
+      - run: node --test tests/verification-selection.test.mjs
         when: template-source
         id: check.verification-selection
+      - run: node --test tests/verification-gates.test.mjs tests/verification-baseline.test.mjs tests/verification-qualification.test.mjs tests/verification-delivery-run.test.mjs tests/legacy-verification.test.mjs
+        id: check.release-profile-consumers
+        resources: [native-cli]
+      - run: node --test tests/verification-report.test.mjs
+        id: check.daily-report
+        resources: [python-jsonschema, go]
   research-evidence:
     commands:
       - run: node .agents/skills/yss-research/tests/run-scenarios.mjs
@@ -3351,6 +3399,7 @@ gates:
     impact_dependencies: []
     depends_on: []
     check_ids:
+      - check.yss-cli-pin
       - check.role-independent-contracts
       - check.document-reading-views
       - check.92a3623cf3550ba8
@@ -3665,6 +3714,9 @@ gates:
     impact_dependencies: []
     depends_on: []
     check_ids:
+      - check.release-profile-consumers
+      - check.verification-report-v2
+      - check.verification-artifacts
       - check.010ab85199ad1140
       - check.1f905d7e659c8525
       - check.e970cf29c7cd81e3
@@ -3738,22 +3790,6 @@ supplemental_checks:
     depends_on: []
     when: template-source
     task_id: supplemental.template-wiki-untracked
-    source_requirement: committed
-  - id: check.legacy-coverage-supplemental
-    run: node --test tests/legacy-coverage.test.mjs
-    group: feature-assets
-    gate_ids: [ check.verification-lifecycle ]
-    depends_on: []
-    when: template-source
-    task_id: supplemental.legacy-coverage
-    source_requirement: committed
-  - id: check.yss-cli-pin-supplemental
-    run: node --test tests/yss-cli-pin.test.mjs
-    group: feature-assets
-    gate_ids: [ check.verification-lifecycle ]
-    depends_on: []
-    when: template-source
-    task_id: supplemental.yss-cli-pin
     source_requirement: committed
   - id: check.skill-lock-readers-supplemental
     run: node --test tests/skill-lock-readers.test.mjs
@@ -3877,12 +3913,3 @@ supplemental_checks:
     when: template-source
     source_requirement: committed
     task_id: supplemental.native-profile-asset-consumption
-  - id: check.verification-optimization-regressions
-    run: node --test tests/verification-gates.test.mjs tests/verification-baseline.test.mjs tests/verification-execution.test.mjs tests/verification-script-retirement.test.mjs tests/verification-preflight.test.mjs tests/verification-report-v2.test.mjs tests/verification-artifacts.test.mjs tests/verification-delivery-run.test.mjs tests/legacy-verification.test.mjs
-    group: verification-optimization
-    gate_ids:
-      - check.verification-final-integrity
-    depends_on: []
-    when: template-source
-    source_requirement: committed
-    task_id: supplemental.optimization-regressions

@@ -13,6 +13,7 @@ import {validateMaintenanceVerificationEvidence} from '../scripts/lib/maintenanc
 import {createHash} from 'node:crypto';
 import {spawnSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
+import {ROOT} from '../scripts/lib/template-verification.mjs';
 
 function fixture(t) {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'verification-v2-'));
@@ -38,6 +39,23 @@ test('完整 v2 报告按独立期望台账核验', t => {
   assert.equal(validateVerificationReport(f.report, f.options).status, 'passed');
   f.report.plan.commands = []; f.report.results = [];
   assert.throws(() => validateVerificationReport(f.report, f.options), /任务|task/);
+});
+test('必跑责任报告按独立编译任务拒绝漏项、丢 Gate 和执行篡改',t=>{
+ const f=fixture(t),head=spawnSync('git',['rev-parse','HEAD'],{cwd:ROOT,encoding:'utf8'}).stdout.trim();
+ const compiled=compileExpectedVerificationPlan({root:ROOT,args:['--profile','release','--base',head],reportDirectory:f.directory});
+ const required=compiled.commands.find(row=>row.id==='check.daily-execution');assert.ok(required);assert.equal(required.source_requirement,'committed');
+ // Isolate one policy-derived task in the existing synthetic report fixture.
+ const task={...required,depends_on:[]};
+ f.plan.commands=[task];f.plan.gates=task.gate_ids.map(id=>({id,selected:true,check_ids:[task.id]}));
+ f.report.root=ROOT;f.options.root=ROOT;f.report.plan=structuredClone(f.plan);
+ Object.assign(f.report.results[0],task,{actual_execution:task.execution});
+ finalizeVerificationReport(f.report,{status:'passed',wallMs:1,repositoryMode:'template-source'});
+ assert.equal(validateVerificationReport(f.report,f.options).status,'passed');
+ for(const mutate of [
+  report=>{report.plan.commands=[];report.results=[];},
+  report=>report.plan.commands[0].gate_ids=[],
+  report=>report.results[0].actual_execution.args=['--test','other.test.mjs'],
+ ]){const report=structuredClone(f.report);mutate(report);assert.throws(()=>validateVerificationReport(report,f.options));}
 });
 test('日常 limited 报告不能成为正式发布证据',t=>{
  const f=fixture(t);const daily=createVerificationReport({...f.plan,requested_profile:'fast'},{root:f.directory,inputDigest:f.report.input_sha256,scope:{kind:'complete-candidate'}});

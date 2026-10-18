@@ -127,7 +127,10 @@ export function planTemplateVerification({ profile = "fast", changedFiles = [], 
     ensure(raw&&compileVerificationCheck({...definition,...raw},{profile}).command===step.command.join(' '),`CI_GUARD_BINDING: ${step.id}`);
   }
   if(daily)return {...applyDailyVerificationSelection(plan,{selection,config,includeSlow,mandatoryChecks:ciGuards?ciVerificationCheckIds():[],mandatoryReason:'ci-required'}),compatibility_required:false,policy_digest:verificationPolicyDigest(config),fallback_reasons:[]};
-  const mandatory=(config.gates||[]).filter(g=>g.required_at_release&&g.execution_scope==='template-verification').flatMap(g=>g.check_ids);
+  const required=Object.hasOwn(config.profiles.release,'required_checks')?config.profiles.release.required_checks:[];
+  const known=new Set([...config.profiles.fast.checks.map(check=>check.id),...Object.values(config.groups).flatMap(group=>group.commands.map(verificationCheckId))]);
+  ensure(Array.isArray(required)&&required.every(id=>typeof id==='string'&&known.has(id))&&new Set(required).size===required.length,'RELEASE_REQUIRED_CHECKS_INVALID');
+  const mandatory=[...new Set([...(config.gates||[]).filter(g=>g.required_at_release&&g.execution_scope==='template-verification').flatMap(g=>g.check_ids),...required])];
   return buildReleasePlan(applyDailyVerificationSelection(plan,{selection:'allowlist',config,profile:'release',mandatoryChecks:mandatory}),{config});
 }
 

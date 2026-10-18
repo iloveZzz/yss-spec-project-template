@@ -75,9 +75,6 @@ export function produceCliArtifact({root,source,directory,run,environment=proces
  const tarball=path.join(directory,`${tuple.family}-${path.basename(binary)}`);fs.copyFileSync(binary,tarball);fs.chmodSync(tarball,fs.statSync(binary).mode&0o777);
  return validateArtifact({source_tuple:tuple,tarball,packed_tarball_path:tarball,tarball_sha256:hash(fs.readFileSync(tarball)),installed_root,binary,bundle_manifest,snapshot:exported.inspection,snapshot_sha256:tuple.snapshot_hash,manifest_sha256:tuple.manifest_hash,installed_tree_sha256:installedTreeDigest(installed_root)},tuple);
 }
-/** The two old source-test consumers are superseded by public native behavior tests. */
-export function prepareCliSourceConsumer(){throw new TypeError('RETIRED_SOURCE_CONSUMER: 使用 tests/cli-retirement.test.mjs 的原生公开入口覆盖');}
-export function validateCliSourceConsumer(){throw new TypeError('RETIRED_SOURCE_CONSUMER: 旧源码回执仅保留在历史归档，不授予当前验证通过');}
 export function verifyInstalledCliMigration({artifact,directory,run}={}){
  validateArtifact(artifact,artifact.source_tuple);const family=artifact.source_tuple.family;fs.mkdirSync(directory,{recursive:true});const target=path.join(directory,'instance');const environment={...process.env,YSS_NATIVE_BINARY:artifact.binary,YSS_NATIVE_BINARY_SHA256:artifact.source_tuple.binary_sha256},options={environment,run,cwd:artifact.installed_root};
  initializeNative(family,target,options);runNative(['doctor','--root',target],options);runNative(['diff','--root',target],options);

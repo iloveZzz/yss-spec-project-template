@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
-import {collectReleaseSources,createArtifactCoordinator,sourceTuple,validateArtifact,installedTreeDigest,produceCliArtifact,prepareCliSourceConsumer,validateCliSourceConsumer,verifyInstalledCliMigration} from '../.template-source/scripts/lib/verification-artifacts.mjs';
+import {collectReleaseSources,createArtifactCoordinator,sourceTuple,validateArtifact,installedTreeDigest,produceCliArtifact,verifyInstalledCliMigration} from '../.template-source/scripts/lib/verification-artifacts.mjs';
 import {NATIVE_PROFILES,nativeBinary,nativeDigest as hash,inspectNative,runNative} from '../.template-source/scripts/lib/native-yss.mjs';
 const temporary=t=>{const dir=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'native-artifacts-')));t.after(()=>fs.rmSync(dir,{recursive:true,force:true}));return dir;};
 const source=(binarySha)=>({namespace:'candidate-release',family:'spec',cli_commit:'1'.repeat(40),template_commit:'2'.repeat(40),core_commit:'3'.repeat(40),package_name:'yss',version:'1.0.0-alpha.3',template_version:'git:'+'2'.repeat(40),source_contract_version:2,protocol_version:1,snapshot_hash:'4'.repeat(64),manifest_hash:'5'.repeat(64),bundle_hash:'6'.repeat(64),binary_sha256:binarySha});
@@ -34,12 +34,11 @@ test('已安装 bin/runtime 字节、类型和权限污染不能复用',t=>{
  fs.rmSync(binary);fs.mkdirSync(binary);assert.throws(()=>validateArtifact(artifact,tuple),/安装树/);
 });
 
-test('固定原生消费保留完整 Bundle 并绑定二进制 bytes，旧私有源码接口明确拒绝',t=>{
+test('固定原生消费保留完整 Bundle 并绑定二进制 bytes',t=>{
  const base=temporary(t),root=path.join(base,'source');fs.mkdirSync(root);const pinned=nativeBinary(),inspection=inspectNative('spec'),version=runNative(['version']).result;
  const tuple={...source(pinned.digest),version:version.version,template_version:inspection.templateVersion,template_commit:inspection.templateCommit,snapshot_hash:inspection.sourceSnapshotHash,manifest_hash:inspection.manifestHash,bundle_hash:inspection.bundleHash};
  const commands=[],run=(file,args,cwd,env)=>{commands.push({file,args,cwd});const result=spawnSync(file,args,{cwd,env,encoding:'utf8',maxBuffer:128*1024*1024});assert.equal(result.status,0,result.stderr);return result;};
  const artifact=produceCliArtifact({root,source:tuple,directory:path.join(base,'artifact'),run});validateArtifact(artifact,tuple);assert.equal(commands.length,1);assert.equal(commands[0].file,artifact.binary);assert.deepEqual(commands[0].args.slice(0,2),['bundle','export']);assert.ok(fs.existsSync(path.join(artifact.installed_root,'bundle/scripts/runtime-store')));assert.ok(!commands.some(row=>row.file==='npm'));
- assert.throws(()=>prepareCliSourceConsumer({}),/RETIRED_SOURCE_CONSUMER/);assert.throws(()=>validateCliSourceConsumer({}),/RETIRED_SOURCE_CONSUMER/);
  fs.writeFileSync(path.join(artifact.installed_root,'bundle/scripts/runtime-store'),'tampered governance tool');assert.throws(()=>validateArtifact(artifact,tuple),/安装树/);
 });
 
@@ -70,9 +69,7 @@ test('发行来源收集：固定二进制与源码提交必须与固定文件�
  for(const cwd of [cli,root])git(cwd,'init','-q');
  put(cli,'go.mod','module github.com/iloveZzz/yss-cli\n\ngo 1.27.1\n');
  put(cli,'main.go',fs.readFileSync(new URL('../.template-source/scripts/tests/fixtures/native-release.go',import.meta.url)));
- put(cli,'tools/package/main.go',`package main
-import("archive/tar";"compress/gzip";"crypto/sha256";"encoding/json";"fmt";"os";"path/filepath";"sort";"strings")
-func main(){if len(os.Args)!=6||os.Args[1]!="--native-manifest"||os.Args[3]!="--required-platforms"{panic("wrong assembler invocation")};if os.Getenv("GOFLAGS")!=""||os.Getenv("GOWORK")!="off"{panic("unfixed Go environment")};raw,e:=os.ReadFile(os.Args[2]);if e!=nil{panic(e)};var v map[string]any;if e=json.Unmarshal(raw,&v);e!=nil{panic(e)};if v["fixtureFail"]==true{panic("synthetic assembler refusal")};out:=os.Args[5];if e=os.Mkdir(out,0700);e!=nil{panic(e)};platforms:=strings.Split(os.Args[4],",");sort.Strings(platforms);manifest:=v["fixtureManifest"];b,_:=json.Marshal(manifest);archive:="fixture.tar.gz";f,e:=os.Create(filepath.Join(out,archive));if e!=nil{panic(e)};g:=gzip.NewWriter(f);w:=tar.NewWriter(g);w.WriteHeader(&tar.Header{Name:"release-manifest.json",Mode:0644,Size:int64(len(b))});w.Write(b);w.Close();g.Close();f.Close();a,_:=os.ReadFile(filepath.Join(out,archive));m:=manifest.(map[string]any);proof:=map[string]any{"schemaVersion":2,"version":v["cliVersion"],"cliCommit":v["cliCommit"],"sourceState":"committed","stableReady":true,"qualificationScope":"local-platform-impacted-consumers","inputManifestSha256":fmt.Sprintf("%x",sha256.Sum256(raw)),"sourceLockSha256":v["sourceLockSha256"],"requiredPlatforms":platforms,"pending":[]string{},"artifacts":[]any{map[string]any{"platform":m["platform"],"archive":archive,"sha256":fmt.Sprintf("%x",sha256.Sum256(a)),"binarySha256":m["binarySha256"]}}};b,_=json.Marshal(proof);os.WriteFile(filepath.Join(out,"checksums.json"),b,0600);if v["fixtureDrift"]==true{os.WriteFile(os.Args[2],append(raw,' '),0600)}}`);
+
  const cliCommit=commit(cli),pinCommit='f'.repeat(40),platform=`${process.platform==='win32'?'windows':process.platform}/${process.arch==='x64'?'amd64':process.arch}`;
  put(root,'.template-source/distribution/yss-cli-pin.json',JSON.stringify({schema_version:1,repository:'https://example.test/yss-cli.git',version:'1.3.5',commit:pinCommit,go_version:'1.27.1',build:'go build',binaries:{[platform.replace('/','-')]:{sha256:'0'.repeat(64)}}}));
  const templateCommit=commit(root),binary=path.join(base,'yss-fixture'),built=spawnSync('go',['build','-trimpath','-ldflags',`-X main.cliCommit=${cliCommit} -X main.templateCommit=${templateCommit} -X main.designCommit=${templateCommit} -X main.backendCommit=${templateCommit}`,'-o',binary,'.'],{cwd:cli,env:{...process.env,CGO_ENABLED:'0'},encoding:'utf8'});assert.equal(built.status,0,built.stderr);

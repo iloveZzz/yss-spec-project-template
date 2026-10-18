@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { compactLegacyCoverage, expandLegacyCoverage } from '../scripts/lib/legacy-coverage.mjs';
+import { expandLegacyCoverage } from '../scripts/lib/legacy-coverage.mjs';
 import {readHistoricalProfiles} from '../.template-source/scripts/lib/legacy-verification.mjs';
 // 固定含旧覆盖清单的历史策略，不能随当前 HEAD 的资产退役变化。
 const root=new URL('..',import.meta.url).pathname,commit='0abbe49ee4cfd8608beab95243520888228dad41';
@@ -93,14 +93,4 @@ test('固定历史 profile：展开后恰好 117 条，且内容与压缩前逐�
   const digest = createHash('sha256').update(JSON.stringify(loaded.legacy_coverage)).digest('hex');
   assert.equal(digest, '8fdcd99b97a508b39602fd0e0ec4048c9c9cbfdb84fc1444b316e3a9b5ea70c5');
   assert.equal('legacy_coverage_defaults' in loaded, false);
-});
-
-test('压缩再展开是恒等变换（用真实的 117 条验证）', () => {
-  const expanded = loadVerificationProfiles().legacy_coverage;
-  const { defaults, gates, rows } = compactLegacyCoverage(expanded);
-  const again = expandLegacyCoverage({ legacy_coverage_defaults: defaults, legacy_coverage_gates: gates, legacy_coverage: rows }).legacy_coverage;
-  assert.equal(JSON.stringify(again), JSON.stringify(expanded));
-  const constantKeys = ['owner', 'input_patterns', 'depends_on', 'duration_ms', 'disposition', 'audit_status', 'evidence_ref'];
-  assert.ok(rows.every((item) => constantKeys.every((key) => !(key in item))), '压缩后不再重复逐条相同的字段');
-  assert.deepEqual(rows.filter((item) => 'counterexample_ref' in item).map((item) => item.old_id), ['legacy.012'], '只有真正不同的条目才带覆盖项');
 });

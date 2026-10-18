@@ -6,11 +6,67 @@ import path from 'node:path';
 import {planTemplateVerification,loadVerificationProfiles,ROOT} from '../scripts/lib/template-verification.mjs';
 import {resolveVerificationScope} from '../scripts/lib/verification-report.mjs';
 import {spawnSync} from 'node:child_process';
-import './verification-gates.test.mjs';
-import './verification-baseline.test.mjs';
-import './verification-qualification.test.mjs';
+import {compileTaskExecution,addVerificationExecutionTasks} from '../.template-source/scripts/lib/verification-execution-plan.mjs';
 const pilot='.agents/skills/yss-research/SKILL.md';
 const pilotConfig=()=>loadVerificationProfiles();
+const releaseRequired=['check.release-profile-consumers','check.daily-execution','check.verification-script-retirement','check.daily-preflight','check.verification-report-v2','check.verification-artifacts','check.legacy-coverage','check.yss-cli-pin'];
+test('发布必跑唯一覆盖保留空差异、策略及 pin 的完整责任',t=>{
+ const directory=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'required-selection-')));t.after(()=>fs.rmSync(directory,{recursive:true,force:true}));
+ for(const [index,changedFiles]of [[],['.template-source/process/template-verification-profiles.yaml'],['.template-source/distribution/yss-cli-pin.json']].entries()){
+  const p=planTemplateVerification({profile:'release',changedFiles});assert.equal(p.source_requirement,'committed');
+  for(const id of releaseRequired){assert.equal(p.commands.filter(x=>x.id===id).length,1,id);assert.equal(p.commands.find(x=>x.id===id).source_requirement,'committed',id);}
+  const compiled=addVerificationExecutionTasks(p,{root:ROOT,reportDir:path.join(directory,String(index))});
+  for(const ref of ['legacy-coverage','yss-cli-pin','verification-gates','verification-baseline','verification-qualification','verification-delivery-run','legacy-verification','verification-execution','verification-script-retirement','verification-preflight','verification-report-v2','verification-artifacts']){
+   const target=path.join(ROOT,'tests',ref+'.test.mjs');
+   assert.equal(compiled.commands.filter(row=>row.execution?.args?.some(arg=>path.resolve(ROOT,arg)===target)).length,1,`${changedFiles}: ${ref}`);
+  }
+ }
+ const fast=planTemplateVerification({changedFiles:['README.md']});assert.ok(fast.commands.every(x=>!releaseRequired.includes(x.id)));
+ const legacy=planTemplateVerification({changedFiles:['tests/verification-selection.test.mjs'],selection:'legacy'}),shadow=planTemplateVerification({changedFiles:['tests/verification-selection.test.mjs'],selection:'shadow'});
+ assert.deepEqual(legacy.commands,shadow.commands);
+ for(const id of ['check.release-profile-consumers','check.daily-report'])assert.ok(legacy.commands.some(row=>row.id===id),id);
+ const release=planTemplateVerification({profile:'release',changedFiles:[]});
+ assert.ok(release.commands.find(row=>row.id==='check.yss-cli-pin').gate_ids.includes('check.verification-lifecycle'));
+ for(const id of releaseRequired.slice(0,6))assert.ok(release.commands.find(row=>row.id===id).gate_ids.includes('check.verification-final-integrity'),id);
+ assert.ok(release.commands.find(row=>row.id==='check.release-profile-consumers').gate_ids.includes('check.verification-distribution'));
+});
+test('发布必跑唯一覆盖拒绝非法显式清单，缺字段保留旧规则',()=>{
+ for(const value of [null,'check.x',[''],[1],[releaseRequired[0],releaseRequired[0]],['check.not-registered']]){
+  const config=loadVerificationProfiles();config.profiles.release.required_checks=value;
+  assert.throws(()=>planTemplateVerification({profile:'release',config}),/RELEASE_REQUIRED_CHECKS_INVALID/);
+  assert.doesNotThrow(()=>planTemplateVerification({changedFiles:['README.md'],config}));
+ }
+ const config=loadVerificationProfiles();delete config.profiles.release.required_checks;
+ assert.doesNotThrow(()=>planTemplateVerification({profile:'release',config}));
+});
+test('产物消费者实际执行来源收集且不依赖旧名称',t=>{
+ const directory=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'artifact-selection-')));
+ t.after(()=>fs.rmSync(directory,{recursive:true,force:true}));
+ const marker=path.join(directory,'source-collection-ran');
+ const plan=planTemplateVerification({changedFiles:['tests/verification-artifacts.test.mjs']});
+ const consumers=plan.commands.map(task=>compileTaskExecution(task,{root:ROOT})).filter(execution=>execution?.args.some(arg=>arg.endsWith('/verification-artifacts.test.mjs')));
+ assert.equal(consumers.length,1);
+ const environment={...process.env};delete environment.NODE_TEST_CONTEXT;
+ for(const execution of consumers){
+  const args=execution.args.map((arg,index)=>{
+   if(!arg.endsWith('.test.mjs'))return arg;
+   const file=path.join(directory,`${index}.test.mjs`);
+   fs.writeFileSync(file,arg.endsWith('/verification-artifacts.test.mjs')?`import test from 'node:test';import fs from 'node:fs';test('发行来源收集：固定二进制与源码提交必须与固定文件一致，不要求 Bundle 绑定本次模板，也不接受装配输入',()=>fs.writeFileSync(${JSON.stringify(marker)},'ran'));`:'');
+   return file;
+  });
+  const child=spawnSync(execution.file,args,{cwd:execution.cwd,env:environment,encoding:'utf8'});
+  assert.equal(child.status,0,child.stderr||child.stdout);
+ }
+ assert.equal(fs.existsSync(marker),true,'登记的参数必须实际执行来源收集场景');
+ for(const ref of ['tests/verification-artifacts.test.mjs','.template-source/scripts/lib/verification-artifacts.mjs']){
+  const p=planTemplateVerification({changedFiles:[ref]}),checks=p.commands.filter(x=>x.id==='check.verification-artifacts');
+  assert.equal(checks.length,1);assert.deepEqual(checks[0].resources,['native-cli','go']);
+ }
+ assert.ok(!plan.commands.some(x=>x.id==='check.template-release-sources'));
+ for(const ref of ['docs/superpowers/plans/2026-10-18-test-retirement-and-verification-dedup.md','docs/superpowers/specs/2026-10-18-test-retirement-and-verification-dedup-design.md'])assert.ok(planTemplateVerification({changedFiles:[ref]}).commands.some(x=>x.id==='check.doc-facts'));
+ assert.ok(!planTemplateVerification({changedFiles:['README.md']}).commands.some(x=>x.id==='check.verification-artifacts'));
+ assert.throws(()=>planTemplateVerification({changedFiles:['tests/new-unregistered-audit.test.mjs']}),/UNKNOWN_VERIFICATION_PATH/);
+});
 test('CI共享仓根交接运输的检查使用同一互斥资源',()=>{
  const plan=planTemplateVerification({changedFiles:['scripts/fixtures/role-independent-draft/handoff-chain.test.mjs','tests/scenarios/verify-strategic-handoff-package-scenarios.mjs']});
  for(const id of ['check.role-independent-formal-current','check.strategic-handoff-package-scenarios'])assert.ok(plan.commands.find(check=>check.id===id)?.resources.includes('repo-root-evidence'),id);

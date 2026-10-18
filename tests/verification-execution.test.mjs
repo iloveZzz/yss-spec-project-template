@@ -64,6 +64,21 @@ test('旧源码消费任务在真实 worker 执行任何命令前被拒绝',asyn
   assert.equal(result.code,1);assert.equal(fs.existsSync(marker),false);
   assert.throws(()=>compileTaskExecution(task,{root}),/RETIRED_SOURCE_CONSUMER/);
 });
+test('套件入口独立：显式 gates 用例只运行一次',()=>{
+ const environment={...process.env};delete environment.NODE_TEST_CONTEXT;
+ const result=execFileSync(process.execPath,['--test','--test-reporter=tap','--test-name-pattern=补充检查拒绝','tests/verification-selection.test.mjs','tests/verification-gates.test.mjs'],{cwd:process.cwd(),env:environment,encoding:'utf8'});
+ assert.equal([...result.matchAll(/^# Subtest: 补充检查拒绝/gm)].length,1,result);
+});
+test('必跑责任报告对应的独立失败不能被成功任务复用掩盖',async t=>{
+ const directory=temporary(t),first=path.join(directory,'first'),second=path.join(directory,'second');
+ const plan={strategy:'release',groups:['one','two'],commands:[
+  {id:'check.first-required',task_id:'first-required',group:'one',source_requirement:'committed',depends_on:[],command:node(`require('node:fs').writeFileSync(${JSON.stringify(first)},'ran')`)},
+  {id:'check.second-required',task_id:'second-required',group:'two',source_requirement:'committed',depends_on:[],command:node(`require('node:fs').writeFileSync(${JSON.stringify(second)},'ran');process.exit(7)`)},
+ ]};
+ const rows=(await runGroups(plan,'template-source',2,{cwd:process.cwd(),logRoot:directory})).flatMap(group=>group.results);
+ assert.equal(fs.readFileSync(first,'utf8'),'ran');assert.equal(fs.readFileSync(second,'utf8'),'ran');
+ assert.deepEqual(rows.map(row=>row.code),[0,7]);assert.ok(rows.every(row=>!row.reused));
+});
 test('真实Git退役四gitlink差异纳入完整门禁，仍保留三个Agent来源（yss-cli 由固定文件固定，不再是 gitlink）',t=>{
   const {root}=fixtureRoot(t),sourceRoot=fileURLToPath(new URL('..',import.meta.url)),git=(...args)=>execFileSync('git',args,{cwd:root,encoding:'utf8'}).trim();
   const retired=['create-yss-spec','create-yss-harness-strategic-design','create-yss-harness-backend','create-yss-harness-frontend'].map(name=>`submodules/${name}`);

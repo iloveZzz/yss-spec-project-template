@@ -92,24 +92,6 @@ export function assertSliceBusinessSources({root,ticketText,setBinding,acceptanc
   }
 }
 
-export function assertBusinessCheckpoint(root,state) {
-  if (!businessAuthoringEnabled(root)) return;
-  const stage=state.stage;
-  const pastSpec=['stage.product-design','stage.system-data-engineering','stage.ticket-formalization','stage.vertical-slice-implementation','stage.verification-release-retrospective'].includes(stage);
-  // Design uses ticket-formalization for business drafting, while the full
-  // lifecycle uses that stage for engineering Slices. Entering the business
-  // work unit must remain possible with drafts; its exit requires formal proof.
-  const finalized=['work-unit.technical-analysis','work-unit.strategic-design-handoff','work-unit.implementation-repository-preparation','work-unit.ticket-decomposition','work-unit.slice-implementation'].includes(state.next_work_unit) || ['stage.system-data-engineering','stage.vertical-slice-implementation','stage.verification-release-retrospective'].includes(stage) || (stage==='stage.ticket-formalization'&&state.next_work_unit!=='work-unit.business-ticket-formalization');
-  const artifact=state.artifacts?.['artifact.business-ticket-set'];
-  const completedSpec=['work-unit.prototype-design','work-unit.prototype-design-v2','work-unit.business-ticket-formalization'].includes(state.next_work_unit)||state.stage_trace?.completed_work_unit==='work-unit.spec-synthesis'||(stage==='stage.spec-architecture'&&['completed','paused-human-gate'].includes(state.status));
-  if(!pastSpec && !finalized && !artifact?.ref && !completedSpec)return;
-  if(!businessSetRef(state))fail('BUSINESS_CHECKPOINT_BLOCKED: 缺少业务票集合引用');
-  const report=checkBusinessTickets({root,setRef:businessSetRef(state),mode:finalized?'formal':'draft'});
-  if(report.status!=='passed')fail(`BUSINESS_CHECKPOINT_BLOCKED: ${report.diagnostics.map(x=>x.code).join(', ')}`);
-  if(artifact?.digest && report.inputs.find(x=>x.ref===artifact.ref)?.digest!==artifact.digest)fail('BUSINESS_SYNC_STALE');
-  const sync=businessSyncDiagnostics(root,businessSetRef(state),report);if(sync.length)fail('BUSINESS_SYNC_STALE: '+sync.map(x=>x.ref).join(', '));
-}
-
 // Only inspect explicit synchronization declarations in the two feature views.
 export function businessSyncDiagnostics(root,setRef,report) {
   if(!setRef)return [];

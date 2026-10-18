@@ -143,6 +143,42 @@ test('公开业务报告：非法结构安全阻断，未知导入布局明确�
   for(const file of ['docs/spec-baselines/spec-baseline.demo/v1/arbitrary/source/tickets.yaml','docs/handoffs/demo/latest/package/handoff.yaml']){const p=native(f,{file});assert.equal(p.status,2);assert.ok(codes(p.report).includes('BUSINESS_SOURCE_LAYOUT_UNSUPPORTED'));}
 });
 
+test('原生 checkpoint：进入设计缺集合拒绝、恢复集合接受',async t=>{
+ const root=makeRoot('checkpoint-business-missing-'),seed=makeRoot('checkpoint-business-seed-');
+ t.after(()=>{fs.rmSync(root,{recursive:true,force:true});fs.rmSync(seed,{recursive:true,force:true});});
+ const f=await approvedSpecFixture(root,{nativeSeed:seed});
+ f.plan.write(path.dirname(f.checkpointRef)+'/map.md',`---\ncheckpoint_ref: ${f.checkpointRef}\n---\n# Synthetic feature\n`);
+ f.state.artifacts['artifact.plan-record']=f.state.artifacts['artifact.plan'];delete f.state.artifacts['artifact.plan'];
+ f.state.stage='stage.spec-architecture';f.state.next_work_unit='work-unit.prototype-design-v2';
+ const verify=()=>{f.plan.write(f.checkpointRef,f.state);const p=run(['lifecycle','verify','--root',root,'--checkpoint',f.checkpointRef,'--json']);const check=p.envelope.result.checks.find(x=>x.id==='business-checkpoint');assert.ok(check,JSON.stringify({code:p.envelope.code,checks:p.envelope.result.checks,diagnostics:p.envelope.result.diagnostics}));return check;};
+ assert.equal(verify()?.status,'passed');
+ const binding=f.state.artifacts['artifact.business-ticket-set'];delete f.state.artifacts['artifact.business-ticket-set'];delete f.state.business_ticket_set_ref;
+ assert.equal(verify()?.status,'failed');
+ f.state.artifacts['artifact.business-ticket-set']=binding;
+ assert.equal(verify()?.status,'passed');
+});
+
+test('原生 checkpoint：正式化入口允许草案、出口拒绝草案并观察变化',async t=>{
+ const root=makeRoot('checkpoint-business-draft-'),seed=makeRoot('checkpoint-business-seed-');
+ t.after(()=>{fs.rmSync(root,{recursive:true,force:true});fs.rmSync(seed,{recursive:true,force:true});});
+ const f=await approvedSpecFixture(root,{nativeSeed:seed});
+ f.plan.write(path.dirname(f.checkpointRef)+'/map.md',`---\ncheckpoint_ref: ${f.checkpointRef}\n---\n# Synthetic feature\n`);
+ f.state.artifacts['artifact.plan-record']=f.state.artifacts['artifact.plan'];delete f.state.artifacts['artifact.plan'];
+ const binding=f.state.artifacts['artifact.business-ticket-set'],set=parseYaml(fs.readFileSync(path.join(root,binding.ref),'utf8'));
+ for(const row of set.tickets){
+  const text=fs.readFileSync(path.join(root,row.ref),'utf8'),ticket=ticketMetadata(text);ticket.status='draft';
+  f.strategic.put(row.ref,'---\n'+JSON.stringify(ticket)+'\n---\n'+text.split(/\n---\n/)[1]);row.digest=sha(fs.readFileSync(path.join(root,row.ref)));
+ }
+ set.status='draft';f.strategic.put(binding.ref,set);binding.digest=sha(fs.readFileSync(path.join(root,binding.ref)));
+ const review=parseYaml(fs.readFileSync(path.join(root,set.review_ref),'utf8'));review.subject_digest=binding.digest;f.strategic.put(set.review_ref,review);
+ f.state.stage='stage.ticket-formalization';f.state.next_work_unit='work-unit.business-ticket-formalization';
+ const verify=()=>{f.plan.write(f.checkpointRef,f.state);const p=run(['lifecycle','verify','--root',root,'--checkpoint',f.checkpointRef,'--json']);const check=p.envelope.result.checks.find(x=>x.id==='business-checkpoint');assert.ok(check,JSON.stringify({code:p.envelope.code,checks:p.envelope.result.checks,diagnostics:p.envelope.result.diagnostics}));return check;};
+ assert.equal(verify()?.status,'passed');
+ f.state.next_work_unit='work-unit.strategic-design-handoff';assert.equal(verify()?.status,'failed');
+ f.state.next_work_unit='work-unit.business-ticket-formalization';assert.equal(verify()?.status,'passed');
+ fs.appendFileSync(path.join(root,set.tickets[0].ref),'\nchanged after binding\n');assert.equal(verify()?.status,'failed');
+});
+
 test('严格消费者：Spec baseline、checkpoint 与 progression 继续拒绝业务草案错误',async t=>{
   const root=makeRoot('business-native-spec-'),seed=makeRoot('business-native-spec-seed-');t.after(()=>{fs.rmSync(root,{recursive:true,force:true});fs.rmSync(seed,{recursive:true,force:true});});
   const f=await approvedSpecFixture(root,{nativeSeed:seed});f.state.artifacts['artifact.plan-record']=f.state.artifacts['artifact.plan'];delete f.state.artifacts['artifact.plan'];f.plan.write(f.checkpointRef,f.state);const directory=path.dirname(f.checkpointRef);

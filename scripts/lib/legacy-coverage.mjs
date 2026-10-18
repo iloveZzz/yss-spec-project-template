@@ -67,21 +67,3 @@ export function expandLegacyCoverage(config) {
   delete config.legacy_coverage_gates;
   return config;
 }
-
-/** 把已展开的 legacy_coverage 压缩成 profile 里的文本（迁移与测试用）；只写逐条不同的部分。 */
-export function compactLegacyCoverage(rows) {
-  const first = rows[0];
-  const defaults = Object.fromEntries(DEFAULT_KEYS.map((key) => [key, first[key]]));
-  const gates = {};
-  for (const row of rows) gates[row.replacement_gate] = row.display_gate;
-  const compact = rows.map((row) => {
-    const out = { old_id: row.old_id, check_id: row.check_id, group: row.group, gate: row.replacement_gate };
-    if (JSON.stringify(row.gate_ids) !== JSON.stringify([row.replacement_gate])) out.gate_ids = row.gate_ids;
-    out.command = row.command;
-    if (row.replacement_command !== undefined) { out.replacement_command = row.replacement_command; out.retirement_disposition = row.retirement_disposition; }
-    for (const key of DEFAULT_KEYS) if (JSON.stringify(row[key]) !== JSON.stringify(defaults[key])) out[key] = row[key];
-    if (row.equivalent_assertion.source_ref !== `${row.evidence_ref}#${row.old_id}`) out.source_ref = row.equivalent_assertion.source_ref;
-    return out;
-  });
-  return { defaults, gates, rows: compact };
-}

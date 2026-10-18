@@ -7,7 +7,7 @@ import {makeRoot} from '../../../tests/helpers/yss-instance.mjs';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {stringify} from '../../vendor/yaml.mjs';
-import {checkBusinessTickets,assertImplementationTicket,assertBusinessTicketTransition,assertSliceBusinessSources,assertBusinessCheckpoint,summarizeBusinessImplementation,businessSyncDiagnostics} from '../../lib/business-tickets.mjs';
+import {checkBusinessTickets,assertImplementationTicket,assertBusinessTicketTransition,assertSliceBusinessSources,summarizeBusinessImplementation,businessSyncDiagnostics} from '../../lib/business-tickets.mjs';
 const sha=x=>`sha256:${createHash('sha256').update(x).digest('hex')}`;
 function fixture(t) {
  const root=makeRoot('business-ticket-test-');t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
@@ -45,14 +45,6 @@ test('父 Ticket 声明已同步但业务摘要过期会被指出',t=>{const f=f
 test('正式编译入口拒绝移动到 issues 的业务票',t=>{const f=fixture(t),ref='.work/demo/issues/spoof.md';f.put(ref,fs.readFileSync(path.join(f.root,f.ref),'utf8'));const result=prepareSliceImplementationContract({root:f.root,ticket_ref:ref});assert.equal(result.slice_contract.status,'blocked');assert.ok(result.report.blockers.some(x=>x.code==='TICKET_NOT_IMPLEMENTABLE'));});
 test('启用新规则后 v2 仍可只读显示，但不能进入当前执行',t=>{const f=fixture(t);f.put('old.yaml',{schema_version:2,status:'approved',contract_id:'old',contract_version:'v1'});assert.doesNotThrow(()=>readSliceContract('old.yaml',{root:f.root,diagnostic:true}));assert.throws(()=>readSliceContract('old.yaml',{root:f.root}),/BUSINESS_SLICE_V3_REQUIRED/);});
 
-test('手改 checkpoint 进入 Design 不能跳过 Spec 业务草案',t=>{const f=fixture(t),state={stage:'stage.spec-architecture',status:'running',next_work_unit:'work-unit.prototype-design-v2'};assert.throws(()=>assertBusinessCheckpoint(f.root,state),/BUSINESS_CHECKPOINT_BLOCKED/);state.artifacts={'artifact.business-ticket-set':{ref:f.setRef}};assert.doesNotThrow(()=>assertBusinessCheckpoint(f.root,state));});
-test('Design 可携带草案进入业务正式化，离开前必须正式化',t=>{
-  const f=fixture(t);f.ticket.status='draft';f.set.status='draft';f.save();
-  const state={stage:'stage.ticket-formalization',status:'running',next_work_unit:'work-unit.business-ticket-formalization',artifacts:{'artifact.business-ticket-set':{ref:f.setRef}}};
-  assert.doesNotThrow(()=>assertBusinessCheckpoint(f.root,state));
-  state.next_work_unit='work-unit.strategic-design-handoff';
-  assert.throws(()=>assertBusinessCheckpoint(f.root,state),/BUSINESS_CHECKPOINT_BLOCKED/);
-});
 test('真实编译从业务票自动绑定原始 Spec AC，FR 中的交叉引用不造成重复定位',t=>{
   const f=fixture(t),ref='.work/demo/issues/one.md';
   fs.appendFileSync(path.join(f.root,f.ticket.spec.ref),'\n在其他叙述中引用 AC-001，不是另一条验收。\n');

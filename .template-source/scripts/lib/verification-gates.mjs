@@ -47,7 +47,8 @@ export function buildReleasePlan(plan,{config}) {
   const definitions=new Map();
   for(const task of Object.entries(config.groups).flatMap(([group,value])=>value.commands.map(raw=>compileVerificationCheck(raw,{group,profile:'release'})))){const {group,task_id,...definition}=task,previous=definitions.get(task.id);if(previous&&JSON.stringify(previous)!==JSON.stringify(definition))throw Error(`检查 ID 冲突: ${task.id}`);definitions.set(task.id,definition);}
   validateGateConfiguration(config);
-  const commands=plan.commands.map((task,index)=>({...task,task_id:task.task_id||`release.${index}`,gate_ids:(config.gates||[]).filter(gate=>gate.check_ids.includes(task.id)).map(gate=>gate.id)}));
+  const required=new Set(config.profiles.release.required_checks||[]);
+  const commands=plan.commands.map((task,index)=>({...task,task_id:task.task_id||`release.${index}`,gate_ids:(config.gates||[]).filter(gate=>gate.check_ids.includes(task.id)).map(gate=>gate.id),...(required.has(task.id)?{source_requirement:'committed'}:{})}));
   const gates=(config.gates||[]).map(gate=>({...gate,selected:gate.execution_scope==='template-verification'&&commands.some(task=>task.gate_ids.includes(gate.id)),selection_reason:gate.execution_scope==='template-verification'?'release-inputs-and-required':`${gate.execution_scope}-owned`,check_ids:[...gate.check_ids],task_ids:commands.filter(task=>task.gate_ids.includes(gate.id)).map(task=>task.task_id)}));
   for(const task of commands) {
     const deps=gates.filter(gate=>task.gate_ids.includes(gate.id)).flatMap(gate=>gate.depends_on);
