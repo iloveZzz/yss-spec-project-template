@@ -68,8 +68,8 @@ test('产物消费者实际执行来源收集且不依赖旧名称',t=>{
  assert.throws(()=>planTemplateVerification({changedFiles:['tests/new-unregistered-audit.test.mjs']}),/UNKNOWN_VERIFICATION_PATH/);
 });
 test('CI共享仓根交接运输的检查使用同一互斥资源',()=>{
- const plan=planTemplateVerification({includeSlow:true,changedFiles:['scripts/fixtures/role-independent-draft/handoff-chain.test.mjs','tests/scenarios/verify-strategic-handoff-package-scenarios.mjs']});
- for(const id of ['check.role-independent-formal-current','check.strategic-handoff-package-scenarios'])assert.ok(plan.commands.find(check=>check.id===id)?.resources.includes('repo-root-evidence'),id);
+ const plan=planTemplateVerification({includeSlow:true,changedFiles:['scripts/fixtures/role-independent-draft/handoff-chain.test.mjs','tests/scenarios/verify-strategic-handoff-package-scenarios.mjs','scripts/fixtures/business-tickets/handoff.test.mjs','tests/scenarios/verify-existing-ui-baseline-scenarios.mjs']});
+ for(const id of ['check.role-independent-formal-current','check.strategic-handoff-package-scenarios','check.work-layout-tickets','check.existing-ui-baseline-scenarios'])assert.ok(plan.commands.find(check=>check.id===id)?.resources.includes('repo-root-evidence'),id);
 });
 test('Plan审查测试唯一归属保留触发与门禁，耗时组在fast明确延后',()=>{
  const files=['scripts/lib/plan-review-control.mjs','scripts/lib/review-package.mjs','scripts/lib/work-layout.mjs','scripts/fixtures/plan-review-control/build-fixture.mjs'];
