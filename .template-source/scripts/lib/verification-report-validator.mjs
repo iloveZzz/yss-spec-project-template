@@ -18,9 +18,9 @@ const selected = (plan, mode) => plan.commands.map((task,index)=>({...task,index
 const executionInputs=task=>Object.fromEntries(Object.entries(task).filter(([name])=>!['id','task_id','index','gate_ids','group','title','display_id','old_id','old_index','selection_reason'].includes(name)).map(([name,value])=>[name,['depends_on','resources','parallel_unless_env','input_patterns'].includes(name)?[...new Set(value||[])].sort():value]).sort(([a],[b])=>a.localeCompare(b)));
 
 /** Recompile from repository policy and consumer arguments, not report.plan. */
-export function compileExpectedVerificationPlan({root,args=[],fixedCommit,config,baselineAssessment,reportDirectory}={}){
+export function compileExpectedVerificationPlan({root,args=[],fixedCommit,config,baselineAssessment,reportDirectory,environment=process.env}={}){
  root=fs.realpathSync(root);
- const {values}=parseArgs({args,strict:true,options:{profile:{type:'string',default:'release'},base:{type:'string'},'changed-file':{type:'string',multiple:true},selection:{type:'string'},'report-dir':{type:'string'},'baseline-report':{type:'string'},'baseline-report-sha256':{type:'string'},'qualification-report':{type:'string'},'qualification-report-sha256':{type:'string'},'runtime-store':{type:'string'},concurrency:{type:'string'},'tooling-mode':{type:'string'},checkpoint:{type:'string',multiple:true},'task-package':{type:'string',multiple:true}}});
+ const {values}=parseArgs({args,strict:true,options:{'ci-guards':{type:'boolean',default:false},profile:{type:'string',default:'release'},base:{type:'string'},'changed-file':{type:'string',multiple:true},selection:{type:'string'},'report-dir':{type:'string'},'baseline-report':{type:'string'},'baseline-report-sha256':{type:'string'},'qualification-report':{type:'string'},'qualification-report-sha256':{type:'string'},'runtime-store':{type:'string'},concurrency:{type:'string'},'tooling-mode':{type:'string'},checkpoint:{type:'string',multiple:true},'task-package':{type:'string',multiple:true}}});
  const git=args=>{const r=spawnSync('git',args,{cwd:root,encoding:'utf8',maxBuffer:32*1024*1024});ensure(r.status===0,r.stderr||'无法独立编译验证计划');return r.stdout;};
  const files=new Set(values['changed-file']||[]);
  if(values.base)git(['diff','--name-only','-z','--no-renames','--diff-filter=ACDMRTUXB',`${values.base}...${fixedCommit||'HEAD'}`]).split('\0').filter(Boolean).forEach(file=>files.add(file));
@@ -30,12 +30,13 @@ export function compileExpectedVerificationPlan({root,args=[],fixedCommit,config
  if(!historical&&values.profile==='release')ensure(values.base,'RELEASE_BASE_REQUIRED: --base 必须绑定上一正式发行完整 SHA');
  if(values['qualification-report']!==undefined||values['qualification-report-sha256']!==undefined)throw new TypeError(historical?'HISTORICAL_QUALIFIED_BASELINE_REFUSED':'QUALIFICATION_RETIRED');
  if(!baselineAssessment&&values.base&&values['baseline-report']&&values['baseline-report-sha256'])baselineAssessment=validateBaselineReport({root,base:values.base,reportFile:values['baseline-report'],expectedDigest:values['baseline-report-sha256']});
+ ensure(!historical||!values['ci-guards'],'CI_GUARDS_FAST_ONLY');
  const reference=historical&&values.profile==='legacy-full';
- const plan=historical?compileHistoricalVerificationPlan({root,commit:fixedCommit,config,profile:values.profile,changedFiles:[...files]}):planTemplateVerification({root,config,profile:values.profile,changedFiles:[...files],base:values.base,baselineReport:values['baseline-report'],baselineReportDigest:values['baseline-report-sha256'],baselineAssessment,...(values.selection?{selection:values.selection}:{})});
+ const plan=historical?compileHistoricalVerificationPlan({root,commit:fixedCommit,config,profile:values.profile,changedFiles:[...files]}):planTemplateVerification({ciGuards:values['ci-guards'],includeSlow:environment.YSS_VERIFY_SLOW==='only'?'only':environment.YSS_VERIFY_SLOW==='1',root,config,profile:values.profile,changedFiles:[...files],base:values.base,baselineReport:values['baseline-report'],baselineReportDigest:values['baseline-report-sha256'],baselineAssessment,...(values.selection?{selection:values.selection}:{})});
  plan.scope={kind:values.profile==='fast'?'limited':'complete-candidate',files:[...files].sort(),explicit_files:values['changed-file']||[],base:values.base||null};
  const reportDir=values['report-dir']?path.resolve(values['report-dir']):reportDirectory?path.resolve(reportDirectory):null;
  if(values['report-dir']&&reportDirectory)ensure(fs.realpathSync(reportDir)===fs.realpathSync(reportDirectory),'实际 report directory 与明确 invocation 不匹配');
- return addVerificationExecutionTasks(plan,{root,reference,fixedCommit,reportDir,purpose:'verification',checkpoints:values.checkpoint||[],taskPackages:values['task-package']||[]});
+ return addVerificationExecutionTasks(plan,{root,reference,fixedCommit,reportDir,purpose:'verification',environment,checkpoints:values.checkpoint||[],taskPackages:values['task-package']||[]});
 }
 
 export function assertEvidenceFile(file, directory, expectedDigest) {
@@ -59,7 +60,9 @@ export function validateVerificationReport(report, {root,expectedPlan,reportDire
   validateJsonSchema(report,path.resolve(import.meta.dirname,'../../process/schemas/template-verification-report.schema.json'));
   ensure(report.status === 'passed', '验证报告未通过');
   if(!historical)ensure(report.root === fs.realpathSync(root), '验证报告属于其它源码');
-  ensure(report.scope?.kind === 'complete-candidate', '验证范围不是完整候选');
+  const daily=!requireRelease&&!historical&&expectedPlan?.effective_profile==='fast'&&expectedPlan.strategy==='daily-necessary'&&expectedPlan.source_requirement==='current';
+  ensure(report.scope?.kind === (daily?'limited':'complete-candidate'), '验证范围不是完整候选或受控 limited');
+  if(daily)ensure(report.plan?.effective_profile==='fast'&&report.plan.source_requirement==='current'&&report.purpose==='verification'&&report.experimental!==true,'limited 必须为真实 fast verification');
   ensure(expectedPlan && Array.isArray(expectedPlan.commands), '独立期望任务台账缺失');
   ensure(report.plan && Array.isArray(report.plan.commands) && Array.isArray(report.results), '验证任务结果缺失');
   if (requireRelease) {
@@ -75,7 +78,7 @@ export function validateVerificationReport(report, {root,expectedPlan,reportDire
   ensure(Number.isFinite(Date.parse(report.started_at)) && Number.isFinite(Date.parse(report.finished_at)) && Date.parse(report.finished_at)>=Date.parse(report.started_at), '验证报告尚未完成或时间非法');
   ensure(report.input_drift === false && /^[a-f0-9]{64}$/.test(report.input_sha256) && report.input_after_sha256 === report.input_sha256, '验证输入漂移或摘要缺失');
   if (!historical) ensure(report.input_sha256 === (currentInputDigest || verificationInputDigest(root)), '验证源码已漂移');
-  if(!expectedSourcesManifest&&!historical){const head=spawnSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'});ensure(head.status===0,'来源 HEAD 缺失');expectedSourcesManifest=collectReleaseSources({root,commit:head.stdout.trim()});}
+  if(!expectedSourcesManifest&&!historical&&!daily){const head=spawnSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'});ensure(head.status===0,'来源 HEAD 缺失');expectedSourcesManifest=collectReleaseSources({root,commit:head.stdout.trim()});}
   ensure(Array.isArray(report.unexecuted) && report.unexecuted.length === 0, '验证存在未执行任务');
   if(!historical){assert.deepEqual(report.plan.selection,expectedPlan.selection,'release 检查选择与独立完整变化集不匹配');assert.deepEqual(report.plan.changed_files,expectedPlan.changed_files,'release 变化路径不匹配');if(expectedPlan.scope)assert.deepEqual(report.scope,expectedPlan.scope,'release 范围或基线不匹配');}
   else ensure(report.plan.selection?.effective !== 'allowlist' && !report.plan.selection?.omitted?.length, '历史 release 不允许裁剪或遗漏');

@@ -12,15 +12,12 @@ template-gate:
   interruptible: true
   variables:
     GIT_DEPTH: "0"
-    YSS_CI_ENV_FILE: /tmp/yss-ci-env
   script:
-    - scripts/ci-setup --toolchain --yss-commit pin
-    - set -a; if [ -f "$YSS_CI_ENV_FILE" ]; then . "$YSS_CI_ENV_FILE"; fi; set +a
     - |
       if [ "$CI_PIPELINE_SOURCE" = "merge_request_event" ]; then
-        scripts/ci-gate --mode pr --base "$CI_MERGE_REQUEST_DIFF_BASE_SHA" --report-dir /tmp/ci-gate
+        scripts/ci-gate --mode pr --base "$CI_MERGE_REQUEST_DIFF_BASE_SHA" --report-dir /tmp/ci-gate --prepare-tools
       else
-        scripts/ci-gate --mode push --report-dir /tmp/ci-gate
+        scripts/ci-gate --mode push --report-dir /tmp/ci-gate --prepare-tools
       fi
   after_script:
     # 报告必须写在仓外；GitLab 只收集项目目录内的 artifact，ci-gate 结束后再复制。

@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { createRequire } from "node:module";
+import {parse as parseYaml} from "../scripts/vendor/yaml.mjs";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -15,10 +15,7 @@ const SLOW_WORKFLOW = ".github/workflows/template-slow-checks.yml";
 const ADAPTERS = [WORKFLOW, ACTION, GITLAB, SLOW_WORKFLOW];
 const read = (relative) => fs.readFileSync(path.join(ROOT, relative), "utf8");
 const code = (relative) => read(relative).split("\n").filter((line) => !line.trim().startsWith("#")).join("\n");
-// yaml 只在 pnpm 安装过工具依赖后可用；缺失时跳过解析类断言，文本类断言照常执行。
-const YAML = (() => {
-  try { return createRequire(path.join(ROOT, ".template-source/tooling/node/package.json"))("yaml"); } catch { return null; }
-})();
+const YAML={parse:parseYaml};
 const parsed = (relative) => YAML.parse(read(relative));
 const versions = () => Object.fromEntries(spawnSync(path.join(ROOT, "scripts/ci-setup"), ["--print-versions"], { encoding: "utf8" }).stdout.trim().split("\n").map((line) => line.split("=")));
 
@@ -28,7 +25,7 @@ test("适配器只调用 scripts/ci-setup 与 scripts/ci-gate，不含检查逻�
     assert.deepEqual([...called].filter((name) => !["ci-setup", "ci-gate"].includes(name)), [], file);
   }
   assert.match(code(WORKFLOW), /scripts\/ci-gate --mode pr/);
-  assert.match(code(GITLAB), /scripts\/ci-setup --toolchain/);
+  assert.match(code(GITLAB), /scripts\/ci-gate .*--prepare-tools/);
 });
 
 test("GitHub：PR 与 main 推送触发，只读权限，完整历史，base 经环境变量传入", () => {
@@ -75,11 +72,13 @@ test("GitLab 镜像主版本与 scripts/ci-setup 的目标 Node 一致", () => {
   assert.equal(image[1], versions().node);
 });
 
-test("慢检查工作流只定时或手动触发，测试步骤 5 分钟上限并调用 ci-gate --mode slow", () => {
+test("慢检查工作流保留总预算，验证五分钟由公共 gate 独立计时", () => {
   const text = code(SLOW_WORKFLOW);
   assert.match(text, /^on:\n  schedule:\n    - cron: '[^']+'\n  workflow_dispatch:$/m);
   assert.doesNotMatch(text, /pull_request|push:/);
-  assert.match(text, /timeout-minutes: 5\n\s+shell: bash\n\s+run: scripts\/ci-gate --mode slow /);
+  assert.match(text, /timeout-minutes: 20/);
+  assert.doesNotMatch(text,/timeout-minutes: 5/);
+  assert.match(text,/run: scripts\/ci-gate --mode slow .*--prepare-tools/);
 });
 
 test(".nvmrc 主版本与 scripts/ci-setup 的目标 Node 一致，本地与 CI 使用同一主版本", () => {
@@ -119,17 +118,23 @@ test("setup-template 是薄封装：先供给 Node，再从现有 pin reader 读
   assert.equal(fs.readFileSync(output, "utf8"), `go=${JSON.parse(read(".template-source/distribution/yss-cli-pin.json")).go_version}\n`);
 });
 
-test("两个平台都准备工具链，并都按 yss-cli 固定文件构建 yss（fast 的部分测试需要原生二进制）", () => {
-  assert.match(code(WORKFLOW), /toolchain: 'true'\n\s+yss-commit: pin/);
-  assert.match(code(GITLAB), /scripts\/ci-setup --toolchain --yss-commit pin/);
-  assert.doesNotMatch(read("scripts/ci-setup"), /submodule update|sync-profile-skills/, "Profile 已并入根仓，CI 不再初始化子模块");
+test('适配器仅供给基础运行时，按需准备统一交给 gate',()=>{
+ for(const file of [WORKFLOW,SLOW_WORKFLOW]){
+  assert.match(code(file),/runtime-only: 'true'/);assert.match(code(file),/scripts\/ci-gate .*--prepare-tools/);
+  assert.doesNotMatch(code(file),/toolchain: 'true'|yss-commit: pin/);
+ }
+ const action=parsed(ACTION);assert.equal(action.inputs['runtime-only'].default,'false');
+ const setup=action.runs.steps.find(step=>step.run?.includes('scripts/ci-setup ${args'));
+ assert.equal(setup.if,"inputs.runtime-only != 'true'");
+ assert.doesNotMatch(code(GITLAB),/scripts\/ci-setup|set -a|YSS_CI_ENV_FILE/);
+ assert.doesNotMatch(read('scripts/ci-setup'),/submodule update|sync-profile-skills/);
 });
 
 test("GitLab 适配器与 CI 用的环境文件不进仓库，并排除出实例分发", () => {
   const profile = JSON.parse(read(".template-source/distribution/bundle-profile.json"));
   assert.ok(profile.manifest.excludeRootFiles.includes(".gitlab-ci.yml"));
   assert.ok(profile.manifest.excludeRootEntries.includes(".github"));
-  assert.match(code(GITLAB), /YSS_CI_ENV_FILE: \/tmp\//);
+  assert.doesNotMatch(code(GITLAB), /YSS_CI_ENV_FILE|set -a/);
 });
 
 test("AC-006：github-workflows.md 登记 template-gate，不再声明已移除，发布段落保持", () => {

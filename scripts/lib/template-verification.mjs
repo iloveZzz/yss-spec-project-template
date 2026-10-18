@@ -2,6 +2,7 @@ import { applyDailyVerificationSelection, verificationCheckId } from './verifica
 import {buildReleasePlan, compileVerificationCheck, verificationPolicyDigest} from '../../.template-source/scripts/lib/verification-gates.mjs';
 import {assertBaselineParameters,validateBaseline} from '../../.template-source/scripts/lib/verification-baseline.mjs';
 import {assertVerificationSources,verificationSourceIdentities} from '../../.template-source/scripts/lib/verification-execution-plan.mjs';
+import {STEPS,ciVerificationCheckIds} from './ci-gate.mjs';
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -83,7 +84,10 @@ function matchedGroups(config, changedFiles) {
   return { groups, unknown };
 }
 
-export function planTemplateVerification({ profile = "fast", changedFiles = [], config = loadVerificationProfiles(), selection, root = ROOT, base, baselineReport, baselineReportDigest, baselineAssessment, baselineValidator, qualificationReport, qualificationReportDigest, qualificationAssessment } = {}) {
+export function planTemplateVerification({ profile = "fast", changedFiles = [], config = loadVerificationProfiles(), selection, root = ROOT, base, baselineReport, baselineReportDigest, baselineAssessment, baselineValidator, qualificationReport, qualificationReportDigest, qualificationAssessment, ciGuards = false, includeSlow } = {}) {
+  includeSlow??=process.env.YSS_VERIFY_SLOW==='only'?'only':process.env.YSS_VERIFY_SLOW==='1';
+  ensure(!ciGuards||(profile==='fast'&&includeSlow!=='only'&&(!selection||selection==='allowlist')),'CI_GUARDS_FAST_ONLY');
+  ensure([false,true,'only'].includes(includeSlow),'includeSlow 无效');
   ensure(['fast','release'].includes(profile)&&Object.hasOwn(config.profiles, profile), `未知核验 profile: ${profile}`);
   assertBaselineParameters({root,base,baselineReport,baselineReportDigest});
   if(baselineReport!==undefined) {
@@ -117,8 +121,12 @@ export function planTemplateVerification({ profile = "fast", changedFiles = [], 
   const compatibilityRequired = effectiveProfile === "release" || normalized.some((file) => (config.compatibility_patterns || []).some((pattern) => matches(file, pattern)));
   const plan = { source_requirement: profile === 'fast' ? 'current' : 'committed', compatibility_required: compatibilityRequired, requested_profile: profile, effective_profile: effectiveProfile, escalation_reason: escalationReason, changed_files: normalized, unknown_files: routed.unknown, groups: orderedGroups, commands, supplemental_checks:structuredClone(config.supplemental_checks||[]), required_files: config.required_files || [], syntax_files: config.syntax_files || [], max_concurrency: config.max_concurrency || 4 };
   // YSS_VERIFY_SLOW=1：fast 也执行命中的 tier: slow 检查；=only：只执行全部 tier: slow 检查（定时或按需）。
-  const slow=process.env.YSS_VERIFY_SLOW;
-  if(daily)return {...applyDailyVerificationSelection(plan,{selection,config,includeSlow:slow==='only'?'only':slow==='1'}),compatibility_required:false,policy_digest:verificationPolicyDigest(config),fallback_reasons:[]};
+  if(ciGuards)for(const step of STEPS.filter(step=>step.verification_check_id)){
+    const raw=config.profiles.fast.checks.find(check=>check.id===step.verification_check_id);
+    const definition=Object.values(config.groups).flatMap(group=>group.commands).find(item=>verificationCheckId(typeof item==='string'?{run:item}:item)===step.verification_check_id);
+    ensure(raw&&compileVerificationCheck({...definition,...raw},{profile}).command===step.command.join(' '),`CI_GUARD_BINDING: ${step.id}`);
+  }
+  if(daily)return {...applyDailyVerificationSelection(plan,{selection,config,includeSlow,mandatoryChecks:ciGuards?ciVerificationCheckIds():[],mandatoryReason:'ci-required'}),compatibility_required:false,policy_digest:verificationPolicyDigest(config),fallback_reasons:[]};
   const mandatory=(config.gates||[]).filter(g=>g.required_at_release&&g.execution_scope==='template-verification').flatMap(g=>g.check_ids);
   return buildReleasePlan(applyDailyVerificationSelection(plan,{selection:'allowlist',config,profile:'release',mandatoryChecks:mandatory}),{config});
 }

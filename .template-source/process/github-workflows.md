@@ -27,7 +27,9 @@
 
 ## 合入检查
 
-`template-gate` 的两个适配器只做三件事：选择模式、调用 `scripts/ci-setup` 准备环境、调用 `scripts/ci-gate`。它们不含检查逻辑，所以同一提交在两个平台执行相同的步骤、命令与退出码。步骤清单只在 `scripts/lib/ci-gate.mjs` 的一个数组里维护，本文不复述；环境版本只在 `scripts/ci-setup` 里维护，GitHub 的 `setup-template` 通过 `--print-versions` 读取，GitLab 的镜像主版本由测试与之核对。
+`template-gate` 的两个适配器供给基础运行时、选择模式并调用 `scripts/ci-gate --prepare-tools`；检查与重依赖需求统一由公共入口决定。GitHub 的 `setup-template` 开启 `runtime-only` 后只供给 Node、Python、Go；默认调用兼容既有全量准备。环境版本由 `scripts/ci-setup --print-versions` 与现有 CLI pin 提供，GitLab 镜像主版本由测试与之核对。
+
+公共入口先运行配置安全、文档事实、上下文预算与 Node 声明检查，失败则不得跳过阻断并报告通过，也不会启动依赖安装或 fast。技能投影、技能锁及注册表由 fast 的 `--ci-guards` 必跑集合真实执行一次，hook 沿用原有名称和命令。即使无变化，也不能省略这些 CI 守卫。行为回归继续按实际输入及依赖选择。
 
 | 事件 | 模式 | base |
 |---|---|---|
@@ -35,17 +37,19 @@
 | GitLab `merge_request_event` | `--mode pr` | `CI_MERGE_REQUEST_DIFF_BASE_SHA` |
 | 主分支推送 | `--mode push` | 脚本取 `HEAD^`（合并提交的第一亲本即上一个主分支顶点） |
 
-两个平台都用完整历史检出，PR / MR 与主分支推送均执行阻断的 `verify-template-fast`。PR / MR 传入完整 base SHA；推送使用 `HEAD^`，仅首个提交没有上一提交时不带 `--base`。其它干净检出若不带范围基准，变更文件数为 0，只会空过。candidate 验证入口已退役；正式发布继续消费完整发布证据。
+两个平台都用完整历史检出，PR / MR 与主分支推送均执行阻断的 `verify-template-fast`。PR / MR 传入完整 base SHA；推送使用 `HEAD^`，仅首个提交没有上一提交时不带 `--base`。独立 fast 在干净检出且不带范围基准时没有行为变化；CI 仍执行必跑守卫。candidate 验证入口已退役；正式发布继续消费完整发布证据。
 
-fast 选中的部分检查需要原生 `yss` 二进制，所以两个平台都用 `scripts/ci-setup --yss-commit pin`：取 `.template-source/distribution/yss-cli-pin.json` 固定的提交，按固定的 Go 版本、用 yss-cli 的 `tools/build-candidate.mjs` 构建，核对当前平台的 SHA-256 与固定文件一致后导出 `YSS_NATIVE_BINARY`；摘要不符即失败，CI 里也不接受 `YSS_NATIVE_BINARY_OVERRIDE`。yss-cli 不再是 submodule。环境准备依赖的子模组都是公开仓库，匿名可读，GitLab runner 不需要令牌或镜像。拉取子模组失败时 `scripts/ci-setup` 以非零退出，`template-gate` 失败并在日志中给出原因，不得跳过该步骤后报告通过。
+重依赖由原始选择的计划计算：需要原生 CLI 时才按 `.template-source/distribution/yss-cli-pin.json` 获取固定源码、供给精确 Go、使用提交内的 `tools/build-candidate.mjs` 构建并核对当前平台 SHA-256；CI 不接受 `YSS_NATIVE_BINARY_OVERRIDE`。模板 pnpm frozen 依赖和 Vue 作者工具链分别按所选需求安装。生命周期注册表在 CI 必跑，因此文档场景仍准备 Python / jsonschema。基础运行时供给与上述准备分别计时，不承诺消除运行时供给成本。
+
+`ci-setup --requirements-file <绝对JSON文件>` 严格校验共用需求，不能混用旧准备参数。导出仅写本轮报告目录的 `setup.env`；gate 按允许字段、绝对路径和摘要读取数据，不执行文件内容。准备前后对照原始计划和完整输入；仅本轮明确请求的、Git 忽略且未跟踪的模板 `node_modules` 安装产物可在准备阶段变化，随后恢复完整观察。源码、锁、模式、Git 状态或无关忽略文件漂移均拒绝。获取、构建或安装失败使 gate 非零退出，保留日志。yss-cli 不再是 submodule。
 
 Linux runner 上的两个测试曾因对 macOS 行为的隐性假设而失败，已修复：超时测试显式 `exec`，使忽略 `SIGTERM` 的进程成为 `sh -c` 的直接子进程；发布的“旧运行时残留”后置检查改用 `.template-source/scripts/lib/legacy-runtime-scan.mjs`，不再依赖外部 ripgrep。`yss-cli` 的原生验证仍只对 darwin/arm64 做资格。
 
-报告与日志写在仓外的 `/tmp/ci-gate`，两个平台都作为构建产物保留；两份报告的步骤名单、各步命令与退出码应一致。检查期间仓库出现任何新增改动都会使本轮失败。
+报告与日志写在仓外的 `/tmp/ci-gate`，两个平台都作为构建产物保留；两份报告的步骤名单、各步命令与退出码应一致。除上述准备阶段的合法安装产物外，检查期间任何输入变化都会使本轮失败；同一已有脏文件再次变化也会被发现。fast 退出后，外层独立重算期望并核验 v2 报告、实际退出、任务、日志摘要及输入；`limited` 始终不是发布证据。
 
 ### 慢检查与 5 分钟上限
 
-测试与验证遵守 5 分钟硬上限，超时即失败。实测超过 60 秒的日常检查在 `template-verification-profiles.yaml` 的 fast 清单里标为 `tier: slow`：fast 命中时不执行，计入报告 `plan.selection.omitted`（`reason: deferred-slow-check`），运行结束打印“已延后”清单，不代表通过。慢检查由 `template-slow-checks` 工作流每日定时或手动运行（`scripts/ci-gate --mode slow`，测试步骤 5 分钟上限）；本地用 `YSS_VERIFY_SLOW=1`（fast 中一并执行命中的慢检查）或 `YSS_VERIFY_SLOW=only`（只执行全部慢检查）。release profile 不受影响。
+测试与验证遵守 5 分钟硬上限，超时即失败。实测超过 60 秒的日常检查在 `template-verification-profiles.yaml` 的 fast 清单里标为 `tier: slow`：fast 命中时不执行，计入报告 `plan.selection.omitted`（`reason: deferred-slow-check`），运行结束打印“已延后”清单，不代表通过。慢检查由 `template-slow-checks` 工作流每日定时或手动运行（`scripts/ci-gate --mode slow`，公共 gate 对验证执行单独限制 5 分钟，准备沿用工作流原总预算）；本地用 `YSS_VERIFY_SLOW=1`（fast 中一并执行命中的慢检查）或 `YSS_VERIFY_SLOW=only`（只执行全部慢检查）。release profile 不受影响。
 
 ## 轻量模板发布（默认）
 

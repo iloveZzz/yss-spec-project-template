@@ -15,7 +15,7 @@ function commandKey(item, cwd) {
 }
 
 export const MAX_VERIFICATION_CONCURRENCY = 8;
-export const SHARED_TOOL_RESOURCES = new Set(['native-cli', 'python-jsonschema']);
+export const SHARED_TOOL_RESOURCES = new Set(['native-cli', 'python-jsonschema', 'go']);
 
 class ResourceLocks {
   #held = new Map();

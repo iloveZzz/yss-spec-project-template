@@ -21,13 +21,11 @@ jobs:
           persist-credentials: false
       - uses: ./.github/actions/setup-template
         with:
-          toolchain: 'true'
-          yss-commit: pin
+          runtime-only: 'true'
       - name: scripts/ci-gate --mode slow
-        # 测试本身 5 分钟硬上限，超时即失败。
-        timeout-minutes: 5
+        # 公共 gate 独立限制验证执行 5 分钟；准备沿用 job 的总预算。
         shell: bash
-        run: scripts/ci-gate --mode slow --report-dir /tmp/ci-gate-slow
+        run: scripts/ci-gate --mode slow --report-dir /tmp/ci-gate-slow --prepare-tools
       - uses: actions/upload-artifact@v4
         if: always()
         with:

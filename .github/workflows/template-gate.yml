@@ -21,8 +21,7 @@ jobs:
           persist-credentials: false
       - uses: ./.github/actions/setup-template
         with:
-          toolchain: 'true'
-          yss-commit: pin
+          runtime-only: 'true'
       - name: scripts/ci-gate
         shell: bash
         env:
@@ -31,9 +30,9 @@ jobs:
           REPORT_DIR: /tmp/ci-gate
         run: |
           if [[ "$EVENT_NAME" == pull_request ]]; then
-            scripts/ci-gate --mode pr --base "$BASE_SHA" --report-dir "$REPORT_DIR"
+            scripts/ci-gate --mode pr --base "$BASE_SHA" --report-dir "$REPORT_DIR" --prepare-tools
           else
-            scripts/ci-gate --mode push --report-dir "$REPORT_DIR"
+            scripts/ci-gate --mode push --report-dir "$REPORT_DIR" --prepare-tools
           fi
       - uses: actions/upload-artifact@v4
         if: always()

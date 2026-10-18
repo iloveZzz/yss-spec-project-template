@@ -228,7 +228,7 @@ test('两路内部tooling独占外层预算，同资源检查互斥', async () =
   await runGroups(plan,'template-source',2,{cwd:'/fixture',environment:{YSS_TOOLING_CONCURRENCY:'2'},execute});
   assert.equal(peak,1);
 });
-test('只读工具资源（native-cli、python-jsonschema）不互斥，自定义资源仍互斥', async () => {
+test('只读工具资源（native-cli、python-jsonschema、Go）不互斥，自定义资源仍互斥', async () => {
   const peakOf = async resource => {
     let active=0,peak=0;
     const execute = async command => { active++; peak=Math.max(peak,active); await new Promise(resolve=>setTimeout(resolve,30)); active--; return {command,code:0}; };
@@ -241,6 +241,7 @@ test('只读工具资源（native-cli、python-jsonschema）不互斥，自定�
   };
   assert.equal(await peakOf('native-cli'),2);
   assert.equal(await peakOf('python-jsonschema'),2);
+  assert.equal(await peakOf('go'),2);
   assert.equal(await peakOf('custom-state'),1);
 });
 test('同组检查用不同 lane 可并行，同 lane 仍串行', async () => {

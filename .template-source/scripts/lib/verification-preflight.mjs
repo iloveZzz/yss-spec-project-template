@@ -16,22 +16,37 @@ export function validateVerificationReportDirectory(root,directory) {
   fs.accessSync(parent,fs.constants.W_OK);
   return target;
 }
+export function validateVerificationToolRequirements(value) {
+  const keys=['schema_version','python','go','native_cli','tooling','vue'];
+  if(!value||Array.isArray(value)||typeof value!=='object'||Object.keys(value).length!==keys.length||keys.some(key=>!Object.hasOwn(value,key))||value.schema_version!==1||!['none','runtime','jsonschema'].includes(value.python)||keys.slice(2).some(key=>typeof value[key]!=='boolean'))throw new TypeError('VERIFICATION_TOOL_REQUIREMENTS_INVALID');
+  return value;
+}
+export function verificationToolRequirements(plan,{reportValidation=false}={}) {
+  const daily=plan.strategy==='daily-necessary',commands=plan.commands.map(item=>item.command).join('\n');
+  return validateVerificationToolRequirements({schema_version:1,
+    python:reportValidation||!daily||plan.commands.some(item=>item.resources?.includes('python-jsonschema'))?'jsonschema':/\bpython3?\s/.test(commands)?'runtime':'none',
+    go:daily&&plan.commands.some(item=>/^go\s/.test(item.command)||item.resources?.includes('go')),
+    native_cli:plan.commands.some(item=>item.resources?.includes('native-cli')),
+    tooling:/\bpnpm\b/.test(commands)||!daily&&/\.template-source\/tooling\/node/.test(commands)||plan.commands.some(item=>item.resources?.includes('pnpm-tooling')),
+    vue:/verify-yss-prototype-contract-scenarios|build-shadcn-vue|verify-existing-ui-baseline-scenarios/.test(commands),
+  });
+}
 export function verificationPreflight({root,plan,reportDir,environment=process.env,nodeVersion=process.version,probe=spawnSync}) {
   const observations=[],errors=[];
-  const daily=plan.strategy==='daily-necessary',commands=plan.commands.map(item=>item.command).join('\n');
+  const needs=verificationToolRequirements(plan);
   const check=(name,operation)=>{try{observations.push({name,status:'passed',observed:operation()});}catch(error){errors.push({name,error:error.message});observations.push({name,status:'failed',error:error.message});}};
   const invoke=(file,args,cwd=root)=>{const result=probe(file,args,{cwd,env:environment,encoding:'utf8',timeout:30000,maxBuffer:4*1024*1024});if(result.status!==0||result.error||result.signal)throw new Error(result.error?.message||result.stderr||`${file}: exit=${result.status} signal=${result.signal}`);return result.stdout.trim();};
   check('node',()=>{if(!/^v24\./.test(nodeVersion))throw new Error(`验证运行器需要 Node 24，实际 ${nodeVersion}`);return nodeVersion;});
   if(reportDir)check('report-directory',()=>validateVerificationReportDirectory(root,reportDir));
-  if(!daily||plan.commands.some(item=>item.resources?.includes('python-jsonschema')))check('python-jsonschema',()=>{const value=JSON.parse(invoke('python3',['-c','import sys,json,importlib.metadata; print(json.dumps({"version":[sys.version_info.major,sys.version_info.minor],"executable":sys.executable,"jsonschema":importlib.metadata.version("jsonschema")}))']));if(value.version[0]!==3||value.version[1]!==12)throw new Error('需要 Python 3.12 和 jsonschema');return value;});
-  else if(/\bpython3?\s/.test(commands))check('python',()=>{const value=JSON.parse(invoke('python3',['-c','import sys,json; print(json.dumps({"version":[sys.version_info.major,sys.version_info.minor],"executable":sys.executable}))']));if(value.version[0]!==3||value.version[1]!==12)throw new Error('需要 Python 3.12');return value;});
-  if(daily&&plan.commands.some(item=>/^go\s/.test(item.command)))check('go',()=>invoke('go',['version']));
-  if(daily&&plan.commands.some(item=>item.resources?.includes('native-cli')))check('native-cli',()=>{
+  if(needs.python==='jsonschema')check('python-jsonschema',()=>{const value=JSON.parse(invoke('python3',['-c','import sys,json,importlib.metadata; print(json.dumps({"version":[sys.version_info.major,sys.version_info.minor],"executable":sys.executable,"jsonschema":importlib.metadata.version("jsonschema")}))']));if(value.version[0]!==3||value.version[1]!==12)throw new Error('需要 Python 3.12 和 jsonschema');return value;});
+  else if(needs.python==='runtime')check('python',()=>{const value=JSON.parse(invoke('python3',['-c','import sys,json; print(json.dumps({"version":[sys.version_info.major,sys.version_info.minor],"executable":sys.executable}))']));if(value.version[0]!==3||value.version[1]!==12)throw new Error('需要 Python 3.12');return value;});
+  if(needs.go)check('go',()=>invoke('go',['version']));
+  if(plan.strategy==='daily-necessary'&&needs.native_cli)check('native-cli',()=>{
     const binary=require('./native-yss.mjs').nativeBinary(environment),pins=require('./yss-cli-pin.mjs'),pin=pins.readYssCliPin(root);
     // 仓库里有固定文件，二进制就必须与它一致；本地联调自己构建的二进制要显式覆盖，结果会标记为未固定。
     return pin?{...binary,pin:pins.verifyPinnedBinary({digest:binary.digest,pin,environment})}:binary;
   });
-  if(/\bpnpm\b/.test(commands)||!daily&&/\.template-source\/tooling\/node/.test(commands)||plan.commands.some(item=>item.resources?.includes('pnpm-tooling')))check('pnpm-and-tooling-lock',()=>{
+  if(needs.tooling)check('pnpm-and-tooling-lock',()=>{
     const tooling=path.join(root,'.template-source/tooling/node'),pkg=JSON.parse(fs.readFileSync(path.join(tooling,'package.json'))),version=invoke('pnpm',['--version'],tooling);
     if(`pnpm@${version}`!==pkg.packageManager)throw new Error(`pnpm 版本需要 ${pkg.packageManager}，实际 ${version}`);
     const expected=fs.readFileSync(path.join(tooling,'pnpm-lock.yaml'));
@@ -42,7 +57,7 @@ export function verificationPreflight({root,plan,reportDir,environment=process.e
     if(sections(expected)!==sections(installed))throw new Error('tooling 安装依赖与 frozen lock 不一致');
     return {version,lock_sha256:hash(expected)};
   });
-  if(/verify-yss-prototype-contract-scenarios|build-shadcn-vue|verify-existing-ui-baseline-scenarios/.test(commands))check('vue-author-toolchain',()=>{
+  if(needs.vue)check('vue-author-toolchain',()=>{
     if(!environment.YSS_VUE_TOOLCHAIN)throw new Error('选中原型场景需要 YSS_VUE_TOOLCHAIN');
     const assets=path.join(root,'.agents/skills/yss-prototype-stage/assets/shadcn-vue-authoring'),toolchain=fs.realpathSync(environment.YSS_VUE_TOOLCHAIN);
     const expected=JSON.parse(fs.readFileSync(path.join(assets,'package.json')));

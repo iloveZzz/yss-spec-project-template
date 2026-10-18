@@ -24,6 +24,7 @@ profiles:
         depends_on: []
         failure_mode: "仓库职责与 gitlink 保护引用失效"
       - id: check.9f66238a57e457bf
+        resources: [python-jsonschema]
         group: lifecycle
         inputs_complete: true
         input_patterns:
@@ -409,7 +410,7 @@ profiles:
         failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
       - id: check.profile-consumers-review-capabilities
         tier: slow  # 实测约 99s；fast 中延后，按需（YSS_VERIFY_SLOW=1）或定时执行
-        resources: [native-cli]
+        resources: [native-cli, python-jsonschema]
         lane: pc-review-capabilities
         run: "node --test --test-skip-pattern='^backend plugin receives' .template-source/tooling/node/test/review-capabilities.test.mjs"
         group: feature-assets
@@ -923,6 +924,12 @@ profiles:
         group: feature-assets
         inputs_complete: true
         input_patterns:
+          - ".template-source/scripts/lib/verification-execution-plan.mjs"
+          - ".template-source/scripts/lib/verification-preflight.mjs"
+          - ".template-source/scripts/lib/verification-report-validator.mjs"
+          - ".template-source/scripts/lib/template-verification-worker.mjs"
+          - "scripts/lib/verification-selection.mjs"
+          - "scripts/lib/template-verification.mjs"
           - "scripts/ci-gate"
           - "scripts/ci-setup"
           - "scripts/lib/ci-gate.mjs"
@@ -1182,6 +1189,7 @@ profiles:
         failure_mode: "历史只读记录错误授予当前状态，或仓外证据未绑定当前字节"
       - id: check.a5802dc214ecfcda
         run: "node tests/scenarios/verify-maintenance-review-workflow-scenarios.mjs"
+        resources: [go]
         group: maintenance
         inputs_complete: true
         input_patterns:
@@ -1486,10 +1494,12 @@ profiles:
         failure_mode: "阶段 checkpoint 越界接受或编排合同错误"
       - id: "check.daily-selection"
         resources: [ "python-jsonschema" ]
-        run: "node --test --test-name-pattern '日常|试点|unknown, mixed|path sets|dependency closure|qualification binds|missing dependency|正式 Schema|选中的 Schema|目标意图|既有补充|补充检查拒绝' tests/verification-selection.test.mjs"
+        run: "node --test --test-name-pattern '日常|试点|unknown, mixed|path sets|dependency closure|qualification binds|missing dependency|正式 Schema|选中的 Schema|目标意图|既有补充|补充检查拒绝|CI|原始选择|重复登记合并' tests/verification-selection.test.mjs"
         group: "candidate-integrity"
         inputs_complete: true
         input_patterns:
+          - ".template-source/scripts/lib/template-verification-worker.mjs"
+          - "scripts/lib/ci-gate.mjs"
           - "scripts/lib/template-verification.mjs"
           - "scripts/lib/verification-selection.mjs"
           - "scripts/lib/verification-report.mjs"
@@ -1523,16 +1533,22 @@ profiles:
         group: "candidate-integrity"
         inputs_complete: true
         input_patterns:
+          - ".template-source/process/template-verification-profiles.yaml"
+          - ".template-source/scripts/lib/verification-execution-plan.mjs"
+          - "scripts/lib/template-verification.mjs"
+          - "scripts/lib/ci-gate.mjs"
           - ".template-source/scripts/lib/verification-preflight.mjs"
           - "tests/verification-preflight.test.mjs"
         depends_on: []
         failure_mode: "环境缺失未提前拒绝或无关环境被强制要求的错误"
       - id: "check.daily-report"
-        resources: [ "python-jsonschema" ]
+        resources: [ "python-jsonschema", "go" ]
         run: "node --test tests/verification-report.test.mjs tests/verification-report-v2.test.mjs"
         group: "candidate-integrity"
         inputs_complete: true
         input_patterns:
+          - ".template-source/scripts/lib/template-verification-worker.mjs"
+          - "scripts/lib/ci-gate.mjs"
           - "scripts/lib/verification-report.mjs"
           - "scripts/lib/template-verification.mjs"
           - "scripts/lib/verification-selection.mjs"
@@ -1754,14 +1770,6 @@ profiles:
           - "scripts/fixtures/strategic-handoff/base-*.json"
         depends_on: []
         failure_mode: "业务 Ticket 在默认根下引用或 formalize 失败"
-      - id: check.work-layout-assets
-        run: "node --test scripts/fixtures/structured-assets/*.test.mjs"
-        group: work-layout
-        inputs_complete: true
-        input_patterns:
-          - "scripts/fixtures/structured-assets/**"
-        depends_on: []
-        failure_mode: "结构化资产迁移或写范围错误"
       - id: check.work-layout-api
         run: "node --test scripts/fixtures/contract-efficiency/api-v2.test.mjs"
         group: work-layout
@@ -1800,15 +1808,6 @@ profiles:
         input_patterns:
           - "tests/scenarios/verify-lifecycle-operator-scenarios.mjs"
           - "scripts/verify-lifecycle-operator-scenarios"
-        depends_on: []
-        failure_mode: "目录修正后对应生命周期或证据消费者接受错误引用或拒绝当前有效引用"
-      - id: check.work-layout-openapi-draft-validation
-        run: "node tests/scenarios/verify-openapi-draft-validation-scenarios.mjs"
-        group: work-layout
-        inputs_complete: true
-        input_patterns:
-          - "tests/scenarios/verify-openapi-draft-validation-scenarios.mjs"
-          - "scripts/verify-openapi-draft-validation-scenarios"
         depends_on: []
         failure_mode: "目录修正后对应生命周期或证据消费者接受错误引用或拒绝当前有效引用"
       - id: check.work-layout-digital-human-task-package
@@ -3231,11 +3230,10 @@ gates:
       - check.work-layout-reading
       - check.work-layout-stage-tracking
       - check.work-layout-tickets
-      - check.work-layout-assets
       - check.work-layout-api
       - check.work-layout-lifecycle-transition
       - check.work-layout-lifecycle-operator
-      - check.work-layout-openapi-draft-validation
+      - check.openapi-validation-scenarios
       - check.work-layout-digital-human-task-package
       - check.work-layout-design-migration
       - check.work-layout-design-fixtures
@@ -3296,6 +3294,7 @@ gates:
     impact_dependencies: []
     depends_on: []
     check_ids:
+      - check.role-independent-contracts
       - check.document-reading-views
       - check.92a3623cf3550ba8
       - check.1451647ba2722b30

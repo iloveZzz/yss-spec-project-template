@@ -1,9 +1,15 @@
 import { spawn, spawnSync } from "node:child_process";
-import { createWriteStream, existsSync, mkdirSync, readFileSync, readdirSync, realpathSync, writeFileSync } from "node:fs";
+import { appendFileSync, lstatSync, createWriteStream, existsSync, mkdirSync, readFileSync, readdirSync, realpathSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import {runCommand as runBoundedCommand} from './command-runner.mjs';
+import {createHash} from 'node:crypto';
+import {isDeepStrictEqual} from 'node:util';
+import {createIntakeSnapshotObserver} from './read-only-intake.mjs';
+import {verificationToolRequirements} from '../../.template-source/scripts/lib/verification-preflight.mjs';
 import { resolveMaintenanceOutput } from "./maintenance-storage.mjs";
 
 const MODES = ["pr", "push", "slow"];
+const SLOW_VERIFICATION_TIMEOUT_MS = 5 * 60 * 1000;
 const FULL_SHA = /^[0-9a-f]{40}$/;
 /** 重步骤在任一前置步骤失败时跳过：先把便宜的失败原因交给作者，不在已知失败的候选上空耗数分钟。 */
 const SKIPPED_AFTER_FAILURE = "前置步骤失败，已跳过";
@@ -28,24 +34,28 @@ export const STEPS = [
   },
   {
     id: "sync-skills",
+    verification_check_id: "check.skill-projection-identity",
     title: "技能投影与 canonical 一致",
     command: ["scripts/sync-skills", "--check"],
     fix: "scripts/sync-skills",
   },
   {
     id: "skill-lock",
+    verification_check_id: "check.skill-lock-current",
     title: "技能锁与分发内容一致",
     command: ["scripts/update-skill-lock", "--check"],
     fix: "scripts/update-skill-lock",
   },
   {
     id: "lifecycle-registry",
+    verification_check_id: "check.9f66238a57e457bf",
     title: "生命周期注册表",
     command: ["scripts/verify-lifecycle-registry"],
     fix: "按日志修正 lifecycle-registry.yaml；派生产物过期时运行 scripts/generate-lifecycle-artifacts；缺 jsonschema 时运行 scripts/ci-setup",
   },
   {
     id: "skill-registry",
+    verification_check_id: "check.022dccdddca70b70",
     title: "技能路由注册表",
     command: ["scripts/verify-skill-registry"],
     fix: "按日志修正 .template-spec/agents/yss-skill-registry.yaml",
@@ -72,7 +82,7 @@ export const STEPS = [
     id: "verify-template",
     title: "模板验证（fast，按变更范围）",
     heavy: true,
-    command: (context) => ["scripts/verify-template-fast", ...(context.scopeBase ? ["--base", context.scopeBase] : []), "--report-dir", path.join(context.reportDir, "verification")],
+    command: (context) => ["scripts/verify-template-fast", "--ci-guards", ...(context.scopeBase ? ["--base", context.scopeBase] : []), "--report-dir", path.join(context.reportDir, "verification")],
     fix: "查看该步骤日志与 verification 报告中第一个失败的检查；本地用同一命令复现",
   },
   {
@@ -85,6 +95,10 @@ export const STEPS = [
     fix: "查看 verification-slow 报告中失败的慢检查；本地用 YSS_VERIFY_SLOW=only scripts/verify-template-fast 复现",
   },
 ];
+
+export function ciVerificationCheckIds() {
+  return STEPS.filter(step => step.verification_check_id).map(step => step.verification_check_id);
+}
 
 // ---------------------------------------------------------------------------
 // Node 版本声明（FR-009）
@@ -226,38 +240,83 @@ function defaultReportDir(root, mode) {
   return resolveMaintenanceOutput(`maintenance:ci-gate/${mode}-${stamp}-${process.pid}`, { root });
 }
 
-function worktreeState(root) {
-  const result = git(root, ["status", "--porcelain=v1", "--untracked-files=all"]);
-  if (result.status !== 0) throw new TypeError(`无法读取 git 状态: ${result.stderr.trim()}`);
-  return new Set(result.stdout.split("\n").filter(Boolean));
+function snapshotChanges(before,after) {
+  const changes=[];
+  if(!isDeepStrictEqual(before.git,after.git))changes.push('Git HEAD/index');
+  for(const ref of new Set([...Object.keys(before.files),...Object.keys(after.files)]))if(!isDeepStrictEqual(before.files[ref],after.files[ref]))changes.push(ref);
+  return changes;
+}
+function preparationChanges(root,before,after,needs) {
+  const prefix='.template-source/tooling/node/node_modules/';
+  const ignored=git(root,['check-ignore','-q','--',prefix]).status===0;
+  const tracked=git(root,['ls-files','-z','--',prefix]);
+  const allow=needs.tooling&&ignored&&tracked.status===0&&!tracked.stdout;
+  return snapshotChanges(before,after).filter(ref=>!allow||!ref.startsWith(prefix));
+}
+function readCiSetupEnvironment(file) {
+  if(!existsSync(file))return {};
+  if(!lstatSync(file).isFile())throw new TypeError('setup 环境必须为普通文件');
+  const allowed=new Set(['YSS_NATIVE_SOURCE_ROOT','YSS_NATIVE_BINARY','YSS_NATIVE_BINARY_SHA256','YSS_VUE_TOOLCHAIN']),values={};
+  for(const line of readFileSync(file,'utf8').split(/\r?\n/).filter(Boolean)){
+    const at=line.indexOf('='),key=line.slice(0,at),value=line.slice(at+1);
+    if(at<1||!allowed.has(key)||Object.hasOwn(values,key)||!value||value.includes('\0'))throw new TypeError('setup 环境含未知、重复或非法变量');
+    if(key==='YSS_NATIVE_BINARY_SHA256'){
+      if(!/^[a-f0-9]{64}$/.test(value))throw new TypeError('setup 二进制摘要无效');
+    }else{
+      if(!path.isAbsolute(value))throw new TypeError('setup 路径必须为绝对路径');
+      const stat=lstatSync(value);
+      if(key==='YSS_NATIVE_BINARY'?!stat.isFile():!stat.isDirectory())throw new TypeError('setup 路径类型无效');
+    }
+    values[key]=value;
+  }
+  const native=['YSS_NATIVE_SOURCE_ROOT','YSS_NATIVE_BINARY','YSS_NATIVE_BINARY_SHA256'];
+  if(native.some(key=>Object.hasOwn(values,key))){
+    if(native.some(key=>!values[key]))throw new TypeError('setup 原生环境缺字段');
+    if(createHash('sha256').update(readFileSync(values.YSS_NATIVE_BINARY)).digest('hex')!==values.YSS_NATIVE_BINARY_SHA256)throw new TypeError('setup 二进制摘要不匹配');
+  }
+  return values;
 }
 
-function runCommand({ root, command, logPath, env, stdout, stderr }) {
+async function runCommand({ root, command, logPath, env, stdout, stderr, timeoutMs=0 }) {
+  if(timeoutMs){
+    const result=await runBoundedCommand(path.join(root,command[0]),command.slice(1),{cwd:root,env,timeoutMs,stdoutFile:logPath+'.stdout',stderrFile:logPath+'.stderr'});
+    writeFileSync(logPath,result.stdout+result.stderr+(result.termination?`\n验证执行终止: ${result.termination}\n`:''));
+    stdout.write(result.stdout);stderr.write(result.stderr);
+    return {status:result.status,code:result.actual_exit_code,signal:result.actual_exit_signal,observed:result.actual_exit_code_observed,termination:result.termination};
+  }
   return new Promise((resolve) => {
     const log = createWriteStream(logPath);
-    const done = (code, extra) => {
+    let settled=false;
+    const done = (result, extra) => {
+      if(settled)return;settled=true;
       if (extra) log.write(extra);
-      log.end(() => resolve(code));
+      log.end(() => resolve(result));
     };
     const child = spawn(path.join(root, command[0]), command.slice(1), { cwd: root, env, stdio: ["ignore", "pipe", "pipe"] });
     child.stdout.on("data", (chunk) => { log.write(chunk); stdout.write(chunk); });
     child.stderr.on("data", (chunk) => { log.write(chunk); stderr.write(chunk); });
     child.on("error", (error) => {
       stderr.write(`${error.message}\n`);
-      done(127, `${error.message}\n`);
+      done({status:127,code:null,signal:null,observed:false}, `${error.message}\n`);
     });
-    child.on("close", (code, signal) => done(code ?? (signal ? 128 : 1)));
+    child.on("close", (code, signal) => done({status:code??(signal?128:1),code,signal,observed:Number.isInteger(code)}));
   });
 }
 
 function seconds(ms) { return `${(ms / 1000).toFixed(1)}s`; }
 
 /** 依次执行 STEPS，记录命令、退出码、耗时与日志路径，并保证仓内没有新增改动。 */
-export async function runGate({ root, mode, base, reportDir, steps: allSteps = STEPS, env = process.env, stdout = process.stdout, stderr = process.stderr }) {
+export async function runGate({ root, mode, base, reportDir, steps: allSteps = STEPS, prepareTools = false, verification = {}, env = process.env, stdout = process.stdout, stderr = process.stderr }) {
+  root=realpathSync(root);
   validateOptions({ root, mode, base, reportDir });
-  const steps = allSteps.filter((step) => (step.modes ?? ["pr", "push"]).includes(mode));
+  const {selectVerificationInputs,compileExpectedVerificationPlan,validateVerificationReport,verificationInputDigest}=verification;
+  const steps = allSteps.filter((step) => !step.verification_check_id && (step.modes ?? ["pr", "push"]).includes(mode));
   const directory = reportDir ?? defaultReportDir(root, mode);
   mkdirSync(directory, { recursive: true });
+  if(prepareTools){
+    const index=steps.findIndex(step=>['verify-template','verify-slow'].includes(step.id));
+    if(index>=0)steps.splice(index,0,{id:'prepare-tools',title:'按所选计划准备工具',heavy:true,env:steps[index].env,command:['scripts/ci-setup','--requirements-file',path.join(directory,'tool-requirements.json')],fix:'查看准备日志，修正所选工具的版本、pin 或 frozen lock'});
+  }
   const head = git(root, ["rev-parse", "HEAD"]).stdout.trim();
   const parent = git(root, ["rev-parse", "--verify", "--quiet", "HEAD^"]);
   const scopeBase = mode === "pr" ? base : (parent.status === 0 ? parent.stdout.trim() : null);
@@ -265,7 +324,11 @@ export async function runGate({ root, mode, base, reportDir, steps: allSteps = S
   const report = { mode, base: base ?? null, scope_base: scopeBase, head, started_at: new Date().toISOString(), report_dir: directory, status: "running", duration_ms: null, steps: [] };
   const reportPath = path.join(directory, "report.json");
   const save = () => writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`);
-  const before = worktreeState(root);
+  const observer=createIntakeSnapshotObserver();
+  const snapshot=()=>observer.snapshot(root,{excludeIgnoredToolState:true});
+  const before=snapshot();let finalBaseline=before,environment={...env};
+  const phaseViolations=[];
+  let guardsObserved=false;
   const started = Date.now();
   let failed = false;
 
@@ -275,6 +338,11 @@ export async function runGate({ root, mode, base, reportDir, steps: allSteps = S
     const shown = command ? command.join(" ") : "(内置检查)";
     const entry = { id: step.id, title: step.title, command: shown, status: "running", exit_code: null, duration_ms: null, log: path.join(directory, `${String(index + 1).padStart(2, "0")}-${step.id}.log`), fix: step.fix ?? null };
     report.steps.push(entry);
+    if(step.heavy&&!guardsObserved){
+      guardsObserved=true;
+      const changes=snapshotChanges(before,snapshot());
+      if(changes.length){phaseViolations.push(...changes);failed=true;stderr.write(`入口守卫修改了验证输入: ${changes.join(', ')}\n`);}
+    }
     if (step.heavy && failed) {
       Object.assign(entry, { status: "skipped", reason: SKIPPED_AFTER_FAILURE });
       writeFileSync(entry.log, `${SKIPPED_AFTER_FAILURE}\n`);
@@ -286,12 +354,49 @@ export async function runGate({ root, mode, base, reportDir, steps: allSteps = S
     const stepStart = Date.now();
     if (step.run) {
       let outcome;
-      try { outcome = step.run(context); } catch (error) { outcome = { ok: false, lines: [error.message] }; }
+      try { outcome = await step.run(context); } catch (error) { outcome = { ok: false, lines: [error.message] }; }
       writeFileSync(entry.log, `${outcome.lines.join("\n")}\n`);
       (outcome.ok ? stdout : stderr).write(`${outcome.lines.join("\n")}\n`);
       entry.exit_code = outcome.ok ? 0 : 1;
     } else {
-      entry.exit_code = await runCommand({ root, command, logPath: entry.log, env: step.env ? { ...env, ...step.env } : env, stdout, stderr });
+      const stepEnvironment=step.env?{...environment,...step.env}:environment;
+      const verification=['verify-template','verify-slow'].includes(step.id);
+      try {
+        if(step.id==='prepare-tools'){
+          const verificationStep=steps.find(item=>['verify-template','verify-slow'].includes(item.id));
+          const verificationCommand=verificationStep.command(context);
+          const selected=await selectVerificationInputs(verificationCommand.slice(1),root,{environment:stepEnvironment});
+          const needs=verificationToolRequirements(selected.plan,{reportValidation:true}),setupFile=path.join(directory,'setup.env'),input=snapshot();
+          report.tool_requirements=needs;
+          writeFileSync(command[2],JSON.stringify(needs)+'\n');
+          const actual=await runCommand({root,command,logPath:entry.log,env:{...stepEnvironment,YSS_CI_ENV_FILE:setupFile},stdout,stderr});
+          entry.exit_code=actual.status;entry.child_exit_code=actual.code;entry.child_exit=actual;
+          const after=snapshot(),changes=preparationChanges(root,input,after,needs);
+          if(changes.length){phaseViolations.push(...changes);throw new TypeError(`工具准备修改了验证输入: ${changes.join(', ')}`);}
+          if(entry.exit_code!==0)throw new TypeError(`工具准备失败: exit=${entry.exit_code}`);
+          const exported=readCiSetupEnvironment(setupFile),prepared={...stepEnvironment,...exported};
+          const reselected=await selectVerificationInputs(verificationCommand.slice(1),root,{environment:prepared});
+          if(!isDeepStrictEqual(selected.plan,reselected.plan)||!isDeepStrictEqual(needs,verificationToolRequirements(reselected.plan,{reportValidation:true})))throw new TypeError('工具准备后计划或需求变化');
+          environment={...environment,...exported};finalBaseline=after;
+        }else {
+          if(verification){
+              await selectVerificationInputs(command.slice(1),root,{environment:stepEnvironment});
+          }
+          const actual=await runCommand({ root, command, logPath: entry.log, env: stepEnvironment, stdout, stderr, timeoutMs:step.id==='verify-slow'?SLOW_VERIFICATION_TIMEOUT_MS:0 });
+          entry.exit_code=actual.status;entry.child_exit_code=actual.code;entry.child_exit=actual;
+          if(verification){
+            const args=['--profile','fast',...command.slice(1)],reportDirectory=command[command.indexOf('--report-dir')+1];
+            const expectedPlan=compileExpectedVerificationPlan({root,args,environment:stepEnvironment,reportDirectory});
+            const reportFile=path.join(reportDirectory,'report.json');
+            const verificationReport=JSON.parse(readFileSync(reportFile,'utf8'));
+            validateVerificationReport(verificationReport,{root,expectedPlan,reportDirectory,expectedInvocation:{command:path.join(root,'scripts/run-template-verification'),args},currentInputDigest:verificationInputDigest(root),observedExitCode:entry.exit_code,requireRelease:false});
+            report.verification={report_file:reportFile,guard_task_ids:mode==='slow'?[]:ciVerificationCheckIds()};
+          }
+        }
+      } catch(error){
+        const message=`验证报告或计划拒绝: ${error.message}\n`;
+        appendFileSync(entry.log,message);stderr.write(message);entry.error=error.message;entry.exit_code=entry.exit_code||1;
+      }
     }
     entry.duration_ms = Date.now() - stepStart;
     const passed = entry.exit_code === 0;
@@ -304,21 +409,13 @@ export async function runGate({ root, mode, base, reportDir, steps: allSteps = S
     save();
   }
 
-  const after = worktreeState(root);
-  const added = [...after].filter((line) => !before.has(line));
-  const removed = [...before].filter((line) => !after.has(line));
-  const guard = { id: "repository-unchanged", title: "检查期间仓库无新增改动", command: "(内置检查)", status: "passed", exit_code: 0, duration_ms: 0, log: path.join(directory, `${String(steps.length + 1).padStart(2, "0")}-repository-unchanged.log`), fix: null };
-  if (added.length > 0 || removed.length > 0) {
-    guard.status = "failed";
-    guard.exit_code = 1;
-    guard.fix = "检查步骤只能读取仓库；把写入改到仓外报告目录";
-    const lines = [...added.map((line) => `新增/变化: ${line}`), ...removed.map((line) => `消失: ${line}`)];
-    writeFileSync(guard.log, `${lines.join("\n")}\n`);
-    stderr.write(`失败 repository-unchanged\n  步骤: repository-unchanged — ${guard.title}\n${lines.map((line) => `  ${line}`).join("\n")}\n  日志: ${guard.log}\n  修复: ${guard.fix}\n`);
-    failed = true;
-  } else {
-    writeFileSync(guard.log, "仓库状态与检查前一致\n");
-  }
+  const changes=[...new Set([...phaseViolations,...snapshotChanges(finalBaseline,snapshot())])];
+  const guard = { id: "repository-unchanged", title: "检查期间验证输入保持一致", command: "(内置检查)", status: "passed", exit_code: 0, duration_ms: 0, log: path.join(directory, `${String(steps.length + 1).padStart(2, "0")}-repository-unchanged.log`), fix: null };
+  if(changes.length){
+    guard.status='failed';guard.exit_code=1;guard.fix='检查步骤只能读取验证输入；准备阶段仅允许所选 tooling 的忽略安装产物';
+    writeFileSync(guard.log,changes.join('\n')+'\n');stderr.write(`失败 repository-unchanged: ${changes.join(', ')}\n`);failed=true;
+  }else writeFileSync(guard.log,'验证输入与本阶段基线一致\n');
+  report.input_observation_metrics=observer.metrics;
   report.steps.push(guard);
 
   report.duration_ms = Date.now() - started;

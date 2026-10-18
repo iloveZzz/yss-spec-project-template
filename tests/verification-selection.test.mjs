@@ -117,3 +117,62 @@ test('选中的 Schema 行为测试能发现全部接受的错误实现', t => {
   fs.writeFileSync(file, original);
   assert.equal(run().status, 0);
 });
+
+test('CI 空变化仍必跑守卫且每个 ID 只出现一次，拒绝失效绑定', async () => {
+ const {ciVerificationCheckIds,STEPS}=await import('../scripts/lib/ci-gate.mjs');
+ assert.equal(typeof ciVerificationCheckIds,'function');
+ const ids=ciVerificationCheckIds();
+ assert.deepEqual(ids,['check.skill-projection-identity','check.skill-lock-current','check.9f66238a57e457bf','check.022dccdddca70b70']);
+ const plan=planTemplateVerification({changedFiles:[],ciGuards:true});
+ for(const id of ids){assert.equal(plan.commands.filter(x=>x.id===id).length,1);assert.equal(plan.commands.find(x=>x.id===id).selection_reason,'ci-required');}
+ for(const id of ids)assert.equal(planTemplateVerification({changedFiles:['.agents/skills/yss-domain/SKILL.md'],ciGuards:true}).commands.find(x=>x.id===id).selection_reason,'ci-required');
+ assert.equal(planTemplateVerification({changedFiles:[]}).commands.length,0);
+ for(const options of [{profile:'release'},{includeSlow:'only'},{selection:'legacy'},{selection:'shadow'}])assert.throws(()=>planTemplateVerification({...options,ciGuards:true}),/CI_GUARDS_FAST_ONLY/);
+ const missing=loadVerificationProfiles();missing.profiles.fast.checks=missing.profiles.fast.checks.filter(x=>x.id!==ids[0]);
+ assert.throws(()=>planTemplateVerification({config:missing,ciGuards:true}),/CI_GUARD_BINDING/);
+ const wrong=loadVerificationProfiles();wrong.profiles.fast.checks.find(x=>x.id===ids[0]).run='scripts/verify-doc-facts';
+ assert.throws(()=>planTemplateVerification({config:wrong,ciGuards:true}),/CI_GUARD_BINDING/);
+ assert.deepEqual(STEPS.filter(x=>x.verification_check_id).map(x=>x.command.join(' ')).sort(),plan.commands.filter(x=>ids.includes(x.id)).map(x=>x.command).sort());
+});
+
+test('原始选择读取提交、index、工作树及中文未跟踪路径且不探测工具', async t => {
+ const {selectVerificationInputs}=await import('../.template-source/scripts/lib/template-verification-worker.mjs');
+ assert.equal(typeof selectVerificationInputs,'function');
+ const directory=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'ci-raw-selection-')));t.after(()=>fs.rmSync(directory,{recursive:true,force:true}));
+ const git=(...args)=>{const r=spawnSync('git',['-c','user.name=t','-c','user.email=t@example.invalid','-c','commit.gpgsign=false',...args],{cwd:directory,encoding:'utf8'});assert.equal(r.status,0,r.stderr);return r.stdout.trim();};
+ fs.mkdirSync(path.join(directory,'docs'));fs.mkdirSync(path.join(directory,'.template-source/process'),{recursive:true});
+ fs.copyFileSync(path.join(ROOT,'.template-source/process/template-verification-profiles.yaml'),path.join(directory,'.template-source/process/template-verification-profiles.yaml'));
+ fs.writeFileSync(path.join(directory,'README.md'),'base');git('init','-q');git('add','.');git('commit','-qm','base');const base=git('rev-parse','HEAD');
+ fs.writeFileSync(path.join(directory,'docs/committed.md'),'commit');git('add','.');git('commit','-qm','next');
+ fs.writeFileSync(path.join(directory,'docs/staged.md'),'staged');git('add','.');fs.appendFileSync(path.join(directory,'README.md'),'dirty');fs.writeFileSync(path.join(directory,'docs/中文 未跟踪.md'),'new');
+ const reportDir=path.join(directory,'would-be-invalid-report');
+ const selected=await selectVerificationInputs(['--base',base,'--ci-guards','--report-dir',reportDir],directory,{environment:{PATH:'/no-tools'}});
+ assert.deepEqual(selected.scope.files,['README.md','docs/committed.md','docs/staged.md','docs/中文 未跟踪.md']);
+ assert.ok(selected.plan.commands.every(x=>x.kind!=='preflight'&&!x.execution));assert.equal(fs.existsSync(reportDir),false);
+ const slow=await selectVerificationInputs([],directory,{environment:{YSS_VERIFY_SLOW:'only'}});
+ assert.equal(slow.plan.commands.filter(x=>x.id==='check.skill-lock-current').length,0);
+ assert.ok(slow.plan.commands.length>0);
+});
+
+test('重复登记合并保持输入与 Gate 并集',async()=>{
+ const {compileVerificationCheck,compileTaskExecution}=await import('../.template-source/scripts/lib/verification-execution-plan.mjs');
+ const {readHistoricalProfiles}=await import('../.template-source/scripts/lib/legacy-verification.mjs');
+ const current=loadVerificationProfiles(),historical=readHistoricalProfiles(ROOT,'6f8f19d5a4ee7e62cbb73c9cc9ed0142ff4730c0');
+ const definition=(config,id)=>{const raw=config.profiles.fast.checks.find(x=>x.id===id),base=Object.entries(config.groups).flatMap(([group,g])=>g.commands.map(value=>({...(typeof value==='string'?{run:value}:value),group}))).find(x=>x.id===id);return {...base,...raw};};
+ for(const [keep,old] of [['check.openapi-validation-scenarios','check.work-layout-openapi-draft-validation'],['check.structured-assets','check.work-layout-assets']]){
+  assert.equal(current.profiles.fast.checks.some(x=>x.id===old),false);
+  const retained=definition(current,keep),before=[definition(historical,keep),definition(historical,old)];
+  assert.ok(historical.profiles.fast.checks.some(x=>x.id===old),'旧策略仍保留旧身份');
+  const compiled=before.map(raw=>compileVerificationCheck(raw,{group:raw.group,profile:'fast'}));
+  assert.equal(compiled[0].command,compiled[1].command);
+  assert.deepEqual(compileTaskExecution(compiled[0],{root:ROOT}),compileTaskExecution(compiled[1],{root:ROOT}));
+  for(const field of ['input_patterns','resources','depends_on'])for(const value of new Set(before.flatMap(raw=>raw[field]||[])))assert.ok(retained[field]?.includes(value),`${keep} ${field}: ${value}`);
+  for(const gate of historical.gates.filter(g=>g.check_ids.includes(keep)||g.check_ids.includes(old)))assert.ok(current.gates.find(g=>g.id===gate.id).check_ids.includes(keep),gate.id);
+  for(const pattern of new Set(before.flatMap(raw=>raw.input_patterns))){
+   const file=pattern.replaceAll('**','sample').replaceAll('*','sample');
+   const plan=planTemplateVerification({changedFiles:[file]});assert.equal(plan.commands.filter(x=>x.id===keep).length,1,file);assert.equal(plan.commands.some(x=>x.id===old),false);
+   const selected=plan.commands.find(x=>x.id===keep);for(const dep of retained.depends_on)assert.ok(plan.commands.some(x=>x.id===dep));
+   for(const resource of retained.resources||[])assert.ok(selected.resources.includes(resource));
+  }
+ }
+});
