@@ -130,7 +130,7 @@ function shellWords(command){
   }
   if(quoted)throw new TypeError('NODE_TEST_COMMAND_INVALID');if(started)words.push(word);return words;
 }
-export function compileTaskExecution(task,{root,reportDir,fixedCommit}={}){
+export function compileTaskExecution(task,{root,reportDir,fixedCommit,environment=process.env}={}){
   if(task.kind==='source-test-consumer')throw new TypeError('RETIRED_SOURCE_CONSUMER: 旧源码消费任务不再授予验证资格');
   const requested=task.command.trim();
   // Bind the frozen occurrence before expanding its removed test glob. The
@@ -142,11 +142,11 @@ export function compileTaskExecution(task,{root,reportDir,fixedCommit}={}){
   }
   if(/^(?:node\s+)?scripts\/verify-context-contract(?:\s|$)/.test(requested)) {
     const words=shellWords(requested);if(words[0]==='node')words.shift();words.shift();
-    const execution=contextExecution(root,words);
+    const execution=contextExecution(root,words,environment);
     return {requested_command:task.command,...execution,source_bindings:{mapping_sha256:hash(fs.readFileSync(path.join(root,'.template-source/scripts/lib/verification-execution-plan.mjs'))),target:'scripts/lib/native-context.mjs',target_sha256:hash(fs.readFileSync(observedRetiredTarget(root,'scripts/verify-context-contract')))}};
   }
   if(/^yss\s+context\s+check(?:\s|$)/.test(requested)) {
-    const words=shellWords(requested),{binary,digest}=contextBinary();words.shift();
+    const words=shellWords(requested),{binary,digest}=contextBinary(environment);words.shift();
     return {requested_command:task.command,file:binary,args:words,cwd:root,environment:{},binary_sha256:digest,protocol:"context-envelope-v1",source_bindings:{mapping_sha256:hash(fs.readFileSync(path.join(root,'.template-source/scripts/lib/verification-execution-plan.mjs'))),target:'scripts/lib/native-context.mjs',target_sha256:hash(fs.readFileSync(observedRetiredTarget(root,'scripts/verify-context-contract')))}};
   }
   const retiredRequest=/^(?:node(?:\.exe)?|['"][^'"]*[\\/]node(?:\.exe)?['"]|\S*[\\/]node(?:\.exe)?)\s/.test(requested)
@@ -215,7 +215,7 @@ function dailyParsingTargets(plan,root) {
   });
 }
 
-export function addVerificationExecutionTasks(plan,{root,repositoryMode='template-source',reference=false,checkpoints=[],taskPackages=[],purpose='verification',reportDir,fixedCommit}={}) {
+export function addVerificationExecutionTasks(plan,{root,repositoryMode='template-source',reference=false,checkpoints=[],taskPackages=[],purpose='verification',reportDir,fixedCommit,environment=process.env}={}) {
   plan=structuredClone(plan);plan.selection??={requested:'legacy',effective:'legacy',omitted:[]};plan.groups??=[...new Set(plan.commands.map(task=>task.group))];
   const daily=plan.strategy==='daily-necessary';
   if(reference)plan.gates=[];
@@ -256,7 +256,7 @@ export function addVerificationExecutionTasks(plan,{root,repositoryMode='templat
     for(const task of plan.commands.filter(task=>task.kind!=='preflight'))task.depends_on=[...new Set(['check.verification-environment',...(task.depends_on||[])])];
     const gate=plan.gates?.find(gate=>gate.id==='check.verification-environment');if(gate){gate.selected=true;gate.selection_reason='mandatory-preflight';gate.check_ids=['check.verification-environment'];gate.task_ids=['check.verification-environment'];}
   }
-  for(const task of plan.commands){const execution=compileTaskExecution(task,{root,reportDir,fixedCommit});if(execution){
+  for(const task of plan.commands){const execution=compileTaskExecution(task,{root,reportDir,fixedCommit,environment});if(execution){
     if(daily&&execution.file===process.execPath&&Object.keys(execution).every(key=>['requested_command','file','args','cwd','environment'].includes(key))){
       // Normalize only observed Node aliases; formal request identities stay frozen.
       task.requested_command??=task.command;

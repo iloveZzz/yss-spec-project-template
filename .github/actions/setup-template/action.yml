@@ -1,6 +1,9 @@
 name: Setup template tooling
 description: 供给 Node、Python、Go 运行时并调用 scripts/ci-setup；不含检查逻辑，Node/Python 版本取自 scripts/ci-setup，Go 版本取自 CLI pin。
 inputs:
+  runtime-only:
+    description: 仅供给基础运行时，按需依赖由 ci-gate 准备
+    default: 'false'
   python:
     description: 是否安装 schema 验证环境
     default: 'true'
@@ -31,7 +34,8 @@ runs:
     - uses: actions/setup-go@v5
       with:
         go-version: ${{ steps.go_version.outputs.go }}
-    - shell: bash
+    - if: inputs.runtime-only != 'true'
+      shell: bash
       env:
         INPUT_PYTHON: ${{ inputs.python }}
         INPUT_TOOLCHAIN: ${{ inputs.toolchain }}

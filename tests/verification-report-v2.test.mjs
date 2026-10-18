@@ -292,3 +292,15 @@ test('干净发行仍从固定基线纳入全部提交差异，显式子集不�
  const plan=compileExpectedVerificationPlan({root,config,reportDirectory:path.join(os.tmpdir(),path.basename(root)+'-report'),args:['--base',base,'--changed-file','README.md']});
  assert.deepEqual(plan.changed_files,['README.md','unknown.asset']);assert.equal(plan.scope.base,base);assert.ok(plan.commands.some(task=>task.id==='check.example'));
 });
+
+test('limited 仅在独立 fast 期望下显式消费，保留完整失败拒绝',t=>{
+ const f=fixture(t);
+ Object.assign(f.plan,{requested_profile:'fast',effective_profile:'fast',source_requirement:'current',strategy:'daily-necessary',gates:[]});
+ f.plan.commands[0].gate_ids=[];f.plan.scope={kind:'limited',files:[],explicit_files:[],base:null};
+ f.report.plan=structuredClone(f.plan);f.report.scope=structuredClone(f.plan.scope);f.report.results[0].gate_ids=[];f.report.sources_manifest=null;
+ finalizeVerificationReport(f.report,{status:'passed',wallMs:1,repositoryMode:'template-source'});
+ const {expectedSourcesManifest,...options}=f.options;options.requireRelease=false;
+ assert.equal(validateVerificationReport(f.report,options).status,'passed');
+ assert.throws(()=>validateVerificationReport(f.report,{...options,requireRelease:true}),/完整候选|release/);
+ for(const mutate of [r=>r.plan.commands=[],r=>r.results=[],r=>r.purpose='diagnostic',r=>r.invocation.args=[],r=>r.results[0].stdoutFile=path.join(f.directory,'missing.log'),r=>r.results[0].log_digests.stdoutFile='0'.repeat(64),r=>r.final_exit.observed=false,r=>r.input_drift=true]){const report=structuredClone(f.report);mutate(report);assert.throws(()=>validateVerificationReport(report,options));}
+});

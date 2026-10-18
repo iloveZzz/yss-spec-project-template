@@ -8,7 +8,7 @@ English overview: [README.en.md](README.en.md).
 
 本模板默认作为 Harness / 研发管理仓库，保留流程文档、契约模板、Agent skills 和协作约定。后端源码默认位于明确登记的实现仓库；前端实现由独立规格与 CLI 维护，不在本模板。
 
-默认一名 Agent 在 Spec 内连续完成需求、必要产品设计及适用后端工作，按显式目标推进；仅新建 Spec、Backend Profile。旧 Design 通过显式迁移并入 Spec，原记录与原批准保持原字节。Spec 文档批准、产品设计完成、后端可交付、前端验收和业务验收是可选的本次终点；终点改变保留当前批准和后续路线。专职 Profile 继续按自身职责结束，主控通过显式同功能 checkpoint 与当前接收证据汇总。见[本次推进目标与专职协作](.template-spec/process/lifecycle-progression.md)。
+默认一名 Agent 在 Spec 内连续完成需求、必要产品设计及适用后端工作，按显式目标推进；新建使用 Spec、Backend Profile，定义见 [Profile 注册](scripts/lib/profile-tree.mjs)。旧 Design 通过显式迁移并入 Spec，原记录与原批准保持原字节。Spec 文档批准、产品设计完成、后端可交付、前端验收和业务验收是可选的本次终点；终点改变保留当前批准和后续路线。专职 Profile 继续按自身职责结束，主控通过显式同功能 checkpoint 与当前接收证据汇总。见[本次推进目标与专职协作](.template-spec/process/lifecycle-progression.md)。
 
 ## 项目结构
 

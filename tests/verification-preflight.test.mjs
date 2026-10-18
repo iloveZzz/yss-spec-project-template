@@ -61,3 +61,51 @@ test('原生消费者的二进制必须与固定文件一致，本地联调可�
   const ci=run(other,{YSS_NATIVE_BINARY_OVERRIDE:'1',CI:'true'});
   assert.match(ci.errors[0].error,/CI 不接受覆盖/);
 });
+
+test('CI 文档计划保留 schema 前置但不准备无关重工具',async()=>{
+ const {verificationToolRequirements,validateVerificationToolRequirements}=await import('../.template-source/scripts/lib/verification-preflight.mjs');
+ const {planTemplateVerification}=await import('../scripts/lib/template-verification.mjs');
+ assert.equal(typeof verificationToolRequirements,'function');assert.equal(typeof validateVerificationToolRequirements,'function');
+ const requirements=verificationToolRequirements(planTemplateVerification({changedFiles:['README.md'],ciGuards:true}));
+ assert.deepEqual(requirements,{schema_version:1,python:'jsonschema',go:false,native_cli:false,tooling:false,vue:false});
+ for(const bad of [null,[],{}, {...requirements,extra:true},{...requirements,go:1},{...requirements,tooling:'false'},{...requirements,python:'no'},{...requirements,schema_version:2}])assert.throws(()=>validateVerificationToolRequirements(bad));
+ for(const field of Object.keys(requirements)){const bad={...requirements};delete bad[field];assert.throws(()=>validateVerificationToolRequirements(bad));}
+ assert.deepEqual(validateVerificationToolRequirements(requirements),requirements);
+ const base={schema_version:1,python:'none',go:false,native_cli:false,tooling:false,vue:false};
+ const daily=commands=>({strategy:'daily-necessary',commands});
+ for(const [task,changes]of [[{command:'go test ./...'},{go:true}],[{command:'node --test report.test.mjs',resources:['go']},{go:true}],[{command:'python3 -c ast'},{python:'runtime'}],[{command:'node schema',resources:['python-jsonschema']},{python:'jsonschema'}],[{command:'pnpm --dir .template-source/tooling/node test'},{tooling:true}],[{command:'node native',resources:['native-cli']},{native_cli:true}],[{command:'scripts/verify-existing-ui-baseline-scenarios'},{vue:true}]])assert.deepEqual(verificationToolRequirements(daily([task])),{...base,...changes});
+ assert.equal(verificationToolRequirements({commands:[]}).python,'jsonschema');
+ assert.equal(verificationToolRequirements(planTemplateVerification({changedFiles:['scripts/lib/verification-selection.mjs'],ciGuards:true})).go,true,'报告测试实际构建 Go fixture');
+ const cli=planTemplateVerification({changedFiles:['tests/cli-retirement.test.mjs']});assert.equal(verificationToolRequirements(cli).native_cli,true);
+});
+
+test('准备后的原生执行 tuple 消费显式环境而非父进程环境',async t=>{
+ const {compileTaskExecution}=await import('../.template-source/scripts/lib/verification-execution-plan.mjs');
+ const temp=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'ci-compiled-environment-')));t.after(()=>fs.rmSync(temp,{recursive:true,force:true}));
+ const binary=path.join(temp,'yss');fs.writeFileSync(binary,'fixture bytes');
+ const environment={YSS_NATIVE_BINARY:binary,YSS_NATIVE_BINARY_SHA256:createHash('sha256').update('fixture bytes').digest('hex')};
+ const execution=compileTaskExecution({command:'scripts/verify-context-contract'},{root:path.resolve(import.meta.dirname,'..'),environment});assert.equal(execution.file,binary);
+});
+
+
+test('CI 报告消费单独声明 schema 前置',async()=>{
+ const {verificationToolRequirements}=await import('../.template-source/scripts/lib/verification-preflight.mjs');
+ const empty={strategy:'daily-necessary',commands:[]};
+ assert.equal(verificationToolRequirements(empty).python,'none');
+ assert.equal(verificationToolRequirements(empty,{reportValidation:true}).python,'jsonschema');
+});
+
+test('slow 检查本身声明 schema 前置',async()=>{
+ const {verificationToolRequirements}=await import('../.template-source/scripts/lib/verification-preflight.mjs');
+ const {planTemplateVerification}=await import('../scripts/lib/template-verification.mjs');
+ const slow=planTemplateVerification({includeSlow:'only'});
+ assert.equal(verificationToolRequirements(slow).python,'jsonschema');
+ assert.equal(slow.commands.find(x=>x.id==='check.profile-consumers-review-capabilities').resources.includes('python-jsonschema'),true);
+});
+
+test('维护审查的实际场景输入声明 Go',async()=>{
+ const {verificationToolRequirements}=await import('../.template-source/scripts/lib/verification-preflight.mjs');
+ const {planTemplateVerification}=await import('../scripts/lib/template-verification.mjs');
+ const workflow=planTemplateVerification({changedFiles:['tests/scenarios/verify-maintenance-review-workflow-scenarios.mjs']});
+ assert.equal(verificationToolRequirements(workflow).go,true);assert.equal(verificationToolRequirements(workflow).native_cli,false);
+});

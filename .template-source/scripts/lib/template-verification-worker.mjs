@@ -27,7 +27,7 @@ function changedFiles(root,base) {
   for(const args of [['diff','--name-only','-z','--no-renames','--diff-filter=ACDMRTUXB'],['diff','--cached','--name-only','-z','--no-renames','--diff-filter=ACDMRTUXB'],['ls-files','-z','--others','--exclude-standard']])collect(git(root,args));
   return [...files];
 }
-const options={help:{type:'boolean',default:false},profile:{type:'string',default:'fast'},base:{type:'string'},'changed-file':{type:'string',multiple:true},selection:{type:'string'},'report-dir':{type:'string'},'baseline-report':{type:'string'},'baseline-report-sha256':{type:'string'},'qualification-report':{type:'string'},'qualification-report-sha256':{type:'string'},'runtime-store':{type:'string',default:'off'},'fresh-inputs':{type:'boolean',default:false},plan:{type:'boolean',default:false},json:{type:'boolean',default:false},concurrency:{type:'string'},'tooling-mode':{type:'string'},checkpoint:{type:'string',multiple:true},'task-package':{type:'string',multiple:true}};
+const options={'ci-guards':{type:'boolean',default:false},help:{type:'boolean',default:false},profile:{type:'string',default:'fast'},base:{type:'string'},'changed-file':{type:'string',multiple:true},selection:{type:'string'},'report-dir':{type:'string'},'baseline-report':{type:'string'},'baseline-report-sha256':{type:'string'},'qualification-report':{type:'string'},'qualification-report-sha256':{type:'string'},'runtime-store':{type:'string',default:'off'},'fresh-inputs':{type:'boolean',default:false},plan:{type:'boolean',default:false},json:{type:'boolean',default:false},concurrency:{type:'string'},'tooling-mode':{type:'string'},checkpoint:{type:'string',multiple:true},'task-package':{type:'string',multiple:true}};
 export function validateVerificationArguments(values) {
   if(values.profile!==undefined&&!['fast','release'].includes(values.profile))throw new TypeError(`未知核验 profile: ${values.profile}`);
   if(values['qualification-report']!==undefined||values['qualification-report-sha256']!==undefined)throw new TypeError('QUALIFICATION_RETIRED');
@@ -44,12 +44,12 @@ export function validateVerificationArguments(values) {
   if(values['baseline-report']!==undefined&&values.base===undefined)throw new TypeError('--baseline-report 需要 --base 绑定固定基线');
   return values;
 }
-async function prepare(argv,root) {
+export async function selectVerificationInputs(argv,root,{environment=process.env}={}) {
   const {values}=parseArgs({args:argv,options,strict:true});
   validateVerificationArguments(values);
   if(values.help)return {help:true,values};
   assertBaselineParameters({root,base:values.base,baselineReport:values['baseline-report'],baselineReportDigest:values['baseline-report-sha256']});
-  const {planTemplateVerification}=await import('../../../scripts/lib/template-verification.mjs');
+  const {planTemplateVerification,loadVerificationProfiles}=await import('../../../scripts/lib/template-verification.mjs');
   const explicit=values['changed-file']||[],requested=values.profile;
   const scope=resolveVerificationScope({profile:requested,explicit,actual:changedFiles(root,values.base)});scope.base=values.base||null;
   let assessment;
@@ -57,16 +57,21 @@ async function prepare(argv,root) {
     const {validateBaselineReport}=await import('./verification-report-validator.mjs');
     assessment=validateBaselineReport({root,base:values.base,reportFile:values['baseline-report'],expectedDigest:values['baseline-report-sha256']});
   }
-  let plan=planTemplateVerification({profile:requested,changedFiles:scope.files,root,base:values.base,baselineReport:values['baseline-report'],baselineReportDigest:values['baseline-report-sha256'],baselineAssessment:assessment,...(values.selection?{selection:values.selection}:{})});
+  let plan=planTemplateVerification({config:loadVerificationProfiles(fs.readFileSync(path.join(root,'.template-source/process/template-verification-profiles.yaml'),'utf8')),ciGuards:values['ci-guards'],includeSlow:environment.YSS_VERIFY_SLOW==='only'?'only':environment.YSS_VERIFY_SLOW==='1',profile:requested,changedFiles:scope.files,root,base:values.base,baselineReport:values['baseline-report'],baselineReportDigest:values['baseline-report-sha256'],baselineAssessment:assessment,...(values.selection?{selection:values.selection}:{})});
   plan.scope=scope;
   const requestedConcurrency=Number(values.concurrency||plan.max_concurrency||1);if(!Number.isInteger(requestedConcurrency)||requestedConcurrency<1||requestedConcurrency>8)throw new TypeError('concurrency 必须为 1..8');
   const release=plan.effective_profile==='release',concurrency=release?1:requestedConcurrency,requestedMode=values['tooling-mode']||'legacy';
   if(!['legacy','optimized'].includes(requestedMode))throw new TypeError('tooling-mode 必须为 legacy 或 optimized');
   const mode=release?'legacy':requestedMode;
   plan.tooling={requested_mode:requestedMode,effective_mode:mode,verification_concurrency:concurrency,test_concurrency:mode==='legacy'?1:Math.min(2,concurrency),reason:release?'complete-release-serial':requestedMode==='optimized'?'explicit-optimized-execution':'legacy-tooling'};
+  return {values,plan,scope,root,concurrency,toolingMode:mode,purpose:'verification',invocation:{command:path.join(root,'scripts/run-template-verification'),args:argv}};
+}
+async function prepare(argv,root,options) {
+  const input=await selectVerificationInputs(argv,root,options);
+  if(input.help)return input;
+  const {values,plan}=input;
   const reportDir=validateVerificationReportDirectory(root,values['report-dir']||path.join(fs.realpathSync(os.tmpdir()),`yss-template-verification-${randomUUID()}`));
-  plan=addVerificationExecutionTasks(plan,{root,checkpoints:values.checkpoint,taskPackages:values['task-package'],reportDir});
-  return {values,plan,scope,root,reportDir,concurrency,toolingMode:mode,purpose:'verification',invocation:{command:path.join(root,'scripts/run-template-verification'),args:argv}};
+  return {...input,reportDir,plan:addVerificationExecutionTasks(plan,{root,checkpoints:values.checkpoint,taskPackages:values['task-package'],reportDir,environment:options?.environment||process.env})};
 }
 export {prepare as prepareVerificationPlan};
 async function runPrepared(input) {
@@ -80,7 +85,7 @@ async function runPrepared(input) {
     if(reportDir)validateVerificationReportDirectory(root,reportDir);
     const modeResult=spawnSync(process.execPath,[path.join(root,'scripts/repository-mode')],{cwd:root,env:environment,encoding:'utf8'});
     if(modeResult.status!==0)throw new TypeError(modeResult.stderr||'仓库身份校验失败');mode=modeResult.stdout.trim();
-    plan=addVerificationExecutionTasks(plan,{root,repositoryMode:mode,checkpoints:values.checkpoint,taskPackages:values['task-package'],purpose,reportDir});
+    plan=addVerificationExecutionTasks(plan,{root,repositoryMode:mode,checkpoints:values.checkpoint,taskPackages:values['task-package'],purpose,reportDir,environment});
     inputObserver=createVerificationInputObserver(root,{reuseUnchanged:plan.requested_profile!=='release'&&plan.effective_profile!=='release'&&!values['fresh-inputs']});
     before=inputObserver.digest();
     report=createVerificationReport(plan,{root,inputDigest:before,concurrency,scope,invocation});report.purpose=purpose;report.experimental=purpose!=='verification';
@@ -107,7 +112,7 @@ async function runPrepared(input) {
       // separate scheduler invocations from overwriting each other's logs.
       const candidates=plan.commands.filter(task=>task.command===command),task=options.task||candidates[0];
       if(!task)throw new TypeError('ACTUAL_EXECUTION_TASK_MISSING');
-      const execution=compileTaskExecution(task,{root,reportDir});
+      const execution=compileTaskExecution(task,{root,reportDir,environment});
       return runCommandToFiles(command,{...options,execution,sequence:`${phase}-${options.sequence}`,onProcess:event=>process.send?.({kind:'command-process',...event}),timeoutMs:/pnpm.*\.template-source\/tooling\/node\s+test/.test(command)?0:options.timeoutMs});
     };
     const preparationTasks=plan.commands.filter(task=>task.group==='artifact-preparation');
@@ -197,7 +202,7 @@ if(process.argv[1]&&path.resolve(process.argv[1])===workerFile) {
   } else {
     try {
       const input=await prepare(process.argv.slice(2),process.cwd());
-      if(input.help)process.stdout.write('用法: scripts/run-template-verification --profile fast|release [--base <完整SHA>] [--baseline-report <文件> --baseline-report-sha256 <摘要>] [--plan --json] [--report-dir <仓库外新目录>] [--concurrency 1..8] [--selection legacy|shadow|allowlist] [--fresh-inputs]\nfast 默认按检查选择必要集合，报告范围 limited；legacy / shadow 显式使用原组范围。\n--fresh-inputs 禁用本次运行内的文件摘要复用；release 始终完整读取字节。\nrelease 必须提供上一正式发行 --base，覆盖全部真实变化并选择受影响检查，来源、安装与恢复要求保留；历史策略仅用于独立报告读取。\n');
+      if(input.help)process.stdout.write('用法: scripts/run-template-verification --profile fast|release [--base <完整SHA>] [--baseline-report <文件> --baseline-report-sha256 <摘要>] [--plan --json] [--report-dir <仓库外新目录>] [--concurrency 1..8] [--selection legacy|shadow|allowlist] [--fresh-inputs] [--ci-guards]\n--ci-guards 仅用于普通 fast，添加 CI 常驻守卫。\nfast 默认按检查选择必要集合，报告范围 limited；legacy / shadow 显式使用原组范围。\n--fresh-inputs 禁用本次运行内的文件摘要复用；release 始终完整读取字节。\nrelease 必须提供上一正式发行 --base，覆盖全部真实变化并选择受影响检查，来源、安装与恢复要求保留；历史策略仅用于独立报告读取。\n');
       else if(input.values.plan)process.stdout.write(`${JSON.stringify(input.plan,null,input.values.json?2:0)}\n`);
       else await runPrepared(input);
     }catch(error){process.stderr.write(`模板核验失败: ${error.message}\n`);process.exitCode=1;}

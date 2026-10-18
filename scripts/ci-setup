@@ -17,6 +17,7 @@ YSS_CLI_PIN=.template-source/scripts/lib/yss-cli-pin.mjs
 usage() {
   cat <<'EOF'
 用法: scripts/ci-setup [--no-python] [--toolchain] [--yss-commit <40位SHA>|pin] [--dry-run]
+       scripts/ci-setup --requirements-file <绝对JSON文件> [--dry-run]
        scripts/ci-setup --print-versions
   默认          校验 Node 主版本、确认 template-source、按 frozen lockfile 安装 pnpm 依赖、安装 Python schema 依赖
   --no-python   跳过 Python schema 依赖
@@ -26,20 +27,28 @@ usage() {
   --print-versions  打印 node= 与 python= 的目标版本（KEY=value，可直接追加到 $GITHUB_OUTPUT），供平台适配器选择运行时，不重复写版本号
 环境变量:
   YSS_CI_ENV_FILE  需要传给后续步骤的变量按 NAME=value 追加到该文件
-                   （GitHub 传 $GITHUB_ENV；GitLab 在后续命令前 set -a; . 该文件）
+                   （ci-gate 使用专用文件按受控数据读取；不得当 shell 执行）
   YSS_CI_ALLOW_LOCAL=1  允许在未设置 CI 的机器上真实执行
 EOF
 }
 
 python=1
+python_schema=1
+go_needed=0
+tooling=1
+requirements_file=""
+requirements_mode=0
+legacy_options=0
 toolchain=0
 yss_commit=""
 dry_run=0
 while (($#)); do
   case "$1" in
-    --no-python) python=0 ;;
-    --toolchain) toolchain=1 ;;
+    --requirements-file) shift; requirements_file="${1:-}"; requirements_mode=1; [[ -n "$requirements_file" ]] || { echo "--requirements-file 缺少路径" >&2; exit 2; } ;;
+    --no-python) legacy_options=1; python=0 ;;
+    --toolchain) legacy_options=1; toolchain=1 ;;
     --yss-commit)
+      legacy_options=1
       shift
       yss_commit="${1:-}"
       ;;
@@ -50,6 +59,26 @@ while (($#)); do
   esac
   shift
 done
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+if ((requirements_mode)); then
+  ((legacy_options==0)) || { echo "--requirements-file 不能与旧准备选项混用" >&2; exit 2; }
+  requirements="$(node --input-type=module - "$requirements_file" "$ROOT_DIR" <<'JS'
+import fs from 'node:fs';import path from 'node:path';import {pathToFileURL} from 'node:url';
+try {
+  const file=process.argv[2];
+  if(!path.isAbsolute(file)||!fs.lstatSync(file).isFile())throw new Error('需求文件必须是绝对普通文件');
+  const {validateVerificationToolRequirements}=await import(pathToFileURL(path.join(process.argv[3],'.template-source/scripts/lib/verification-preflight.mjs')));
+  const needs=validateVerificationToolRequirements(JSON.parse(fs.readFileSync(file,'utf8')));
+  console.log([needs.python,Number(needs.go),Number(needs.native_cli),Number(needs.tooling),Number(needs.vue)].join(' '));
+}catch(error){console.error(error.message);process.exit(2);}
+JS
+)" || exit 2
+  read -r python_requirement go_needed native_needed tooling toolchain <<< "$requirements"
+  if [[ "$python_requirement" == none ]]; then python=0; fi
+  if [[ "$python_requirement" != jsonschema ]]; then python_schema=0; fi
+  if ((native_needed)); then yss_commit=pin; fi
+fi
 
 yss_pinned=0
 if [[ "$yss_commit" == gitlink ]]; then
@@ -149,7 +178,7 @@ fi
 step "确认仓库模式为 template-source"
 if ((!dry_run)); then test "$(scripts/repository-mode)" = template-source; else echo "+ test \"\$(scripts/repository-mode)\" = template-source"; fi
 
-if ((toolchain)) || [[ -n "$yss_commit" ]]; then
+if ((go_needed)) || [[ -n "$yss_commit" ]] || { ((!requirements_mode)) && ((toolchain)); }; then
   step "Go：版本取自 yss-cli 固定文件的 go_version"
   if ((dry_run)); then
     echo "+ go 缺失或不等于固定文件的 go_version 时，在 root 容器内按 go.dev 公布的 sha256 安装"
@@ -207,16 +236,21 @@ if [[ -n "$yss_commit" ]]; then
   fi
 fi
 
-step "pnpm ${YSS_CI_PNPM_VERSION}：按 frozen lockfile 安装模板工具依赖"
-if ((!dry_run)); then
-  if [[ "$(pnpm --version 2>/dev/null || true)" != "$YSS_CI_PNPM_VERSION" ]]; then
-    corepack enable
-    corepack prepare "pnpm@${YSS_CI_PNPM_VERSION}" --activate
+if ((tooling || toolchain)); then
+  step "pnpm ${YSS_CI_PNPM_VERSION}：准备所选工具的运行器"
+  if ((!dry_run)); then
+    if [[ "$(pnpm --version 2>/dev/null || true)" != "$YSS_CI_PNPM_VERSION" ]]; then
+      corepack enable
+      corepack prepare "pnpm@${YSS_CI_PNPM_VERSION}" --activate
+    fi
+  else
+    echo "+ corepack prepare pnpm@${YSS_CI_PNPM_VERSION} --activate（版本不符时）"
   fi
-else
-  echo "+ corepack prepare pnpm@${YSS_CI_PNPM_VERSION} --activate（版本不符时）"
 fi
-run pnpm --dir .template-source/tooling/node install --frozen-lockfile
+if ((tooling)); then
+  step "按 frozen lockfile 安装模板工具依赖"
+  run pnpm --dir .template-source/tooling/node install --frozen-lockfile
+fi
 
 if ((toolchain)); then
   step "准备原型作者工具链"
@@ -232,7 +266,8 @@ if ((toolchain)); then
 fi
 
 if ((python)); then
-  step "Python ${YSS_CI_PYTHON_MINOR}：安装 jsonschema==${YSS_CI_JSONSCHEMA_VERSION}"
+  step "Python ${YSS_CI_PYTHON_MINOR}：准备运行时"
+  if ((python_schema)); then step "安装 jsonschema==${YSS_CI_JSONSCHEMA_VERSION}"; fi
   if ((dry_run)); then
     echo "+ python3 不是 ${YSS_CI_PYTHON_MINOR} 时，在 root 容器内经 uv==${YSS_CI_UV_VERSION} 补装"
   else
@@ -240,7 +275,7 @@ if ((python)); then
   fi
   # 补装后的解释器不受 PEP 668 限制；系统 Python 在一次性 CI 容器内允许写入，本机不放开。
   if [[ -n "${CI:-}" ]]; then export PIP_BREAK_SYSTEM_PACKAGES=1; fi
-  run python3 -m pip install "jsonschema==${YSS_CI_JSONSCHEMA_VERSION}"
+  if ((python_schema)); then run python3 -m pip install "jsonschema==${YSS_CI_JSONSCHEMA_VERSION}"; fi
 fi
 
 step "环境准备完成"

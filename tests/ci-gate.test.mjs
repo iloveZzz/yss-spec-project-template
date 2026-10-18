@@ -6,8 +6,13 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { STEPS, checkNodeEngines, runGate, satisfiesNodeRange, validateOptions } from "../scripts/lib/ci-gate.mjs";
+import {loadVerificationProfiles} from '../scripts/lib/template-verification.mjs';
 import { readYssCliPin } from "../.template-source/scripts/lib/yss-cli-pin.mjs";
 
+import {selectVerificationInputs} from '../.template-source/scripts/lib/template-verification-worker.mjs';
+import {compileExpectedVerificationPlan,validateVerificationReport} from '../.template-source/scripts/lib/verification-report-validator.mjs';
+import {verificationInputDigest} from '../scripts/lib/verification-report.mjs';
+const verification={selectVerificationInputs,compileExpectedVerificationPlan,validateVerificationReport,verificationInputDigest};
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const CI_GATE = path.join(ROOT, "scripts/ci-gate");
 const CI_SETUP = path.join(ROOT, "scripts/ci-setup");
@@ -31,44 +36,106 @@ function sh(cwd, ...args) {
 }
 
 /** 带桩脚本的最小仓库：每个 STEPS 命令都是只记录参数的 bash 桩，真实检查由各自的测试覆盖。 */
-function fixture(t, { engines = ">=22", nvmrc = "22", write, commits = 2 } = {}) {
-  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "yss-ci-gate-"));
+function fixture(t, { engines = ">=22", nvmrc = "22", write, commits = 2, tooling = false, trackedOutput = false, gitlink = false } = {}) {
+  const directory = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), "yss-ci-gate-")));
   t.after(() => fs.rmSync(directory, { recursive: true, force: true }));
   const root = path.join(directory, "repo");
   fs.mkdirSync(path.join(root, "scripts"), { recursive: true });
   fs.writeFileSync(path.join(root, "package.json"), `${JSON.stringify({ name: "fixture", private: true, ...(engines ? { engines: { node: engines } } : {}) })}\n`);
   if (nvmrc !== null) fs.writeFileSync(path.join(root, ".nvmrc"), `${nvmrc}\n`);
-  fs.writeFileSync(path.join(root, "scripts/ci-setup"), SETUP_MARKER);
+  fs.writeFileSync(path.join(root, "scripts/ci-setup"), SETUP_MARKER+`
+[ -n "\${STUB_LOG:-}" ] && echo "ci-setup $*" >> "$STUB_LOG"
+if [ -n "\${SETUP_WAIT_RELEASE:-}" ]; then while [ ! -f "$SETUP_WAIT_RELEASE" ]; do sleep 0.01; done; fi
+if [ -n "\${SETUP_FAIL:-}" ]; then exit 7; fi
+if [ -n "\${SETUP_WRITE:-}" ]; then mkdir -p "$(dirname "$SETUP_WRITE")"; echo installed > "$SETUP_WRITE"; fi
+if [ -n "\${SETUP_TOOLING_LOCK:-}" ]; then mkdir -p .template-source/tooling/node/node_modules/.pnpm; cp .template-source/tooling/node/pnpm-lock.yaml .template-source/tooling/node/node_modules/.pnpm/lock.yaml; fi
+if [ -n "\${SETUP_CHMOD:-}" ]; then chmod +x "$SETUP_CHMOD"; fi
+if [ -n "\${SETUP_STAGE:-}" ]; then git add "$SETUP_STAGE"; fi
+if [ -n "\${SETUP_COMMIT:-}" ]; then git -c user.name=t -c user.email=t@example.invalid -c commit.gpgsign=false commit --allow-empty -qm mutate; fi
+if [ -n "\${SETUP_SUBCOMMIT:-}" ]; then git -C vendor/nested -c user.name=t -c user.email=t@example.invalid -c commit.gpgsign=false commit --allow-empty -qm mutate; fi
+if [ -n "\${SETUP_ENV:-}" ]; then printf '%s\\n' "$SETUP_ENV" > "$YSS_CI_ENV_FILE"; fi
+`,{mode:0o755});
   const commands = new Set(["scripts/verify-template-candidate", "scripts/verify-template-fast"]);
   for (const step of STEPS) if (Array.isArray(step.command)) commands.add(step.command[0]);
   for (const command of commands) {
     fs.writeFileSync(path.join(root, command), STUB, { mode: 0o755 });
   }
+  // Minimal policy keeps real selection, execution, logs and report validation,
+  // while shell guards stand in for unrelated repository-wide guard contents.
+  const original=loadVerificationProfiles(),ids=['check.skill-projection-identity','check.skill-lock-current','check.9f66238a57e457bf','check.022dccdddca70b70'];
+  const checks=ids.map(id=>({...Object.values(original.groups).flatMap(g=>g.commands).find(x=>x.id===id),...original.profiles.fast.checks.find(x=>x.id===id),input_patterns:['README.md','docs/**'],resources:[],group:'guards'}));
+  const config={schema_version:1,groups:{guards:{commands:checks}},profiles:{fast:{checks},release:{}},routing:[{patterns:['README.md','docs/**'],groups:['guards']}],gates:[],syntax_files:[],required_files:[]};
+  const fixtureEnv={};
+  if(tooling){
+    checks[0].resources=['pnpm-tooling'];
+    const tools=path.join(root,'.template-source/tooling/node'),bin=path.join(directory,'bin');fs.mkdirSync(tools,{recursive:true});fs.mkdirSync(bin);
+    fs.writeFileSync(path.join(tools,'package.json'),JSON.stringify({packageManager:'pnpm@10.15.0'}));fs.writeFileSync(path.join(tools,'pnpm-lock.yaml'),'lockfileVersion: 9\nimporters: {}\n');
+    fs.writeFileSync(path.join(bin,'pnpm'),'#!/usr/bin/env bash\necho 10.15.0\n',{mode:0o755});Object.assign(fixtureEnv,{PATH:bin+path.delimiter+process.env.PATH,SETUP_TOOLING_LOCK:'1'});
+  }
+  fs.writeFileSync(path.join(root,'.gitignore'),'node_modules/\nignored-state/\n');
+  if(trackedOutput){fs.mkdirSync(path.join(root,'.template-source/tooling/node/node_modules'),{recursive:true});fs.writeFileSync(path.join(root,'.template-source/tooling/node/node_modules/tracked'),'tracked');}
+  fs.mkdirSync(path.join(root,'.template-source/process'),{recursive:true});fs.writeFileSync(path.join(root,'.template-source/process/template-verification-profiles.yaml'),JSON.stringify(config));
+  fs.mkdirSync(path.join(root,'.template-source/scripts/lib'),{recursive:true});fs.copyFileSync(path.join(ROOT,'.template-source/scripts/lib/verification-preflight.mjs'),path.join(root,'.template-source/scripts/lib/verification-preflight.mjs'));
+  const helper=path.join(directory,'fast.mjs');
+  const url=ref=>JSON.stringify(path.join(ROOT,ref));
+  fs.writeFileSync(helper,`
+import fs from 'node:fs';import path from 'node:path';import {spawnSync} from 'node:child_process';
+import {compileExpectedVerificationPlan} from ${url('.template-source/scripts/lib/verification-report-validator.mjs')};
+import {compileTaskExecution} from ${url('.template-source/scripts/lib/verification-execution-plan.mjs')};
+import {createVerificationReport,finalizeVerificationReport,saveVerificationReport,verificationInputDigest} from ${url('scripts/lib/verification-report.mjs')};
+import {createHash} from 'node:crypto';
+const root=process.cwd(),args=['--profile','fast',...process.argv.slice(2)],directory=args[args.indexOf('--report-dir')+1];
+fs.appendFileSync(process.env.STUB_LOG,'verify-template-fast '+process.argv.slice(2).join(' ')+'\\n');
+if(process.env.STUB_FAIL?.split(' ').includes('verify-template-fast'))process.exit(1);
+if(process.env.STUB_WAIT_FAST){fs.writeFileSync(process.env.STUB_FAST_PID,String(process.pid));await new Promise(()=>setInterval(()=>{},1000));}
+if(process.env.STUB_NO_REPORT)process.exit(0);
+if(process.env.FAST_WRITE)fs.writeFileSync(process.env.FAST_WRITE,'mutated after preparation');
+const plan=compileExpectedVerificationPlan({root,args,environment:process.env});fs.mkdirSync(directory,{recursive:true});
+const report=createVerificationReport(plan,{root,inputDigest:verificationInputDigest(root),scope:plan.scope,concurrency:1,invocation:{command:path.join(root,'scripts/run-template-verification'),args}});
+for(const [index,task] of plan.commands.entries()){
+ const execution=compileTaskExecution(task,{root,reportDir:directory});
+ const actual=execution?spawnSync(execution.file,execution.args,{cwd:root,env:{...process.env,...execution.environment},encoding:'utf8'}):spawnSync(task.command,{cwd:root,env:process.env,shell:true,encoding:'utf8'});
+ const stdoutFile=path.join(directory,index+'.out'),stderrFile=path.join(directory,index+'.err');fs.writeFileSync(stdoutFile,actual.stdout||'');fs.writeFileSync(stderrFile,actual.stderr||'');
+ report.results.push({...task,index,code:actual.status??1,actual_exit_code:actual.status,actual_exit_signal:actual.signal,actual_exit_code_observed:Number.isInteger(actual.status),...(execution?{actual_execution:execution}:{}),stdoutFile,stderrFile,log_digests:Object.fromEntries([['stdoutFile',stdoutFile],['stderrFile',stderrFile]].map(([key,file])=>[key,createHash('sha256').update(fs.readFileSync(file)).digest('hex')]))});
+}
+report.input_after_sha256=verificationInputDigest(root);report.input_drift=report.input_after_sha256!==report.input_sha256;
+const code=report.results.some(x=>x.code!==0)||report.input_drift?1:0;report.final_exit={code,signal:null,observed:true};
+finalizeVerificationReport(report,{status:code?'failed':'passed',wallMs:1,repositoryMode:'template-source'});if(process.env.STUB_TAMPER==='missing-guard'){report.plan.commands=report.plan.commands.filter(x=>x.id!=='check.skill-lock-current');report.results=report.results.filter(x=>x.id!=='check.skill-lock-current');}
+if(process.env.STUB_TAMPER==='diagnostic')report.purpose='diagnostic';
+if(process.env.STUB_TAMPER==='invocation')report.invocation.args=[];
+if(process.env.STUB_TAMPER==='log')fs.unlinkSync(report.results[0].stdoutFile);
+saveVerificationReport(directory,report);process.exitCode=code;
+`);
+  fs.writeFileSync(path.join(root,'scripts/verify-template-fast'),'#!/usr/bin/env node\nawait import('+JSON.stringify(helper)+');\n',{mode:0o755});
+  if(gitlink){const child=path.join(root,'vendor/nested');fs.mkdirSync(child,{recursive:true});fs.writeFileSync(path.join(child,'file'),'child');sh(child,'init','-q');sh(child,'add','.');sh(child,'commit','-qm','nested');}
   sh(root, "init", "-q");
   sh(root, "add", "-A");
+  if(trackedOutput)sh(root,'add','-f','.template-source/tooling/node/node_modules/tracked');
   sh(root, "commit", "-q", "-m", "fixture");
   const base = sh(root, "rev-parse", "HEAD");
   if (commits > 1) {
-    fs.writeFileSync(path.join(root, "CHANGE.md"), "change\n");
+    fs.writeFileSync(path.join(root, "README.md"), "change\n");
     sh(root, "add", "-A");
     sh(root, "commit", "-q", "-m", "change");
   }
+  if(write){fs.writeFileSync(path.join(root,write),'already dirty');}
   const reportDir = path.join(directory, "reports", "run");
   const stubLog = path.join(directory, "stub.log");
-  return { root, base, reportDir, stubLog, directory, write: write ? path.join(root, write) : undefined };
+  return { root, base, reportDir, stubLog, directory, env:fixtureEnv, write: write ? path.join(root, write) : undefined };
 }
 
 async function gate(t, options = {}, env = {}) {
   const f = fixture(t, options.fixture);
   const out = sink();
   const err = sink();
-  const result = await runGate({
+  const result = await runGate({verification,
     root: f.root,
     mode: options.mode ?? "push",
     base: options.mode === "pr" ? f.base : undefined,
     reportDir: f.reportDir,
     steps: options.steps,
-    env: { ...process.env, STUB_LOG: f.stubLog, ...(f.write ? { STUB_WRITE: f.write } : {}), ...env },
+    prepareTools: options.prepareTools,
+    env: { ...process.env, ...f.env, STUB_LOG: f.stubLog, ...(f.write ? { STUB_WRITE: f.write } : {}), ...env },
     stdout: out,
     stderr: err,
   });
@@ -148,7 +215,7 @@ test("AC-004：推送模式全部通过，报告在仓外，仓内没有新增�
   const run = await gate(t);
   assert.equal(run.exitCode, 0, run.err);
   assert.equal(run.report.status, "passed");
-  assert.deepEqual(run.report.steps.map((step) => step.id), [...STEPS.filter((step) => !step.modes).map((step) => step.id), "repository-unchanged"]);
+  assert.deepEqual(run.report.steps.map((step) => step.id), [...STEPS.filter((step) => !step.modes&&!step.verification_check_id).map((step) => step.id), "repository-unchanged"]);
   assert.ok(run.report.steps.every((step) => step.status === "passed" && step.exit_code === 0 && fs.existsSync(step.log)));
   assert.equal(run.reportPath, path.join(run.reportDir, "report.json"));
   assert.ok(path.relative(run.root, run.reportDir).startsWith(".."));
@@ -156,7 +223,7 @@ test("AC-004：推送模式全部通过，报告在仓外，仓内没有新增�
   assert.equal(run.report.head, sh(run.root, "rev-parse", "HEAD"));
   const parent = sh(run.root, "rev-parse", "HEAD^");
   assert.equal(run.report.scope_base, parent);
-  assert.ok(run.calls.some((line) => line.startsWith("verify-template-fast ") && line.includes(`--base ${parent} --report-dir ${path.join(run.reportDir, "verification")}`)));
+  assert.ok(run.calls.some((line) => line.startsWith("verify-template-fast ") && line.includes(`--ci-guards --base ${parent} --report-dir ${path.join(run.reportDir, "verification")}`)));
   assert.ok(!run.calls.some((line) => line.startsWith("verify-template-candidate")));
 });
 
@@ -175,35 +242,32 @@ test("PR 模式只执行 fast 阻断验证并传递完整 base SHA", async (t) =
   assert.equal(run.report.scope_base, run.base);
   const fast = run.calls.filter((line) => line.startsWith("verify-template-fast "));
   assert.equal(fast.length, 1);
-  assert.match(fast[0], new RegExp(`--base ${run.base} --report-dir ${path.join(run.reportDir, "verification").replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`));
+  assert.match(fast[0], new RegExp(`--ci-guards --base ${run.base} --report-dir ${path.join(run.reportDir, "verification").replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`));
   const candidate = run.calls.filter((line) => line.startsWith("verify-template-candidate "));
   assert.equal(candidate.length, 0);
   assert.ok(!run.report.steps.some((step) => step.id === "verify-candidate"));
 });
 
-test("AC-003：投影检查失败时输出步骤名、命令、日志与修复命令，并继续跑其它便宜检查", async (t) => {
-  const run = await gate(t, { mode: "pr" }, { STUB_FAIL: "sync-skills" });
-  assert.equal(run.exitCode, 1);
-  assert.match(run.err, /步骤: sync-skills/);
-  assert.match(run.err, /命令: scripts\/sync-skills --check/);
-  assert.match(run.err, /修复: scripts\/sync-skills\n/);
-  const failed = run.report.steps.find((step) => step.id === "sync-skills");
-  assert.equal(failed.status, "failed");
-  assert.equal(failed.exit_code, 1);
-  assert.match(fs.readFileSync(failed.log, "utf8"), /sync-skills 失败输出/);
-  assert.match(run.err, new RegExp(failed.log.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
-  assert.equal(run.report.steps.find((step) => step.id === "skill-registry").status, "passed");
-  assert.equal(run.report.steps.find((step) => step.id === "verify-template").status, "skipped");
-  assert.ok(!run.calls.some((line) => line.startsWith("verify-template-")));
-  assert.match(run.out, /ci-gate 失败：sync-skills/);
+test('无关文档仍拒绝坏锁，移交守卫只在 fast 执行一次',async t=>{
+ const pass=await gate(t,{mode:'pr'});assert.equal(pass.exitCode,0,pass.err);
+ for(const name of ['sync-skills','update-skill-lock','verify-lifecycle-registry','verify-skill-registry'])assert.equal(pass.calls.filter(x=>x.split(' ')[0]===name).length,1,name);
+ assert.deepEqual(pass.report.verification.guard_task_ids,STEPS.filter(x=>x.verification_check_id).map(x=>x.verification_check_id));
+ assert.equal(pass.report.steps.some(x=>x.verification_check_id||x.id==='skill-lock'),false);
+ const bad=await gate(t,{mode:'pr'},{STUB_FAIL:'update-skill-lock'});assert.equal(bad.exitCode,1);
+ const report=JSON.parse(fs.readFileSync(path.join(bad.reportDir,'verification/report.json')));assert.equal(report.results.find(x=>x.id==='check.skill-lock-current').actual_exit_code,1);
 });
 
-test("每个必需检查脚本失败都会让整体失败并落在报告里", async (t) => {
-  for (const name of ["verify-agent-config", "update-skill-lock", "verify-lifecycle-registry", "verify-skill-registry", "verify-doc-facts"]) {
-    const run = await gate(t, {}, { STUB_FAIL: name });
-    assert.equal(run.exitCode, 1, name);
-    assert.deepEqual(run.report.steps.filter((step) => step.status === "failed").map((step) => step.command.split(" ")[0]), [`scripts/${name}`], name);
-  }
+test('CI 四项前移守卫失败均不启动 fast',async t=>{
+ for(const name of ['verify-agent-config','verify-doc-facts','harness-metrics']){const run=await gate(t,{mode:'pr',prepareTools:true},{STUB_FAIL:name});assert.equal(run.exitCode,1);assert.equal(run.calls.some(x=>x.startsWith('verify-template-fast ')||x.startsWith('ci-setup ')),false);}
+ const run=await gate(t,{fixture:{engines:'>=24',nvmrc:'22'},prepareTools:true});assert.equal(run.exitCode,1);assert.equal(run.calls.some(x=>x.startsWith('verify-template-fast ')),false);
+});
+
+test('CI 子进程退出 0 但缺守卫报告仍拒绝',async t=>{
+ const run=await gate(t,{}, {STUB_NO_REPORT:'1'});assert.equal(run.exitCode,1);assert.equal(run.report.steps.find(x=>x.id==='verify-template').child_exit_code,0);assert.match(run.err,/报告|report/);
+});
+
+test('CI 拒绝缺守卫、诊断、旧调用及坏日志报告',async t=>{
+ for(const value of ['missing-guard','diagnostic','invocation','log']){const run=await gate(t,{}, {STUB_TAMPER:value});assert.equal(run.exitCode,1,value);assert.match(run.err,/报告|report/);}
 });
 
 test("文档事实失败阻断整体并保留真实报告与日志，后续 fast 不再执行", async (t) => {
@@ -273,7 +337,7 @@ test("选项校验：模式、base 与报告目录", (t) => {
 
 test("命令行：用法错误退出 2，帮助退出 0，仓库失败退出 1", (t) => {
   const f = fixture(t);
-  const run = (...args) => spawnSync(CI_GATE, ["--root", f.root, ...args], { encoding: "utf8", env: { ...process.env, STUB_LOG: f.stubLog } });
+  const run = (...args) => spawnSync(CI_GATE, ["--root", f.root, ...args], { encoding: "utf8", env: { ...process.env, ...f.env, STUB_LOG: f.stubLog } });
   const noMode = run();
   assert.equal(noMode.status, 2);
   assert.match(noMode.stderr, /用法: scripts\/ci-gate/);
@@ -335,7 +399,7 @@ function setupFixture(t) {
     fs.mkdirSync(path.dirname(target), { recursive: true });
     fs.writeFileSync(target, value, { mode });
   };
-  for (const ref of ["scripts/ci-setup", ".template-source/scripts/lib/yss-cli-pin.mjs"]) {
+  for (const ref of ["scripts/ci-setup", ".template-source/scripts/lib/yss-cli-pin.mjs", ".template-source/scripts/lib/verification-preflight.mjs"]) {
     write(root, ref, fs.readFileSync(path.join(ROOT, ref)), 0o755);
   }
   write(root, "scripts/repository-mode", "#!/usr/bin/env bash\necho template-source\n", 0o755);
@@ -356,9 +420,9 @@ exit 43
   const readPin = spawnSync(path.join(bin, "node"), [path.join(root, ".template-source/scripts/lib/yss-cli-pin.mjs"), "commit"], { encoding: "utf8" });
   assert.equal(readPin.status, 0, readPin.stderr);
   assert.equal(readPin.stdout.trim(), pin.commit);
-  return { root, cli, pin, run(version, extra = {}) {
+  return { root, cli, pin, directory, bin, run(version, extra = {}, args = ["--no-python", "--yss-commit", "pin"]) {
     const temp = fs.mkdtempSync(path.join(directory, "run-"));
-    const result = spawnSync(path.join(root, "scripts/ci-setup"), ["--no-python", "--yss-commit", "pin"], {
+    const result = spawnSync(path.join(root, "scripts/ci-setup"), args, {
       encoding: "utf8", env: { ...process.env, CI: "", YSS_CI_ALLOW_LOCAL: "1", YSS_CI_NODE_MAJOR: process.versions.node.split(".")[0],
         YSS_CI_GO_VERSION: "", GOTOOLCHAIN: "auto", YSS_CLI_REPOSITORY: cli, RUNNER_TEMP: temp,
         PATH: `${bin}${path.delimiter}${process.env.PATH}`, TEST_GO_VERSION: `go${version}`, ...extra },
@@ -410,4 +474,75 @@ test("ci-setup：本机非 dry-run 拒绝执行，非法参数退出 2", () => {
 
 test("仓库自身的 Node 版本声明三处一致", () => {
   assert.deepEqual(checkNodeEngines(ROOT).findings, []);
+});
+
+
+test('需求文件仅准备所选工具且拒绝非法结构、路径和混用',t=>{
+ const directory=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'ci-setup-requirements-')));t.after(()=>fs.rmSync(directory,{recursive:true,force:true}));
+ const file=path.join(directory,'requirements.json'),none={schema_version:1,python:'none',go:false,native_cli:false,tooling:false,vue:false};
+ const run=(value,args=[])=>{fs.writeFileSync(file,typeof value==='string'?value:JSON.stringify(value));return spawnSync(CI_SETUP,['--dry-run','--requirements-file',file,...args],{encoding:'utf8',env:{...process.env,CI:''}});};
+ const schema=run({...none,python:'jsonschema'});assert.equal(schema.status,0,schema.stderr);assert.match(schema.stdout,/jsonschema==4\.23\.0/);assert.doesNotMatch(schema.stdout,/构建 yss|pnpm|作者工具链|Go：/);
+ const runtime=run({...none,python:'runtime'});assert.equal(runtime.status,0,runtime.stderr);assert.match(runtime.stdout,/Python/);assert.doesNotMatch(runtime.stdout,/pip install.*jsonschema/);
+ const vue=run({...none,vue:true});assert.equal(vue.status,0,vue.stderr);assert.match(vue.stdout,/原型作者工具链/);assert.doesNotMatch(vue.stdout,/pnpm --dir \.template-source\/tooling\/node install|Go：/);
+ const native=run({...none,native_cli:true});assert.equal(native.status,0,native.stderr);assert.match(native.stdout,/构建 yss/);assert.match(native.stdout,/Go：/);assert.doesNotMatch(native.stdout,/pnpm --dir \.template-source\/tooling\/node install/);
+ for(const bad of ['{',{}, {...none,native_cli:'false'},{...none,unknown:'$(touch sentinel)'}])assert.notEqual(run(bad).status,0);
+ for(const args of [['--no-python'],['--toolchain'],['--yss-commit','pin']])assert.notEqual(run(none,args).status,0);
+ assert.notEqual(spawnSync(CI_SETUP,['--dry-run','--requirements-file','relative.json'],{encoding:'utf8'}).status,0);
+ const f=setupFixture(t),input=path.join(f.directory,'native.json');fs.writeFileSync(input,JSON.stringify({...none,native_cli:true}));
+ assert.equal(f.run(f.pin.go_version,{},['--requirements-file',input]).status,42);
+ assert.match(f.run('0.0.1',{},['--requirements-file',input]).stderr,/需要精确 Go/);
+});
+
+test('准备只接受受控导出数据，shell 字符串不执行',async t=>{
+ const f=fixture(t),sentinel=path.join(f.root,'sentinel'),vue=path.join(f.directory,'$(touch sentinel) `touch sentinel`');fs.mkdirSync(vue);
+ const run=async(value)=>{const reportDir=path.join(f.directory,'export-'+Math.random());return runGate({verification,root:f.root,mode:'push',reportDir,prepareTools:true,env:{...process.env,...f.env,STUB_LOG:f.stubLog,SETUP_ENV:value},stdout:sink(),stderr:sink()});};
+ const safe=await run('YSS_VUE_TOOLCHAIN='+vue);assert.equal(safe.exitCode,0,JSON.stringify(safe.report));assert.equal(fs.existsSync(sentinel),false);
+ for(const value of ['EVIL=bad','YSS_VUE_TOOLCHAIN=relative','YSS_NATIVE_BINARY_SHA256=bad','YSS_VUE_TOOLCHAIN=/does-not-exist','YSS_VUE_TOOLCHAIN='+vue+'\nYSS_VUE_TOOLCHAIN='+vue]){const result=await run(value);assert.equal(result.exitCode,1,value);assert.equal(result.report.steps.find(x=>x.id==='verify-template').status,'skipped');}
+ assert.equal(fs.existsSync(sentinel),false);
+});
+
+test('输入观察拒绝同一已有脏文件在守卫阶段再次变化',async t=>{
+ const f=fixture(t,{write:'README.md'}),out=sink();
+ const result=await runGate({verification,root:f.root,mode:'push',reportDir:f.reportDir,prepareTools:true,env:{...process.env,...f.env,STUB_LOG:f.stubLog,STUB_WRITE_FROM:'verify-doc-facts',STUB_WRITE:f.write},stdout:out,stderr:sink()});
+ assert.equal(result.exitCode,1);assert.equal(fs.readFileSync(f.stubLog,'utf8').includes('ci-setup '),false);assert.equal(result.report.steps.at(-1).status,'failed');
+});
+
+test('输入观察仅在准备阶段允许忽略且未跟踪的 tooling 安装产物',async t=>{
+ const execute=async({tooling=true,trackedOutput=false,gitlink=false,write='.template-source/tooling/node/node_modules/installed',after=false,extra={}}={})=>{
+  const f=fixture(t,{tooling,trackedOutput,gitlink}),file=path.join(f.root,write),out=sink(),err=sink();
+  const result=await runGate({verification,root:f.root,mode:'push',reportDir:f.reportDir,prepareTools:true,env:{...process.env,...f.env,STUB_LOG:f.stubLog,SETUP_WRITE:file,...after?{FAST_WRITE:file}:{},...Object.fromEntries(Object.entries(extra).map(([key,value])=>[key,value==='FILE'?file:value]))},stdout:out,stderr:err});
+  return {...result,calls:fs.readFileSync(f.stubLog,'utf8'),err:err.text};
+ };
+ const good=await execute();assert.equal(good.exitCode,0,good.err);assert.equal(good.report.steps.filter(x=>x.id==='prepare-tools').length,1);assert.equal(good.calls.split('\n').filter(x=>x.startsWith('ci-setup ')).length,1);
+ for(const options of [{tooling:false},{write:'README.md'},{write:'ignored-state/unrelated'},{trackedOutput:true},{after:true},{write:'README.md',extra:{SETUP_CHMOD:'FILE'}},{write:'README.md',extra:{SETUP_STAGE:'FILE'}},{extra:{SETUP_COMMIT:'1'}},{gitlink:true,extra:{SETUP_SUBCOMMIT:'1'}},{extra:{SETUP_FAIL:'1'}}]){const bad=await execute(options);assert.equal(bad.exitCode,1,JSON.stringify(options));if(!options.after)assert.equal(bad.calls.includes('verify-template-fast '),false,JSON.stringify(options));}
+});
+
+
+test('原始需求选择拒绝未知输入时不启动准备',async t=>{
+ const f=fixture(t);fs.writeFileSync(path.join(f.root,'unmapped.asset'),'unknown');
+ const result=await runGate({verification,root:f.root,mode:'push',reportDir:f.reportDir,prepareTools:true,env:{...process.env,STUB_LOG:f.stubLog},stdout:sink(),stderr:sink()});
+ assert.equal(result.exitCode,1);assert.match(result.report.steps.find(x=>x.id==='prepare-tools').error,/UNKNOWN_VERIFICATION_PATH/);assert.equal(fs.readFileSync(f.stubLog,'utf8').includes('ci-setup '),false);
+});
+
+
+test('符号链接 root 接受同一真实成功报告',async t=>{
+ const f=fixture(t),link=path.join(f.directory,'repo-link');fs.symlinkSync(f.root,link);
+ const run=spawnSync(CI_GATE,['--root',link,'--mode','push','--report-dir',f.reportDir],{encoding:'utf8',env:{...process.env,STUB_LOG:f.stubLog}});
+ assert.equal(run.status,0,run.stderr);const report=JSON.parse(fs.readFileSync(path.join(f.reportDir,'report.json')));assert.equal(report.steps.find(x=>x.id==='verify-template').child_exit_code,0);
+});
+
+test('slow 准备不消耗验证本身五分钟预算，超时保留实际退出', {timeout:10000},async t=>{
+ const f=fixture(t),release=path.join(f.directory,'release-setup'),pidFile=path.join(f.directory,'fast-pid');
+ t.mock.timers.enable({apis:['setTimeout']});let finished=false,pid;
+ t.after(()=>{if(pid)try{process.kill(pid,'SIGTERM');}catch(error){if(error.code!=='ESRCH')throw error;}});
+ const run=runGate({verification,root:f.root,mode:'slow',reportDir:f.reportDir,prepareTools:true,env:{...process.env,STUB_LOG:f.stubLog,SETUP_WAIT_RELEASE:release,STUB_WAIT_FAST:'1',STUB_FAST_PID:pidFile},stdout:sink(),stderr:sink()}).then(value=>{finished=true;return value;});
+ const waitFor=async predicate=>{const end=Date.now()+2000;while(!predicate()&&Date.now()<end)await new Promise(setImmediate);assert.equal(predicate(),true);};
+ await waitFor(()=>fs.existsSync(f.stubLog)&&fs.readFileSync(f.stubLog,'utf8').includes('ci-setup '));
+ t.mock.timers.tick(300000);await new Promise(setImmediate);assert.equal(finished,false,'准备阶段不使用测试计时器');
+ fs.writeFileSync(release,'release');await waitFor(()=>fs.existsSync(pidFile));pid=Number(fs.readFileSync(pidFile,'utf8'));
+ t.mock.timers.tick(299999);await new Promise(setImmediate);assert.equal(finished,false,'测试有自己的完整五分钟');
+ t.mock.timers.tick(1);await waitFor(()=>finished);
+ const result=await run,step=result.report.steps.find(x=>x.id==='verify-slow');
+ assert.equal(result.exitCode,1);assert.equal(step.exit_code,124);assert.equal(step.child_exit.termination,'timeout');assert.ok(step.child_exit.signal||Number.isInteger(step.child_exit.code));
+ assert.equal(result.report.tool_requirements.python,'jsonschema','外层报告消费始终需要 schema');
 });

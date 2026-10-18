@@ -2,7 +2,7 @@ import path from 'node:path';
 import {verificationCheckId,verificationPatternMatches as patternMatches,compileVerificationCheck} from '../../.template-source/scripts/lib/verification-gates.mjs';
 export {verificationCheckId,patternMatches};
 // tier: slow 的日常检查在 fast 中延后：命中也不执行，记入 selection.omitted（报告列为未执行）；includeSlow 或 release 时照常执行。
-export function applyDailyVerificationSelection(plan,{selection='allowlist',config,profile='fast',mandatoryChecks=[],includeSlow=false}) {
+export function applyDailyVerificationSelection(plan,{selection='allowlist',config,profile='fast',mandatoryChecks=[],mandatoryReason='release-required',includeSlow=false}) {
   if(!['legacy','shadow','allowlist'].includes(selection))throw new TypeError(`未知 selection: ${selection}`);
   const definitions=new Map();
   for(const [group,value] of Object.entries(config.groups))for(const raw of value.commands){
@@ -40,7 +40,7 @@ export function applyDailyVerificationSelection(plan,{selection='allowlist',conf
     if(profile==='fast'&&item.tier==='slow'&&!includeSlow){deferred.push({...compileVerificationCheck(item,{group:item.group,profile,taskId:item.id}),selection_reason:reason,reason:'deferred-slow-check'});continue;}
     select(item.id,reason);
   }
-  for(const id of mandatoryChecks){if(!checks.has(id)){const definition=definitions.get(id);if(!definition)throw new TypeError(`未知发行必需检查: ${id}`);checks.set(id,{...definition,depends_on:definition.depends_on||[]});}select(id,'release-required');}
+  for(const id of mandatoryChecks){if(!checks.has(id)){const definition=definitions.get(id);if(!definition)throw new TypeError(`未知发行必需检查: ${id}`);checks.set(id,{...definition,depends_on:definition.depends_on||[]});}if(mandatoryReason==='ci-required'&&reasons.has(id))reasons.set(id,mandatoryReason);else select(id,mandatoryReason);}
   if(profile==='release') {
     const gates=new Map((config.gates||[]).map(gate=>[gate.id,gate])),expanded=new Set();
     const expand=gate=>{if(expanded.has(gate.id))return;expanded.add(gate.id);for(const id of [...gate.depends_on,...gate.impact_dependencies]){const dependency=gates.get(id);if(!dependency)throw new TypeError(`未知 Gate 依赖: ${id}`);for(const check of dependency.check_ids)select(check,`gate-dependency:${gate.id}`);expand(dependency);}};
