@@ -29,9 +29,7 @@ scripts/query-lifecycle-context --work-unit work-unit.plan-requirements --check-
 
 `--include` 限合同顶层键；调用前按 [来源与补装](references/matt-yss-adapter.md) 预检，在既有授权内补装并重验。`daily` 从当前任务影响选择并核验 YSS 技能，不能因无正式合同漏掉技术约束。
 
-技能、阅读视图与证据复用先读[查询与证据复用](references/conditional-guidance.md#查询与证据复用)。
-
-新实例只使用 Spec、Backend。默认同一 Agent 持续执行并诚实自检；专业检查按产物与影响选择，不按岗位或人数拆分。明确用户或已知外部要求触发独立复核时，消费真实独立上下文及同一冻结候选的只读结果。稳定 Agent/session ID 不可得时记录原因；不得补造身份。旧 identity1/Profile1–2 只读核验原义，新写入先显式迁移。
+技能、身份、阅读视图与证据复用先读[查询与证据复用](references/conditional-guidance.md#查询与证据复用)。
 
 ## 入口与模式
 
@@ -40,9 +38,7 @@ scripts/query-lifecycle-context --work-unit work-unit.plan-requirements --check-
 3. 按 `request_triage` 选 `route`、`orchestrate`、`resume`、`audit`；行动请求无需模式关键字，意图不明只读 `route`。模式、门禁及授权边界仍适用。
 4. `project-instance` 按生命周期注册表推进；`template-source` 只走模板维护流程。
 
-进入正式工作单元前先判交付路径。已合格 `daily` 以一张普通 Ticket / PR 承接范围、验收、路径、技能、实际测试和适用复核；不创建阶段 checkpoint、正式 Slice 合同、多级批准或 `ready-for-agent`，也不调用正式实现准入器来豁免缺项。当前任务已绑定正式阶段、checkpoint 或 Slice 时恢复 `governed`；无关功能资产不阻断新普通任务。缺事实先调查，发现新风险时停止受影响动作、保留已有证据并从最近可信资产升级。
-
-只读咨询、状态和定位不创建 Ticket、checkpoint 或审批，不运行实现回归。行动从当前可信阶段选择缺失工作，复用当前批准资产、登记及工作单元；主链是导航，未来阶段产物不计作当前缺项。按影响面完成当前工作及直接 / 传递依赖的适用验证；Fresh Verification、证据复用和边界重验按裁剪合同执行。
+进入正式单元或处理日常 / 只读请求前，先读[交付路径与只读边界](references/conditional-guidance.md#交付路径与只读边界)。已有正式任务保持 `governed`；只读不建任务或批准。
 
 必须确认的未决项按 `planning.clarification_policy` 主动调用 `grilling`，见 [澄清](references/plan-requirements.md)。
 
