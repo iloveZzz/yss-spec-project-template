@@ -96,8 +96,7 @@ test('项目内计划输出与后续输入漂移按各自错误码拒绝并保�
 test('Spec 日常路线拒绝前端声明与实际前端文件，保留后端路线',t=>{
   const base=scratch(t),root=path.join(base,'spec');let repo=path.join(base,'implementation');
   const source=path.resolve(import.meta.dirname,'..');
-  put(root,'yss-project.yaml','schema_version: 1\nrepository_mode: project-instance\n');
-  put(root,'.yss-template.json',JSON.stringify({metadataSchemaVersion:3,templateSource:'github:iloveZzz/yss-spec-project-template'}));
+  initializeNative('spec',root);
   const orchestration=loadOrchestrationContract(ref=>fs.readFileSync(path.join(source,ref)),'.template-spec/process/orchestration-contract.yaml');
   for(const ref of ['CONTEXT.md','AGENTS.md','.template-spec/agents/issue-tracker.md',...orchestration.refs])put(root,ref,fs.readFileSync(path.join(source,ref)));
   put(root,'facts.md','目标、验收、风险、基线与回滚均为本次测试输入。\n');
@@ -106,7 +105,7 @@ test('Spec 日常路线拒绝前端声明与实际前端文件，保留后端路
   const git=(...args)=>{const r=spawnSync('git',args,{cwd:repo,encoding:'utf8'});assert.equal(r.status,0,r.stderr);return r.stdout.trim();};
   git('init','--quiet');git('add','.');git('-c','user.name=Test','-c','user.email=test@example.invalid','commit','--quiet','-m','baseline');
   const baseline=git('rev-parse','HEAD');
-  const record={task_id:'AR12C-DAILY',delivery_path:'daily',formal_bindings:[],goal_ref:'facts.md',acceptance_ref:'facts.md',repository:{root:repo,baseline_sha:baseline,baseline_ref:'facts.md',rollback_ref:'facts.md'},scope:{paths:['src/'],impacts:['backend','no-api'],risk_ref:'facts.md'},skills:[{ref:'skill.md',digest:`sha256:${nativeDigest(skill)}`}],inputs:[],commands:[{argv:['node','--check','src/server.js'],cwd:'.'}],api:{mode:'none',reason:'无 API 变化'}};
+  const record={schema_version:2,policy_version:2,task_id:'AR12C-DAILY',delivery_path:'daily',formal_bindings:[],goal_ref:'facts.md',acceptance_ref:'facts.md',repository:{root:repo,baseline_sha:baseline,baseline_ref:'facts.md',rollback_ref:'facts.md'},scope:{paths:['src/'],impacts:['backend','no-api'],risk_ref:'facts.md'},skills:[{ref:'skill.md',digest:`sha256:${nativeDigest(skill)}`}],inputs:[],commands:[{argv:['node','--check','src/server.js'],cwd:'.'}],api:{mode:'none',reason:'无 API 变化'}};
   const task=()=>put(root,'task.md',`# 日常任务\n\n<!-- yss-task-evidence -->\n\`\`\`json\n${JSON.stringify(record)}\n\`\`\`\n`);
   const args=action=>['lifecycle',action,'--root',root,'--task','task.md','--implementation-root',repo,'--base',baseline];
   put(repo,'src/server.js','export const enabled = true;\n');task();
@@ -142,7 +141,7 @@ test('公开 Bundle 导出保持完整文件 bytes、mode 和 manifest，拒绝�
   nativeBinary();const base=scratch(t),out=path.join(base,'export');
   const result=runNative(['bundle','export','--profile','spec','--out',out]).result;
   assert.equal(result.directory,out);const inspection=result.inspection;
-  assert.ok([2,3].includes(inspection.schemaVersion),'公开导出使用受支持的固定 Bundle schema');assert.ok(result.files.length>10);
+  assert.ok([2,3,4].includes(inspection.schemaVersion),'公开导出使用受支持的固定 Bundle schema');assert.ok(result.files.length>10);
   for(const entry of result.files){const file=path.join(out,entry.path);assert.equal(nativeDigest(fs.readFileSync(file)),entry.digest,entry.path);assert.equal(fs.statSync(file).mode&0o777,entry.mode,entry.path);}
   const before=tree(out);
   runNative(['bundle','export','--profile','spec','--out',out],{expectedCode:'EXISTS'});assert.deepEqual(tree(out),before);

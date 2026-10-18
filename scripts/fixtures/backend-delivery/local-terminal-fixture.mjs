@@ -41,7 +41,10 @@ export function registerLocalBackendFeature(f,feature='local') {
   f.write('.template-spec/agents/issue-tracker.md','---\ntracker:\n  platform: local-markdown\n  root: .work\n---\n');
   const specSeed=makeRoot('local-backend-spec-identity-');
   f.write('.yss.json',fs.readFileSync(path.join(specSeed,'.yss.json'),'utf8'));
-  f.write('.template-spec/process/orchestration-contract.yaml',JSON.stringify(loadOrchestrationContract(ref=>fs.readFileSync(path.join(ROOT,ref)), '.template-spec/process/orchestration-contract.yaml').value));
+  const policyRef='.template-spec/process/orchestration-contract.yaml';
+  const original=loadOrchestrationContract(ref=>fs.readFileSync(path.join(specSeed,ref)),policyRef).value;
+  const current=loadOrchestrationContract(ref=>fs.readFileSync(path.join(ROOT,ref)),policyRef).value;
+  f.write(policyRef,JSON.stringify({...original,progression_target:current.progression_target,work_unit_routes:{...original.work_unit_routes,'work-unit.backend-delivery':current.work_unit_routes['work-unit.backend-delivery']}}));
   const profileRef='.template-spec/process/harness-profile.yaml';
   f.write(profileRef,fs.readFileSync(path.join(specSeed,profileRef),'utf8'));
   const checkpoint={...read(path.join(f.root,f.binding.approval_ref)),feature_id:featureID,artifacts:{'artifact.spec':f.file('spec.md')}};

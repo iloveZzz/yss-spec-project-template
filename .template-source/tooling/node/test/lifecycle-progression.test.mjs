@@ -372,13 +372,14 @@ function approvedSpecFixture(approvedFixture) {
   return approvedFixture('layered-mvc', {nativeSeed});
 }
 
-test('旧Slice批准可只读核验，正式执行须先显式迁移', async t => {
+test('真实批准执行入口只读可核验，正式执行缺当前活动feature绑定仍拒绝', async t => {
   const {approvedFixture}=await import('../../../../scripts/fixtures/delivery-preflight/approved-execution-fixture.mjs');
   const {createApprovedExecutionContext}=await import('../../../../scripts/lib/approved-execution-context.mjs');
   const f=approvedSpecFixture(approvedFixture);
   t.after(()=>f.cleanup());
+  f.write('.template-spec/process/orchestration-contract.yaml',JSON.stringify(loadOrchestrationContract(ref=>fs.readFileSync(path.join(ROOT,ref)),'.template-spec/process/orchestration-contract.yaml').value));
   assert.doesNotThrow(()=>createApprovedExecutionContext(f.binding,{root:f.root,contract:f.contract,readOnly:true}));
-  assert.throws(()=>createApprovedExecutionContext(f.binding,{root:f.root,contract:f.contract}),/GOVERNANCE_MIGRATION_REQUIRED/);
+  assert.throws(()=>createApprovedExecutionContext(f.binding,{root:f.root,contract:f.contract}),/正式 feature.*活动 map.*绑定/);
 });
 
 test('Slice 批准 checkpoint 与活动推进 checkpoint 分别核验，目标续推不改原批准', async t => {
@@ -386,10 +387,7 @@ test('Slice 批准 checkpoint 与活动推进 checkpoint 分别核验，目标�
   const {createApprovedExecutionContext,createApprovedRecompilationContext,assertApprovedExecutionContext}=await import('../../../../scripts/lib/approved-execution-context.mjs');
   const f=approvedSpecFixture(approvedFixture),checkpointRef='.work/current/checkpoint.json';
   t.after(()=>f.cleanup());
-  const policyRef='.template-spec/process/orchestration-contract.yaml';
-  const originalPolicy=loadOrchestrationContract(ref=>fs.readFileSync(path.join(f.root,ref)),policyRef).value;
-  const {progression_target}=loadOrchestrationContract(ref=>fs.readFileSync(path.join(ROOT,ref)),policyRef).value;
-  f.write(policyRef,JSON.stringify({...originalPolicy,progression_target}));
+  f.write('.template-spec/process/orchestration-contract.yaml',JSON.stringify(loadOrchestrationContract(ref=>fs.readFileSync(path.join(ROOT,ref)),'.template-spec/process/orchestration-contract.yaml').value));
   f.write('.template-spec/agents/issue-tracker.md','---\ntracker:\n  platform: local-markdown\n  root: .work\n---\n');
   f.write(checkpointRef,{...f.checkpoint,feature_id:'feature.current'});
   f.write('.work/current/map.md',`---\ncheckpoint_ref: ${checkpointRef}\n---\n`);
@@ -401,29 +399,24 @@ test('Slice 批准 checkpoint 与活动推进 checkpoint 分别核验，目标�
   const nativeBinary = contextBinary().binary;
   const project=status=>{process.env.YSS_NATIVE_BINARY=nativeProjection({...f,checkpointRef},{status},nativeBinary).YSS_NATIVE_BINARY;process.env.YSS_NATIVE_BINARY_SHA256=createHash('sha256').update(fs.readFileSync(process.env.YSS_NATIVE_BINARY)).digest('hex');};
   project('pending');
-  const execution=createApprovedExecutionContext(f.binding,{root:f.root,readOnly:true});
-  const entry=()=>assertProgressionEntry('work-unit.slice-implementation',{root:f.root,assetRef:f.binding.ref});
-  assert.doesNotThrow(entry);
-  assert.doesNotThrow(()=>createApprovedRecompilationContext(f.binding,{root:f.root,readOnly:true}));
-  assert.doesNotThrow(()=>assertApprovedExecutionContext(execution,{root:f.root,readOnly:true}));
-  for(const create of [createApprovedExecutionContext,createApprovedRecompilationContext])assert.throws(()=>create(f.binding,{root:f.root}),/GOVERNANCE_MIGRATION_REQUIRED/);
-  assert.throws(()=>assertApprovedExecutionContext(execution,{root:f.root}),/EXECUTION_CONTEXT_READ_ONLY/);
+  const execution=createApprovedExecutionContext(f.binding,{root:f.root});
+  assert.doesNotThrow(()=>createApprovedRecompilationContext(f.binding,{root:f.root}));
+  assert.doesNotThrow(()=>assertApprovedExecutionContext(execution,{root:f.root}));
   project('reached');
-  assert.throws(entry,/已达到.*保留 next/);
-  assert.doesNotThrow(()=>assertApprovedExecutionContext(execution,{root:f.root,readOnly:true}));
+  for(const create of [createApprovedExecutionContext,createApprovedRecompilationContext])assert.throws(()=>create(f.binding,{root:f.root}),/已达到.*保留 next/);
+  assert.throws(()=>assertApprovedExecutionContext(execution,{root:f.root}),/已达到.*保留 next/);
   f.write(configRef,{...config,target:'business-accepted'});project('pending');
-  assert.doesNotThrow(entry);
-  assert.doesNotThrow(()=>assertApprovedExecutionContext(execution,{root:f.root,readOnly:true}));
+  assert.doesNotThrow(()=>assertApprovedExecutionContext(execution,{root:f.root}));
   assert.deepEqual(fs.readFileSync(path.join(f.root,f.binding.approval_ref)),originalApproval);
   assert.deepEqual(fs.readFileSync(path.join(f.root,checkpointRef)),originalCheckpoint);
   f.write('.work/duplicate/map.md',`---\ncheckpoint_ref: ${checkpointRef}\n---\n`);
-  assert.throws(entry,/多重登记/);
+  assert.throws(()=>createApprovedExecutionContext(f.binding,{root:f.root}),/多重登记/);
   fs.rmSync(path.join(f.root,'.work/duplicate'),{recursive:true});
   f.write(checkpointRef,{schema_version:1,repository_mode:'project-instance',feature_id:'feature.current',artifacts:{},gates:{}});
-  assert.throws(entry,/登记资产引用|活动 map.*绑定/);
+  assert.throws(()=>createApprovedExecutionContext(f.binding,{root:f.root}),/登记资产引用|活动 map.*绑定/);
   fs.writeFileSync(path.join(f.root,checkpointRef),originalCheckpoint);
   f.write(f.binding.approval_ref,{...f.checkpoint,gates:{}});
-  assert.throws(()=>createApprovedExecutionContext(f.binding,{root:f.root,readOnly:true}),/EXECUTION_APPROVAL_SCOPE/);
+  assert.throws(()=>createApprovedExecutionContext(f.binding,{root:f.root}),/EXECUTION_APPROVAL_SCOPE/);
 });
 
 

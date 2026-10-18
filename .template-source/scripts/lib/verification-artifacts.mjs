@@ -44,11 +44,11 @@ export function collectReleaseSources({root,commit,families=NATIVE_PROFILES,envi
  const pin=readYssCliPin(root);
  if(pin){ensure(verifyPinnedBinary({digest:binary.digest,pin,environment}).pinned,'发布验证必须使用固定的 yss 二进制，不接受 YSS_NATIVE_BINARY_OVERRIDE');ensure(sourceCommit===pin.commit,`yss 源码提交 ${sourceCommit.slice(0,8)} 与固定文件的 ${pin.commit.slice(0,8)} 不一致`);}
  const inspections=Object.fromEntries(families.map(family=>[family,inspectNative(family,{environment})]));
- for(const bundle of Object.values(inspections))ensure([2,3].includes(bundle.schemaVersion)&&bundle.sourceState==='committed','Bundle 必须来自已提交的模板来源');
+ for(const bundle of Object.values(inspections))ensure([2,3,4].includes(bundle.schemaVersion)&&bundle.sourceState==='committed','Bundle 必须来自已提交的模板来源');
  const entries=families.map(family=>{
   ensure(NATIVE_PROFILES.includes(family),'未知发布 Profile');const template_commit=inspections[family].templateCommit;
   const bundle=inspections[family];
-  ensure([2,3].includes(bundle.schemaVersion)&&bundle.sourceState==='committed'&&/^[a-f0-9]{40}$/.test(bundle.templateCommit||''),'Bundle 必须来自已提交的模板来源');
+  ensure([2,3,4].includes(bundle.schemaVersion)&&bundle.sourceState==='committed'&&/^[a-f0-9]{40}$/.test(bundle.templateCommit||''),'Bundle 必须来自已提交的模板来源');
   const cli_commit=version.cliCommit||version.commit||bundle.cliCommit;
   ensure((version.sourceState||bundle.cliSourceState)==='committed','发行二进制必须来自已提交的 yss 源码');
   return {...sourceTuple({namespace:'candidate-release',family,cli_commit,template_commit,core_commit:commit,package_name:'yss',version:version.version,template_version:bundle.templateVersion,source_contract_version:2,protocol_version:version.protocolVersion,snapshot_hash:bundle.sourceSnapshotHash,manifest_hash:bundle.manifestHash,bundle_hash:bundle.bundleHash,binary_sha256:binary.digest}),template_path:'.'};
@@ -61,7 +61,7 @@ export function validateArtifact(artifact,expectedSource){
  ensure(typeof artifact.tarball==='string'&&path.isAbsolute(artifact.tarball),'产物文件路径缺失');
  const stat=fs.lstatSync(artifact.tarball);ensure(stat.isFile()&&!stat.isSymbolicLink(),'产物必须是普通文件');ensure(hash(fs.readFileSync(artifact.tarball))===artifact.tarball_sha256,'产物摘要漂移');
  ensure(artifact.tarball_sha256===actual.binary_sha256,'二进制与来源锁错配');
- if(artifact.installed_root){ensure(installedTreeDigest(artifact.installed_root)===artifact.installed_tree_sha256,'安装树字节、类型或权限漂移');ensure(hash(fs.readFileSync(artifact.binary))===actual.binary_sha256,'安装后二进制漂移');const inspection=JSON.parse(fs.readFileSync(artifact.bundle_manifest));ensure([2,3].includes(inspection.schemaVersion)&&inspection.profile===actual.family&&inspection.templateVersion===actual.template_version&&inspection.templateCommit===actual.template_commit&&inspection.sourceSnapshotHash===actual.snapshot_hash&&inspection.manifestHash===actual.manifest_hash&&inspection.bundleHash===actual.bundle_hash,'安装后 Bundle 来源漂移');}
+ if(artifact.installed_root){ensure(installedTreeDigest(artifact.installed_root)===artifact.installed_tree_sha256,'安装树字节、类型或权限漂移');ensure(hash(fs.readFileSync(artifact.binary))===actual.binary_sha256,'安装后二进制漂移');const inspection=JSON.parse(fs.readFileSync(artifact.bundle_manifest));ensure([2,3,4].includes(inspection.schemaVersion)&&inspection.profile===actual.family&&inspection.templateVersion===actual.template_version&&inspection.templateCommit===actual.template_commit&&inspection.sourceSnapshotHash===actual.snapshot_hash&&inspection.manifestHash===actual.manifest_hash&&inspection.bundleHash===actual.bundle_hash,'安装后 Bundle 来源漂移');}
  return artifact;
 }
 export function createArtifactCoordinator({produce}){ensure(typeof produce==='function','产物生产者缺失');const records=new Map();return {acquire(source){const tuple=sourceTuple(source),key=hash(JSON.stringify(tuple));if(records.has(key))return validateArtifact(records.get(key),tuple);const artifact=produce(tuple);validateArtifact(artifact,tuple);records.set(key,artifact);return artifact;},records(){return [...records.values()];}};}

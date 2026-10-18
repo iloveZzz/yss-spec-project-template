@@ -8,7 +8,10 @@ import { buildPlanFixture } from '../../scripts/fixtures/user-decision/plan-fixt
 import { assertPlanSpecEntry, assertPlanCheckpoint } from '../../scripts/lib/plan-spec-entry.mjs';
 import { readFileSync } from 'node:fs';
 import { decisionDigest } from '../../scripts/lib/native-user-decision.mjs';
-import { buildPlanReviewFixture, completeSyntheticPlanReview } from '../../scripts/fixtures/plan-review-control/build-fixture.mjs';
+import { buildPlanReviewFixture } from '../../scripts/fixtures/plan-review-control/build-fixture.mjs';
+import { buildReviewPackage, prepareReviewPackage } from '../../scripts/lib/review-package.mjs';
+import { dispatchPlanReview, completePlanReview } from '../../scripts/lib/plan-review-control.mjs';
+import { loadOrchestrationContract } from '../../scripts/lib/orchestration-contract.mjs';
 import { makeRoot } from '../helpers/yss-instance.mjs';
 
 // These replies are synthetic fixtures, never evidence for a real Plan approval.
@@ -116,11 +119,28 @@ try {
   valid.review.open_items = [{ id: 'q-detail', critical: false, runnable_blocker: false, status: 'deferred', noncritical_reason: '不影响范围或关键规则', owner: '测试负责人', resolution_point: 'Spec 评审前', downstream_recipient: '测试需求负责人', evidence_refs: ['plan.md'] }];
   valid.reapprove();
   assert.equal(assertPlanSpecEntry(valid.state, { root: valid.root }).result, 'allowed', '用户确认后的非关键延期可通过');
-  // Exercise the registered package/dispatch/completion path with synthetic evidence.
+  // Construct legacy review records with the pure transitions; public publication still requires migration.
+  const policyRef='.template-spec/process/orchestration-contract.yaml';
+  const policy=loadOrchestrationContract(ref=>readFileSync(path.join(valid.root,ref)),policyRef);
+  const originalPolicy=new Map(policy.refs.map(ref=>[ref,readFileSync(path.join(valid.root,ref))]));
   const reviewFixture = buildPlanReviewFixture(valid.root);
+  for(const [ref,bytes]of originalPolicy)reviewFixture.write(ref,bytes);
   for (const row of Object.values(reviewFixture.checkpoint.checks)) { row.basis.push(reviewFixture.asset('plan.md')); row.evidence_refs.push('plan.md'); }
   reviewFixture.save();
-  const combined = completeSyntheticPlanReview(reviewFixture);
+  assert.throws(()=>prepareReviewPackage(reviewFixture.options),/GOVERNANCE_MIGRATION_REQUIRED/);
+  const built=buildReviewPackage(reviewFixture.options),task=built.task,binding=task.review_context.plan_review_binding;
+  for(const [name,content]of Object.entries(built.files))reviewFixture.write(path.posix.join(reviewFixture.options.outputDir,name),content);
+  Object.assign(reviewFixture.checkpoint,built.plan_checkpoint);reviewFixture.save();
+  reviewFixture.checkpoint.plan_review_control=dispatchPlanReview(reviewFixture.checkpoint.plan_review_control,binding,{root:valid.root});reviewFixture.save();
+  const resultRef=path.posix.join(reviewFixture.options.outputDir,'result.json');
+  const result={synthetic_fixture:true,plan_review_binding:binding,outcome:'passed',check_results:reviewFixture.options.checkIds.map(check_id=>({check_id,status:'passed'})),findings:[]};
+  reviewFixture.write(resultRef,result);
+  reviewFixture.checkpoint.plan_review_control=completePlanReview(reviewFixture.checkpoint.plan_review_control,binding,{...result,result_ref:resultRef,result_digest:reviewFixture.asset(resultRef).digest},{root:valid.root});reviewFixture.save();
+  const bundle=structuredClone(built.bundle),approvedRef=path.posix.join(reviewFixture.options.outputDir,'approved-bundle.json');
+  for(const row of bundle.reviews)row.decision='approved';reviewFixture.write(approvedRef,bundle);
+  for(const row of bundle.reviews){const current=reviewFixture.checkpoint.checks[row.gate_id];Object.assign(current,{status:'approved',approval_ref:approvedRef,basis:[...current.basis,reviewFixture.asset(current.subject_ref),reviewFixture.asset(approvedRef)]});}
+  reviewFixture.save();
+  const combined={bundle,approvedRef};
   valid.state.plan_review_control = reviewFixture.checkpoint.plan_review_control;
   valid.state.checks = reviewFixture.checkpoint.checks;
   valid.setAggregateContext(combined);

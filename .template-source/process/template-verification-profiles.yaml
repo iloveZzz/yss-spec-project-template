@@ -771,7 +771,7 @@ profiles:
       - id: check.role-independent-formal-current
         run: "node --test --test-concurrency=1 scripts/fixtures/role-independent-draft/formal-plan.test.mjs scripts/fixtures/role-independent-draft/professional-plan.test.mjs scripts/fixtures/role-independent-draft/worker-chain.test.mjs scripts/fixtures/role-independent-draft/handoff-chain.test.mjs"
         group: implementation
-        resources: [native-cli]
+        resources: [native-cli, "repo-root-evidence"]
         inputs_complete: true
         input_patterns:
           - "scripts/fixtures/existing-backend/fixture.mjs"

@@ -11,6 +11,10 @@ import './verification-baseline.test.mjs';
 import './verification-qualification.test.mjs';
 const pilot='.agents/skills/yss-research/SKILL.md';
 const pilotConfig=()=>loadVerificationProfiles();
+test('共享仓根交接运输的检查使用同一互斥资源',()=>{
+ const plan=planTemplateVerification({changedFiles:['scripts/fixtures/role-independent-draft/handoff-chain.test.mjs','tests/scenarios/verify-strategic-handoff-package-scenarios.mjs']});
+ for(const id of ['check.role-independent-formal-current','check.strategic-handoff-package-scenarios'])assert.ok(plan.commands.find(check=>check.id===id)?.resources.includes('repo-root-evidence'),id);
+});
 test('日常新设计与计划只登记文档消费者',()=>{
  for(const ref of ['.template-source/contracts/spec-backend-direct-consumption-design.md','docs/superpowers/plans/2026-10-18-spec-backend-material-intake-and-manual-handoff.md']){
   const plan=planTemplateVerification({changedFiles:[ref]});

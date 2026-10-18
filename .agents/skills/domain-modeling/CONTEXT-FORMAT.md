@@ -50,6 +50,10 @@ context_schema_version: 1
 - 禁用别名使用 `避免：别名一、别名二`；需要补充说明时追加 `；备注：...`。
 - 术语稳定时立即回写。工作单元完成、门禁批准或阶段转换前仍须执行 context reconciliation。
 
+## 命名派生与维护职责
+
+`英文标识` 是 PascalCase 词干，不是英语释义。`## 业务术语` 必须填写该列，并使用 `Global` 或“业务边界与规则设计”中已确认的 PascalCase `context_id` 填写 `适用业务责任区`；术语稳定身份仍是 `<ContextId>/<EnglishIdentifier>`，该编号由 Agent 维护，业务人员只需确认名称、含义和适用范围。`## 流程术语` 的英文标识填 `—`。代码类型名、字段名和契约 property 由该词干变形：类名 = 词干 + YSS 工程后缀；字段与 JSON property 为 camelCase；数据库列为 snake_case；枚举常量为 UPPER_SNAKE。工程后缀以 YSS skill 和当前工程惯例为准，不作为业务词写入本表。JSON 与 Java 字段不一致时，以 DTO wire shape / OpenAPI 为准，不在本表另开列。改中文术语、英文标识、含义或适用业务责任区都是统一业务词汇变更，必须先回写本表。`避免 / 备注` 中的禁用别名使用 `避免：别名一、别名二`，其他说明使用 `备注：...`。
+
 ## 机器验证
 
 使用 `yss context check --root . --json` 校验位置、版本、表格、术语身份、适用业务责任区和引用。业务资产只使用结构化 `context_ref: CONTEXT.md` 与 `term_refs`，不得使用 `CONTEXT.md#Term` 或 `contexts/<ContextId>/CONTEXT.md`。校验器兼容旧项目的 `适用限界上下文` 表头，但新模板只写 `适用业务责任区`。
