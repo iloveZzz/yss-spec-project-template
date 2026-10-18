@@ -293,6 +293,7 @@
       ".template-spec/process/script-execution.md",
       ".template-spec/process/document-writing.md",
       ".template-spec/process/contract-reading.md",
+      ".template-spec/process/daily-input-preparation.md",
       ".template-spec/process/structured-assets.md",
       ".template-spec/process/runtime-storage.md",
       ".template-spec/process/schemas/approval-record.schema.json",

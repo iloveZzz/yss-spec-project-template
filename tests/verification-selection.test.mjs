@@ -281,3 +281,20 @@ test('重复登记合并保持输入与 Gate 并集',async()=>{
   }
  }
 });
+
+test('输入准备只选择真实消费者', async () => {
+  for (const ref of ['tests/daily-input-preparation.test.mjs', '.agents/skills/yss-product-lifecycle/references/daily-delivery.md', '.template-spec/process/daily-input-preparation.md', 'profiles/backend/.agents/skills/harness-orchestrator/SKILL.md']) {
+    const p = planTemplateVerification({changedFiles: [ref]});
+    const checks = p.commands.filter(x => x.id === 'check.daily-input-preparation');
+    assert.equal(checks.length, 1, ref);
+    assert.ok(checks[0].resources.includes('native-cli'));
+  }
+  for (const ref of ['docs/superpowers/specs/2026-10-18-sha256-usage-optimization-design.md', 'docs/superpowers/plans/2026-10-18-sha256-usage-optimization.md']) {
+    assert.ok(planTemplateVerification({changedFiles: [ref]}).commands.some(x => x.id === 'check.doc-facts'), ref);
+  }
+  assert.ok(!planTemplateVerification({changedFiles: ['docs/superpowers/specs/unrelated-note.md']}).commands.some(x => x.id === 'check.daily-input-preparation'));
+  assert.throws(() => planTemplateVerification({changedFiles: ['tests/unregistered-daily-behavior.test.mjs']}), /UNKNOWN_VERIFICATION_PATH/);
+  const {composeProfileTree} = await import('../scripts/lib/profile-tree.mjs');
+  const ref = '.template-spec/process/daily-input-preparation.md';
+  assert.deepEqual(fs.readFileSync(path.join(composeProfileTree('backend', {root: ROOT}), ref)), fs.readFileSync(path.join(ROOT, ref)));
+});
