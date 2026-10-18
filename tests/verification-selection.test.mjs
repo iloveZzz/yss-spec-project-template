@@ -84,7 +84,12 @@ test('Plan审查测试唯一归属保留触发与门禁，耗时组在fast明确
  for(const [id,file] of [
   ['check.role-independent-formal-current','scripts/fixtures/role-independent-draft/handoff-chain.test.mjs'],
   ['check.plan-review-control-unit','.template-source/tooling/node/test/plan-review-control.test.mjs'],
-  ['check.plugin-scope-terminal','.template-source/tooling/node/test/plugin-terminal.test.mjs']
+  ['check.plugin-scope-terminal','.template-source/tooling/node/test/plugin-terminal.test.mjs'],
+  ...['check.cli-content-identity','check.cli-content-identity-rest','check.cli-content-identity-install'].map(id=>[id,'.template-source/distribution/yss-cli-pin.json']),
+  ['check.plan-spec-entry-scenarios','tests/scenarios/verify-plan-spec-entry-scenarios.mjs'],
+  ['check.backend-scaffold-direct-generation','scripts/lib/standalone-backend-scaffold.mjs'],
+  ['check.backend-delivery-terminal','scripts/lib/backend-delivery.mjs'],
+  ['check.scaffold-contract-consumers','scripts/lib/implementation-contract-compiler.mjs']
  ]){
   const fast=planTemplateVerification({changedFiles:[file]});
   assert.equal(fast.commands.some(row=>row.id===id),false,id);

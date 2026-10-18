@@ -621,6 +621,7 @@ profiles:
         depends_on: []
         failure_mode: "角色会签消费迁移后错误放行无权角色、缺失批准或失效门禁，或拒绝合法原生身份"
       - id: check.plan-spec-entry-scenarios
+        tier: slow  # cbe04769 发布差异检查实测 110s；fast 延后，release 保留。
         run: "node scripts/verify-plan-spec-entry-scenarios"
         group: feature-assets
         resources: [ "native-cli" ]
@@ -731,6 +732,7 @@ profiles:
         depends_on: []
         failure_mode: "已移除的前端 Profile、前端移交验证入口、前端生命周期稳定 ID 或 frontend-accepted 推进目标重新出现"
       - id: check.backend-delivery-terminal
+        tier: slow  # cbe04769 发布差异检查实测 151s；fast 延后，release 保留。
         run: "node --test --test-concurrency=1 tests/backend-delivery-terminal.test.mjs"
         group: feature-assets
         inputs_complete: true
@@ -1285,6 +1287,7 @@ profiles:
         depends_on: []
         failure_mode: "当前来源缺失、重复或倒序标记被历史兼容路径静默接受"
       - id: "check.backend-scaffold-direct-generation"
+        tier: slow  # cbe04769 发布差异检查实测 121s；fast 延后，release 保留。
         run: "node --test .agents/skills/yss-ddd-scaffold-generator/scripts/standalone.test.mjs .agents/skills/yss-ddd-scaffold-generator/scripts/scaffold-generator.test.mjs .agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs"
         group: "implementation"
         inputs_complete: true
@@ -1313,6 +1316,7 @@ profiles:
         depends_on: [check.backend-scaffold-direct-generation]
         failure_mode: "精确平台绑定、运行证据或退役架构决策接受错误；真实平台证据另按选定两个组合执行"
       - id: check.scaffold-contract-consumers
+        tier: slow  # 保留对 121s 生成检查的依赖；避免 fast 再次拉入慢前置。
         run: "node --test .agents/skills/yss-implementation-contract-compiler/tests/backend-profiles.test.mjs tests/legacy-backend-scaffold-audit.test.mjs tests/yss-backend-skill-governance.test.mjs"
         group: implementation
         inputs_complete: true
@@ -1688,6 +1692,7 @@ profiles:
         depends_on: [ "check.daily-flow" ]
         failure_mode: "已有性能对照入口的 Python 语法错误；对照仍显式使用原组范围"
       - id: "check.cli-content-identity"
+        tier: slow  # cbe04769 发布差异检查实测 81s；fast 延后，release 保留。
         resources: [ "native-cli" ]
         lane: cli-identity-scaffold
         inputs_complete: true
@@ -1700,6 +1705,7 @@ profiles:
         depends_on: []
         failure_mode: "固定的 yss 二进制与 yss-cli 固定文件的版本、提交或摘要不符，或原生 CLI 消费入口、兼容或来源身份错误"
       - id: "check.cli-content-identity-install"
+        tier: slow  # cbe04769 发布差异检查实测 95s；fast 延后，release 保留。
         resources: [ "native-cli" ]
         lane: cli-identity-install
         inputs_complete: true
@@ -1724,6 +1730,7 @@ profiles:
         depends_on: []
         failure_mode: "固定的 yss 二进制与 yss-cli 固定文件的版本、提交或摘要不符，或原生 CLI 消费入口、兼容或来源身份错误"
       - id: "check.cli-content-identity-rest"
+        tier: slow  # cbe04769 发布差异检查实测 62s；fast 延后，release 保留。
         resources: [ "native-cli" ]
         lane: cli-identity-rest
         inputs_complete: true
