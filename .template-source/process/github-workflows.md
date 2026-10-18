@@ -53,12 +53,14 @@ Linux runner 上的两个测试曾因对 macOS 行为的隐性假设而失败，
 
 ## 轻量模板发布（默认）
 
+Spec 规格模板独立发布，只声明模板自身版本；发行说明和维护者摘要不登记配套 YSS CLI 版本。版本绑定由 YSS CLI 发布负责：发布 CLI 时指定消费的 Spec 模板版本，并固定其完整提交 SHA。模板验证使用的 `yss-cli-pin.json` 仅固定校验工具输入，不表示模板发行依赖某个 CLI 发行版本。
+
 只发布模板、不同时发布 CLI 时，使用这条路径；它不要求恢复矩阵、原生装配、平台运行证据或 CLI Bundle 绑定本次模板提交。
 
 1. 变更经 PR 合入 main，`template-gate` 必须通过。
 2. 在合入后的 main 提交上执行 `scripts/verify-template-fast --base <上一正式发行完整 SHA> --report-dir <仓库外新目录>`，保存 `limited` 范围的报告。
 3. 平台验收由维护者人工完成并自行记录（Mac、Windows、Linux 各自的安装、初始化与回滚）；发行说明写明「平台验收：人工，不在 CI 或发布门禁内」，不声称任何平台已验收。
-4. 在该提交上打 `vX.Y.Z` tag 并创建 GitHub Release，附上 fast 报告与 `SHA256SUMS`。发行说明列出配套 CLI 版本和本次未覆盖的范围。
+4. 在该提交上打 `vX.Y.Z` tag 并创建 GitHub Release，附上 fast 报告与 `SHA256SUMS`。发行说明列出模板变更及本次未覆盖的范围。
 
 上面 1–4 步由 `.template-source/scripts/release-template.mjs` 分两步完成：
 

@@ -69,14 +69,14 @@ test('远端已有同名 tag 时拒绝（同步 origin 后本地也可见），�
   assert.throws(() => check(f), /已存在/);
 });
 
-test('发行说明由证据生成：未通过的报告拒绝，平台验收写明人工且不声称任何平台通过', () => {
+test('模板发行说明独立于 CLI 版本，验证范围仍由通过的证据生成', () => {
   const input = { version: '2.0.0', commit: 'a'.repeat(40), base: 'b'.repeat(40), summary: '维护者摘要一行', report: { status: 'passed', scope: { kind: 'limited' } }, cliVersion: '2.2.0' };
   const notes = buildNotes(input);
   assert.match(notes, /^维护者摘要一行/);
   assert.match(notes, /范围 limited/);
   assert.match(notes, /平台验收：人工，不在 CI 或发布门禁内/);
   assert.match(notes, /未执行\*\*：完整/);
-  assert.match(notes, /v2\.2\.0/);
+  assert.doesNotMatch(notes, /CLI|v2\.2\.0|yss-cli-pin/);
   assert.doesNotMatch(notes, /(Mac|Windows|Linux).*(通过|已验收)/);
   assert.throws(() => buildNotes({ ...input, report: { status: 'failed' } }), /未通过/);
   assert.throws(() => buildNotes({ ...input, summary: '  ' }), /摘要/);
@@ -88,12 +88,12 @@ test('证据目录：附件与 SHA256SUMS 一致；output 必须是绝对路径'
   const reportFile = path.join(base, 'report.json');
   fs.writeFileSync(reportFile, JSON.stringify({ status: 'passed', scope: { kind: 'limited' } }));
   assert.throws(() => writeEvidence({ output: 'relative', version: '2.0.0', commit: 'a'.repeat(40), base: 'b'.repeat(40), summary: 's', reportFile }), /绝对路径/);
-  const out = writeEvidence({ output: path.join(base, 'out'), version: '2.0.0', commit: 'a'.repeat(40), base: 'b'.repeat(40), summary: 's', reportFile, cliVersion: null });
+  const out = writeEvidence({ output: path.join(base, 'out'), version: '2.0.0', commit: 'a'.repeat(40), base: 'b'.repeat(40), summary: 's', reportFile });
   const sums = fs.readFileSync(out.assets[1], 'utf8').trim();
   const [digest, name] = sums.split(/\s+/);
   assert.equal(name, 'template-fast-verification-report.json');
   assert.equal(digest, spawnSync('shasum', ['-a', '256', out.assets[0]], { encoding: 'utf8' }).stdout.split(' ')[0]);
-  assert.match(fs.readFileSync(out.notesFile, 'utf8'), /未登记/);
+  assert.doesNotMatch(fs.readFileSync(out.notesFile, 'utf8'), /CLI|未登记|yss-cli-pin/);
 });
 
 test('发布：按 tag → 推送 → Release → 回读校验顺序执行，任一步失败即停止，摘要或提交不一致拒绝', t => {

@@ -6,7 +6,7 @@ import path from "node:path";
 import fs from "node:fs";
 import os from "node:os";
 import { parseArgs } from "node:util";
-import { checkPreconditions, writeEvidence, publish, cliVersionOf, defaultRun } from "./lib/release-template.mjs";
+import { checkPreconditions, writeEvidence, publish, defaultRun } from "./lib/release-template.mjs";
 
 const USAGE = `用法:
   准备: node .template-source/scripts/release-template.mjs --version X.Y.Z --base <上一正式发行完整SHA> --summary <维护者摘要文件> --output <仓库外新绝对目录>
@@ -38,7 +38,7 @@ try {
     fs.writeFileSync(path.join(output, "verify-template-fast.log"), `${fast.stdout}\n${fast.stderr}\n`);
     if (fast.timedOut) throw new TypeError(`准备超过 ${maxSeconds} 秒预算，已中止（用时 ${elapsedSeconds} 秒）；日志 ${path.join(output, "verify-template-fast.log")}。调大 --max-seconds 只能由维护者显式决定`);
     if (fast.status !== 0) throw new TypeError(`verify-template-fast 失败，日志 ${path.join(output, "verify-template-fast.log")}`);
-    const evidence = writeEvidence({ output, version: values.version, commit: plan.commit, base: values.base, summary: fs.readFileSync(path.resolve(values.summary), "utf8"), reportFile: path.join(reportDir, "report.json"), cliVersion: cliVersionOf(root) });
+    const evidence = writeEvidence({ output, version: values.version, commit: plan.commit, base: values.base, summary: fs.readFileSync(path.resolve(values.summary), "utf8"), reportFile: path.join(reportDir, "report.json") });
     fs.writeFileSync(path.join(output, "plan.json"), JSON.stringify({ version: values.version, base: values.base, commit: plan.commit, assets: evidence.assets, prepare_seconds: elapsedSeconds, budget_seconds: maxSeconds }, null, 2) + "\n");
     process.stdout.write(`准备完成，用时 ${elapsedSeconds} 秒（预算 ${maxSeconds} 秒），未改动远端。发行说明：${evidence.notesFile}\n确认后发布：node .template-source/scripts/release-template.mjs --version ${values.version} --base ${values.base} --publish-from ${output}\n`);
   }

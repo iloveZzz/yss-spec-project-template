@@ -2,7 +2,6 @@ import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
 import { spawnSync } from "node:child_process";
-import { readYssCliPin } from "./yss-cli-pin.mjs";
 
 // 轻量模板发布（github-workflows.md「轻量模板发布」）：合入检查 + fast 报告 + 人工平台验收。
 // 本库只做前置核对、证据与发行说明生成，以及（显式 execute）tag 与 GitHub Release；不构建、不装配、不验收任何平台。
@@ -76,7 +75,7 @@ export function checkPreconditions({ root, version, base, run = defaultRun, fetc
 }
 
 /** 发行说明：维护者摘要在前；验证与未覆盖范围由证据生成，不接受自述。 */
-export function buildNotes({ version, commit, base, summary, report, cliVersion }) {
+export function buildNotes({ version, commit, base, summary, report }) {
   if (typeof summary !== "string" || !summary.trim()) fail("缺少维护者摘要");
   if (report?.status !== "passed") fail("fast 报告未通过，不能生成发行说明");
   const scope = report.scope?.kind ?? "unknown";
@@ -84,16 +83,15 @@ export function buildNotes({ version, commit, base, summary, report, cliVersion 
 
 ## 验证（如实）
 - 发布提交 \`${commit.slice(0, 8)}\` 上执行 \`scripts/verify-template-fast --base ${base.slice(0, 8)}\`，结果 ${report.status}，范围 ${scope}，报告见 \`template-fast-verification-report.json\`。
-- **未执行**：完整 \`scripts/verify-template\` release 档、CLI Bundle 与本模板提交的绑定。
+- **未执行**：完整 \`scripts/verify-template\` release 档。
 - **平台验收：人工，不在 CI 或发布门禁内。** 本发行不声称任何平台已验收。
-- 配套 CLI：${cliVersion ? `v${cliVersion}（固定文件 yss-cli-pin.json）` : "未登记"}；本发行不含新的 CLI 发行。
 `;
 }
 
-export function writeEvidence({ output, version, commit, base, summary, reportFile, cliVersion }) {
+export function writeEvidence({ output, version, commit, base, summary, reportFile }) {
   if (!path.isAbsolute(output)) fail("output 必须是绝对路径");
   const report = JSON.parse(fs.readFileSync(reportFile, "utf8"));
-  const notes = buildNotes({ version, commit, base, summary, report, cliVersion });
+  const notes = buildNotes({ version, commit, base, summary, report });
   fs.mkdirSync(path.join(output, "assets"), { recursive: true });
   const assets = path.join(output, "assets");
   const reportAsset = path.join(assets, "template-fast-verification-report.json");
@@ -132,5 +130,3 @@ export function publish({ root, version, commit, notesFile, assets, run = defaul
   if (tagCommit !== commit) fail("tag 指向的提交与发布提交不一致");
   return { tag, commit: tagCommit, verified_assets: sums.length };
 }
-
-export function cliVersionOf(root) { return readYssCliPin(root)?.version ?? null; }
