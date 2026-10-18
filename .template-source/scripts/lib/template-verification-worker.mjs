@@ -112,7 +112,7 @@ async function runPrepared(input) {
       // separate scheduler invocations from overwriting each other's logs.
       const candidates=plan.commands.filter(task=>task.command===command),task=options.task||candidates[0];
       if(!task)throw new TypeError('ACTUAL_EXECUTION_TASK_MISSING');
-      const execution=compileTaskExecution(task,{root,reportDir,environment});
+      const execution=task.execution||compileTaskExecution(task,{root,reportDir,environment});
       return runCommandToFiles(command,{...options,execution,sequence:`${phase}-${options.sequence}`,onProcess:event=>process.send?.({kind:'command-process',...event}),timeoutMs:/pnpm.*\.template-source\/tooling\/node\s+test/.test(command)?0:options.timeoutMs});
     };
     const preparationTasks=plan.commands.filter(task=>task.group==='artifact-preparation');
