@@ -477,15 +477,6 @@
       "count": 1,
       "category": "history",
       "reason": "记录实例资产保护边界，说明历史临时工作根不得移植到实例"
-    },
-    {
-      "repository": ".",
-      "file": "docs/superpowers/specs/2026-10-19-gitignore-hygiene-design.md",
-      "kind": "content",
-      "text": "- 项目实例的 `.work/`、历史 `docs/.scratch/` 可能保存正式资产；模板源整目录忽略规则不得移植到实例。必要工程证据继续按现行引用保留。",
-      "count": 1,
-      "category": "history",
-      "reason": "记录实例资产保护边界，说明历史临时工作根不得移植到实例"
     }
   ]
 }
