@@ -46,7 +46,7 @@ assert.equal(clarification.rounds.reuse, 'unchanged-confirmed-decisions');
 assert.equal(clarification.rounds.correction, 'reopen-only-affected-decisions-and-dependencies');
 assert.equal(clarification.rounds.independent_authorized_work, 'continue');
 assert.equal(clarification.convergence.preparation_passed_means, 'clarification-materials-and-prerequisites-ready');
-assert.equal(clarification.convergence.final_confirmation_boundary, 'gate.plan-approved');
+assert.equal(clarification.convergence.final_confirmation_boundary, 'consolidated-formed-plan-spec-and-applicable-design');
 assert.equal(clarification.convergence.confirmation_writeback, 'external-proof-without-review-or-basis-rewrite');
 assert.equal(clarification.convergence.completion, clarificationQuery.execution.selected.grill_exit.completion);
 assert.throws(() => queryLifecycleContext({ ...query, include: ['clarification_policy'] }), /未知/, 'include 仍仅接收顶层合同键');

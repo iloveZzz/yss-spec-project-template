@@ -85,6 +85,7 @@
       "scripts/run-template-verification",
       "scripts/verify-maintenance-checkpoint",
       "scripts/verify-maintenance-review-record",
+      "scripts/verify-digital-human-roles",
       "scripts/verify-skill-governance",
       "scripts/verify-skill-registry",
       "scripts/verify-template",
