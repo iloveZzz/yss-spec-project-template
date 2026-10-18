@@ -20,10 +20,15 @@ export async function buildLegacyPlanSourceFixture(root) {
   const record = document(approvalRef);
   const expected = { boundary: 'gate.plan-approved', ...currentContext, subject_digest: asset(currentContext.subject_ref).digest };
   const gate = { ...currentContext, status: 'approved', approval_ref: approvalRef, subject_digest: expected.subject_digest,
+    reason: 'Synthetic historical approval consumption', evidence_refs: [approvalRef],
     basis: [...currentContext.basis, asset(currentContext.subject_ref), asset(approvalRef)] };
+  delete gate.review_package;
   // Isolate aggregate consumption: applicable-check coverage is exercised by the
   // complete Plan scenarios, and is not fabricated for this older source profile.
   const registry = { id_policy: { deprecated_ids: [] }, gates: [{ id: 'gate.plan-approved', requires_checks: [], evidence: [] }], checks: [] };
-  const checkpoint = { feature_id: 'feature.supplier', checks: {}, gates: { 'gate.plan-approved': gate } };
+  const checkpoint = { schema_version: 1, repository_mode: 'project-instance', feature_id: 'feature.supplier',
+    mode: 'orchestrate', status: 'running', stage: 'stage.plan', artifacts: {}, checks: {}, gates: { 'gate.plan-approved': gate },
+    context_reconciliation: {status: 'pending', ref: null, evidence_refs: []}, next_work_unit: 'work-unit.plan-requirements',
+    ticket_sync: {}, verification: {}, human_review: {}, git_checkpoint: {}, blockers: [], rollback: [] };
   return { root, source, rolesDoc, binding, approvalRef, record, expected, gate, registry, checkpoint, read, asset, synthetic_fixture: true };
 }

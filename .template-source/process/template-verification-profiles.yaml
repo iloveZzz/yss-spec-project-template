@@ -155,6 +155,7 @@ profiles:
         depends_on: []
         failure_mode: "状态反馈与合同摘要不一致"
       - id: check.plugin-scope-terminal
+        tier: slow  # 完整成功路径实测 164s；fast 明确延后，release 保留。
         run: "node --test .template-source/tooling/node/test/plugin-scope.test.mjs .template-source/tooling/node/test/plugin-terminal.test.mjs"
         group: feature-assets
         resources: [ native-cli, "repo-root-evidence" ]
@@ -463,6 +464,11 @@ profiles:
           - ".template-source/tooling/node/test/design-preview-browser.mjs"
           - "scripts/lib/profile-tree.mjs"
           - "profiles/**"
+          - "scripts/lib/plan-review-control.mjs"
+          - "scripts/lib/review-package.mjs"
+          - "scripts/lib/work-layout.mjs"
+          - "scripts/fixtures/plan-review-control/**"
+          - ".template-source/tooling/node/test/plan-review-control.test.mjs"
         depends_on: []
         failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
       - id: check.harness-upgrade-generated
@@ -773,6 +779,7 @@ profiles:
         depends_on: []
         failure_mode: "推进意图被当作冻结战略包的批准或交付证据"
       - id: check.role-independent-formal-current
+        tier: slow  # 原串行长链已执行 142s 仍被取消；fast 明确延后，release 保留。
         run: "node --test --test-concurrency=1 scripts/fixtures/role-independent-draft/formal-plan.test.mjs scripts/fixtures/role-independent-draft/professional-plan.test.mjs scripts/fixtures/role-independent-draft/worker-chain.test.mjs scripts/fixtures/role-independent-draft/handoff-chain.test.mjs"
         group: implementation
         resources: [native-cli, "repo-root-evidence"]
@@ -825,13 +832,20 @@ profiles:
         depends_on: []
         failure_mode: "合同审查准备放过过期的阅读视图、前后资产身份冲突，或把原决定当成已批准"
       - id: check.plan-review-control-unit
+        tier: slow  # 当前安装与事务回归实测超过 60s；fast 延后，release 保留。
         run: "node --test .template-source/tooling/node/test/plan-review-control.test.mjs"
         group: feature-assets
+        resources: [native-cli, python-jsonschema]
         inputs_complete: true
         input_patterns:
           - ".template-source/tooling/node/test/plan-review-control.test.mjs"
           - "scripts/plan-review-control"
           - "scripts/lib/plan-review-control.mjs"
+          - "scripts/lib/review-package.mjs"
+          - "scripts/lib/work-layout.mjs"
+          - "scripts/fixtures/plan-review-control/**"
+          - "scripts/fixtures/role-independent-draft/installed-fixture.mjs"
+          - "scripts/fixtures/role-independent-draft/professional-plan-fixture.mjs"
         depends_on: []
         failure_mode: "Plan 审查周期的绑定、派发或完成校验放过未绑定的证据"
       - id: check.profile-tree
@@ -1866,19 +1880,6 @@ profiles:
           - "scripts/fixtures/contract-efficiency/api-v2.test.mjs"
         depends_on: []
         failure_mode: "API 决策样例遗漏配置根或 Draft 绑定"
-      - id: check.work-layout-plan-review
-        run: "node --test .template-source/tooling/node/test/plan-review-control.test.mjs .template-source/tooling/node/test/review-capabilities.test.mjs"
-        group: work-layout
-        inputs_complete: true
-        input_patterns:
-          - "scripts/lib/plan-review-control.mjs"
-          - "scripts/lib/review-package.mjs"
-          - "scripts/lib/work-layout.mjs"
-          - "scripts/fixtures/plan-review-control/**"
-          - ".template-source/tooling/node/test/plan-review-control.test.mjs"
-          - ".template-source/tooling/node/test/review-capabilities.test.mjs"
-        depends_on: []
-        failure_mode: "Plan 审查写入忽略当前根、越界或丢失事务与证据绑定"
       - id: check.work-layout-lifecycle-transition
         run: "node tests/scenarios/verify-lifecycle-transition-scenarios.mjs"
         group: work-layout
@@ -3473,7 +3474,7 @@ gates:
       - check.digital-human-native-consumers
       - check.user-decision-scenarios
       - check.plan-review-control-unit
-      - check.work-layout-plan-review
+      - check.profile-consumers-review-capabilities
       - check.work-layout-user-decision
     audit_status: conservative-complete
     display_id: G08

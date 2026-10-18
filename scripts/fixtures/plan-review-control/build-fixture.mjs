@@ -22,11 +22,11 @@ export function buildPlanReviewFixture(root, { boundaries = PLAN_BOUNDARIES, wor
   };
   const read = ref => fs.readFileSync(path.resolve(root, ref));
   const asset = ref => ({ ref, digest: reviewDigest(read(ref)) });
-  const authorities = ['.template-spec/agents/digital-human-roles.yaml', '.template-spec/agents/yss-skill-registry.yaml', '.template-spec/process/lifecycle-registry.yaml', ...loadOrchestrationContract(ref => fs.readFileSync(path.join(ROOT, ref)), '.template-spec/process/orchestration-contract.yaml').refs];
   const identityRoot = makeRoot('plan-review-policy-');
-  for (const ref of ['.yss.json', '.template-spec/process/harness-profile.yaml']) write(ref, fs.readFileSync(path.join(identityRoot, ref)));
+  const authorities = ['.yss.json', '.template-spec/process/harness-profile.yaml', '.template-spec/agents/digital-human-roles.yaml', '.template-spec/agents/yss-skill-registry.yaml', '.template-spec/process/lifecycle-registry.yaml', ...loadOrchestrationContract(ref => fs.readFileSync(path.join(identityRoot, ref)), '.template-spec/process/orchestration-contract.yaml').refs];
   write('CONTEXT.md', context);
-  for (const ref of authorities) write(ref, fs.readFileSync(path.join(ROOT, ref)));
+  for (const ref of authorities) write(ref, fs.readFileSync(path.join(identityRoot, ref)));
+  fs.rmSync(identityRoot, {recursive: true, force: true});
   fs.cpSync(path.join(ROOT, '.template-spec/process/schemas'), path.join(root, '.template-spec/process/schemas'), { recursive: true });
   write('yss-project.yaml', 'schema_version: 1\nrepository_mode: project-instance\n');
   write('input/confirmed-scope.md', '# 合成确认范围\n\nfeature.demo：提交当前业务报表，不扩展已确认范围。仅用于测试。\n');

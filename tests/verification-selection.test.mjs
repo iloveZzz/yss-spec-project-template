@@ -68,8 +68,30 @@ test('产物消费者实际执行来源收集且不依赖旧名称',t=>{
  assert.throws(()=>planTemplateVerification({changedFiles:['tests/new-unregistered-audit.test.mjs']}),/UNKNOWN_VERIFICATION_PATH/);
 });
 test('CI共享仓根交接运输的检查使用同一互斥资源',()=>{
- const plan=planTemplateVerification({changedFiles:['scripts/fixtures/role-independent-draft/handoff-chain.test.mjs','tests/scenarios/verify-strategic-handoff-package-scenarios.mjs']});
+ const plan=planTemplateVerification({includeSlow:true,changedFiles:['scripts/fixtures/role-independent-draft/handoff-chain.test.mjs','tests/scenarios/verify-strategic-handoff-package-scenarios.mjs']});
  for(const id of ['check.role-independent-formal-current','check.strategic-handoff-package-scenarios'])assert.ok(plan.commands.find(check=>check.id===id)?.resources.includes('repo-root-evidence'),id);
+});
+test('Plan审查测试唯一归属保留触发与门禁，耗时组在fast明确延后',()=>{
+ const files=['scripts/lib/plan-review-control.mjs','scripts/lib/review-package.mjs','scripts/lib/work-layout.mjs','scripts/fixtures/plan-review-control/build-fixture.mjs'];
+ for(const file of files){
+  const plan=planTemplateVerification({includeSlow:true,changedFiles:[file]});
+  for(const name of ['plan-review-control','review-capabilities']){
+   const owners=plan.commands.filter(row=>row.command.includes(`/${name}.test.mjs`));
+   assert.equal(owners.length,1,`${file}: ${name}`);
+   assert.ok(loadVerificationProfiles().gates.find(row=>row.id==='check.verification-approval').check_ids.includes(owners[0].id));
+  }
+ }
+ for(const [id,file] of [
+  ['check.role-independent-formal-current','scripts/fixtures/role-independent-draft/handoff-chain.test.mjs'],
+  ['check.plan-review-control-unit','.template-source/tooling/node/test/plan-review-control.test.mjs'],
+  ['check.plugin-scope-terminal','.template-source/tooling/node/test/plugin-terminal.test.mjs']
+ ]){
+  const fast=planTemplateVerification({changedFiles:[file]});
+  assert.equal(fast.commands.some(row=>row.id===id),false,id);
+  assert.ok(fast.selection.omitted.some(row=>row.id===id&&row.reason==='deferred-slow-check'),id);
+  assert.ok(planTemplateVerification({profile:'release',changedFiles:[file]}).commands.some(row=>row.id===id),id);
+ }
+
 });
 test('日常新设计与计划只登记文档消费者',()=>{
  for(const ref of ['.template-source/contracts/spec-backend-direct-consumption-design.md','docs/superpowers/plans/2026-10-18-spec-backend-material-intake-and-manual-handoff.md']){

@@ -1,4 +1,3 @@
-import { loadOrchestrationContract } from '../../../../scripts/lib/orchestration-contract.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -19,7 +18,10 @@ test('real validators close a synthetic backend package, preserve the terminal a
   const source=fs.mkdtempSync(path.join(tmpdir(),'yss-strategy-source-'));t.after(()=>fs.rmSync(source,{recursive:true,force:true}));
   await strategyFixture(source,{handoffVersion:4});
   const strategy=await exportBundle({sourceRoot:source,handoffRef:'handoff.yaml',output:path.join(f.root,'strategy-package')});
-  f.write('.template-spec/process/orchestration-contract.yaml',JSON.stringify(loadOrchestrationContract(ref=>fs.readFileSync(path.join(ROOT,ref)),'.template-spec/process/orchestration-contract.yaml').value));
+  // Synthetic scope extension retains the historical policy generation and approvals.
+  const policy=loadOrchestrationContract(ref=>fs.readFileSync(path.join(f.root,ref)),'.template-spec/process/orchestration-contract.yaml').value;
+  policy.execution_scopes=loadOrchestrationContract(ref=>fs.readFileSync(path.join(ROOT,ref)),'.template-spec/process/orchestration-contract.yaml').value.execution_scopes;
+  f.write('.template-spec/process/orchestration-contract.yaml',policy);
   f.write('.yss-execution-scope.yaml',{schema_version:1,scope_id:'plan-to-backend'});
   const roles=read(path.join(f.root,'.template-spec/agents/digital-human-roles.yaml'));
   // Synthetic source policy for the fixture's existing OpenAPI gate.
@@ -56,3 +58,4 @@ test('real validators close a synthetic backend package, preserve the terminal a
   f.write('checks.log','stale independent review evidence');
   await assert.rejects(verifyBackendDeliveryTerminal(f.root),/evidence stale|摘要|stale/);
 });
+import { loadOrchestrationContract } from '../../../../scripts/lib/orchestration-contract.mjs';
