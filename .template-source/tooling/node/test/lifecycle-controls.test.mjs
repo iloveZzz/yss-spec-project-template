@@ -38,7 +38,7 @@ test('registry retains seven approval gates, adds a conditional handoff gate and
  assert.equal(handoff.stage,'stage.product-design');
  assert.deepEqual(handoff.requires_gates,['gate.plan-approved','gate.spec-baseline-approved','gate.product-design-approved']);
  const orchestration=loadOrchestrationContract(ref=>readFileSync(path.join(root,ref)),'.template-spec/process/orchestration-contract.yaml').value;
- assert.equal(orchestration.work_unit_routes['work-unit.strategic-design-handoff'].applies_when,'explicit-external-implementation-consumer');
+ assert.equal(orchestration.work_unit_routes['work-unit.strategic-design-handoff'].applies_when,'explicit-user-package-request');
  const cyclic=structuredClone(r);cyclic.checks[0].requires_checks=[cyclic.checks[1].id];cyclic.checks[1].requires_checks=[cyclic.checks[0].id];
  assert.throws(()=>validateRegistry(cyclic,{baseline:null}),/依赖循环/);
 });
@@ -90,10 +90,11 @@ test('evidence drift and aggregate omissions cannot reuse approval',()=>fixture(
 test('a bare passed flag and unbound evidence cannot close a check',()=>fixture(f=>{
  delete f.state.checks[f.checkId].evidence;assert.throws(f.verify,/缺少绑定证据/);
 }));
-test('retired approvals remain readable but cannot approve new gates',()=>{
+test('retired approvals remain readable but cannot approve new gates',t=>{
+ const dir=makeRoot('retired-approval-history-');t.after(()=>rmSync(dir,{recursive:true,force:true}));
  const record={schema_version:1,gate_id:'gate.release-ready',decision:'approved',actor_kind:'biological-human',role_id:'role.biological-human',runtime_id:'runtime.generic',principal_ref:'test-only.person'};
- assert.equal(validateApprovalRecord(record,{history:true}).execution_authorization,'not-evaluated');assert.throws(()=>validateApprovalRecord(record,{requireApproved:true}),/不是会签门禁|已退役/);
- assert.throws(()=>assertCheckpointApprovals({gates:{'gate.release-ready':{status:'pending'}}}),/已退役/);
+ assert.equal(validateApprovalRecord(record,{root:dir,history:true}).execution_authorization,'not-evaluated');assert.throws(()=>validateApprovalRecord(record,{root:dir,requireApproved:true}),/不是会签门禁|已退役/);
+ assert.throws(()=>assertCheckpointApprovals({gates:{'gate.release-ready':{status:'pending'}}},undefined,{root:dir}),/已退役/);
 });
 test('delivery acceptance does not require a release decision; runtime actions still require human authorization',t=>{
  const dir=makeRoot('delivery-decision-policy-','backend');t.after(()=>rmSync(dir,{recursive:true,force:true}));
