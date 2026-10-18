@@ -90,7 +90,7 @@ test('真实战略专职 policy 使用产品设计聚合门禁；ready-for-human
 test('既有 UI 全目录作为已验证观测文件集：源删除后可验包，治理悬空引用仍拒绝',async t=>{
  const base=root(t),source=path.join(base,'source');mkdirSync(source);const f=await handoffFixture(source,{sourceDocumentation:true});
  f.handoff.package_export.additional_files.push('missing-governance.md');f.save();await assert.rejects(()=>exportBundle({sourceRoot:source,handoffRef:'handoff.yaml',output:path.join(base,'invalid')}),error=>error.code==='HANDOFF_CLOSURE'&&error.message.includes('missing-governance.md'));
- f.handoff.package_export.additional_files=[];f.save();const output=path.join(base,'package');await exportBundle({sourceRoot:source,handoffRef:'handoff.yaml',output});
+ assert.equal(f.handoff.package_export.additional_files.pop(),'missing-governance.md');f.save();const output=path.join(base,'package');await exportBundle({sourceRoot:source,handoffRef:'handoff.yaml',output});
  rmSync(source,{recursive:true});assert.equal(await openBundle(output,b=>b.handoff.ui_baseline_kind,{readOnly:true}),'existing-ui-baseline');
  const raw=readFileSync(path.join(output,'payload/files/existing-ui/source/README.md'),'utf8');assert.match(raw,/original-source/);
 });

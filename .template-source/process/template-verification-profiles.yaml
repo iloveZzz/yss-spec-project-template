@@ -1869,7 +1869,7 @@ profiles:
         depends_on: []
         failure_mode: "阶段任务定义和 checkpoint 的根不一致"
       - id: check.work-layout-tickets
-        resources: [native-cli]
+        resources: [native-cli, repo-root-evidence]
         run: "node --test scripts/fixtures/business-tickets/*.test.mjs"
         group: work-layout
         inputs_complete: true
