@@ -1,9 +1,7 @@
-import {loadOrchestrationContract} from '../../lib/orchestration-contract.mjs';
 import {makeRoot} from '../../../tests/helpers/yss-instance.mjs';
 // Synthetic test evidence only; never import to produce real project approval.
 import { mkdirSync, writeFileSync, readFileSync, existsSync, copyFileSync, realpathSync } from 'node:fs';
 import path from 'node:path';
-import { ROOT } from '../../lib/lifecycle-registry.mjs';
 import { parseContextContract, resolveContextTermRefs } from '../../lib/context-contract.mjs';
 import { decisionDigest } from '../../lib/native-user-decision.mjs';
 import { planEntryPolicy } from '../../lib/plan-spec-entry.mjs';
@@ -20,7 +18,7 @@ export function buildPlanFixture(root, { nativeSeed } = {}) {
   if (!existsSync(path.join(root, 'yss-project.yaml'))) write('yss-project.yaml', 'schema_version: 1\nrepository_mode: project-instance\n');
   mkdirSync(path.join(root, '.template-spec/agents'), { recursive: true });
   write('.template-spec/agents/issue-tracker.md', '---\ntracker:\n  platform: local-markdown\n  root: .work\n---\n# Legacy Plan fixture\n');
-  if (!explicitSeed) for (const ref of ['.template-spec/process/lifecycle-registry.yaml', '.template-spec/process/schemas/plan-review-control.schema.json', '.template-spec/agents/digital-human-roles.yaml', '.template-spec/agents/yss-skill-registry.yaml', ...loadOrchestrationContract(ref=>readFileSync(path.join(ROOT,ref)), '.template-spec/process/orchestration-contract.yaml').refs]) write(ref, readFileSync(path.join(ROOT, ref), 'utf8'));
+  // Keep the installed identity/Profile/policy generation together for historical verification.
   if (!explicitSeed) write('CONTEXT.md', context);
   else if (!existsSync(path.join(root, 'CONTEXT.md'))) copyFileSync(path.join(nativeSeed, 'CONTEXT.md'), path.join(root, 'CONTEXT.md'));
   write('plan.md', '测试规划：小范围修订，不改变业务边界或关键规则。\n');

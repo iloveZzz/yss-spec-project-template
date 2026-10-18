@@ -11,7 +11,7 @@ import {loadDigitalHumanRoles} from '../../../../scripts/lib/digital-human-roles
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {ROOT, loadRegistry} from '../../../../scripts/lib/lifecycle-registry.mjs';
-import {prepareReviewPackage} from '../../../../scripts/lib/review-package.mjs';
+import {buildReviewPackage,prepareReviewPackage} from '../../../../scripts/lib/review-package.mjs';
 import {approvalExpectedFromTask} from '../../../../scripts/lib/review-capabilities.mjs';
 import {parseDocument, stringify as stringifyYaml} from '../../../../scripts/vendor/yaml.mjs';
 import {readFileSync as snapshotRead,withValidationPhase} from '../../../../scripts/lib/validation-phase.mjs';
@@ -19,6 +19,15 @@ import {sourceApproval} from '../../../../scripts/lib/strategic-handoff.mjs';
 import {makeRoot} from '../../../../tests/helpers/yss-instance.mjs';
 
 const digest = bytes => createHash('sha256').update(bytes).digest('hex');
+// Construct synthetic historical records; the public writer must still refuse unmigrated instances.
+function historicalReview(options) {
+ assert.throws(()=>prepareReviewPackage(options),/GOVERNANCE_MIGRATION_REQUIRED/);
+ const built=buildReviewPackage(options);
+ for(const [name,content]of Object.entries(built.files)) {
+  const file=path.join(options.root,options.outputDir,name);mkdirSync(path.dirname(file),{recursive:true});writeFileSync(file,content,{flag:'wx'});
+ }
+ return {...built,bundle_ref:path.posix.join(options.outputDir,'bundle-draft.yaml')};
+}
 function fixture(run) {
  const root = makeRoot('yss-current-approval-');
  const save = (ref, value) => writeFileSync(path.join(root, ref), typeof value === 'string' ? value : JSON.stringify(value));
@@ -116,12 +125,12 @@ test('current approval still requires the original human reply and current decis
   assert.throws(()=>validateApprovalRecord(record,{root:f.root,expected}),/user-decision-stale/);
  });
 });
-test('history CLI reads an incomplete v2 draft, current CLI cannot grant approval',()=>{
- const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../../../..');
- const script=path.join(root,'scripts/verify-approval-record'),draft=path.join(root,'.template-spec/templates/approval-record-template.json');
- const history=spawnSync(process.execPath,[script,'--history',draft],{encoding:'utf8'});
+test('history CLI reads an incomplete v2 draft, current CLI cannot grant approval',t=>{
+ const root=makeRoot('approval-v2-history-');t.after(()=>rmSync(root,{recursive:true,force:true}));
+ const script=path.join(ROOT,'scripts/verify-approval-record'),draft=path.join(root,'.template-spec/templates/approval-record-template.json');
+ const history=spawnSync(process.execPath,[script,'--root',root,'--history',draft],{encoding:'utf8'});
  assert.equal(history.status,0,history.stderr);assert.match(history.stdout,/not-evaluated/);
- const current=spawnSync(process.execPath,[script,'--require-approved',draft],{encoding:'utf8'});
+ const current=spawnSync(process.execPath,[script,'--root',root,'--require-approved',draft],{encoding:'utf8'});
  assert.equal(current.status,1);assert.match(current.stderr,/approved|APPROVAL_CONTEXT_REQUIRED/);
  const conflict=spawnSync(process.execPath,[script,'--history','--checkpoint',draft,draft],{encoding:'utf8'});
  assert.equal(conflict.status,1);assert.match(conflict.stderr,/不能用于当前/);
@@ -161,7 +170,7 @@ test('one v2 capability task strictly binds different per-check subjects across 
   base.checks[id]={status:'pending',applicable:true,subject_ref:`input/subject-${i}.json`,subject_digest:asset(`input/subject-${i}.json`).digest,approval_scope:[`scope-${i}`],drafter_principal_ref:`synthetic.author-${i}`,basis:[asset(`input/evidence-${i}.txt`)],evidence_refs:[`input/evidence-${i}.txt`]};
  }
  write('input/checkpoint.json',base);
- const prepared=prepareReviewPackage({root,registry:live,checkpointRef:'input/checkpoint.json',checkIds,roleId:'role.test-engineer',runtimeId:'runtime.generic',actorId:'agent.synthetic-reviewer',reviewerPrincipalRef:'synthetic.reviewer',drafterPrincipalRef:'synthetic.packet-owner',implementationActorId:'agent.synthetic-worker',taskId:'current-api-baseline',reviewSessionId:'session.current',workUnitId:'work-unit.technical-analysis',outputDir:'reviews/current'});
+ const prepared=historicalReview({root,registry:live,checkpointRef:'input/checkpoint.json',checkIds,roleId:'role.test-engineer',runtimeId:'runtime.generic',actorId:'agent.synthetic-reviewer',reviewerPrincipalRef:'synthetic.reviewer',drafterPrincipalRef:'synthetic.packet-owner',implementationActorId:'agent.synthetic-worker',taskId:'current-api-baseline',reviewSessionId:'session.current',workUnitId:'work-unit.technical-analysis',outputDir:'reviews/current'});
  const bundle=parseDocument(readFileSync(path.join(root,prepared.bundle_ref),'utf8')).toJS();
  assert.ok(bundle.reviews.every(row=>row.decision==='pending'));
  assert.throws(()=>validateApprovalRecordFile(path.join(root,prepared.bundle_ref),{root}),/必须为 approved/);
@@ -265,8 +274,9 @@ test('backend technical design and engineering contract share one prepared revie
  // 新字段随本仓 schema 与准备入口发布；初始化实例仍是固定版本 Bundle，这里覆盖为当前源。
  for(const ref of ['.template-spec/process/schemas/approval-record.schema.json','.template-spec/process/schemas/review-bundle.schema.json','.template-spec/process/schemas/governance-evidence.schema.json','scripts/prepare-review-package'])write(ref,readFileSync(path.join(ROOT,ref)));
  const prepared=spawnSync(process.execPath,[path.join(root,'scripts/prepare-review-package'),'--root',root,'--checkpoint','input/checkpoint.json',...gateIds.flatMap(id=>['--check',id]),'--role','role.test-agent','--actor','agent.reviewer','--reviewer-principal','principal.reviewer','--drafter-principal','agent.architecture','--implementation-actor','agent.architecture','--task-id','design-review','--review-session','session.design','--work-unit','work-unit.technical-design','--output-dir','reviews/design','--independence','same-session'],{encoding:'utf8',cwd:root});
- assert.equal(prepared.status,0,prepared.stderr);
- const bundle=parseDocument(readFileSync(path.join(root,JSON.parse(prepared.stdout).bundle_ref),'utf8')).toJS();
+ assert.notEqual(prepared.status,0);assert.match(prepared.stderr,/GOVERNANCE_MIGRATION_REQUIRED/);
+ const historical=historicalReview({root,checkpointRef:'input/checkpoint.json',checkIds:gateIds,roleId:'role.test-agent',runtimeId:'runtime.generic',actorId:'agent.reviewer',reviewerPrincipalRef:'principal.reviewer',drafterPrincipalRef:'agent.architecture',implementationActorId:'agent.architecture',taskId:'design-review',reviewSessionId:'session.design',workUnitId:'work-unit.technical-design',outputDir:'reviews/design',independence:'same-session'});
+ const bundle=parseDocument(readFileSync(path.join(root,historical.bundle_ref),'utf8')).toJS();
  assert.deepEqual(bundle.reviews.map(row=>row.gate_id).sort(),[...gateIds].sort());
  assert.ok(bundle.reviews.every(row=>row.decision==='pending'));
  assert.deepEqual(bundle.independence,{mode:'same-session'},'独立性只如实记录');

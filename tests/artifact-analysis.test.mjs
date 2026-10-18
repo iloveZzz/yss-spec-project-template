@@ -11,7 +11,7 @@ import { makeRoot } from "./helpers/yss-instance.mjs";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const digest = (text) => `sha256:${createHash("sha256").update(text).digest("hex")}`;
 
-/** 真实 spec 实例（makeRoot：yss init 一次后复制），写入一个功能包；spec 只登记 FR-001 / AC-001。 */
+/** 真实旧 Spec 的冻结测试资产，写入一个功能包；spec 只登记 FR-001 / AC-001。 */
 function project(t, { acceptance = "AC-001" } = {}) {
   const root = makeRoot("yss-analysis-");
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));

@@ -12,7 +12,7 @@ import {componentCapabilityDigest,loadBackendPlatforms,platformBinding,platformD
 import {platformSourceFingerprint} from '../../lib/backend-platform-provenance.mjs';
 export const sha=x=>`sha256:${createHash('sha256').update(x).digest('hex')}`;
 export function fixture(family='layered-mvc',{nativeSeed}={}){
- const root=fs.mkdtempSync(path.join(os.tmpdir(),'yss-existing-regression-')), project=path.join(root,'project');fs.mkdirSync(project);
+ const root=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'yss-existing-regression-'))), project=path.join(root,'project');fs.mkdirSync(project);
  if(nativeSeed){
   const seedRoot=path.resolve(nativeSeed);
   // This relocated synthetic fixture consumes assets, not the source root's transaction journals.

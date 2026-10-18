@@ -1,15 +1,22 @@
-// 测试用项目根：有固定版本 yss 时给出「现场 yss init 一次、之后按需复制」的真实 spec 实例，批准与用户决定的校验才能真正委托给 yss；
-// 校验只能使用原生执行器；缺执行器直接失败，不制造合成根回退。
-import {cpSync, existsSync, mkdtempSync, realpathSync, rmSync} from 'node:fs';
+// 旧协议测试使用原固定 CLI 实际 init 的冻结资产，由当前原生执行器核验；不把旧批准改成新政策。
+// 新政策安装链使用 role-independent-draft/installed-fixture.mjs 的现场 init；本夹具不证明受管分发完整性。
+import assert from 'node:assert/strict';
+import {cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync} from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {spawnSync} from 'node:child_process';
+import {createHash} from 'node:crypto';
+import {gunzipSync} from 'node:zlib';
 import {contextBinary} from '../../scripts/lib/native-context.mjs';
 
 const roots = new Set(); // 退出时统一清理，调用方也可以提前清理
 process.on('exit', () => { for (const dir of roots) rmSync(dir, {recursive: true, force: true}); });
 const templates = new Map();
 const {binary}=contextBinary();
+const archive=readFileSync(new URL('./fixtures/native-legacy.json.gz',import.meta.url));
+const provenance=JSON.parse(readFileSync(new URL('./fixtures/native-legacy.provenance.json',import.meta.url),'utf8'));
+const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
+assert.equal(sha(archive),provenance.archiveSha256,'旧原生夹具归档摘要漂移');
+const snapshot=JSON.parse(gunzipSync(archive));
 
 export const hasYss = Boolean(binary);
 
@@ -17,9 +24,15 @@ function templateInstance(profile) {
   if (templates.has(profile)) return templates.get(profile);
   const base = realpathSync(mkdtempSync(path.join(os.tmpdir(), 'yss-instance-template-')));
   process.on('exit', () => rmSync(base, {recursive: true, force: true}));
-  const init = spawnSync(binary, ['init', '--profile', profile, '--root', path.join(base, 'inst'), '--project-name', 'test'], {encoding: 'utf8'});
-  if (init.status !== 0) throw new Error(`yss init 失败：${init.stderr || init.stdout}`);
-  templates.set(profile, path.join(base, 'inst'));
+  const files=snapshot.profiles[profile];assert.ok(files,`缺少冻结旧实例: ${profile}`);
+  const root=path.join(base,'inst');
+  for(const [ref,file]of Object.entries(files)) {
+    assert.ok(!path.isAbsolute(ref)&&!ref.split('/').includes('..'),'旧原生夹具路径越界');
+    const bytes=Buffer.from(snapshot.objects[file.sha256],'base64');assert.equal(sha(bytes),file.sha256,ref);
+    const target=path.join(root,ref);mkdirSync(path.dirname(target),{recursive:true});writeFileSync(target,bytes,{mode:file.executable?0o755:0o644});
+  }
+  assert.equal(sha(readFileSync(path.join(root,'.yss.json'))),provenance.profiles[profile].metadataSha256);
+  templates.set(profile, root);
   return templates.get(profile);
 }
 

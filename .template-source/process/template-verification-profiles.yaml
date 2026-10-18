@@ -183,6 +183,8 @@ profiles:
           - "scripts/fixtures/user-decision/plan-fixture.mjs"
           - ".template-source/tooling/node/test/approval-consumption.test.mjs"
           - "tests/helpers/yss-instance.mjs"
+          - "tests/helpers/fixtures/native-legacy.json.gz"
+          - "tests/helpers/fixtures/native-legacy.provenance.json"
           - "scripts/fixtures/spec-baseline/fixture.mjs"
           - ".template-source/tooling/node/test/design-preview-browser.mjs"
           - "scripts/lib/profile-tree.mjs"
@@ -200,6 +202,8 @@ profiles:
           - "scripts/fixtures/user-decision/plan-fixture.mjs"
           - ".template-source/tooling/node/test/approval-consumption.test.mjs"
           - "tests/helpers/yss-instance.mjs"
+          - "tests/helpers/fixtures/native-legacy.json.gz"
+          - "tests/helpers/fixtures/native-legacy.provenance.json"
           - "scripts/fixtures/spec-baseline/fixture.mjs"
           - ".template-source/tooling/node/test/design-preview-browser.mjs"
           - "scripts/lib/profile-tree.mjs"
@@ -213,10 +217,13 @@ profiles:
         group: feature-assets
         inputs_complete: true
         input_patterns:
+          - "scripts/fixtures/existing-backend/fixture.mjs"
           - "scripts/fixtures/contract-efficiency/distribution.test.mjs"
           - "scripts/fixtures/user-decision/plan-fixture.mjs"
           - ".template-source/tooling/node/test/approval-consumption.test.mjs"
           - "tests/helpers/yss-instance.mjs"
+          - "tests/helpers/fixtures/native-legacy.json.gz"
+          - "tests/helpers/fixtures/native-legacy.provenance.json"
           - "scripts/fixtures/spec-baseline/fixture.mjs"
           - ".template-source/tooling/node/test/design-preview-browser.mjs"
           - "scripts/lib/profile-tree.mjs"
@@ -235,6 +242,8 @@ profiles:
           - "scripts/fixtures/user-decision/plan-fixture.mjs"
           - ".template-source/tooling/node/test/approval-consumption.test.mjs"
           - "tests/helpers/yss-instance.mjs"
+          - "tests/helpers/fixtures/native-legacy.json.gz"
+          - "tests/helpers/fixtures/native-legacy.provenance.json"
           - "scripts/fixtures/spec-baseline/fixture.mjs"
           - ".template-source/tooling/node/test/design-preview-browser.mjs"
           - "scripts/lib/profile-tree.mjs"
@@ -253,6 +262,8 @@ profiles:
           - "scripts/fixtures/user-decision/plan-fixture.mjs"
           - ".template-source/tooling/node/test/approval-consumption.test.mjs"
           - "tests/helpers/yss-instance.mjs"
+          - "tests/helpers/fixtures/native-legacy.json.gz"
+          - "tests/helpers/fixtures/native-legacy.provenance.json"
           - "scripts/fixtures/spec-baseline/fixture.mjs"
           - ".template-source/tooling/node/test/design-preview-browser.mjs"
           - "scripts/lib/profile-tree.mjs"
@@ -271,6 +282,8 @@ profiles:
           - "scripts/fixtures/user-decision/plan-fixture.mjs"
           - ".template-source/tooling/node/test/approval-consumption.test.mjs"
           - "tests/helpers/yss-instance.mjs"
+          - "tests/helpers/fixtures/native-legacy.json.gz"
+          - "tests/helpers/fixtures/native-legacy.provenance.json"
           - "scripts/fixtures/spec-baseline/fixture.mjs"
           - ".template-source/tooling/node/test/design-preview-browser.mjs"
           - "scripts/lib/profile-tree.mjs"
@@ -307,6 +320,8 @@ profiles:
           - "scripts/fixtures/user-decision/plan-fixture.mjs"
           - ".template-source/tooling/node/test/approval-consumption.test.mjs"
           - "tests/helpers/yss-instance.mjs"
+          - "tests/helpers/fixtures/native-legacy.json.gz"
+          - "tests/helpers/fixtures/native-legacy.provenance.json"
           - "scripts/fixtures/spec-baseline/fixture.mjs"
           - ".template-source/tooling/node/test/design-preview-browser.mjs"
           - "scripts/lib/profile-tree.mjs"
@@ -324,6 +339,8 @@ profiles:
           - "scripts/fixtures/user-decision/plan-fixture.mjs"
           - ".template-source/tooling/node/test/approval-consumption.test.mjs"
           - "tests/helpers/yss-instance.mjs"
+          - "tests/helpers/fixtures/native-legacy.json.gz"
+          - "tests/helpers/fixtures/native-legacy.provenance.json"
           - "scripts/fixtures/spec-baseline/fixture.mjs"
           - ".template-source/tooling/node/test/design-preview-browser.mjs"
           - "scripts/lib/profile-tree.mjs"
@@ -340,6 +357,8 @@ profiles:
           - ".template-source/tooling/node/test/approval-consumption.test.mjs"
           - "scripts/fixtures/user-decision/plan-fixture.mjs"
           - "tests/helpers/yss-instance.mjs"
+          - "tests/helpers/fixtures/native-legacy.json.gz"
+          - "tests/helpers/fixtures/native-legacy.provenance.json"
           - "scripts/fixtures/spec-baseline/fixture.mjs"
           - ".template-source/tooling/node/test/design-preview-browser.mjs"
           - "scripts/lib/profile-tree.mjs"
@@ -357,6 +376,8 @@ profiles:
           - "scripts/fixtures/user-decision/plan-fixture.mjs"
           - ".template-source/tooling/node/test/approval-consumption.test.mjs"
           - "tests/helpers/yss-instance.mjs"
+          - "tests/helpers/fixtures/native-legacy.json.gz"
+          - "tests/helpers/fixtures/native-legacy.provenance.json"
           - "scripts/fixtures/spec-baseline/fixture.mjs"
           - ".template-source/tooling/node/test/design-preview-browser.mjs"
           - "scripts/lib/profile-tree.mjs"
@@ -374,6 +395,8 @@ profiles:
           - "scripts/fixtures/user-decision/plan-fixture.mjs"
           - ".template-source/tooling/node/test/approval-consumption.test.mjs"
           - "tests/helpers/yss-instance.mjs"
+          - "tests/helpers/fixtures/native-legacy.json.gz"
+          - "tests/helpers/fixtures/native-legacy.provenance.json"
           - "scripts/fixtures/spec-baseline/fixture.mjs"
           - ".template-source/tooling/node/test/design-preview-browser.mjs"
           - "scripts/lib/profile-tree.mjs"
@@ -387,10 +410,13 @@ profiles:
         group: feature-assets
         inputs_complete: true
         input_patterns:
+          - "scripts/fixtures/existing-backend/fixture.mjs"
           - ".template-source/tooling/node/test/lifecycle-progression.test.mjs"
           - "scripts/fixtures/user-decision/plan-fixture.mjs"
           - ".template-source/tooling/node/test/approval-consumption.test.mjs"
           - "tests/helpers/yss-instance.mjs"
+          - "tests/helpers/fixtures/native-legacy.json.gz"
+          - "tests/helpers/fixtures/native-legacy.provenance.json"
           - "scripts/fixtures/spec-baseline/fixture.mjs"
           - ".template-source/tooling/node/test/design-preview-browser.mjs"
           - "scripts/lib/profile-tree.mjs"
@@ -408,6 +434,8 @@ profiles:
           - "scripts/fixtures/user-decision/plan-fixture.mjs"
           - ".template-source/tooling/node/test/approval-consumption.test.mjs"
           - "tests/helpers/yss-instance.mjs"
+          - "tests/helpers/fixtures/native-legacy.json.gz"
+          - "tests/helpers/fixtures/native-legacy.provenance.json"
           - "scripts/fixtures/spec-baseline/fixture.mjs"
           - ".template-source/tooling/node/test/design-preview-browser.mjs"
           - "scripts/lib/profile-tree.mjs"
@@ -426,6 +454,8 @@ profiles:
           - "scripts/fixtures/user-decision/plan-fixture.mjs"
           - ".template-source/tooling/node/test/approval-consumption.test.mjs"
           - "tests/helpers/yss-instance.mjs"
+          - "tests/helpers/fixtures/native-legacy.json.gz"
+          - "tests/helpers/fixtures/native-legacy.provenance.json"
           - "scripts/fixtures/spec-baseline/fixture.mjs"
           - ".template-source/tooling/node/test/design-preview-browser.mjs"
           - "scripts/lib/profile-tree.mjs"
@@ -513,8 +543,11 @@ profiles:
         resources: [ "native-cli", "repo-root-evidence" ]
         inputs_complete: true
         input_patterns:
+          - "scripts/fixtures/existing-backend/fixture.mjs"
           - "tests/business-ticket-native-report.test.mjs"
           - "tests/helpers/yss-instance.mjs"
+          - "tests/helpers/fixtures/native-legacy.json.gz"
+          - "tests/helpers/fixtures/native-legacy.provenance.json"
           - "scripts/lib/business-tickets.mjs"
           - "scripts/fixtures/strategic-handoff/fixture.mjs"
           - "scripts/lib/strategic-handoff.mjs"
@@ -589,6 +622,8 @@ profiles:
           - "scripts/lib/plan-spec-entry.mjs"
           - "scripts/fixtures/user-decision/plan-fixture.mjs"
           - "tests/helpers/yss-instance.mjs"
+          - "tests/helpers/fixtures/native-legacy.json.gz"
+          - "tests/helpers/fixtures/native-legacy.provenance.json"
         depends_on: []
         failure_mode: "Plan→Spec 入口的批准、用户决定与上下文调和在真实实例根上被放行或误拒"
       - id: check.openapi-validation-scenarios
@@ -739,6 +774,7 @@ profiles:
         resources: [native-cli]
         inputs_complete: true
         input_patterns:
+          - "scripts/fixtures/existing-backend/fixture.mjs"
           - "scripts/fixtures/role-independent-draft/**"
           - ".agents/skills/yss-stage-decision/references/domain-strategy.schema.json"
           - ".agents/skills/yss-stage-decision/references/stage-decision-package.schema.json"
@@ -2466,6 +2502,8 @@ routing:
       - scripts/backend-delivery
       - scripts/slice-contract
       - tests/helpers/yss-instance.mjs
+      - tests/helpers/fixtures/native-legacy.json.gz
+      - tests/helpers/fixtures/native-legacy.provenance.json
       - scripts/fixtures/user-decision/plan-fixture.mjs
       - .template-source/process/node-core-layer.json
       - tests/advance-maintenance-root.test.mjs
