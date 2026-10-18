@@ -10,6 +10,7 @@ test("当前模板 AGENTS 必须有完整标记，历史兼容不能掩盖来源
   const root = mkdtempSync(path.join(os.tmpdir(), "agents-layout-"));
   t.after(() => rmSync(root, { recursive: true, force: true }));
   execFileSync("git", ["init", "-q", root]);
+  writeFileSync(path.join(root, "yss-project.yaml"), "schema_version: 1\nrepository_mode: template-source\n");
   for (const ref of [".template-spec/agents/yss-skill-registry.yaml", ".template-spec/agents/digital-human-roles.yaml", ".template-spec/agents/issue-tracker.md", ".template-spec/process/lifecycle-registry.yaml", ".template-spec/process/lifecycle-artifact-map.md", ".template-source/process/maintenance-intensity.yaml", ".template-source/process/template-verification-profiles.yaml", ".template-source/agents/skills-maintenance.md"]) {
     mkdirSync(path.dirname(path.join(root, ref)), { recursive: true });
     writeFileSync(path.join(root, ref), "fixture\n");
