@@ -55,15 +55,15 @@ Matt skills 决定如何工作；YSS 生命周期决定是否允许推进；YSS 
 | 首次启用或配置缺失 | `setup-matt-pocock-skills`（用户显式） | `needs-human`，说明缺失项；用户完成 setup 后重新计算 readiness |
 | 需求澄清 | 原生 `work-unit.plan-requirements`，按 `planning.clarification_policy` 主动调用 `grilling` 处理必须确认的未决决定，术语使用 `domain-modeling` | 逐项验收未决项和证据回流；完整退出联合当前 Plan 用户决定 |
 | 信息在其他人手中 | 生命周期外部输入问卷 | 使用 `external-input-required` 暂停；答案回流后记录 response、重新分类影响面，再进入 `work-unit.plan-requirements` 或 `to-spec` |
-| 大型模糊工作 | `wayfinder`（可选） | 仅在跨会话 / 跨 Agent 或 frontier 不清晰时启用；map 真正完成后 `handoff → to-spec` |
+| 大型模糊工作 | `wayfinder`（可选） | 仅在跨会话 / 跨 Agent 或 frontier 不清晰时启用；map 真正完成后继续当前原生 Spec 工作；handoff / to-spec 仅用户显式调用 |
 | 技术或战略事实 | `yss-research`（`research` 为 deprecated alias） | `technical-evidence` 核验一手技术资料；`strategy-evidence` 为领域战略和阶段决策提供可审计证据；研究包不得自行修改或批准下游资产 |
-| runnable 问题 | `prototype` | 生成单文件可分享 HTML，保留 `prototype/<name>` 分支作为主来源；必须 source/return handoff 和结论回填，只能作为阶段 4 输入，不得替代低保真评审、H1/H2 档位路由、schema v4 验证和用户确认 |
+| runnable 问题 | `prototype` | 生成单文件可分享 HTML，保留 `prototype/<name>` 分支作为主来源；必须有运行证据、结论、权威资产回填和未决项；source/return handoff 仅实际手动交接时需要，只能作为阶段 4 输入，不得替代低保真评审、H1/H2 档位路由、schema v4 验证和用户确认 |
 | Spec 综合 | 原生 `work-unit.spec-synthesis`；`to-spec`（用户显式兼容） | 初稿进入 `ready-for-human`，不得直接实现 |
 | 切片 | 原生 `work-unit.ticket-decomposition`；`to-tickets`（用户显式兼容） | 仅在冻结/无影响记录后拆垂直切片，初始 Ticket 状态为 `ready-for-human` |
 | 实现 | 原生 `work-unit.slice-implementation`；`implement`（用户显式兼容） | 当前合同批准并持久化后执行；内部使用 `tdd`，结果回交后再次核验 |
 | Bug | `diagnosing-bugs`、`tdd` | 先建立红色反馈；高风险影响升级上游门禁 |
 | 审查 | `code-review` | 唯一默认代码审查入口；审查者独立且不得写实现；Standards 消费 Spec、仓库治理规则、Slice `required_skills` 和 YSS / Alibaba 专项检查输入；finding 按合同分流修复或 stale 回 实现合同编译器 |
-| 跨上下文 | `handoff` | 保存来源、阶段、未决项、命令和下一责任人 |
+| 用户明确要求跨上下文交接 | `handoff` | 默认临时续接说明和产物引用；明确正式打包才走原冻结包协议 |
 | 阶段边界 | 生命周期 phase-boundary 合同 | 按 `Continue → /clear → /handoff → subagent → /compact` 选择上下文动作；只记录证据，不扩展生命周期状态 |
 | 解释未落地 | 普通对话与文档写作规范 | 只重新解释当前结论，不改变阶段、门禁、Ticket 或 `ready-for-agent` |
 | 人工步骤 | 人工 checkpoint | 记录 Agent 无法替代的点击、审批、凭据和迁移步骤；秘密值必须隐藏并脱敏 |

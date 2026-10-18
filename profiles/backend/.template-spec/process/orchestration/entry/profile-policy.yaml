@@ -209,7 +209,9 @@ business_input:
   modes:
     - standalone
     - upstream
+  # 普通需求、说明、技术文档或 Spec 材料先提取到本端记录；来源格式、源工程身份与源批准不作为分析前提。
   standalone: local-plan-spec-and-current-approved-design
+  # 仅用户显式选择现有正式上游时核验来源批准；普通材料不自动建立正式接收或持续在线绑定。
   upstream: reuse-current-approved-assets-preserve-authority
   conflicts: confirm-with-authority-before-dependent-work
   delivery_path_policy_ref: .template-spec/process/orchestration-contract.yaml#request_triage.delivery_path

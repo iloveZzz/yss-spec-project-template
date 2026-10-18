@@ -381,7 +381,7 @@ wayfinder_mode:
     - unclear-decision-frontier
     - cross-domain-dependency-map-needed
   lifecycle_position: plan-to-spec-planning
-  completion_route: wayfinder -> handoff -> to-spec
+  completion_route: wayfinder -> native-spec-work-unit
   does_not_replace:
     - lifecycle-gates
     - spec-baseline
@@ -409,12 +409,10 @@ unknown_impact:
 prototype_return_evidence:
   required:
     - prototype_mode
-    - source_handoff
     - prototype_asset_or_run
     - conclusion
     - updated_authoritative_asset
     - remaining_questions
-    - return_handoff
   allowed_modes:
     - matt_logic
     - yss_high_fidelity
@@ -444,12 +442,10 @@ prototype_modes:
     required:
       - prototype_mode
       - prototype_branch
-      - source_handoff
       - prototype_asset_or_run
       - conclusion
       - updated_authoritative_asset
       - remaining_questions
-      - return_handoff
     purpose: exploratory_primary_source
     production_delivery: false
     replaces_yss_high_fidelity: false

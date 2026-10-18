@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import {localBackendTerminalFixture,registerLocalBackendFeature} from '../scripts/fixtures/backend-delivery/local-terminal-fixture.mjs';
 import * as producer from '../scripts/lib/backend-delivery.mjs';
@@ -11,6 +12,23 @@ import {normalizeSliceContract,readSliceContract,selectSliceWorkUnit,selectedSli
 import {baselineFixture} from '../scripts/fixtures/existing-ui-baseline/fixture.mjs';
 
 function localFixture(t,options) {const f=localBackendTerminalFixture(options);t.after(f.cleanup);return f;}
+
+test('普通材料离线后按当前本端合同复验后端终点，不触发交接或扩大授权',async t=>{
+  const materialRoot=fs.mkdtempSync(path.join(os.tmpdir(),'backend-material-'));
+  t.after(()=>fs.rmSync(materialRoot,{recursive:true,force:true}));
+  const sourceRef=path.join(materialRoot,'说明.txt');
+  fs.writeFileSync(sourceRef,'提交申请时校验必填材料；缺少材料拒绝提交。\n');
+  const f=localFixture(t),{checkpointRef,terminal}=registerLocalBackendFeature(f);
+  f.write('.work/local/material-notes.md',`来源（信息引用）：${sourceRef}\n${fs.readFileSync(sourceRef,'utf8')}`);
+  const completed=await completeBackendDelivery(f.root,terminal,{checkpointRef});
+  assert.equal(completed.result,'backend-delivered');
+  fs.rmSync(materialRoot,{recursive:true});
+  const verified=await verifyBackendDeliveryTerminal(f.root,{checkpointRef});
+  assert.equal(verified.result,'backend-delivered');
+  assert.equal(verified.business_completed,false);
+  assert.equal(verified.release_authorized,false);
+  assert.equal(fs.existsSync(path.join(f.root,'docs/deliveries/strategic')),false);
+});
 
 test('本地后端证据复用批准Slice、独立审查与构建部署，不生成战略交接包',async t=>{
   const f=localFixture(t);

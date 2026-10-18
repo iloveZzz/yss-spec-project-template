@@ -44,8 +44,6 @@ progression_target:
         - gate.product-design-approved
       required_checks:
         - business-tickets-formal
-      conditional_required_checks:
-        strategic-handoff-delivery: explicit-external-implementation-consumer
       conditional_gates:
         gate.product-design-approved: product-design-impact
       no_ui_presentation: not-applicable-with-current-impact-evidence
@@ -60,8 +58,6 @@ progression_target:
       required_checks:
         - backend-delivery
       backend_completion_mode: local-current-verification-or-required-external-package
-      conditional_required_checks:
-        strategic-handoff-delivery: explicit-external-implementation-consumer
       allowed_execution_scopes:
         - plan-to-backend
     business-accepted:
@@ -71,14 +67,13 @@ progression_target:
       required_checks:
         - business-acceptance
       conditional_required_checks:
-        strategic-handoff-delivery: explicit-external-implementation-consumer
         backend-delivery: backend-api-data-impact
       allowed_execution_scopes: []
   external_strategic_handoff:
     work_unit: work-unit.strategic-design-handoff
     gate: gate.strategic-design-handoff-approved
     artifact: artifact.strategic-design-handoff
-    trigger: explicit-external-implementation-consumer
+    trigger: explicit-user-package-request
     source_capability: business-ticket-approval-v1
     review_policy_ref: .template-spec/process/orchestration/domain/review.yaml#review_modes
     source_authority: original-profile-and-current-approved-assets

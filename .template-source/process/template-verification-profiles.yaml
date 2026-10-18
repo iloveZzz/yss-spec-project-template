@@ -83,6 +83,8 @@ profiles:
           - ".template-spec/agents/*.md"
           - ".template-source/contracts/harness-hardening-v1*.md"
           - ".template-source/contracts/architecture-iteration-v1*.md"
+          - ".template-source/contracts/spec-backend-direct-consumption-design.md"
+          - "docs/superpowers/plans/2026-10-18-spec-backend-material-intake-and-manual-handoff.md"
         depends_on: []
         failure_mode: "说明文档复述门禁数、阶段数、投影根数量或硬编码与 lock 不一致的上游 revision"
       - id: check.role-independent-contracts
@@ -120,6 +122,11 @@ profiles:
         inputs_complete: true
         input_patterns:
           - "tests/specialist-business-inputs.test.mjs"
+          - "scripts/lib/harness-execution-scope.mjs"
+          - ".template-spec/process/orchestration/entry/request-triage.yaml"
+          - ".template-spec/process/agent-entry-policy.md"
+          - ".agents/skills/yss-product-lifecycle/SKILL.md"
+          - ".agents/skills/yss-product-lifecycle/references/conditional-guidance.md"
           - "scripts/lib/profile-tree.mjs"
           - "profiles/**"
         depends_on: []
@@ -683,6 +690,10 @@ profiles:
         group: feature-assets
         inputs_complete: true
         input_patterns:
+          - ".template-spec/process/orchestration/entry/request-triage.yaml"
+          - ".template-spec/process/orchestration/domain/progression.yaml"
+          - ".template-spec/process/orchestration/workflow/work-units/work-unit.backend-delivery.yaml"
+          - "scripts/lib/backend-delivery.mjs"
           - "tests/backend-delivery-terminal.test.mjs"
           - "scripts/fixtures/backend-delivery/local-terminal-fixture.mjs"
           - "scripts/lib/slice-contract.mjs"
@@ -1482,6 +1493,14 @@ profiles:
           - "scripts/verify-lifecycle-checkpoint"
           - "scripts/lib/checkpoint-boundary.mjs"
           - "tests/checkpoint-boundary.test.mjs"
+          - "tests/helpers/scenario-checks.mjs"
+          - ".template-spec/process/harness-process-tailoring.md"
+          - ".template-spec/process/lifecycle-progression.md"
+          - ".agents/skills/handoff/SKILL.md"
+          - ".agents/skills/yss-product-lifecycle/references/orchestration.md"
+          - ".agents/skills/yss-product-lifecycle/references/matt-yss-adapter.md"
+          - ".agents/skills/yss-product-lifecycle/references/progression-target.md"
+          - ".template-spec/process/orchestration-policy-consumers.md"
         depends_on: []
         failure_mode: "阶段 checkpoint 越界接受或编排合同错误"
       - id: "check.daily-selection"
@@ -3346,6 +3365,7 @@ gates:
     impact_dependencies: []
     depends_on: []
     check_ids:
+      - check.role-independent-contracts
       - check.plan-review-control-convergence
       - check.role-gates-current-capability
       - check.a3cc57f168071cc8

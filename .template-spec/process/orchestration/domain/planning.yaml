@@ -166,7 +166,7 @@ grill_exit:
     - no_unresolved_runnable_blocker
   facts_resolved_or_routed:
     technical_fact: yss-research
-    runnable_question: handoff-prototype-handoff
+    runnable_question: prototype
     external_decision: external-input-required
   user_confirmation_required: true
   preparation_check: grill_exit

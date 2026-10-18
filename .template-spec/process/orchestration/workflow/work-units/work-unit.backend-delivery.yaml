@@ -43,4 +43,4 @@ work_unit_routes:
       - business-acceptance-boundary
     not_applicable_reason: outside_plan_to_backend_execution_scope
     verifier: scripts/complete-backend-delivery
-    completion: current-source-and-exported-package-verified
+    completion: current-local-evidence-or-explicit-external-package-verified

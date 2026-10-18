@@ -38,7 +38,7 @@ function validatePlanClarificationPolicy(data) {
   ensure(data.grill_exit?.preparation_check === 'grill_exit' && data.grill_exit?.final_confirmation_boundary === 'gate.plan-approved' && data.grill_exit?.completion === exit.completion, 'grill_exit 与 Plan 两层澄清退出要求冲突');
 }
 
-function validateMattContract(data) {
+export function validateMattContract(data) {
   validatePlanClarificationPolicy(data);
   const formal = data.entry_routing?.formal_user_entry;
   ensure(includesAll(formal?.skills, ["setup-matt-pocock-skills", "to-spec", "to-tickets", "implement"]) && formal?.action === "lifecycle-validate-and-accept" && formal?.lifecycle_artifact_write === "conditional-explicit-user-entry" && formal?.return_to_orchestrator === "required", "正式用户入口缺少生命周期预检与回交约束");
@@ -47,7 +47,7 @@ function validateMattContract(data) {
   ensure(includesAll(setup?.preserves, ["lifecycle.status", "gate.status", "ticket.role"]) && setup?.legacy_artifacts_detected?.action === "migration-check" && setup.legacy_artifacts_detected.setup === "forbidden" && setup.legacy_artifacts_detected.write === "paused", "setup 暂停或旧资产迁移暂停契约不完整");
   const grill = data.grill_exit;
   ensure(includesAll(grill?.required, ["frontier_empty", "facts_resolved_or_routed", "decisions_confirmed", "shared_understanding_confirmed", "no_unresolved_runnable_blocker"]) && grill?.user_confirmation_required === true, "grill_exit 缺少 frontier、事实路由、决策、共同理解、用户确认或 runnable blocker 条件");
-  ensure(grill?.facts_resolved_or_routed?.technical_fact === "yss-research" && grill.facts_resolved_or_routed.runnable_question === "handoff-prototype-handoff" && grill.facts_resolved_or_routed.external_decision === "external-input-required", "grill_exit 的事实、runnable 问题或外部决策路由不完整");
+  ensure(grill?.facts_resolved_or_routed?.technical_fact === "yss-research" && grill.facts_resolved_or_routed.runnable_question === "prototype" && grill.facts_resolved_or_routed.external_decision === "external-input-required", "grill_exit 的事实、runnable 问题或外部决策路由不完整");
   const git = data.git_authorization;
   ensure(git?.explicit_scoped_user_reply_may_be_normalized === true, "明确范围的原始用户回复未允许按既有用户决定协议归一化");
   for (const action of ["commit", "push"]) {

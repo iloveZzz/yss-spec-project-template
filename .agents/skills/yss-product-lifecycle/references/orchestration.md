@@ -23,7 +23,7 @@
 
 恢复按合同 `execution_efficiency.recovery` 执行：读取当前 checkpoint、阶段工作项、任务包和真实结果，先识别运行中任务、已有完成证据及操作已完成但尚未登记的情况。运行中或结果未知时核对原任务身份，不因缺少摘要再次派发；已有完成证据须先复核新鲜度，再计算下一单元。外部动作缺可查询结果时报告缺口，不能重做副作用。
 
-上游变化按既有依赖关系使受影响资产过期，保留未受影响工作和历史记录；恢复、派发和交付边界仍执行适用 Context、决定/延续、门禁、仓库和允许写范围的校验。核验后输入变化即重验。有效授权不重复询问；未知或实质变化回交原责任方。历史实例缺 stage_tracking 时按已登记兼容和显式迁移入口处理，状态查询不自动补写。
+本端及显式正式绑定输入的变化按既有依赖关系使受影响资产过期；普通材料仅按需获取，不因原来源变化或离线启动同步、比较或恢复，保留未受影响工作和历史记录；恢复、派发和交付边界仍执行适用 Context、决定/延续、门禁、仓库和允许写范围的校验。核验后输入变化即重验。有效授权不重复询问；未知或实质变化回交原责任方。历史实例缺 stage_tracking 时按已登记兼容和显式迁移入口处理，状态查询不自动补写。
 
 ## 结果与友好提示
 
@@ -65,7 +65,7 @@ Matt phase boundary 是工作阶段之间的上下文决策，不是新的生命
 
 1. **Continue**：下一阶段需要当前会话作为 primary source，或当前上下文仍在 smart zone 内。
 2. **`/clear`**：当前探索、死路和决策对下一阶段完全无关。
-3. **`/handoff`**：内容必须跨新 harness、新目录、同事或中途分叉的 side task 携带。
+3. **`/handoff`**：用户明确要求交接时，为新上下文生成轻量续接说明与引用；跨目录、换会话本身不触发交接。
 4. **Subagent**：工作单元边界清晰，可以在无人值守时完成并返回报告。
 5. **`/compact`**：同一 harness、同一目录且上下文仍相关，但需要压缩后继续；它是最后选项。
 
@@ -151,7 +151,7 @@ tracker 选择和冲突按 `.template-spec/agents/issue-tracker.md` 裁决：已
 
 ## Wayfinder 完成判定
 
-“无 frontier”不等于完成。只有以下条件同时成立，才能 `wayfinder → handoff → to-spec`：
+“无 frontier”不等于完成。只有以下条件同时成立，才能继续当前原生 Spec 工作单元；`to-spec` 和 `handoff` 仍只由用户显式调用：
 
 - open child tickets 为 0；
 - 不存在 open blocked 或 open claimed child ticket；
@@ -162,9 +162,9 @@ Decision ticket 产生决策，不是实现切片，不得标记 `ready-for-agen
 
 ## `work-unit.plan-requirements` 退出判定
 
-进入 `to-spec` 前必须区分已确认项与未决项，并确认用户、问题、MVP、非目标、成功标准、术语/ADR 候选和测试 seam。事实问题走 `yss-research`；需 runnable 反馈的问题走 `handoff → prototype → handoff`。存在未回流 blocker 时不得进入 Spec baseline。
+进入 Spec 工作前必须区分已确认项与未决项，并确认用户、问题、MVP、非目标、成功标准、术语/ADR 候选和测试 seam。事实问题走 `yss-research`；需 runnable 反馈的问题走 `prototype`，在当前记录回写实验结论。存在未回流 blocker 时不得进入 Spec baseline。
 
-Prototype 回流必须有可核验证据：来源 handoff、prototype 资产或运行记录、结论、被更新的 Spec/设计/ADR/Ticket 引用、剩余未决项和返回 handoff。仅在对话中声称“已验证”不算回流完成。
+Prototype 回流必须有可核验证据：prototype 资产或运行记录、结论、被更新的 Spec/设计/ADR/Ticket 引用及剩余未决项。没有实际手动交接时无需 source/return handoff；用户确实选择交接时仍核验其安全引用。仅在对话中声称“已验证”不算回流完成。
 
 Matt `prototype` 的回流还必须注明 `prototype_branch`，并保留单文件 HTML 主来源；该结果只能作为 YSS 原型输入，仍须完成阶段 4 的低保真评审、H1/H2 档位路由、schema v4 验证和用户确认，不得用 throwaway prototype 替代。
 

@@ -11,6 +11,16 @@ import {planEntryPolicy} from '../scripts/lib/plan-spec-entry.mjs';
 import {composeProfileTree} from '../scripts/lib/profile-tree.mjs';
 const root=path.resolve(import.meta.dirname,'..');
 const read=(base,ref)=>parse(fs.readFileSync(path.join(base,ref),'utf8'));
+test('材料输入不要求来源格式和治理身份，根与Backend共用政策',()=>{
+ const policy=loadOrchestrationContract(ref=>fs.readFileSync(path.join(root,ref)),'.template-spec/process/orchestration-contract.yaml').value.request_triage.material_intake;
+ assert.deepEqual(policy,{
+  source_format:'unrestricted',record:'current-task-or-native-assets',
+  upstream_access:'on-demand',change_recovery:'optional',approval:'never-infer-from-material'
+ });
+ const base=composeProfileTree('backend');
+ const projected=loadOrchestrationContract(ref=>fs.readFileSync(path.join(base,ref)),'.template-spec/process/orchestration-contract.yaml').value;
+ assert.deepEqual(projected.request_triage.material_intake,policy);
+});
 test('专职 Profile 本地 Plan/Spec 与上游路线共享唯一日常政策，不扩另一端实现',()=>{
  const canonical=loadOrchestrationContract(ref=>fs.readFileSync(path.join(root,ref)),'.template-spec/process/orchestration-contract.yaml').value,policy=canonical.request_triage;
  for(const side of ['backend']) {
@@ -39,6 +49,25 @@ test('业务分析角色不能 Worker；专职角色不能写另一端',t=>{
  const base=composeProfileTree('backend');fs.mkdirSync(path.join(temporary,'.template-spec/process'),{recursive:true});fs.copyFileSync(path.join(base,'.template-spec/process/harness-profile.yaml'),path.join(temporary,'.template-spec/process/harness-profile.yaml'));fs.writeFileSync(path.join(temporary,'yss-project.yaml'),'schema_version: 1\nrepository_mode: project-instance\n');
  assert.throws(()=>enforceHarnessTaskScope({role_id:'role.product-manager',execution_state:'Worker',work_unit_id:'work-unit.spec-synthesis',allowed_write_paths:['src/']},{root:temporary}),/分析角色不能/);
  assert.throws(()=>enforceHarnessTaskScope({role_id:'role.backend-agent',execution_state:'Worker',work_unit_id:'work-unit.slice-implementation',allowed_write_paths:['apps/frontend/']},{root:temporary}),/另一端/);
+ assert.doesNotThrow(()=>enforceHarnessTaskScope({execution_state:'Worker',work_unit_id:'work-unit.slice-implementation',allowed_write_paths:['apps/backend/']},{root:temporary}));
+ for(const role_id of ['role.frontend-engineer','role.frontend-agent'])assert.throws(()=>enforceHarnessTaskScope({role_id,execution_state:'Worker',work_unit_id:'work-unit.slice-implementation',allowed_write_paths:['src/']},{root:temporary}),/前端实现/);
  fs.mkdirSync(path.join(temporary,'.template-spec/agents'));fs.writeFileSync(path.join(temporary,'.template-spec/agents/issue-tracker.md'),'---\ntracker:\n  business_ticket_version: 1\n---\n');
  assert.equal(businessAuthoringEnabled(temporary),true);
+});
+test('旧角色表及无岗位Profile保留跨端只读例外，前端实现仍拒绝',t=>{
+ const temporary=fs.mkdtempSync('/tmp/yss-cross-review-');t.after(()=>fs.rmSync(temporary,{recursive:true,force:true}));
+ fs.mkdirSync(path.join(temporary,'.template-spec/process'),{recursive:true});
+ fs.writeFileSync(path.join(temporary,'yss-project.yaml'),'schema_version: 1\nrepository_mode: project-instance\n');
+ const profile=read(composeProfileTree('backend'),'.template-spec/process/harness-profile.yaml');
+ for(const audience of [profile.audience,{target_user_roles:['role.backend-agent'],control_plane_roles:['role.architecture-agent']}]){
+  fs.writeFileSync(path.join(temporary,'.template-spec/process/harness-profile.yaml'),JSON.stringify({...profile,audience}));
+  for(const role_id of ['role.frontend-engineer','role.frontend-agent']){
+   const task={role_id,work_unit_id:'work-unit.slice-implementation'};
+   for(const execution_state of ['Reviewer','Explorer']){
+    assert.doesNotThrow(()=>enforceHarnessTaskScope({...task,execution_state,allowed_write_paths:[]},{root:temporary}));
+    assert.throws(()=>enforceHarnessTaskScope({...task,execution_state,allowed_write_paths:['docs/']},{root:temporary}),/另一端|前端实现/);
+   }
+   assert.throws(()=>enforceHarnessTaskScope({...task,execution_state:'Worker',allowed_write_paths:[]},{root:temporary}),/另一端|前端实现/);
+  }
+ }
 });

@@ -23,7 +23,7 @@ CLI 输入草稿使用当前功能包已有且被项目忽略的 `tmp` 目录，
 
 外部消费者逐项声明 `{profile, root, checkpoint_ref}`，每种 Profile 最多一项；根必须是显式绝对路径，checkpoint 必须属于同一功能。主控汇总时读取指定 checkpoint 与当前接收 Receipt，核对战略、接口、交付和实现版本，不按邻居目录、全局根或状态标签猜功能。Design 接收冻结 Spec 基线；Backend/Frontend 的实现交接消费批准的 Handoff v5 完整 delivery wrapper。新增 Backend Delivery 的 `strategic_bundle_ref` 必须指向完整不可变交付目录，裸 package 只用于历史兼容读取。
 
-Spec 只有在显式外部实现专职消费者需要时，才派发 `work-unit.strategic-design-handoff`、登记交接资产和门禁。产品经理起草，需求经理独立审查，源角色政策声明 `business-ticket-approval-v1`；所有来源批准当前，finalize 成包且整包实际验证通过后才算源交接完成。接收回执可异步，但在本次目标要求联合交付时必须核验本功能的当前接收证据。默认本地综合流程直接消费资产，不能自导自入。
+只有用户明确要求正式打包 / 离线交付时，Spec 才派发 `work-unit.strategic-design-handoff`、登记交接资产和门禁；外部消费者存在本身不触发包流程。普通 handoff 使用临时续接说明，普通材料读取不登记正式接收；已生效的正式跨 Profile 合同继续原义核验。产品经理起草，需求经理独立审查，源角色政策声明 `business-ticket-approval-v1`；所有来源批准当前，finalize 成包且整包实际验证通过后才算源交接完成。接收回执可异步，但在本次目标要求联合交付时必须核验本功能的当前接收证据。默认本地综合流程直接消费资产，不能自导自入。
 
 执行范围是硬上限：例如 `plan-to-backend` 可以选择 Spec、产品设计或后端终点，不能以目标配置扩大到业务验收。完整 Spec 选择一次后端终点不会永久改成后端职责范围；本地核验既有后端实现与验证，不因目标自行导出战略包或自导自入。显式外部后端消费者需要的包记录定位到本功能 map 目录，实际交付仍限制在已批准后端写路径，并保留命中的产品 UI 设计门禁。业务验收与实际 merge/release 分开授权。
 

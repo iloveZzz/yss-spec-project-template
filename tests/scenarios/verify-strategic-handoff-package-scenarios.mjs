@@ -126,10 +126,10 @@ test('规则遗漏、摘要漂移、批准不匹配和离线资源丢失阻断�
  f.put('preview/index.html','<img src="missing.png">');await assert.rejects(run,error=>error.code==='HANDOFF_SOURCE_STALE'&&error.message.includes('prototype_ref'));
 });
 test('篡改 payload、重新封摘要后的虚构规则索引、额外文件均拒绝',async t=>{
- const f=await setupV4(t),output=path.join(f.base,'package');await exportBundle({sourceRoot:f.source,handoffRef:'handoff.yaml',output});
- const spec=path.join(output,'payload/files/source/spec.md'),bytes=readFileSync(spec);writeFileSync(spec,'tampered');await assert.rejects(()=>openBundle(output,()=>null),/摘要/);writeFileSync(spec,bytes);
- writeFileSync(path.join(output,'extra.txt'),'extra');await assert.rejects(()=>openBundle(output,()=>null),/未登记/);rmSync(path.join(output,'extra.txt'));
- const manifest=read(path.join(output,'manifest.json'));const idx=Buffer.from(json([]));writeFileSync(path.join(output,'indexes/rules.json'),idx);const row=manifest.files.find(x=>x.path==='indexes/rules.json');row.sha256=hash(idx);row.size_bytes=idx.length;delete manifest.bundle_digest;manifest.bundle_digest=digest(manifest);writeFileSync(path.join(output,'manifest.json'),json(manifest));await assert.rejects(()=>openBundle(output,()=>null),error=>error.code==='HANDOFF_INDEX');
+ const f=await setupV4(t),output=path.join(f.base,'package'),evidenceRoot=makeRoot('handoff-package-evidence-');t.after(()=>rmSync(evidenceRoot,{recursive:true,force:true}));await exportBundle({sourceRoot:f.source,handoffRef:'handoff.yaml',output,evidenceRoot});
+ const spec=path.join(output,'payload/files/source/spec.md'),bytes=readFileSync(spec);writeFileSync(spec,'tampered');await assert.rejects(()=>openBundle(output,()=>null,{evidenceRoot}),/摘要/);writeFileSync(spec,bytes);
+ writeFileSync(path.join(output,'extra.txt'),'extra');await assert.rejects(()=>openBundle(output,()=>null,{evidenceRoot}),/未登记/);rmSync(path.join(output,'extra.txt'));
+ const manifest=read(path.join(output,'manifest.json'));const idx=Buffer.from(json([]));writeFileSync(path.join(output,'indexes/rules.json'),idx);const row=manifest.files.find(x=>x.path==='indexes/rules.json');row.sha256=hash(idx);row.size_bytes=idx.length;delete manifest.bundle_digest;manifest.bundle_digest=digest(manifest);writeFileSync(path.join(output,'manifest.json'),json(manifest));await assert.rejects(()=>openBundle(output,()=>null,{evidenceRoot}),error=>error.code==='HANDOFF_INDEX');
 });
 test('ZIP 路径穿越和重复条目拒绝',async t=>{
  const f=await setupV4(t);

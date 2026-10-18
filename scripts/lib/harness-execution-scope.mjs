@@ -57,9 +57,13 @@ export function enforceHarnessTaskScope(task,{root=ROOT}={}) {
     const analysisUnits=['work-unit.plan-opportunity','work-unit.plan-requirements','work-unit.domain-strategy-design','work-unit.stage-decision','work-unit.spec-synthesis',...(profile.profile_id==='harness.frontend-delivery'?['work-unit.prototype-design-v2']:[])];
     ensure(analysisUnits.includes(task.work_unit_id),'业务分析角色仅限本端 Plan/Spec 与产品设计起草和审查');
   }
-  const local=[...profile.audience.target_user_roles,...profile.audience.control_plane_roles];
   const crossReview=['Explorer','Reviewer'].includes(task.execution_state)&&task.allowed_write_paths.length===0;
-  ensure(local.includes(task.role_id)||crossReview,'专职 Harness 不允许派发另一端的实现/起草任务');
+  if(profile.audience.qualification_registry==='not-required') {
+    ensure(!['role.frontend-engineer','role.frontend-agent'].includes(task.role_id)||crossReview,'后端职责不允许派发前端实现');
+  } else {
+    const local=[...profile.audience.target_user_roles,...profile.audience.control_plane_roles];
+    ensure(local.includes(task.role_id)||crossReview,'专职 Harness 不允许派发另一端的实现/起草任务');
+  }
   const opposite='frontend';
   ensure(task.allowed_write_paths.every(ref=>!new RegExp(`^apps/${opposite}(?:/|$)`).test(ref)),'专职 Harness 不允许写入另一端工程');
 }

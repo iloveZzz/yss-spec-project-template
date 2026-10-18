@@ -2,6 +2,12 @@
 # consumers: lifecycle route/query, current Profile workflows and governance validators
 request_triage:
   owner: yss-product-lifecycle
+  material_intake:
+    source_format: unrestricted
+    record: current-task-or-native-assets
+    upstream_access: on-demand
+    change_recovery: optional
+    approval: never-infer-from-material
   delivery_path:
     version: 2
     enabled_profiles:

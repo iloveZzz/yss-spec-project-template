@@ -2,7 +2,7 @@ schema_version: 3
 profile_id: harness.backend-delivery
 status: active
 name: 后端专职交付 Harness
-purpose: 承接批准战略，完成后端战术设计、冻结接口及部署验证，按业务切片交付真实接口；可按需协作于显式 Spec 主控，后端职责完成不等于整体业务验收。
+purpose: 从可读需求、说明、技术文档或 Spec 材料分析本端目标与验收，复用已有结果；按本端有效合同完成后端设计、冻结接口及部署验证，可按需协作于显式 Spec 主控，后端职责完成不等于整体业务验收。
 audience:
   boundary: 职责按业务切片接力；后端交付、前端验收和统一管理方业务验收分别记录。上游规则及 API 变化回交权威方，不在本仓静默重定义。
   qualification_registry: not-required
@@ -126,7 +126,9 @@ business_input:
   modes:
     - standalone
     - upstream
+  # 普通需求、说明、技术文档或 Spec 材料先提取到本端记录；来源格式、源工程身份与源批准不作为分析前提。
   standalone: local-plan-spec-and-current-approved-design
+  # 仅用户显式选择现有正式上游时核验来源批准；普通材料不自动建立正式接收或持续在线绑定。
   upstream: reuse-current-approved-assets-preserve-authority
   conflicts: confirm-with-authority-before-dependent-work
   delivery_path_policy_ref: .template-spec/process/orchestration-contract.yaml#request_triage.delivery_path

@@ -7,6 +7,8 @@ description: 编排 YSS 研发全生命周期；当阶段、产物、门禁或 S
 
 仅生成 DDD/MVC 脚手架时读[直接生成](references/conditional-guidance.md#直接生成脚手架)。
 
+有需求、说明、技术文档或 Spec 材料时，先按 `request_triage.material_intake` 与[材料分析](references/conditional-guidance.md#材料分析与按需读取)提取并复用本端记录；来源格式、源工程身份及源批准不作为分析前提。普通材料按需读取，不强制变化检测、同步或恢复，提取不授予批准或实施权限。
+
 先按编排合同 `request_triage.delivery_path` 选择交付路径；`daily` 操作见 [普通任务交付](references/daily-delivery.md)。路径不是阶段、Ticket 状态或批准。
 
 ## 事实源
@@ -34,7 +36,7 @@ scripts/query-lifecycle-context --work-unit work-unit.plan-requirements --check-
 ## 入口与模式
 
 1. 严格解析 `yss-project.yaml`，不得按目录、Git remote 或占位符猜仓库身份。
-2. 判定影响面及最近可信阶段；完成须有内容、审查、新鲜上游和可读证据，文件存在不代表通过。
+2. 判定影响面及最近可信阶段；完成须有当前内容、适用审查、可读证据及正式绑定输入的当前性，文件存在不代表通过。
 3. 按 `request_triage` 选 `route`、`orchestrate`、`resume`、`audit`；行动请求无需模式关键字，意图不明只读 `route`。模式、门禁及授权边界仍适用。
 4. `project-instance` 按生命周期注册表推进；`template-source` 只走模板维护流程。
 

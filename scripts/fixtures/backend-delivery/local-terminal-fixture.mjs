@@ -7,6 +7,7 @@ import {attachArtifactApproval} from './approval-fixture.mjs';
 import * as producer from '../../lib/backend-delivery.mjs';
 import {hash,read,ROOT} from '../../lib/strategic-handoff-io.mjs';
 import {sliceCheckApplicability} from '../../lib/slice-applicability.mjs';
+import {makeRoot} from '../../../tests/helpers/yss-instance.mjs';
 
 export function localBackendTerminalFixture({apiRequired = true} = {}) {
   const f=terminalReviewFixture({specText:'# 需求\nFR-1: 提交申请并校验必填材料。\nAC-1: 提交成功或返回必填校验失败。\n',apiRequired,
@@ -38,11 +39,11 @@ export function registerLocalBackendFeature(f,feature='local') {
   const checkpointRef=`.work/${feature}/checkpoint.json`;
   const featureID=`feature.${feature}`;
   f.write('.template-spec/agents/issue-tracker.md','---\ntracker:\n  platform: local-markdown\n  root: .work\n---\n');
-  f.write('.yss.json',{schemaVersion:1,protocolVersion:1,profile:'spec',profileId:'harness.spec-template',cliVersion:'1.3.2',templateVersion:'3.5.12',legacyCliVersion:'3.5.12',templateSourceState:'committed',templateCommit:'a'.repeat(40),snapshotHash:'b'.repeat(64),manifestHash:'c'.repeat(64),baselineDigest:hash(Buffer.from('{}')).slice(7),variables:{},distribution:{},managedFiles:{}});
+  const specSeed=makeRoot('local-backend-spec-identity-');
+  f.write('.yss.json',fs.readFileSync(path.join(specSeed,'.yss.json'),'utf8'));
   f.write('.template-spec/process/orchestration-contract.yaml',JSON.stringify(loadOrchestrationContract(ref=>fs.readFileSync(path.join(ROOT,ref)), '.template-spec/process/orchestration-contract.yaml').value));
   const profileRef='.template-spec/process/harness-profile.yaml';
-  f.write(profileRef,fs.existsSync(path.join(ROOT,profileRef))?fs.readFileSync(path.join(ROOT,profileRef),'utf8'):
-    {schema_version:2,profile_id:'harness.spec-template',instantiation:{cli_package:'create-yss-spec',metadata_file:'.yss-template.json',template_source:'github:iloveZzz/yss-spec-project-template'}});
+  f.write(profileRef,fs.readFileSync(path.join(specSeed,profileRef),'utf8'));
   const checkpoint={...read(path.join(f.root,f.binding.approval_ref)),feature_id:featureID,artifacts:{'artifact.spec':f.file('spec.md')}};
   const check=checkpoint.checks['check.design-reviewed'],reviewRef=check.approval_ref;
   check.applicable=true;check.evidence={'evidence.contract-approval':[reviewRef],'evidence.approval-record':[reviewRef]};

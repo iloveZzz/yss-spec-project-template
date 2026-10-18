@@ -105,6 +105,15 @@
 
 `entry/profile-policy.yaml` 的任务 3 与 `entry/request-triage.yaml` 的 daily/standard 2 复用上述政策。daily 的同一 Ticket JSON 显式声明 `schema_version: 2`、`policy_version: 2`；`implementation.provenance` 替代必需 actor 身份，审查记录的 `assessment` 使用共用复核结构，原始审查记录与结果、阻断项、assessment、当前候选摘要一致。API 使用 `api_digest`，代码使用 `candidate_digest`，二者不可互换。缺版本是历史输入，不能猜为 2。
 
+## 材料分析与手动交接的执行位置
+
+| 政策 | 消费责任与边界 |
+|---|---|
+| `request_triage.material_intake` | `yss-product-lifecycle/references/conditional-guidance.md` 的材料分析节与 Backend `harness-orchestrator`：不限来源格式，复用本端记录，按需读取，不推断批准或自动建立正式接收 |
+| `wayfinder_mode`、`grill_exit`、`prototype_return_evidence`、`prototype_modes.matt_logic` | 生命周期 `orchestration.md` / `matt-yss-adapter.md`：原生 Spec 接续，原型保留运行、结论、权威回写与未决项；无实际交接不要求 handoff |
+| `progression_target.external_strategic_handoff`、战略交接工作单元 | `progression-target.md`、`handoff/SKILL.md` 与 Backend 编排入口：仅显式正式包请求触发；包与来源批准验证保留，普通材料不自动成为包依赖 |
+| `phase_boundary` | `scripts/lib/checkpoint-boundary.mjs` 及原生 checkpoint：continue 不需交接引用，实际 handoff 仍核验 source/destination；历史读取不授予当前执行资格 |
+
 ## 旧强约束的去向
 
 | 原位置/约束 | 新位置或退休理由 | 消费者处置 |

@@ -11,6 +11,17 @@ import './verification-baseline.test.mjs';
 import './verification-qualification.test.mjs';
 const pilot='.agents/skills/yss-research/SKILL.md';
 const pilotConfig=()=>loadVerificationProfiles();
+test('日常新设计与计划只登记文档消费者',()=>{
+ for(const ref of ['.template-source/contracts/spec-backend-direct-consumption-design.md','docs/superpowers/plans/2026-10-18-spec-backend-material-intake-and-manual-handoff.md']){
+  const plan=planTemplateVerification({changedFiles:[ref]});
+  assert.equal(plan.effective_profile,'fast');
+  assert.ok(plan.commands.some(row=>row.id==='check.doc-facts'),ref);
+  assert.ok(plan.commands.every(row=>!row.id.includes('release')),ref);
+ }
+ for(const ref of ['.template-spec/process/orchestration/entry/request-triage.yaml','.agents/skills/yss-product-lifecycle/references/conditional-guidance.md']){
+  assert.ok(planTemplateVerification({changedFiles:[ref]}).commands.some(row=>row.id==='check.specialist-business-inputs'),ref);
+ }
+});
 test('路由与推进意图测试按自身输入选择，发布路由检查必选且不重复',()=>{
  for(const [file,id]of [['tests/native-consumer-routing.test.mjs','check.native-consumer-routing'],['tests/progression-target-evidence.test.mjs','check.progression-target-evidence']]){
   const plan=planTemplateVerification({changedFiles:[file]});assert.equal(plan.commands.filter(row=>row.id===id).length,1);
