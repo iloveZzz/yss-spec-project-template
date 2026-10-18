@@ -206,6 +206,13 @@ test('CI 空变化仍必跑守卫且每个 ID 只出现一次，拒绝失效绑�
  assert.deepEqual(STEPS.filter(x=>x.verification_check_id).map(x=>x.command.join(' ')).sort(),plan.commands.filter(x=>ids.includes(x.id)).map(x=>x.command).sort());
 });
 
+test('工作布局扫描准备独立 CLI 例外所需的固定来源', async () => {
+ const {verificationToolRequirements}=await import('../.template-source/scripts/lib/verification-preflight.mjs');
+ const plan=planTemplateVerification({changedFiles:['scripts/fixtures/backend-scaffold/design-prerequisites.mjs'],ciGuards:true});
+ assert.ok(plan.commands.find(item=>item.id==='check.work-layout-hardcodes').resources?.includes('native-cli'));
+ assert.equal(verificationToolRequirements(plan,{reportValidation:true}).native_cli,true);
+});
+
 test('原始选择读取提交、index、工作树及中文未跟踪路径且不探测工具', async t => {
  const {selectVerificationInputs}=await import('../.template-source/scripts/lib/template-verification-worker.mjs');
  assert.equal(typeof selectVerificationInputs,'function');

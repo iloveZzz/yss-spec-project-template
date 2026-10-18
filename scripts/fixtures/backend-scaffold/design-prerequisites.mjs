@@ -60,11 +60,16 @@ export function attachDesignPrerequisites(root, contract, { dataImpact = "not-ap
       write(root, ref, readFileSync(path.join(nativeIdentity, ref), "utf8"));
     }
     const catalog = read(path.join(nativeIdentity, ".template-spec/engineering/backend-platforms.json"));
-    const catalogEvidence = new Set(catalog.compatibility.flatMap(entry => [
-      ...(entry.artifact_resolution_evidence ? [entry.artifact_resolution_evidence.ref] : []),
-      ...Object.values(entry.platform_artifact_bindings || {}).filter(binding => binding.status === "resolved-pom").flatMap(binding => (binding.evidence || []).map(evidence => evidence.ref)),
-    ]));
-    for (const ref of catalogEvidence) write(root, ref, readFileSync(path.join(nativeIdentity, ref), "utf8"));
+    const catalogEvidence = new Map(catalog.compatibility.flatMap(entry => [
+      ...(entry.artifact_resolution_evidence ? [entry.artifact_resolution_evidence] : []),
+      ...Object.values(entry.platform_artifact_bindings || {}).filter(binding => binding.status === "resolved-pom").flatMap(binding => binding.evidence || []),
+    ]).map(evidence => [evidence.ref, evidence.digest]));
+    // 冻结旧实例不含工程证据，只补入与其目录摘要相符的受控原文。
+    for (const [ref, digest] of catalogEvidence) {
+      const source = readFileSync(new URL("../../../" + ref, import.meta.url), "utf8");
+      if (hash(source) !== digest) throw new Error(`脚手架夹具工程证据摘要不匹配: ${ref}`);
+      write(root, ref, source);
+    }
     cpSync(path.join(nativeIdentity, ".template-spec/process/schemas"), path.join(root, ".template-spec/process/schemas"), { recursive: true });
     nativeContext = readFileSync(path.join(nativeIdentity, "CONTEXT.md"), "utf8");
   } finally { rmSync(nativeIdentity, { recursive: true, force: true }); }
