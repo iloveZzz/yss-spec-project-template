@@ -1,139 +1,18 @@
 #!/usr/bin/env node
-import { spawnSync } from "node:child_process";
-import { existsSync, lstatSync, readFileSync } from "node:fs";
-import path from "node:path";
-import { PROJECTION_ROOTS, ROOT } from "./lib/skill-supply-chain.mjs";
+import { scanRetiredSkillIds } from "./lib/skill-retirement.mjs";
 
-const retired = [
-  "grill-with-docs",
-  "to-questionnaire",
-  "improve-codebase-architecture",
-  "wait-what",
-  "ask-matt",
-  "grill-me",
-  "dispatching-parallel-agents",
-  "loop-me",
-  "migrate-to-shoehorn",
-  "prototype-page-acceptance",
-  "scaffold-exercises",
-  "setup-pre-commit",
-  "setup-ts-deep-modules",
-  "teach",
-  "writing-beats",
-  "writing-fragments",
-  "writing-shape",
-  "yss-microapp-commit",
-  "component-selection-imports",
-  "page-form-module",
-  "page-list-module",
-  "page-skeleton",
-  "vue3-best-practices",
-  "yss-use-table-height",
-  "yss-use-tree-height",
-  "yss-components",
-  "yss-mvc-scaffold-generator",
-  "yss-mvc-design",
-  "yss-mvc-data-analysis-project-initializer",
-  "yss-backend-scaffold-parent",
-  "yss-backend-scaffold-adapter",
-  "yss-application-layer-reference",
-  "yss-domain-layer-reference",
-  "yss-infrastructure-layer-reference",
-  "yss-web-layer-reference",
-  "yss-page-module-development",
-  "yss-router",
-  "yss-source-index",
-  "file-export-download",
-  "formily-foundation",
-  "formily-linkage-effects",
-  "formily-mode-slot-detail",
-  "formily-step-flow",
-  "frontend-commit",
-  "theme-token-usage",
-  "yedit-table-usage",
-  "yss-api-integration",
-  "yss-formily",
-  "yss-formily-schema-generator",
-  "yss-frontend-scaffold-generator",
-  "yss-hook",
-  "yss-ui",
-  "yss-ui-business-page-generation",
-  "ytable-usage",
-  "ytree-usage",
-];
-const allowed = (relative, line) => relative === ".template-spec/agents/skill-migrations.md"
-  || relative === ".template-source/profile-skill-sync.json"
-  // Immutable bindings for migration from earlier backend-delivery plugin versions.
-  || relative === ".template-source/plugins/yss-backend-delivery/legacy-0.2.json"
-  || relative === ".template-source/plugins/yss-backend-delivery/legacy-m4.json"
-  // Explicit migration removes the verified legacy skill before the current verifier runs.
-  || (relative === ".template-source/plugins/yss-backend-delivery/migration.mjs"
-    && line.includes('const ref = `.${agent}/skills/grill-me`;'))
-  || relative.startsWith(".template-source/profile-skill-patches/")
-  // Verbatim source-policy regression fixture: its retired/forbidden lists are evidence, not active skill routing.
-  || relative === "scripts/fixtures/existing-ui-baseline/design-source-roles.json"
-  || relative === "scripts/fixtures/strategic-handoff/aggregate-source-roles.json"
-  || relative === "scripts/fixtures/strategic-handoff/source-roles.json"
-  || relative.includes("/.template-spec/agents/skill-migrations.md")
-  || relative.startsWith(".template-source/wiki/raw/")
-  || relative.endsWith(".template-source/wiki/raw/skill-migrations.md")
-  || relative.includes("/tests/")
-  || relative.startsWith(".template-source/tooling/node/test/")
-  || relative.endsWith("/skills/.yss-skills-manifest.json")
-  || relative === ".template-source/agents/yss-ui-skills-integration.md"
-  || relative === "scripts/lib/skill-governance.mjs"
-  // The resolver names this retired ID only to reject it and return its replacement.
-  || (relative === "scripts/lib/skill-registry.mjs" && line.includes('const replacementSkill = ({ "grill-me":'))
-  || (relative.endsWith("/skills/yss-product-lifecycle/references/orchestration-contract.yaml") && line.includes("retired_shared_skills:"))
-  || relative.endsWith("scripts/verify-retired-skill-ids")
-  || relative.endsWith("scripts/lib/skill-supply-chain.mjs")
-  || relative.endsWith("scripts/lib/implementation-contract-compiler.mjs");
-
-const escaped = retired.filter((id) => !["teach", "yss-components"].includes(id)).map((id) => id.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
-const exactSkillIdPattern = `(?<![a-z0-9-])(?:${escaped.join("|")})(?![a-z0-9-])`;
-const teachSkillPattern = "(?:`teach`|/teach(?:/|\\b)|(?:^|[\\[,])\\s*[\"']?teach[\"']?\\s*(?=[,\\]])|\\b(?:id|name)\\s*:\\s*[\"']?teach[\"']?\\b)";
-const yssComponentsSkillPattern = "(?:`yss-components`|/yss-components/|(?:^|[\\[,])\\s*[\"']?yss-components[\"']?\\s*(?=[,\\]])|\\b(?:id|name|skill)\\s*:\\s*[\"']?yss-components[\"']?\\b)";
-const retiredSkillPattern = `(?:${exactSkillIdPattern}|${teachSkillPattern}|${yssComponentsSkillPattern})`;
-const matcher = new RegExp(retiredSkillPattern, "u");
-const matches = [];
-const inventory = spawnSync(
-  "git",
-  // These trees are already excluded below or unconditionally allowed above.
-  // Filter before buffering: retained Agent workspaces can exceed spawnSync's
-  // output limit without adding any active asset to this audit.
-  ["ls-files", "-z", "--cached", "--others", "--exclude-standard", "--", ".",
-    ":(exclude).codegraph/**", ":(exclude)submodules/**"],
-  { cwd: ROOT, encoding: "utf8", maxBuffer: 32 * 1024 * 1024 },
-);
-if (inventory.status !== 0) {
-  process.stderr.write(inventory.stderr || inventory.error?.message || "无法读取 Git 文件清单\n");
-  process.exit(1);
-}
-const files = inventory.stdout.split("\0").filter(Boolean).filter((relative) =>
-  !relative.startsWith(".git/")
-  && !relative.startsWith(".codegraph/")
-  && !relative.startsWith("submodules/"));
-for (const relative of files) {
-  const absolute = path.join(ROOT, relative);
-  if (!existsSync(absolute)) continue;
-  const stat = lstatSync(absolute);
-  if (!stat.isFile() || stat.isSymbolicLink()) continue;
-  const bytes = readFileSync(absolute);
-  if (bytes.includes(0)) continue;
-  const lines = bytes.toString("utf8").split(/\r?\n/);
-  lines.forEach((line, index) => {
-    if (matcher.test(line)) matches.push(`./${relative}:${index + 1}:${line}`);
-  });
-}
-const violations = matches.filter((line) => {
-  const match = line.match(/^\.\/(.*?):\d+:/);
-  return !match || !allowed(match[1], line);
-});
-for (const name of retired) {
-  const roots = [".agents/skills", ...PROJECTION_ROOTS];
-  for (const root of roots) if (existsSync(path.join(ROOT, root, name))) violations.push(`${root}/${name}: retired physical directory remains`);
-}
-if (violations.length) {
-  process.stderr.write(`退役 skill id 仍存在于活跃资产:\n${violations.join("\n")}\n`);
+try {
+  const result = scanRetiredSkillIds();
+  const hard = result.hard;
+  const violations = result.violations;
+  const summary = "退役检查：hard=" + hard.length + " text=" + violations.length + " allowed-references=" + result.allowedReferences.length;
+  if (hard.length || violations.length) {
+    process.stderr.write("退役 skill id 仍存在于活跃资产:\n" + [...hard, ...violations].join("\n") + "\n");
+    process.exitCode = 1;
+  } else {
+    process.stdout.write(summary + "\nretired skill ids are absent from active assets\n");
+  }
+} catch (error) {
+  process.stderr.write("verify-retired-skill-ids 错误: " + error.message + "\n");
   process.exitCode = 1;
-} else process.stdout.write("retired skill ids are absent from active assets\n");
+}

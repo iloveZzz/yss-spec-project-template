@@ -5,11 +5,11 @@
 ## 权威内容与投影
 
 - `.agents/skills` 是跨 Agent 共享技能的唯一权威内容。
-- `.codex/skills`、`.cursor/skills`、`.pi/skills` 中的同名共享技能是生成投影，不得分别手工修改。
-- Cursor 的契约运行时入口是 `.cursor/skills`，不得把 canonical `.agents/skills` 与平台投影解释为两个来源。
+- 模板源只生成 `.claude/skills` 投影（Claude Code 唯一发现入口）；`.codex/skills`、`.cursor/skills`、`.pi/skills` 不是模板源投影，这些运行时直接读取 `.agents/skills`。
+- 实例若启用平台投影，由实例 `skills-lock.json` 的 `projectionRoots` 声明，最多四个；不得把实例投影根与模板源 canonical 内容解释为两个来源。
 - 分层、别名和默认可发现性以 `.template-spec/agents/yss-skill-registry.yaml` 为准；当前 registry 为 `active`，实现合同编译器、生命周期编排器和实例发现面必须消费通过校验的 canonical 技能及其 alias 解析结果。
 - 只属于某个平台的 skill 继续保留在对应 root，并由 `skills-lock.json` 的 `platform` 分组记录。
-- 共享技能投影可以是指向权威目录的符号链接，也可以是完整同步副本；`scripts/sync-skills --check` 会检查链接目标或完整目录哈希。
+- 共享技能投影可以是指向权威目录的符号链接，也可以是完整同步副本；`scripts/sync-skills --check` 检查模板源 `.claude/skills` 的链接目标或完整目录哈希，实例投影根由实例锁声明并按实例入口校验。
 
 ## 来源与锁定
 
@@ -69,11 +69,11 @@
 
 ## 专职 Profile 覆盖层
 
-design、backend 专职 Profile 不再是独立仓库，也没有同步脚本、共享工具锁或「有意定制」登记。Profile 的内容分三层，后面的覆盖前面的：内核（本仓的 `.agents/skills`、`scripts`、`.template-spec/process`、`.template-spec/templates`）、`profiles/_specialist/`（各专职 Profile 共有的覆盖）、`profiles/<profile>/`（该 Profile 自己的覆盖，含它的分发清单 `.template-source/distribution/bundle-profile.json`）。yss-cli 在构建 Bundle 时按来源锁里的 `overlayPaths` 把三层组合起来；内核里不属于某个 Profile 的文件，写进它分发清单的 `excludePaths`。
+design、backend 专职 Profile 不再是独立仓库，也没有同步脚本、共享工具锁或「有意定制」登记。design 为 legacy（旧产品线与旧实例迁移），backend 为现役覆盖层；两者都通过 `.template-source/process/profile-status.yaml` 声明状态。Profile 的内容分三层，后面的覆盖前面的：内核（本仓的 `.agents/skills`、`scripts`、`.template-spec/process`、`.template-spec/templates`）、`profiles/_specialist/`（各专职 Profile 共有的覆盖）、`profiles/<profile>/`（该 Profile 自己的覆盖，含它的分发清单 `.template-source/distribution/bundle-profile.json`）。yss-cli 在构建 Bundle 时按来源锁里的 `overlayPaths` 把三层组合起来；内核里不属于某个 Profile 的文件，写进它分发清单的 `excludePaths`。
 
 - 改内核文件，所有 Profile 的下一版 Bundle 同时带上；只想让某个 Profile 不同，就在它的覆盖层里放同一路径的文件。
 - 需要「整棵 Profile 目录」的测试和夹具用 `scripts/lib/profile-tree.mjs` 的 `composeProfileTree(profile)`，规则与 yss-cli 一致。
-- 覆盖层里的 `.codex/skills/<name>` 等链接是旧运行时投影，随旧模板线的 Profile 一起保留，下一步清理；覆盖层目录里不要带会忽略覆盖层自己内容的 `.gitignore`。
+- 覆盖层里的旧运行时投影随旧模板线的 Profile 一并保留；design legacy 冻结期间只读取与迁移，不新增投影或同步机制。覆盖层目录里不要带会忽略覆盖层自己内容的 `.gitignore`。
 - `scripts/verify-profile-distribution` 检查每个 Profile 是否排除了仅模板源脚本、已删除的同步机制是否复活。
 
 ## 真实 Agent 行为评测

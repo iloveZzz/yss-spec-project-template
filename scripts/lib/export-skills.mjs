@@ -4,8 +4,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
-const sourceRoot = path.join(root, ".agents/skills");
+const defaultRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const managed = ["skills", "skills.sh.json", ".yss-export-manifest.json"];
 const forbidden = ["AGENTS.md", "CONTEXT.md", "docs", "skills-lock.json", ".agents", ".codex", ".cursor", ".pi"];
 const hash = (content) => createHash("sha256").update(content).digest("hex");
@@ -103,7 +102,7 @@ function validate(output, skillNames) {
   validateLinks(path.join(output, "skills"));
 }
 
-function loadConfig() {
+function loadConfig(root) {
   let data;
   try { data = JSON.parse(readFileSync(path.join(root, "yss-public-skills.json"), "utf8")); } catch (error) { fail("invalid yss-public-skills.json: " + error.message); }
   if (!Array.isArray(data.skills) || !data.skills.length || new Set(data.skills).size !== data.skills.length || data.skills.some((item) => !/^(?:yss-[a-z0-9]+(?:-[a-z0-9]+)*|setup-yss-harness)$/.test(item))) fail("yss-public-skills.json skills must be a unique non-empty skill-directory array");
@@ -117,7 +116,7 @@ function loadConfig() {
   return data;
 }
 
-function ensureOutput(output) {
+function ensureOutput(output, sourceRoot) {
   if (!existsSync(sourceRoot) || lstatSync(sourceRoot).isSymbolicLink()) fail("canonical skill root is missing or a symbolic link");
   const canonical = realpathSync(sourceRoot);
   if (output === canonical || output.startsWith(canonical + path.sep) || canonical.startsWith(output + path.sep)) fail("output directory must not overlap canonical skills: " + output);
@@ -128,8 +127,8 @@ function ensureOutput(output) {
   }
 }
 
-function build(output, data) {
-  ensureOutput(output); mkdirSync(output, { recursive: true });
+function build(output, data, sourceRoot) {
+  ensureOutput(output, sourceRoot); mkdirSync(output, { recursive: true });
   for (const entry of managed) rmSync(path.join(output, entry), { recursive: true, force: true });
   mkdirSync(path.join(output, "skills"), { recursive: true });
   const exported = [];
@@ -169,11 +168,13 @@ function fileMap(directory) {
   return output;
 }
 
-export function exportSkills(argv = process.argv.slice(2)) {
+export function exportSkills(argv = process.argv.slice(2), options = {}) {
+  const root = options.root ?? defaultRoot;
+  const sourceRoot = options.sourceRoot ?? path.join(root, ".agents/skills");
   if (argv.includes("-h") || argv.includes("--help")) return "Usage: scripts/export-yss-skills --output DIR [--skill NAME] [--check]";
   const position = argv.indexOf("--output");
   if (position < 0 || !argv[position + 1]) fail("--output is required");
-  const output = path.resolve(argv[position + 1]); const data = loadConfig();
+  const output = path.resolve(argv[position + 1]); const data = loadConfig(root);
   const selection = argv.indexOf("--skill");
   if (selection >= 0) {
     const name = argv[selection + 1];
@@ -181,11 +182,11 @@ export function exportSkills(argv = process.argv.slice(2)) {
     data.skills = [name];
     data.groupings = data.groupings.map(group => ({ ...group, skills: group.skills.filter(skill => skill === name) })).filter(group => group.skills.length);
   }
-  if (!argv.includes("--check")) { build(output, data); return "Exported " + data.skills.length + " YSS skills to " + output; }
-  ensureOutput(output); if (!existsSync(output) || !lstatSync(output).isDirectory()) fail("export directory does not exist: " + output);
+  if (!argv.includes("--check")) { build(output, data, sourceRoot); return "Exported " + data.skills.length + " YSS skills to " + output; }
+  ensureOutput(output, sourceRoot); if (!existsSync(output) || !lstatSync(output).isDirectory()) fail("export directory does not exist: " + output);
   const temporary = mkdtempSync(path.join(tmpdir(), "yss-export-check-"));
   try {
-    build(temporary, data); validate(output, data.skills);
+    build(temporary, data, sourceRoot); validate(output, data.skills);
     const expected = fileMap(temporary); const actual = fileMap(output);
     if (expected.size !== actual.size || [...expected].some(([key, value]) => !actual.has(key) || !value.equals(actual.get(key)))) fail("export is out of date; managed file list or content differs");
     return "YSS public export is up to date: " + output;

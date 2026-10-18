@@ -1,0 +1,15 @@
+#!/usr/bin/env node
+import { checkMaintenanceDocs } from "./lib/maintenance-docs.mjs";
+
+try {
+  const findings = checkMaintenanceDocs();
+  if (findings.length) {
+    process.stderr.write("维护文档检查失败:\n" + findings.map((entry) => entry.file + "  " + entry.rule + "  " + entry.detail).join("\n") + "\n");
+    process.exitCode = 1;
+  } else {
+    process.stdout.write("维护文档检查通过\n");
+  }
+} catch (error) {
+  process.stderr.write("verify-maintenance-docs 错误: " + error.message + "\n");
+  process.exitCode = 1;
+}

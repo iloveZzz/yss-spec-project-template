@@ -1,3 +1,11 @@
+---
+doc_type: maintenance-plan
+status: completed
+baseline_commit: e1337581036f55f66c00c7d40c042ad60f6c8190
+created_at: 2026-10-18
+moved_to: maintenance:archive/2026-10-18/2026-10-18-spec-backend-material-intake-and-manual-handoff.md
+---
+
 # Spec / Backend 材料分析与手动交接 Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
@@ -210,7 +218,6 @@ assert.equal(contract.wayfinder_mode.completion_route.includes('handoff'), false
 
 执行器来源和完整 SHA256 记于 resume-native-context.json。归档候选 5f0b140 与当前基线 6f8f19d 由原候选清单绑定，二进制与归档摘要现场一致；它不是当前发行 pin。未新增传输模块、schema 升级、CLI 源码/构建/安装任务或自动变化/恢复。保留隔离工作树与证据，不声明全量 fast、可合并、可发布或生产认证。
 
-
 ## 合入补充授权（2026-10-18）
 
 用户追加授权：隔离构建并更新固定 CLI、修复历史兼容夹具、将已合入七项合同对应的流程资产数量上限由 120 更新为 127；门禁通过后本地合入 main 并移除分支，不安装或发布。该授权取代上文实施阶段“不改 pin、不构建 CLI”的范围限制，上述执行结果仍按原候选保留。
@@ -218,7 +225,6 @@ assert.equal(contract.wayfinder_mode.completion_route.includes('handoff'), false
 固定 CLI 使用已有能力提交 5f0b140，在独立干净副本和固定 Go 环境构建三个登记平台；Darwin 重复构建摘要相同并通过黑盒冒烟，Linux 仅交叉构建。旧协议夹具冻结原 f94762e7 实际初始化的 Spec、Backend、Design 资产及来源摘要，由当前 CLI 核验；现行角色解耦合同继续现场初始化。旧政策只读验证保留，正式写入的显式迁移要求继续生效；历史导出夹具通过 additional_files 携带原始身份。夹具不证明完整受管分发或产品批准。常驻读取预算 14000 B 保持原值。
 
 补充修复的定向检查已有对应日志，最终合入资格以本次干净提交运行的 ci-gate 实际报告为准。
-
 
 本轮干净候选 ac3ed4c0 的完整合入门禁实际执行 75 项，69 通过、6 失败，input_drift=false，未执行列表为空，原报告保留。失败集中于新固定 CLI 的 Bundle v4 消费、日常新记录/身份、旧政策夹具及共享仓根暂存碰撞；定向修复保持身份/Profile/政策同代，旧 Plan 记录由纯构造与状态转换生成并继续断言正式发布须迁移，相关消费者保留来源/字节/权限检查。正式合同链补上现有 repo-root-evidence 互斥资源，保留 INPUT_DRIFT 检查。
 

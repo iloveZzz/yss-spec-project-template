@@ -68,6 +68,6 @@ test("NFR-003：AGENTS.md、CONTEXT.md 与 yss-product-lifecycle/SKILL.md 合计
 });
 
 test("架构迭代流程资产数量不超过 127", () => {
-  const budget = 127; // 原预算 120 + cf29acc6 的 6 项身份、授权与 Slice v4 Schema + 3cbee067 的根 Profile 政策。
+  const budget = 128; // 原预算 127 + 2026-10-19 风险整改新增的 Profile 状态、退役扫描、维护文档、分发卫生与策略基线配置。
   assert.ok(collectMetrics(ROOT).process_files <= budget, "流程资产不得超出架构迭代预算");
 });

@@ -2,6 +2,8 @@
 
 运行工具把普通执行记录保存到仓库外的 SQLite 和日志目录。checkpoint、合同、批准、用户原始决定、迁移回执及恢复事务继续使用现有文件作为权威。查询索引和历史通过记录只能帮助定位证据；阶段流转、实现和交付仍执行当前合同要求的 Fresh Verification。
 
+模板源的 `docs/superpowers/specs` 与 `docs/superpowers/plans` 仅保留在办维护文档，并写 frontmatter 状态与基线；完成或废弃后按 `.template-source/README.md` 的规则迁入仓外 maintenance 或 `.template-source/contracts/`。
+
 ## 存储位置与运行方式
 
 受影响工具要求 Node `>=22.13 <27`，使用内置 `node:sqlite`，不安装原生驱动。低于最低版本或达到 27 时，在创建目标目录、数据库或日志前拒绝执行；`off` 模式也遵守工具的 Node 基线。

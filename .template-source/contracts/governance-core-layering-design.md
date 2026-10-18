@@ -12,6 +12,8 @@ work_package: WP-11
 
 # 治理核心分层：设计
 
+> 历史快照说明：本文记录当时基线与结论；当前门禁数量、检查清单与发行状态分别以 `.template-source/process/template-verification-profiles.yaml` 和 `.template-spec/process/lifecycle-registry.yaml` 为准。
+
 本文是 [模板加固规格](harness-hardening-v1.md) FR-014 与 AC-019 的设计交付，对应 [执行计划](harness-hardening-v1-plan.md) 的 WP-11。**只做设计**：不移动任何文件、不改注册表与 schema，实现另立合同（规格“非目标范围”）。FR-017 的维护连续性决策按计划记在计划第 6 节，本文第 9 节只给出引用。状态为 `proposed`，第 10 节的决策记录由维护者签署后才算 AC-019 完成。
 
 ## 1. 为什么分层

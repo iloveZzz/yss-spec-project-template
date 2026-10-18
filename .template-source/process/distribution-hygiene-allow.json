@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "exclude": [
+    {
+      "prefix": ".template-spec/engineering/evidence/",
+      "reason": "历史工程 evidence 保留原始日志与本机路径，只读不改写"
+    }
+  ],
+  "allow": [
+    {
+      "path": ".agents/skills/archify/test/release-package-gates.test.mjs",
+      "reason": "测试夹具以 Windows 路径作为输入断言"
+    }
+  ]
+}

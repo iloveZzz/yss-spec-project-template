@@ -51,7 +51,7 @@
 ## 入口导航
 
 ```text
-yss 1.3.5 — Spec / Design / Backend / Frontend 统一入口
+yss — Spec / Backend 统一入口（版本以 .template-source/distribution/yss-cli-pin.json 为准）
 ──────────────────────
 
 用法: yss [选项] <命令> [参数]

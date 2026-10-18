@@ -78,6 +78,29 @@ function pathRefFindings(root, file, lines, allow) {
   return findings;
 }
 
+function pinFindings(root, entries = []) {
+  const findings = [];
+  for (const entry of entries) {
+    if (!entry || !Array.isArray(entry.files) || typeof entry.regex !== 'string' || !entry.expected?.file || !entry.expected?.path) throw new TypeError('pinFacts 配置无效');
+    const expectedPath = path.join(root, entry.expected.file);
+    if (!fs.existsSync(expectedPath)) continue;
+    const expected = JSON.parse(fs.readFileSync(expectedPath, 'utf8'))?.[entry.expected.path];
+    if (expected === undefined) throw new TypeError('pinFacts 缺少期望值: ' + entry.expected.file + '#' + entry.expected.path);
+    for (const file of expandFiles(root, entry.files)) {
+      const lines = fs.readFileSync(path.join(root, file), 'utf8').split('\n');
+      lines.forEach((line, index) => {
+        let expression;
+        try { expression = new RegExp(entry.regex, 'g'); } catch (error) { throw new TypeError('pinFacts regex 无效: ' + error.message); }
+        for (const match of line.matchAll(expression)) {
+          if (match[1] === String(expected)) continue;
+          findings.push({ file, line: index + 1, rule: 'pin-fact', text: match[0], detail: '期望 ' + expected, authority: entry.authority ?? entry.expected.file + '#' + entry.expected.path });
+        }
+      });
+    }
+  }
+  return findings;
+}
+
 export function checkDocFacts(root, { patternsPath = DEFAULT_PATTERNS_PATH } = {}) {
   const config = JSON.parse(fs.readFileSync(patternsPath, 'utf8'));
   const patterns = config.patterns.map((pattern) => ({ ...pattern, re: new RegExp(pattern.regex, 'g') }));
@@ -100,6 +123,7 @@ export function checkDocFacts(root, { patternsPath = DEFAULT_PATTERNS_PATH } = {
     if (pathRefFiles.has(file)) fileFindings.push(...pathRefFindings(root, file, lines, allow));
     findings.push(...fileFindings.sort((left, right) => left.line - right.line));
   }
+  findings.push(...pinFindings(root, config.pinFacts ?? []));
   return findings;
 }
 

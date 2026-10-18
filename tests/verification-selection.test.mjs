@@ -127,8 +127,10 @@ test('日常 Skill 文本只选择一致性检查，不启动无关场景或发�
  assert.equal(plan.effective_profile,'fast');
  assert.equal(plan.selection.effective,'allowlist');
  assert.ok(plan.commands.some(x=>x.command==='scripts/sync-skills --check'));
- assert.ok(plan.commands.every(x=>!x.command.includes('--test')&&!x.command.includes('run-scenarios')&&!x.command.includes('upstream-skill-source')));
- assert.ok(plan.commands.every(x=>x.selection_reason.includes('SKILL.md')&&x.selection_reason.includes('错误')));
+ const skillConsumers = new Set(['check.public-skill-export','check.retired-skill-ids','check.distribution-hygiene']);
+ assert.ok(plan.commands.every(x=>skillConsumers.has(x.id)||(!x.command.includes('--test')&&!x.command.includes('run-scenarios')&&!x.command.includes('upstream-skill-source'))));
+ for (const id of skillConsumers) assert.equal(plan.commands.filter(item=>item.id===id).length,1,id);
+ assert.ok(plan.commands.every(x=>skillConsumers.has(x.id)||(x.selection_reason.includes('SKILL.md')&&x.selection_reason.includes('错误'))));
 });
 test('日常核心验证器保持 fast，缺映射和依赖错误在执行前拒绝',()=>{
  const plan=planTemplateVerification({changedFiles:['scripts/lib/json-schema.mjs']});
@@ -302,4 +304,13 @@ test('输入准备只选择真实消费者', async () => {
   const {composeProfileTree} = await import('../scripts/lib/profile-tree.mjs');
   const ref = '.template-spec/process/daily-input-preparation.md';
   assert.deepEqual(fs.readFileSync(path.join(composeProfileTree('backend', {root: ROOT}), ref)), fs.readFileSync(path.join(ROOT, ref)));
+});
+
+test('检查超时：默认值、显式值与非法值', async () => {
+  const { compileVerificationCheck } = await import('../.template-source/scripts/lib/verification-gates.mjs');
+  assert.equal(compileVerificationCheck({ run: 'node --test x' }, { profile: 'fast' }).timeout_ms, 300000);
+  assert.equal(compileVerificationCheck({ run: 'node --test x' }, { profile: 'release' }).timeout_ms, 1800000);
+  assert.equal(compileVerificationCheck({ run: 'node --test x', timeout_ms: 0 }, { profile: 'fast' }).timeout_ms, 0);
+  assert.equal(compileVerificationCheck({ run: 'node --test x', timeout_ms: 1234 }, { profile: 'fast' }).timeout_ms, 1234);
+  assert.throws(() => compileVerificationCheck({ run: 'node --test x', timeout_ms: -1 }, { profile: 'fast' }), /VERIFICATION_TIMEOUT_INVALID/);
 });

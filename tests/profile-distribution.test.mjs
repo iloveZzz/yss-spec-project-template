@@ -37,6 +37,7 @@ function workspace(t, tweak = {}) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'yss-profile-distribution-'));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   git(root, 'init', '-q');
+  write(root, '.template-source/process/profile-status.yaml', 'schema_version: 1\nprofiles:\n  spec:\n    status: kernel\n  backend:\n    status: active\n  design:\n    status: active\n');
   write(root, BUNDLE_PROFILE_REF, `${JSON.stringify({ manifest: manifest({ excludePaths: ['scripts/verify-template', 'scripts/fixtures', NEED] }) })}\n`);
   for (const file of FILES) write(root, file, file === NEED_BY ? `run("node", ["${NEED}", "--check"]);\n` : 'x\n');
   for (const profile of ['backend', 'design']) {
@@ -125,6 +126,7 @@ test('违规：后缀规则会误伤名字恰好以 test 结尾的路径段（�
 test('无法评估时失败而不是通过：覆盖层目录缺失、策略缺失', (t) => {
   const root = workspace(t);
   fs.rmSync(path.join(root, 'profiles/design'), { recursive: true });
+  write(root, '.template-source/process/profile-status.yaml', 'schema_version: 1\nprofiles:\n  spec:\n    status: kernel\n  backend:\n    status: active\n');
   git(root, 'add', '-A');
   assert.throws(() => evaluateAll(root), /design 缺少覆盖层目录 profiles\/design/);
   const missingPolicy = workspace(t);
@@ -152,7 +154,9 @@ test('FR-006：分发守卫拒绝技能投影和根内旧清单，但允许明�
   assert.deepEqual(result.reports.find((report) => report.profile === 'backend').findings.map((finding) => finding.path).sort(), [...files].sort());
   assert.match(formatReport(result), /技能投影/);
   const excluded = { ...policy, excludePaths: [...policy.excludePaths, '.claude/skills', '.codex/skills', '.cursor/skills', '.pi/skills'] };
-  assert.equal(evaluateAll(workspace(t, { backend: { policy: excluded, files: [...files, '.codex/instructions.md'] } })).ok, true);
+  const excludedResult = evaluateAll(workspace(t, { backend: { policy: excluded, files: [...files, '.codex/instructions.md'] } }));
+  const excludedBackend = excludedResult.reports.find((report) => report.profile === 'backend');
+  assert.equal(excludedBackend.findings.some((finding) => finding.kind === 'skill-projection-shipped'), false, formatReport(excludedResult));
 });
 
 test('命令行：合规退出 0，违规退出 1 并写 stderr，参数错误退出 1', (t) => {
@@ -164,4 +168,47 @@ test('命令行：合规退出 0，违规退出 1 并写 stderr，参数错误�
   assert.equal(failed.status, 1);
   assert.match(failed.stderr, /违规 backend/);
   assert.equal(spawnSync(process.execPath, [SCRIPT, '--nope'], { encoding: 'utf8' }).status, 1);
+});
+test('Profile 状态：缺失、未知值与 legacy 缺原因分别失败', (t) => {
+  const missing = workspace(t);
+  fs.rmSync(path.join(missing, '.template-source/process/profile-status.yaml'));
+  assert.throws(() => evaluateAll(missing), /缺少 \.template-source\/process\/profile-status\.yaml/);
+
+  const unknown = workspace(t);
+  write(unknown, '.template-source/process/profile-status.yaml', 'schema_version: 1\nprofiles:\n  spec:\n    status: kernel\n  backend:\n    status: active\n  design:\n    status: paused\n');
+  assert.throws(() => evaluateAll(unknown), /status 无效: paused/);
+
+  const legacy = workspace(t);
+  write(legacy, '.template-source/process/profile-status.yaml', 'schema_version: 1\nprofiles:\n  spec:\n    status: kernel\n  backend:\n    status: active\n  design:\n    status: legacy\n');
+  assert.throws(() => evaluateAll(legacy), /design 标记 legacy 时必须写 reason/);
+});
+
+test('Profile 状态：legacy 带原因与迁移说明时仍可评估分发', (t) => {
+  const root = workspace(t);
+  write(root, '.template-source/process/profile-status.yaml', 'schema_version: 1\nprofiles:\n  spec:\n    status: kernel\n  backend:\n    status: active\n  design:\n    status: legacy\n    reason: 旧产品线\n    migration: 显式迁移\n');
+  const result = evaluateAll(root);
+  assert.equal(result.ok, true, formatReport(result));
+  assert.equal(result.profileStatus.legacy[0], 'design');
+  assert.match(formatReport(result), /Profile 状态: .*design=legacy/);
+});
+test('陈旧 excludePaths：模板源与覆盖层都不存在且未登记实例侧例外时失败', (t) => {
+  const policy = manifest({ excludePaths: ['scripts/verify-template', 'scripts/does-not-exist'] });
+  const root = workspace(t, { backend: { policy } });
+  const result = evaluateAll(root);
+  assert.equal(result.ok, false);
+  const backend = result.reports.find((report) => report.profile === 'backend');
+  assert.ok(backend.findings.some((finding) => finding.kind === 'stale-exclude-path' && finding.path === 'scripts/does-not-exist'), formatReport(result));
+  assert.match(formatReport(result), /stale-exclude-path|都不能存在|请删除/);
+});
+
+test('过期实例侧例外：allowlist 路径已在模板源出现时失败', (t) => {
+  const policy = manifest({ excludePaths: ['scripts/verify-template', 'scripts/fixtures', '.pi/skills'] });
+  const root = workspace(t, { backend: { policy } });
+  write(root, '.pi/skills/x/SKILL.md', 'x\n');
+  git(root, 'add', '-A');
+  git(root, 'commit', '-qm', 'fixture-instance-only');
+  const result = evaluateAll(root);
+  assert.equal(result.ok, false);
+  const backend = result.reports.find((report) => report.profile === 'backend');
+  assert.ok(backend.findings.some((finding) => finding.kind === 'stale-allowlist' && finding.path === '.pi/skills'), formatReport(result));
 });

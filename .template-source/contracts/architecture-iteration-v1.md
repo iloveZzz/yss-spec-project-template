@@ -12,6 +12,8 @@ execution_plan: architecture-iteration-v1-plan.md
 
 # 架构迭代规格：单仓、单实现、按版本钉住
 
+> 历史快照说明：本文记录当时基线与结论；当前门禁数量、检查清单与发行状态分别以 `.template-source/process/template-verification-profiles.yaml` 和 `.template-spec/process/lifecycle-registry.yaml` 为准。
+
 ## 文档状态与范围
 
 本文是 `template-source` 的维护合同，状态为 `accepted`：各项决定已于 2026-10-11 由维护者在 wayfinder 决策地图里逐票确认，地图在仓外 `.work/architecture-iteration/`，决定摘要见[执行计划](architecture-iteration-v1-plan.md)第 6 节；同日维护者确认了本文措辞并解决 Q-001、Q-002。`accepted` 的含义是可以按执行计划派发工作包，每个工作包只能写入计划第 3 节列出的路径；推送、打 tag、发布 CLI、归档旧仓库仍按计划第 1 节第 8 条逐次授权。本文规定这轮改造要达到的可观察结果；执行顺序、写入范围和验证命令见执行计划。本文不是产品 Spec，不触发产品 Spec、OpenAPI、原型或 `context_reconciliation`，这些项记为 `not-applicable：模板源架构维护`。

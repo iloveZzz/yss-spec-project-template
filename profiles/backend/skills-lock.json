@@ -475,7 +475,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-layered-mvc-scaffold-generator/SKILL.md",
-        "effectiveHash": "99e70b3ced23e5e7df471f74e50429c1c1e16133c480038cd4b7fab4d40ddcd8",
+        "effectiveHash": "47acea3c92749c2ce177010a7c9885e6a6f6403db81585f033cde8b96eac49c1",
         "targets": [
           ".agents/skills"
         ]

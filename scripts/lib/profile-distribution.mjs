@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
+import { loadProfileStatus } from './profile-status.mjs';
 
 /**
  * Profile 实例的分发守卫。
@@ -22,6 +23,36 @@ export const PROFILE_NEEDS = {
     by: 'scripts/verify-lifecycle-registry',
     reason: 'verify-lifecycle-registry 在 Profile 实例里直接调用它检查派生文档是否漂移',
   },
+};
+
+export const INSTANCE_ONLY_EXCLUDES = {
+  backend: [
+    { path: '.pi/skills', reason: '实例侧 Agent 投影根，模板源不提交' },
+    { path: '.cursor/skills', reason: '实例侧 Agent 投影根，模板源不提交' },
+    { path: '.codex/skills', reason: '实例侧 Agent 投影根，模板源不提交' },
+    { path: '.codex/config.toml', reason: '实例侧本地配置，模板源不提交' },
+    { path: '.codex/settings.local.json', reason: '实例侧本地 Codex 配置，模板源不提交' },
+    { path: '.codex/skills/.DS_Store', reason: '实例侧本地产物' },
+    { path: 'docs/.scratch', reason: '实例侧临时材料目录' },
+    { path: 'docs/reviews', reason: '实例侧评审材料目录' },
+    { path: 'docs/adr', reason: '实例侧架构决策目录' },
+    { path: '.work', reason: '实例侧本地工作包目录' },
+  ],
+  design: [
+    { path: '.pi/skills', reason: '实例侧 Agent 投影根，模板源不提交' },
+    { path: '.cursor/skills', reason: '实例侧 Agent 投影根，模板源不提交' },
+    { path: '.codex/skills', reason: '实例侧 Agent 投影根，模板源不提交' },
+    { path: '.codex/config.toml', reason: '实例侧本地配置，模板源不提交' },
+    { path: '.codex/settings.local.json', reason: '实例侧本地 Codex 配置，模板源不提交' },
+    { path: 'docs/discovery', reason: '实例侧机会探索材料目录' },
+    { path: 'docs/.scratch', reason: '实例侧临时材料目录' },
+    { path: 'docs/adr', reason: '实例侧架构决策目录' },
+    { path: 'docs/api', reason: '实例侧下游研发目录' },
+    { path: 'docs/implementation', reason: '实例侧下游研发目录' },
+    { path: 'docs/releases', reason: '实例侧发布材料目录' },
+    { path: 'docs/reviews', reason: '实例侧评审材料目录' },
+    { path: '.work', reason: '实例侧本地工作包目录' },
+  ],
 };
 
 const fail = (message) => { throw new TypeError(`PROFILE_DISTRIBUTION: ${message}`); };
@@ -76,16 +107,26 @@ export function evaluateProfile({ root, profile, rootManifest }) {
   const manifest = readManifest(path.join(root, overlayRoot), profile);
   const strip = (prefix) => git(root, ['ls-files', '--', prefix]).split('\n').filter(Boolean).map((file) => [file.slice(prefix.length + 1), file]);
   // 同一路径后面的覆盖前面的：内核 < _specialist < 该 Profile
+  const allFiles = git(root, ['ls-files']).split('\n').filter(Boolean);
   const composed = new Map();
-  for (const file of git(root, ['ls-files']).split('\n').filter(Boolean)) {
+  for (const file of allFiles) {
     if (KERNEL_SCOPE.some((scope) => beneath(file, scope))) composed.set(file, file);
   }
-  for (const prefix of ['profiles/_specialist', overlayRoot]) for (const [relative, file] of strip(prefix)) composed.set(relative, file);
+  const overlayFiles = [];
+  for (const prefix of ['profiles/_specialist', overlayRoot]) for (const [relative, file] of strip(prefix)) { composed.set(relative, file); overlayFiles.push(relative); }
   const tracked = [...composed.keys()];
+  const available = new Set([...allFiles.filter((file) => !file.startsWith('profiles/')), ...overlayFiles]);
+  const existsInAvailable = (entry) => available.has(entry) || [...available].some((file) => file.startsWith(entry + '/'));
   const rootOnly = list(rootManifest, 'excludePaths').filter((entry) => entry.startsWith('scripts/'));
 
   const findings = [];
   const staleNeeds = [];
+  const instanceOnly = new Map((INSTANCE_ONLY_EXCLUDES[profile] ?? []).map((item) => [item.path, item.reason]));
+  for (const entry of list(manifest, 'excludePaths')) {
+    const exists = existsInAvailable(entry);
+    if (instanceOnly.has(entry)) { if (exists) findings.push({ kind: 'stale-allowlist', path: entry, reason: instanceOnly.get(entry) }); continue; }
+    if (!exists) findings.push({ kind: 'stale-exclude-path', path: entry });
+  }
   for (const file of tracked) {
     if (/^\.(claude|codex|cursor|pi)\/skills(?:\/|$)/.test(file) && shipped(file, manifest)) {
       findings.push({ kind: 'skill-projection-shipped', path: file });
@@ -127,8 +168,9 @@ export function evaluateProfile({ root, profile, rootManifest }) {
 
 export function evaluateAll(root) {
   const rootManifest = readManifest(root, '根仓');
+  const profileStatus = loadProfileStatus({ root });
   const reports = PROFILES.map((profile) => evaluateProfile({ root, profile, rootManifest }));
-  return { reports, ok: reports.every((report) => !report.findings.length && !report.staleNeeds.length) };
+  return { reports, profileStatus, ok: reports.every((report) => !report.findings.length && !report.staleNeeds.length) };
 }
 
 const MESSAGES = {
@@ -138,10 +180,13 @@ const MESSAGES = {
   'suffix-collateral': (f) => `后缀规则会误伤 ${f.path}`,
   'retired-machinery-present': (f) => `${f.path} 属于 Profile 并入前的同步机制，已删除，不应重新出现`,
   'profile-submodule-present': (f) => `${f.path} 重新登记了 Profile 子模块；Profile 现在是 profiles/ 下的覆盖层`,
+  'stale-exclude-path': (f) => `excludePaths 中的 ${f.path} 在当前模板源与覆盖层都不存在，也不是已登记的实例侧例外；请删除或登记到 INSTANCE_ONLY_EXCLUDES`,
+  'stale-allowlist': (f) => `INSTANCE_ONLY_EXCLUDES 中的 ${f.path} 已在模板源出现（${f.reason}），该例外已过期；请删除`,
 };
 
 export function formatReport(result) {
   const lines = [];
+  if (result.profileStatus) lines.push('Profile 状态: ' + Object.entries(result.profileStatus.profiles).map(([name, entry]) => name + '=' + entry.status).join(', '));
   for (const report of result.reports) {
     if (!report.findings.length && !report.staleNeeds.length) { lines.push(`通过 ${report.profile.padEnd(9)} 已排除仅模板源脚本，未使用测试目录批量排除规则（跟踪 ${report.tracked} 个文件）`); continue; }
     for (const finding of report.findings) lines.push(`违规 ${report.profile}: ${MESSAGES[finding.kind](finding)}`);

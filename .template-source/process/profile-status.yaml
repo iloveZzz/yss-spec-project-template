@@ -1,0 +1,14 @@
+schema_version: 1
+# Template-source Profile 生命周期声明。spec 是内核，backend 是现役覆盖层，design 仅用于旧实例迁移与历史读取。
+profiles:
+  spec:
+    status: kernel
+  backend:
+    status: active
+  design:
+    status: legacy
+    reason: >-
+      旧 Design 产品线随 Spec 优先级收敛；新项目只使用 Spec 与 Backend，旧 Design 通过显式迁移保留历史。
+    migration: >-
+      旧实例按用户手册执行 yss migrate 显式迁移；本覆盖层只保留历史读取、旧证据兼容与旧 Bundle 身份识别，
+      不新增功能，不参与现役 Profile 的组合一致性哈希检查。

@@ -36,6 +36,16 @@ try {
   const schemaResult = run("python3", ["-c", schemaValidator, schemaPath], { input: JSON.stringify(registry) });
   if (schemaResult.status !== 0) throw new TypeError(`JSON Schema 校验失败: ${schemaResult.stdout}${schemaResult.stderr}`);
   validateRegistry(registry);
+  if (isTemplateSource(ROOT)) {
+    const intensityPath = path.join(ROOT, ".template-source/process/maintenance-intensity.yaml");
+    const intensityText = readFileSync(intensityPath, "utf8");
+    const levels = new Set([...intensityText.matchAll(/^  (L\d+):/gm)].map((match) => match[1]));
+    const checkpoint = (registry.evidence ?? []).find((item) => item.id === "evidence.maintenance-intensity-checkpoint");
+    if (!checkpoint) throw new TypeError("缺少 evidence.maintenance-intensity-checkpoint");
+    const mentioned = [...String(checkpoint.description ?? "").matchAll(/L\d+/g)].map((match) => match[0]);
+    const unexpected = mentioned.filter((level) => !levels.has(level));
+    if (unexpected.length) throw new TypeError(`maintenance-intensity-checkpoint description 引用未定义级别: ${unexpected.join(", ")}`);
+  }
   if (registryPath === DEFAULT_REGISTRY) {
     const generated = run("node", ["scripts/generate-lifecycle-artifacts", "--check"]);
     if (generated.status !== 0) throw new TypeError(`${generated.stdout}${generated.stderr}`.trim());

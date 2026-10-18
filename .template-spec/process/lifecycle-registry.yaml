@@ -124,7 +124,7 @@ evidence:
     description: 阶段决策包的 Schema、引用、语义一致性、影响传播和下游消费验证结果。
   - id: evidence.maintenance-intensity-checkpoint
     name: 模板维护强度 checkpoint
-    description: template-source 变更的 L1 / L2 / L3 分级、触发项、最低验证证据、review 模式和升级记录。
+    description: template-source 变更的 L1 / L2 分级、触发项、最低验证证据、review 模式和升级记录。
     public_description: 当前 template-source 按 maintenance-intensity.yaml 的 L1 / L2 分级，记录触发项、最低验证证据、review 模式和升级依据。
   - id: evidence.repository-identity-check
     name: 仓库身份校验结果

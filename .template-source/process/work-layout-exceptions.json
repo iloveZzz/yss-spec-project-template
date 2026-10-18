@@ -459,6 +459,33 @@
       "count": 1,
       "category": "compatibility",
       "reason": "集中定义历史扫描根，保留旧配置兼容"
+    },
+    {
+      "repository": ".",
+      "file": "scripts/lib/profile-distribution.mjs",
+      "kind": "content",
+      "text": "    { path: 'docs/.scratch', reason: '实例侧临时材料目录' },",
+      "count": 2,
+      "category": "compatibility",
+      "reason": "Profile 分发清单以字面路径登记实例侧临时工作根，供 stale-exclude 校验读取"
+    },
+    {
+      "repository": ".",
+      "file": ".template-source/process/runtime-storage.md",
+      "kind": "content",
+      "text": "- 项目实例的 `.work/`、历史 `docs/.scratch/` 可能保存正式资产，模板源整目录忽略规则不得移植到实例；必要工程证据继续按现行引用保留。",
+      "count": 1,
+      "category": "history",
+      "reason": "记录实例资产保护边界，说明历史临时工作根不得移植到实例"
+    },
+    {
+      "repository": ".",
+      "file": "docs/superpowers/specs/2026-10-19-gitignore-hygiene-design.md",
+      "kind": "content",
+      "text": "- 项目实例的 `.work/`、历史 `docs/.scratch/` 可能保存正式资产；模板源整目录忽略规则不得移植到实例。必要工程证据继续按现行引用保留。",
+      "count": 1,
+      "category": "history",
+      "reason": "记录实例资产保护边界，说明历史临时工作根不得移植到实例"
     }
   ]
 }

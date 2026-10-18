@@ -54,6 +54,14 @@
       }
     ]
   },
+  "pinFacts": [
+    {
+      "files": [".template-spec/user-guide/unified-cli.md"],
+      "regex": "yss\\s+([0-9]+\\.[0-9]+\\.[0-9]+)",
+      "expected": { "file": ".template-source/distribution/yss-cli-pin.json", "path": "version" },
+      "authority": ".template-source/distribution/yss-cli-pin.json#version"
+    }
+  ],
   "patterns": [
     {
       "id": "gate-count",

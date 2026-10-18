@@ -13,7 +13,7 @@ description: 建立或核验 YSS 设计系统、主题 Token 与视觉一致性�
 - 团队治理说明：`.template-spec/design/design.md`，解释 YSS 生命周期、组件路线、状态与验收，不重新定义 `DESIGN.md` 中的具体值。
 - 项目 Token 快照：`.template-spec/design/tokens/theme.json`、`.template-spec/design/tokens/tokens.default.json`、`.template-spec/design/tokens/tokens.dark.json`、`.template-spec/design/tokens/tokens.compact.json`、`.template-spec/design/tokens/variables.css`、`.template-spec/design/tokens/variables.dark.css`；它们是派生实现视图，不得反向覆盖规范源。
 - 本技能执行清单：`references/design-system.md`，用于 Agent 执行和评审，不替代 `.template-spec/design/design.md`。
-- 历史输入包：`/Users/zhudaoming/Downloads/Product-Design-System`，只用于追溯首次引入来源，不作为后续工程依赖。
+- 历史输入包：首次引入来源仅作外部追溯记录（本机路径已移除），不作为后续工程依赖。
 - 默认主题来源：Data Quality 主题经项目适配后落到根 `DESIGN.md`；来源与 AntD v6 设计参考 / Vue 运行时的区别见 `references/data-quality-theme.md`。
 - Codex `$design-qa` 项目对照：`references/design-qa-theme.md`，不替代官方 `design-qa` 流程，也不改上游插件正文。
 - 原型阶段合同：`yss-prototype-stage`，用于统一 H1/H2 原型资产和浏览器验证证据。H1/H2 默认使用项目 Token 驱动的 HTML/CSS/JavaScript 离线原型。

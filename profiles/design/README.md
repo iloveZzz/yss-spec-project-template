@@ -1,5 +1,7 @@
 # YSS 产品与业务设计 Harness（Design Profile）
 
+> **状态：legacy（旧产品线）。** 新项目只使用 Spec 与 Backend；本 Profile 仅用于旧 Design 实例的显式迁移、历史读取与旧证据兼容，不新增功能，不参与现役 Profile 的组合一致性哈希检查。迁移入口见 `.template-spec/user-guide/unified-cli.md`。
+
 > **项目名称：** [填写]
 > **业务领域：** [填写]
 > **团队规模：** [填写]

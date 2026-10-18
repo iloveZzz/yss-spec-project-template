@@ -12,6 +12,8 @@ execution_plan: harness-hardening-v1-plan.md
 
 # 模板加固规格：执行点下沉与表面积削减
 
+> 历史快照说明：本文记录当时基线与结论；当前门禁数量、检查清单与发行状态分别以 `.template-source/process/template-verification-profiles.yaml` 和 `.template-spec/process/lifecycle-registry.yaml` 为准。
+
 ## 文档状态与范围
 
 本文是 `template-source` 的维护合同，状态为 `proposed`，未经维护者确认前不授权任何写入。它定义一轮加固的可观察结果；执行顺序、写范围和验证命令见 [执行计划](harness-hardening-v1-plan.md)。本文不是产品 Spec，不触发产品 Spec、OpenAPI、原型或 `context_reconciliation`，这些项记为 `not-applicable：模板源治理与工具链维护`。

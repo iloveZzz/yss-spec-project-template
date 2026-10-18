@@ -14,6 +14,8 @@
 
 历史研究、审查、发布过程、试验副本、构建缓存和旧规划从当前工作树移除。新的运行材料统一保存到当前工作区仓外 `maintenance` 命名空间；详细路径与恢复规则见 [维护留存策略](process/runtime-storage.md)。用 `scripts/maintenance-path <类别/运行ID/文件>` 取得绝对路径，用 `maintenance:<相对路径>` 引用维护证据并绑定摘要。
 
+`docs/superpowers/specs` 与 `docs/superpowers/plans` 是模板源的**在办维护文档工作区**：只保留 draft / reviewed / active 状态的设计与计划，并写 frontmatter（doc_type、status、baseline_commit、created_at）。完成或废弃后，计划迁入仓外 maintenance 并记录摘要；需要长期作为依据的设计结论迁入 `.template-source/contracts/` 并登记到其索引。该例外不适用于项目实例。
+
 恢复包、归档索引、报告及 Wiki 事务历史均保存在仓外。清理前核验逐文件字节、权限和恢复包完整性；已失效的计划不改写为已完成。当前 Git 历史仍可用于定位原始来源。
 
 ## 实例分发

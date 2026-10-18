@@ -1,3 +1,11 @@
+---
+doc_type: maintenance-plan
+status: completed
+baseline_commit: e1337581036f55f66c00c7d40c042ad60f6c8190
+created_at: 2026-10-18
+moved_to: maintenance:archive/2026-10-18/2026-10-18-test-retirement-and-verification-dedup.md
+---
+
 # 过时测试与验证重复清理 Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
@@ -179,7 +187,6 @@ for (const value of [null, 'check.x', [''], [required[0], required[0]], ['check.
 本计划沿用用户此前选择的 Native / executing-plans：同一执行者顺序完成，最后一次独立上下文复核。请先审阅本设计和计划是否符合本轮范围；本文件没有授予实现、提交、采用固定 CLI 或发布资格，也没有将审计实验写为实现通过。
 
 规划期自检：需求 A1–A7、验收 AC1–AC6、五项 Review Focus 均已对应到任务；函数与字段名按现行源码核对，并补齐 legacy / shadow 的组覆盖及缺字段 / 显式 null 的区别。本轮只新增设计和计划；本地链接、代码围栏、空白及两文档全局约束一致性检查通过，根文档事实与治理布局检查通过。完整当前差异的 fast 只读计划成功，实际选择治理布局、前置和差异终检；实现、TDD、真实去重收益、完整 Gate 与发布验证均未执行。
-
 
 ## 本轮执行记录（隔离工作树）
 

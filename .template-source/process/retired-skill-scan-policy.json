@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "source": "scripts/lib/skill-supply-chain.mjs#OBSOLETE",
+  "default_mode": "exact",
+  "contextual": [
+    {
+      "id": "teach",
+      "reason": "通用英文词；只在技能 id、slash 命令或反引号上下文中匹配"
+    },
+    {
+      "id": "yss-components",
+      "reason": "与组件名同形；只在技能 id、slash 命令或反引号上下文中匹配"
+    }
+  ],
+  "not_text_scanned": [
+    {
+      "id": "qa",
+      "reason": "通用英文缩写，全仓文本无法可靠区分"
+    },
+    {
+      "id": "research",
+      "reason": "通用英文词，可能是活跃能力名"
+    },
+    {
+      "id": "wizard",
+      "reason": "通用英文词"
+    }
+  ],
+  "allow": [
+    {
+      "prefix": ".template-spec/",
+      "reason": "治理流程、Schema、用户手册与历史说明可提及退役入口；物理目录、注册表与锁由硬检查覆盖"
+    },
+    {
+      "prefix": ".template-source/",
+      "reason": "模板维护区、历史合同与检查策略可记录退役事实；现役 Profile 锁/注册表由硬检查覆盖"
+    },
+    {
+      "prefix": "profiles/",
+      "reason": "Profile 覆盖层包含旧线内容与迁移说明；现役 Profile 锁/注册表由硬检查覆盖"
+    },
+    {
+      "prefix": "docs/superpowers/",
+      "reason": "在办维护设计/计划可引用退役事实"
+    },
+    {
+      "prefix": "tests/",
+      "reason": "回归测试与夹具需要历史 ID 作为输入"
+    },
+    {
+      "prefix": "scripts/fixtures/",
+      "reason": "测试夹具可编码历史策略"
+    },
+    {
+      "prefix": ".template-source/tooling/node/test/",
+      "reason": "工具链测试可引用历史状态"
+    },
+    {
+      "prefix": ".template-source/scripts/tests/",
+      "reason": "工具链测试可引用历史状态"
+    },
+    {
+      "prefix": ".agents/skills/yss-implementation-contract-compiler/tests/",
+      "reason": "技能内回归测试以旧 ID 作为拒绝输入"
+    },
+    {
+      "prefix": ".agents/skills/yss-prototype-stage/tests/",
+      "reason": "技能内回归夹具引用旧组件名作为输入"
+    },
+    {
+      "path": ".agents/skills/publish-skills-sh/references/yss-export.md",
+      "reason": "发布说明中的历史入口说明"
+    },
+    {
+      "path": ".agents/skills/yss-up-springboot3/SKILL.md",
+      "reason": "禁止虚构退役组件的指令说明"
+    },
+    {
+      "path": "scripts/lib/skill-supply-chain.mjs",
+      "reason": "OBSOLETE 单一来源本身"
+    },
+    {
+      "path": "scripts/lib/skill-retirement.mjs",
+      "reason": "退役扫描实现本身"
+    },
+    {
+      "path": "scripts/lib/skill-registry.mjs",
+      "reason": "注册表拒绝旧 ID 并返回替代入口"
+    },
+    {
+      "path": "scripts/lib/skill-governance.mjs",
+      "reason": "技能治理检查登记退役 ID"
+    },
+    {
+      "path": "scripts/lib/implementation-contract-compiler.mjs",
+      "reason": "编译器拒绝已移除技能 ID"
+    },
+    {
+      "path": "scripts/verify-retired-skill-ids",
+      "reason": "退役扫描薄包装"
+    },
+    {
+      "path": "scripts/sync-harness-upgrade.mjs",
+      "reason": "旧技能名到新入口的显式迁移映射"
+    },
+    {
+      "path": "skills-lock.json",
+      "reason": "锁文件由硬检查覆盖，文本扫描不重复阻断"
+    },
+    {
+      "path": "README.md",
+      "reason": "根说明可能记录历史与退役入口"
+    },
+    {
+      "path": "README.en.md",
+      "reason": "英文说明可能记录历史与退役入口"
+    },
+    {
+      "path": "AGENTS.md",
+      "reason": "入口规则可能提到退役边界"
+    },
+    {
+      "path": "CONTEXT.md",
+      "reason": "词汇表说明可能引用旧术语"
+    }
+  ]
+}

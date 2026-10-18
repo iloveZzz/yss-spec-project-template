@@ -22,7 +22,7 @@
 
 ## 输入摘要准备
 
-无 API 变化的 daily 任务，可按[输入摘要准备说明](../../../../.template-spec/process/daily-input-preparation.md)探测 CLI 能力、准备既有输入并更新同一 Ticket。旧 CLI 继续原流程；准备不续期测试、审查或批准，完成仍需实际验证及 verify-daily。
+无 API 变化的 daily 任务，可按输入摘要准备说明（模板源 .template-spec/process/daily-input-preparation.md；实例按分发清单提供）探测 CLI 能力、准备既有输入并更新同一 Ticket。旧 CLI 继续原流程；准备不续期测试、审查或批准，完成仍需实际验证及 verify-daily。
 
 ## 最小起步记录
 

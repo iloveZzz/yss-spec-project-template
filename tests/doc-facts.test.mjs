@@ -111,3 +111,21 @@ test('计数模式不把“一个”当作复述，维护强度与 Profile 数�
     '.template-spec/user-guide/guide.md:profile-count',
   ]);
 });
+test('pinFacts：硬编码 CLI 版本与 pin 不一致时报告', (t) => {
+  const root = project(t, {
+    '.template-spec/user-guide/unified-cli.md': 'yss 1.3.5 — 统一入口\n',
+    '.template-source/distribution/yss-cli-pin.json': JSON.stringify({ version: '2.5.0' }),
+  });
+  const findings = checkDocFacts(root).filter((item) => item.rule === 'pin-fact');
+  assert.equal(findings.length, 1);
+  assert.match(findings[0].text, /1\.3\.5/);
+  assert.match(findings[0].detail, /2\.5\.0/);
+});
+
+test('pinFacts：与 pin 一致的版本不报告', (t) => {
+  const root = project(t, {
+    '.template-spec/user-guide/unified-cli.md': 'yss 2.5.0 — 统一入口\n',
+    '.template-source/distribution/yss-cli-pin.json': JSON.stringify({ version: '2.5.0' }),
+  });
+  assert.deepEqual(checkDocFacts(root).filter((item) => item.rule === 'pin-fact'), []);
+});

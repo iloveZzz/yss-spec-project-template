@@ -90,6 +90,8 @@ profiles:
           - "docs/superpowers/specs/2026-10-18-test-retirement-and-verification-dedup-design.md"
           - "docs/superpowers/specs/2026-10-18-sha256-usage-optimization-design.md"
           - "docs/superpowers/plans/2026-10-18-sha256-usage-optimization.md"
+          - "docs/superpowers/**"
+          - ".template-source/contracts/README.md"
         depends_on: []
         failure_mode: "说明文档复述门禁数、阶段数、投影根数量或硬编码与 lock 不一致的上游 revision"
       - id: check.daily-input-preparation
@@ -713,9 +715,6 @@ profiles:
         input_patterns:
           - "tests/frontend-removed.test.mjs"
           - "profiles/frontend/**"
-          - ".agents/skills/yss-ui/**"
-          - ".agents/skills/yss-frontend-scaffold-generator/**"
-          - ".agents/skills/yss-formily-schema-generator/**"
           - ".agents/skills/.yss-skills-manifest.json"
           - ".agents/rules/yss-ai-skills.md"
           - ".agents/mcp_config.json"
@@ -1964,6 +1963,85 @@ profiles:
           - ".agents/skills/yss-tactical-design/tests/**"
         depends_on: []
         failure_mode: "默认工作包样例在阶段决策或战术设计中产生失效引用"
+      - id: check.public-skill-export
+        run: "node --test tests/public-skill-export.test.mjs"
+        group: skills
+        inputs_complete: true
+        input_patterns:
+          - ".agents/skills/**"
+          - "yss-public-skills.json"
+          - "scripts/export-yss-skills"
+          - "scripts/lib/export-skills.mjs"
+          - "tests/public-skill-export.test.mjs"
+        depends_on: []
+        failure_mode: "公开技能包携带越界或失效链接、符号链接、凭据或不可移植路径"
+      - id: check.retired-skill-ids
+        run: "node --test tests/retired-skill-ids.test.mjs"
+        group: skills
+        inputs_complete: true
+        input_patterns:
+          - ".agents/skills/**"
+          - ".template-spec/agents/yss-skill-registry.yaml"
+          - "skills-lock.json"
+          - "profiles/**"
+          - ".template-source/process/retired-skill-scan-policy.json"
+          - "scripts/lib/skill-retirement.mjs"
+          - "scripts/lib/skill-supply-chain.mjs"
+          - "scripts/verify-retired-skill-ids"
+          - "tests/retired-skill-ids.test.mjs"
+        depends_on: []
+        failure_mode: "退役技能回流未被发现，或历史说明被误报为活跃资产"
+      - id: check.profile-consistency
+        run: "node --test tests/profile-consistency.test.mjs"
+        group: hygiene
+        inputs_complete: true
+        input_patterns:
+          - "profiles/**"
+          - ".template-source/process/profile-status.yaml"
+          - ".template-spec/agents/yss-skill-registry.yaml"
+          - "skills-lock.json"
+          - "scripts/lib/profile-status.mjs"
+          - "scripts/lib/profile-tree.mjs"
+          - "scripts/lib/skill-supply-chain.mjs"
+          - "tests/profile-consistency.test.mjs"
+        depends_on: []
+        failure_mode: "现役 Profile 的组合技能、锁、注册表或 effectiveHash 发生漂移"
+      - id: check.maintenance-docs
+        run: "node --test tests/maintenance-docs.test.mjs"
+        group: hygiene
+        inputs_complete: true
+        input_patterns:
+          - "docs/superpowers/**"
+          - ".template-source/contracts/**"
+          - ".template-source/process/maintenance-docs.json"
+          - "scripts/lib/maintenance-docs.mjs"
+          - "scripts/verify-maintenance-docs"
+          - "tests/maintenance-docs.test.mjs"
+        depends_on: []
+        failure_mode: "维护文档缺少元数据、基线失效或 contracts 索引漏项"
+      - id: check.distribution-hygiene
+        run: "node --test tests/distribution-hygiene.test.mjs"
+        group: hygiene
+        inputs_complete: true
+        input_patterns:
+          - ".agents/skills/**"
+          - ".template-spec/**"
+          - ".template-source/process/distribution-hygiene-allow.json"
+          - "scripts/lib/distribution-hygiene.mjs"
+          - "scripts/verify-distribution-hygiene"
+          - "tests/distribution-hygiene.test.mjs"
+        depends_on: []
+        failure_mode: "分发面包含未允许的宿主绝对路径或 Agent root 路径"
+      - id: check.verification-policy-baseline
+        run: "node --test tests/verification-policy-baseline.test.mjs"
+        group: candidate-integrity
+        inputs_complete: true
+        input_patterns:
+          - ".template-source/process/template-verification-profiles.yaml"
+          - ".template-source/process/verification-policy-baseline.json"
+          - "tests/verification-policy-baseline.test.mjs"
+        depends_on: []
+        failure_mode: "验证策略静默删除 required checks、Gate 或 CI 守卫"
   release:
     selection: impact
     required_checks:
@@ -2917,6 +2995,12 @@ routing:
       - tests/verification-delivery-run.test.mjs
     groups:
       - candidate-integrity
+  - patterns: ["tests/public-skill-export.test.mjs", "tests/retired-skill-ids.test.mjs"]
+    groups: ["skills"]
+  - patterns: ["tests/profile-consistency.test.mjs", "tests/maintenance-docs.test.mjs", "tests/distribution-hygiene.test.mjs"]
+    groups: ["hygiene"]
+  - patterns: ["tests/verification-policy-baseline.test.mjs"]
+    groups: ["candidate-integrity"]
 groups:
   work-layout:
     commands:
@@ -3043,9 +3127,11 @@ groups:
       - run: pnpm --dir .template-source/tooling/node test
         when: template-source
         id: check.71586a7291afee4f
+        timeout_ms: 0
       - run: pnpm --dir .template-source/tooling/node check:vendor
         when: template-source
         id: check.637af2529c59dfe5
+        timeout_ms: 0
   skills:
     commands:
       - run: scripts/sync-skills --check
@@ -3341,6 +3427,9 @@ gates:
       - check.skill-supply-chain-unit
       - check.harness-skill-scope
       - check.skill-lock-readers
+      - check.public-skill-export
+      - check.retired-skill-ids
+      - check.profile-consistency
     audit_status: conservative-complete
     display_id: G03
     audit_basis: Every registered changed path retains this risk; no narrowing or retirement.
@@ -3375,6 +3464,7 @@ gates:
       - check.work-layout-digital-human-task-package
       - check.work-layout-design-migration
       - check.work-layout-design-fixtures
+      - check.maintenance-docs
     audit_status: conservative-complete
     display_id: G04
     audit_basis: Every registered changed path retains this risk; no narrowing or retirement.
@@ -3722,6 +3812,7 @@ gates:
       - check.profile-distribution
       - check.profile-distribution-gate
       - check.lifecycle-query-profile-snapshot
+      - check.distribution-hygiene
     audit_status: conservative-complete
     display_id: G18
     audit_basis: Every registered changed path retains this risk; no narrowing or retirement.
@@ -3765,6 +3856,7 @@ gates:
       - check.daily-report
       - check.daily-flow
       - check.daily-benchmark-syntax
+      - check.verification-policy-baseline
     audit_status: conservative-complete
     display_id: G20
     audit_basis: Every registered changed path retains this risk; no narrowing or retirement.

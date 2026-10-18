@@ -42,7 +42,7 @@ YSS 模板工程是一套可版本化的研发治理系统。它用仓库身份�
 
 ### 5.2 技能供应链
 
-`.agents/skills` 是跨 Agent 共享技能的权威内容。`.codex/skills`、`.cursor/skills` 和 `.pi/skills` 是生成投影。
+`.agents/skills` 是跨 Agent 共享技能的权威内容。模板源只生成 `.claude/skills` 投影；`.codex/skills`、`.cursor/skills` 和 `.pi/skills` 不是模板源投影，这些运行时直接读取 canonical 内容。实例若启用平台投影，由实例 `skills-lock.json` 的 `projectionRoots` 声明。
 
 `.template-spec/agents/yss-skill-registry.yaml` 管理技能分层、成熟度、别名和运行时发现；`skills-lock.json` 管理来源、版本、hash 与投影完整性。修改共享技能后必须同步投影并更新 lock，不能分别编辑平台副本。
 
@@ -56,7 +56,7 @@ YSS 模板工程是一套可版本化的研发治理系统。它用仓库身份�
 
 模板实例分发面包含根规则、`CONTEXT.md`、按需选择的共享 skills、`.template-spec/` 中的治理资产和共享验证脚本；`docs/` 保存实例按需产生的产品资产。CLI 从固定模板 commit 构建 bundled snapshot，并在 metadata 中保存模板身份和版本。
 
-`.template-source/` 是模板源治理区，保存当前维护规则、跨仓契约、工具源码、必要工程依据；`llm-wiki` 在本机按需生成的模板源 Wiki 不提交；运行报告、历史证据、缓存及恢复包存入仓外 maintenance 命名空间。该目录不进入 `project-instance`，避免把模板维护历史误当成产品研发资产。
+`.template-source/` 是模板源治理区，保存当前维护规则、跨仓契约、工具源码、必要工程依据；`llm-wiki` 在本机按需生成的模板源 Wiki 不提交；运行报告、历史证据、缓存及恢复包存入仓外 maintenance 命名空间。该目录不进入 `project-instance`，避免把模板维护历史误当成产品研发资产。模板源的 `docs/superpowers/specs` 与 `docs/superpowers/plans` 只作为在办维护文档工作区：必须有 frontmatter 与状态，完成后计划迁入仓外 maintenance，长期依据迁入 `.template-source/contracts/`；项目实例的 `docs/` 仍只保存产品资产。
 
 ## 7. 模板维护工作流
 

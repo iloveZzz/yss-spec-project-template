@@ -14,7 +14,9 @@ export function compileVerificationCheck(raw,{group,profile='release',gateIds=[]
   if(typeof item.run!=='string'||!item.run)throw Error('VERIFICATION_COMMAND_INVALID');
   const sourceProfile=profile==='legacy-full'?'release':profile;
   const command=`${item.run}${item.require_committed_for?.includes(sourceProfile)&&!item.run.endsWith(' --require-committed')?' --require-committed':''}`;
-  const result={id:verificationCheckId(item),group:group||item.group,command,when:item.when??null,depends_on:[...(item.depends_on||[])],gate_ids:[...gateIds]};
+  const timeout=item.timeout_ms??(profile==='release'?1800000:300000);
+  if(!Number.isSafeInteger(timeout)||timeout<0)throw new TypeError('VERIFICATION_TIMEOUT_INVALID: '+String(item.timeout_ms));
+  const result={id:verificationCheckId(item),group:group||item.group,command,when:item.when??null,depends_on:[...(item.depends_on||[])],gate_ids:[...gateIds],timeout_ms:timeout};
   if(taskId||item.task_id)result.task_id=taskId||item.task_id;
   for(const field of ['lane','resources','parallel_unless_env'])if(item[field]!==undefined)result[field]=structuredClone(item[field]);
   return result;

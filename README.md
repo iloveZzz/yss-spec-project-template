@@ -20,7 +20,7 @@ English overview: [README.en.md](README.en.md).
 ├── yss-project.yaml         ← 仓库身份
 ├── .template-spec/          ← 可复用流程、门禁、契约与文档模板
 ├── .template-source/        ← 现行模板维护资产与分发工具（不进入实例；运行历史存仓外）
-├── docs/                    ← 项目实例按需创建的 Plan、Spec、设计、Ticket 与交付证据
+├── docs/                    ← 项目实例按需创建的 Plan、Spec、设计、Ticket 与交付证据；模板源只在 docs/superpowers/{specs,plans} 保存在办维护文档
 └── scripts/                 ← 合同与流程验证工具
 ```
 
@@ -55,7 +55,7 @@ yss init --profile spec --root /absolute/path/project --apply --plan-file /absol
 
 ## 模板配置取舍
 
-`.agents/skills` 是共享技能的权威内容；Codex、Cursor、Pi 直接读取它，Claude Code 读取生成的 `.claude/skills` 链接。共享技能只能在权威目录修改，随后运行：
+`.agents/skills` 是共享技能的权威内容；模板源只生成 `.claude/skills` 链接供 Claude Code 发现，Codex、Cursor、Pi 直接读取 `.agents/skills`；实例平台投影由实例锁声明。共享技能只能在权威目录修改，随后运行：
 
 ```bash
 scripts/sync-skills

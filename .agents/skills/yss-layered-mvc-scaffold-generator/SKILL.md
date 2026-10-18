@@ -19,7 +19,7 @@ description: 直接生成 YSS 分层 MVC 后端脚手架及参考工程，无需
 
 - 新合同使用 Project Scaffold Contract v5，绑定 `reference_example`（是否启用、固定标识、版本、路径及当前模板摘要）和完整设计前置；来源见 [合同编译](../yss-implementation-contract-compiler/references/scaffold-compilation.md)。编译器只生成草案，当前生命周期批准、写范围、技术/数据/API 设计门禁仍需完整核验。
 - 历史 v4 通用 MVC 合同保持空骨架语义；不能通过参数追加参考工程。历史 v3 只读恢复审计，不用于生成。旧独立 v1 / 正式 v4 Manifest 用 `scripts/audit-legacy-backend-scaffold --project-root <目录>` 核验文件所有权；结果不授予平台或生命周期资格。
-- 平台与组件来自批准的 `platform_configuration` v2、精确 Maven Parent/BOM 和共享 [平台目录](../../../.template-spec/engineering/backend-platforms.md)。候选、生成成功或本地样例通过不授予平台支持、产品批准或 `ready-for-agent`。
+- 平台与组件来自批准的 `platform_configuration` v2、精确 Maven Parent/BOM 和共享平台目录（模板源 .template-spec/engineering/backend-platforms.md；公开包不携带该目录）。候选、生成成功或本地样例通过不授予平台支持、产品批准或 `ready-for-agent`。
 - 固定核心模块为 server/service/repository；external-integration 增加 adapter，published-client 增加 client，feign-client 增加 client/feign-client。完整闭包与职责见 [architecture.md](references/architecture.md)。
 
 ## 退役与目录保护

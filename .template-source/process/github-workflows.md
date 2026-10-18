@@ -49,7 +49,7 @@ Linux runner 上的两个测试曾因对 macOS 行为的隐性假设而失败，
 
 ### 慢检查与 5 分钟上限
 
-测试与验证遵守 5 分钟硬上限，超时即失败。实测超过 60 秒的日常检查在 `template-verification-profiles.yaml` 的 fast 清单里标为 `tier: slow`：fast 命中时不执行，计入报告 `plan.selection.omitted`（`reason: deferred-slow-check`），运行结束打印“已延后”清单，不代表通过。慢检查由 `template-slow-checks` 工作流每日定时或手动运行（`scripts/ci-gate --mode slow`，公共 gate 对验证执行单独限制 5 分钟，准备沿用工作流原总预算）；本地用 `YSS_VERIFY_SLOW=1`（fast 中一并执行命中的慢检查）或 `YSS_VERIFY_SLOW=only`（只执行全部慢检查）。release profile 不受影响。
+普通检查默认 300 秒超时（release 默认 1800 秒）；固定工具准备与多文件 tooling 等任务可显式登记 `timeout_ms`，0 表示不超时；超时以 124 失败并保留日志。实测超过 60 秒的日常检查在 `template-verification-profiles.yaml` 的 fast 清单里标为 `tier: slow`：fast 命中时不执行，计入报告 `plan.selection.omitted`（`reason: deferred-slow-check`），运行结束打印“已延后”清单，不代表通过。慢检查由 `template-slow-checks` 工作流每日定时或手动运行（`scripts/ci-gate --mode slow`，公共 gate 对验证执行单独限制 5 分钟，准备沿用工作流原总预算）；本地用 `YSS_VERIFY_SLOW=1`（fast 中一并执行命中的慢检查）或 `YSS_VERIFY_SLOW=only`（只执行全部慢检查）。release profile 不受影响。
 
 ## 轻量模板发布（默认）
 

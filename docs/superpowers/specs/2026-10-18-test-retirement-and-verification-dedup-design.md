@@ -1,3 +1,11 @@
+---
+doc_type: maintenance-design
+status: completed
+baseline_commit: e1337581036f55f66c00c7d40c042ad60f6c8190
+created_at: 2026-10-18
+moved_to: maintenance:archive/2026-10-18/2026-10-18-test-retirement-and-verification-dedup-design.md
+---
+
 # 过时测试与验证重复清理设计
 
 本设计把当前审计发现落实为一轮模板维护：先修复漏测，再移除无消费者的代码，最后消除重复执行。依据是 `main@c37b6869c472891fc515e8e7e98200870762fca0` 的现行源码和本会话的定向实验；实验结果是审计证据，不是未来实现的通过证据。

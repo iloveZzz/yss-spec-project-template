@@ -7,8 +7,11 @@ import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { composeProfileTree, PROFILE_NAMES } from "../scripts/lib/profile-tree.mjs";
+import { loadProfileStatus } from "../scripts/lib/profile-status.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const PROFILE_STATUS = loadProfileStatus({ root: ROOT });
+const ACTIVE_PROFILES = PROFILE_NAMES.filter((name) => PROFILE_STATUS.profiles[name].status === "active");
 
 test("FR-008：Profile 目录 = 内核 + _specialist + 该 Profile 的覆盖层，后面的覆盖前面的（只应用分发清单对 .agents/skills 的排除）", () => {
   for (const profile of PROFILE_NAMES) {
@@ -44,6 +47,14 @@ test("不属于 Profile 的名字被拒绝", () => {
   assert.throws(() => composeProfileTree("spec"), /未知 Profile/);
 });
 
+test("Profile 状态：spec kernel、backend active、design legacy 且带迁移说明", () => {
+  assert.deepEqual(PROFILE_STATUS.kernel, ["spec"]);
+  assert.deepEqual(PROFILE_STATUS.active, ["backend"]);
+  assert.deepEqual(PROFILE_STATUS.legacy, ["design"]);
+  assert.ok(PROFILE_STATUS.profiles.design.reason);
+  assert.ok(PROFILE_STATUS.profiles.design.migration);
+});
+
 test("FR-007：三端查询保留各自合同、输出结构与完整内容摘要", () => {
   for (const [profile, skill, unit] of [
     ["spec", "yss-product-lifecycle", "work-unit.entry-triage"],
@@ -66,7 +77,7 @@ test("FR-007：三端查询保留各自合同、输出结构与完整内容摘�
 });
 
 test("FR-006：现役专用 Profile 的锁与注册表接受无投影模型并保留技能哈希", () => {
-  for (const profile of PROFILE_NAMES.filter(name => name !== "design")) {
+  for (const profile of ACTIVE_PROFILES) {
     const tree = composeProfileTree(profile);
     const lock = JSON.parse(fs.readFileSync(path.join(tree, "skills-lock.json"), "utf8"));
     assert.deepEqual(lock.projectionRoots, []);

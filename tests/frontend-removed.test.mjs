@@ -54,18 +54,19 @@ const RETIRED_FRONTEND_SKILLS = ['file-export-download', 'formily-foundation', '
   'theme-token-usage', 'yedit-table-usage', 'yss-api-integration', 'yss-formily', 'yss-formily-schema-generator', 'yss-frontend-scaffold-generator', 'yss-hook',
   'yss-ui', 'yss-ui-business-page-generation', 'ytable-usage', 'ytree-usage'];
 
-test('前端技能已整线退役：无目录、投影、注册表、锁或公开清单条目', () => {
+test('前端技能已整线退役：无目录、投影、注册表、锁或公开清单条目', async () => {
   const registry = parse(read('.template-spec/agents/yss-skill-registry.yaml'));
   const registered = new Set(registry.skills.map((skill) => skill.id));
   const lock = JSON.parse(read('skills-lock.json'));
   const publicSkills = JSON.parse(read('yss-public-skills.json'));
-  const retiredIds = read('scripts/verify-retired-skill-ids');
+  const { retiredSkillIds } = await import('../scripts/lib/skill-retirement.mjs');
+  const retiredIds = new Set(retiredSkillIds());
   for (const id of RETIRED_FRONTEND_SKILLS) {
     for (const base of ['.agents/skills', '.claude/skills']) assert.equal(existsSync(path.join(root, base, id)), false, `${base}/${id} 不应存在`);
     assert.equal(registered.has(id), false, `${id} 不应在注册表`);
     assert.equal(id in lock.skills.shared, false, `${id} 不应在锁`);
     assert.equal(publicSkills.skills.includes(id), false, `${id} 不应公开发布`);
-    assert.ok(retiredIds.includes(`"${id}"`), `${id} 必须登记在 verify-retired-skill-ids`);
+    assert.ok(retiredIds.has(id), `${id} 必须在 OBSOLETE 单一来源中登记`);
   }
   assert.equal('iloveZzz/yss-ui' in lock.sources, false);
   assert.equal(registry.capabilities.some((row) => row.id === 'scaffold.frontend-vue3'), false);
