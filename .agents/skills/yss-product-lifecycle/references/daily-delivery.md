@@ -20,6 +20,10 @@
 
 发现破坏性 API、跨仓、迁移、架构/平台变化、关键权限行为或其他政策排除项时，停止受影响后续动作并保留已有修改、日志和审查；调查实际影响后从最近可信阶段进入 `governed`。不得删除绑定、改路径标签或给正式准入器加豁免旗标来继续。无依赖且仍符合授权的工作可以继续。
 
+## 输入摘要准备
+
+无 API 变化的 daily 任务，可按[输入摘要准备说明](../../../../.template-spec/process/daily-input-preparation.md)探测 CLI 能力、准备既有输入并更新同一 Ticket。旧 CLI 继续原流程；准备不续期测试、审查或批准，完成仍需实际验证及 verify-daily。
+
 ## 最小起步记录
 
 下面是普通任务的 Markdown 模板。替换所有 `__...__`，补写具体目标/验收/风险依据；`baseline_sha` 使用真实完整 Git SHA，技能摘要使用该治理项目已安装 Skill 的原始字节 SHA-256，`commands` 使用工程已有命令，`scope.paths` 限本轮实现范围。追加实际消费的技能和输入，不把示例当作全部技术约束。现行/历史正式绑定须真实列入 `formal_bindings`，不能清空后降级。此初稿仅供 `route`；尚无 implementation/tests/review 时 `verify-daily` 必须阻断。

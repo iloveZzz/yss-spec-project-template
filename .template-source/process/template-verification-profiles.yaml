@@ -88,8 +88,24 @@ profiles:
           - "docs/superpowers/plans/2026-10-18-spec-backend-material-intake-and-manual-handoff.md"
           - "docs/superpowers/plans/2026-10-18-test-retirement-and-verification-dedup.md"
           - "docs/superpowers/specs/2026-10-18-test-retirement-and-verification-dedup-design.md"
+          - "docs/superpowers/specs/2026-10-18-sha256-usage-optimization-design.md"
+          - "docs/superpowers/plans/2026-10-18-sha256-usage-optimization.md"
         depends_on: []
         failure_mode: "说明文档复述门禁数、阶段数、投影根数量或硬编码与 lock 不一致的上游 revision"
+      - id: check.daily-input-preparation
+        run: "node --test tests/daily-input-preparation.test.mjs"
+        resources: [native-cli]
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - "tests/daily-input-preparation.test.mjs"
+          - ".template-spec/process/daily-input-preparation.md"
+          - "profiles/backend/.agents/skills/harness-orchestrator/SKILL.md"
+          - ".template-source/distribution/bundle-profile.json"
+          - ".agents/skills/yss-product-lifecycle/references/daily-delivery.md"
+          - ".template-source/distribution/yss-cli-pin.json"
+        depends_on: []
+        failure_mode: "输入准备改写完成证据、忽略当前来源或错误放宽正式路线，或固定 CLI 缺少准备能力"
       - id: check.role-independent-contracts
         run: "node --test tests/role-independent-contracts.test.mjs"
         group: feature-assets
@@ -2305,6 +2321,8 @@ syntax_files:
   - tests/verification-selection.test.mjs
   - tests/verification-delivery-run.test.mjs
 routing:
+  - patterns: ["tests/daily-input-preparation.test.mjs"]
+    groups: [feature-assets]
   - patterns: ["tests/harness-skill-scope.test.mjs"]
     groups: [skills]
   - patterns: ["tests/yss-backend-skill-governance.test.mjs"]
@@ -2936,6 +2954,10 @@ groups:
         id: check.schema-runtime
   feature-assets:
     commands:
+      - run: node --test tests/daily-input-preparation.test.mjs
+        resources: [native-cli]
+        when: template-source
+        id: check.daily-input-preparation
       - run: node --test tests/feature-assets.test.mjs tests/browser-session.test.mjs
         when: template-source
         id: check.feature-assets
@@ -3610,6 +3632,7 @@ gates:
     depends_on: []
     check_ids:
       - check.native-consumer-routing
+      - check.daily-input-preparation
       - check.517fe9954d913f53
       - check.517fe9954d913f53-install
       - check.517fe9954d913f53-sync
