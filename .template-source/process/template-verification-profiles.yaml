@@ -1067,6 +1067,7 @@ profiles:
           - "tests/agent-hook.test.mjs"
           - ".claude/settings.json"
           - ".codex/hooks.json"
+          - ".codex/settings.local.json"
           - ".template-source/distribution/bundle-profile.json"
         depends_on: []
         failure_mode: "Stop hook 对相关路径漏检、对无关路径误检或误阻断、阻断协议与 Claude Code / Codex 不一致，或 hook 文件进入实例分发"
@@ -2856,6 +2857,7 @@ routing:
       - tests/artifact-analysis.test.mjs
       - .claude/settings.json
       - .codex/hooks.json
+      - .codex/settings.local.json
       - CLAUDE.md
       - tests/claude-entry.test.mjs
       - tests/explicit-invocation.test.mjs

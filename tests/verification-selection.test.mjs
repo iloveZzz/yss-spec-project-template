@@ -10,6 +10,11 @@ import {compileTaskExecution,addVerificationExecutionTasks} from '../.template-s
 const pilot='.agents/skills/yss-research/SKILL.md';
 const pilotConfig=()=>loadVerificationProfiles();
 const releaseRequired=['check.release-profile-consumers','check.daily-execution','check.verification-script-retirement','check.daily-preflight','check.verification-report-v2','check.verification-artifacts','check.legacy-coverage','check.yss-cli-pin'];
+test('本地 Codex 配置移出跟踪仍选择现有 hook 检查，未知相邻路径继续拒绝', () => {
+ const plan=planTemplateVerification({changedFiles:['.codex/settings.local.json']});
+ assert.equal(plan.commands.filter(row=>row.id==='check.agent-hook').length,1);
+ assert.throws(()=>planTemplateVerification({changedFiles:['.codex/unregistered-local.json']}),/UNKNOWN_VERIFICATION_PATH/);
+});
 test('发布必跑唯一覆盖保留空差异、策略及 pin 的完整责任',t=>{
  const directory=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'required-selection-')));t.after(()=>fs.rmSync(directory,{recursive:true,force:true}));
  for(const [index,changedFiles]of [[],['.template-source/process/template-verification-profiles.yaml'],['.template-source/distribution/yss-cli-pin.json']].entries()){

@@ -52,6 +52,12 @@ htmlcov/
 # <<< create-yss-spec managed rules
 
 # Template-source only
+# Local agent settings and repository-local worktrees
+/.claude/settings.local.json
+/.codex/settings.local.json
+/.claude/worktrees/
+/.worktrees/
+
 .vscode/
 Excalidraw
 .obsidian

@@ -16,6 +16,14 @@
 
 清理使用 `scripts/runtime-store plan-gc` 和 `apply-gc`，执行时重新检查正式引用、进程占用及输入变化。保护材料不受普通日志留存期影响。数据库与日志都不进入源码输入扫描；运行记录的历史通过结果不替代本次 Fresh Verification。
 
+## 源码跟踪边界
+
+- 个人配置与仓内 worktree 由[根忽略规则](../../.gitignore)的模板源专用区精确排除；共享 hook、canonical Skills、投影和锁文件继续跟踪。
+- 会话日志、重复推演、可重建阅读视图及普通运行报告使用现有仓外维护存储，不再复制成第二套长期维护文档。
+- Superpowers 设计和计划仍承担当前需求、决定、执行或验收依据时继续保留，不忽略整个 `docs/superpowers/`。
+- AR 阶段总结和盘点仍有执行计划及兼容例外引用，不能直接搬迁或删除。先收敛引用，再按下文 plan → pack → verify → remove 流程核验归档后，才处理对应原件。
+- 项目实例的 `.work/`、历史 `docs/.scratch/` 可能保存正式资产，模板源整目录忽略规则不得移植到实例；必要工程证据继续按现行引用保留。
+
 ## 仓外维护目录与引用
 
 复用 `~/.yss-harness/runtime/<workspace-id>/maintenance/`，可通过 `YSS_RUNTIME_HOME` 指定持久仓外根。workspace-id 由真实工作区根路径的 SHA-256 计算，不能借用其它工作区。下设 `archives/`、`candidates/`、`research/`、`diagrams/`、`cache/` 和 `wiki/`。正式材料不使用 `RUNNER_TEMP` 作为唯一存储；CI 需导出独立包。
