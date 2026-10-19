@@ -46,5 +46,5 @@ test('native Bundle exports retain platform evidence and reject missing or chang
 test('backend query parsing and binding use the same phase snapshot',async()=>{
  const {syncBuiltinESMExports}=await import('node:module');const {queryLifecycleContext}=await import(pathToFileURL(path.join(composeProfileTree('backend'),'scripts/lib/lifecycle-context-query.mjs')).href);const ref=path.join(composeProfileTree('backend'),'.template-spec/process/lifecycle-registry.yaml'),read=fs.readFileSync;let reads=0;
  fs.readFileSync=function(file,...args){const value=read.call(this,file,...args);if(String(file)===ref && ++reads>1)return Buffer.concat([Buffer.from(value),Buffer.from('\n# drift')]);return value;};syncBuiltinESMExports();
- try{assert.throws(()=>queryLifecycleContext({mode:'route'}),/VALIDATION_INPUT_CHANGED/);}finally{fs.readFileSync=read;syncBuiltinESMExports();}
+ try{assert.throws(()=>queryLifecycleContext({workUnitId:'work-unit.harness-entry'}),/VALIDATION_INPUT_CHANGED/);}finally{fs.readFileSync=read;syncBuiltinESMExports();}
 });

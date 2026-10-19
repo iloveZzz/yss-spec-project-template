@@ -22,8 +22,8 @@ test("当前模板 AGENTS 必须有完整标记，历史兼容不能掩盖来源
   }
   writeFileSync(path.join(root, "AGENTS.md"), `${start}\n任意标题\n${end}\n产品规则`);
   assert.equal(verifyGovernanceLayout(root, "template-source").mode, "template-source");
-  const child = path.join(root, "profiles/design/AGENTS.md");
+  const child = path.join(root, "profiles/backend/AGENTS.md");
   mkdirSync(path.dirname(child), { recursive: true });
   writeFileSync(child, "没有标记");
-  assert.throws(() => verifyGovernanceLayout(root, "template-source"), /profiles\/design\/AGENTS\.md/);
+  assert.throws(() => verifyGovernanceLayout(root, "template-source"), /profiles\/backend\/AGENTS\.md/);
 });

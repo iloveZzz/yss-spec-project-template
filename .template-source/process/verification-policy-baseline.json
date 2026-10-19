@@ -77,11 +77,6 @@
       "required_at_release": true
     },
     {
-      "id": "check.verification-design-cli",
-      "display_id": "G14",
-      "required_at_release": true
-    },
-    {
       "id": "check.verification-backend-cli",
       "display_id": "G15",
       "required_at_release": true

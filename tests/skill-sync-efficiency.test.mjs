@@ -7,7 +7,7 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 
 // 专职 Profile 暂未登记投影根；根（spec）的投影行为见下一条用例。
-for (const sourceRoot of ["profiles/backend", "profiles/design"]) test(`FR-006：${sourceRoot} Skill 同步不创建任何投影目录，检查也通过`, async () => {
+for (const sourceRoot of ["profiles/backend"]) test(`FR-006：${sourceRoot} Skill 同步不创建任何投影目录，检查也通过`, async () => {
   const root = mkdtempSync(path.join(os.tmpdir(), "yss-skill-sync-"));
   try {
     mkdirSync(path.join(root, "scripts/lib"), { recursive: true });
