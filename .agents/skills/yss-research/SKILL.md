@@ -40,7 +40,7 @@ description: "研究 YSS 技术与产品策略事实，统一发起竞品调研�
 
 运行时支持后台 Agent 且资料可独立阅读时可以委派；否则在当前 Agent 研究。委派用于优化执行，不构成可信度证明。
 
-只读分诊使用 task-package schema v2、`contract.kind: read-only-intake`、`Explorer`、已登记分诊工作单元和空写范围；使用 `scripts/prepare-read-only-intake`、`scripts/run-read-only-intake`，执行证据留在仓库外。无已执行命令时写 `verification_status: not-executed`。正式落盘前由所有者分析影响并派发正式任务包，详见 `.template-spec/process/subagent-collaboration.md`。
+只读分诊 v2（task-package schema v2、`read-only-intake`）仅服务 `template-source` 维护与旧记录；`project-instance` 的 Spec/Backend 研究直接返回来源与结论，不创建角色任务包，也不调用 `scripts/prepare-read-only-intake` / `scripts/run-read-only-intake`。正式落盘前由所有者分析影响并派发正式任务包，详见 `.template-spec/process/subagent-collaboration.md`。
 
 只读分诊的独立运行包继续作为证据来源，并由运行存储保护。使用 `scripts/runtime-store inspect` 定位运行，`export` 导出可独立核验的文件包；留存与恢复按 `.template-spec/process/runtime-storage.md` 执行。
 
@@ -69,6 +69,6 @@ description: "研究 YSS 技术与产品策略事实，统一发起竞品调研�
 node .agents/skills/yss-research/scripts/validate-research-package.mjs <slug>-research-brief.md <slug>-evidence.yaml
 ```
 
-`template-source` 的可复用维护研究存于 当前工作区仓外的 `maintenance:research/<run-id>/`（用 `scripts/maintenance-path` 解析；证据引用绑定原字节摘要）；`project-instance` 沿项目研究 / 证据约定，并由消费生命周期资产绑定决定性输出。模板正式研究使用 `work-unit.maintenance-research`，按 `.template-spec/process/research-completion.md` 记录当前验证并收尾；只回传结论的分诊继续用 read-only-intake v2。
+`template-source` 的可复用维护研究存于 当前工作区仓外的 `maintenance:research/<run-id>/`（用 `scripts/maintenance-path` 解析；证据引用绑定原字节摘要）；`project-instance` 沿项目研究 / 证据约定，并由消费生命周期资产绑定决定性输出。模板正式研究使用 `work-unit.maintenance-research`，按 `.template-spec/process/research-completion.md` 记录当前验证并收尾；只回传结论的模板维护分诊继续用 read-only-intake v2，项目实例不使用。
 
 来源不可用或冲突时说明限制。普通缺口降低置信度；决定性 Claim 的来源缺失或不匹配时不能视为已确立。研究完成不授予维护或产品批准。

@@ -5,7 +5,7 @@ import path from 'node:path';
 import os from 'node:os';
 import { spawnSync } from 'node:child_process';
 import { generateTaskPackageDefaults, validateTaskPackage } from '../scripts/lib/task-package.mjs';
-import { observeReadOnlyIntake, intakeEvidencePath, intakeSnapshot, createIntakeSnapshotObserver, fileDigest, digest } from '../scripts/lib/read-only-intake.mjs';
+import { assertTemplateSourceReadOnlyIntake, observeReadOnlyIntake, intakeEvidencePath, intakeSnapshot, createIntakeSnapshotObserver, fileDigest, digest } from '../scripts/lib/read-only-intake.mjs';
 
 function fixture(t) {
   const temp=fs.mkdtempSync(path.join(os.tmpdir(),'yss-intake-test-')); t.after(()=>fs.rmSync(temp,{recursive:true,force:true}));
@@ -18,6 +18,15 @@ function fixture(t) {
     inputs:['CONTEXT.md'],objective:'只读研究',allowed_write_paths:[],forbidden_actions:['写入仓库','批准或流转'],expected_outputs:['来源和结论'],expected_evidence_files:[],verification_commands:[],verification_results:[],verification_status:'not-executed',downstream_consumers:['root'],convergence:{parent_work_unit:'work-unit.entry-triage',convergence_ref:'chat-root'}
   }); return {temp,root,task};
 }
+test('read-only intake v2 只接受 template-source，项目实例明确拒绝', t=>{
+ const source=fs.mkdtempSync(path.join(os.tmpdir(),'yss-intake-mode-'));t.after(()=>fs.rmSync(source,{recursive:true,force:true}));
+ fs.writeFileSync(path.join(source,'yss-project.yaml'),'schema_version: 1\nrepository_mode: template-source\n');
+ assert.doesNotThrow(()=>assertTemplateSourceReadOnlyIntake(source));
+ fs.writeFileSync(path.join(source,'yss-project.yaml'),'schema_version: 2\nrepository_mode: project-instance\n');
+ assert.throws(()=>assertTemplateSourceReadOnlyIntake(source),/template-source-only/);
+ fs.writeFileSync(path.join(source,'yss-project.yaml'),'schema_version: 1\nrepository_mode: project-instance\n');
+ assert.throws(()=>assertTemplateSourceReadOnlyIntake(source),/template-source-only/);
+});
 test('snapshots hash mixed file lengths exactly and observe fresh file, link and mode changes', t=>{
  const {root}=fixture(t);
  const bytes=[Buffer.alloc(1048609, 91), Buffer.alloc(0), Buffer.from('短文件'), Buffer.alloc(1048576, 7)];

@@ -22,13 +22,13 @@
 
 identity1/Profile1–2 的 task1/2、approval1/2、角色及 runtime 规则按原政策只读核验。不得按新单执行者政策解释旧批准，不降版本绕过，也不把旧记录改成新批准。新任务或阶段写入先显式迁移，旧批准、Receipt、ID 和用户字节保持不变。模板源维护仍消费其明确的维护合同，不能借产品任务生成资产。
 
-以下 v2 分诊工具是历史读取/审计协议；当前只读咨询不要求创建任务包。
+以下 v2 分诊工具是 `template-source` 维护与旧记录的历史读取/审计协议；`project-instance` 的日常与正式只读咨询直接返回来源和结论，不创建任务包。
 
-## 只读分诊任务包 v2
+## 只读分诊任务包 v2（template-source/legacy）
 
-schema v1 及三种正式合同继续执行原规则。v2 仅用于 `read-only-intake`：`Explorer`、注册表已有 `work-unit.entry-triage` 或专职 Profile 的 `work-unit.harness-entry`、`allowed_write_paths: []`，不带 checkpoint、Slice 或正式审查合同。研究完成只回传来源和结论，不更新阶段、Ticket、批准或 `next_route`；写正式资产前由主控重新分析影响并生成正式任务包。旧消费者必须拒绝 v2 并升级，禁止改写为 v1 绕过边界。
+schema v1 及三种正式合同继续执行原规则。v2 仅用于 `template-source` 的 `read-only-intake`：`Explorer`、新任务使用注册表已有的 `work-unit.entry-triage`、`allowed_write_paths: []`，不带 checkpoint、Slice 或正式审查合同；历史 `work-unit.harness-entry` 记录仅按原政策只读核验。研究完成只回传来源和结论，不更新阶段、Ticket、批准或 `next_route`；写正式资产前由主控重新分析影响并生成正式任务包。旧消费者必须拒绝 v2 并升级，禁止改写为 v1 绕过边界。
 
-`prepare-read-only-intake --input <选择.yaml> --output <仓库外/task.json>` 从角色默认值生成任务包；输入沿用任务 ID、角色、运行时、分诊入口、合同 ID/版本/来源、输入、目标、禁止事项、预期输出、下游消费者和汇合字段。`run-read-only-intake --task <task.json> --run-dir <仓库外新目录> [--timeout-ms <毫秒>] -- <命令> <参数>` 保存观测与日志；不传命令时明确未执行验证。复核使用 `verify-digital-human-task-package <run-dir/task-result.json> --run-dir <绝对目录>`。
+`prepare-read-only-intake --input <选择.yaml> --output <仓库外/task.json>` 仅可在 `template-source` 根运行，使用历史角色默认值生成旧任务包；`project-instance` 会由脚本 guard 拒绝。`run-read-only-intake --task <task.json> --run-dir <仓库外新目录> [--timeout-ms <毫秒>] -- <命令> <参数>` 保存历史观测与日志；不传命令时明确未执行验证。Spec/Backend 实例不调用这两个脚本。
 
 运行证据使用 `run:` 相对引用，禁止绝对路径、`..` 与符号链接逃逸。命令、退出码、时间、stdout/stderr 与摘要必须一致；源码引用不能冒充运行日志。派发器观察 Git 跟踪、未跟踪及忽略文件的新增、删除、修改及已初始化子仓，结果中的空变更声明不能覆盖实际差异。未初始化子仓阻断观测。此工具是合同与结果审计，不是 OS 沙箱：执行期间改后恢复及可信派发器证据被恶意同步伪造不在终态观测能力内；运行目录应由派发器持有，不扩大 Agent 仓库写权限，运行时仍须采用只读权限。恢复后重新观察，不能直接复用旧完成状态。
 

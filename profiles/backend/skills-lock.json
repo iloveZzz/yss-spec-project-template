@@ -466,7 +466,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-implementation-contract-compiler/SKILL.md",
-        "effectiveHash": "604efcdb4231d767ff49d99d35072d4a1919f7fa480155bbefbc1d765f0e6463",
+        "effectiveHash": "851d1d54c9cc8b7a2329a996e0cd5c224eab3a65e0667933ae7093d94f86f12c",
         "targets": [
           ".agents/skills"
         ]
@@ -520,7 +520,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-research/SKILL.md",
-        "effectiveHash": "6e4b39adea7001211693b153477ded6bde1da869389e0c9a4eb852b3d3f6cb04",
+        "effectiveHash": "d33131abb6f0db3bd61e99ec8763bb3fff92fea7177b4010768ded058410945f",
         "targets": [
           ".agents/skills"
         ]

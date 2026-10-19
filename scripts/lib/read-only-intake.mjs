@@ -8,6 +8,13 @@ import { assertNodeVersion, beginRuntimeRun } from './runtime-store.mjs';
 
 const ensure = (ok, message) => { if (!ok) throw new TypeError(`read-only-intake: ${message}`); };
 export const digest = value => `sha256:${createHash('sha256').update(value).digest('hex')}`;
+/** v2 只读分诊只服务 template-source 维护；Spec/Backend 项目实例使用普通只读咨询，不创建角色任务包。 */
+export function assertTemplateSourceReadOnlyIntake(root) {
+  const identity = parse(fs.readFileSync(path.join(root, 'yss-project.yaml'), 'utf8'));
+  if (identity?.repository_mode !== 'template-source') {
+    throw new TypeError('read-only-intake-v2-template-source-only: 项目实例不调用 read-only intake v2；直接返回来源与结论，不创建角色任务包');
+  }
+}
 const inside = (root, file) => { const rel = path.relative(root, file); return rel !== '..' && !rel.startsWith(`..${path.sep}`) && !path.isAbsolute(rel); };
 export function intakeEvidencePath(ref, { root, runDir }) {
   const runtime = ref.startsWith('run:');

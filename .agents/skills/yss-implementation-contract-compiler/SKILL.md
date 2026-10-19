@@ -20,7 +20,7 @@ Slice v3 的当前执行结果须按 `references/yss-skill-execution-result.md` 
 
 先读取 Spec、切片 Ticket、需求冻结、适用的原型确认、OpenAPI Freeze/no-impact、适用的系统/数据架构和 Design Review、Build Architecture Checklist、实现仓库和验证命令。输入缺失、未批准或 `stale` 时输出 `blocked`，交回 `yss-product-lifecycle`。
 
-工程基线与 Build Architecture Checklist 的编写结构见[系统概要设计](../../../.template-spec/architecture/templates/system-overview-design-template.md#工程基线与准入清单)。保留清单资产及原引用字段、实现前审查批准和持久化要求；[事后验证记录](../../../.template-spec/templates/verification-record-template.md#架构约束核验)不代替事前准入。
+工程基线与 Build Architecture Checklist 的编写结构见 `.template-spec/architecture/templates/system-overview-design-template.md`。保留清单资产及原引用字段、实现前审查批准和持久化要求；事后验证记录见 `.template-spec/templates/verification-record-template.md`，不代替事前准入。
 
 ## 编译循环
 
