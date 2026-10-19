@@ -137,7 +137,8 @@ test('原生实例必要检查纳入各profile及完整真实变更计划，保�
     assert.deepEqual(check.gate_ids,['check.verification-fixed-source']);
     assert.deepEqual(check.execution.args,['--test','--test-concurrency=1','tests/instance-metadata.test.mjs','tests/native-instance-drift.test.mjs']);
     assert.ok(check.depends_on.includes('check.verification-environment'));
-    assert.equal(execution.commands.filter(item=>item.kind==='artifact-prepare').length,3);
+    const preparation=execution.commands.filter(item=>item.kind==='artifact-prepare');
+    assert.deepEqual(preparation.map(item=>item.task_id),['check.cli-artifact-spec','check.cli-artifact-backend']);
     assert.ok(execution.commands.some(item=>item.command.includes('native-consumer-routing.test.mjs')));
   }
   for(const profile of ['fast','release'])assert.throws(()=>planTemplateVerification({profile,changedFiles:['unregistered-native-instance.asset'],root}),/UNKNOWN_VERIFICATION_PATH/);

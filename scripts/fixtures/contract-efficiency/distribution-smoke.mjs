@@ -4,6 +4,7 @@ import path from 'node:path';
 import os from 'node:os';
 import assert from 'node:assert/strict';
 import {spawnSync} from 'node:child_process';
+import {parseDocument} from '../../vendor/yaml.mjs';
 import {verificationInputDigest} from '../../lib/verification-report.mjs';
 import {treeHash} from '../../lib/skill-supply-chain.mjs';
 import {NATIVE_PROFILES,nativeBinary,nativeDigest as hash,runNative,initializeNative,applyNative,inspectNative} from '../../../.template-source/scripts/lib/native-yss.mjs';
@@ -86,12 +87,15 @@ try{
   runNative(['sync','--root',target],options);
   const review=JSON.parse(node([path.join(target,'scripts/contract'),'prepare-review','contract-smoke.md','contract-smoke.md','--kind','spec','--json'],target));assert.equal(review.approval_reusable,false);assert.equal(review.execution_allowed,false);
   const initialized=execute('git',['init','-q',target],scratch);assert.equal(initialized.status,0,initialized.stderr);
-  const specialist=profile==='backend'||profile==='frontend',unit=specialist?'work-unit.harness-entry':'work-unit.entry-triage',input=path.join(scratch,`${profile}-input.json`),task=path.join(scratch,`${profile}-task.json`),run=path.join(scratch,`${profile}-run`);
-  fs.writeFileSync(input,JSON.stringify({role_id:specialist?'role.harness-orchestrator':'role.requirements-manager',task_id:'intake-smoke',work_unit_id:unit,actor_id:'maintainer',runtime_id:'runtime.generic',contract:{contract_id:'smoke',contract_version:1,contract_ref:'CONTEXT.md'},inputs:['CONTEXT.md'],objective:'read-only research',forbidden_actions:['write'],expected_outputs:['source references'],downstream_consumers:['owner'],convergence:{parent_work_unit:unit,convergence_ref:'current-session'}}));
-  node([path.join(target,'scripts/prepare-read-only-intake'),'--input',input,'--output',task],target);
-  const intake=JSON.parse(node([path.join(target,'scripts/run-read-only-intake'),'--task',task,'--run-dir',run],target));assert.equal(intake.workflow_status,'resolved');assert.equal(intake.verification_status,'not-executed');assert.equal(intake.result.next_route,null);
-  node([path.join(target,'scripts/verify-digital-human-task-package'),path.join(run,'task-result.json'),'--run-dir',run],target);
-  rows.push({profile,template_commit:inspection.templateCommit,template_source_state:inspection.sourceState,bundle_sha256:inspection.bundleHash,native_copy_export_init_sync:'passed',writing_assets:writing,installed_skill_hashes:skills,reader:'passed',review_preparation:'passed',intake_producer_runner_consumer:'passed',release_ready:false});save();console.log(`${profile}: fixed native export/init/sync/read/intake passed`);
+  const identity=parseDocument(fs.readFileSync(path.join(target,'yss-project.yaml'),'utf8')).toJS();
+  assert.equal(identity.schema_version,2);assert.equal(identity.repository_mode,'project-instance');
+  assert.equal(JSON.parse(fs.readFileSync(path.join(target,'.yss.json'),'utf8')).profile,profile);
+  assert.equal(parseDocument(fs.readFileSync(path.join(target,'.template-spec/process/harness-profile.yaml'),'utf8')).toJS().schema_version,3);
+  // Task2 intake is historical-only; current read-only consultation creates no task.
+  const unit=profile==='backend'?'work-unit.harness-entry':'work-unit.entry-triage',before=state(target);
+  runNative(['lifecycle','query','--root',target,'--id',unit],options);
+  assert.deepEqual(state(target),before,'Read-only query changed the instance');
+  rows.push({profile,template_commit:inspection.templateCommit,template_source_state:inspection.sourceState,bundle_sha256:inspection.bundleHash,native_copy_export_init_sync:'passed',writing_assets:writing,installed_skill_hashes:skills,reader:'passed',review_preparation:'passed',legacy_task2_generation:'not-executed-historical-only',read_only_query:'passed',release_ready:false});save();console.log(`${profile}: fixed native export/init/sync/read and current read-only query passed`);
  }
  report.input_after_sha256=verificationInputDigest(root);report.input_drift=report.input_after_sha256!==inputDigest;assert.equal(report.input_drift,false,'Distribution source changed during smoke');
  report.binary_after_sha256=hash(fs.readFileSync(pin.binary));assert.equal(report.binary_after_sha256,pin.digest);report.status='passed';
