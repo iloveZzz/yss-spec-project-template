@@ -152,7 +152,7 @@
         "source": "ayghri/i-have-adhd",
         "sourceType": "git",
         "skillPath": "skills/i-have-adhd/SKILL.md",
-        "effectiveHash": "d5d423469fd4f3002fcc1d4d00eed34d295a777cc9bbb2d1a47e92d5d43c8440",
+        "effectiveHash": "7f92326394f0101b66aa183ce10f437a3f6b0c3173ec2c7a2c16b55d2d9cc027",
         "sourceRevision": "839872f9d1cd634fed642b4589ce7226199cc15f",
         "upstreamHash": "4c88635cbcb4765b63528d608d27589596840708e89607fda9c9fa5726c11f7e",
         "adaptationRef": ".agents/skills/i-have-adhd/references/yss-adaptation.md",
