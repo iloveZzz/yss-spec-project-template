@@ -12,7 +12,7 @@ export function assertBusinessApprovalBasis(root,state,{required=false}={}) {
   if(!required)return;
   const report=checkBusinessTickets({root,setRef:businessSetRef(state),mode:'formal'});
   if(report.status!=='passed')throw Error(`BUSINESS_FORMALIZATION_BLOCKED: ${report.diagnostics.map(x=>x.code).join(', ')}`);
-  const rolesDoc=yamlValue(fs.readFileSync(businessPath(root,'.template-spec/agents/digital-human-roles.yaml'),'utf8'));
+  // approval3 不读取历史角色表；旧记录由 native-approval 按原政策自行解析。
   const proofRefs=[];
   for(const id of ['gate.spec-baseline-approved','gate.product-design-approved']) {
     const gate=state.gates?.[id];
@@ -20,7 +20,7 @@ export function assertBusinessApprovalBasis(root,state,{required=false}={}) {
     if(gate?.status!=='approved'||!gate.approval_ref)throw Error(`BUSINESS_APPROVAL_REQUIRED: ${id}`);
     const record=loadApprovalRecord(businessPath(root,gate.approval_ref),id);
     if(record.gate_id!==id||record.subject_ref!==gate.subject_ref||!gate.approval_scope?.length||JSON.stringify([...gate.approval_scope].sort())!==JSON.stringify([...(record.approval_scope||[])].sort()))throw Error(`BUSINESS_APPROVAL_SCOPE_MISMATCH: ${id}`);
-    validateApprovalRecordFile(businessPath(root,gate.approval_ref),{gate:id,root,rolesDoc,requireApproved:true,expected:approvalExpectationForCheckpoint(id,gate,{root})});
+    validateApprovalRecordFile(businessPath(root,gate.approval_ref),{gate:id,root,requireApproved:true,expected:approvalExpectationForCheckpoint(id,gate,{root})});
     if(id==='gate.spec-baseline-approved'&&record.subject_ref!==report.spec.ref) {
       // Existing approvals may cover a review package instead of the Spec itself.
       // Its signed bytes, rather than a mutable checkpoint label, bind the baseline.

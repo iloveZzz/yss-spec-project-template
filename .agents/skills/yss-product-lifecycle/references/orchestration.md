@@ -132,7 +132,7 @@ tracker 选择和冲突按 `.template-spec/agents/issue-tracker.md` 裁决：已
 
 ## 用户决定与恢复
 
-关键决定使用 [真实用户回复协议](user-decisions.md)，消费当前编排合同的 `user_decision_policy`。会签前先形成可审阅资产；恢复、阶段流转、实施派发和发布时校验原始回复及当前资产摘要。技术复核与用户决定分别保留，关键决定不得以 Agent 自检、无反对意见或超时放行。等待只阻断依赖事项；新的 `user_decisions` 引用通过 Workflow Execution Result、checkpoint 和任务包传递。
+关键决定使用 [真实用户回复协议](user-decisions.md)，消费当前编排合同的 `user_decision_policy`。批准前先形成可审阅资产；恢复、阶段流转、实施派发和发布时校验原始回复及当前资产摘要。技术复核与用户决定分别保留，关键决定不得以 Agent 自检、无反对意见或超时放行。等待只阻断依赖事项；新的 `user_decisions` 引用通过 Workflow Execution Result、checkpoint 和任务包传递。
 
 ## 按阻塞原因处理
 
@@ -178,7 +178,7 @@ Release 与 Retrospective 属于生命周期编排器拥有的工作单元。发
 
 Checkpoint 中已批准门禁必须带 `basis: [{ref, digest}]` 和按 `evidence.*` 分类的 `evidence` 引用数组；此处 digest 是实际文件字节的 64 位十六进制 SHA-256。每个适用检查带 `applicable: true`、通过状态和同样的证据绑定；不适用项须 `applicable: false`、原因和影响面证据。内部专业审查还须 `approval_ref`、`subject_ref`、`approval_scope`，审查记录带 `subject_digest` 和不同于 `principal_ref` 的 `drafter_principal_ref`。
 
-聚合门禁的 `subject_ref` 指向当前审阅包，包含 `gate_id` 和 `basis`，覆盖所有检查及其他验收依据；用户批准绑定此包，专业会签记录绑定其 `subject_digest`。检查证据、审阅包和会签记录均纳入 checkpoint 的摘要绑定，避免只改变检查结果却复用旧批准。`scripts/verify-lifecycle-checkpoint` 实际核验；旧 gate ID 只允许历史读取或按源策略校验外部冻结包，不能直接关闭当前门禁。
+聚合门禁的 `subject_ref` 指向当前审阅包，包含 `gate_id` 和 `basis`，覆盖所有检查及其他验收依据；用户批准绑定此包，专业批准记录绑定其 `subject_digest`。检查证据、审阅包和批准记录均纳入 checkpoint 的摘要绑定，避免只改变检查结果却复用旧批准。`scripts/verify-lifecycle-checkpoint` 实际核验；旧 gate ID 只允许历史读取或按源策略校验外部冻结包，不能直接关闭当前门禁。
 
 交付技术核验可由当前执行者完成，业务验收仍按真实决定与目标要求；实际合并、推送和发布分别执行已有外部动作授权检查。阶段完成不请求发布权限。没有相关资产、依据或范围变化时复用现有批准；相关变化仅失效受影响批准。
 

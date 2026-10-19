@@ -60,7 +60,7 @@ Local 主 tracker 的完整功能包结构如下：
 └── issues/01-<slug>.md
 ```
 
-- `parent-ticket.md` 保存 Ticket 五态、业务说明、Spec / 设计 / 契约及会签入口，并明确引用实际 checkpoint。阶段、门禁摘要、阻塞与下一工作单元通过 `scripts/lifecycle-status` 按需读取，不另填第二张状态表。批准依据仍在批准记录中。
+- `parent-ticket.md` 保存 Ticket 五态、业务说明、Spec / 设计 / 契约及批准入口，并明确引用实际 checkpoint。阶段、门禁摘要、阻塞与下一工作单元通过 `scripts/lifecycle-status` 按需读取，不另填第二张状态表。批准依据仍在批准记录中。
 - `issues/01-<slug>.md` 等文件是垂直切片或 Wayfinder 子 Ticket；不得把多个 Ticket 合并成一个文件。
 - 每个 Ticket 在顶部附近使用 `Status:` 记录 Matt 五态之一：`needs-triage`、`needs-info`、`ready-for-agent`、`ready-for-human`、`wontfix`。
 - 评论和对话追加在 `## Comments` 下；状态变化必须保留原因、证据引用和下一步。

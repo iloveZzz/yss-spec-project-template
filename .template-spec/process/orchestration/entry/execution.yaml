@@ -17,7 +17,7 @@ document_writing:
 user_progress_report:
   owner: yss-product-lifecycle
   reference: references/orchestration.md#结果与友好提示
-  writing_reference: .template-spec/process/document-writing.md#4-进度与会签提示
+  writing_reference: .template-spec/process/document-writing.md#4-进度与批准提示
   emit_on:
     - controller-return
     - status-request
@@ -171,7 +171,7 @@ execution_efficiency:
     approval: revalidate-current-decision-or-supported-continuation
   interaction:
     questions: batch-independent-current-stage-questions
-    user_decision_policy_ref: .template-spec/agents/digital-human-roles.yaml#user_decision_policy
+    user_decision_policy_ref: .template-spec/process/orchestration/domain/review.yaml#user_decision_policy
     decision_evidence_ref: references/user-decisions.md
     dependent_future_approvals: forbidden
     checkpoint_policy_ref: checkpoint_policy

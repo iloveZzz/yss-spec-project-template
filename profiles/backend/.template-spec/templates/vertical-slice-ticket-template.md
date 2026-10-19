@@ -59,7 +59,7 @@ requirement_version: v1
 | 实现合同编译器 状态 | draft / blocked / ready-for-lifecycle-review |
 | 生命周期批准状态 | pending / approved / rejected |
 | suggested_owner_role_id | `role.frontend-agent` / `role.backend-agent` / `role.test-agent`（实现合同编译器 建议，Harness Orchestrator 派活） |
-| Build Architecture Checklist |  |
+| Build Architecture Checklist | <已批准清单资产引用；编写结构见[系统概要设计](../architecture/templates/system-overview-design-template.md#工程基线与准入清单)> |
 
 > 实现合同编译器 不得自行将合同批准或将本 Ticket 推进为 `ready-for-agent`。只有生命周期编排器核验并持久化当前版本合同、清除阻塞边后，才能推进状态。
 

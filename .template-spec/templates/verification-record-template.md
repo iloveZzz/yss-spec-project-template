@@ -27,6 +27,16 @@ owner: ai
 | E2E 关键路径 |  | 是 / 否 / 不适用 |
 | 风险 / 回滚约束 |  | 是 / 否 / 不适用 |
 
+## 架构约束核验
+
+涉及架构或工程约束时，引用实现前已批准且当前的 Build Architecture Checklist、Slice 合同版本及 Execution Result。准入清单的编写结构见[系统概要设计](../architecture/templates/system-overview-design-template.md#工程基线与准入清单)；本节仅汇总实际执行证据，不能替代事前批准或修改冻结资产。
+
+| 来源 / constraint_id | 当前合同与结果引用 | 实际结论与证据 | 延期 / 漂移 / 违反的处理 |
+|---|---|---|---|
+| <工程基线或清单中的约束> | <contract_id / contract_version、Execution Result 的 constraint_results> | <引用原结果状态及代码、测试或日志证据> | <责任人、后续 Ticket、验证计划、目标版本 / 日期、阻断或重路由结论> |
+
+核对 changed files 是否均在批准写范围内、预期证据是否齐全，以及实际验证的 cwd、命令、退出码、执行时间和日志。延期项保留风险与补齐责任；`drift`、`violation`、新影响和未执行的必需验证不得汇总为通过。只引用工程基线，不在本记录重定义质量标准。
+
 ## 2. 命令与结果
 
 引用已有运行记录，核对其中的候选 / 输入、cwd、实际命令、开始与结束时间、退出码及日志位置。Agent 从记录整理下面的阅读摘要，人工无需另抄机器摘要；记录缺项时明确写未知，不能将计划命令写成已执行。

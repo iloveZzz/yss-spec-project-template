@@ -44,7 +44,7 @@
         "source": "mattpocock/skills",
         "sourceType": "github",
         "skillPath": "skills/engineering/code-review/SKILL.md",
-        "effectiveHash": "aa38564b21d9e25e1e6e05cc53e032ec25afc7027446be1dfe119b4da4f48614",
+        "effectiveHash": "16bc7a80075af4778ec3f4819fe48e00929b48b4f64580554c5a4f60ef51ab4c",
         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
         "upstreamHash": "12daafb9c4f77deb3c3303dc2e6f8a3c2a0ff7928fc004af959ba18b8bd38068",
         "adaptationRef": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
@@ -152,7 +152,7 @@
         "source": "ayghri/i-have-adhd",
         "sourceType": "git",
         "skillPath": "skills/i-have-adhd/SKILL.md",
-        "effectiveHash": "9ff6fda98ae4a95787ef01fe8d93467656563ac667fc6e88557c8b1e967b7d31",
+        "effectiveHash": "d5d423469fd4f3002fcc1d4d00eed34d295a777cc9bbb2d1a47e92d5d43c8440",
         "sourceRevision": "839872f9d1cd634fed642b4589ce7226199cc15f",
         "upstreamHash": "4c88635cbcb4765b63528d608d27589596840708e89607fda9c9fa5726c11f7e",
         "adaptationRef": ".agents/skills/i-have-adhd/references/yss-adaptation.md",
@@ -466,7 +466,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-implementation-contract-compiler/SKILL.md",
-        "effectiveHash": "0cf4b62e0e18d67472beb13bc20aca40a24e0c8c6fb1b52153966fda38fd15ce",
+        "effectiveHash": "604efcdb4231d767ff49d99d35072d4a1919f7fa480155bbefbc1d765f0e6463",
         "targets": [
           ".agents/skills"
         ]

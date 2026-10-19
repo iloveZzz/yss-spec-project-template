@@ -68,7 +68,7 @@ AND 所有后续生成代码均绑定主 YSS skill、依赖闭包、允许写路
 
 发布前还必须满足所有已触发门禁均为 `approved` 或 `not-applicable`；不能只凭 fresh verification 和回滚点放行。
 
-任何 `project-instance` 工作单元进入下一步、任何阶段会签暂停或阶段完成 checkpoint，还必须引用当前工作单元的 `context_reconciliation`。其中 `status=reconciled`、`context_ref=CONTEXT.md`、`document_digest` 与 `referenced_terms_digest` 必须和根目录唯一 `CONTEXT.md` 一致；该证据不改变门禁数量。`template-source` 仅允许以带原因的 `not-applicable` 表示它只校验模板合同，不产生产品业务术语。
+任何 `project-instance` 工作单元进入下一步、任何阶段批准暂停或阶段完成 checkpoint，还必须引用当前工作单元的 `context_reconciliation`。其中 `status=reconciled`、`context_ref=CONTEXT.md`、`document_digest` 与 `referenced_terms_digest` 必须和根目录唯一 `CONTEXT.md` 一致；该证据不改变门禁数量。`template-source` 仅允许以带原因的 `not-applicable` 表示它只校验模板合同，不产生产品业务术语。
 
 用户显式运行 `to-tickets` 后，垂直切片初始 Ticket 状态固定为 `ready-for-human`。原生路径执行 `work-unit.ticket-decomposition` 时同样必须产生等价的垂直切片和 `Workflow Execution Result` 证据。只有 `yss-product-lifecycle` 复算上述公式全部为真后，才能把它提升为 `ready-for-agent`；生命周期不会自动调用 `to-tickets`，但不得跳过实现仓库准备和实现切片拆分与合同准入工作单元。旧实例恢复时若缺少当前工程准备结果，保留既有 Ticket，将 Ticket 与 Slice Contract 标为 `blocked` / `stale` 并回到阶段 5。其默认标签也不参与该裁决。
 
@@ -80,7 +80,7 @@ Git 动作分别保存 `commit_authorized`、`commit_scope`、`commit_authorizat
 
 ## 状态块
 
-父 Ticket 是主 tracker 的追踪入口。新功能将机器状态持久化在实际 checkpoint 文件，由父 Ticket 明确引用；使用 `.template-spec/process/templates/lifecycle-checkpoint-template.yaml` 的结构及原 schema 校验。阶段、阻塞和下一工作单元通过 `scripts/lifecycle-status --root <项目> --checkpoint <ref>` 查询，阶段工作进度通过 `scripts/stage-tracking check` 查询。父 Ticket 保留 Ticket 五态、业务说明、资产和会签入口，不另填机器状态表；批准记录仍是批准依据。远程 tracker 同样引用本地 checkpoint，不自动生成阅读包。以下字段示意位于 checkpoint，不再复制到父 Ticket：
+父 Ticket 是主 tracker 的追踪入口。新功能将机器状态持久化在实际 checkpoint 文件，由父 Ticket 明确引用；使用 `.template-spec/process/templates/lifecycle-checkpoint-template.yaml` 的结构及原 schema 校验。阶段、阻塞和下一工作单元通过 `scripts/lifecycle-status --root <项目> --checkpoint <ref>` 查询，阶段工作进度通过 `scripts/stage-tracking check` 查询。父 Ticket 保留 Ticket 五态、业务说明、资产和批准入口，不另填机器状态表；批准记录仍是批准依据。远程 tracker 同样引用本地 checkpoint，不自动生成阅读包。以下字段示意位于 checkpoint，不再复制到父 Ticket：
 
 ```yaml
 lifecycle:

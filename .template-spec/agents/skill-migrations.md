@@ -11,7 +11,7 @@
 - `ytable-usage`、`ytree-usage`、`yedit-table-usage`。
 - `yss-frontend-scaffold-generator`（含 `scaffold.frontend-vue3` 能力与 `frontend.vue3-scaffold` recipe）、`frontend-commit`。
 
-同时移除：`iloveZzz/yss-ui` 上游清单 `.agents/skills/.yss-skills-manifest.json`、`.agents/rules/yss-ai-skills.md`、YSS UI MCP 项目配置（`.agents/mcp_config.json`、`.cursor/mcp.json`、`.vscode/mcp.json`）与接入指南、`work-unit.slice-implementation` 的 `frontend_route`。`role.frontend-engineer` 保留为 OpenAPI 客户端适配与原型可行性的会签角色，不再携带前端实现技能。
+同时移除：`iloveZzz/yss-ui` 上游清单 `.agents/skills/.yss-skills-manifest.json`、`.agents/rules/yss-ai-skills.md`、YSS UI MCP 项目配置（`.agents/mcp_config.json`、`.cursor/mcp.json`、`.vscode/mcp.json`）与接入指南、`work-unit.slice-implementation` 的 `frontend_route`。`role.frontend-engineer` 保留为 OpenAPI 客户端适配与原型可行性的审查角色，不再携带前端实现技能。
 
 - 新请求命中旧 ID 返回 `skill-retired`；前端实现到独立的前端规格与 CLI 中进行。
 - 设计阶段技能 `yss-design-system`、`yss-prototype-stage`、`prototype-review` 保留，原型阶段不得调用生产组件库。

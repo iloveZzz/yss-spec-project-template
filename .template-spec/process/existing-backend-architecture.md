@@ -20,7 +20,7 @@
 
 ## 审查与数据库
 
-`boundary_review` 引用所属治理仓角色策略中的真实架构审查会签记录：主模板为 `check.architecture-reviewed`，专用后端模板为 `gate.technical-design-approved`。两者均必须绑定工程基线本身，且通过本地角色与门禁策略核验；不能凭记录自述跨职责替代，审查必须来自不同于基线作者的执行者，附可读审查证据。`artifact_bindings` 绑定基线 id/version 及去除 `boundary_review` 后的规范 JSON 摘要，避免自引用。基线的完整文件摘要再由仓库登记、合同绑定。此审查不替代当前 Slice 合同批准。
+`boundary_review` 引用所属治理仓当前政策中的真实架构审查批准记录：主模板为 `check.architecture-reviewed`，专用后端模板为 `gate.technical-design-approved`。两者均必须绑定工程基线本身，且通过当前 Profile 与门禁策略核验；不能凭记录自述跨职责替代，审查必须来自不同于基线作者的执行者，附可读审查证据。`artifact_bindings` 绑定基线 id/version 及去除 `boundary_review` 后的规范 JSON 摘要，避免自引用。基线的完整文件摘要再由仓库登记、合同绑定。此审查不替代当前 Slice 合同批准。
 
 `databases.verification` 与 `databases.production` 分别记录 `declared/verified/unknown/not-applicable`。`verified` 必须包含 engine/version/environment_id 及原字节 verification 引用；被引用记录绑定 source_digest、相同环境/引擎/版本、实际命令/退出码/时间和原始日志摘要。声明 PostgreSQL、装有驱动或 H2 通过均不能当作 PostgreSQL 实库验证；生产未知据实保留未知。
 

@@ -44,7 +44,7 @@
 
 `export` / `accept` 从 `assets.slice_contract` 的当前持久化字节与本地批准生成进程内受信上下文，再共同传给架构、技术设计和编译新鲜度检查。输入清单不能提交 `execution` JSON；`status: approved`、`approved: true` 或扩大后的路径数组都不能建立权限。上下文在每个消费边界重新读取原始文件，不缓存批准成功结果。
 
-主模板当前将 `gate.slice-contract-approved` 配置为生命周期主控，`approval_ref` 指向现有生命周期 checkpoint：对应 gate 为 `approved`，`subject_ref` 指向本次 Slice；`human_review.implementation` 与 `human_review.user_decisions` 通过已有 `assertImplementationDecision` 核验原始回复、当前合同字节、Ticket、实现仓库、允许写范围和工程基线。不得为该主控 gate 伪造 `approval-record`。来源明确将此 gate 配置为会签时，遵守来源会签协议；当前专用后端同时列入主控及双数字人会签，显式会签规则优先，需要绑定当前合同身份、版本、摘要的批准记录，不能复用主模板 checkpoint。这里复用来源现有批准规则，不另建并行门禁。
+主模板当前将 `gate.slice-contract-approved` 配置为生命周期主控，`approval_ref` 指向现有生命周期 checkpoint：对应 gate 为 `approved`，`subject_ref` 指向本次 Slice；`human_review.implementation` 与 `human_review.user_decisions` 通过已有 `assertImplementationDecision` 核验原始回复、当前合同字节、Ticket、实现仓库、允许写范围和工程基线。不得为该主控 gate 伪造 `approval-record`。来源明确将此 gate 配置为历史会签来源时，按来源原政策只读核验；当前专用后端同时列入主控及双来源批准，显式来源规则优先，需要绑定当前合同身份、版本、摘要的批准记录，不能复用主模板 checkpoint。这里复用来源现有批准规则，不另建并行门禁。
 
 既有工程身份 v2 的原始 Slice 必须使用对象形式的 `lifecycle_refs` 和 `readiness`，其中 `ticket`、`engineering_baseline` 为非空引用，`blockers`、`stale_inputs`、`not_applicable` 为数组。数组附加属性在 JSON 序列化后会丢失，因此在批准及预检边界先拒绝该结构；这里不要求运行中生命周期状态的就绪布尔字段，也不改变旧交付最小合同的批准语义。
 

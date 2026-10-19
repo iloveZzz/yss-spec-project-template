@@ -11,7 +11,7 @@ Review a pinned candidate: all applicable axes initially, then affected conclusi
 - **Spec** — does the code faithfully implement the originating issue / spec?
 - **UI fidelity** (only when the change has UI impact) — does the candidate match the daily task's confirmed acceptance/current visual baseline, or the governed prototype, and `yss-design-system`? Type-check or claiming "already aligned" is not a pass. Invoke those skills' verification notes; do not collapse this axis into Standards or Spec. YSS page-module conventions stay on Standards.
 
-普通功能默认由当前执行者诚实自检完成 Standards、Spec 和适用的 UI fidelity 检查，分别报告结论。只有专业能力缺口、结论冲突、明确外部制度或用户指定时，才拆成多个审查者；多个无依赖审查可以并行。检查轴不等于会签人数，不能要求用户为每个轴重复确认。
+普通功能默认由当前执行者诚实自检完成 Standards、Spec 和适用的 UI fidelity 检查，分别报告结论。只有专业能力缺口、结论冲突、明确外部制度或用户指定时，才拆成多个审查者；多个无依赖审查可以并行。检查轴不等于审查人数，不能要求用户为每个轴重复确认。
 
 当前编排合同按工作单元与影响选择技术检查及 Skills；新任务使用 task3，实际来源写 provenance，不要求角色/运行时注册。明确独立或外部复核要求按真实来源执行；同账号不同真实上下文可独立，同会话改标签不算。
 

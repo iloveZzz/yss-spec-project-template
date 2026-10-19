@@ -11,8 +11,8 @@ document_writing:
   gate_and_status_semantics: unchanged
 user_progress_report:
   owner: harness-orchestrator
-  reference: .template-spec/process/document-writing.md#4-进度与会签提示
-  writing_reference: .template-spec/process/document-writing.md#4-进度与会签提示
+  reference: .template-spec/process/document-writing.md#4-进度与批准提示
+  writing_reference: .template-spec/process/document-writing.md#4-进度与批准提示
   emit_on:
     - controller-return
     - status-request

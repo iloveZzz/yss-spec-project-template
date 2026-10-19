@@ -124,3 +124,14 @@ test('Slice4 removes role qualification while preserving Slice3 and strict versi
  rejects('slice-implementation-contract-v4',{...slice,schema_version:3});
  const bad=copy(slice);bad.work_units[0].role_id='role.backend-engineer';rejects('slice-implementation-contract-v4',bad);
 });
+test('approval3 remains bound even after mandatory digital-human countersign is retired', () => {
+ // 删除会签措辞不能把批准记录降级为可省略的自由文本。
+ rejects('approval-record',{...check,check_ids:[]});
+ rejects('approval-record',{...check,review:{mode:'self-check'}}); // self-check 仍须 provenance
+ rejects('approval-record',{...check,actor_kind:'digital-human'});
+ const registry=parse(fs.readFileSync(path.join(root,'.template-spec/process/lifecycle-registry.yaml'),'utf8'));
+ for(const gateId of ['gate.plan-approved','gate.spec-baseline-approved']){
+  const gate=registry.gates.find(row=>row.id===gateId);
+  assert.ok(gate?.evidence?.includes('evidence.approval-record'),`${gateId} 仍必须要求当前批准记录`);
+ }
+});

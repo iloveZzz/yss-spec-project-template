@@ -62,7 +62,7 @@ requirement_version: v1
 | contract_ref |  |
 | 编译与批准记录 | 在现有 checkpoint / 任务包中维护，不回写冻结 Ticket |
 | suggested_owner_role_id | `role.frontend-engineer` / `role.backend-engineer` / `role.test-engineer`（实现合同编译器 建议，编排器派活） |
-| Build Architecture Checklist |  |
+| Build Architecture Checklist | <已批准清单资产引用；编写结构见[系统概要设计](../architecture/templates/system-overview-design-template.md#工程基线与准入清单)> |
 
 > 实现合同编译器 不得自行将合同批准或将本 Ticket 推进为 `ready-for-agent`。只有生命周期编排器核验并持久化当前版本合同、清除阻塞边后，才能在主 tracker 推进执行状态。
 
@@ -98,13 +98,13 @@ Agent 使用 `scripts/slice-contract view <合同.yaml>` 展示审阅说明，�
 
 本表作为 tracker / 任务包的记录字段说明，冻结后不在本文件填写。出现 `drift`、`violation` 或非空 `new_impacts` 时暂停受影响工作单元，不得先完成代码再补合同；更新合同版本并通过生命周期审查后才能恢复。
 
-## 会签
+## 批准记录
 
-冻结后会签结果保存在现有批准记录与 checkpoint，不修改以下冻结时引用。
+冻结后批准结果保存在现有批准记录与 checkpoint，不修改以下冻结时引用。
 
-| 门禁 | 记录路径 | 会签角色 | 状态 |
+| 门禁 | 记录路径 | 审查 / 批准依据 | 状态 |
 |---|---|---|---|
-|  | `.work/<feature>/gates/<gate-id>-approval.yaml` | 见 `.template-spec/agents/digital-human-roles.yaml` | pending / approved / blocked / not-applicable |
+|  | `.work/<feature>/gates/<gate-id>-approval.yaml` | 当前 Profile 的门禁政策、适用检查和真实用户决定 | pending / approved / blocked / not-applicable |
 
 ## 状态
 

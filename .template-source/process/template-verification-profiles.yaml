@@ -1130,6 +1130,57 @@ profiles:
           - "tests/digital-human-roles-docs.test.mjs"
         depends_on: []
         failure_mode: "流程术语回流到根 CONTEXT.md、术语表违反英文标识或重复规则、入口链接断开、运行时平台细节混入流程术语，常驻读取超过预算，或角色说明 / 术语表与数字人角色注册表漂移"
+      - id: check.spec-role-free-guidance
+        run: "node --test tests/spec-role-free-guidance.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - "tests/spec-role-free-guidance.test.mjs"
+          - "tests/role-independent-contracts.test.mjs"
+          - "tests/helpers/scenario-checks.mjs"
+          - ".template-source/distribution/bundle-profile.json"
+          - ".template-spec/process/process-glossary.md"
+          - ".template-spec/process/document-writing.md"
+          - ".template-spec/process/contract-reading.md"
+          - ".template-spec/process/work-layout.md"
+          - ".template-spec/process/feature-assets.md"
+          - ".template-spec/process/delivery-preflight.md"
+          - ".template-spec/process/existing-backend-architecture.md"
+          - ".template-spec/process/orchestration-policy-consumers.md"
+          - ".template-spec/process/templates/stage-checkpoint-template.md"
+          - ".template-spec/process/orchestration/entry/execution.yaml"
+          - ".template-spec/process/orchestration/core/results.yaml"
+          - ".template-spec/process/orchestration/domain/review.yaml"
+          - ".template-spec/process/lifecycle-registry.yaml"
+          - ".template-spec/process/schemas/approval-record.schema.json"
+          - ".template-spec/plan/entry-review.md"
+          - ".template-spec/templates/local-parent-ticket-template.md"
+          - ".template-spec/templates/vertical-slice-ticket-template.md"
+          - ".template-spec/templates/spec-template.md"
+          - ".template-spec/agents/triage-labels.md"
+          - ".template-spec/agents/issue-tracker.md"
+          - ".template-spec/agents/skill-migrations.md"
+          - ".template-spec/agents/digital-human-roles.md"
+          - ".template-spec/agents/digital-human-roles.yaml"
+          - ".template-spec/user-guide/用户手册.md"
+          - ".template-spec/api/templates/openapi-freeze-record-template.md"
+          - "profiles/_specialist/.template-spec/agents/triage-labels.md"
+          - "profiles/_specialist/.template-spec/process/templates/stage-checkpoint-template.md"
+          - "profiles/backend/.template-spec/process/orchestration/entry/execution.yaml"
+          - ".agents/skills/yss-product-lifecycle/references/orchestration.md"
+          - ".agents/skills/yss-product-lifecycle/references/user-decisions.md"
+          - ".agents/skills/yss-product-lifecycle/references/state-model.md"
+          - ".agents/skills/code-review/SKILL.md"
+          - ".agents/skills/triage/SKILL.md"
+          - ".agents/skills/i-have-adhd/SKILL.md"
+          - ".agents/skills/yss-implementation-contract-compiler/SKILL.md"
+          - ".agents/skills/yss-implementation-contract-compiler/references/slice-implementation-contract.md"
+          - "scripts/lib/business-ticket-lifecycle.mjs"
+          - "scripts/lib/profile-distribution.mjs"
+          - "scripts/lib/lifecycle-registry.mjs"
+          - "scripts/lib/digital-human-roles.mjs"
+        depends_on: []
+        failure_mode: "Spec 分发重新要求数字人多角色会签、引用未分发的历史角色表，或在移除会签措辞时误删门禁批准记录证据"
       - id: check.instance-metadata
         run: "node --test --test-concurrency=1 tests/instance-metadata.test.mjs tests/native-instance-drift.test.mjs"
         group: drift-identity
@@ -2394,6 +2445,8 @@ syntax_files:
   - tests/verification-selection.test.mjs
   - tests/verification-delivery-run.test.mjs
 routing:
+  - patterns: [ "tests/spec-role-free-guidance.test.mjs" ]
+    groups: [ feature-assets ]
   - patterns: [ "tests/daily-input-preparation.test.mjs" ]
     groups: [ feature-assets ]
   - patterns: [ "tests/harness-skill-scope.test.mjs" ]
@@ -3042,6 +3095,8 @@ groups:
         resources: [ native-cli ]
         when: template-source
         id: check.daily-input-preparation
+      - run: node --test tests/spec-role-free-guidance.test.mjs
+        id: check.spec-role-free-guidance
       - run: node --test tests/feature-assets.test.mjs tests/browser-session.test.mjs
         when: template-source
         id: check.feature-assets
@@ -3571,6 +3626,7 @@ gates:
     impact_dependencies: []
     depends_on: []
     check_ids:
+      - check.spec-role-free-guidance
       - check.role-independent-contracts
       - check.plan-review-control-convergence
       - check.role-gates-current-capability

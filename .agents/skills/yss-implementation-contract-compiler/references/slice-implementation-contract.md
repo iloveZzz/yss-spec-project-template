@@ -45,7 +45,7 @@ scripts/slice-contract migrate <旧v2.yaml> --input <迁移补充.yaml> --output
 ## 审查、批准与派发
 
 - 默认一名有对应能力的独立专业审查者，核验范围、验收覆盖、工程约束和验证充分性。相邻检查可共用现有 review-bundle；不重复要求用户审阅工程字段。
-- 历史 Slice v3 按原政策读取 `check.design-reviewed` 会签、资产绑定与原身份约束。新政策的 Slice v4 使用 approval3，绑定实际审查任务、主体、当前依据、检查项与诚实的自检/独立来源；不补造 principal 或数字人。findings 为明确数组；未关闭缺陷、缺证据和重要风险仍阻断，建议须有 follow_up。
+- 历史 Slice v3 按原政策读取 `check.design-reviewed` 的历史会签（只读）、资产绑定与原身份约束。新政策的 Slice v4 使用 approval3，绑定实际审查任务、主体、当前依据、检查项与诚实的自检/独立来源；不补造 principal 或数字人。findings 为明确数组；未关闭缺陷、缺证据和重要风险仍阻断，建议须有 follow_up。
 - 生命周期把审查记录引用放入 Slice gate 的 evidence_refs。合同最终字节（包含生命周期设置的状态）冻结后绑定审查和 checkpoint；单独的 `status: approved` 不授予执行权。
 - 用户决定沿用现有 user-decisions 协议：已覆盖且无实质变化时复用，缺失确认或决定变化才集中询问。Spec 确认不自动升级为实施授权，不改写原回复。
 - `compileSliceTaskPackage` 只从已批准原始 YAML 生成任务包，角色 Skill 来自 `taskPackageDefaults`；运行时身份在派发时选择。已有任务包 schema 不变，`contract.gate_refs` 为唯一当前批准 checkpoint 引用。
@@ -59,7 +59,7 @@ v2 不自动改写，也不忽略旧 Compiler/Registry 摘要漂移。显式迁�
 
 ## 第二轮增量规则
 
-新草案的 `ticket_policy` 声明 `frozen-requirements` / `tracker-or-task-package`，Ticket 必须有 requirement_version 或显式绑定版本。冻结后进度、验收结果、会签与重路由记录进入现有 tracker / 任务包；需求改动生成新版本，不重新解释旧合同的绑定。审阅视图分别显示冻结时状态与当前状态的读取位置。
+新草案的 `ticket_policy` 声明 `frozen-requirements` / `tracker-or-task-package`，Ticket 必须有 requirement_version 或显式绑定版本。冻结后进度、验收结果、批准与重路由记录进入现有 tracker / 任务包；需求改动生成新版本，不重新解释旧合同的绑定。审阅视图分别显示冻结时状态与当前状态的读取位置。
 
 明确 `scope.risk_level` 后，准备器绑定生命周期注册表和裁剪依据，并从注册表已发布架构审查的 trigger 条件计算 `applicability.checks`。缺少该声明的旧 v3 保留原保守材料要求。已有 UI 承接须声明 `frontend.baseline_kind: existing-ui-baseline` 与 `ui_change: none`，绑定已有观测包和前端交付验收；UI 变化仍走产品设计证据。未知影响、必要证据缺失和外部强制审批不能裁掉。
 

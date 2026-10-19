@@ -23,6 +23,8 @@ Approved / Changes requested / Blocked
 
 ## Slice Implementation Contract 审查
 
+事前准入清单的编写结构见[系统概要设计](../architecture/templates/system-overview-design-template.md#工程基线与准入清单)，事后证据汇总见[验证记录](verification-record-template.md#架构约束核验)。审查仍消费原清单资产、当前合同和 Execution Result，不能以模板或事后记录代替事前准入。
+
 > 按 实现合同编译器 生成条件对称核验合同和执行结果。Reviewer 不得直接信任实现者自报的 `implemented`。
 
 | 检查项 | 结论 | 证据 |

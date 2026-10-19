@@ -20,6 +20,8 @@ Slice v3 的当前执行结果须按 `references/yss-skill-execution-result.md` 
 
 先读取 Spec、切片 Ticket、需求冻结、适用的原型确认、OpenAPI Freeze/no-impact、适用的系统/数据架构和 Design Review、Build Architecture Checklist、实现仓库和验证命令。输入缺失、未批准或 `stale` 时输出 `blocked`，交回 `yss-product-lifecycle`。
 
+工程基线与 Build Architecture Checklist 的编写结构见[系统概要设计](../../../.template-spec/architecture/templates/system-overview-design-template.md#工程基线与准入清单)。保留清单资产及原引用字段、实现前审查批准和持久化要求；[事后验证记录](../../../.template-spec/templates/verification-record-template.md#架构约束核验)不代替事前准入。
+
 ## 编译循环
 
 1. 判断 frontend/backend/API/data/domain/cross-repo 影响，并按 [compiler-contract.yaml](references/compiler-contract.yaml) 把 impact 映射为入口 capability；逐项填写 backend `component_impacts`。
@@ -66,7 +68,7 @@ Slice v3 的当前执行结果须按 `references/yss-skill-execution-result.md` 
 
 ## 输出
 
-输出唯一 YAML 合同草案及派生报告；报告包含 capability/Recipe 解析记录、技能依赖闭包、不适用理由、阻塞项、TDD 模式、工作单元、预期证据、验证命令、人工审查点、完整重路由触发器，以及由当前工作单元和实际影响选出的 `primary_skill` / `check_ids`。自然语言说明不能替代结构化合同字段。编译器不得自行批准合同、设置 `ready-for-agent` 或关闭会签门禁；不按岗位或固定人数派活；前端实现由独立前端规格与 CLI 维护。
+输出唯一 YAML 合同草案及派生报告；报告包含 capability/Recipe 解析记录、技能依赖闭包、不适用理由、阻塞项、TDD 模式、工作单元、预期证据、验证命令、人工审查点、完整重路由触发器，以及由当前工作单元和实际影响选出的 `primary_skill` / `check_ids`。自然语言说明不能替代结构化合同字段。编译器不得自行批准合同、设置 `ready-for-agent` 或关闭批准门禁；不按岗位或固定人数派活；前端实现由独立前端规格与 CLI 维护。
 
 ## 战略交接快照包
 

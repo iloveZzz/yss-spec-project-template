@@ -39,7 +39,7 @@ scripts/lifecycle-status --root . --checkpoint .work/<feature>/checkpoint.yaml
 scripts/stage-tracking check --root . --checkpoint .work/<feature>/checkpoint.yaml
 ```
 
-查询不写文件，也不授予执行权限。批准依据仍读取下方会签记录。
+查询不写文件，也不授予执行权限。批准依据仍读取下方批准记录。
 
 ## 资产与证据
 
@@ -52,15 +52,15 @@ scripts/stage-tracking check --root . --checkpoint .work/<feature>/checkpoint.ya
 - Verification：`.work/<feature>/verification/`
 - Vertical slices：`.work/<feature>/issues/`
 
-## 会签
+## 批准记录
 
-会签记录写在 `.work/<feature>/gates/<gate-id>-approval.yaml`。会签桶内门禁标为 `approved` 前必须通过 `scripts/verify-approval-record`。
+批准记录写在 `.work/<feature>/gates/<gate-id>-approval.yaml`，使用当前 Profile 的 `approval-record` 合同；门禁标为 `approved` 前必须通过 `scripts/verify-approval-record`。
 
-| 门禁 | 记录路径 | 会签角色 |
+| 门禁 | 记录路径 | 审查 / 批准依据 |
 |---|---|---|
-|  | `.work/<feature>/gates/<gate-id>-approval.yaml` | 见 `.template-spec/agents/digital-human-roles.yaml` |
+|  | `.work/<feature>/gates/<gate-id>-approval.yaml` | 当前 Profile 的门禁政策、适用检查和真实用户决定 |
 
-会签结果读取记录原件；阻塞关系与下一工作单元读取上述 checkpoint，不在本票重填状态表。
+批准结果读取记录原件；阻塞关系与下一工作单元读取上述 checkpoint，不在本票重填状态表。
 
 ## Comments
 

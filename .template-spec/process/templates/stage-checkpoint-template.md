@@ -52,6 +52,6 @@ blockers: []
 rollback: []
 ```
 
-阶段 checkpoint 只在会签暂停、handoff、进入实现、合并或发布边界集中回写；出现阻塞、责任人变化或资产单独批准时立即回写，并保留阶段因果。`paused-human-gate` 表示等待 YAML `gate_policy` 指定的会签人（数字人或生物人），不是「必须是生物人」。会签桶内门禁标为 `approved` 时必须有可读的 `approval_ref`。
+阶段 checkpoint 只在批准暂停、handoff、进入实现、合并或发布边界集中回写；出现阻塞、责任人变化或资产单独批准时立即回写，并保留阶段因果。`paused-human-gate` 表示等待当前 Profile 政策指定的批准来源；旧实例可等待历史数字人签署，但不是「必须是生物人」。批准记录桶内门禁标为 `approved` 时必须有可读的 `approval_ref`。
 
 当前边界必须具有非空 decision/reason 及完整 stage_trace；普通入口分诊不要求尚未产生的交接证据。`verify-lifecycle-checkpoint --history` 仅检查旧记录结构，不证明当前流转或批准。

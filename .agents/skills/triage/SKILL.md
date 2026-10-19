@@ -35,7 +35,7 @@ Two categories:
 - `needs-triage` — maintainer needs to evaluate
 - `needs-info` — waiting on reporter for more information
 - `ready-for-agent` — 仅限生命周期确认合同已批准且当前、适用门禁通过的垂直切片。
-- `ready-for-human` — 资产仍需指定数字人或生物人会签，不代表可实现或可合并。
+- `ready-for-human` — 资产仍需当前政策要求的批准或审查，不代表可实现或可合并。
 - `wontfix` — will not be actioned
 
 PR 附有代码也不能凭简报直接成为 `ready-for-agent`，或凭 `ready-for-human` 推断可合并。读取已配置 tracker 的真实状态；冲突回交生命周期处理。配置缺失按生命周期 setup readiness 处理，不从 Git remote 推断平台。

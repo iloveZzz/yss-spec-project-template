@@ -18,7 +18,7 @@ scripts/contract diff <旧资产> <新资产> --kind <类型> [--json]
 | `scaffold`、`scaffold-decision` | 脚手架合同、架构选择 | 脚手架所有者及原始用户决定 |
 | `slice` | Slice 与工作单元 | `scripts/slice-contract inspect`、原批准与派发 |
 | `handoff`、`backend-delivery` | 战略交接、后端交付 | 对应包 / 交付验证器 |
-| `approval`、`user-decision`、`context-reconciliation` | 会签、原始回复、Context 对账 | 原批准 / 用户决定 / Context 校验 |
+| `approval`、`user-decision`、`context-reconciliation` | 批准记录、原始回复、Context 对账 | 原批准 / 用户决定 / Context 校验 |
 
 通用适配器保留未知字段，只做可读取、适用 schema 和可识别来源绑定核对；不支持结构核验的类型会明确标记。专用资产所有者的业务校验并未被通用视图替代。Markdown 正文完整保留。API v2 审查结果从绑定的实际记录展示。摘要字段变化、数组顺序和纯字节变化均在 diff 中保留，不据此自动认定批准可沿用。
 

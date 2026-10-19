@@ -93,6 +93,27 @@ owner: ai
 - [ ] OpenAPI schema 不直接暴露内部聚合或持久化表结构。
 - [ ] 领域行为测试、Application 用例测试、契约测试 seam 已明确。
 
+### 工程基线与准入清单
+
+工程基线在原有资产中定义一次，本设计引用其 `baseline_id`、`baseline_version`、版本和摘要；后续 Slice、审查与验证只引用同一来源。具体规则消费[后端架构 Profile](../../agents/backend-architecture-profiles.md)、[平台清单说明](../../engineering/backend-platforms.md)及适用专业 Skill，不另抄一套通用检查。
+
+| 依据 | 当前引用与结论 |
+|---|---|
+| 工程基线 | <基线资产、baseline_id / baseline_version、版本与摘要> |
+| 架构与平台 | <逐项目 DDD / MVC、精确 Boot / Java、platform_configuration 与当前确认依据；既有工程记录登记值复用证据> |
+| 适用约束 | <来源、适用范围、分层 / 事务 / 持久化 / API / 工具链约束及有依据的例外> |
+| 风险与反证 | <命中风险时引用主张、反证、验证证据、残余风险、责任人和回滚约束；未命中说明原因> |
+
+`Build Architecture Checklist` 在实现合同编译前准备，进入实现前与当前 Slice 合同一起完成适用审查、批准和持久化。保留独立清单资产及 `build_architecture_checklist`、`build_architecture_checklist_ref` 原有引用字段；本节只是编写结构，不能替代实际批准的清单。合同仍绑定完整文件及原始字节摘要，不以本节链接代替资产引用。
+
+| constraint | source | slice | status | evidence | follow-up |
+|---|---|---|---|---|---|
+| <可核验约束> | <基线 / 架构 / ADR / 冻结 API 来源> | <适用切片> | <implemented / seam-deferred / drift / violation / not-applicable> | <当前证据或待执行验证> | <补齐落点与阻断结论> |
+
+事前列出约束、允许写范围、验证方法和未决项，不能把待执行验证写成 `implemented`；进入实现前核验清单与当前合同版本及批准一致。只应用所选 DDD / MVC 路线的约束，不把 Domain / Gateway 要求强加给 MVC。
+
+`seam-deferred` 必须有风险、责任人、后续 Ticket、验证计划和目标版本 / 发布日期；`not-applicable` 说明原因。`drift`、`violation` 或新影响按当前政策停止受影响工作并重路由。执行后的 `constraint_results`、实际命令、路径与证据核验写入原 Execution Result 和[验证记录](../../templates/verification-record-template.md#架构约束核验)，不回写冻结 Ticket 或批准的清单；事后证据不能补授事前准入资格。
+
 ## 9. 非功能需求
 
 | 维度 | 设计约束 | 验证方式 |

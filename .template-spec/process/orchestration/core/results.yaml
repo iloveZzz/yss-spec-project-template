@@ -175,7 +175,7 @@ matt_invocation_boundary:
 lifecycle_native_entries:
   default_entry: yss-product-lifecycle
   formal_artifact_owner: yss-product-lifecycle
-  user_confirmation_policy_ref: .template-spec/agents/digital-human-roles.yaml#user_decision_policy
+  user_confirmation_policy_ref: .template-spec/process/orchestration/domain/review.yaml#user_decision_policy
   compatibility_entries:
     to-spec: lifecycle-validate-and-accept
     to-tickets: lifecycle-validate-and-accept

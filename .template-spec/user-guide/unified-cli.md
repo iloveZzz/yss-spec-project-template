@@ -1,6 +1,6 @@
 # 统一 CLI 操作说明
 
-现行 Profile 使用同一固定 `yss` 二进制。`spec` 是综合研发主控，`design` 是产品与业务设计，`backend` 是专职交付。前端 Profile 已移除，旧前端实例升级/同步会被明确拒绝且不改动文件。三个 Agent 模板源继续维护，退役范围仅限四个旧生成器。
+现行 Profile 使用同一固定 `yss` 二进制，仅提供 `spec` 综合研发主控与 `backend` 专职交付；产品与业务设计由 Spec 承担。旧 Design 实例按其固定版本和迁移合同处理。前端 Profile 已移除，旧前端实例升级/同步会被明确拒绝且不改动文件。
 
 ## 分册
 
@@ -10,7 +10,6 @@
 | [日常交付与正式功能目标](cli/daily-and-targets.md) | 日常交付能力、正式功能的可续推目标、Context 校验与快照、正式路径中的 Ticket 边界 |
 | [教程：快速开始、日常与正式路径](cli/tutorial-daily-governed.md) | 教程：quickstart、教程：daily、教程：governed |
 | [教程：Spec 主控](cli/tutorial-spec.md) | 教程：spec |
-| [教程：Design](cli/tutorial-design.md) | 教程：design |
 | [教程：Backend](cli/tutorial-backend.md) | 教程：backend |
 | [教程：维护与案例](cli/tutorial-maintenance.md) | 教程：maintenance、案例材料与验证 |
 | [命令参考](cli/command-reference.md) | 命令参考 |
@@ -58,12 +57,11 @@ yss — Spec / Backend 统一入口（版本以 .template-source/distribution/ys
 
 Profile 职责:
   spec 综合研发主控；支持目标政策的完整正式功能默认推进业务验收。
-  design 产品与业务设计；backend 承担技术设计与专职交付。
+  产品与业务设计在 spec 内完成；backend 承担技术设计与专职交付。
   本次目标、本端职责与整体业务分别核验；旧实例先核对能力并显式同步。
 
 快速上手（选择一个 Profile，在独立新目录运行）:
   yss init --profile spec --root ./demo-spec --project-name 演示项目
-  yss init --profile design --root ./demo-design --project-name 演示项目
   yss init --profile backend --root ./demo-backend --project-name 演示项目
   yss doctor --root ./demo-spec --human
   yss context verify --root ./demo-spec --json
@@ -121,7 +119,7 @@ Profile 职责:
 
 项目常用参数（程序升级不接受这些参数）:
   --root <目录>    项目根，默认当前目录
-  --profile <Profile>  spec|design|backend；init 必需，其余从身份检测
+  --profile <Profile>  spec|backend；init 必需，其余从身份检测
 
 升级、同步与恢复:
   yss upgrade --check                         查询 CLI 稳定版本
@@ -132,7 +130,7 @@ Profile 职责:
 
 帮助: yss -h | yss <命令/子命令> --help | yss help <命令/子命令>
 完整离线教程: yss help tutorial
-按主题阅读: yss help tutorial quickstart|daily|governed|spec|design|backend|maintenance
+按主题阅读: yss help tutorial quickstart|daily|governed|spec|backend|maintenance
 示例索引: yss help examples [命令/子命令]
 错误索引: yss help errors [错误码]
 入口区别: upgrade 升级程序；sync 同步模板；migrate 迁移旧实例；recover 恢复未完成事务；rollback 回退最近成功事务。
@@ -156,10 +154,6 @@ Profile 职责:
 ## 教程：spec
 
 见 [教程：spec](cli/tutorial-spec.md#教程spec)。
-
-## 教程：design
-
-见 [教程：design](cli/tutorial-design.md#教程design)。
 
 ## 教程：backend
 
