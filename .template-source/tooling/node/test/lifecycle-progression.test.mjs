@@ -42,19 +42,19 @@ function nativeProjection(f, changes = {}, nativeBinary) {
 async function specialistTaskFixture(t, profile) {
   const f = fixture(t), source = composeProfileTree(profile);
   fs.cpSync(source, f.root, {recursive: true, filter: file => !path.relative(source, file).split(path.sep).some(part => ['.git', '.codegraph', 'node_modules'].includes(part))});
-  const profileId = profile === 'design' ? 'harness.business-ddd-strategy-handoff' : `harness.${profile}-delivery`, hex = '0'.repeat(64);
+  const profileId = `harness.${profile}-delivery`, hex = '0'.repeat(64);
   f.write('yss-project.yaml', 'schema_version: 1\nrepository_mode: project-instance\n');
   f.write('.yss.json', JSON.stringify({schemaVersion: 1, protocolVersion: 1, profile, profileId, templateSourceState: 'committed', templateCommit: 'a'.repeat(40), snapshotHash: hex, manifestHash: hex, variables: {}, distribution: {}, managedFiles: {}, baselineDigest: createHash('sha256').update('{}').digest('hex')}));
   f.write('.template-spec/agents/issue-tracker.md', '---\ntracker:\n  platform: local-markdown\n  root: .work\n---\n');
-  f.write(f.checkpointRef, JSON.stringify({schema_version: 1, repository_mode: 'project-instance', profile_id: profileId, feature_id: 'feature.specialist', status: 'completed', next_work_unit: profile === 'design' ? 'work-unit.strategic-design-handoff' : 'work-unit.verification'}));
+  f.write(f.checkpointRef, JSON.stringify({schema_version: 1, repository_mode: 'project-instance', profile_id: profileId, feature_id: 'feature.specialist', status: 'completed', next_work_unit: 'work-unit.verification'}));
   f.write('.work/package-one/map.md', `---\ncheckpoint_ref: ${f.checkpointRef}\n---\n`);
   // This transport fixture isolates task admission. Actual frontend receipt and
   // native terminal verification are covered by their separate integration fixtures.
   const module = await import(path.join(f.root, 'scripts/lib/task-package.mjs'));
-  const workUnit = profile === 'design' ? 'work-unit.plan-opportunity' : 'work-unit.harness-entry';
-  const pkg = module.generateTaskPackageDefaults(profile === 'design' ? 'role.requirements-manager' : 'role.architecture-agent', {
+  const workUnit = 'work-unit.harness-entry';
+  const pkg = module.generateTaskPackageDefaults('role.architecture-agent', {
     task_id: 'task.synthetic-specialist-reentry', work_unit_id: workUnit, actor_id: 'synthetic.drafter', runtime_id: 'runtime.skill-projection',
-    checkpoint_ref: f.checkpointRef, stage_id: profile === 'design' ? 'stage.plan' : 'stage.harness-entry', execution_state: 'Drafter', workflow_status: 'active',
+    checkpoint_ref: f.checkpointRef, stage_id: 'stage.harness-entry', execution_state: 'Drafter', workflow_status: 'active',
     contract: {kind: 'lifecycle-work-unit', contract_id: 'synthetic.reentry', contract_version: 1, status: 'issued', contract_ref: '.template-spec/process/lifecycle-registry.yaml', lifecycle_ref: '.template-spec/process/lifecycle-registry.yaml'},
     inputs: ['CONTEXT.md'], objective: '检查已完成功能的专职写任务准入', allowed_write_paths: ['.work/package-one/outputs/'], forbidden_actions: ['不得扩大职责'],
     expected_outputs: ['当前功能的有界草稿'], expected_evidence_files: ['CONTEXT.md'], verification_commands: ['synthetic-admission-check'], verification_results: [],
@@ -63,7 +63,7 @@ async function specialistTaskFixture(t, profile) {
   return {...f, module, pkg};
 }
 
-for (const profile of ['design', 'backend']) test(`specialist non-Slice ${profile} task admission stops reached/NA writes and retains readonly and legacy paths`, async t => {
+for (const profile of ['backend']) test(`specialist non-Slice ${profile} task admission stops reached/NA writes and retains readonly and legacy paths`, async t => {
   const f = await specialistTaskFixture(t, profile), before = fs.readFileSync(path.join(f.root, f.checkpointRef));
   const binaryBefore = process.env.YSS_NATIVE_BINARY, digestBefore = process.env.YSS_NATIVE_BINARY_SHA256;
   t.after(() => {
@@ -208,7 +208,7 @@ test('专职身份不能通过手工目标配置扩大成综合Spec后端交付'
   f.write(f.configRef, JSON.stringify({...f.config, consumers: [{profile: 'backend', root: path.dirname(f.root), checkpoint_ref: 'checkpoint.yaml'}]}));
   const hex = '0'.repeat(64);
   f.write('.yss.json', JSON.stringify({schemaVersion: 1, protocolVersion: 1, profile: 'design', profileId: 'harness.business-ddd-strategy-handoff', templateSourceState: 'committed', templateCommit: 'a'.repeat(40), snapshotHash: hex, manifestHash: hex, variables: {}, distribution: {}, managedFiles: {}, baselineDigest: createHash('sha256').update('{}').digest('hex')}));
-  assert.throws(() => authorizeBackendDelivery({root: f.root, checkpointRef: f.checkpointRef}), /真实 native Spec/);
+  assert.throws(() => authorizeBackendDelivery({root: f.root, checkpointRef: f.checkpointRef}), /真实 native Spec|Design Profile 已移除/);
 });
 
 test('旧Backend合同本端交付绑定明确功能，未声明能力不能生成本地证据终点', t => {
@@ -260,10 +260,7 @@ test('Spec条件战略交接门禁的注册不会把整体完成门禁降为战�
   assert.throws(() => assertCheckpointUserDecisions(checkpoint, {root: f.root}), /当前交付或战略交接验收/);
   checkpoint.gates['gate.delivery-accepted'] = {status: 'approved'};
   assert.doesNotThrow(() => assertCheckpointUserDecisions(checkpoint, {root: f.root}));
-  const designRoot = makeRoot('yss-design-completion-', 'design');
-  t.after(() => fs.rmSync(designRoot, {recursive: true, force: true}));
-  assert.doesNotThrow(() => assertCheckpointUserDecisions({...checkpoint, gates: {'gate.strategic-design-handoff-approved': {status: 'approved'}}}, {root: designRoot}));
-  assert.throws(() => assertCheckpointUserDecisions({...checkpoint, gates: {'gate.delivery-accepted': {status: 'approved'}}}, {root: designRoot}), /当前交付或战略交接验收/);
+
 });
 
 
@@ -438,4 +435,13 @@ test('功能包外的当前Slice由checkpoint显式绑定定位，目录位置�
   }
   f.write(f.checkpointRef,checkpoint);
   assert.throws(()=>readProgressionTarget({root:f.root,assetRef:'.work/package-one/unbound-slice.yaml'}),/显式 feature checkpoint|登记资产/);
+});
+
+test('consumer Design 不会被过滤为无消费者，Backend 保留',t=>{
+ const f=fixture(t);
+ for(const profile of ['backend','design','unknown']) {
+  f.config.consumers=[{profile,root:path.dirname(f.root),checkpoint_ref:'checkpoint.json'}];f.write(f.configRef,JSON.stringify(f.config));
+  if(profile==='backend')assert.equal(readProgressionTarget({root:f.root,checkpointRef:f.checkpointRef}).consumers[0].profile,'backend');
+  else assert.throws(()=>readProgressionTarget({root:f.root,checkpointRef:f.checkpointRef}),/consumer/);
+ }
 });

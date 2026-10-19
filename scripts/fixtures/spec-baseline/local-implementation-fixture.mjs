@@ -67,7 +67,7 @@ export async function localImplementationFixture({nativeSeed,backendRequired=tru
    preparation:await load(nativeSeed,'scripts/lib/slice-contract-preparation.mjs'),
    slice:await load(nativeSeed,'scripts/lib/slice-contract.mjs')};
   const receiverCompiler=nativeFrontendSeed?await load(nativeFrontendSeed,'scripts/lib/implementation-contract-compiler.mjs'):nativeReaders.compiler;
-  let checkpoint,checkpointRef,specProof;
+  let checkpoint,checkpointRef;
   f=terminalReviewFixture({nativeSeed,nativeReaders,apiRequired:backendRequired,
    specText:'---\ncontent_profile: plan-spec-v1\n---\n## 功能需求\n| ID | 需求 |\n|---|---|\n| FR-1 | 提交材料 |\n## 验收标准\n| ID | 需求引用 |\n|---|---|\n| AC-1 | FR-1 |\n',
    refineContract:(contract,owner)=>{
@@ -166,7 +166,7 @@ export async function localImplementationFixture({nativeSeed,backendRequired=tru
     for(const key of ['required_capabilities','required_skills','recipe_ids','registry_digest','compiler_contract_digest','component_bindings','component_bindings_digest'])if(compiled[key]!==undefined)contract.resolution[key]=compiled[key];
    }});
   const file=ref=>({ref,digest:hash(fs.readFileSync(path.join(f.root,ref)))});
-  const modules={spec:await load(f.root,'scripts/lib/spec-baseline.mjs'),controls:await load(f.root,'scripts/lib/lifecycle-controls.mjs'),
+  const modules={controls:await load(f.root,'scripts/lib/lifecycle-controls.mjs'),
    registry:await load(f.root,'scripts/lib/lifecycle-registry.mjs'),producer:await load(f.root,'scripts/lib/backend-delivery.mjs'),
    terminal:await load(f.root,'scripts/lib/backend-delivery-terminal.mjs')};
   const registry=modules.registry.loadRegistry(path.join(f.root,'.template-spec/process/lifecycle-registry.yaml'));
@@ -183,7 +183,6 @@ export async function localImplementationFixture({nativeSeed,backendRequired=tru
   Object.assign(checkpoint,{stage:sliceImplementationStage(f.root),next_work_unit:'work-unit.slice-implementation'});
   checkpoint.artifacts['artifact.slice-implementation-contract']={ref:f.binding.ref,digest:f.binding.digest,status:'approved',evidence_refs:[f.binding.approval_ref]};
   f.write(checkpointRef,checkpoint);
-  specProof=modules.spec.inspectSpecBaselineSource(f.root,checkpointRef,undefined,{localFrontend:!!nativeFrontendSeed});
   modules.controls.assertGateChecks('gate.product-design-approved',checkpoint,{root:f.root,registry,rolesDoc});
   modules.controls.assertGateChecks('gate.slice-contract-approved',checkpoint,{root:f.root,registry,rolesDoc});
   const api=backendRequired?attachArtifactApproval(f.root,'api.yaml','api.local-implementation','gate.engineering-contract-approved'):null;
@@ -233,14 +232,13 @@ export async function localImplementationFixture({nativeSeed,backendRequired=tru
   checkpoint.artifacts['artifact.frontend-implementation-plan']={ref:frontendPlanRef,status:'approved',evidence_refs:[frontendPlanRef]};
   checkpoint.artifacts['artifact.frontend-implementation-verification']={ref:frontendVerificationRef,status:'ready-for-human',evidence_refs:[frontendVerificationRef]};
   f.write(checkpointRef,checkpoint);
-  specProof=modules.spec.inspectSpecBaselineSource(f.root,checkpointRef,undefined,{localFrontend:!!nativeFrontendSeed});
   for(const [ref,saved]of preserved)if(!fs.readFileSync(path.join(nativeSeed,ref)).equals(saved.bytes)||fs.statSync(path.join(nativeSeed,ref)).mode!==saved.mode)throw Error('native Spec seed authority mutated: '+ref);
   const finalSeed=nativeFrontendSeed||nativeSeed;
   for(const original of new Set([...protectedRefs,...loadOrchestrationContract(ref=>fs.readFileSync(path.join(finalSeed,ref)),'.template-spec/process/orchestration-contract.yaml').refs])) {
     const ref=nativeFrontendSeed&&original.startsWith('.agents/skills/yss-product-lifecycle/')?original.replace('yss-product-lifecycle','harness-orchestrator'):original;
     if(!fs.readFileSync(path.join(f.root,ref)).equals(fs.readFileSync(path.join(finalSeed,ref)))||fs.statSync(path.join(f.root,ref)).mode!==fs.statSync(path.join(finalSeed,ref)).mode)throw Error('native receiver authority mutated: '+ref);
   }
-  return {...f,checkpoint,checkpointRef,sliceRef:f.binding.ref,sliceID:f.contract.slice_id,specRef:'source/spec.md',specProof,
+  return {...f,checkpoint,checkpointRef,sliceRef:f.binding.ref,sliceID:f.contract.slice_id,specRef:'source/spec.md',
    backendTerminalRef:result?.terminal_ref||null,frontendPlanRef,frontendVerificationRef,frontendWorkUnitId:'work-unit.slice-frontend',taskBinding:f.binding,
    sourceSeed:nativeSeed,backendRequired,synthetic_fixture:true,result};
  }catch(error){if(f)f.cleanup();throw error;}finally{fs.rmSync(scratch,{recursive:true,force:true});}

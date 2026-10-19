@@ -83,11 +83,11 @@
 | `artifact.implementation-repository-preparation-result` | 实现仓库准备结果 | `stage.system-data-engineering` | 后端或前端交付面进入实现切片拆分与合同准入前。 |
 | `artifact.tactical-design` | DDD 战术设计 | `stage.system-data-engineering` | 聚合边界、状态机、一致性或持久化映射复杂到无法在系统概要设计的 Tactical DDD Check 中清楚表达。 |
 | `artifact.spec-delta` | Spec Delta | `stage.spec-architecture` | 已有冻结 Spec 的高风险行为变化。 |
-| `artifact.parent-ticket` | 功能父 Ticket | `stage.plan` | 每个功能首次进入 Plan 或最近可信接入阶段时建立，正式化时复用；Design profile 不创建工程父 Ticket。 |
+| `artifact.parent-ticket` | 功能父 Ticket | `stage.plan` | 每个功能首次进入 Plan 或最近可信接入阶段时建立，正式化时复用。 |
 | `artifact.vertical-slice-ticket` | 垂直切片 Ticket | `stage.ticket-formalization` | 进入实现前。 |
 | `artifact.slice-implementation-contract` | Slice Implementation Contract | `stage.ticket-formalization` | Agent 进入实现。 |
 | `artifact.retrospective` | 复盘记录 | `stage.verification-release-retrospective` | 发布后或阶段性完成后满足复盘触发条件。 |
-| `artifact.business-ticket-set` | 业务 Ticket 集 | `stage.spec-architecture` | Spec 同步起草、Design 校准和战略业务正式化；不依赖实现工程，不授予实现资格。 |
+| `artifact.business-ticket-set` | 业务 Ticket 集 | `stage.spec-architecture` | Spec 同步起草、产品设计校准和业务正式化；不依赖实现工程，不授予实现资格。 |
 
 ### 2.3 执行证据
 

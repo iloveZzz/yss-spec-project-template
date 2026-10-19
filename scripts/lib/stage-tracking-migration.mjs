@@ -6,7 +6,7 @@ import {parseAsset} from './structured-assets.mjs';
 import { existsSync, readFileSync, writeFileSync, mkdirSync, renameSync, unlinkSync, statSync, openSync, closeSync } from 'node:fs';
 import path from 'node:path';
 import { parseDocument, stringify } from '../vendor/yaml.mjs';
-import { TRACKER_REF, STAGE_WORK_UNITS, sha256, safeTrackingPath, readTracking, parseYaml, trackerConfig, isDesign, binding, assertStageTracking, refreshTracking } from './stage-tracking.mjs';
+import { TRACKER_REF, STAGE_WORK_UNITS, sha256, safeTrackingPath, readTracking, parseYaml, trackerConfig, trackingProfile, binding, assertStageTracking, refreshTracking } from './stage-tracking.mjs';
 
 const descriptor = (root, ref) => { const p = safeTrackingPath(root, ref); return existsSync(p) ? { digest: sha256(readFileSync(p)), mode: statSync(p).mode & 0o777 } : null; };
 const json = x => `${JSON.stringify(x, null, 2)}\n`;
@@ -43,6 +43,7 @@ export function checkTracking(root, checkpointRef) {
   } catch (error) { return { status: 'blocked', feature_id: feature, enabled: config.lifecycle_tracking_version === 1, error: error.message, migration_required: !checkpoint.stage_tracking }; }
 }
 export function planTracking(root, { checkpoint_ref, items = [], refresh = false } = {}) {
+  trackingProfile(root);
   assertAssetTransactionIdle(root);assertCurrentAssetReference(root,checkpoint_ref);
   if (!checkpoint_ref?.endsWith('.json')) throw new Error('ASSET_MIGRATION_REQUIRED: stage-tracking writes require an explicit JSON checkpoint');
   root = path.resolve(root); identity(root);
@@ -69,9 +70,8 @@ export function planTracking(root, { checkpoint_ref, items = [], refresh = false
     checkpoint.next_work_unit = items[0]?.work_unit || 'work-unit.plan-requirements';
   }
   checkpoint.feature_id ??= feature;
-  const design = isDesign(root);
   checkpoint.stage_tracking ??= { schema_version: 1, feature_id: checkpoint.feature_id, checkpoint_ref, entry_stage: checkpoint.stage,
-    entry: { kind: design ? 'checkpoint' : 'parent-ticket', ref: design ? checkpoint_ref : `${base}/parent-ticket.md` }, items: [] };
+    entry: { kind: 'parent-ticket', ref: `${base}/parent-ticket.md` }, items: [] };
   if (refresh) checkpoint = refreshTracking(root, checkpoint).checkpoint;
   const tracking = checkpoint.stage_tracking;
   const ids = new Set(tracking.items.map(x => x.id));
@@ -111,12 +111,12 @@ export function planTracking(root, { checkpoint_ref, items = [], refresh = false
     }
   }
   const entryRef = tracking.entry.ref;
-  if (!design) {
+
     watch(entryRef);
     const link = `\n阶段工作进度与证据：${checkpoint_ref}\n`;
     if (!observed[entryRef]) change(entryRef, `# ${feature}\n\nStatus: needs-triage\n${link}${trackerConfig(root).platform !== 'local-markdown' ? `\npublication: pending\npending_publication_to: ${trackerConfig(root).platform}\n` : ''}`);
     else if (!readTracking(root, entryRef).includes(checkpoint_ref)) change(entryRef, readTracking(root, entryRef) + link);
-  }
+
   const mapRef = `${base}/map.md`; watch(mapRef);
   if (!observed[mapRef]) change(mapRef, `---\ncheckpoint_ref: ${checkpoint_ref}\n---\n# ${feature}\n\n阶段工作与证据见 ${checkpoint_ref}。\n`);
   else if (!readTracking(root, mapRef).includes(checkpoint_ref)) change(mapRef, readTracking(root, mapRef) + `\n阶段工作与证据：${checkpoint_ref}\n`);
@@ -189,6 +189,7 @@ function applyTrackingSources(root, plan, { afterWrite } = {}) {
 
 // Finalize after the source transaction has committed; presentation failure never rolls it back.
 export function applyTracking(root,plan,options={}){
+  trackingProfile(root);
  const result=applyTrackingSources(root,plan,options);
  return finalizeReading(root,plan.input.checkpoint_ref,result);
 }

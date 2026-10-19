@@ -23,7 +23,7 @@ description: 安装或升级 YSS CLI，并初始化、接管、同步或迁移�
 | 同来源资源缺口 | 当前 Profile 的 `skills/assets list` → `ensure` |
 | 模板源、矛盾身份、既有实例缺必需身份、未知 schema | 项目分支只诊断并保留现场 |
 
-已有合法身份沿用登记 Profile。新建或接管按用途推荐 `spec/design/backend/frontend`，缺用途决定时询问，不能用框架、目录名或前后端标签猜 Profile；后端交付插件绑定的是 `spec`。
+已有合法身份沿用登记 Profile。新建或接管按用途推荐 `spec/backend`，缺用途决定时询问，不能用框架、目录名或前后端标签猜 Profile；后端交付插件绑定的是 `spec`。
 
 ## 操作分流
 

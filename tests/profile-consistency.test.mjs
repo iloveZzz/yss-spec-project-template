@@ -61,16 +61,13 @@ test("现役 Profile 组合技能、锁、注册表与 effectiveHash 一致", ()
   }
 });
 
-test("legacy Profile 保持可组合与可读取，退役内容由状态豁免", () => {
-  for (const profile of STATUS.legacy) {
-    const tree = composeProfileTree(profile);
-    const dirs = skillDirectories(tree);
-    assertSetsEqual({ dirs, lock: lockSkills(tree), registry: registrySkills(tree) }, profile);
-    assert.ok(STATUS.profiles[profile].reason);
-    assert.ok(STATUS.profiles[profile].migration);
-  }
-  assert.ok(skillDirectories(composeProfileTree("design")).includes("ask-matt"), "design 旧内容应保留 ask-matt 供迁移读取");
+test("Design 不存在于当前状态、技能与组合入口",()=>{
+ assert.deepEqual(Object.keys(STATUS.profiles).sort(),["backend","spec"]);
+ assert.throws(()=>composeProfileTree("design"),/未知 Profile/);
+ assert.equal(fs.existsSync(path.join(ROOT,"profiles/design")),false);
+ assert.equal(fs.existsSync(path.join(ROOT,".template-source/plugins/yss-product-design")),false);
 });
+
 function lifecycleIds(file) {
   const document = parseDocument(fs.readFileSync(file, "utf8"), { uniqueKeys: true });
   assert.equal(document.errors.length, 0, file + ": " + document.errors[0]?.message);
@@ -88,7 +85,7 @@ test("Profile 与内核生命周期 ID 分歧全部显式声明且无过期项",
   const root = lifecycleIds(path.join(ROOT, ".template-spec/process/lifecycle-registry.yaml"));
   const deprecated = new Set(root.data.id_policy?.deprecated_ids ?? []);
   assert.ok(deprecated.size > 0, "内核必须登记 deprecated_ids");
-  const knownProfiles = new Set([...STATUS.active, ...STATUS.legacy]);
+  const knownProfiles = new Set(STATUS.active);
   for (const profile of Object.keys(divergences.profiles)) assert.ok(knownProfiles.has(profile), "未知 Profile 声明: " + profile);
   for (const profile of knownProfiles) {
     const profileRegistry = lifecycleIds(path.join(composeProfileTree(profile), ".template-spec/process/lifecycle-registry.yaml"));
@@ -99,7 +96,7 @@ test("Profile 与内核生命周期 ID 分歧全部显式声明且无过期项",
     assert.deepEqual([...new Set(declaredIds)].sort(), overlap, profile + ": 未声明或过期的生命周期分歧");
     for (const entry of declared) {
       assert.equal(entry.root_status, "deprecated", profile + ": " + entry.id);
-      assert.equal(entry.disposition, STATUS.legacy.includes(profile) ? "legacy-frozen" : "profile-active-intentional", profile + ": " + entry.id);
+      assert.equal(entry.disposition, "profile-active-intentional", profile + ": " + entry.id);
       assert.ok(entry.reason && entry.reason.trim(), profile + ": 缺少 divergence reason " + entry.id);
     }
   }

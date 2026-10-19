@@ -277,7 +277,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/setup-yss-harness/SKILL.md",
-        "effectiveHash": "1c76e6858669fc9ab10b0c4a60ad9290c022e5e56ecb8926c6811998f3545ba8",
+        "effectiveHash": "f14dee297fd3c1756f9f248c17ca29673aa1673027817fca9e51214abaf87186",
         "targets": [
           ".agents/skills"
         ]
@@ -319,7 +319,7 @@
         "source": "mattpocock/skills",
         "sourceType": "github",
         "skillPath": "skills/engineering/to-tickets/SKILL.md",
-        "effectiveHash": "5b3d5c6195a902dbf604fd4e512d8518f6698a467ac773607d23933e795683a3",
+        "effectiveHash": "d2f8510c1c7406e38716c451a54346bc50b751eabbd2301ddc7be97f26fc489f",
         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
         "upstreamHash": "597a1a0af4f7391ab459a02a3f33576109b6bc61ecdc5e7e05149336858b4f29",
         "adaptationRef": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",

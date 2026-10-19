@@ -6,11 +6,11 @@ import { loadProfileStatus } from './profile-status.mjs';
 /**
  * Profile 实例的分发守卫。
  *
- * backend / frontend / design 的分发策略是「整目录放行 + 排除清单」：新增一个仅模板源使用的脚本，只要没写进该 Profile 自己的
+ * Backend 的分发策略是「整目录放行 + 排除清单」：新增一个仅模板源使用的脚本，只要没写进该 Profile 自己的
  * excludePaths，就会进入每一个新实例。本检查以根仓已声明的「仅模板源」脚本为准，核对每个 Profile 有没有同样排除，并保证
  * 不用后缀规则批量移除旧实例已登记的 Skill 测试文件。判定逻辑镜像 yss-cli 的 internal/bundle/producer.go includedByManifest。
  */
-export const PROFILES = ['backend', 'design'];
+export const PROFILES = ['backend'];
 export const BUNDLE_PROFILE_REF = '.template-source/distribution/bundle-profile.json';
 /** 批量排除这些目录会破坏旧实例迁移；退役必须另外满足逐文件的可信来源合同。 */
 const MANAGED_TEST_SUFFIXES = ['tests', 'test'];
@@ -38,21 +38,7 @@ export const INSTANCE_ONLY_EXCLUDES = {
     { path: 'docs/adr', reason: '实例侧架构决策目录' },
     { path: '.work', reason: '实例侧本地工作包目录' },
   ],
-  design: [
-    { path: '.pi/skills', reason: '实例侧 Agent 投影根，模板源不提交' },
-    { path: '.cursor/skills', reason: '实例侧 Agent 投影根，模板源不提交' },
-    { path: '.codex/skills', reason: '实例侧 Agent 投影根，模板源不提交' },
-    { path: '.codex/config.toml', reason: '实例侧本地配置，模板源不提交' },
-    { path: '.codex/settings.local.json', reason: '实例侧本地 Codex 配置，模板源不提交' },
-    { path: 'docs/discovery', reason: '实例侧机会探索材料目录' },
-    { path: 'docs/.scratch', reason: '实例侧临时材料目录' },
-    { path: 'docs/adr', reason: '实例侧架构决策目录' },
-    { path: 'docs/api', reason: '实例侧下游研发目录' },
-    { path: 'docs/implementation', reason: '实例侧下游研发目录' },
-    { path: 'docs/releases', reason: '实例侧发布材料目录' },
-    { path: 'docs/reviews', reason: '实例侧评审材料目录' },
-    { path: '.work', reason: '实例侧本地工作包目录' },
-  ],
+
 };
 
 const fail = (message) => { throw new TypeError(`PROFILE_DISTRIBUTION: ${message}`); };

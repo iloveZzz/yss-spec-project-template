@@ -69,11 +69,11 @@
 
 ## 专职 Profile 覆盖层
 
-design、backend 专职 Profile 不再是独立仓库，也没有同步脚本、共享工具锁或「有意定制」登记。design 为 legacy（旧产品线与旧实例迁移），backend 为现役覆盖层；两者都通过 `.template-source/process/profile-status.yaml` 声明状态。Profile 的内容分三层，后面的覆盖前面的：内核（本仓的 `.agents/skills`、`scripts`、`.template-spec/process`、`.template-spec/templates`）、`profiles/_specialist/`（各专职 Profile 共有的覆盖）、`profiles/<profile>/`（该 Profile 自己的覆盖，含它的分发清单 `.template-source/distribution/bundle-profile.json`）。yss-cli 在构建 Bundle 时按来源锁里的 `overlayPaths` 把三层组合起来；内核里不属于某个 Profile 的文件，写进它分发清单的 `excludePaths`。
+Backend 是唯一专职覆盖层，通过 `.template-source/process/profile-status.yaml` 声明状态。Profile 的内容分三层，后面的覆盖前面的：内核（本仓的 `.agents/skills`、`scripts`、`.template-spec/process`、`.template-spec/templates`）、`profiles/_specialist/`（各专职 Profile 共有的覆盖）、`profiles/<profile>/`（该 Profile 自己的覆盖，含它的分发清单 `.template-source/distribution/bundle-profile.json`）。yss-cli 在构建 Bundle 时按来源锁里的 `overlayPaths` 把三层组合起来；内核里不属于某个 Profile 的文件，写进它分发清单的 `excludePaths`。
 
 - 改内核文件，所有 Profile 的下一版 Bundle 同时带上；只想让某个 Profile 不同，就在它的覆盖层里放同一路径的文件。
 - 需要「整棵 Profile 目录」的测试和夹具用 `scripts/lib/profile-tree.mjs` 的 `composeProfileTree(profile)`，规则与 yss-cli 一致。
-- 覆盖层里的旧运行时投影随旧模板线的 Profile 一并保留；design legacy 冻结期间只读取与迁移，不新增投影或同步机制。覆盖层目录里不要带会忽略覆盖层自己内容的 `.gitignore`。
+- 覆盖层只保留 canonical 技能，不新增投影或同步机制。覆盖层目录里不要带会忽略覆盖层自己内容的 `.gitignore`。
 - `scripts/verify-profile-distribution` 检查每个 Profile 是否排除了仅模板源脚本、已删除的同步机制是否复活。
 
 ## 真实 Agent 行为评测

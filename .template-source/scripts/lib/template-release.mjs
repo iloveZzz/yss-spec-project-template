@@ -28,11 +28,11 @@ export function assertReleaseCheckout(root, commit) {
   return { template_commit: commit };
 }
 
-export function verifyTemplateRelease({ root, commit, output, runtimeStore = 'off',cliFamily='all-four',base,baselineReport,baselineReportDigest,qualificationReport,qualificationReportDigest,concurrency=1,toolingMode='legacy',expectedPlan,artifactCoordinator }) {
+export function verifyTemplateRelease({ root, commit, output, runtimeStore = 'off',cliFamily='all',base,baselineReport,baselineReportDigest,qualificationReport,qualificationReportDigest,concurrency=1,toolingMode='legacy',expectedPlan,artifactCoordinator }) {
   assertNodeVersion();
   assert.ok(qualificationReport===undefined&&qualificationReportDigest===undefined,'QUALIFICATION_RETIRED');
   assert.ok(['sqlite','off'].includes(runtimeStore), 'runtime-store 必须为 sqlite 或 off');
-  assert.ok(['spec','all-four'].includes(cliFamily),'cli-family 必须为 spec 或 all-four');
+  assert.ok(['spec','all'].includes(cliFamily),'cli-family 必须为 spec 或 all');
   assert.ok(Number.isInteger(concurrency)&&concurrency>=1&&concurrency<=8,'concurrency 必须为 1..8');
   assert.ok(['legacy','optimized'].includes(toolingMode),'tooling-mode 必须为 legacy 或 optimized');
   if(base)assert.match(base,/^[a-f0-9]{40}$/,'base 必须为完整 SHA');
@@ -46,7 +46,7 @@ export function verifyTemplateRelease({ root, commit, output, runtimeStore = 'of
   output = realpathSync(output);
   const relative = path.relative(root, output);
   assert.ok(relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative), '证据目录必须在仓库外');
-  const families=cliFamily==='all-four'?['spec','design','backend']:['spec'];
+  const families=cliFamily==='all'?['spec','backend']:['spec'];
   const report = { schema_version: 2,kind:'template-release-verification',purpose:'verification', requested_commit: commit,cli_families:families, status: 'failed',
     verification_scope:'local-template-and-cli',release_readiness:'not-evaluated',
     started_at: new Date().toISOString(), commands: [], publication: 'not-performed' };
@@ -110,13 +110,13 @@ export function verifyTemplateRelease({ root, commit, output, runtimeStore = 'of
     assert.equal(readFileSync(userWorkflow, 'utf8'), userBytes);
     applyNative('sync','spec',instance,path.join(scratch,'sync-plan.json'),[],nativeOptions);
     assert.equal(readFileSync(userWorkflow, 'utf8'), userBytes, '同步不得接管用户 .github');
-    if(cliFamily==='all-four')report.cli_integrations=report.artifacts.map(artifact=>prepared?JSON.parse(readFileSync(assertEvidenceFile(path.join(fullDirectory,'migration-results',`${artifact.source_tuple.family}.json`),fullDirectory))):verifyInstalledCliMigration({artifact,directory:path.join(output,'integration',artifact.source_tuple.family),run}));
+    if(cliFamily==='all')report.cli_integrations=report.artifacts.map(artifact=>prepared?JSON.parse(readFileSync(assertEvidenceFile(path.join(fullDirectory,'migration-results',`${artifact.source_tuple.family}.json`),fullDirectory))):verifyInstalledCliMigration({artifact,directory:path.join(output,'integration',artifact.source_tuple.family),run}));
     for(const artifact of report.artifacts)validateArtifact(artifact,artifact.source_tuple);
     assert.equal(verificationInputDigest(root),full.input_sha256,'发布集成结束后输入已漂移');
     assertReleaseCheckout(root, commit);
     assert.deepEqual(collectReleaseSources(sourceOptions),allSources,'发布集成结束后 CLI 来源已漂移');
     report.status = 'passed';
-    if(cliFamily==='all-four'){
+    if(cliFamily==='all'){
       const integrationFile=path.join(output,'release-verification.json');writeFileSync(integrationFile,JSON.stringify(report,null,2)+'\n');
       const integration=validateReleaseIntegration({root,reportFile:integrationFile,expectedDigest:hash(readFileSync(integrationFile)),expectedCommit:commit});
       assert.ok(integration.valid,integration.reasons.join('; '));

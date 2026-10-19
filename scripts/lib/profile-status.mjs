@@ -4,9 +4,9 @@ import { fileURLToPath } from "node:url";
 import { parseDocument } from "../vendor/yaml.mjs";
 
 export const PROFILE_STATUS_FILE = ".template-source/process/profile-status.yaml";
-export const STATUSES = ["kernel", "active", "legacy"];
+export const STATUSES = ["kernel", "active"];
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
-const ENTRY_FIELDS = new Set(["status", "reason", "migration"]);
+const ENTRY_FIELDS = new Set(["status"]);
 
 function fail(message) { throw new TypeError("PROFILE_STATUS: " + message); }
 
@@ -28,7 +28,8 @@ export function loadProfileStatus({ root = ROOT } = {}) {
   if (!data || typeof data !== "object" || Array.isArray(data)) fail("状态文件必须是对象");
   if (data.schema_version !== 1) fail("schema_version 必须为 1");
   if (!data.profiles || typeof data.profiles !== "object" || Array.isArray(data.profiles)) fail("profiles 必须是对象");
-  const required = ["spec", ...profileDirectories(root)];
+  const required = ["spec", "backend"];
+  for(const name of profileDirectories(root))if(name!=="backend")fail("未知 Profile 目录: "+name);
   const declared = Object.keys(data.profiles).sort();
   const missing = required.filter((name) => !declared.includes(name));
   const unknown = declared.filter((name) => !required.includes(name));
@@ -42,10 +43,6 @@ export function loadProfileStatus({ root = ROOT } = {}) {
     if (!STATUSES.includes(entry.status)) fail(name + " 的 status 无效: " + entry.status);
     if (name === "spec" && entry.status !== "kernel") fail("spec 必须是 kernel");
     if (name !== "spec" && entry.status === "kernel") fail(name + " 不能是 kernel");
-    if (entry.status === "legacy") {
-      if (typeof entry.reason !== "string" || !entry.reason.trim()) fail(name + " 标记 legacy 时必须写 reason");
-      if (typeof entry.migration !== "string" || !entry.migration.trim()) fail(name + " 标记 legacy 时必须写 migration");
-    }
     profiles[name] = {};
     for (const key of ENTRY_FIELDS) if (entry[key] !== undefined) profiles[name][key] = entry[key];
   }
@@ -54,7 +51,6 @@ export function loadProfileStatus({ root = ROOT } = {}) {
     profiles,
     kernel: required.filter((name) => profiles[name].status === "kernel"),
     active: required.filter((name) => profiles[name].status === "active"),
-    legacy: required.filter((name) => profiles[name].status === "legacy"),
   };
 }
 

@@ -13,7 +13,7 @@ import { fileURLToPath } from "node:url";
  * 与 yss-cli 的 internal/bundle/overlay.go 同一规则；结果缓存在本进程的临时目录里。
  */
 export const KERNEL_SCOPE = [".agents/skills", "scripts", ".template-spec/process", ".template-spec/templates"];
-export const PROFILE_NAMES = ["design", "backend"];
+export const PROFILE_NAMES = ["backend"];
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const cache = new Map();
 

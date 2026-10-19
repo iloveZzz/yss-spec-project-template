@@ -32,15 +32,15 @@ const manifest = (overrides = {}) => ({
 const GOOD_PROFILE = manifest({ excludePaths: ['scripts/verify-template', 'scripts/fixtures'] });
 const FILES = ['scripts/verify-template', 'scripts/verify-lifecycle-registry', 'scripts/fixtures/a.json', '.agents/skills/x/SKILL.md', '.agents/skills/x/tests/a.test.mjs', NEED, NEED_BY];
 
-/** 根仓（内核 + 三个 Profile 覆盖层）的最小仓库；tweak 里的函数可改每个 Profile 的策略与覆盖文件。 */
+/** 根仓（内核 + Backend 覆盖层）的最小仓库；tweak 里的函数可改每个 Profile 的策略与覆盖文件。 */
 function workspace(t, tweak = {}) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'yss-profile-distribution-'));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   git(root, 'init', '-q');
-  write(root, '.template-source/process/profile-status.yaml', 'schema_version: 1\nprofiles:\n  spec:\n    status: kernel\n  backend:\n    status: active\n  design:\n    status: active\n');
+  write(root, '.template-source/process/profile-status.yaml', 'schema_version: 1\nprofiles:\n  spec:\n    status: kernel\n  backend:\n    status: active\n');
   write(root, BUNDLE_PROFILE_REF, `${JSON.stringify({ manifest: manifest({ excludePaths: ['scripts/verify-template', 'scripts/fixtures', NEED] }) })}\n`);
   for (const file of FILES) write(root, file, file === NEED_BY ? `run("node", ["${NEED}", "--check"]);\n` : 'x\n');
-  for (const profile of ['backend', 'design']) {
+  for (const profile of ['backend']) {
     const options = { policy: GOOD_PROFILE, files: [], referenceNeed: true, ...(tweak[profile] ?? {}) };
     write(root, `profiles/${profile}/${BUNDLE_PROFILE_REF}`, `${JSON.stringify({ manifest: options.policy })}\n`);
     for (const file of options.files) write(root, `profiles/${profile}/${file}`, 'x\n');
@@ -80,25 +80,25 @@ test('合规：Profile 排除了根仓的仅模板源脚本，保留 Skill 测�
 
 test('兼容迁移：保留已登记 Skill 测试文件的策略通过，批量排除被拒绝', (t) => {
   const compatible = manifest({ excludePaths: ['scripts/verify-template', 'scripts/fixtures'] });
-  const root = workspace(t, Object.fromEntries(['backend', 'design'].map((profile) => [profile, { policy: compatible }])));
+  const root = workspace(t, Object.fromEntries(['backend'].map((profile) => [profile, { policy: compatible }])));
   const result = evaluateAll(root);
   assert.equal(result.ok, true, formatReport(result));
   assert.equal(shipped('.agents/skills/x/tests/a.test.mjs', compatible), true);
   for (const suffix of ['test', 'tests']) {
-    const invalid = workspace(t, { design: { policy: { ...compatible, excludePathSuffixes: [suffix] } } });
-    const observed = evaluateAll(invalid).reports.find((report) => report.profile === 'design');
+    const invalid = workspace(t, { backend: { policy: { ...compatible, excludePathSuffixes: [suffix] } } });
+    const observed = evaluateAll(invalid).reports.find((report) => report.profile === 'backend');
     assert.ok(observed.findings.some((finding) => finding.kind === 'managed-test-directory-excluded' && finding.path === suffix));
   }
 });
 
 test('违规：根仓声明为仅模板源的脚本在 Profile 里仍然分发', (t) => {
-  const root = workspace(t, { design: { policy: manifest({ excludePaths: ['scripts/fixtures'] }) } });
+  const root = workspace(t, { backend: { policy: manifest({ excludePaths: ['scripts/fixtures'] }) } });
   const result = evaluateAll(root);
   assert.equal(result.ok, false);
-  const design = result.reports.find((report) => report.profile === 'design');
-  assert.deepEqual(design.findings.map((finding) => finding.path), ['scripts/verify-template']);
-  assert.match(formatReport(result), /违规 design: .*scripts\/verify-template/);
-  assert.ok(result.reports.filter((report) => report.profile !== 'design').every((report) => !report.findings.length), '别的 Profile 不受牵连');
+  const backend = result.reports.find((report) => report.profile === 'backend');
+  assert.deepEqual(backend.findings.map((finding) => finding.path), ['scripts/verify-template']);
+  assert.match(formatReport(result), /违规 backend: .*scripts\/verify-template/);
+  assert.ok(result.reports.filter((report) => report.profile !== 'backend').every((report) => !report.findings.length), '别的 Profile 不受牵连');
 });
 
 test('例外：实例确实需要的脚本被登记在 PROFILE_NEEDS 里就不算违规，但依赖消失后例外自己过期', (t) => {
@@ -125,10 +125,10 @@ test('违规：后缀规则会误伤名字恰好以 test 结尾的路径段（�
 
 test('无法评估时失败而不是通过：覆盖层目录缺失、策略缺失', (t) => {
   const root = workspace(t);
-  fs.rmSync(path.join(root, 'profiles/design'), { recursive: true });
+  fs.rmSync(path.join(root, 'profiles/backend'), { recursive: true });
   write(root, '.template-source/process/profile-status.yaml', 'schema_version: 1\nprofiles:\n  spec:\n    status: kernel\n  backend:\n    status: active\n');
   git(root, 'add', '-A');
-  assert.throws(() => evaluateAll(root), /design 缺少覆盖层目录 profiles\/design/);
+  assert.throws(() => evaluateAll(root), /缺少 Profile 条目: backend|backend 缺少覆盖层目录 profiles\/backend/);
   const missingPolicy = workspace(t);
   fs.rmSync(path.join(missingPolicy, 'profiles/backend', BUNDLE_PROFILE_REF));
   assert.throws(() => evaluateAll(missingPolicy), /缺少 backend 的分发策略/);
@@ -162,7 +162,7 @@ test('FR-006：分发守卫拒绝技能投影和根内旧清单，但允许明�
 test('命令行：合规退出 0，违规退出 1 并写 stderr，参数错误退出 1', (t) => {
   const ok = spawnSync(process.execPath, [SCRIPT, '--root', workspace(t)], { encoding: 'utf8' });
   assert.equal(ok.status, 0, ok.stderr);
-  assert.match(ok.stdout, /通过 design/);
+  assert.match(ok.stdout, /通过 backend/);
   const bad = workspace(t, { backend: { policy: manifest() } });
   const failed = spawnSync(process.execPath, [SCRIPT, '--root', bad], { encoding: 'utf8' });
   assert.equal(failed.status, 1);
@@ -175,21 +175,18 @@ test('Profile 状态：缺失、未知值与 legacy 缺原因分别失败', (t) 
   assert.throws(() => evaluateAll(missing), /缺少 \.template-source\/process\/profile-status\.yaml/);
 
   const unknown = workspace(t);
-  write(unknown, '.template-source/process/profile-status.yaml', 'schema_version: 1\nprofiles:\n  spec:\n    status: kernel\n  backend:\n    status: active\n  design:\n    status: paused\n');
+  write(unknown, '.template-source/process/profile-status.yaml', 'schema_version: 1\nprofiles:\n  spec:\n    status: kernel\n  backend:\n    status: paused\n');
   assert.throws(() => evaluateAll(unknown), /status 无效: paused/);
 
   const legacy = workspace(t);
-  write(legacy, '.template-source/process/profile-status.yaml', 'schema_version: 1\nprofiles:\n  spec:\n    status: kernel\n  backend:\n    status: active\n  design:\n    status: legacy\n');
-  assert.throws(() => evaluateAll(legacy), /design 标记 legacy 时必须写 reason/);
+  write(legacy, '.template-source/process/profile-status.yaml', 'schema_version: 1\nprofiles:\n  spec:\n    status: kernel\n  backend:\n    status: legacy\n');
+  assert.throws(() => evaluateAll(legacy), /status 无效: legacy/);
 });
 
-test('Profile 状态：legacy 带原因与迁移说明时仍可评估分发', (t) => {
-  const root = workspace(t);
-  write(root, '.template-source/process/profile-status.yaml', 'schema_version: 1\nprofiles:\n  spec:\n    status: kernel\n  backend:\n    status: active\n  design:\n    status: legacy\n    reason: 旧产品线\n    migration: 显式迁移\n');
-  const result = evaluateAll(root);
-  assert.equal(result.ok, true, formatReport(result));
-  assert.equal(result.profileStatus.legacy[0], 'design');
-  assert.match(formatReport(result), /Profile 状态: .*design=legacy/);
+test('Profile 状态：Design 即使声明迁移说明也拒绝',t=>{
+ const root=workspace(t);
+ write(root,'.template-source/process/profile-status.yaml','schema_version: 1\nprofiles:\n  spec:\n    status: kernel\n  backend:\n    status: active\n  design:\n    status: legacy\n    reason: old\n    migration: old\n');
+ assert.throws(()=>evaluateAll(root),/未知 Profile 条目: design/);
 });
 test('陈旧 excludePaths：模板源与覆盖层都不存在且未登记实例侧例外时失败', (t) => {
   const policy = manifest({ excludePaths: ['scripts/verify-template', 'scripts/does-not-exist'] });

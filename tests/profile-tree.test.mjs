@@ -47,18 +47,16 @@ test("不属于 Profile 的名字被拒绝", () => {
   assert.throws(() => composeProfileTree("spec"), /未知 Profile/);
 });
 
-test("Profile 状态：spec kernel、backend active、design legacy 且带迁移说明", () => {
-  assert.deepEqual(PROFILE_STATUS.kernel, ["spec"]);
-  assert.deepEqual(PROFILE_STATUS.active, ["backend"]);
-  assert.deepEqual(PROFILE_STATUS.legacy, ["design"]);
-  assert.ok(PROFILE_STATUS.profiles.design.reason);
-  assert.ok(PROFILE_STATUS.profiles.design.migration);
+test("Profile 仅保留 spec kernel 与 backend active，Design 不可组合",()=>{
+ assert.deepEqual(PROFILE_NAMES,["backend"]);
+ assert.deepEqual(Object.keys(PROFILE_STATUS.profiles).sort(),["backend","spec"]);
+ assert.deepEqual(PROFILE_STATUS.kernel,["spec"]);assert.deepEqual(PROFILE_STATUS.active,["backend"]);
+ assert.throws(()=>composeProfileTree("design"),/未知 Profile/);
 });
 
-test("FR-007：三端查询保留各自合同、输出结构与完整内容摘要", () => {
+test("FR-007：两端查询保留各自合同、输出结构与完整内容摘要", () => {
   for (const [profile, skill, unit] of [
     ["spec", "yss-product-lifecycle", "work-unit.entry-triage"],
-    ["design", "yss-strategic-design", "work-unit.plan-opportunity"],
     ["backend", "harness-orchestrator", "work-unit.harness-entry"],
   ]) {
     const tree = profile === "spec" ? ROOT : composeProfileTree(profile);

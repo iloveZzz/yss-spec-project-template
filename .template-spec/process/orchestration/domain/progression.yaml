@@ -86,16 +86,11 @@ profile_guidance:
   links_file: .yss-profile-links.json
   required_capabilities:
     - profile-guidance-v1
-    - spec-baseline-v1
   routes:
     spec:
       targets:
-        - design
         - backend
       default: continue-current-spec
-    design:
-      targets:
-        - backend
     backend:
       targets: []
   evidence: explicit-profile-links-and-current-approved-inputs
@@ -107,7 +102,6 @@ profile_guidance:
   recommendation: read-only-never-initialization-or-approval
   confirmation: explicit-user-target-choice-before-prepare-or-import
   unregistered_target: unknown-never-inferred-from-neighbor-directories
-  design_intake: frozen-spec-baseline-then-target-context-reconciliation
   role_boundary: recommend-downstream-profile-without-dispatching-its-implementation
   progression_intent: one-spec-controller-with-optional-specialists
   specialist_terminal_is_business_acceptance: false

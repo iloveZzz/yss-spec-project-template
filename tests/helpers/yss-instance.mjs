@@ -38,6 +38,7 @@ function templateInstance(profile) {
 
 /** 返回一个新的项目根（已 realpath）；调用方负责清理。 */
 export function makeRoot(prefix = 'yss-test-', profile = 'spec') {
+  assert.ok(['spec','backend'].includes(profile),'unsupported fixture Profile: '+profile);
   const dir = realpathSync(mkdtempSync(path.join(os.tmpdir(), prefix)));
   roots.add(dir);
   cpSync(templateInstance(profile), dir, {recursive: true, verbatimSymlinks: true});

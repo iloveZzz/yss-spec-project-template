@@ -20,7 +20,6 @@
 | `capabilities` | 查看原生能力、治理接口与发行证据边界。 | `yss help examples capabilities` |
 | `compat` | 显式旧命令兼容适配。 | `yss help examples compat` |
 | `compat create-yss-harness-backend` | 固定旧别名的显式原生适配。 | `yss help examples compat create-yss-harness-backend` |
-| `compat create-yss-harness-design` | 固定旧别名的显式原生适配。 | `yss help examples compat create-yss-harness-design` |
 | `compat create-yss-spec` | 固定旧别名的显式原生适配。 | `yss help examples compat create-yss-spec` |
 | `compat-api` | 供现役 JavaScript 消费者使用的原生传输接口。 | `yss help examples compat-api` |
 | `compat-api native.run` | 版本化兼容传输方法。 | `yss help examples compat-api native.run` |
@@ -45,8 +44,6 @@
 | `evidence verify` | 执行当前领域规则和独立消费者绑定校验。 | `yss help examples evidence verify` |
 | `handoff` | 校验 handoff 的结构或原生领域语义。 | `yss help examples handoff` |
 | `handoff check` | 执行显式 Schema 结构校验。 | `yss help examples handoff check` |
-| `handoff export` | 导出当前已批准的 Spec 基线及来源证据。 | `yss help examples handoff export` |
-| `handoff import` | 将批准 Spec 基线接入独立 Design。 | `yss help examples handoff import` |
 | `handoff verify` | 执行当前领域规则和独立消费者绑定校验。 | `yss help examples handoff verify` |
 | `init` | 创建固定模板来源的项目实例。 | `yss help examples init` |
 | `lifecycle` | 查询当前生命周期、配置本次推进目标并核验门禁。 | `yss help examples lifecycle` |

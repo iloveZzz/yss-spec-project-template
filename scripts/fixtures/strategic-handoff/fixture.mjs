@@ -22,7 +22,7 @@ context_schema_version: 1
 // only the actual installed policy/Skill closure; never transplant runtime state.
 export function copyNativeFixturePolicy(root, nativeSeed) {
  const metadata=read(path.join(nativeSeed,'.yss.json')),profile=read(path.join(nativeSeed,'.template-spec/process/harness-profile.yaml'));
- const expected={spec:'harness.spec-template',design:'harness.business-ddd-strategy-handoff',frontend:'harness.frontend-delivery'}[metadata.profile];
+ const expected={spec:'harness.spec-template',frontend:'harness.frontend-delivery'}[metadata.profile];
  if(!expected||metadata.profileId!==expected||profile.profile_id!==expected)throw Error('Synthetic strategic native seed Profile policy mismatch');
  for(const ref of ['.template-spec/process','.agents/skills']){
    const source=path.join(nativeSeed,ref);if(!lstatSync(source).isDirectory())throw Error('Native policy closure missing: '+ref);
@@ -33,11 +33,13 @@ export function copyNativeFixturePolicy(root, nativeSeed) {
    if(!info.isFile()||info.isSymbolicLink())throw Error('Native policy must be a regular file: '+ref);
    mkdirSync(path.dirname(target),{recursive:true});copyFileSync(source,target);chmodSync(target,info.mode&0o777);
  }
+ // Frozen authority remains unchanged; full Spec source fixtures also need files omitted by initial installation.
+ for(const ref of ['.agents/skills','.template-spec/process'])cpSync(path.resolve(import.meta.dirname,'../../..',ref),path.join(root,ref),{recursive:true,force:false});
  return metadata;
 }
 // Handoff v3 remains the default for released CLI compatibility tests.
 export async function fixture(root, { nativeSeed, technicalDesign = false, handoffVersion = 3, businessTickets = false, impacts = { ui: true, api: true, data: true, backend: true, frontend: true, cross_repo: false, high_risk: false } } = {}) {
- const explicitSeed=Boolean(nativeSeed);nativeSeed ||= makeRoot('strategic-policy-','design');copyNativeFixturePolicy(root,nativeSeed);
+ const explicitSeed=Boolean(nativeSeed);nativeSeed ||= makeRoot('strategic-policy-','spec');copyNativeFixturePolicy(root,nativeSeed);
  const put=(ref,value)=>{const p=path.join(root,ref);mkdirSync(path.dirname(p),{recursive:true});writeFileSync(p,typeof value==='string'?value:json(value));};
  put('yss-project.yaml','schema_version: 1\nrepository_mode: project-instance\n');put('CONTEXT.md',context);
  const source=parseContextSource(context), resolved=resolveContextTermRefs(source,['Global/Supplier']);

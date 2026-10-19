@@ -21,7 +21,7 @@ export async function cancellation(build, name, profile) {
   assert.ok(process.env.YSS_PLUGIN_TEST_BINARY, 'YSS_PLUGIN_TEST_BINARY required');
   const evidence = process.env.YSS_PLUGIN_TEST_ROOT;
   const parent = fs.realpathSync(fs.mkdtempSync(path.join(evidence || tmpdir(), `cancel-wrapper-${profile}-`)));
-  const plugin = path.join(parent, name), receipt = profile === 'spec' ? '.yss-backend-plugin.json' : '.yss-product-design-plugin.json';
+  const plugin = path.join(parent, name), receipt = '.yss-backend-plugin.json';
   const events = [], startedAt = new Date().toISOString();
   let passed = false;
   try {

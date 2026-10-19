@@ -55,13 +55,13 @@ test('runtime module copies bind the canonical source in every composed Profile'
   for (const ref of ['scripts/lib/runtime-store.mjs']) {
     assert.ok(read(ref).equals(canonical), ref);
   }
-  for (const side of ['design', 'backend']) {
+  for (const side of ['backend']) {
     const tree = composeProfileTree(side);
     for (const ref of sharedRefs) assert.ok(fs.readFileSync(path.join(tree, ref)).equals(read(ref)), `${side}/${ref}`);
   }
 });
 
-test('four native Bundle exports contain runtime manager and portable policy', t => {
+test('supported native Bundle exports contain runtime manager and portable policy', t => {
   const scratch=temporary(t);
   for(const profile of NATIVE_PROFILES){
     const out=path.join(scratch,profile);const exported=runNative(['bundle','export','--profile',profile,'--out',out]).result;

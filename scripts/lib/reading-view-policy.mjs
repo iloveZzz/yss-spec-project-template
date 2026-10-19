@@ -18,7 +18,6 @@ export function readingLocation(root, checkpoint){
  if(typeof cp.feature_id==='string'&&cp.feature_id.startsWith('feature.')&&existsSync(safe(root,profileRef,{missing:true}))){
   const profile=parseSliceYaml(read(profileRef)),skill={
    'harness.spec-template':'yss-product-lifecycle',
-   'harness.business-ddd-strategy-handoff':'yss-strategic-design',
    'harness.backend-delivery':'harness-orchestrator'
   }[profile.profile_id];
   if(!skill)throw Error('reading-profile-identity');

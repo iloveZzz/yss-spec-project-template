@@ -1,9 +1,0 @@
-# owner: yss-strategic-design
-# consumers: lifecycle route/query, current Profile workflows and governance validators
-work_unit_routes:
-  work-unit.slice-implementation:
-    downstream: true
-    owner: downstream-rd-team
-    handoff: strategic-design-handoff
-    applies_when: downstream_profile_approved
-    not_applicable_reason: downstream_only

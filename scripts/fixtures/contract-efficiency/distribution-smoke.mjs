@@ -71,7 +71,7 @@ try{
  const version=runNative(['version'],options).result;report.cli_version=version.version;report.cli_commit=version.cliCommit;report.cli_source_state=version.sourceState;
  for(const profile of NATIVE_PROFILES){
   const out=path.join(scratch,`${profile}-bundle`),exported=runNative(['bundle','export','--profile',profile,'--out',out],options).result,inspection=inspectNative(profile,options);
-  assert.equal(inspection.schemaVersion,3);assert.deepEqual(exported.inspection,inspection);
+  assert.equal(inspection.schemaVersion,4);assert.deepEqual(exported.inspection,inspection);
   for(const row of exported.files){const file=path.join(out,row.path);assert.equal(hash(fs.readFileSync(file)),row.digest);assert.equal(fs.statSync(file).mode&0o777,row.mode);}
   report.bundle_exports.push({profile,template_commit:inspection.templateCommit,bundle_sha256:inspection.bundleHash,manifest_sha256:inspection.manifestHash,files:exported.files.length,status:'passed'});
   const target=path.join(scratch,`${profile}-instance`);initializeNative(profile,target,options);
@@ -80,7 +80,6 @@ try{
   else{
    writing.lifecycle_writing_examples_sha256=asset(target,exampleRef);
    for(const name of ['diagnosing-bugs','grilling'])skills[name]=skill(target,root,name);
-   if(profile==='design'){skills['yss-strategic-design']=skill(target,composeProfileTree('design'),'yss-strategic-design');assert.ok(inspection.manifest.excludePaths.includes(retroRef));assert.equal(fs.existsSync(path.join(target,retroRef)),false);writing.retrospective='existing-profile-exclusion';}
    else{writing.retro_sha256=asset(target,retroRef);for(const name of ['implement','tdd'])skills[name]=skill(target,root,name);}
   }
   fs.writeFileSync(path.join(target,'contract-smoke.md'),'# 合同阅读验收\n\n目标：保留约束。\n');

@@ -7,6 +7,7 @@ import { digest, invoke, json, physical } from './native-tool.mjs';
 const HERE = import.meta.dirname;
 
 export function buildNative({ binary, output, profile, identity, pluginRoot, binaryCommit = null }) {
+  if (profile !== 'spec') throw new Error('unsupported-plugin-profile: '+profile);
   if (!binary) throw new Error('native-binary-required');
   if (binaryCommit !== null && !/^[a-f0-9]{40}$/.test(binaryCommit)) throw new Error('full-binary-commit-required');
   const input = physical(binary, true), target = physical(output);
@@ -17,7 +18,7 @@ export function buildNative({ binary, output, profile, identity, pluginRoot, bin
   if (!invoke(input, ['capabilities']).result?.native?.includes('work-layout-v1')) throw new Error('native-work-layout-capability-missing');
   if (binaryCommit !== null && binaryCommit !== version.cliCommit) throw new Error('binary-commit-provenance-mismatch');
   const inspection = invoke(input, ['bundle', 'inspect', '--profile', profile]).result;
-  if (![2, 3].includes(inspection.schemaVersion) || inspection.profile !== profile || inspection.sourceState !== 'committed'
+  if (![2, 3, 4].includes(inspection.schemaVersion) || inspection.profile !== profile || inspection.sourceState !== 'committed'
       || !inspection.files || !/^[a-f0-9]{64}$/.test(inspection.bundleHash) || !/^[a-f0-9]{40}$/.test(inspection.templateCommit)) throw new Error('native-bundle-identity-invalid');
   const parent = realpathSync(mkdtempSync(path.join(tmpdir(), 'yss-native-plugin-'))), exported = path.join(parent, 'template');
   let stage;
@@ -62,7 +63,7 @@ export function buildNative({ binary, output, profile, identity, pluginRoot, bin
     write('README.md', readFileSync(path.join(pluginRoot, 'README.md')));
     const lock = { schema_version: 2, plugin: identity.name, source: { state: 'native-bundle', template_commit: inspection.templateCommit, bundle_hash: inspection.bundleHash },
       native: pin, files: records.sort((a, b) => a.ref.localeCompare(b.ref)), development_only: true, release_ready: false,
-      external_dependencies: { platform: profile === 'design' ? [{ requested: 'product-design:index', availability: 'requires-codex-session', when: 'selected-visual-source-adapter' }] : [] } };
+      external_dependencies: { platform: [] } };
     writeFileSync(path.join(stage, 'bundle-lock.json'), json(lock), { flag: 'wx' });
     const staged = invoke(path.join(stage, binaryPath), ['bundle', 'inspect', '--profile', profile]).result;
     if (digest(staged) !== digest(inspection)) throw new Error('staged-native-bundle-mismatch');

@@ -1,13 +1,12 @@
 import {loadOrchestrationContract} from '../../lib/orchestration-contract.mjs';
 import test from 'node:test';
-import {composeProfileTree} from '../../lib/profile-tree.mjs';
 import assert from 'node:assert/strict';
 import {readFileSync,existsSync,cpSync} from 'node:fs';
 import path from 'node:path';
 import {readingFixture,repo} from './fixture.mjs';
 const cp='.work/demo/checkpoint.yaml';
 function registeredReading(profile='spec',checkpoint='intake-checkpoint.json'){
- const f=readingFixture(),owner=profile==='design'?composeProfileTree('design'):repo;
+ const f=readingFixture(),owner=repo;
  if(profile==='spec')f.put('.template-spec/process/harness-profile.yaml',{schema_version:1,profile_id:'harness.spec-template'});else f.put('.template-spec/process/harness-profile.yaml',readFileSync(path.join(owner,'.template-spec/process/harness-profile.yaml'),'utf8'));
  const contract='.template-spec/process/orchestration-contract.yaml';f.put(contract,JSON.stringify(loadOrchestrationContract(ref=>readFileSync(path.join(owner,ref)),contract).value));
  f.put('.template-spec/agents/issue-tracker.md','---\ntracker:\n  platform: local-markdown\n  root: .work\n---\n');
@@ -15,8 +14,8 @@ function registeredReading(profile='spec',checkpoint='intake-checkpoint.json'){
  f.put('.work/supplier/map.md','---\ncheckpoint_ref: '+checkpoint+'\n---\n# 当前功能\n');
  return {...f,checkpoint};
 }
-test('current registered reading separates canonical ID and root Design checkpoint directory',async()=>{
- const {readingLocation}=await import('../../lib/reading-view-policy.mjs');const f=registeredReading('design');
+test('current registered Spec reading separates canonical ID and checkpoint directory',async()=>{
+ const {readingLocation}=await import('../../lib/reading-view-policy.mjs');const f=registeredReading('spec');
  try{assert.deepEqual(readingLocation(f.root,f.checkpoint),{feature:'feature.supplier',base:'.work/supplier',directory:'.work/supplier/reading'});}finally{f.cleanup();}
 });
 
@@ -38,7 +37,7 @@ test('registered reading refuses missing, duplicate and conflicting maps and uns
  }
 });
 test('reading policy root references retain traversal and absolute-path rejection',async()=>{
- const {readingPolicy}=await import('../../lib/reading-view-policy.mjs');const f=registeredReading('design');try{
+ const {readingPolicy}=await import('../../lib/reading-view-policy.mjs');const f=registeredReading('spec');try{
   for(const ref of ['intake-checkpoint.json','.work/demo/中文 状态.json']){
    f.put('.template-spec/process/reading-policy.yaml',{schema_version:1,mode:'managed',checkpoints:[ref]});assert.deepEqual(readingPolicy(f.root).checkpoints,[ref]);
   }
@@ -64,9 +63,9 @@ function inChild(code,args,environment){
  assert.equal(run.status,0,run.stderr);return JSON.parse(run.stdout);
 }
 
-test('yss renders an idempotent v2 bundle without navigation self-dependency for spec and design',async()=>{
+test('yss renders an idempotent v2 bundle without navigation self-dependency for Spec',async()=>{
  const {renderReadingBundle,checkReadingViews}=await import('../../lib/reading-view-bundle.mjs');
- for(const profile of ['spec','design']){
+ for(const profile of ['spec']){
   const f=readingInstance({profile});managedPolicy(f);
   f.put('.work/other/map.md','---\ncheckpoint_ref: .work/other/checkpoint.json\n---\n');f.put('.work/other/checkpoint.json',{feature_id:'feature.other'});
   assert.equal(renderReadingBundle(f.root,icp).status,'rendered',profile);
@@ -146,10 +145,10 @@ test('adding or changing project display names invalidates the reading bundle',a
  assert.notEqual(checkReadingViews(f.root,icp,{required:true}).status,'current');
  renderReadingBundle(f.root,icp);assert.equal(checkReadingViews(f.root,icp,{required:true}).status,'current');
 });
-test('root Design checkpoint review preparation retains managed missing and stale reading gaps',async()=>{
+test('Spec checkpoint review preparation retains managed missing and stale reading gaps',async()=>{
  const {prepareContractReview}=await import('../../lib/contract-review-preparation.mjs');
  const {readingCheckpointsForAsset,renderReadingBundle}=await import('../../lib/reading-view-bundle.mjs');
- const f=readingInstance({profile:'design'});managedPolicy(f);
+ const f=readingInstance({profile:'spec'});managedPolicy(f);
  assert.deepEqual(readingCheckpointsForAsset(f.root,icp,'checkpoint'),[icp]);
  const prepare=()=>prepareContractReview(icp,icp,{root:f.root,kind:'checkpoint'});
  assert.ok(prepare().gaps.some(row=>row.code==='READING_VIEWS_STALE'),'missing managed bundle must block review preparation');

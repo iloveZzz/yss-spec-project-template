@@ -4,9 +4,9 @@
 
 ## 流程与职责
 
-Spec 综合同时起草业务 Ticket；完成条件是可读取的集合和 FR/AC 覆盖。Design 按页面流、状态、失败与恢复路径校准原 Ticket，保持稳定 ID。无产品设计影响时记录不适用依据并进入业务正式化，不生成空原型。尚未批准、尚未冻结、缺工程是待满足前置，不能写为不适用。
+Spec 综合同时起草业务 Ticket；完成条件是可读取的集合和 FR/AC 覆盖。产品设计按页面流、状态、失败与恢复路径校准原 Ticket，保持稳定 ID。无产品设计影响时记录不适用依据并进入业务正式化，不生成空原型。尚未批准、尚未冻结、缺工程是待满足前置，不能写为不适用。
 
-业务正式化消费当前 Spec、适用的产品设计批准和独立专业审查。语义不变按现有授权延续协议核验；范围、规则、验收或风险实质变化交回原决定边界。全生命周期随后进入技术分析；本地已确认资产直接消费，无需导出再导入自己。独立 Design profile 到战略交接结束。
+业务正式化消费当前 Spec、适用的产品设计批准和独立专业审查。语义不变按现有授权延续协议核验；范围、规则、验收或风险实质变化交回原决定边界。全生命周期随后进入技术分析；本地已确认资产直接消费，无需导出再导入自己。
 
 研发可以在技术分析期间形成实现 Slice 草案。正式实现 Slice 仍需当前工程契约、实现仓库准备、Slice 合同批准和完整就绪检查。业务票只能为 `draft` 或 `ready-for-human`，不能授予实现权限。业务票与阶段工作项即使移动到 `issues/` 仍不能作为实现票。
 
@@ -37,7 +37,7 @@ node scripts/verify-business-tickets .work/<feature>/business-ticket-set.yaml --
 
 ## 批准与交接兼容
 
-Handoff v5 外层结构不变。新 Design 源角色策略声明 required_capabilities: [business-ticket-approval-v1]，最终业务集合绑定 `gate.strategic-design-handoff-approved` 的当前资产批准；不能借用更早的 Plan 批准。旧工具拒绝未知能力。无能力声明的历史包沿原策略只读核验，不能补写历史 Plan 回复。包导出必须包含集合、票据、专业审查、原始来源和延期证据闭包。
+Handoff v5 外层结构不变。Spec 源政策声明 required_capabilities: [business-ticket-approval-v1]，最终业务集合绑定 `gate.strategic-design-handoff-approved` 的当前资产批准；不能借用更早的 Plan 批准。旧工具拒绝未知能力。无能力声明的历史包沿原策略只读核验，不能补写历史 Plan 回复。包导出必须包含集合、票据、专业审查、原始来源和延期证据闭包。
 
 ## 启用、迁移与回退
 

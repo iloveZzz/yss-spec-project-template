@@ -3,13 +3,13 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
-const [backendCli,designCli,output]=process.argv.slice(2);
-if(!output)throw Error('plugin-smoke.mjs <pinned-backend-cli> <pinned-design-cli> <report.json>');
+const [backendCli,output]=process.argv.slice(2);
+if(!output)throw Error('plugin-smoke.mjs <pinned-backend-cli> <report.json>');
 const root=path.resolve(import.meta.dirname,'../../..');
 const scratch=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'contract-plugin-final-'))),rows=[];
 function run(args,cwd=root){const result=spawnSync(process.execPath,args,{cwd,encoding:'utf8',timeout:180000,maxBuffer:16*1024*1024});if(result.status!==0)throw Error(`${args.join(' ')}: ${result.stderr||result.stdout}`);return JSON.parse(result.stdout);}
 try{
- for(const [name,cli] of [['yss-backend-delivery',backendCli],['yss-product-design',designCli]]){
+ for(const [name,cli] of [['yss-backend-delivery',backendCli]]){
   const plugin=path.join(scratch,name),target=path.join(scratch,`${name}-fixture`),entry=path.join(plugin,'scripts/plugin.mjs');
   run([path.join(root,`.template-source/plugins/${name}/build.mjs`),'--output',plugin,'--cli-root',path.resolve(cli)]);
   const verified=run([entry,'verify']);

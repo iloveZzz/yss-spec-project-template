@@ -17,11 +17,11 @@ CLI 输入草稿使用当前功能包已有且被项目忽略的 `tmp` 目录，
 
 “已批准”“completed”、文件存在或上一会话的文字结论均不能建立上述完成。到达终点后停止派发下游写任务，仍保留真实 `next_work_unit`；用户明确扩大终点后，先复验当前来源、有效批准和职责，再继续尚未完成工作。只读状态和目标查询不创建资产或批准，也不授予实现权限。旧 CLI 缺能力或目标不可验证时停止受影响推进。
 
-默认在一个 Spec 项目内由数字人分工完成设计和后端实现；前端实现已不在本生命周期内。只有明确需要独立工作空间或交付责任时才接入专职 Profile：Design 完成业务设计和战略交接，Backend 完成后端交付。产品设计里程碑不等于 Design Profile 的整个战略交接终点；专职终点也不等于 Spec 主控的整个业务验收。
+默认在同一 Spec 项目内完成需求、必要产品设计和适用后端工作。产品设计完成依据本 Spec 的当前资产、检查和批准判定。只有明确需要独立工作空间或交付责任时才接入 Backend；其交付终点不等于主控的业务验收。
 
 原生 Backend Profile 的正式交付终点直接绑定自己的明确 checkpoint 与唯一登记 map，在功能目录保存 `backend-delivery.json`。它消费真实正式包、独立审查与当前提交，不需要 Spec 推进意图或 `plan-to-backend` 范围；本地 `local-evidence` 终点仍只用于 Spec 功能目标。
 
-外部消费者逐项声明 `{profile, root, checkpoint_ref}`，每种 Profile 最多一项；根必须是显式绝对路径，checkpoint 必须属于同一功能。主控汇总时读取指定 checkpoint 与当前接收 Receipt，核对战略、接口、交付和实现版本，不按邻居目录、全局根或状态标签猜功能。Design 接收冻结 Spec 基线；Backend/Frontend 的实现交接消费批准的 Handoff v5 完整 delivery wrapper。新增 Backend Delivery 的 `strategic_bundle_ref` 必须指向完整不可变交付目录，裸 package 只用于历史兼容读取。
+外部消费者逐项声明 `{profile, root, checkpoint_ref}`，每种 Profile 最多一项；根必须是显式绝对路径，checkpoint 必须属于同一功能。主控汇总时读取指定 checkpoint 与当前接收 Receipt，核对战略、接口、交付和实现版本，不按邻居目录、全局根或状态标签猜功能。Backend 的正式实现交接消费批准的 Handoff v5 完整 delivery wrapper。新增 Backend Delivery 的 `strategic_bundle_ref` 必须指向完整不可变交付目录，裸 package 只用于历史兼容读取。
 
 只有用户明确要求正式打包 / 离线交付时，Spec 才派发 `work-unit.strategic-design-handoff`、登记交接资产和门禁；外部消费者存在本身不触发包流程。普通 handoff 使用临时续接说明，普通材料读取不登记正式接收；已生效的正式跨 Profile 合同继续原义核验。产品经理起草，需求经理独立审查，源角色政策声明 `business-ticket-approval-v1`；所有来源批准当前，finalize 成包且整包实际验证通过后才算源交接完成。接收回执可异步，但在本次目标要求联合交付时必须核验本功能的当前接收证据。默认本地综合流程直接消费资产，不能自导自入。
 

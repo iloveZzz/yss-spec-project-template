@@ -349,7 +349,7 @@ artifacts:
   - id: artifact.parent-ticket
     name: 功能父 Ticket
     stage: stage.plan
-    trigger: 每个功能首次进入 Plan 或最近可信接入阶段时建立，正式化时复用；Design profile 不创建工程父 Ticket。
+    trigger: 每个功能首次进入 Plan 或最近可信接入阶段时建立，正式化时复用。
   - id: artifact.vertical-slice-ticket
     name: 垂直切片 Ticket
     stage: stage.ticket-formalization
@@ -365,7 +365,7 @@ artifacts:
   - id: artifact.business-ticket-set
     name: 业务 Ticket 集
     stage: stage.spec-architecture
-    trigger: Spec 同步起草、Design 校准和战略业务正式化；不依赖实现工程，不授予实现资格。
+    trigger: Spec 同步起草、产品设计校准和业务正式化；不依赖实现工程，不授予实现资格。
 
 work_units:
   - id: work-unit.strategic-design-handoff

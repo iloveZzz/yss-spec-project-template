@@ -154,7 +154,7 @@ test('第三批分发保留替代核心库并且当前阶段直接安装新路�
       assert.ok(!policy.manifest.excludePaths.includes(`scripts/${name}`),`${ref} must not require the retired shell`);
     }
   }
-  const manifest=fs.readFileSync(path.join(composeProfileTree('design'),'.template-spec/process/instance-distribution-manifest.yaml'),'utf8');
+  const manifest=fs.readFileSync(path.join(composeProfileTree('backend'),'.template-spec/process/instance-distribution-manifest.yaml'),'utf8');
   for(const name of ['implementation-path-policy','repository-scope-policy']) assert.ok(!manifest.includes(`- scripts/lib/${name}.mjs`),'Design instance manifest must retain replacement libraries');
   const specPolicies=[['.template-source/distribution/bundle-profile.json',()=>read('.template-source/distribution/bundle-profile.json')]];
   if(cliSource)specPolicies.push(['yss-cli internal/bundle/rules/spec.json',()=>readFrom(cliSource,'internal/bundle/rules/spec.json')]);

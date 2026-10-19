@@ -1,7 +1,0 @@
-{
-  "name": "yss-product-design",
-  "version": "0.2.0-dev.1+native.20261006",
-  "displayName": "YSS 需求到产品设计",
-  "flow": "Plan → Spec / 功能架构 → 产品设计与验证 → 方案交接",
-  "entry": "product-design"
-}

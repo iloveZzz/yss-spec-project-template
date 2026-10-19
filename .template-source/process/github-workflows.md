@@ -11,7 +11,7 @@
 | main 集成验证与正式发布：`scripts/verify-template` | 按当前策略执行全部适用检查、前后置与固定来源准备；要求已提交来源 | 检查完整候选；当前分支为 main 不单独触发 |
 | 固定版本：`verify-template-release.mjs` | 输入完整 40 位模板 commit，执行上述验证与指定 CLI 家族集成 | 产出证据，不打 tag、不创建 Release、不发布包 |
 
-主模板源提供两个薄适配器：`.github/workflows/template-gate.yml`（GitHub Actions）与 `.gitlab-ci.yml`（GitLab CI），检查名均为 `template-gate`，在 PR / MR 与主分支推送时运行，并登记为 PR / MR 必需检查。三个专职 Agent 模板和四个 CLI 仓库不设根 `.github/workflows`，它们的检查通过各自仓库的本地入口执行；手动 Actions 入口不再提供。正式发布仍由维护者通过上述本地入口执行并保存本轮证据。
+主模板源提供两个薄适配器：`.github/workflows/template-gate.yml`（GitHub Actions）与 `.gitlab-ci.yml`（GitLab CI），检查名均为 `template-gate`，在 PR / MR 与主分支推送时运行，并登记为 PR / MR 必需检查。Backend 专职模板不设根 `.github/workflows`，其检查通过本仓库的 Profile 组合与分发入口执行；统一 CLI 的检查通过 CLI 仓库本地入口执行；手动 Actions 入口不再提供。正式发布仍由维护者通过上述本地入口执行并保存本轮证据。
 
 日常交付不自动追加 release，不因维护等级、交付措辞 自动升级为正式发布验证。定向选择依据、命令、退出码与未覆盖风险必须可读；未知影响先调查。发布及已采纳 mandatory CI 命中后仍执行其完整适用集合，不能通过删计划项或改报告声明绕过。
 
@@ -90,11 +90,11 @@ node .template-source/scripts/release-template.mjs --version X.Y.Z --base <上�
 
 输入 SHA 与实际 HEAD 必须一致；该提交须具备本合同对应的验证脚本。发布证据绑定实际待验证提交，不再依赖 GitHub workflow 或 action 编排。
 
-`node .template-source/scripts/verify-template-release.mjs --commit <40位SHA> --base <上一正式发行完整SHA> --output <仓库外绝对目录> --cli-family all-four` 要求干净模板、同仓三个 Profile 及固定 CLI 来源一致。显式提供 `YSS_NATIVE_BINARY`、`YSS_NATIVE_BINARY_SHA256` 和固定源码的 `YSS_NATIVE_SOURCE_ROOT`；二进制必须是 `yss-cli-pin.json` 固定的那一份，三 Profile Bundle 必须来自已提交的模板来源，但**不要求 Bundle 绑定本次待发布的模板提交**。生产、公开 Bundle 导出、隔离安装副本、初始化、Skill 投影/锁校验及用户 `.github` 保留检查全部通过。当前发布集合始终覆盖三 Profile。`--cli-family spec` 仅用于定向诊断。
+`node .template-source/scripts/verify-template-release.mjs --commit <40位SHA> --base <上一正式发行完整SHA> --output <仓库外绝对目录> --cli-family all` 要求干净模板、同仓 Spec/Backend 两个 Profile 及固定 CLI 来源一致。显式提供 `YSS_NATIVE_BINARY`、`YSS_NATIVE_BINARY_SHA256` 和固定源码的 `YSS_NATIVE_SOURCE_ROOT`；二进制必须是 `yss-cli-pin.json` 固定的那一份，Spec/Backend Bundle 必须来自已提交的模板来源，但**不要求 Bundle 绑定本次待发布的模板提交**。生产、公开 Bundle 导出、隔离安装副本、初始化、Skill 投影/锁校验及用户 `.github` 保留检查全部通过。当前发布集合始终覆盖 Spec/Backend。`--cli-family spec` 仅用于定向诊断。
 
 旧实例恢复矩阵、原生装配 native input 和平台范围声明已从发布门禁移除：这些平台验收由维护者人工处理并自行记录，发行说明写明「平台验收：人工」，门禁不检查、也不替任何平台背书。
 
-Go 生产用固定四源提交和 `bundle-profile.json` 声明政策，运行 `go run ./tools/bundle --source-root <模板根> --lock docs/source-lock.json --out internal/bundle/assets`，再以 `CGO_ENABLED=0` 构建。二进制、Bundle、插件摘要收录仓外生态发行清单，避免互相嵌入未来提交形成循环。模板 Node/Python 治理工具和 pnpm frozen 依赖继续保留。不会执行 publish、npm deprecated 或仓库归档。
+Go 生产用固定 Spec/Backend 来源提交和 `bundle-profile.json` 声明政策，运行 `go run ./tools/bundle --source-root <模板根> --lock docs/source-lock.json --out internal/bundle/assets`，再以 `CGO_ENABLED=0` 构建。二进制、Bundle、插件摘要收录仓外生态发行清单，避免互相嵌入未来提交形成循环。模板 Node/Python 治理工具和 pnpm frozen 依赖继续保留。不会执行 publish、npm deprecated 或仓库归档。
 
 证据保存在仓库外的新目录：候选保留计划、完整 base/head/tested commit、实际调用参数与日志；发布保留 `release-verification.json`、每条命令实际退出码、日志、模板 SHA、生成器 SHA、同仓 Profile 来源与新快照摘要；兼容验证分别记录日志。失败结果及缺失证据必须保留，不能宣称通过。发布就绪要求全部适用风险、集成和阻断兼容检查均成功；Node 26 观察失败可见但不阻断。
 
@@ -106,7 +106,7 @@ candidate、legacy-full 执行入口、legacy_coverage 记账、资格配对计�
 
 历史报告从其绑定提交读取策略与清单，只读编译期望台账；不运行历史执行器，不让历史 qualified-gates 自述恢复当前资格或缩减检查。无法独立验证的历史记录保持可追溯，但不能作为当前有效 baseline。旧候选快照、审查记录与证据 kind 不因验证档退役而删除。
 
-三 Profile 的固定二进制、Bundle 导出和安装副本属于可见准备任务。旧两项源码检查的稳定覆盖 ID 映射 `tests/cli-retirement.test.mjs` 的公开行为检查，不继续 require 退役 gitlink。检查覆盖版本化 envelope、真实退出码、bytes/mode 来源、三 Profile 初始化/同步、预演无写入、幂等、保护路径和预期错误码。旧实例恢复矩阵单独执行仓外固定旧执行器，不将原生新建实例冒充旧实例迁移。
+Spec/Backend 的固定二进制、Bundle 导出和安装副本属于可见准备任务。旧两项源码检查的稳定覆盖 ID 映射 `tests/cli-retirement.test.mjs` 的公开行为检查，不继续 require 退役 gitlink。检查覆盖版本化 envelope、真实退出码、bytes/mode 来源、Spec/Backend 初始化/同步、预演无写入、幂等、保护路径和预期错误码。旧实例恢复矩阵单独执行仓外固定旧执行器，不将原生新建实例冒充旧实例迁移。
 
 固定来源本机报告使用 `verification_scope: local-template-and-cli` 与 `release_readiness: not-evaluated`。本机通过只闭合本机源码和 CLI 风险；整体可发布结论还须核验既有适用 Node / 平台合同及当前 SHA 的真实证据，缺项保持未就绪。
 

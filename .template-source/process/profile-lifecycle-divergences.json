@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "description": "Profile 生命周期注册表与内核 deprecated_ids 的显式分歧声明。backend 为有意扩展，design 为 legacy 冻结；新增分歧必须先登记并说明原因。",
+  "description": "Profile 生命周期注册表与内核 deprecated_ids 的显式分歧声明；Backend 的有意扩展须登记原因。",
   "profiles": {
     "backend": [
       {
@@ -30,44 +30,6 @@
         "disposition": "profile-active-intentional",
         "reason": "Backend 维护覆盖层仍按维护强度选择复核工作单元。",
         "migration_note": "由 Backend 编排合同继续解释。"
-      }
-    ],
-    "design": [
-      {
-        "id": "artifact.high-fidelity-html-prototype",
-        "root_status": "deprecated",
-        "disposition": "legacy-frozen",
-        "reason": "Design legacy Profile 的既有原型产物，保留供历史读取与迁移。"
-      },
-      {
-        "id": "artifact.prototype-review",
-        "root_status": "deprecated",
-        "disposition": "legacy-frozen",
-        "reason": "Design legacy Profile 的原型评审产物，不再扩展。"
-      },
-      {
-        "id": "artifact.prototype-confirmation",
-        "root_status": "deprecated",
-        "disposition": "legacy-frozen",
-        "reason": "Design legacy Profile 的原型确认产物，保留历史语义。"
-      },
-      {
-        "id": "work-unit.intensity-aware-verification",
-        "root_status": "deprecated",
-        "disposition": "legacy-frozen",
-        "reason": "Design legacy Profile 的强度感知验证单元，保留历史读取。"
-      },
-      {
-        "id": "work-unit.intensity-aware-review",
-        "root_status": "deprecated",
-        "disposition": "legacy-frozen",
-        "reason": "Design legacy Profile 的强度感知复核单元，保留历史读取。"
-      },
-      {
-        "id": "work-unit.prototype-design",
-        "root_status": "deprecated",
-        "disposition": "legacy-frozen",
-        "reason": "Design legacy Profile 的原型设计工作单元，不再新增。"
       }
     ]
   }

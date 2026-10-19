@@ -16,7 +16,7 @@ export function consumerEntry(root, capability, sourceWorkUnit) {
     ensure(identity?.kind === 'native' && identity.profile === 'spec' && profile.instantiation?.cli_package === 'yss' && profile.instantiation?.native_profile === 'spec', 'consumer-entry-invalid-spec-profile');
   }
   const dedicated = profile && !fullSpec;
-  if (dedicated) ensure(['harness.business-ddd-strategy-handoff', 'harness.backend-delivery'].includes(profile.profile_id) && Array.isArray(profile.lifecycle?.allowed_work_units), 'consumer-entry-invalid-profile');
+  if (dedicated) ensure(profile.profile_id === 'harness.backend-delivery' && Array.isArray(profile.lifecycle?.allowed_work_units), 'consumer-entry-invalid-profile');
   const contractRef = '.template-spec/process/orchestration-contract.yaml';
   const contract = readContract(root, contractRef);
   const target = scope?.scope_id || (dedicated ? profile.profile_id : 'yss-full-lifecycle');

@@ -8,7 +8,7 @@ import { hash, safe, fileMode } from './runtime.mjs';
 import { digest, invoke, invokeAsync, json, physical, tool } from './native-tool.mjs';
 import { projectEntry } from './entry.mjs';
 
-const receiptPath = profile => profile === 'design' ? '.yss-product-design-plugin.json' : '.yss-backend-plugin.json';
+const receiptPath = profile => '.yss-backend-plugin.json';
 const read = (root, ref) => JSON.parse(readFileSync(safe(root, ref)));
 const within = (a, b) => a === b || a.startsWith(b + path.sep);
 function identity(root) { return read(root, 'scripts/identity.json'); }
@@ -68,7 +68,7 @@ function binding(ctx, legacy = null, backend = null) {
     plugin_bundle_sha256: ctx.bundleDigest, binary_sha256: ctx.pin.binarySha256, inspection_digest: ctx.pin.inspectionDigest,
     template_commit: ctx.snapshot.templateCommit, bundle_hash: ctx.snapshot.bundleHash,
     execution_owner: 'project-local-yss-product-lifecycle', business_execution_ready: false,
-    execution_scope: ctx.pin.profile === 'spec' ? 'plan-to-backend' : 'strategic-design',
+    execution_scope: 'plan-to-backend',
     ...(legacy ? { legacy_binding: legacy } : {}), ...(backend ? { backend } : {}) };
 }
 function check(root, target, ctx, requireBinding = false) {
@@ -96,7 +96,6 @@ function check(root, target, ctx, requireBinding = false) {
 function plan(root, values, kind) {
   const target = physical(values['target-dir']), ctx = context(root, target);
   const native = existsSync(path.join(target, '.yss.json'));
-  if (ctx.pin.profile === 'design' && values['backend-root']) throw new Error('backend-root-outside-design-profile');
   // Native init validates empty targets and its own completed recovery archive;
   // the wrapper must not invent a second historical-init acceptance policy.
   if (kind === 'bind-existing') {
@@ -147,8 +146,8 @@ function plan(root, values, kind) {
     }
     if (command === 'init') {
       if (!values['project-name']?.trim() || !values['business-domain']?.trim()) throw new Error('project-name-and-business-domain-required');
-      const tracker = values['issue-tracker'] || (ctx.pin.profile === 'design' ? 'local-markdown' : null);
-      if (!['github', 'gitlab', ...(ctx.pin.profile === 'design' ? ['local-markdown'] : [])].includes(tracker)) throw new Error('explicit-issue-tracker-required');
+      const tracker = values['issue-tracker'];
+      if (!['github', 'gitlab'].includes(tracker)) throw new Error('explicit-issue-tracker-required');
       args.push('--full', '--project-name', values['project-name'], '--business-domain', values['business-domain'], '--team-size', values['team-size'] || '1', '--issue-tracker', tracker);
     }
     const preview = invoke(ctx.binary, args), saved = readFileSync(nativeFile);
@@ -178,25 +177,7 @@ async function apply(root, plan) {
     return { result: 'applied', target, native: result, check: check(root, target, ctx, true), ready_for_agent: false };
   } finally { rmSync(parent, { recursive: true, force: true }); }
 }
-function designEntry(target, values, checked) {
-  if (!['new', 'reuse', 'resume'].includes(values.mode)) throw new Error('entry-mode-required');
-  const input = values.input ? JSON.parse(readFileSync(values.input)) : {};
-  if (!input || Array.isArray(input) || Object.keys(input).some(key => !['artifact_refs', 'checkpoint'].includes(key))) throw new Error('invalid-entry-input');
-  if (values.mode === 'resume' && !input.checkpoint) throw new Error('checkpoint-required');
-  const refs = input.artifact_refs || [];
-  if (!Array.isArray(refs) || (values.mode === 'reuse' && !refs.length && !input.checkpoint)) throw new Error('upstream-artifacts-required');
-  const artifacts = refs.map(ref => ({ ref, sha256: hash(readFileSync(safe(target, ref))) }));
-  if (input.checkpoint) {
-    executeNode(safe(target, 'scripts/verify-lifecycle-checkpoint'), [safe(target, input.checkpoint)], target);
-    const doc = parseDocument(readFileSync(safe(target, input.checkpoint), 'utf8'), { uniqueKeys: true });
-    if (doc.errors.length) throw new Error('checkpoint-yaml-invalid');
-    const checkpoint = doc.toJS({ maxAliasCount: 0 });
-    if (checkpoint.status === 'completed' || checkpoint.stage_trace?.completed_work_unit === 'work-unit.strategic-design-handoff') return { ...checked, result: 'design-delivered', next_work_unit: null, execution_started: false };
-  }
-  const workUnit = values.mode === 'new' ? 'work-unit.plan-requirements' : 'work-unit.entry-triage';
-  const query = JSON.parse(executeNode(safe(target, 'scripts/query-lifecycle-context'), ['--mode', 'route', '--work-unit', workUnit], target));
-  return { ...checked, result: 'project-local-handoff', artifacts, checkpoint: input.checkpoint || null, next_work_unit: workUnit, query, execution_started: false };
-}
+
 export async function runProjectCommand(root, command, values) {
   if (['project-plan', 'project-bind-plan', 'project-migration-plan', 'project-upgrade-plan'].includes(command)) return plan(root, values, command === 'project-plan' ? 'initialize' : command === 'project-bind-plan' ? 'bind-existing' : 'upgrade');
   if (['project-apply', 'project-bind-apply', 'project-migration-apply', 'project-upgrade-apply'].includes(command)) {
@@ -217,9 +198,8 @@ export async function runProjectCommand(root, command, values) {
   if (command === 'project-check') return checked;
   if (command === 'project-entry') {
     const entryValues = { ...values, ...(values.input ? { input: physical(values.input, true) } : {}) };
-    return ctx.pin.profile === 'design' ? designEntry(target, entryValues, checked) : projectEntry(target, entryValues, checked, executeNode);
+    return projectEntry(target, entryValues, checked, executeNode);
   }
-  if (ctx.pin.profile === 'design') throw new Error('command-outside-design-profile');
   if (command === 'project-import-design') {
     if (!values.bundle || existsSync(path.join(target, '.yss-backend-delivery.json'))) throw new Error('design-bundle-required-or-backend-already-delivered');
     return JSON.parse(executeNode(safe(target, 'scripts/strategic-consumer-entry'), ['--root', target, '--bundle', physical(values.bundle, 'either')], target));

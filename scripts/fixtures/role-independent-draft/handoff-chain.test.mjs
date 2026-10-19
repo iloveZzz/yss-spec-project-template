@@ -38,6 +38,20 @@ test('installed Spec completes role-free Handoff5; Backend imports Receipt3 whil
    const ref=name+'-approval.json';write(ref,{schema_version:3,artifact_bindings:artifacts,gate_id:gate,decision:'approved',actor_kind:'agent',subject_ref:subject,subject_digest:asset(subject).digest,approval_scope:[feature],basis:task.input_bindings,evidence_refs:[task.provenance.execution_ref],review_task_ref:task.provenance.task_ref,review_task_digest:asset(task.provenance.task_ref).digest,check_ids:task.skill_source.check_ids,policy:task.policy,review:task.review_context.review,...(decision?{user_decision_ref:decision}:{})});return ref;
   }
   const specApproval=reviewAsset({name:'spec',subject:'source/spec.md',unit:'work-unit.spec-synthesis',stage:'stage.spec-architecture',source:'spec-prepare.json',gate:'gate.spec-baseline-approved',decision:'decision/decision.json',artifacts:[artifact('spec_ref')]});
+  // Missing current Spec checks must block even when product design is not applicable.
+  const checkpointBefore=read(cpRef),specApprovalBefore=read(specApproval),planApprovalBefore=read('plan-approval.json');
+  const current=doc(cpRef),specRecord=doc(specApproval),stageRef='source/stage.yaml';
+  Object.assign(current,{spec_ref:'source/spec.md',plan_ref:'plan.md',domain_strategy_ref:'source/strategy.yaml',stage_decision_package_ref:stageRef,business_ticket_set_ref:'source/tickets.yaml',delivery_impacts:{ui:false,backend:true,api:false,data:false},context_reconciliation:{status:'reconciled',ref:'spec-reconciliation.json',evidence_refs:['spec-reconciliation.json']}});
+  current.artifacts['artifact.spec']={ref:'source/spec.md',status:'approved',evidence_refs:[specApproval]};
+  current.gates['gate.spec-baseline-approved']={status:'approved',approval_ref:specApproval,subject_ref:specRecord.subject_ref,subject_digest:specRecord.subject_digest,approval_scope:specRecord.approval_scope,basis:[...specRecord.basis,asset('source/spec.md')],evidence_refs:[specApproval]};
+  current.gates['gate.product-design-approved']={status:'not-applicable',applicable:false,reason:'当前批准影响评估无 UI 设计影响',basis:[asset(stageRef)],evidence_refs:[stageRef]};
+  write(cpRef,current);write('.work/feature-demo/map.md',`---\ncheckpoint_ref: ${cpRef}\n---\n# Current feature\n`);
+  const intentRef='.work/feature-demo/progression-target.json';
+  write(intentRef,{schema_version:1,kind:'lifecycle-progression-target',feature_id:feature,checkpoint_ref:cpRef,target:'product-design-completed',intent_source:'TEST current design milestone',consumers:[]});
+  const milestone=()=>run('actual-local-design-milestone',['lifecycle','target','--checkpoint',cpRef]);
+  const currentBytes=read(cpRef),result=milestone();assert.equal(result.progression.status,'blocked',result.progression.reason);assert.match(result.progression.reason,/依据|检查/);assert.deepEqual(read(cpRef),currentBytes);
+  assert.deepEqual(read(specApproval),specApprovalBefore);assert.deepEqual(read('plan-approval.json'),planApprovalBefore);
+  write(cpRef,checkpointBefore);fs.unlinkSync(path.join(root,intentRef));fs.unlinkSync(path.join(root,'.work/feature-demo/map.md'));
   const handoff=structuredClone(data.handoff);handoff.package_export.approvals={};
   for(const [key,source]of Object.entries(handoff.source)){
    const plan=['domain_strategy_ref','stage_decision_package_ref'].includes(key),business=key==='business_ticket_set_ref',ref=source.persisted_ref,approval=plan?p.aggregate:doc(specApproval);source.digest=plan?digest(doc(ref)):'sha256:'+asset(ref).digest;

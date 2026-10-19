@@ -48,7 +48,6 @@ export function orchestrationRef(root) {
     return canonical || '.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml';
   }
   const owner={
-    'harness.business-ddd-strategy-handoff':'yss-strategic-design',
     'harness.backend-delivery':'harness-orchestrator'
   }[profile];
   if(!owner)throw new Error(`未知生命周期 profile: ${profile}`);

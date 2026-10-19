@@ -13,7 +13,7 @@ export function upgradeReview(build, name, profile) {
   assert.ok(binary, 'fixed native binary required');
   const parent = fs.realpathSync(fs.mkdtempSync(path.join(process.env.YSS_PLUGIN_TEST_ROOT || tmpdir(), `review-${profile}-`)));
   const plugin = path.join(parent, name), target = path.join(parent, 'project');
-  const receipt = profile === 'spec' ? '.yss-backend-plugin.json' : '.yss-product-design-plugin.json';
+  const receipt = '.yss-backend-plugin.json';
   let passed = false;
   const run = (args, expected = 0) => {
     const r = spawnSync(process.execPath, [path.join(plugin, 'scripts/plugin.mjs'), ...args], { encoding: 'utf8', timeout: 180000, maxBuffer: 128 * 1024 * 1024 });

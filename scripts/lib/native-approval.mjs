@@ -9,7 +9,6 @@ import {loadDigitalHumanRoles,countersignRuleForGate} from './digital-human-role
 import {assertHandoffEvidenceRef} from './strategic-handoff-io.mjs';
 import {approvalExpectedFromTask} from './review-capabilities.mjs';
 import {nativeEvidenceVerify,nativeContractVerify,nativeCoverage,nativeApprovalRecord,NEEDS} from './native-evidence.mjs';
-import {assertImportedSpecPrerequisite} from './spec-baseline.mjs';
 import {assertWorkUnitUserDecision} from './native-user-decision.mjs';
 const hash=value=>createHash('sha256').update(value).digest('hex');
 const hex=value=>typeof value==='string'?value.replace(/^sha256:/,''):value;
@@ -137,7 +136,7 @@ export function assertStrategicWorkUnitDecision(workUnit,state,options={}){
  if(identity.schema_version===2){assertCheckpointApprovals(state,options.checkpointPath,options);return assertWorkUnitUserDecision(workUnit,{user_decisions:state.user_decisions||state.human_review?.user_decisions||[],user_decision_not_applicable:state.user_decision_not_applicable||state.human_review?.not_applicable||[]},options);}
  const roles=currentRoles(options),boundaries=workUnit==='work-unit.strategic-design-handoff'?['gate.strategic-design-handoff-approved']:[...(roles.user_decision_policy.work_unit_gates?.[workUnit]||[]),...(roles.user_decision_policy.work_units?.[workUnit]?[roles.user_decision_policy.work_units[workUnit]]:[])];
  for(const boundary of boundaries){
-  if(state.upstream_spec_baseline&&state.gates?.[boundary]?.status!=='approved'&&['gate.plan-approved','gate.spec-baseline-approved'].includes(boundary)){assertImportedSpecPrerequisite(state,{root:rootFor(options)});continue;}
+  if(Object.hasOwn(state,'upstream_spec_baseline'))approvalError('PROFILE_REMOVED','Spec→Design 基线导入已移除');
   if(state.gates?.[boundary]?.status==='approved'){nativeCoverage(nativeContractVerify({root:rootFor(options),kind:'gate-checks',document:state,extra:['--gate',boundary],needs:NEEDS.gateChecks}),'gate_checks');assertApprovedGateHasValidApproval(boundary,state.gates[boundary],{...options,checkpoint:state});}
   else if(workUnit==='work-unit.strategic-design-handoff')approvalError('APPROVAL_CURRENT_INVALID','strategic-gate-migration-required: '+boundary);
   else {assertWorkUnitUserDecision(workUnit,{user_decisions:state.user_decisions||state.human_review?.user_decisions||[],user_decision_not_applicable:state.user_decision_not_applicable||state.human_review?.not_applicable||[]},options);break;}

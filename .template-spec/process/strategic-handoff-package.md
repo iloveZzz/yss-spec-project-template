@@ -114,7 +114,7 @@ scripts/strategic-feedback verify-adjudication --root <消费者项目根> <adju
 
 ## 插件接收入口与目标路由
 
-`yss-product-design` 在战略 profile 内完成设计与 Handoff v5 交付，`yss-backend-delivery` 通过 `project-import-design` 调用目标项目的 `scripts/strategic-consumer-entry --root <目标根> --bundle <交付目录或ZIP>`。入口先验证源包与后端路线，再执行既有 import；返回收据和目标工程设计入口，固定 `ready_for_agent: false`。恢复以 `--receipt <项目内收据路径>` 重新验证，查询不导入文件。
+Spec 完成产品与业务设计，按用户明确要求进行 Handoff v5 正式交付，`yss-backend-delivery` 通过 `project-import-design` 调用目标项目的 `scripts/strategic-consumer-entry --root <目标根> --bundle <交付目录或ZIP>`。入口先验证源包与后端路线，再执行既有 import；返回收据和目标工程设计入口，固定 `ready_for_agent: false`。恢复以 `--receipt <项目内收据路径>` 重新验证，查询不导入文件。
 
 源 `work-unit.technical-design` 保留不变，目标主控 `consumer_entry_routes` 持有精确映射；`plan-to-backend` 和完整主模板进入 `work-unit.technical-analysis`，专职后端进入自己的 `work-unit.technical-design`。目标工作单元不存在或超出 profile/职责范围时阻断。后端插件的 scope 只选择 backend-technical-design；源包保留完整前端、协调路线，不宣称已接管或完成。
 

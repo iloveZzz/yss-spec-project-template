@@ -61,11 +61,10 @@
           "declares_version": 5,
           "status": "aligned",
           "consumers": [
-            "profiles/design/scripts/verify-strategic-design-handoff",
             "profiles/backend/scripts/lib/harness-profile.mjs",
             "profiles/*/.template-spec/process/harness-profile.yaml"
           ],
-          "note": "与 v5 同文；保留无版本路径供既有 design/backend 消费者引用"
+          "note": "与 v5 同文；供当前 Spec 与 Backend 消费者引用"
         }
       }
     },

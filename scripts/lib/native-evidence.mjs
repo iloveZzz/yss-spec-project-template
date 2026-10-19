@@ -15,8 +15,8 @@ export const NEEDS={
  task:['task.directory-write-scope.v1'],checkpoint:['lifecycle.legacy-untracked-checkpoint.v1','template-source.verify-root.v1'],
  handoffPackage:['handoff.package-identity.v1','handoff.source-view.v1'],handoffSource:['handoff.source-view.v1'],
  handoffDelivery:['handoff.delivery-view.v1'],sourceApproval:['handoff.source-approval.v1'],sourceContextSnapshot:['handoff.source-context-snapshot.v1'],
- handoffConsumption:['handoff.consumption-report.v1'],specBaselinePackage:['handoff.spec-baseline-package.v1','handoff.spec-baseline-source-view.v1'],
- specBaselineBinding:['contract.spec-baseline-binding.v1'],businessTickets:['contract.business-tickets-report.v1','contract.business-tickets-source-views.v1'],
+ handoffConsumption:['handoff.consumption-report.v1'],
+ businessTickets:['contract.business-tickets-report.v1','contract.business-tickets-source-views.v1'],
  contextReconciliation:['evidence.context-reconciliation.v1'],openapiValidation:['contract.openapi-validation.v1'],
  backendTerminal:['contract.backend-terminal.v1'],backendDeliveryPackage:['handoff.backend-delivery-package.v1'],
  scaffoldDecisions:['contract.scaffold-decisions.v1'],slicePreflight:['contract.slice-preflight-report.v1'],
@@ -124,7 +124,7 @@ export function nativeEvidenceVerify({root:given,kind,file,extra=[],environment=
    else selected=stage(file,'input');
    const flags=[...extra];
    for(const [flag,value]of Object.entries(documents)){const target=path.join(temporary.dir,flag.replace(/[^a-z-]/g,'')+'.json');fs.writeFileSync(target,JSON.stringify(value));flags.push(flag,path.relative(root,target));}
-   const selectedFlag=selector||(group==='lifecycle'?'--checkpoint':group==='handoff'&&['package','spec-baseline','backend-delivery','delivery'].includes(kind)?'--package':'--file');
+   const selectedFlag=selector||(group==='lifecycle'?'--checkpoint':group==='handoff'&&['package','backend-delivery','delivery'].includes(kind)?'--package':'--file');
    const args=[group,'verify','--root',root,...(group==='lifecycle'?[]:['--kind',kind]),selectedFlag,selected,...flags,'--json'];
    const {binary,digest:binaryDigest}=contextBinary(environment),fixedEnvironment={...environment,YSS_NATIVE_BINARY:binary,YSS_NATIVE_BINARY_SHA256:binaryDigest};
    const execute=()=>{contextBinary(fixedEnvironment);const result=spawnSync(binary,args,{cwd:root,env:fixedEnvironment,encoding:'utf8',timeout:120000,maxBuffer:64*1024*1024});contextBinary(fixedEnvironment);return result;};

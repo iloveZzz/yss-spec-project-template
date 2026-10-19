@@ -7,11 +7,11 @@ import {spawnSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {pilotFixture} from '../slice-contract-v3/pilot-fixture.mjs';
 import {stringify} from '../../vendor/yaml.mjs';
-test('design/backend receivers expose identical review and task constraints using original YAML',()=>{
+test('Spec/Backend receivers expose identical review and task constraints using original YAML',()=>{
  const f=pilotFixture();try{
  f.write('slice.yaml',stringify({slice_contract:f.contract}));
  let expected;
- for(const receiver of ['.',...['design','backend'].map(name=>composeProfileTree(name))]){
+ for(const receiver of ['.',...['backend'].map(name=>composeProfileTree(name))]){
   for(const profile of ['review','task']){
    const args=[path.resolve(receiver,'scripts/contract'),'view','slice.yaml','--kind','slice','--profile',profile,'--unit','work-unit.slice-backend','--root',f.root,'--json'];
    const result=spawnSync(process.execPath,args,{encoding:'utf8'});assert.equal(result.status,0,`${receiver}: ${result.stderr}`);

@@ -1,3 +1,4 @@
+import {readInstanceMetadata} from './instance-metadata.mjs';
 import { readingLocation } from './reading-view-policy.mjs';
 import { readFileSync, existsSync, lstatSync, realpathSync } from 'node:fs';
 import path from 'node:path';
@@ -48,10 +49,14 @@ export function trackerConfig(root) {
   return config;
 }
 export function trackingProfile(root) {
+  const identity=readInstanceMetadata(root);
   const ref = '.template-spec/process/harness-profile.yaml';
-  return existsSync(safeTrackingPath(root, ref)) ? parseYaml(readTracking(root, ref)) : null;
+  if(!existsSync(safeTrackingPath(root,ref)))return null;
+  const profile=parseYaml(readTracking(root,ref));
+  if(!['harness.spec-template','harness.backend-delivery'].includes(profile?.profile_id))throw new Error('tracking-profile-unsupported');
+  if(identity&&identity.metadata.profileId&&identity.metadata.profileId!==profile.profile_id)throw new Error('tracking-profile-identity-mismatch');
+  return profile;
 }
-export const isDesign = root => trackingProfile(root)?.profile_id === 'harness.business-ddd-strategy-handoff';
 function current(root, value) {
   try { return binding(root, value.ref).digest === value.digest; } catch { return false; }
 }
@@ -77,7 +82,7 @@ export function refreshTracking(root, checkpoint) {
   return { checkpoint: next, stale_item_ids: changed };
 }
 export function assertStageTracking(checkpoint, { root, checkpointRef, currentWorkUnit, nextWorkUnit, transition = false, entering = false, now = new Date() } = {}) {
-  const workUnits={...STAGE_WORK_UNITS,...(isDesign(root)?{'work-unit.business-ticket-formalization':'stage.ticket-formalization','work-unit.strategic-design-handoff':'stage.ticket-formalization'}:{})};
+  const workUnits=STAGE_WORK_UNITS;
   const identity = parseYaml(readTracking(root, 'yss-project.yaml'));
   if (![1,2].includes(identity?.schema_version) || !['template-source', 'project-instance'].includes(identity.repository_mode)) throw new Error('tracking-repository-identity-invalid');
   if ((transition || entering) && checkpoint?.stage) assertCheckpointBoundary(checkpoint, { root });
@@ -95,9 +100,7 @@ export function assertStageTracking(checkpoint, { root, checkpointRef, currentWo
   const base = location.base + '/';
   if ((registered ? location.feature !== feature : !tracking.checkpoint_ref.startsWith(base)) || (checkpointRef && tracking.checkpoint_ref !== checkpointRef)) throw new Error('tracking-checkpoint-mismatch');
   safeTrackingPath(root, tracking.checkpoint_ref);
-  if (isDesign(root)) {
-    if (tracking.entry.kind !== 'checkpoint' || tracking.entry.ref !== tracking.checkpoint_ref) throw new Error('tracking-design-parent-forbidden');
-  } else if (tracking.entry.kind !== 'parent-ticket' || tracking.entry.ref !== `${base}parent-ticket.md`) throw new Error('tracking-parent-required');
+  if (tracking.entry.kind !== 'parent-ticket' || tracking.entry.ref !== `${base}parent-ticket.md`) throw new Error('tracking-parent-required');
   const entry = readTracking(root, tracking.entry.ref);
   if (tracking.entry.kind === 'parent-ticket' && !entry.includes(tracking.checkpoint_ref)) throw new Error('tracking-parent-checkpoint-link-required');
   const registry = parseYaml(readTracking(root, '.template-spec/process/lifecycle-registry.yaml'));

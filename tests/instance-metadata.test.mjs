@@ -93,8 +93,8 @@ test('metadata v3 绑定模板基线与保留决定，并保留本地0600权限'
  item.disposition.applied={...applied,digest:'0'.repeat(64)};f.metadata.baselineDigest=sha(JSON.stringify(f.metadata.managedFiles));f.save();
  assert.throws(()=>readInstanceMetadata(f.root),/保留决定与基线矛盾/);
 });
-test('两固定插件 binding 必须匹配原生家族和来源，保留旧 metadata 不改变身份', async t => {
- for(const profile of ['spec','design'])await t.test(profile, async t=>{
+test('后端插件 binding 必须匹配原生家族和来源，保留旧 metadata 不改变身份', async t => {
+ for(const profile of ['spec'])await t.test(profile, async t=>{
   const f=nativeFixture(t,2,profile);
   const ref=profile==='spec'?'.yss-backend-plugin.json':'.yss-product-design-plugin.json';
   const legacy=profile==='spec'?'.yss-template.json':'.yss-harness-design.json';
@@ -119,8 +119,22 @@ test('Schema 1/2 的同家族旧 metadata 只作 lineage，未知家族仍拒绝
   assert.equal(readInstanceMetadata(f.root).kind,'native');
   fs.rmSync(path.join(f.root,'.yss-template.json'));
   fs.writeFileSync(path.join(f.root,'.yss-harness-design.json'),'{"managedFiles":{}}');
-  assert.throws(()=>readInstanceMetadata(f.root),/家族身份矛盾/);
+  assert.throws(()=>readInstanceMetadata(f.root),/家族身份矛盾|Design.*移除/);
  });
+});
+
+test('Design 身份与插件只作为拒绝信号，原件保持不变', async t => {
+ for(const ref of ['.yss-harness-design.json','.yss-product-design-plugin.json'])await t.test(ref,t=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'removed-design-'));
+  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  const file=path.join(root,ref);fs.writeFileSync(file,'{}\n',{mode:0o600});
+  assert.throws(()=>readInstanceMetadata(root),/Design.*移除/);
+  assert.equal(fs.readFileSync(file,'utf8'),'{}\n');
+  assert.equal(fs.statSync(file).mode&0o777,0o600);
+  assert.deepEqual(fs.readdirSync(root),[ref]);
+ });
+ const f=nativeFixture(t,3,'design');
+ assert.throws(()=>readInstanceMetadata(f.root),/Design.*移除/);
 });
 
 test('原生实例可以声明 claude 运行时，投影根必须与运行时一一对应', () => {
@@ -138,4 +152,15 @@ test('本地工作树模板必须绑定不可变 tree 且由工作树 CLI 执行
  assert.equal(readInstanceMetadata(f.root).kind,'native');
  f.metadata.templateVersion='worktree:HEAD';f.save();assert.throws(()=>readInstanceMetadata(f.root),/来源/);
  f.metadata.templateVersion='worktree:'+'f'.repeat(40);f.metadata.cliSourceState='committed';f.save();assert.throws(()=>readInstanceMetadata(f.root),/来源/);
+});
+
+test('Spec 身份不能重新启用 Design 原政策，支持的来源仍可读取',t=>{
+ const f=nativeFixture(t,4);
+ for(const source_profile of ['spec','backend','design']) {
+  const bytes=JSON.stringify({schema_version:1,kind:'governance-original-source',source_profile,files:{}}),digest=sha(bytes),ref=`.template-spec/compatibility/governance-history/${digest}/manifest.json`;
+  fs.mkdirSync(path.dirname(path.join(f.root,ref)),{recursive:true});fs.writeFileSync(path.join(f.root,ref),bytes,{mode:0o600});f.metadata.governanceHistory={ref,digest};f.save();
+  if(source_profile==='design')assert.throws(()=>readInstanceMetadata(f.root),/历史来源 Profile/);
+  else assert.equal(readInstanceMetadata(f.root).profile,'spec');
+  assert.equal(fs.readFileSync(path.join(f.root,ref),'utf8'),bytes);
+ }
 });

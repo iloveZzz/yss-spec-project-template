@@ -117,8 +117,8 @@ test('公开业务报告：kind、参数、帮助与能力令牌一致',t=>{
 });
 
 test('公开业务报告：真实导出快照保留来源视图、清单与严格 Handoff 消费',async t=>{
-  const root=makeRoot('business-handoff-native-','design');t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
-  const seed=makeRoot('business-policy-seed-','design');t.after(()=>fs.rmSync(seed,{recursive:true,force:true}));
+  const root=makeRoot('business-handoff-native-','spec');t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+  const seed=makeRoot('business-policy-seed-','spec');t.after(()=>fs.rmSync(seed,{recursive:true,force:true}));
   const f={root,...await handoffFixture(root,{nativeSeed:seed,handoffVersion:5,businessTickets:true})};
   const ticketRef='source/business-tickets/BT-001.md',text=fs.readFileSync(path.join(root,ticketRef),'utf8'),ticket=ticketMetadata(text);ticket.source_refs.push({ref:'CONTEXT.md',version:'v1',digest:sha(fs.readFileSync(path.join(root,'CONTEXT.md')))});
   f.put(ticketRef,'---\n'+JSON.stringify(ticket)+'\n---\n'+text.split(/\n---\n/)[1]);const set=JSON.parse(fs.readFileSync(path.join(root,'source/tickets.yaml')));set.tickets[0].digest=sha(fs.readFileSync(path.join(root,ticketRef)));f.put('source/tickets.yaml',set);const review=JSON.parse(fs.readFileSync(path.join(root,'source/business-review.yaml')));review.subject_digest=sha(fs.readFileSync(path.join(root,'source/tickets.yaml')));f.put('source/business-review.yaml',review);f.handoff.source.business_ticket_set_ref.digest=review.subject_digest;f.sign();
@@ -138,9 +138,10 @@ test('公开业务报告：非法结构安全阻断，未知导入布局明确�
   for(const mutate of [f=>{f.ticket.version=[];f.set.tickets[0].version=[];},f=>{f.ticket.dependencies={invalid:true};},f=>{f.ticket.source_refs=[null];},f=>{f.ticket.open_questions=[null];}]){
     const f=fixture(t);mutate(f);f.save();const p=native(f);assert.notEqual(p.status,0);assert.ok(codes(p.report).includes('SCHEMA_INVALID'));
   }
+  const removed=fixture(t);const rejected=native(removed,{file:'docs/spec-baselines/spec-baseline.demo/v1/working-files/tickets.yaml'});assert.ok(codes(rejected.report).includes('PROFILE_REMOVED'));
   const f=fixture(t);delete f.set.coverage_deferred;f.put(f.setRef,f.set);const absent=native(f);assert.ok(codes(absent.report).includes('SCHEMA_INVALID'));assert.deepEqual(absent.report.coverage_deferred,[]);
-  for(const file of ['docs/spec-baselines/spec-baseline.demo/v1/package/payload/files/source/tickets.yaml','docs/handoffs/demo/v1/package/handoff.yaml']){const p=native(f,{file});assert.equal(p.status,2);assert.ok(codes(p.report).includes('INPUT'));assert.ok(p.report.diagnostics.some(row=>row.message.includes('manifest.json')));}
-  for(const file of ['docs/spec-baselines/spec-baseline.demo/v1/arbitrary/source/tickets.yaml','docs/handoffs/demo/latest/package/handoff.yaml']){const p=native(f,{file});assert.equal(p.status,2);assert.ok(codes(p.report).includes('BUSINESS_SOURCE_LAYOUT_UNSUPPORTED'));}
+  for(const file of ['docs/handoffs/demo/v1/package/handoff.yaml']){const p=native(f,{file});assert.equal(p.status,2);assert.ok(codes(p.report).includes('INPUT'));assert.ok(p.report.diagnostics.some(row=>row.message.includes('manifest.json')));}
+  for(const file of ['docs/handoffs/demo/latest/package/handoff.yaml']){const p=native(f,{file});assert.equal(p.status,2);assert.ok(codes(p.report).includes('BUSINESS_SOURCE_LAYOUT_UNSUPPORTED'));}
 });
 
 test('原生 checkpoint：进入设计缺集合拒绝、恢复集合接受',async t=>{
@@ -179,7 +180,7 @@ test('原生 checkpoint：正式化入口允许草案、出口拒绝草案并观
  fs.appendFileSync(path.join(root,set.tickets[0].ref),'\nchanged after binding\n');assert.equal(verify()?.status,'failed');
 });
 
-test('严格消费者：Spec baseline、checkpoint 与 progression 继续拒绝业务草案错误',async t=>{
+test('严格消费者：本地 Spec、checkpoint 与 progression 继续拒绝业务草案错误',async t=>{
   const root=makeRoot('business-native-spec-'),seed=makeRoot('business-native-spec-seed-');t.after(()=>{fs.rmSync(root,{recursive:true,force:true});fs.rmSync(seed,{recursive:true,force:true});});
   const f=await approvedSpecFixture(root,{nativeSeed:seed});f.state.artifacts['artifact.plan-record']=f.state.artifacts['artifact.plan'];delete f.state.artifacts['artifact.plan'];f.plan.write(f.checkpointRef,f.state);const directory=path.dirname(f.checkpointRef);
   f.plan.write(directory+'/map.md',`---\ncheckpoint_ref: ${f.checkpointRef}\n---\n# Synthetic feature\n`);
@@ -188,17 +189,17 @@ test('严格消费者：Spec baseline、checkpoint 与 progression 继续拒绝�
   const baseline=suffix=>run(['handoff','export','--root',root,'--kind','spec-baseline','--checkpoint',f.checkpointRef,'--out',path.join(output,suffix),'--json']);
   const checkpoint=()=>run(['lifecycle','verify','--root',root,'--checkpoint',f.checkpointRef,'--json']);
   const progression=()=>run(['lifecycle','target','--root',root,'--checkpoint',f.checkpointRef,'--json']);
-  const base=baseline('valid');assert.equal(base.status,0,JSON.stringify(base.envelope));
+  const removed=baseline('removed');assert.notEqual(removed.status,0);assert.equal(fs.existsSync(path.join(output,'removed')),false);
+  const base=checkpoint();assert.equal(base.status,0,JSON.stringify(base.envelope));
   const analysis=f.state.checks['check.artifact-consistency-analyzed'];delete f.state.checks['check.artifact-consistency-analyzed'];f.plan.write(f.checkpointRef,f.state);
-  const missingAnalysis=baseline('missing-analysis');assert.notEqual(missingAnalysis.status,0);assert.equal(missingAnalysis.envelope.code,'EVIDENCE_REQUIRED',JSON.stringify(missingAnalysis.envelope));assert.equal(fs.existsSync(path.join(output,'missing-analysis')),false);
+  const missingAnalysis=checkpoint();assert.notEqual(missingAnalysis.status,0);
   f.state.checks['check.artifact-consistency-analyzed']=analysis;f.plan.write(f.checkpointRef,f.state);
   const analysisFile=path.join(root,analysis.basis[0].ref),analysisBytes=fs.readFileSync(analysisFile);fs.appendFileSync(analysisFile,'\n');
-  const staleAnalysis=baseline('stale-analysis');assert.notEqual(staleAnalysis.status,0);assert.equal(staleAnalysis.envelope.code,'EVIDENCE_DRIFT',JSON.stringify(staleAnalysis.envelope));assert.equal(fs.existsSync(path.join(output,'stale-analysis')),false);fs.writeFileSync(analysisFile,analysisBytes);
+  const staleAnalysis=checkpoint();assert.notEqual(staleAnalysis.status,0);fs.writeFileSync(analysisFile,analysisBytes);
   const cp=checkpoint();assert.equal(cp.status,0,JSON.stringify(cp.envelope));
   const progress=progression();assert.equal(progress.status,0,JSON.stringify(progress.envelope));assert.equal(progress.envelope.result.progression.status,'reached',JSON.stringify(progress.envelope));
   const setRef='source/tickets.yaml',set=parseYaml(fs.readFileSync(path.join(root,setRef),'utf8')),ref=set.tickets[0].ref,text=fs.readFileSync(path.join(root,ref),'utf8'),ticket=ticketMetadata(text);ticket.acceptance_refs=[];f.strategic.put(ref,'---\n'+JSON.stringify(ticket)+'\n---\n'+text.split(/\n---\n/)[1]);set.tickets[0].digest=sha(fs.readFileSync(path.join(root,ref)));f.strategic.put(setRef,set);
   const current=native({root,setRef},{mode:'draft'});assert.ok(codes(current.report).includes('COVERAGE_MISSING'));
-  const deniedBaseline=baseline('invalid');assert.notEqual(deniedBaseline.status,0);assert.ok(['SCHEMA_INVALID','REQUIRED_FIELD','COVERAGE_REQUIRED'].includes(deniedBaseline.envelope.code),JSON.stringify(deniedBaseline.envelope));assert.equal(fs.existsSync(path.join(output,'invalid')),false);
   const deniedCheckpoint=checkpoint();assert.notEqual(deniedCheckpoint.status,0);assert.ok(deniedCheckpoint.envelope.result.checks.some(x=>x.id==='business-checkpoint'&&x.status==='failed'),JSON.stringify(deniedCheckpoint.envelope));
   const deniedProgression=progression();assert.equal(deniedProgression.status,0,JSON.stringify(deniedProgression.envelope));assert.equal(deniedProgression.envelope.result.progression.status,'blocked',JSON.stringify(deniedProgression.envelope));assert.match(deniedProgression.envelope.result.progression.reason,/业务|business|acceptance_refs|SCHEMA/);
 });
@@ -225,4 +226,16 @@ test('native transport rejects a symlink ancestor before writing and preserves e
  const result=verify();assert.equal(result.exitCode,0,result.message);
  const staged=result.envelope.result.inputs.find(row=>row.ref.endsWith('/input.json'));assert.ok(staged);assert.equal(staged.descriptor.mode,0o600);
  assert.throws(()=>withValidationPhase({root:f.root,purpose:'external-mode'},()=>{assert.equal(verify().exitCode,0);fs.chmodSync(original,0o644);}),/VALIDATION_INPUT_CHANGED/);
+});
+
+test('Spec 本地无 UI 设计终点不需要 Design，原批准与 next 保留且漂移阻断',async t=>{
+ const root=makeRoot('local-no-ui-'),seed=makeRoot('local-no-ui-seed-');t.after(()=>{fs.rmSync(root,{recursive:true,force:true});fs.rmSync(seed,{recursive:true,force:true});});
+ const f=await approvedSpecFixture(root,{nativeSeed:seed,productDesign:false}),dir=path.dirname(f.checkpointRef),stage=f.state.artifacts['artifact.stage-decision-package'].ref;
+ f.state.gates['gate.product-design-approved']={status:'not-applicable',reason:'当前批准影响评估无产品设计影响',basis:[{ref:stage,digest:sha(fs.readFileSync(path.join(root,stage)))}],evidence_refs:[stage]};
+ f.plan.write(f.checkpointRef,f.state);f.plan.write(dir+'/map.md',`---\ncheckpoint_ref: ${f.checkpointRef}\n---\n# Current Spec\n`);
+ f.plan.write(dir+'/progression-target.json',{schema_version:1,kind:'lifecycle-progression-target',feature_id:f.state.feature_id,checkpoint_ref:f.checkpointRef,target:'product-design-completed',intent_source:'TEST local milestone',consumers:[]});
+ const before=fs.readFileSync(path.join(root,f.checkpointRef)),approval=path.join(root,f.state.gates['gate.spec-baseline-approved'].approval_ref),approvalBytes=fs.readFileSync(approval),spec=path.join(root,f.state.artifacts['artifact.spec'].ref);
+ const target=()=>run(['lifecycle','target','--root',root,'--checkpoint',f.checkpointRef,'--json']);
+ const current=target();assert.equal(current.status,0,JSON.stringify(current.envelope));assert.equal(current.envelope.result.progression.status,'not-applicable',JSON.stringify(current.envelope.result.progression));assert.equal(current.envelope.result.next_action.kind,'target-reached');assert.deepEqual(fs.readFileSync(path.join(root,f.checkpointRef)),before);assert.deepEqual(fs.readFileSync(approval),approvalBytes);
+ fs.appendFileSync(spec,'\nchanged after approval\n');const stale=target();assert.equal(stale.status,0);assert.equal(stale.envelope.result.progression.status,'blocked');assert.deepEqual(fs.readFileSync(approval),approvalBytes);
 });

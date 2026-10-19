@@ -6,7 +6,7 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import * as runtime from '../runtime.mjs';
 import { build as backendBuild } from '../build.mjs';
-import { build as designBuild } from '../../yss-product-design/build.mjs';
+import {buildNative} from '../native-build.mjs';
 
 test('权限比较表达 Windows 只读属性并保留 Unix 可执行位保护', () => {
   // This is a capability-model test with observed libuv modes, not a Windows
@@ -29,7 +29,7 @@ test('固定原生工具路径在 Windows 显式保留 exe 后缀', () => {
   assert.equal(runtime.nativeBinaryPath('linux'), 'assets/tool/yss');
 });
 
-for (const [profile, name, build] of [['spec', 'yss-backend-delivery', backendBuild], ['design', 'yss-product-design', designBuild]]) {
+for (const [profile, name, build] of [['spec', 'yss-backend-delivery', backendBuild]]) {
   test(`${profile} 当前主机真实公开打包并执行固定 staged binary`, () => {
     const binary = process.env.YSS_PLUGIN_TEST_BINARY;
     assert.ok(binary, 'fixed YSS_PLUGIN_TEST_BINARY required; no silent test skip');
@@ -59,3 +59,5 @@ for (const [profile, name, build] of [['spec', 'yss-backend-delivery', backendBu
     } finally { rmSync(parent, { recursive: true, force: true }); }
   });
 }
+
+test('removed Design plugin Profile is rejected before inputs or writes',()=>{assert.throws(()=>buildNative({profile:'design'}),/unsupported-plugin-profile/);});

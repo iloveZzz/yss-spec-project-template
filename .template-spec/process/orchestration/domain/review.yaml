@@ -539,12 +539,6 @@ profile_admission:
   new_profiles:
   - spec
   - backend
-  legacy_design:
-    profile_id: harness.business-ddd-strategy-handoff
-    read: original-semantics
-    write: explicit-migration-only
-    new_request: reject-with-explicit-spec-migration-guidance
-    silent_alias: forbidden
   spec:
     product_design: all-applicable-inputs-checks-and-acceptance-retained
     frontend_implementation: external-toolchain-only

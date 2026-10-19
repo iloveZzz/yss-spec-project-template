@@ -1,6 +1,5 @@
 import {loadOrchestrationContract} from '../../lib/orchestration-contract.mjs';
 import test from 'node:test';
-import {composeProfileTree} from '../../lib/profile-tree.mjs';
 import assert from 'node:assert/strict';
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, cpSync, symlinkSync, rmSync } from 'node:fs';
 import os from 'node:os';
@@ -12,13 +11,12 @@ import { planTracking, applyTracking, checkTracking } from '../../lib/stage-trac
 const repo = path.resolve(import.meta.dirname, '../../..');
 const checkpointRef = '.work/demo/checkpoint.json';
 function put(root, ref, value) { const p = path.join(root, ref); mkdirSync(path.dirname(p), { recursive: true }); writeFileSync(p, typeof value === 'string' ? value : ref.endsWith('.json') ? JSON.stringify(value, null, 2) : stringify(value)); }
-function fixture({ design = false, enabled = false, platform = 'local-markdown', workRoot = '.work' } = {}) {
+function fixture({ enabled = false, platform = 'local-markdown', workRoot = '.work' } = {}) {
   const root = mkdtempSync(path.join(os.tmpdir(), 'yss-stage-tracking-'));
   for (const ref of ['.template-spec/process/checkpoint-boundary.yaml', '.template-spec/process/schemas/stage-tracking.schema.json', '.template-spec/process/schemas/lifecycle-checkpoint.schema.json', '.template-spec/process/templates/lifecycle-checkpoint-template.yaml', '.template-spec/process/lifecycle-registry.yaml']) put(root, ref, readFileSync(path.join(repo, ref), 'utf8'));
   put(root, 'yss-project.yaml', { schema_version: 1, repository_mode: 'project-instance' });
   put(root, 'CONTEXT.md', '# 测试词汇');
   put(root, '.template-spec/agents/issue-tracker.md', `---\ntracker:\n  platform: ${platform}\n  root: ${workRoot}\n${enabled ? '  lifecycle_tracking_version: 1\n' : ''}---\n# Tracker\n`);
-  if (design) put(root, '.template-spec/process/harness-profile.yaml', { profile_id: 'harness.business-ddd-strategy-handoff', allowed_work_units: ['work-unit.plan-requirements', 'work-unit.spec-synthesis', 'work-unit.prototype-design-v2'] });
   put(root, '.work/demo/plan/input.md', '# 已确认的问题');
   return root;
 }
@@ -32,35 +30,33 @@ function complete(root, cp, id = 'scope') {
   put(root, `.work/demo/verification/${id}.md`, '规则已逐例验证');
   item.completion = item.acceptance.map(criterion => ({ criterion, evidence_refs: [binding(root, `.work/demo/verification/${id}.md`)] })); item.progress = 'completed';
 }
-function registeredFixture({design=false,workRoot='.work'}={}){
- const root=fixture({design,workRoot}),ref=design?'intake-checkpoint.json':`${workRoot}/demo/checkpoint.json`,base=`${workRoot}/demo`;
- const owner=design?composeProfileTree('design'):repo;
- if(design)put(root,'.template-spec/process/harness-profile.yaml',readFileSync(path.join(owner,'.template-spec/process/harness-profile.yaml'),'utf8'));
- else put(root,'.template-spec/process/harness-profile.yaml',{schema_version:1,profile_id:'harness.spec-template'});
+function registeredFixture({workRoot='.work'}={}){
+ const root=fixture({workRoot}),ref=`${workRoot}/demo/checkpoint.json`,base=`${workRoot}/demo`;
+ const owner=repo;put(root,'.template-spec/process/harness-profile.yaml',{schema_version:1,profile_id:'harness.spec-template'});
  const contract='.template-spec/process/orchestration-contract.yaml';
  put(root,contract,JSON.stringify(loadOrchestrationContract(ref=>readFileSync(path.join(owner,ref)),contract).value));
  const cp=parseYaml(readFileSync(path.join(repo,'.template-spec/process/templates/lifecycle-checkpoint-template.yaml'),'utf8'));cp.feature_id='feature.supplier';cp.stage='stage.plan';cp.next_work_unit='work-unit.plan-requirements';put(root,ref,cp);
  put(root,`${base}/map.md`,`---\ncheckpoint_ref: ${ref}\n---\n# 登记\n`);return {root,ref,base,contract};
 }
-test('registered current Spec and root Design migration use map directory and preserve original approval fields',()=>{
- for(const options of [{},{design:true},{workRoot:'docs/custom-work'}]){
+test('registered current Spec migration use map directory and preserve original approval fields',()=>{
+ for(const options of [{},{workRoot:'docs/custom-work'}]){
   const f=registeredFixture(options);try{
    const before=parseYaml(readFileSync(path.join(f.root,f.ref),'utf8'));
    const p=planTracking(f.root,{checkpoint_ref:f.ref,items:[{...seed(),split_reasons:['independent-acceptance']}]});
    assert.equal(applyTracking(f.root,p).status,'applied');
    const cp=parseYaml(readFileSync(path.join(f.root,f.ref),'utf8'));
    assert.equal(cp.feature_id,'feature.supplier');assert.equal(cp.stage_tracking.feature_id,cp.feature_id);
-   assert.equal(cp.stage_tracking.entry.ref,options.design?f.ref:`${f.base}/parent-ticket.md`);
+   assert.equal(cp.stage_tracking.entry.ref,`${f.base}/parent-ticket.md`);
    assert.equal(cp.stage_tracking.items[0].definition_ref,`${f.base}/work-items/scope.md`);
    assert.deepEqual(cp.gates,before.gates);assert.deepEqual(cp.human_review,before.human_review);
    assert.equal(checkTracking(f.root,f.ref).status,'valid');assert.equal(applyTracking(f.root,p).status,'unchanged');
-   cp.stage_tracking.entry.kind=options.design?'parent-ticket':'checkpoint';assert.throws(()=>assertStageTracking(cp,{root:f.root,checkpointRef:f.ref}),/design-parent-forbidden|parent-required/);
+   cp.stage_tracking.entry.kind='checkpoint';assert.throws(()=>assertStageTracking(cp,{root:f.root,checkpointRef:f.ref}),/parent-required/);
   }finally{rmSync(f.root,{recursive:true,force:true});}
  }
 });
 test('registered Stage rejects missing or conflicting registration and unsupported capabilities',()=>{
  for(const scenario of ['missing','duplicate','wrong-checkpoint','unknown-version','unknown-capability']){
-  const f=registeredFixture({design:true});try{
+  const f=registeredFixture();try{
    if(scenario==='missing')rmSync(path.join(f.root,`${f.base}/map.md`));
    if(scenario==='duplicate')put(f.root,'.work/duplicate/map.md',`---\ncheckpoint_ref: ${f.ref}\n---\n`);
    if(scenario==='wrong-checkpoint'){put(f.root,'other.json',readFileSync(path.join(f.root,f.ref),'utf8'));put(f.root,`${f.base}/map.md`,'---\ncheckpoint_ref: other.json\n---\n');}
@@ -71,7 +67,7 @@ test('registered Stage rejects missing or conflicting registration and unsupport
 });
 test('duplicate maps before and during current Stage apply fail with original checkpoint restored',()=>{
  for(const late of [false,true]){
-  const f=registeredFixture({design:true});try{
+  const f=registeredFixture();try{
    const before=readFileSync(path.join(f.root,f.ref)),p=planTracking(f.root,{checkpoint_ref:f.ref,items:[seed()]});
    const duplicate=()=>put(f.root,'.work/duplicate/map.md',`---\ncheckpoint_ref: ${f.ref}\n---\n`);
    if(!late)duplicate();
@@ -107,13 +103,6 @@ test('configured new and custom roots generate one consistent checkpoint, parent
     assert.equal(checkTracking(root,checkpoint_ref).status,'valid');
     assert.throws(()=>planTracking(root,{checkpoint_ref:'unconfigured-work/demo/checkpoint.json',items:[item]}),/WORK_LAYOUT_CHECKPOINT/);
   }
-});
-test('Design entry uses checkpoint and never engineering parent', () => {
-  const { root, checkpoint } = start({ design: true });
-  assert.equal(existsSync(path.join(root, '.work/demo/parent-ticket.md')), false);
-  assert.equal(checkpoint.stage_tracking.entry.kind, 'checkpoint');
-  checkpoint.stage_tracking.entry.kind = 'parent-ticket';
-  assert.throws(() => assertStageTracking(checkpoint, { root }), /design-parent-forbidden/);
 });
 test('existing Spec entry preserves approvals and records entry stage, not historical completion', () => {
   const root = fixture(); const cp = parseYaml(readFileSync(path.join(repo, '.template-spec/process/templates/lifecycle-checkpoint-template.yaml'), 'utf8'));
@@ -268,4 +257,12 @@ test('manual checkpoint edits cannot bypass required owner splitting', () => {
   const { root, checkpoint } = start({}, [seed(), seed('second')]);
   checkpoint.stage_tracking.items[1].owner = '另一位负责人';
   assert.throws(() => assertStageTracking(checkpoint, { root }), /independent-item-required/);
+});
+
+test('removed Design stage writes fail before changing checkpoint',()=>{
+ const root=fixture();try {
+  put(root,'.template-spec/process/harness-profile.yaml',{profile_id:'harness.business-ddd-strategy-handoff'});
+  assert.throws(()=>planTracking(root,{checkpoint_ref:checkpointRef,items:[seed()]}),/tracking-profile-unsupported|未知.*profile/);
+  assert.equal(existsSync(path.join(root,checkpointRef)),false);
+ }finally{rmSync(root,{recursive:true,force:true});}
 });

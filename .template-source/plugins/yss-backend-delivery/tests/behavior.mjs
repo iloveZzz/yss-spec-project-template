@@ -12,7 +12,7 @@ export function behavior(build, name, profile) {
   assert.ok(binary, 'YSS_PLUGIN_TEST_BINARY must identify the fixed tested binary');
   const parent = realpathSync(mkdtempSync(path.join(process.env.YSS_PLUGIN_TEST_ROOT || tmpdir(), `plugin-${profile}-`)));
   const plugin = path.join(parent, name), target = path.join(parent, 'project');
-  const receipt = profile === 'design' ? '.yss-product-design-plugin.json' : '.yss-backend-plugin.json';
+  const receipt = '.yss-backend-plugin.json';
   const read = ref => readFileSync(path.join(target, ref));
   const run = (args, expected = 0) => {
     const result = spawnSync(process.execPath, [path.join(plugin, 'scripts/plugin.mjs'), ...args], { encoding: 'utf8', timeout: 120000, maxBuffer: 128 * 1024 * 1024 });
@@ -127,7 +127,7 @@ export function legacyMigration(build, name, profile, archived = false, history 
     assert.deepEqual(readFileSync(path.join(target, 'CONTEXT.md')), context);
     run(['project-rollback', '--target-dir', target, '--apply']);
     assert.equal(existsSync(path.join(target, '.yss.json')), false);
-    assert.equal(existsSync(path.join(target, profile === 'spec' ? '.yss-backend-plugin.json' : '.yss-product-design-plugin.json')), false);
+    assert.equal(existsSync(path.join(target, '.yss-backend-plugin.json')), false);
     assert.deepEqual(readFileSync(path.join(target, oldMetadata)), before);
     if (legacy) assert.deepEqual(readFileSync(path.join(target, '.yss-plugin.json')), legacy);
     assert.deepEqual(readFileSync(path.join(target, 'CONTEXT.md')), context);

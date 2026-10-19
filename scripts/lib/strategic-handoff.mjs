@@ -30,10 +30,6 @@ function sourceApprovalRecord(document, gateId) {
   return selectApprovalRecord(document, gateId);
 }
 
-function inheritedOwnerBinding(origin, binding) {
-  return origin ? {...binding,checkpoint_ref:origin.source.checkpoint_ref,checkpoint_digest:origin.source.checkpoint_digest} : binding;
-}
-
 function deliveryReadme(handoff) {
   const sources=Object.entries(handoff.source).sort(([a],[b])=>a.localeCompare(b)).map(([key,value])=>`- \`${key}\`: \`${value.persisted_ref}\` (${value.version}, ${value.digest})`);
   const routes=handoff.consumer_routes.map(route=>`- \`${route.capability}\`: \`${route.activation}\` (${route.route_id})`);
@@ -65,11 +61,9 @@ export async function inspectSource(root,handoffRef) {
  versionSchema(read(safe(root,handoffRef)).schema_version,HANDOFF_SCHEMAS,'Handoff');
  return nativeCoverage(nativeEvidenceVerify({root,group:'handoff',kind:'source',file:handoffRef,needs:NEEDS.handoffSource}),'handoff_source');
 }
-export function collectSourceClosure(root,handoffRef,handoff,config,{businessMode='formal',proof}={}) {
- const verified=proof||(businessMode==='draft'
-  ?nativeCoverage(nativeEvidenceVerify({root,group:'handoff',kind:'spec-baseline',selector:'--checkpoint',file:handoffRef,needs:NEEDS.specBaselinePackage}),'spec_baseline_source')
-  :nativeCoverage(nativeEvidenceVerify({root,group:'handoff',kind:'source',file:handoffRef,needs:NEEDS.handoffSource}),'handoff_source'));
- if(businessMode!=='draft')versionSchema(handoff.schema_version,HANDOFF_SCHEMAS,'Handoff');
+export function collectSourceClosure(root,handoffRef,handoff,config,{proof}={}) {
+ const verified=proof||nativeCoverage(nativeEvidenceVerify({root,group:'handoff',kind:'source',file:handoffRef,needs:NEEDS.handoffSource}),'handoff_source');
+ versionSchema(handoff.schema_version,HANDOFF_SCHEMAS,'Handoff');
  ensure(Array.isArray(verified.closure),'NATIVE_PROTOCOL: 来源缺少完整导出闭包');
  return new Map(verified.closure.map(row=>{const bytes=readFileSync(safe(root,row.ref));ensure(hash(bytes)===row.digest,'VALIDATION_INPUT_CHANGED: '+row.ref);return[row.ref,bytes];}));
 }

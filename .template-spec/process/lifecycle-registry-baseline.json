@@ -155,7 +155,7 @@
   },
   "semantic_sha256_by_id": {
     "artifact.architecture-review": "55e32428ee07475ac57f91f53f410dcf182ddaa3aa56187e8f4ba56968142e08",
-    "artifact.business-ticket-set": "662bb45eddfa31e9ec72ea44c4fd59559c0941e09992edd61ebc9f02bdafd2c3",
+    "artifact.business-ticket-set": "d8c77fc61ddcd9a976472b4ffc681dcd32c5f0d6079bc7e510b92f5ee6b28409",
     "artifact.data-architecture": "6ed995295f4e99f953d90d739e9a6d1fc36cc0a50757ec34da39165872ca8731",
     "artifact.domain-strategy": "3eb281af20f0106d836ec2816f0e524754f4f49e24abc2deb1c0daed1d9a918d",
     "artifact.engineering-baseline": "0706c5d26e062fe33324e2cedaf50887cb4618770dddb1802d4f8cf80dfbb330",
@@ -166,7 +166,7 @@
     "artifact.low-fidelity-prototype": "4cb480c2df5eaaf29f3eb53ba3d376eaa9c7309dff3c52364c3b66a63d463903",
     "artifact.openapi-draft": "1b98c72dfa204bb63858ba5b7f06ff72028ca6dedeccf28ae45a7644fe6ae86c",
     "artifact.openapi-freeze-record": "08ee4585a855264efbb50457f1c9e240fc2f3a5058b7a3af2f7a68736a140eb1",
-    "artifact.parent-ticket": "af769d9ece22bfba7f1dc28760616afef6a30663028765b23454e1477350bdfc",
+    "artifact.parent-ticket": "c2468ededf472ff0584c17aea8f29dfaa68f86c4b76a661f7e516fc9f38dc34e",
     "artifact.plan-record": "afe7072c38667a5b59d981fc1011a9567388dd5875f003ecee1779e31719764e",
     "artifact.product-overview": "35918d75d311a3b31fc6dd4e427f39f60c2943ae2bdc5ce65507389453c5ff14",
     "artifact.project-scaffold-contract": "b4d340e476723e7bd6dc6ecbbc429de4d10f7d257917389005aceb820690fc26",

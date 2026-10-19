@@ -87,14 +87,14 @@
 
 ## 编排政策 2 的合同边界
 
-政策 2 的结构已定义，必须同时具备 `role-independent-governance-v1`、根实例身份 2、Profile 3、Bundle 4 与 metadata 4 的原生消费者才能向实例写入。模板源身份仍为 1；Schema 检查不授予执行资格。政策 1、任务 1/2、审批/审查包 1/2、延续 1 与历史 Design 按原合同只读解释，不重写历史字段或摘要。任务 2 仍只读 intake。
+政策 2 的结构已定义，必须同时具备 `role-independent-governance-v1`、根实例身份 2、Profile 3、Bundle 4 与 metadata 4 的原生消费者才能向实例写入。模板源身份仍为 1；Schema 检查不授予执行资格。政策 1、任务 1/2、审批/审查包 1/2、延续 1 按受支持来源的原合同只读解释，不重写历史字段或摘要。任务 2 仍只读 intake。
 
 以下字段由 `orchestration/domain/review.yaml` 唯一维护；原生 `kernel/approval/contracts/lifecycle` 消费者必须按当前明确 Profile 与版本选择，缺失或未知输入不能降级。此表列的是接入合同，并不声称 B1 已完成原生执行验收。
 
 | 策略 | 消费责任与拒绝边界 |
 |---|---|
 | `governance_versions` | 身份、任务、阶段 writer 在计划和应用时核验完整版本组合及总能力；旧政策只允许读、核验、显式迁移 |
-| `profile_admission` | init/profile prepare 仅新建 Spec/Backend；旧 Design 原身份只读，显式迁移不得静默改成 Spec；Backend 不获整体业务验收权限 |
+| `profile_admission` | init/profile prepare 仅新建 Spec/Backend；Design 身份及其历史迁移输入明确拒绝；Backend 不获整体业务验收权限 |
 | `technical_checks` | 按 work unit、实际影响和精确 Profile 计算 Skills；`capability.*` 仅为历史延续的检查组 ID，无持有人或岗位资格；未知检查组拒绝 |
 | `gate_policy` | 只选 `profiles.spec` 或 `profiles.backend` 的完整门禁集，保留全部原检查 ID；禁止把另一个 Profile 的缺失边界当作可跳过 |
 | `user_decision_policy` | 使用 `profile_scope` 与 `continuation.boundaries_by_profile`；真实用户消息 schema1 不变，原决定/冻结快照/当前候选/逐项差异/受影响检查与实际验证必须绑定；禁止链式扩权 |
@@ -129,4 +129,4 @@
 | 固定独立实现/验证者与发布默认独立 | `review_verification`、`review_modes`、适用复核证据 | 明确独立要求仍满足；自检不能签独立结果；提交/推送/发布和外部动作仍需已有有效用户授权 |
 | 路径/仓库/摘要/输入/冻结/真实日志/版本/候选约束 | 原位置保留，task3 新增明确输入绑定、基线和来源 | 原生路径规范化、symlink 防逃逸、实际命令/退出码/日志与候选校验不得因去岗位而放宽 |
 
-历史战略交接与回执格式不因无关岗位清理改写；新的 source approval 必须按其冻结源政策版本解释。Bundle/source-lock 的历史闭包由后续分发工作验证，旧 source snapshot、Design 身份、target_profile_id 与回执摘要必须保留。
+历史战略交接与回执格式不因无关岗位清理改写；新的 source approval 必须按其冻结源政策版本解释。Bundle/source-lock 的历史闭包由后续分发工作验证，受支持 Spec/Backend 的旧 source snapshot、target_profile_id 与回执摘要保持原字节。

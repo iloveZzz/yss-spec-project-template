@@ -2,7 +2,6 @@ import {loadOrchestrationContract} from '../../lib/orchestration-contract.mjs';
 // Explicitly synthetic approvals and replies for protocol tests only.
 import fs from 'node:fs';
 import {makeRoot} from '../../../tests/helpers/yss-instance.mjs';
-import {composeProfileTree} from '../../lib/profile-tree.mjs';
 import path from 'node:path';
 import {ROOT,loadRegistry} from '../../lib/lifecycle-registry.mjs';
 import {fixture as strategicFixture} from '../strategic-handoff/fixture.mjs';
@@ -14,7 +13,7 @@ import {initializePlanReview} from '../../lib/plan-review-control.mjs';
 import {planEntryPolicy,assertPlanAggregateApproval} from '../../lib/plan-spec-entry.mjs';
 
 export function writeIdentity(root,profile) {
- const profileId={spec:'harness.spec-template',design:'harness.business-ddd-strategy-handoff'}[profile];
+ const profileId={spec:'harness.spec-template',backend:'harness.backend-delivery'}[profile];
  fs.writeFileSync(path.join(root,'.yss.json'),json({schemaVersion:1,protocolVersion:1,cliVersion:'1.0.0',templateVersion:'1.0.0',legacyCliVersion:'1.0.0',profile,profileId,templateSourceState:'committed',templateCommit:'1'.repeat(40),snapshotHash:'2'.repeat(64),manifestHash:'3'.repeat(64),variables:{},distribution:{},managedFiles:{},baselineDigest:hash('{}').slice(7)}));
 }
 export function reconcile(root,ref,{receiptRef,sourceContextRef,stage='stage.entry-triage',workUnit='work-unit.entry-triage'}={}) {
@@ -32,15 +31,15 @@ export function copyNativeIdentity(root,seed,profile) {
 }
 export function localPlanFixture(owner,{featureId='feature.supplier',nativeSeed=owner.nativeSeed}={}) {
  const root=owner.root,refs=['CONTEXT.md','.template-spec/process/lifecycle-registry.yaml','.template-spec/agents/digital-human-roles.yaml','.template-spec/agents/yss-skill-registry.yaml','.template-spec/agents/issue-tracker.md'];
- // A local Design reapproval must retain its Profile policy throughout Plan
+ // A local Spec reapproval retains its Profile policy throughout Plan
  // construction and the caller's subsequent native Handoff binding.
- assertNativeIdentity(root,'design');
- nativeSeed ||= makeRoot('local-plan-policy-','design');
- assertNativeIdentity(nativeSeed,'design');owner.nativeSeed=nativeSeed;
+ assertNativeIdentity(root,'spec');
+ nativeSeed ||= makeRoot('local-plan-policy-','spec');
+ assertNativeIdentity(nativeSeed,'spec');owner.nativeSeed=nativeSeed;
  refs.push(...loadOrchestrationContract(ref=>fs.readFileSync(path.join(root,ref)),'.template-spec/process/orchestration-contract.yaml').refs);
  const saved=new Map(refs.map(ref=>[ref,fs.readFileSync(path.join(root,ref))]));
  const plan=buildPlanFixture(root,{nativeSeed});for(const [ref,bytes]of saved)fs.writeFileSync(path.join(root,ref),bytes);
- assertNativeIdentity(root,'design');
+ assertNativeIdentity(root,'spec');
  plan.review.feature_id=featureId;plan.state.feature_id=featureId;
  reconcile(root,'reconciliation.json');
  const policy=planEntryPolicy({root});plan.review.checks=Object.fromEntries(policy.required_checks.map(id=>[id,{status:'passed',evidence_refs:['plan.md']}]));
@@ -138,18 +137,4 @@ export async function approvedSpecFixture(root,{productDesign=true,nativeSeed}={
  // The design selector is read from approved stage bytes, rather than a caller flag.
  // This fixture exercises the required prototype route by default.
  return {root,state,checkpointRef,plan,strategic,synthetic_fixture:true};
-}
-
-export async function designFixture(root,{nativeSeed,productDesign=true}={}) {
- if(nativeSeed)assertNativeIdentity(nativeSeed,'design');
- fs.mkdirSync(root,{recursive:true});
- const target=await strategicFixture(root,{nativeSeed,handoffVersion:5,businessTickets:true,...(!productDesign?{impacts:{ui:false,api:true,data:true,backend:true,frontend:false,cross_repo:false,high_risk:false}}:{})});
- if(!nativeSeed){fs.cpSync(path.join(composeProfileTree('design'),'.template-spec/process/schemas'),path.join(root,'.template-spec/process/schemas'),{recursive:true});
- fs.copyFileSync(path.join(composeProfileTree('design'),'.template-spec/agents/yss-skill-registry.yaml'),path.join(root,'.template-spec/agents/yss-skill-registry.yaml'));
- for(const ref of ['.template-spec/process/lifecycle-registry.yaml','.template-spec/process/harness-profile.yaml','.template-spec/process/checkpoint-boundary.yaml',...loadOrchestrationContract(ref=>fs.readFileSync(path.join(composeProfileTree('design'),ref)), '.template-spec/process/orchestration-contract.yaml').refs]) {
-  const file=path.join(root,ref);fs.mkdirSync(path.dirname(file),{recursive:true});fs.copyFileSync(path.join(composeProfileTree('design'),ref),file);
- }}
- fs.mkdirSync(path.join(root,'.template-spec/agents'),{recursive:true});
- fs.writeFileSync(path.join(root,'.template-spec/agents/issue-tracker.md'),'---\ntracker:\n  platform: local-markdown\n  root: .work\n  business_ticket_version: 1\n---\n# Synthetic Design tracker\n');
- if(!nativeSeed)writeIdentity(root,'design');return {root,...target,synthetic_fixture:true};
 }

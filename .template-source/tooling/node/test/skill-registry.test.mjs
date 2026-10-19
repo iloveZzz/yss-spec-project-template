@@ -401,7 +401,7 @@ test("retired frontend_route is rejected on lifecycle routes", () => {
 
 
 test('Pi invocation metadata rejects missing restrictions and non-boolean flags in all profiles', async () => {
-  for (const base of [ROOT, ...['backend', 'design'].map((profile) => composeProfileTree(profile))]) {
+  for (const base of [ROOT, ...['backend'].map((profile) => composeProfileTree(profile))]) {
     const module = await import(path.join(base, 'scripts/lib/skill-registry.mjs'));
     const data = module.loadSkillRegistry();
     const source = (id) => readFileSync(path.join(base, '.agents/skills', id, 'SKILL.md'), 'utf8');

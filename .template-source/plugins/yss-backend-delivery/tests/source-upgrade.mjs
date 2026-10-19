@@ -16,7 +16,7 @@ export function sourceUpgrade(build, name, profile) {
   assert.equal(hash(readFileSync(previousBinary)), previousDigest, 'previous executable must match its independent fixed digest');
   assert.notEqual(hash(readFileSync(binary)), previousDigest, 'source upgrade requires distinct actual executable bytes');
   const parent = realpathSync(mkdtempSync(path.join(process.env.YSS_PLUGIN_TEST_ROOT || tmpdir(), `source-upgrade-${profile}-`)));
-  const receipt = profile === 'design' ? '.yss-product-design-plugin.json' : '.yss-backend-plugin.json';
+  const receipt = '.yss-backend-plugin.json';
   const events = [], startedAt = new Date().toISOString();
   let previousSource = null;
   let passed = false;
@@ -40,7 +40,7 @@ export function sourceUpgrade(build, name, profile) {
       assert.match(previousCommit, /^[a-f0-9]{40}$/, 'historical plugin source requires a full fixed commit');
       const repository = realpathSync(process.env.YSS_PLUGIN_PREVIOUS_SOURCE_GIT_ROOT);
       const source = path.join(parent, 'previous-source'); mkdirSync(source);
-      const prefixes = ['.template-source/plugins/yss-backend-delivery', '.template-source/plugins/yss-product-design'];
+      const prefixes = ['.template-source/plugins/yss-backend-delivery'];
       const tree = execFileSync('git', ['-C', repository, 'ls-tree', '-r', '-z', previousCommit, ...prefixes], { maxBuffer: 4 * 1024 * 1024 });
       const records = [];
       for (const entry of tree.toString('utf8').split('\0').filter(Boolean)) {

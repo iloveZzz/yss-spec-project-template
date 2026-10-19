@@ -211,7 +211,7 @@ export function validateReleaseIntegration({root,reportFile,expectedDigest,expec
   const directory=fs.realpathSync(path.dirname(reportFile));reportFile=path.join(directory,path.basename(reportFile));assertEvidenceFile(reportFile,directory,expectedDigest);
   const report=JSON.parse(fs.readFileSync(reportFile,'utf8')),commit=expectedCommit||report.requested_commit;
   ensure(report.schema_version===2&&report.kind==='template-release-verification'&&report.status==='passed'&&!report.error&&report.requested_commit===commit&&report.template_commit===commit,'integration 来源或结论未绑定或存在外层失败');
-  const families=['spec','design','backend'];assert.deepEqual(report.cli_families,families,'integration 未覆盖 all-four');
+  const families=['spec','backend'];assert.deepEqual(report.cli_families,families,'integration 未覆盖 all');
   const expected=collectReleaseSources({root,commit,families});
   assert.deepEqual(report.sources_manifest?.families,families,'integration 来源家族缺失');assert.deepEqual(report.sources_manifest?.entries?.map(sourceTuple),expected.entries.map(sourceTuple),'integration 精确来源错配');
   ensure(report.artifacts?.length===families.length&&report.cli_integrations?.length===families.length,'integration 缺少包或迁移真实产物');

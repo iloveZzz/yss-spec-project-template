@@ -5,14 +5,14 @@
 ## 来源准备
 
 1. 先从 GitHub 读取仓库身份、默认分支、Release/tag 和所需模板 remote，再 fetch。记录每仓完整 SHA；不要在用户工作区直接 pull 覆盖本地工作。模板源遵守其身份、固定来源与发布合同，CLI 独立仓不补造产品 Ticket/阶段资产。
-2. 消费 `docs/source-lock.json`：分别记录程序版本、协议版本、Spec/Design/Backend/Frontend 提交及 `skillsSource`。若 backend/frontend 是组合技能来源，先固定 Spec canonical/投影/锁提交，再更新相应 Profile 来源锁与提交，然后刷新 CLI 锁及 Bundle，最后处理父仓 gitlink；避免来源循环。
+2. 消费 `docs/source-lock.json`：分别记录程序版本、协议版本、Spec/Backend 提交及 `skillsSource`。若 Backend 使用组合技能来源，先固定 Spec canonical/投影/锁提交，再更新相应 Profile 来源锁与提交，然后刷新 CLI 锁及 Bundle，最后处理父仓 gitlink；避免来源循环。
 3. 版本及来源更新采用现有工具。读取当前 `tools/refresh-source-lock.mjs --help`，按受影响 Profile 预演；`--skills-source` 用于实际需要更新的组合来源，不能漏掉也不能无关重写。正式来源必须远端可取，不用 `--allow-unpushed` 生成发行资格。
 4. 使用现行生成入口更新 Bundle、helpview、CLI 帮助及对应派生；例如有该能力的版本使用 `node tools/artifacts.mjs generate --scope all --source-root "$source_root" --out "$generation_evidence_dir"`，再以 `check` 和另一仓外新证据目录核验。必须先检查当前参数/目录布局；工具失败即保留错误，不手工改生成文件凑通过。
 5. 完成必要源码验证和适用独立审查后，只提交授权文件，推送并核验远端可读。记录最终 clean SHA；正式包从该 SHA 构建，构建中不再生成或改写源码。
 
 ## 原生构建
 
-优先当前标准构建器，保留 build receipt 的输入清单、工具版本、sourceState、CGO、目标平台、binary SHA 与四 Profile inspect：
+优先当前标准构建器，保留 build receipt 的输入清单、工具版本、sourceState、CGO、目标平台、binary SHA 与两个 Profile inspect：
 
 ```sh
 # Mac ARM 原生宿主；输出必须为仓外新目录
@@ -39,7 +39,7 @@ v1.3.6/1.3.7 的已验证模式如下，仅作为当前合同调查的起点：
 | 平台 | qualificationScope | 该历史模式的实际范围 |
 | --- | --- | --- |
 | Mac ARM64 | `local-platform-impacted-consumers` | 原生入口 82、真实中断恢复 12、插件命令 44、安装 5、旧实例恢复 48、受影响模板消费者 9 |
-| Windows x64 | `windows-program-installation` | 5 项安装验收、12 条实际命令：version、四 Profile inspect、预览、安装、安装后版本/状态、回滚、两次无操作恢复；只读用户文件保留 |
+| Windows x64 | `windows-program-installation` | 5 项安装验收、实际命令：version、两个 Profile inspect、预览、安装、安装后版本/状态、回滚、两次无操作恢复；只读用户文件保留 |
 | 双平台聚合 | `platform-qualified-installation` | 共同来源与资格索引绑定两个独立平台收据，不把 Windows 安装资格扩成 Mac 完整范围 |
 
 若原始说明仍只声明 Mac，而当前已认可的补充发行合同明确允许上述逐平台模式，应保留原文并附可追溯范围声明。仅有历史样例、没有当前依据时不能自行换 qualificationScope；需要变更合同则先形成具体差异并处理真实授权/批准。

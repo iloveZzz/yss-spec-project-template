@@ -145,5 +145,7 @@ test("AC-006：github-workflows.md 登记 template-gate，不再声明已移除�
   assert.match(doc, /scripts\/ci-gate/);
   assert.match(doc, /必需检查/);
   assert.match(doc, /不得跳过/);
-  assert.match(doc, /node \.template-source\/scripts\/verify-template-release\.mjs --commit <40位SHA> --base <上一正式发行完整SHA> --output <仓库外绝对目录> --cli-family all-four/);
+  assert.match(doc, /node \.template-source\/scripts\/verify-template-release\.mjs --commit <40位SHA> --base <上一正式发行完整SHA> --output <仓库外绝对目录> --cli-family all`/);
+  assert.match(doc, /Spec\/Backend/);
+  assert.doesNotMatch(doc, /all-four|三 Profile|三个 Profile|固定四源提交/);
 });

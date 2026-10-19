@@ -47,7 +47,7 @@ export function loadOrchestrationContract(read, rootRef) {
     let owner = 'yss-product-lifecycle';
     try {
       const profile = parse(String(read('.template-spec/process/harness-profile.yaml')), 'harness-profile').profile_id;
-      owner = {'harness.spec-template':'yss-product-lifecycle','harness.backend-delivery':'harness-orchestrator','harness.business-ddd-strategy-handoff':'yss-strategic-design'}[profile];
+      owner = {'harness.spec-template':'yss-product-lifecycle','harness.backend-delivery':'harness-orchestrator'}[profile];
       if(!owner) throw new Error('未知合同 Profile');
     } catch(profileError) { if(profileError.code !== 'ENOENT') throw profileError; }
     rootRef = `.agents/skills/${owner}/references/orchestration-contract.yaml`;

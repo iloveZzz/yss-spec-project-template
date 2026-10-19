@@ -24,7 +24,7 @@ profiles:
         depends_on: []
         failure_mode: "仓库职责与 gitlink 保护引用失效"
       - id: check.9f66238a57e457bf
-        resources: [python-jsonschema]
+        resources: [ python-jsonschema ]
         group: lifecycle
         inputs_complete: true
         input_patterns:
@@ -90,7 +90,7 @@ profiles:
         failure_mode: "说明文档复述门禁数、阶段数、投影根数量或硬编码与 lock 不一致的上游 revision"
       - id: check.daily-input-preparation
         run: "node --test tests/daily-input-preparation.test.mjs"
-        resources: [native-cli]
+        resources: [ native-cli ]
         group: feature-assets
         inputs_complete: true
         input_patterns:
@@ -149,7 +149,7 @@ profiles:
       - id: check.plugin-preparation
         run: "node --test .template-source/tooling/node/test/plugin-preparation.test.mjs"
         group: feature-assets
-        resources: [native-cli]
+        resources: [ native-cli ]
         inputs_complete: true
         input_patterns:
           - ".template-source/plugins/yss-backend-delivery/plan.mjs"
@@ -159,7 +159,7 @@ profiles:
       - id: check.lifecycle-status-feedback
         run: "node --test .template-source/tooling/node/test/lifecycle-status-feedback.test.mjs"
         group: feature-assets
-        resources: [native-cli]
+        resources: [ native-cli ]
         inputs_complete: true
         input_patterns:
           - ".template-source/tooling/node/test/lifecycle-status-feedback.test.mjs"
@@ -167,7 +167,7 @@ profiles:
         depends_on: []
         failure_mode: "状态反馈与合同摘要不一致"
       - id: check.plugin-scope-terminal
-        tier: slow  # 完整成功路径实测 164s；fast 明确延后，release 保留。
+        tier: slow # 完整成功路径实测 164s；fast 明确延后，release 保留。
         run: "node --test .template-source/tooling/node/test/plugin-scope.test.mjs .template-source/tooling/node/test/plugin-terminal.test.mjs"
         group: feature-assets
         resources: [ native-cli, "repo-root-evidence" ]
@@ -181,7 +181,7 @@ profiles:
       - id: check.implementation-candidate-current
         run: "node --test tests/implementation-candidate-current.test.mjs"
         group: feature-assets
-        resources: [native-cli]
+        resources: [ native-cli ]
         inputs_complete: true
         input_patterns:
           - "tests/implementation-candidate-current.test.mjs"
@@ -189,7 +189,7 @@ profiles:
         depends_on: []
         failure_mode: "实现候选未绑定当前合同或材料"
       - id: check.profile-consumers-efficiency-distribution
-        resources: [native-cli]
+        resources: [ native-cli ]
         lane: pc-efficiency-distribution
         run: "node --test --test-skip-pattern='^backend plugin receives' tests/efficiency-distribution.test.mjs"
         group: feature-assets
@@ -208,7 +208,7 @@ profiles:
         depends_on: []
         failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
       - id: check.profile-consumers-native-context-retirement
-        resources: [native-cli]
+        resources: [ native-cli ]
         lane: pc-native-context-retirement
         run: "node --test --test-skip-pattern='^backend plugin receives' tests/native-context-retirement.test.mjs"
         group: feature-assets
@@ -227,7 +227,7 @@ profiles:
         depends_on: []
         failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
       - id: check.profile-consumers-contract-efficiency-distribution
-        resources: [native-cli]
+        resources: [ native-cli ]
         lane: pc-contract-efficiency-distribution
         run: "node --test --test-skip-pattern='^backend plugin receives' scripts/fixtures/contract-efficiency/distribution.test.mjs"
         group: feature-assets
@@ -247,8 +247,8 @@ profiles:
         depends_on: []
         failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
       - id: check.profile-consumers-reading-views-bundle
-        tier: slow  # 实测约 63s；fast 中延后，按需（YSS_VERIFY_SLOW=1）或定时执行
-        resources: [native-cli]
+        tier: slow # 实测约 63s；fast 中延后，按需（YSS_VERIFY_SLOW=1）或定时执行
+        resources: [ native-cli ]
         lane: pc-reading-views-bundle
         run: "node --test --test-skip-pattern='^backend plugin receives' scripts/fixtures/reading-views/bundle.test.mjs"
         group: feature-assets
@@ -267,8 +267,8 @@ profiles:
         depends_on: []
         failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
       - id: check.profile-consumers-slice-contract-v3-round2-xrepo
-        tier: slow  # 实测约 128s；fast 中延后，按需（YSS_VERIFY_SLOW=1）或定时执行
-        resources: [native-cli]
+        tier: slow # 实测约 128s；fast 中延后，按需（YSS_VERIFY_SLOW=1）或定时执行
+        resources: [ native-cli ]
         lane: pc-slice-contract-v3-round2-xrepo
         run: "node --test --test-name-pattern='^cross-repo execution result rejects' scripts/fixtures/slice-contract-v3/round2.test.mjs"
         group: feature-assets
@@ -287,8 +287,8 @@ profiles:
         depends_on: []
         failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
       - id: check.profile-consumers-slice-contract-v3-round2-rest
-        tier: slow  # 实测约 98s；fast 中延后，按需（YSS_VERIFY_SLOW=1）或定时执行
-        resources: [native-cli]
+        tier: slow # 实测约 98s；fast 中延后，按需（YSS_VERIFY_SLOW=1）或定时执行
+        resources: [ native-cli ]
         lane: pc-slice-contract-v3-round2-rest
         run: "node --test --test-skip-pattern='^backend plugin receives' --test-skip-pattern='^cross-repo execution result rejects' scripts/fixtures/slice-contract-v3/round2.test.mjs"
         group: feature-assets
@@ -307,7 +307,7 @@ profiles:
         depends_on: []
         failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
       - id: check.role-independent-draft
-        resources: [native-cli]
+        resources: [ native-cli ]
         run: "node --test scripts/fixtures/role-independent-draft/scenarios.test.mjs scripts/fixtures/role-independent-draft/slice-reading.test.mjs"
         group: feature-assets
         inputs_complete: true
@@ -325,8 +325,8 @@ profiles:
         depends_on: []
         failure_mode: "新政策草稿派发或Slice4读视图错误，检查映射遗漏当前Profile约束，或草稿绕过未就绪的执行/写入边界"
       - id: check.profile-consumers-slice-contract-v3-scenarios
-        tier: slow  # 实测约 113s；fast 中延后，按需（YSS_VERIFY_SLOW=1）或定时执行
-        resources: [native-cli]
+        tier: slow # 实测约 113s；fast 中延后，按需（YSS_VERIFY_SLOW=1）或定时执行
+        resources: [ native-cli ]
         lane: pc-slice-contract-v3-scenarios
         run: "node --test --test-skip-pattern='^backend plugin receives' scripts/fixtures/slice-contract-v3/scenarios.test.mjs"
         group: feature-assets
@@ -345,7 +345,7 @@ profiles:
         depends_on: []
         failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
       - id: check.profile-consumers-stage-tracking-tracking
-        resources: [native-cli]
+        resources: [ native-cli ]
         lane: pc-stage-tracking-tracking
         run: "node --test --test-skip-pattern='^backend plugin receives' scripts/fixtures/stage-tracking/tracking.test.mjs"
         group: feature-assets
@@ -364,7 +364,7 @@ profiles:
         depends_on: []
         failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
       - id: check.profile-consumers-approval-consumption
-        resources: [native-cli]
+        resources: [ native-cli ]
         lane: pc-approval-consumption
         run: "node --test --test-skip-pattern='^backend plugin receives' .template-source/tooling/node/test/approval-consumption.test.mjs"
         group: feature-assets
@@ -401,7 +401,7 @@ profiles:
         depends_on: []
         failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
       - id: check.profile-consumers-decision-continuation
-        resources: [native-cli]
+        resources: [ native-cli ]
         lane: pc-decision-continuation
         run: "node --test --test-skip-pattern='^backend plugin receives' .template-source/tooling/node/test/decision-continuation.test.mjs"
         group: feature-assets
@@ -420,7 +420,7 @@ profiles:
         depends_on: []
         failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
       - id: check.profile-consumers-lifecycle-progression
-        resources: [native-cli]
+        resources: [ native-cli ]
         lane: pc-lifecycle-progression
         run: "node --test --test-skip-pattern='^backend plugin receives' .template-source/tooling/node/test/lifecycle-progression.test.mjs"
         group: feature-assets
@@ -440,7 +440,7 @@ profiles:
         depends_on: []
         failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
       - id: check.profile-consumers-plugin-design-consumption
-        resources: [native-cli]
+        resources: [ native-cli ]
         lane: pc-plugin-design-consumption
         run: "node --test --test-skip-pattern='^backend plugin receives' .template-source/tooling/node/test/plugin-design-consumption.test.mjs"
         group: feature-assets
@@ -459,8 +459,8 @@ profiles:
         depends_on: []
         failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
       - id: check.profile-consumers-review-capabilities
-        tier: slow  # 实测约 99s；fast 中延后，按需（YSS_VERIFY_SLOW=1）或定时执行
-        resources: [native-cli, python-jsonschema]
+        tier: slow # 实测约 99s；fast 中延后，按需（YSS_VERIFY_SLOW=1）或定时执行
+        resources: [ native-cli, python-jsonschema ]
         lane: pc-review-capabilities
         run: "node --test --test-skip-pattern='^backend plugin receives' .template-source/tooling/node/test/review-capabilities.test.mjs"
         group: feature-assets
@@ -503,8 +503,6 @@ profiles:
           - scripts/lib/*.mjs
           - scripts/verify-import-direction
           - tests/import-direction.test.mjs
-          - scripts/fixtures/spec-baseline/package.mjs
-          - scripts/fixtures/spec-baseline/scenarios.mjs
           - .template-source/process/node-core-layer.json
           - .template-source/scripts/lib/*.mjs
         depends_on: []
@@ -524,7 +522,6 @@ profiles:
           - "scripts/verify-digital-human-task-package"
           - "scripts/verify-lifecycle-checkpoint"
           - "scripts/strategic-handoff"
-          - "scripts/spec-baseline"
           - "scripts/verify-context-reconciliation"
           - "scripts/verify-strategic-handoff-consumption"
           - "scripts/verify-openapi-draft-validation-record"
@@ -546,7 +543,7 @@ profiles:
       - id: check.artifact-analysis
         run: "node --test tests/artifact-analysis.test.mjs"
         group: feature-assets
-        resources: [native-cli]
+        resources: [ native-cli ]
         inputs_complete: true
         input_patterns:
           - "scripts/analyze-artifacts"
@@ -558,7 +555,7 @@ profiles:
         depends_on: []
         failure_mode: "一致性分析漏掉某项诊断的发现、把未评估当作一致，或功能包资产识别错误"
       - id: check.business-ticket-native-report
-        tier: slow  # 实测约 74s；fast 中延后，按需（YSS_VERIFY_SLOW=1）或定时执行
+        tier: slow # 实测约 74s；fast 中延后，按需（YSS_VERIFY_SLOW=1）或定时执行
         run: "node --test tests/business-ticket-native-report.test.mjs"
         group: feature-assets
         resources: [ "native-cli", "repo-root-evidence" ]
@@ -580,6 +577,9 @@ profiles:
           - "scripts/lib/native-evidence.mjs"
           - "scripts/lib/native-context.mjs"
           - ".template-source/distribution/yss-cli-pin.json"
+          - scripts/fixtures/spec-baseline/local-implementation-fixture.mjs
+          - scripts/fixtures/spec-baseline/package.mjs
+          - scripts/fixtures/spec-baseline/scenarios.mjs
         depends_on: []
         failure_mode: "业务票原生报告字段、多诊断、draft/formal 拒绝、业务读集或导入快照与既有合同不一致"
       - id: check.ar12b-retirement
@@ -633,7 +633,7 @@ profiles:
         depends_on: []
         failure_mode: "角色会签消费迁移后错误放行无权角色、缺失批准或失效门禁，或拒绝合法原生身份"
       - id: check.plan-spec-entry-scenarios
-        tier: slow  # cbe04769 发布差异检查实测 110s；fast 延后，release 保留。
+        tier: slow # cbe04769 发布差异检查实测 110s；fast 延后，release 保留。
         run: "node scripts/verify-plan-spec-entry-scenarios"
         group: feature-assets
         resources: [ "native-cli" ]
@@ -741,7 +741,7 @@ profiles:
         depends_on: []
         failure_mode: "已移除的前端 Profile、前端移交验证入口、前端生命周期稳定 ID 或 frontend-accepted 推进目标重新出现"
       - id: check.backend-delivery-terminal
-        tier: slow  # cbe04769 发布差异检查实测 151s；fast 延后，release 保留。
+        tier: slow # cbe04769 发布差异检查实测 151s；fast 延后，release 保留。
         run: "node --test --test-concurrency=1 tests/backend-delivery-terminal.test.mjs"
         group: feature-assets
         inputs_complete: true
@@ -790,10 +790,10 @@ profiles:
         depends_on: []
         failure_mode: "推进意图被当作冻结战略包的批准或交付证据"
       - id: check.role-independent-formal-current
-        tier: slow  # 原串行长链已执行 142s 仍被取消；fast 明确延后，release 保留。
+        tier: slow # 原串行长链已执行 142s 仍被取消；fast 明确延后，release 保留。
         run: "node --test --test-concurrency=1 scripts/fixtures/role-independent-draft/formal-plan.test.mjs scripts/fixtures/role-independent-draft/professional-plan.test.mjs scripts/fixtures/role-independent-draft/worker-chain.test.mjs scripts/fixtures/role-independent-draft/handoff-chain.test.mjs"
         group: implementation
-        resources: [native-cli, "repo-root-evidence"]
+        resources: [ native-cli, "repo-root-evidence" ]
         inputs_complete: true
         input_patterns:
           - "scripts/fixtures/existing-backend/fixture.mjs"
@@ -843,10 +843,10 @@ profiles:
         depends_on: []
         failure_mode: "合同审查准备放过过期的阅读视图、前后资产身份冲突，或把原决定当成已批准"
       - id: check.plan-review-control-unit
-        tier: slow  # 当前安装与事务回归实测超过 60s；fast 延后，release 保留。
+        tier: slow # 当前安装与事务回归实测超过 60s；fast 延后，release 保留。
         run: "node --test .template-source/tooling/node/test/plan-review-control.test.mjs"
         group: feature-assets
-        resources: [native-cli, python-jsonschema]
+        resources: [ native-cli, python-jsonschema ]
         inputs_complete: true
         input_patterns:
           - ".template-source/tooling/node/test/plan-review-control.test.mjs"
@@ -996,7 +996,7 @@ profiles:
       - id: check.verification-artifacts
         run: "node --test tests/verification-artifacts.test.mjs"
         group: feature-assets
-        resources: [native-cli, go]
+        resources: [ native-cli, go ]
         inputs_complete: true
         input_patterns:
           - ".template-source/scripts/lib/verification-artifacts.mjs"
@@ -1275,7 +1275,7 @@ profiles:
         failure_mode: "历史只读记录错误授予当前状态，或仓外证据未绑定当前字节"
       - id: check.a5802dc214ecfcda
         run: "node tests/scenarios/verify-maintenance-review-workflow-scenarios.mjs"
-        resources: [go]
+        resources: [ go ]
         group: maintenance
         inputs_complete: true
         input_patterns:
@@ -1297,7 +1297,7 @@ profiles:
         depends_on: []
         failure_mode: "当前来源缺失、重复或倒序标记被历史兼容路径静默接受"
       - id: "check.backend-scaffold-direct-generation"
-        tier: slow  # cbe04769 发布差异检查实测 121s；fast 延后，release 保留。
+        tier: slow # cbe04769 发布差异检查实测 121s；fast 延后，release 保留。
         run: "node --test .agents/skills/yss-ddd-scaffold-generator/scripts/standalone.test.mjs .agents/skills/yss-ddd-scaffold-generator/scripts/scaffold-generator.test.mjs .agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs"
         group: "implementation"
         inputs_complete: true
@@ -1323,10 +1323,10 @@ profiles:
           - "scripts/verify-scaffold-architecture-decisions"
           - ".template-spec/engineering/backend-platforms*"
           - ".template-spec/engineering/evidence/scaffold-3.2.0/**"
-        depends_on: [check.backend-scaffold-direct-generation]
+        depends_on: [ check.backend-scaffold-direct-generation ]
         failure_mode: "精确平台绑定、运行证据或退役架构决策接受错误；真实平台证据另按选定两个组合执行"
       - id: check.scaffold-contract-consumers
-        tier: slow  # 保留对 121s 生成检查的依赖；避免 fast 再次拉入慢前置。
+        tier: slow # 保留对 121s 生成检查的依赖；避免 fast 再次拉入慢前置。
         run: "node --test .agents/skills/yss-implementation-contract-compiler/tests/backend-profiles.test.mjs tests/legacy-backend-scaffold-audit.test.mjs tests/yss-backend-skill-governance.test.mjs"
         group: implementation
         inputs_complete: true
@@ -1340,7 +1340,7 @@ profiles:
           - ".agents/skills/yss-implementation-contract-compiler/tests/backend-profiles.test.mjs"
           - "tests/legacy-backend-scaffold-audit.test.mjs"
           - "tests/yss-backend-skill-governance.test.mjs"
-        depends_on: [check.backend-scaffold-direct-generation]
+        depends_on: [ check.backend-scaffold-direct-generation ]
         failure_mode: "v5 前置或退役路由漂移，历史架构审计被误当新生成或恢复批准"
       - id: "check.mvc-data-analysis-retirement"
         run: "node --test --test-name-pattern='退役|历史' .agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs"
@@ -1453,7 +1453,6 @@ profiles:
         inputs_complete: true
         input_patterns:
           - ".agents/skills/yss-prototype-stage/tests/**"
-          - "profiles/design/.agents/skills/yss-prototype-stage/**"
         depends_on: []
         failure_mode: "原型拒绝配置的工作包根、接受错目录或覆盖已存在内容"
       - id: "check.022dccdddca70b70"
@@ -1702,7 +1701,7 @@ profiles:
         depends_on: [ "check.daily-flow" ]
         failure_mode: "已有性能对照入口的 Python 语法错误；对照仍显式使用原组范围"
       - id: "check.cli-content-identity"
-        tier: slow  # cbe04769 发布差异检查实测 81s；fast 延后，release 保留。
+        tier: slow # cbe04769 发布差异检查实测 81s；fast 延后，release 保留。
         resources: [ "native-cli" ]
         lane: cli-identity-scaffold
         inputs_complete: true
@@ -1715,7 +1714,7 @@ profiles:
         depends_on: []
         failure_mode: "固定的 yss 二进制与 yss-cli 固定文件的版本、提交或摘要不符，或原生 CLI 消费入口、兼容或来源身份错误"
       - id: "check.cli-content-identity-install"
-        tier: slow  # cbe04769 发布差异检查实测 95s；fast 延后，release 保留。
+        tier: slow # cbe04769 发布差异检查实测 95s；fast 延后，release 保留。
         resources: [ "native-cli" ]
         lane: cli-identity-install
         inputs_complete: true
@@ -1740,7 +1739,7 @@ profiles:
         depends_on: []
         failure_mode: "固定的 yss 二进制与 yss-cli 固定文件的版本、提交或摘要不符，或原生 CLI 消费入口、兼容或来源身份错误"
       - id: "check.cli-content-identity-rest"
-        tier: slow  # cbe04769 发布差异检查实测 62s；fast 延后，release 保留。
+        tier: slow # cbe04769 发布差异检查实测 62s；fast 延后，release 保留。
         resources: [ "native-cli" ]
         lane: cli-identity-rest
         inputs_complete: true
@@ -1879,7 +1878,7 @@ profiles:
         depends_on: []
         failure_mode: "阶段任务定义和 checkpoint 的根不一致"
       - id: check.work-layout-tickets
-        resources: [native-cli, repo-root-evidence]
+        resources: [ native-cli, repo-root-evidence ]
         run: "node --test scripts/fixtures/business-tickets/*.test.mjs"
         group: work-layout
         inputs_complete: true
@@ -1917,7 +1916,7 @@ profiles:
         depends_on: []
         failure_mode: "目录修正后对应生命周期或证据消费者接受错误引用或拒绝当前有效引用"
       - id: check.work-layout-digital-human-task-package
-        resources: [native-cli]
+        resources: [ native-cli ]
         run: "node tests/scenarios/verify-digital-human-task-package-scenarios.mjs"
         group: work-layout
         inputs_complete: true
@@ -1936,16 +1935,6 @@ profiles:
           - "scripts/verify-user-decision-scenarios"
         depends_on: []
         failure_mode: "目录修正后对应生命周期或证据消费者接受错误引用或拒绝当前有效引用"
-      - id: check.work-layout-design-migration
-        run: "node profiles/design/tests/scenarios/verify-strategic-gate-migration-scenarios.mjs"
-        group: work-layout
-        inputs_complete: true
-        input_patterns:
-          - "profiles/design/scripts/lib/strategic-gate-migration.mjs"
-          - "profiles/design/.template-spec/process/schemas/strategic-gate-migration-plan.schema.json"
-          - "profiles/design/tests/scenarios/verify-strategic-gate-migration-scenarios.mjs"
-        depends_on: []
-        failure_mode: "迁移计划拒绝配置根或越过功能、输入证据与恢复文件边界"
       - id: check.work-layout-design-fixtures
         run: "node --test .agents/skills/yss-stage-decision/tests/run-scenarios.mjs .agents/skills/yss-tactical-design/tests/run-scenarios.mjs"
         group: work-layout
@@ -2000,6 +1989,7 @@ profiles:
           - "scripts/lib/profile-tree.mjs"
           - "scripts/lib/skill-supply-chain.mjs"
           - "tests/profile-consistency.test.mjs"
+          - .template-source/plugins/yss-product-design/**
         depends_on: []
         failure_mode: "现役 Profile 的组合技能、锁、注册表或 effectiveHash 发生漂移"
       - id: check.lib-coverage-ledger
@@ -2036,6 +2026,16 @@ profiles:
           - "tests/verification-policy-baseline.test.mjs"
         depends_on: []
         failure_mode: "验证策略静默删除 required checks、Gate 或 CI 守卫"
+      - id: check.plugin-supported-scope
+        run: node --test --test-skip-pattern='当前主机真实公开打包' .template-source/plugins/yss-backend-delivery/tests/permissions.test.mjs
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - .template-source/plugins/yss-backend-delivery/**
+          - scripts/fixtures/contract-efficiency/plugin-smoke.mjs
+          - .template-source/tooling/node/scripts/test-with-plugin-clis.mjs
+        depends_on: []
+        failure_mode: 已移除插件 Profile 仍被接受，或权限与固定可执行路径的支持边界回退
   release:
     selection: impact
     required_checks:
@@ -2394,12 +2394,12 @@ syntax_files:
   - tests/verification-selection.test.mjs
   - tests/verification-delivery-run.test.mjs
 routing:
-  - patterns: ["tests/daily-input-preparation.test.mjs"]
-    groups: [feature-assets]
-  - patterns: ["tests/harness-skill-scope.test.mjs"]
-    groups: [skills]
-  - patterns: ["tests/yss-backend-skill-governance.test.mjs"]
-    groups: [implementation]
+  - patterns: [ "tests/daily-input-preparation.test.mjs" ]
+    groups: [ feature-assets ]
+  - patterns: [ "tests/harness-skill-scope.test.mjs" ]
+    groups: [ skills ]
+  - patterns: [ "tests/yss-backend-skill-governance.test.mjs" ]
+    groups: [ implementation ]
   - patterns:
       - tests/verification-preflight.test.mjs
       - tests/verification-artifacts.test.mjs
@@ -2657,7 +2657,6 @@ routing:
       - scripts/fixtures/role-independent-draft/scenarios.test.mjs
       - scripts/fixtures/role-independent-draft/slice-reading.test.mjs
       - scripts/fixtures/stage-tracking/tracking.test.mjs
-      - scripts/fixtures/spec-baseline/scenarios.mjs
       - .template-source/tooling/node/test/approval-current.test.mjs
       - .template-source/tooling/node/test/decision-continuation.test.mjs
       - .template-source/tooling/node/test/lifecycle-progression.test.mjs
@@ -2989,17 +2988,17 @@ routing:
       - tests/verification-delivery-run.test.mjs
     groups:
       - candidate-integrity
-  - patterns: ["tests/public-skill-export.test.mjs", "tests/retired-skill-ids.test.mjs"]
-    groups: ["skills"]
+  - patterns: [ "tests/public-skill-export.test.mjs", "tests/retired-skill-ids.test.mjs" ]
+    groups: [ "skills" ]
   # 已移除的 Superpowers 输出与退役维护文档测试只保留删除 diff 的路由墓碑，不恢复内容检查
   - patterns:
       - "docs/superpowers/**"
       - "tests/maintenance-docs.test.mjs"
-    groups: ["hygiene"]
-  - patterns: ["tests/profile-consistency.test.mjs", "tests/lib-coverage-ledger.test.mjs", "tests/distribution-hygiene.test.mjs"]
-    groups: ["hygiene"]
-  - patterns: ["tests/verification-policy-baseline.test.mjs"]
-    groups: ["candidate-integrity"]
+    groups: [ "hygiene" ]
+  - patterns: [ "tests/profile-consistency.test.mjs", "tests/lib-coverage-ledger.test.mjs", "tests/distribution-hygiene.test.mjs" ]
+    groups: [ "hygiene" ]
+  - patterns: [ "tests/verification-policy-baseline.test.mjs" ]
+    groups: [ "candidate-integrity" ]
 groups:
   work-layout:
     commands:
@@ -3007,7 +3006,7 @@ groups:
         id: check.work-layout
       - run: node scripts/verify-work-layout
         id: check.work-layout-hardcodes
-        resources: [native-cli]
+        resources: [ native-cli ]
   drift-identity:
     commands:
       - run: node --test tests/content-identity.test.mjs tests/drift-report.test.mjs tests/maintenance-iteration.test.mjs
@@ -3019,10 +3018,10 @@ groups:
       - run: "node --test --test-name-pattern='^(Spec 原生阶段资源|现役 archify)' tests/cli-retirement.test.mjs"
         when: template-source
         id: check.cli-content-identity-install
-      - run: "node --test --test-name-pattern='^(backend|design): 内容来源' tests/cli-retirement.test.mjs"
+      - run: "node --test --test-name-pattern='^backend: 内容来源' tests/cli-retirement.test.mjs"
         when: template-source
         id: check.cli-content-identity-sync
-      - run: "node --test --test-skip-pattern='^(按需安装两个后端脚手架|公开 Bundle 导出|已移除前端 Profile)' --test-skip-pattern='^(Spec 原生阶段资源|现役 archify)' --test-skip-pattern='^(backend|design): 内容来源' tests/cli-retirement.test.mjs"
+      - run: "node --test --test-skip-pattern='^(按需安装两个后端脚手架|公开 Bundle 导出|已移除前端 Profile)' --test-skip-pattern='^(Spec 原生阶段资源|现役 archify)' --test-skip-pattern='^backend: 内容来源' tests/cli-retirement.test.mjs"
         when: template-source
         id: check.cli-content-identity-rest
       - run: scripts/sync-skills --check
@@ -3040,7 +3039,7 @@ groups:
   feature-assets:
     commands:
       - run: node --test tests/daily-input-preparation.test.mjs
-        resources: [native-cli]
+        resources: [ native-cli ]
         when: template-source
         id: check.daily-input-preparation
       - run: node --test tests/feature-assets.test.mjs tests/browser-session.test.mjs
@@ -3050,7 +3049,7 @@ groups:
     commands:
       - run: node --test scripts/fixtures/business-tickets/*.test.mjs
         id: check.business-ticket-contract
-        resources: [native-cli]
+        resources: [ native-cli ]
   plan-spec-content:
     commands:
       - run: node --test .template-source/tooling/node/test/plan-spec-quality.test.mjs tests/plan-spec-template-contract.test.mjs
@@ -3066,10 +3065,10 @@ groups:
       - run: "node --test --test-name-pattern='^(Spec 原生阶段资源|现役 archify)' tests/cli-retirement.test.mjs"
         when: template-source
         id: check.517fe9954d913f53-install
-      - run: "node --test --test-name-pattern='^(backend|design): 内容来源' tests/cli-retirement.test.mjs"
+      - run: "node --test --test-name-pattern='^backend: 内容来源' tests/cli-retirement.test.mjs"
         when: template-source
         id: check.517fe9954d913f53-sync
-      - run: "node --test --test-skip-pattern='^(按需安装两个后端脚手架|公开 Bundle 导出|已移除前端 Profile)' --test-skip-pattern='^(Spec 原生阶段资源|现役 archify)' --test-skip-pattern='^(backend|design): 内容来源' tests/cli-retirement.test.mjs"
+      - run: "node --test --test-skip-pattern='^(按需安装两个后端脚手架|公开 Bundle 导出|已移除前端 Profile)' --test-skip-pattern='^(Spec 原生阶段资源|现役 archify)' --test-skip-pattern='^backend: 内容来源' tests/cli-retirement.test.mjs"
         when: template-source
         id: check.517fe9954d913f53-rest
       - run: scripts/verify-repository-scope-scenarios
@@ -3105,7 +3104,7 @@ groups:
         id: check.ba0fad1faed81f06
       - run: scripts/verify-strategic-handoff-package-scenarios
         id: check.83f08a7516716a38
-        resources: [native-cli]
+        resources: [ native-cli ]
   design-system:
     commands:
       - run: node .template-source/tooling/node/scripts/design-md.mjs lint DESIGN.md
@@ -3202,10 +3201,10 @@ groups:
         id: check.aab6b1527f8c70f0
       - run: scripts/verify-subagent-task-package-scenarios
         id: check.ffe328872703d3c0
-        resources: [native-cli]
+        resources: [ native-cli ]
       - run: scripts/verify-digital-human-task-package-scenarios
         id: check.b593997f977be2c5
-        resources: [native-cli]
+        resources: [ native-cli ]
       - run: node --test tests/read-only-intake.test.mjs
         when: template-source
         id: check.read-only-intake
@@ -3350,10 +3349,10 @@ groups:
         id: check.verification-selection
       - run: node --test tests/verification-gates.test.mjs tests/verification-baseline.test.mjs tests/verification-qualification.test.mjs tests/verification-delivery-run.test.mjs tests/legacy-verification.test.mjs
         id: check.release-profile-consumers
-        resources: [native-cli]
+        resources: [ native-cli ]
       - run: node --test tests/verification-report.test.mjs
         id: check.daily-report
-        resources: [python-jsonschema, go]
+        resources: [ python-jsonschema, go ]
   research-evidence:
     commands:
       - run: node .agents/skills/yss-research/tests/run-scenarios.mjs
@@ -3461,7 +3460,6 @@ gates:
       - check.work-layout-lifecycle-operator
       - check.openapi-validation-scenarios
       - check.work-layout-digital-human-task-package
-      - check.work-layout-design-migration
       - check.work-layout-design-fixtures
       - check.lib-coverage-ledger
     audit_status: conservative-complete
@@ -3734,23 +3732,9 @@ gates:
     audit_basis: Every registered changed path retains this risk; no narrowing or retirement.
     release_families:
       - spec
-  - id: check.verification-design-cli
-    title: Design CLI 包与真实入口
-    trigger: four-cli-delivery
-    execution_scope: release-integration
-    required_at_release: true
-    inputs_complete: false
-    input_patterns: []
-    impact_dependencies: []
-    depends_on: []
-    check_ids: []
-    audit_status: pending
-    display_id: G14
-    release_families:
-      - design
   - id: check.verification-backend-cli
     title: Backend CLI 包与真实入口
-    trigger: four-cli-delivery
+    trigger: supported-cli-delivery
     execution_scope: release-integration
     required_at_release: true
     inputs_complete: false
@@ -3763,8 +3747,8 @@ gates:
     release_families:
       - backend
   - id: check.verification-cli-migration
-    title: 四家族迁移与回滚
-    trigger: four-cli-delivery
+    title: Spec 与 Backend 迁移及回滚
+    trigger: supported-cli-delivery
     execution_scope: release-integration
     required_at_release: true
     inputs_complete: false
@@ -3776,7 +3760,6 @@ gates:
     display_id: G17
     release_families:
       - spec
-      - design
       - backend
   - id: check.verification-distribution
     title: 生成实例分发与交付

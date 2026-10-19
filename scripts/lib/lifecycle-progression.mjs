@@ -119,7 +119,7 @@ export function readProgressionTarget({root, checkpointRef, assetRef, includeDef
   check(Array.isArray(config.consumers), 'consumers 消费者必须为数组');
   const seen = new Set();
   for (const consumer of config.consumers) {
-    check(keys(consumer, ['profile', 'root', 'checkpoint_ref']) && ['design', 'backend'].includes(consumer.profile) && path.isAbsolute(consumer.root ?? '') && typeof consumer.checkpoint_ref === 'string' && consumer.checkpoint_ref, 'consumer 消费者缺显式 Profile、root 或 checkpoint');
+    check(keys(consumer, ['profile', 'root', 'checkpoint_ref']) && consumer.profile === 'backend' && path.isAbsolute(consumer.root ?? '') && typeof consumer.checkpoint_ref === 'string' && consumer.checkpoint_ref, 'consumer 消费者缺显式 Profile、root 或 checkpoint');
     safeFile(consumer.root, consumer.checkpoint_ref);
     check(!seen.has(consumer.profile), 'consumer Profile 消费者重复'); seen.add(consumer.profile);
   }

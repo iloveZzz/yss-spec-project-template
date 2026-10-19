@@ -54,11 +54,11 @@ test('ordinary engineering work reuses explicit authorization through public app
 test('product design can continue after independent review without a repeated human reply', () => fixture(f => {
   validateApprovalRecord({ schema_version: 1, gate_id: f.requirement.boundary, decision: 'approved', actor_kind: 'digital-human', role_id: 'role.test-engineer', runtime_id: 'runtime.generic', principal_ref: 'synthetic.reviewer', drafter_principal_ref: 'synthetic.worker', subject_ref: f.subject.ref, subject_digest:f.asset(f.subject.ref).digest.slice(7), basis:f.basis.map(x=>({ref:x.ref,digest:x.digest.slice(7)})), approval_scope: f.requirement.scope, continuation_ref: f.requirement.continuation_ref }, { requireApproved: true, root:f.root,expected:approvalExpectationFromSubject(f.requirement.boundary,f.subject.ref,{root:f.root}) });
 }, 'gate.product-design-approved'));
-test('source approval continuation is verified by all three dedicated receivers', () => fixture(f => {
+test('source approval continuation is verified by the supported dedicated receiver', () => fixture(f => {
   const record = { schema_version: 1, gate_id: f.requirement.boundary, decision: 'approved', actor_kind: 'digital-human', role_id: 'role.test-engineer', runtime_id: 'runtime.generic', principal_ref: 'synthetic.reviewer', drafter_principal_ref: 'synthetic.worker', subject_ref: f.subject.ref, subject_digest:f.asset(f.subject.ref).digest.slice(7), basis:f.basis.map(x=>({ref:x.ref,digest:x.digest.slice(7)})), approval_scope: f.requirement.scope, continuation_ref: f.requirement.continuation_ref };
   f.save('source-approval-record.json',record);
   const input = f.save('source-approval.json', {record,currentAssetRef:{ref:f.subject.ref,approval_ref:'source-approval-record.json'},roles:loadDigitalHumanRoles()});
-  for (const profile of ['design', 'backend']) {
+  for (const profile of ['backend']) {
     const moduleUrl = pathToFileURL(path.join(composeProfileTree(profile), 'scripts/lib/strategic-handoff.mjs')).href;
     const code = `import {readFileSync} from 'node:fs'; import {sourceApproval} from ${JSON.stringify(moduleUrl)}; const {record,roles,currentAssetRef}=JSON.parse(readFileSync(process.argv[1])); await sourceApproval(record,roles,process.argv[2],currentAssetRef);`;
     const result = spawnSync(process.execPath, ['--input-type=module', '-e', code, input, f.root], { encoding: 'utf8' });

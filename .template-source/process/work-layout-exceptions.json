@@ -138,42 +138,6 @@
     },
     {
       "repository": ".",
-      "file": "profiles/design/.template-source/distribution/bundle-profile.json",
-      "kind": "content",
-      "text": "      \"docs/.scratch\",",
-      "count": 1,
-      "category": "compatibility",
-      "reason": "禁止分发实例资产或升级覆盖既有工作包的保护规则"
-    },
-    {
-      "repository": ".",
-      "file": "profiles/design/.template-spec/agents/issue-tracker.md",
-      "kind": "content",
-      "text": "    - docs/.scratch",
-      "count": 1,
-      "category": "compatibility",
-      "reason": "机器配置 legacy_roots 只读扫描；正文使用当前 tracker.root"
-    },
-    {
-      "repository": ".",
-      "file": "profiles/design/.template-spec/process/instance-distribution-manifest.yaml",
-      "kind": "content",
-      "text": "  - docs/.scratch",
-      "count": 1,
-      "category": "compatibility",
-      "reason": "禁止分发实例资产或升级覆盖既有工作包的保护规则"
-    },
-    {
-      "repository": ".",
-      "file": "profiles/design/tests/scenarios/verify-strategic-gate-migration-scenarios.mjs",
-      "kind": "content",
-      "text": " for (const workRoot of ['.work', 'docs/custom-work', 'docs/.scratch']) {",
-      "count": 1,
-      "category": "compatibility-test",
-      "reason": "复用 main Design 迁移场景，验证当前/自定义/历史配置根、写入前拒绝、摘要漂移和不可变历史证据"
-    },
-    {
-      "repository": ".",
       "file": "scripts/lib/work-layout.mjs",
       "kind": "content",
       "text": "export const HISTORICAL_WORK_ROOTS = Object.freeze(['docs/.scratch', '.scratch', 'docs/requirements/tickets']);",
@@ -364,15 +328,6 @@
     {
       "repository": "cli",
       "file": "internal/bundle/rules/backend.json",
-      "kind": "content",
-      "text": "      \"docs/.scratch\",",
-      "count": 1,
-      "category": "compatibility",
-      "reason": "禁止分发实例资产或升级覆盖既有工作包的保护规则"
-    },
-    {
-      "repository": "cli",
-      "file": "internal/bundle/rules/design.json",
       "kind": "content",
       "text": "      \"docs/.scratch\",",
       "count": 1,
