@@ -13,7 +13,7 @@ const read = (ref) => readFileSync(path.join(root, ref), 'utf8');
 test('前端 Profile 与前端移交验证入口已删除', () => {
   for (const ref of ['profiles/frontend', 'scripts/verify-frontend-delivery', 'scripts/verify-frontend-strategic-preflight', 'scripts/verify-frontend-implementation-evidence',
     'scripts/lib/frontend-delivery.mjs', 'scripts/lib/frontend-delivery-boundary.mjs', 'scripts/fixtures/frontend-delivery']) assert.equal(existsSync(path.join(root, ref)), false, `${ref} 不应存在`);
-  assert.deepEqual(PROFILE_NAMES, ['design', 'backend']);
+  assert.deepEqual(PROFILE_NAMES, ['backend']);
 });
 
 test('前端生命周期稳定 ID 已弃用且不再定义', () => {

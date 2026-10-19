@@ -8,7 +8,6 @@ const retired=['approval-record','approval-current','approval-consumption','appr
 const sourceCommit='7ac487880dcbda5ca6e121e1641ee7ebc8a55996';
 const sources={
   spec:['48e6d1ec8c5c6a6780678b970e5463c58c54445f31efbb971b827aa1b3d493f1','343a828bfc887319b67165a6663c05f62c03e3e4a7c210f4eebd23542c8da4a3'],
-  design:['a24884caabbcfa84a0e29675cf29b3fc5594422c36d57e3dd5c9f633aa72e555','2db26d46d4670bed76eb0a5a0871641f4a7770a1aceea4f1825490009fb3a188'],
   backend:['8d6e01e45d02a6d9f156fdfbec8de2477363db4377e8d0b6e0d9204db518f16b','ea3f2f98c59abdd3e53ae60b7139fa7e5d6ad2f7fe80cbce17049dae5a27d440'],
 };
 
@@ -27,10 +26,10 @@ test('AR12b 旧校验路径与生产回退全部退役',()=>{
       }
     }
   }
-  for(const ref of ['scripts','.agents/skills','profiles/design/scripts','profiles/backend/scripts','profiles/design/.agents/skills','profiles/backend/.agents/skills'])scan(path.join(root,ref));
+  for(const ref of ['scripts','.agents/skills','profiles/backend/scripts','profiles/backend/.agents/skills'])scan(path.join(root,ref));
 });
 
-test('三 Profile 的 AR12b 删除只匹配已发布 v4.0.3 精确来源',()=>{
+test('现役 Spec/Backend 的 AR12b 删除只匹配已发布 v4.0.3 精确来源',()=>{
   for(const [profile,[snapshot,bundle]]of Object.entries(sources)){
     const prefix=profile==='spec'?'':`profiles/${profile}/`;
     const policy=JSON.parse(fs.readFileSync(path.join(root,prefix,'.template-source/distribution/bundle-profile.json')));

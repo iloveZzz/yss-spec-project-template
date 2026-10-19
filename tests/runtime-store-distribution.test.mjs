@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import {NATIVE_PROFILES,initializeNative,runNative} from '../.template-source/scripts/lib/native-yss.mjs';
+import {NATIVE_PROFILES,initializeNative,inspectNative,nativeDigest,runNative} from '../.template-source/scripts/lib/native-yss.mjs';
 import {composeProfileTree} from '../scripts/lib/profile-tree.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
@@ -64,15 +64,18 @@ test('runtime module copies bind the canonical source in every composed Profile'
 test('supported native Bundle exports contain runtime manager and portable policy', t => {
   const scratch=temporary(t);
   for(const profile of NATIVE_PROFILES){
+    const expected=inspectNative(profile).files;
     const out=path.join(scratch,profile);const exported=runNative(['bundle','export','--profile',profile,'--out',out]).result;
-    for(const ref of sharedRefs){assert.ok(exported.files.some(row=>row.path===ref),`${profile}/${ref}`);assert.ok(fs.readFileSync(path.join(out,ref)).equals(read(ref)),`${profile}/${ref}`);}
+    // 固定 CLI 的 Bundle 绑定其自身清单，当前模板策略由上面的组合树用例核验。
+    for(const ref of sharedRefs){assert.ok(exported.files.some(row=>row.path===ref),`${profile}/${ref}`);assert.equal(nativeDigest(fs.readFileSync(path.join(out,ref))),expected[ref].digest,`${profile}/${ref}`);}
     assert.equal(fs.existsSync(path.join(out,'.template-source')),false);
   }
 });
 
 test('spec initial stage installs runtime manager and portable policy through public init',t=>{
   const scratch=temporary(t),target=path.join(scratch,'spec');initializeNative('spec',target);
-  for(const ref of sharedRefs)assert.ok(fs.readFileSync(path.join(target,ref)).equals(read(ref)),ref);
+  const expected=inspectNative('spec').files;
+  for(const ref of sharedRefs)assert.equal(nativeDigest(fs.readFileSync(path.join(target,ref))),expected[ref].digest,ref);
 });
 
 test('runtime policy references preserve existing skill preflight and authority', () => {

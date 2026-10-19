@@ -70,7 +70,7 @@ test('policy2 extracts checks without holders, preserves all legacy check IDs an
  assertLegacyCheckIDs(p,'spec','.template-spec/agents/digital-human-roles.yaml');
  assert.equal(p.schema_version,2); assert.equal(p.task_package.schema_version,3); assert.equal(p.request_triage.delivery_path.version,2); assert.equal(p.request_triage.delivery_path.standard.version,2);
  assert.equal(p.review_verification.default_mode,'self-check'); assert.equal(p.governance_versions.required_capability,'role-independent-governance-v1');
- assert.deepEqual(p.profile_admission.new_profiles,['spec','backend']); assert.equal(p.profile_admission.legacy_design.write,'explicit-migration-only');
+ assert.deepEqual(p.profile_admission.new_profiles,['spec','backend']); assert.equal(p.profile_admission.legacy_design,undefined);
  assert.equal(p.governance_versions.project_identity.current,2); assert.equal(p.governance_versions.harness_profile.current,3);
  assert.equal(p.user_decision_policy.continuation.schema_version,2);
  assert.ok(p.technical_checks.length); assert.ok(p.gate_policy.profiles.spec.check_reviews.every(c=>c.gate.startsWith('check.')&&!('countersigners' in c)));
