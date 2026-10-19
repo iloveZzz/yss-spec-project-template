@@ -420,9 +420,9 @@
       "file": "scripts/lib/profile-distribution.mjs",
       "kind": "content",
       "text": "    { path: 'docs/.scratch', reason: '实例侧临时材料目录' },",
-      "count": 2,
+      "count": 1,
       "category": "compatibility",
-      "reason": "Profile 分发清单以字面路径登记实例侧临时工作根，供 stale-exclude 校验读取"
+      "reason": "现行 Backend 分发清单保留实例侧历史临时工作根，供 stale-exclude 校验读取"
     },
     {
       "repository": ".",
@@ -432,6 +432,15 @@
       "count": 1,
       "category": "history",
       "reason": "记录实例资产保护边界，说明历史临时工作根不得移植到实例"
+    },
+    {
+      "repository": "cli",
+      "file": "internal/bundle/rules/design.json",
+      "kind": "content",
+      "text": "      \"docs/.scratch\",",
+      "count": 1,
+      "category": "compatibility",
+      "reason": "固定 CLI 的历史 Design 规则保留旧工作根读取兼容；现行新建仅 Spec、Backend"
     }
   ]
 }

@@ -26,10 +26,12 @@ test('legacy-full准备任务显式登记，清理只删除本轮可写实例',t
   const root=path.join(temp,'source'),directory=path.join(temp,'report');fs.mkdirSync(root);fs.mkdirSync(directory);
   const plan={strategy:'release',effective_profile:'release',commands:[{task_id:'legacy.010',command:'node --test submodules/create-yss-spec/tests/sync-fast-smoke.test.js'},{command:'node .template-source/scripts/verify-cli-upgrade.mjs'}]};
   const prepared=compileDeliveryPreparationTasks(plan,{root,reportDir:directory});
-  assert.equal(prepared.tasks.length,7);
+  assert.equal(prepared.tasks.length,5);
+  assert.deepEqual(prepared.families,['spec','backend']);
+  assert.deepEqual(prepared.tasks.filter(task=>task.kind==='artifact-prepare').map(task=>task.id),['check.cli-artifact-spec','check.cli-artifact-backend']);
   assert.deepEqual(plan.commands[0].depends_on,['check.cli-artifact-consumers']);
   assert.deepEqual(plan.commands[1].depends_on,['check.cli-artifact-consumers']);
-  assert.equal(prepared.tasks.some(task=>task.kind==='source-test-consumer'),false);assert.equal(prepared.tasks.filter(task=>task.kind==='artifact-prepare').length,3);assert.equal(prepared.tasks.filter(task=>task.kind==='artifact-migration').length,3);
+  assert.equal(prepared.tasks.some(task=>task.kind==='source-test-consumer'),false);assert.equal(prepared.tasks.filter(task=>task.kind==='artifact-prepare').length,2);assert.equal(prepared.tasks.filter(task=>task.kind==='artifact-migration').length,2);
   const keep=path.join(directory,'artifacts/spec/consumer/package.txt'),discard=path.join(directory,'migration/spec/user.txt');
   for(const file of [keep,discard]){fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,'evidence');}
   const record=runDeliveryTask({root,directory,action:'cleanup'});

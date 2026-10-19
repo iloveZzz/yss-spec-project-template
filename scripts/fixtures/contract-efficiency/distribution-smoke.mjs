@@ -1,6 +1,5 @@
 // Fixed native consumer smoke; temporary instances never qualify a release.
 import fs from 'node:fs';
-import {composeProfileTree} from '../../lib/profile-tree.mjs';
 import path from 'node:path';
 import os from 'node:os';
 import assert from 'node:assert/strict';
@@ -80,7 +79,7 @@ try{
   else{
    writing.lifecycle_writing_examples_sha256=asset(target,exampleRef);
    for(const name of ['diagnosing-bugs','grilling'])skills[name]=skill(target,root,name);
-   else{writing.retro_sha256=asset(target,retroRef);for(const name of ['implement','tdd'])skills[name]=skill(target,root,name);}
+   writing.retro_sha256=asset(target,retroRef);for(const name of ['implement','tdd'])skills[name]=skill(target,root,name);
   }
   fs.writeFileSync(path.join(target,'contract-smoke.md'),'# 合同阅读验收\n\n目标：保留约束。\n');
   const view=JSON.parse(node([path.join(target,'scripts/contract'),'view','contract-smoke.md','--kind','spec','--json'],target));assert.equal(view.execution_allowed,false);assert.ok(view.markdown.includes('保留约束'));

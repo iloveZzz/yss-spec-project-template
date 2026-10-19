@@ -5,10 +5,11 @@ import {fileURLToPath} from 'node:url';
 import {parseArgs} from 'node:util';
 import {createHash} from 'node:crypto';
 import {collectReleaseSources, produceCliArtifact, prepareArtifactConsumers, verifyInstalledCliMigration, validateArtifact, sourceTuple} from './verification-artifacts.mjs';
+import {NATIVE_PROFILES} from './native-yss.mjs';
 
 const entry=fileURLToPath(import.meta.url);
-const families=['spec','design','backend'];
-const gates={spec:'check.verification-spec-cli',design:'check.verification-design-cli',backend:'check.verification-backend-cli'};
+const families=NATIVE_PROFILES;
+const gates={spec:'check.verification-spec-cli',backend:'check.verification-backend-cli'};
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 const quote=value=>`'${String(value).replaceAll("'","'\\''")}'`;
 const ensure=(condition,message)=>{if(!condition)throw new TypeError(message);};

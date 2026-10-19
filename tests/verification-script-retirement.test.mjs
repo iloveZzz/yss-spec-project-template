@@ -1,6 +1,5 @@
 import test from 'node:test';
 import {loadLegacyManifest} from '../.template-source/scripts/lib/legacy-verification.mjs';
-import {composeProfileTree} from '../scripts/lib/profile-tree.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -145,17 +144,15 @@ test('第三批分发保留替代核心库并且当前阶段直接安装新路�
   const readFrom=(base,ref)=>JSON.parse(fs.readFileSync(path.join(base,ref),'utf8'));
   const read=ref=>readFrom(root,ref);
   if(!cliSource)t.diagnostic('未提供 YSS_NATIVE_SOURCE_ROOT：跳过 yss-cli 内置策略 rules/design.json、rules/spec.json 的核对');
-  const designPolicies=[['profiles/design/.template-source/distribution/bundle-profile.json',()=>read('profiles/design/.template-source/distribution/bundle-profile.json')]];
-  if(cliSource)designPolicies.push(['yss-cli internal/bundle/rules/design.json',()=>readFrom(cliSource,'internal/bundle/rules/design.json')]);
-  for(const [ref,load] of designPolicies){
+  const profilePolicies=[['profiles/backend/.template-source/distribution/bundle-profile.json',()=>read('profiles/backend/.template-source/distribution/bundle-profile.json')]];
+  if(cliSource)for(const profile of ['backend','design'])profilePolicies.push([`yss-cli internal/bundle/rules/${profile}.json`,()=>readFrom(cliSource,`internal/bundle/rules/${profile}.json`)]);
+  for(const [ref,load] of profilePolicies){
     const policy=load();
     for(const name of ['implementation-path-policy','repository-scope-policy']){
       assert.ok(!policy.manifest.excludePaths.includes(`scripts/lib/${name}.mjs`),`${ref} must retain the replacement library`);
       assert.ok(!policy.manifest.excludePaths.includes(`scripts/${name}`),`${ref} must not require the retired shell`);
     }
   }
-  const manifest=fs.readFileSync(path.join(composeProfileTree('backend'),'.template-spec/process/instance-distribution-manifest.yaml'),'utf8');
-  for(const name of ['implementation-path-policy','repository-scope-policy']) assert.ok(!manifest.includes(`- scripts/lib/${name}.mjs`),'Design instance manifest must retain replacement libraries');
   const specPolicies=[['.template-source/distribution/bundle-profile.json',()=>read('.template-source/distribution/bundle-profile.json')]];
   if(cliSource)specPolicies.push(['yss-cli internal/bundle/rules/spec.json',()=>readFrom(cliSource,'internal/bundle/rules/spec.json')]);
   for(const [ref,load] of specPolicies){
