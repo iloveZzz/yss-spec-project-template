@@ -6,7 +6,7 @@
 
 ```text
 快速上手
-前置条件：在独立新目录选择一个 Profile；spec 综合研发主控，design 产品与业务设计，backend 承担技术设计与专职交付。新正式 Spec 功能默认推进到业务验收，可按里程碑续推。
+前置条件：在独立新目录选择 Profile；spec 综合研发主控并承担产品设计，backend 承担技术设计与专职交付。新建使用 spec/backend；旧 Design 保留历史并显式迁移。新正式 Spec 功能默认推进到业务验收，可按里程碑续推。
 输入材料：项目名称与目标目录；已有工程改用 attach 的保存计划。
 
   yss version --json
@@ -28,21 +28,25 @@
 ```text
 日常交付（Spec）
 来源摘要：template=d947b648aa5feac74bd17ddb407a666a28cf5dd2；policy=3617d6ba1b8236d56b0af517c9ed46fca437dabf6862d4124e18ac687c41b051；日常能力=true
-前置条件：当前 Spec 实例启用日常政策；同一任务有需求与验收、单一实现仓、已确认完整基线、适用 Skills、实际测试、独立审查和回滚依据。
+前置条件：当前 Spec 实例启用日常政策；同一任务有需求与验收、单一实现仓、已确认完整基线、适用 Skills、实际测试、适用复核和回滚依据。
 输入材料：docs/daily-task.md 的同一 Ticket/PR 证据区；实际实现仓；已确认的40位 SHA。格式消费项目 .agents/skills/yss-product-lifecycle/references/daily-delivery.md。
-顺序：需求与验收 → YSS 技术技能 → 实现 → 测试 → 独立审查 → verify-daily。
+顺序：需求与验收 → YSS 技术技能 → 实现 → 测试 → 适用复核 → verify-daily。
 
   yss lifecycle route --root ./demo-spec --task docs/daily-task.md --implementation-root "/实际实现仓" --base "<已确认40位SHA>" --json --diagnostics
   yss lifecycle verify-daily --root ./demo-spec --task docs/daily-task.md --implementation-root "/实际实现仓" --base "<已确认40位SHA>" --json --diagnostics
 
-预期结果：route 返回 daily、governed 或 needs-info 及原因。
-  daily：满足政策，按同一记录实现、实际测试及独立审查，再 verify-daily。
+预期结果：当前 CLI 和实例政策支持时，route 选择 daily、standard 或 governed；needs-info 是待补信息状态。
+  daily：满足政策，按同一记录实现、实际测试及适用复核，再 verify-daily。
+  standard：行为变化或新能力形成 Spec-lite，取得绑定当前 Spec-lite 的一次真实人工决定，再沿用同一记录实施和验证。
   governed：已有正式绑定或命中排除风险，从最近可信正式阶段继续。
   needs-info：缺事实先调查，补齐同一任务记录后再次 route。
 下一步：verify-daily 通过后按当前范围交付；它核验已有记录，不执行业务测试或创建批准。
-失败恢复：缺独立审查、过期测试或差异变化时补当前证据；已有正式任务不降级。其他 Profile 以实际政策与能力为准。
-内部测试中的模拟日志和审查记录仅验证协议；公开项目的实际命令、独立审查和批准由对应负责人取得。
+复核默认诚实自检；用户或外部规则明确要求独立复核时，须取得同一候选的真实独立上下文证据。
+失败恢复：缺适用复核、过期测试或差异变化时补当前证据；已有正式任务不降级。旧 CLI、其他 Profile 和不支持的路径按实际政策与能力处理。
+内部测试中的模拟日志和审查记录仅验证协议；实际项目的命令、适用复核和批准须有真实记录。
 ```
+
+实际日常与正式 API 机制记录见[隔离工程机制样例](../cases/contract-governance-validation.md)；standard 尚无本轮运行样例。
 
 ## 教程：governed
 
@@ -56,10 +60,10 @@
 当前实例须启用 lifecycle-target-v1 政策；用 capabilities 查看 CLI 能力，并核验当前实例政策，不能仅凭版本号判断。旧原生实例缺能力时显式 sync --plan，审阅后 apply；不会静默补目标或改 checkpoint。此机制用于 governed，daily 仍走原分流政策。
 
 三个完成结论分别核验：本次目标达到、Profile 职责完成、业务整体完成。新正式 Spec 功能默认 business-accepted；短目标达到不等于整体业务完成。已有 plan-to-backend 职责默认 backend-deliverable，仅允许前三目标，不能通过改目标扩大职责。
-五个可写目标：
+可写目标：
   spec-approved：当前 Spec 批准、业务 Ticket 草案和需求/验收覆盖已核验。
   product-design-completed：适用产品设计审查、验证、批准和业务 Ticket 正式化闭合；产品设计不适用须有当前依据，不生成空原型。
-  backend-deliverable：当前批准合同、适用 API、后端实现、独立审查、构建及契约/部署验证闭合。
+  backend-deliverable：当前批准合同、适用 API、后端实现、适用复核、构建及契约/部署验证闭合。
   business-accepted：Spec 主控完成同一业务范围的统一验收。验收完成不自动提交、合并或发布。
 专职工程只读显示 profile-terminal，它是本端职责终点，不是可写目标。
 
@@ -93,8 +97,8 @@ plan 只保存计划；apply 重新核验当前输入并拒绝篡改或漂移，
 
 本地或独立专职：
   consumers=[]：同一 Spec 主线消费本地批准资产，在已登记实现仓写代码；无需另建三个治理工程或自导自入。
-  外部专职：consumers 每项给 profile（design/backend）、绝对 root、同功能 checkpoint_ref，每种最多一个；不能指向主控自身。未来尚未创建的端只能登记意图，未核验当前接收前不会报完成。
-  Spec→Design 使用当前 SpecBaseline、Receipt 和目标 Context 对账；Spec/Design→Backend 消费同一冻结战略基线。
+  外部专职：新项目 consumers 每项给 profile（backend）、绝对 root、同功能 checkpoint_ref，每种最多一个；不能指向主控自身。未来尚未创建的端只能登记意图，未核验当前接收前不会报完成。
+  Spec→Backend 消费同一冻结战略基线。旧 Design 的 SpecBaseline、Receipt 和目标 Context 对账按历史绑定保留，另行显式迁移；不作为新建推荐。
   主控只汇总显式绑定的同功能交付；过期 Receipt、版本失配和 Context 冲突阻断受影响完成判定。Context 以既有词汇归一化合同核验。
 
 读结果：progression 给目标、来源、reached 和完成依据；completion.milestone/profile/business 区分本次、本端与整体；coordination 给显式消费者状态；next_action 给承接者、工程、工作单元或等待原因。pending 等待证据，blocked 先处理诊断，not-applicable 须有已核验依据。next_action 不授予执行授权。
@@ -149,7 +153,7 @@ plan 只保存计划；apply 重新核验当前输入并拒绝篡改或漂移，
   消费已正式化业务 Ticket 和当前批准的 Spec / 设计；工程契约围绕当前已确认交付范围形成。
   yss contract verify --root ./demo-spec --kind scaffold --file docs/scaffold.json --json --diagnostics
   yss handoff verify --root ./demo-spec --kind package --package docs/handoff --json
-  API：OAS 3.1 YAML Draft → 锁定工具校验 → 独立 Review → Freeze → 实现与契约测试；由 OpenAPI 技能及负责人完成。
+  API：OAS 3.1 YAML Draft → 锁定工具校验 → 内容 Review → Freeze → 实现与契约测试；默认诚实自检，有明确要求时独立复核，由 OpenAPI 技能及负责人完成。
 预期结果：查询/核验当前输入与适用条件。
 下一步条件：新建后端已由用户确认 DDD / MVC 与精确 Spring Boot 版本，既有工程已核验并复用登记值；受影响工程契约冻结或记录无 API 影响；required 脚手架证据齐全。
 失败恢复：查看当前报告的逐项诊断，从最近可信阶段补齐受影响材料；yss help errors。
@@ -169,7 +173,7 @@ plan 只保存计划；apply 重新核验当前输入并拒绝篡改或漂移，
   yss stage query --root ./demo-spec --id stage.vertical-slice-implementation --json
   yss skills list --root ./demo-spec --json
   yss lifecycle status --root ./demo-spec --checkpoint .work/feature/checkpoint.yaml --json
-  仅按批准合同的写范围实现；需要的 Skill 闭包来自当前合同。后端优先根 ./mvnw（前端实现由独立前端规格与 CLI 维护）；记录真实测试并由独立审查者审查。
+  仅按批准合同的写范围实现；需要的 Skill 闭包来自当前合同。后端优先根 ./mvnw（前端实现由独立前端规格与 CLI 维护）；记录真实测试并完成适用复核。
 预期结果：查询/核验当前输入与适用条件。
 下一步条件：允许写路径、禁止模式、证据和验证命令全部满足。
 失败恢复：查看当前报告的逐项诊断，从最近可信阶段补齐受影响材料；yss help errors。

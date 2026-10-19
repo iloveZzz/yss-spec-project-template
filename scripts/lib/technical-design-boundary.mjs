@@ -28,7 +28,8 @@ export function enforceTechnicalDesign(state = {}, { root = ROOT, execution, rea
     args.push('--approved-slice',approved.ref,'--approved-slice-digest',approved.digest,'--approved-slice-approval',approved.approval_ref);
   }
   if(inValidationPhase())args.push('--validation-dependencies');
-  const verified = spawnSync(process.execPath, args, { cwd: root, encoding: 'utf8', timeout: 60000, maxBuffer: 2 * 1024 * 1024 });
+  // Full-instance dependency receipts exceed 2 MiB; match the native transport's bounded allowance.
+  const verified = spawnSync(process.execPath, args, { cwd: root, encoding: 'utf8', timeout: 60000, maxBuffer: 64 * 1024 * 1024 });
   ensure(verified.status === 0, `技术设计不可消费: ${verified.error?.message || verified.stderr}`);
   if(inValidationPhase()){let output;try{output=JSON.parse(verified.stdout);}catch{throw new TypeError('VALIDATION_RECEIPT_INVALID: 技术设计子进程未返回依赖');}const dependencies=output.validation_dependencies;const required=[file,...(execution?[path.resolve(root,approvedExecutionBinding(execution).ref),path.resolve(root,approvedExecutionBinding(execution).approval_ref),path.resolve(root,'.template-spec/agents/digital-human-roles.yaml')]:[])];ensure(required.every(ref=>dependencies?.files?.some(row=>row.file===ref)),'VALIDATION_RECEIPT_INVALID: 技术设计依赖报告缺少必要原始资产');acceptValidationDependencies(dependencies);}
 }

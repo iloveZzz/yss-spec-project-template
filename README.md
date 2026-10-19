@@ -6,6 +6,8 @@ English overview: [README.en.md](README.en.md).
 
 ## 定位
 
+当前候选定位：面向采用 AI Agent 的中文企业后端团队，通过按风险裁剪流程，关联规格、API 合同、实现与交付证据。团队适配性仍待真实任务验证；[隔离工程机制样例](.template-spec/user-guide/cases/contract-governance-validation.md)给出本轮正常、拒绝、恢复及操作成本的实际记录，不承诺业务提效比例。
+
 本模板默认作为 Harness / 研发管理仓库，保留流程文档、契约模板、Agent skills 和协作约定。后端源码默认位于明确登记的实现仓库；前端实现由独立规格与 CLI 维护，不在本模板。
 
 默认一名 Agent 在 Spec 内连续完成需求、必要产品设计及适用后端工作，按显式目标推进；新建使用 Spec、Backend Profile，定义见 [Profile 注册](scripts/lib/profile-tree.mjs)。产品设计职责由 Spec 承担。Spec 文档批准、产品设计完成、后端可交付和业务验收是可选的本次终点；终点改变保留当前批准和后续路线。专职 Profile 继续按自身职责结束，主控通过显式同功能 checkpoint 与当前接收证据汇总。见[本次推进目标与专职协作](.template-spec/process/lifecycle-progression.md)。
