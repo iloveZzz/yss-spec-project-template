@@ -40,10 +40,6 @@
       "reason": "Profile 覆盖层包含旧线内容与迁移说明；现役 Profile 锁/注册表由硬检查覆盖"
     },
     {
-      "prefix": "docs/superpowers/",
-      "reason": "在办维护设计/计划可引用退役事实"
-    },
-    {
       "prefix": "tests/",
       "reason": "回归测试与夹具需要历史 ID 作为输入"
     },

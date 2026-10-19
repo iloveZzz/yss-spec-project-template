@@ -72,6 +72,8 @@ docs/graphify-out
 .template-source/wiki/
 docs/.scratch/
 .work/
+# Superpowers 技能库的本地计划/设计输出，不进入模板内容
+docs/superpowers/
 # Preserved in calibration-and-environment-evidence.tar.gz with a SHA-256 manifest.
 
 # Portable selected-platform verification evidence

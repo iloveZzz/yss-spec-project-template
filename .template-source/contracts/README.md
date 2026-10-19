@@ -24,4 +24,4 @@
 | [spec-backend-direct-consumption-design.md](spec-backend-direct-consumption-design.md) | spec-backend-direct-consumption | 0.2.0 | proposed | 2026-10-18 |
 | [spec-delta-rebaseline-design.md](spec-delta-rebaseline-design.md) | spec-delta-rebaseline-design | 0.1.0 | proposed | 2026-10-11 |
 
-新增或调整本目录文档时同步更新本索引；`scripts/verify-maintenance-docs` 会检查索引覆盖。
+新增或调整本目录文档时人工同步更新本索引。

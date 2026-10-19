@@ -109,3 +109,11 @@ YSS 技能的公开发布仓库为 `iloveZzz/yss-spec-dev-skills`，它是本模
 ## 外部工作流工具
 
 维护者可按需使用本机的 `gitlab-workflow`、`glab`、`gh` 或 `scripts/gitworks`。这些工具不是共享技能投影的一部分；平台选择与发布规则见 `.template-spec/agents/issue-tracker.md`。
+
+## Superpowers 输出边界
+
+Superpowers 技能生成的计划、设计和复盘属于本地技能工作区，不是模板源内容。模板源通过根 `.gitignore` 的 `docs/superpowers/` 规则排除该目录，不提交、不建立维护文档检查；需要长期作为依据的结论人工移入 `.template-source/contracts/`，运行材料按仓外 maintenance 留存。
+
+## 发布前公开导出检查
+
+正式发布模板前，在有授权且可访问公开技能仓的环境执行 `scripts/export-yss-skills --check --output <公开仓路径>`，保存输出和退出码。该检查不属于普通 CI；未执行时必须在发布说明中明确写出，不能声称公开仓已同步。

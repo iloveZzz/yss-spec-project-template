@@ -49,3 +49,9 @@ test("允许清单路径消失时报告 stale", (t) => {
   const result = scanDistributionHygiene({ root });
   assert.deepEqual(result.staleAllow, [".agents/skills/missing/SKILL.md"]);
 });
+
+test("当前模板源分发面无违规且允许清单无失效项", () => {
+  const result = scanDistributionHygiene({ root: ROOT });
+  assert.deepEqual(result.violations, [], result.violations.join("\n"));
+  assert.deepEqual(result.staleAllow, [], result.staleAllow.join("\n"));
+});

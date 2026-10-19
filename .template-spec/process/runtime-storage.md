@@ -2,7 +2,7 @@
 
 运行工具把普通执行记录保存到仓库外的 SQLite 和日志目录。checkpoint、合同、批准、用户原始决定、迁移回执及恢复事务继续使用现有文件作为权威。查询索引和历史通过记录只能帮助定位证据；阶段流转、实现和交付仍执行当前合同要求的 Fresh Verification。
 
-模板源的 `docs/superpowers/specs` 与 `docs/superpowers/plans` 仅保留在办维护文档，并写 frontmatter 状态与基线；完成或废弃后按 `.template-source/README.md` 的规则迁入仓外 maintenance 或 `.template-source/contracts/`。
+模板源不跟踪 Superpowers 技能生成的计划/设计输出（`docs/superpowers/` 已加入根忽略规则）；需要长期依据的结论人工迁入 `.template-source/contracts/`，运行材料按仓外 maintenance 留存。
 
 ## 存储位置与运行方式
 

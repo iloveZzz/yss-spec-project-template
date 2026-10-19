@@ -68,7 +68,7 @@ test('产物消费者实际执行来源收集且不依赖旧名称',t=>{
   assert.equal(checks.length,1);assert.deepEqual(checks[0].resources,['native-cli','go']);
  }
  assert.ok(!plan.commands.some(x=>x.id==='check.template-release-sources'));
- for(const ref of ['docs/superpowers/plans/2026-10-18-test-retirement-and-verification-dedup.md','docs/superpowers/specs/2026-10-18-test-retirement-and-verification-dedup-design.md'])assert.ok(planTemplateVerification({changedFiles:[ref]}).commands.some(x=>x.id==='check.doc-facts'));
+ for(const ref of ['.template-source/contracts/spec-backend-direct-consumption-design.md','.template-source/contracts/harness-hardening-v1.md'])assert.ok(planTemplateVerification({changedFiles:[ref]}).commands.some(x=>x.id==='check.doc-facts'));
  assert.ok(!planTemplateVerification({changedFiles:['README.md']}).commands.some(x=>x.id==='check.verification-artifacts'));
  assert.throws(()=>planTemplateVerification({changedFiles:['tests/new-unregistered-audit.test.mjs']}),/UNKNOWN_VERIFICATION_PATH/);
 });
@@ -104,7 +104,7 @@ test('Plan审查测试唯一归属保留触发与门禁，耗时组在fast明确
 
 });
 test('日常新设计与计划只登记文档消费者',()=>{
- for(const ref of ['.template-source/contracts/spec-backend-direct-consumption-design.md','docs/superpowers/plans/2026-10-18-spec-backend-material-intake-and-manual-handoff.md']){
+ for(const ref of ['.template-source/contracts/spec-backend-direct-consumption-design.md','.template-source/contracts/harness-hardening-v1.md']){
   const plan=planTemplateVerification({changedFiles:[ref]});
   assert.equal(plan.effective_profile,'fast');
   assert.ok(plan.commands.some(row=>row.id==='check.doc-facts'),ref);
@@ -296,10 +296,10 @@ test('输入准备只选择真实消费者', async () => {
     assert.equal(checks.length, 1, ref);
     assert.ok(checks[0].resources.includes('native-cli'));
   }
-  for (const ref of ['docs/superpowers/specs/2026-10-18-sha256-usage-optimization-design.md', 'docs/superpowers/plans/2026-10-18-sha256-usage-optimization.md']) {
+  for (const ref of ['.template-source/contracts/spec-backend-direct-consumption-design.md', '.template-source/contracts/harness-hardening-v1.md']) {
     assert.ok(planTemplateVerification({changedFiles: [ref]}).commands.some(x => x.id === 'check.doc-facts'), ref);
   }
-  assert.ok(!planTemplateVerification({changedFiles: ['docs/superpowers/specs/unrelated-note.md']}).commands.some(x => x.id === 'check.daily-input-preparation'));
+  assert.ok(!planTemplateVerification({changedFiles: ['README.md']}).commands.some(x => x.id === 'check.daily-input-preparation'));
   assert.throws(() => planTemplateVerification({changedFiles: ['tests/unregistered-daily-behavior.test.mjs']}), /UNKNOWN_VERIFICATION_PATH/);
   const {composeProfileTree} = await import('../scripts/lib/profile-tree.mjs');
   const ref = '.template-spec/process/daily-input-preparation.md';

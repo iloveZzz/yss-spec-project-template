@@ -1,0 +1,231 @@
+{
+  "schema_version": 1,
+  "description": "scripts/lib 未直接被 tests 引用的模块台账；新增未覆盖模块必须先登记并说明原因。",
+  "entries": [
+    {
+      "path": "scripts/lib/approved-execution-context.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/asset-command.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/asset-migration.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/asset-transactions.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/backend-platform-provenance.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/backend-platform-verification.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/backend-scaffold-prerequisites.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/business-ticket-lifecycle.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/checkpoint-boundary.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/contract-source.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/execution-evidence.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/first-slice-artifacts.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/first-slice-tests.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/lifecycle-context-query-core.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/lifecycle-controls.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/lifecycle-progression.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/lifecycle-readiness.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/maintenance-counterexample.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/maintenance-research.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/openapi-draft-validation.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/plan-spec-markdown.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/plan-stage-coverage.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/project-governance.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/reading-view-adapters.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/reading-view-bundle.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/reading-view-diff.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/reading-view-model.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/reading-view-policy.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/repository-mode.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/scaffold-local-database.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/scaffold-reference-example.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/skill-discovery.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/skill-governance.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/slice-applicability.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/slice-contract-views.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/slice-execution-preflight.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/slice-repositories.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/slice-task-package.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/spec-baseline.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/stage-tracking.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/stage-tracking-migration.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/strategic-handoff-design-targets.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/structured-assets.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/task-package-schema.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/technical-design-boundary.mjs",
+      "category": "to-backfill",
+      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    }
+  ]
+}

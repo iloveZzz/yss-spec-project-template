@@ -71,3 +71,36 @@ test("legacy Profile 保持可组合与可读取，退役内容由状态豁免",
   }
   assert.ok(skillDirectories(composeProfileTree("design")).includes("ask-matt"), "design 旧内容应保留 ask-matt 供迁移读取");
 });
+function lifecycleIds(file) {
+  const document = parseDocument(fs.readFileSync(file, "utf8"), { uniqueKeys: true });
+  assert.equal(document.errors.length, 0, file + ": " + document.errors[0]?.message);
+  const data = document.toJS({ maxAliasCount: 0 });
+  const ids = new Set();
+  for (const key of ["stages", "gates", "checks", "artifacts", "work_units", "evidence"]) {
+    for (const entry of data[key] ?? []) if (entry?.id) ids.add(entry.id);
+  }
+  return { ids, data };
+}
+
+test("Profile 与内核生命周期 ID 分歧全部显式声明且无过期项", () => {
+  const divergences = JSON.parse(fs.readFileSync(path.join(ROOT, ".template-source/process/profile-lifecycle-divergences.json"), "utf8"));
+  assert.equal(divergences.schema_version, 1);
+  const root = lifecycleIds(path.join(ROOT, ".template-spec/process/lifecycle-registry.yaml"));
+  const deprecated = new Set(root.data.id_policy?.deprecated_ids ?? []);
+  assert.ok(deprecated.size > 0, "内核必须登记 deprecated_ids");
+  const knownProfiles = new Set([...STATUS.active, ...STATUS.legacy]);
+  for (const profile of Object.keys(divergences.profiles)) assert.ok(knownProfiles.has(profile), "未知 Profile 声明: " + profile);
+  for (const profile of knownProfiles) {
+    const profileRegistry = lifecycleIds(path.join(composeProfileTree(profile), ".template-spec/process/lifecycle-registry.yaml"));
+    const overlap = [...profileRegistry.ids].filter((id) => deprecated.has(id)).sort();
+    const declared = divergences.profiles[profile] ?? [];
+    const declaredIds = declared.map((entry) => entry.id);
+    assert.equal(new Set(declaredIds).size, declaredIds.length, profile + ": 分歧声明重复");
+    assert.deepEqual([...new Set(declaredIds)].sort(), overlap, profile + ": 未声明或过期的生命周期分歧");
+    for (const entry of declared) {
+      assert.equal(entry.root_status, "deprecated", profile + ": " + entry.id);
+      assert.equal(entry.disposition, STATUS.legacy.includes(profile) ? "legacy-frozen" : "profile-active-intentional", profile + ": " + entry.id);
+      assert.ok(entry.reason && entry.reason.trim(), profile + ": 缺少 divergence reason " + entry.id);
+    }
+  }
+});

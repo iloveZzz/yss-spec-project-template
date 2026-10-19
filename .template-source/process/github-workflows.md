@@ -60,9 +60,10 @@ Spec 规格模板独立发布，只声明模板自身版本；发行说明和维
 1. 变更经 PR 合入 main，`template-gate` 必须通过。
 2. 在合入后的 main 提交上执行 `scripts/verify-template-fast --base <上一正式发行完整 SHA> --report-dir <仓库外新目录>`，保存 `limited` 范围的报告。
 3. 平台验收由维护者人工完成并自行记录（Mac、Windows、Linux 各自的安装、初始化与回滚）；发行说明写明「平台验收：人工，不在 CI 或发布门禁内」，不声称任何平台已验收。
-4. 在该提交上打 `vX.Y.Z` tag 并创建 GitHub Release，附上 fast 报告与 `SHA256SUMS`。发行说明列出模板变更及本次未覆盖的范围。
+4. 在有授权且可访问公开技能仓的环境执行 `scripts/export-yss-skills --check --output <公开仓路径>`，保存输出与退出码；该步骤不进入普通 CI，未执行时在发布说明中明确列出。
+5. 在该提交上打 `vX.Y.Z` tag 并创建 GitHub Release，附上 fast 报告与 `SHA256SUMS`。发行说明列出模板变更及本次未覆盖的范围。
 
-上面 1–4 步由 `.template-source/scripts/release-template.mjs` 分两步完成：
+上面的准备与发布动作由 `.template-source/scripts/release-template.mjs` 分两步完成；第 4 步公开导出检查是独立人工步骤，脚本不代执行。
 
 ```sh
 # 准备：核对前置（template-source、干净 main、与 origin/main 一致、base 是祖先、tag 未占用、版本递增），

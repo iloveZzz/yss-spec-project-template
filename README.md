@@ -20,7 +20,7 @@ English overview: [README.en.md](README.en.md).
 ├── yss-project.yaml         ← 仓库身份
 ├── .template-spec/          ← 可复用流程、门禁、契约与文档模板
 ├── .template-source/        ← 现行模板维护资产与分发工具（不进入实例；运行历史存仓外）
-├── docs/                    ← 项目实例按需创建的 Plan、Spec、设计、Ticket 与交付证据；模板源只在 docs/superpowers/{specs,plans} 保存在办维护文档
+├── docs/                    ← 项目实例按需创建的 Plan、Spec、设计、Ticket 与交付证据；模板源不跟踪 docs/superpowers 技能输出
 └── scripts/                 ← 合同与流程验证工具
 ```
 

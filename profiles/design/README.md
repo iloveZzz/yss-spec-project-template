@@ -117,3 +117,7 @@ scripts/verify-template
 首次使用请从[本仓手册](.template-spec/user-guide/战略设计子项目用户手册.md)开始；练习见[设备借用职责案例](.template-spec/user-guide/设备借用贯穿案例.md)，全部入口见[索引](.template-spec/user-guide/用户手册索引.md)。
 
 CLI 创建、接入、诊断、同步及恢复见 [CLI 使用说明](.template-spec/user-guide/CLI使用说明.md)。
+
+## 生命周期 legacy 说明
+
+本 Profile 为 legacy 交付线，部分生命周期 ID 与根内核已 deprecated 的 ID 同名。当前行为保持冻结，只读取与迁移；分歧清单见 `.template-source/process/profile-lifecycle-divergences.json`，未声明分歧会使一致性测试失败。

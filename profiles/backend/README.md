@@ -38,3 +38,7 @@ CLI 创建、接入、诊断、同步及恢复见 [CLI 使用说明](.template-s
 ## 本地业务分析与本端交付
 
 原始需求可在本项目完成目标与验收、Plan、业务边界和规则、Spec，再进入本端设计、实现、测试与适用复核；无需先创建独立 Spec/Design 工程。已有上游批准输入时复用当前来源，冲突回交权威方确认，禁止静默改写。小任务按主控合同 `request_triage.delivery_path` 与 `yss lifecycle route` 选择 daily；高风险或已正式绑定任务保留 governed。分析活动不授予前端代码写入；本端交付完成不等于跨端业务验收。纯 UI 记录后端不适用的原因和当前依据；真实 API、数据与跨仓依赖必须对齐。独立脚手架只生成机械结构，不授予业务实施。
+
+## 生命周期分歧
+
+本 Profile 的生命周期注册表与根内核存在少量显式分歧，例如保留仓库身份门禁与 Agent 可执行 Slice 门禁。所有分歧登记在 `.template-source/process/profile-lifecycle-divergences.json`，由 `tests/profile-consistency.test.mjs` 校验；新增或删除分歧必须先更新声明和原因，不能静默漂移。
