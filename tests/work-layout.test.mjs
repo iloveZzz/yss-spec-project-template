@@ -125,7 +125,7 @@ test('独立 CLI 扫描不依赖已删除的 Go 测试目录', t => {
   assert.match(run().stderr, /cli\/layout.go/);
 });
 
-test('固定模板从 CI 环境扫描独立 CLI，并拒绝缺失、错提交和脏来源', t => {
+test('固定模板忽略 CI 的 CLI 来源，显式扫描仍拒绝缺失、错提交和脏来源', t => {
   const root = project(t), cli = fs.realpathSync(project(t));
   const git = (cwd, ...args) => {
     const result = spawnSync('git', ['-C', cwd, ...args], { encoding: 'utf8' });
@@ -143,7 +143,10 @@ test('固定模板从 CI 环境扫描独立 CLI，并拒绝缺失、错提交和
   fs.writeFileSync(pinFile, JSON.stringify(pin));
   const policyFile = path.join(root, '.template-source/process/work-layout-exceptions.json');
   fs.writeFileSync(policyFile, JSON.stringify({ schema_version: 1, exceptions: [] }));
-  const run = (source = cli) => spawnSync(process.execPath, [new URL('../scripts/verify-work-layout', import.meta.url).pathname, '--root', root], { encoding: 'utf8', env: { ...process.env, YSS_NATIVE_SOURCE_ROOT: source } });
+  const run = (source = cli, explicit = true) => spawnSync(process.execPath, [new URL('../scripts/verify-work-layout', import.meta.url).pathname, '--root', root, ...(explicit ? ['--cli-root', source] : [])], { encoding: 'utf8', env: { ...process.env, YSS_NATIVE_SOURCE_ROOT: source } });
+  const implicit = run(path.join(cli, 'absent'), false);
+  assert.equal(implicit.status, 0, implicit.stderr);
+  assert.equal(JSON.parse(implicit.stdout).repositories, 1);
   const valid = run();
   assert.equal(valid.status, 0, valid.stderr);
   assert.equal(JSON.parse(valid.stdout).repositories, 2);
