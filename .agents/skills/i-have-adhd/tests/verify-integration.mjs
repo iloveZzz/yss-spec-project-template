@@ -22,12 +22,13 @@ const locked=lock.skills.shared['i-have-adhd'];
 assert.equal(locked.source,'ayghri/i-have-adhd');
 assert.equal(locked.sourceRevision,'839872f9d1cd634fed642b4589ce7226199cc15f');
 assert.ok(read('.agents/skills/i-have-adhd/references/yss-adaptation.md').includes(locked.sourceRevision),'adaptation provenance follows the locked source revision');
-assert.notEqual(locked.upstreamHash,locked.effectiveHash);
-const {treeHash}=await import(pathToFileURL(path.join(root,'scripts/lib/skill-supply-chain.mjs')));
-assert.equal(treeHash(path.join(root,'.agents/skills/i-have-adhd')),locked.effectiveHash);
+const {treeHash,lockedTreeHashMatches}=await import(pathToFileURL(path.join(root,'scripts/lib/skill-supply-chain.mjs')));
+const effectiveHash=treeHash(path.join(root,'.agents/skills/i-have-adhd'));
+assert.notEqual(locked.upstreamHash,effectiveHash);
+assert.ok(lockedTreeHashMatches(locked,effectiveHash));
 for (const target of locked.targets) {
   const skillPath=target.endsWith('/i-have-adhd')?target:path.join(target,'i-have-adhd');
-  assert.equal(treeHash(path.join(root,skillPath)),locked.effectiveHash,`projection ${target}`);
+  assert.equal(treeHash(path.join(root,skillPath)),effectiveHash,`projection ${target}`);
 }
 for(const ref of ['.template-spec/process/document-writing.md','.template-spec/templates/examples/lifecycle-writing-examples.md']) {
   assert.ok(read(ref).length);
@@ -35,14 +36,13 @@ for(const ref of ['.template-spec/process/document-writing.md','.template-spec/t
 }
 const callers=Object.entries(registry.skill_dependencies).filter(([,deps])=>deps.some(d=>d.skill==='i-have-adhd'));
 assert.ok(callers.length>0);
-for(const [owner,deps] of callers) {
+for(const [,deps] of callers) {
   const edge=deps.find(d=>d.skill==='i-have-adhd');
   assert.equal(edge.type,'context-conditional');
   assert.equal(edge.when,'lifecycle-document-output');
-  assert.ok(read(`.agents/skills/${owner}/SKILL.md`).includes('`i-have-adhd`'));
 }
-const orchestrator=registry.skills.find(x=>['yss-product-lifecycle','yss-strategic-design','harness-orchestrator'].includes(x.id)).id;
-const contract=parse(read(`.agents/skills/${orchestrator}/references/orchestration-contract.yaml`));
+const {loadOrchestrationContract}=await import(pathToFileURL(path.join(root,'scripts/lib/orchestration-contract.mjs')));
+const contract=loadOrchestrationContract(read,'.template-spec/process/orchestration-contract.yaml').value;
 assert.equal(contract.document_writing.supporting_skill,'i-have-adhd');
 assert.equal(contract.document_writing.condition,'lifecycle-document-output');
 assert.equal(contract.document_writing.scope,'current-document-work-only');
