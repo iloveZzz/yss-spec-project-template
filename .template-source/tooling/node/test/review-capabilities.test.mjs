@@ -16,14 +16,14 @@ import { validateJsonSchema } from '../../../../scripts/lib/json-schema.mjs';
 import { readApprovalHistory, validateApprovalRecordFile } from '../../../../scripts/lib/native-approval.mjs';
 
 const clone = structuredClone;
-const registry = loadRegistry(), rolesDoc = loadDigitalHumanRoles();
+const registry = loadRegistry(path.join(makeRoot("historical-review-registry-"),".template-spec/process/lifecycle-registry.yaml")), rolesDoc = loadDigitalHumanRoles();
 const policyRef = '.template-spec/agents/digital-human-roles.yaml';
 const checkIds = ['check.openapi-draft-reviewed', 'check.engineering-baseline-accepted'];
 function fixture(t) {
   const root = makeRoot('yss-review-capability-');
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   const write = (ref, value) => { fs.mkdirSync(path.dirname(path.join(root, ref)), { recursive: true }); fs.writeFileSync(path.join(root, ref), value); };
-  for (const ref of [policyRef, '.template-spec/process/lifecycle-registry.yaml', '.template-spec/agents/yss-skill-registry.yaml']) write(ref, fs.readFileSync(path.join(ROOT, ref)));
+  for (const ref of [policyRef, '.template-spec/agents/yss-skill-registry.yaml']) write(ref, fs.readFileSync(path.join(ROOT, ref)));
   fs.cpSync(path.join(ROOT, '.template-spec/process/schemas'), path.join(root, '.template-spec/process/schemas'), {recursive: true});
   write('yss-project.yaml', 'schema_version: 1\nrepository_mode: project-instance\n');
   const checkpointRef = '.work/feature/checkpoint.json';

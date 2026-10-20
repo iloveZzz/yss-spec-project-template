@@ -39,3 +39,5 @@ yss lifecycle decision migrate-plan --root . --checkpoint <old-checkpoint> --inp
 正式脚手架准备复用已有阶段授权或已核验的技术细化延续，不读取未来实施准入。架构选择的 `user_confirmation` 在新模式提供 `stage_record_ref` 与 `checkpoint_ref`，或 `continuation_ref`；`decision_subject_ref` 绑定去除 `user_confirmation/status/decision_inputs_digest` 并加入实际 `platform_selection` 的选择快照。生成另以 `generation_inputs_ref` 绑定具体生成输入：完整合同去除 `approval/lifecycle_approval_ref/status`；架构决定摘要按去除所有决定 `user_confirmation` 的记录规范化；`design_prerequisites.technical_design` 展开为去除自身 `digest` 的实际技术文档，将架构及相同决定输入的摘要替换为上述规范摘要；移除旧 `engineering_contract_approval_ref`。`lifecycle_approval_ref` 引用覆盖此快照的既有阶段或有效延续。原生消费者精确比较项目、平台、模块、路径及依据；当前原始字节和平台资格仍单独校验。快照不含指向自身授权的摘要，避免登记循环。
 
 适用 UI 的 Spec 阶段以 `kind: prototype-verification-inputs` 成员提供 `case_ids` 和 `preview`（既有 H1/H2 预览配置），原生复用离线树、资源、实际浏览回执及用例覆盖校验；两项原型检查必须绑定此成员。无 UI 时绑定真实影响评估并填写不适用原因。一致性检查必须绑定当前 Spec 和唯一业务票集合，并消费业务票 draft 内容校验。
+
+工程旧格式中保留的 `approval.approver` 是兼容元数据，可沿用已经核验的阶段授权之原始主体引用；它不产生新的角色要求、批准记录或人工确认。不得凭显示字段授予执行资格，实际放行仍消费当前阶段及合同字节。

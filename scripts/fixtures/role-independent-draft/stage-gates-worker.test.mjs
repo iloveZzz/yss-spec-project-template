@@ -1,3 +1,4 @@
+import {backendTerminalFixture} from './backend-terminal-fixture.mjs';
 import {stageGatesFixture} from '../../lib/testing/stage-gates-fixture.mjs';
 // Synthetic business sources exercise real Git, execution, approval and native consumer bindings.
 import {test} from 'node:test';
@@ -22,7 +23,7 @@ test('installed Spec implements a current Slice and accepts delivery with four s
   const assetsPlan=path.join(path.dirname(root),'engineering-assets.plan.json');
   run('engineering-assets-plan',['assets','ensure','stage.system-data-engineering','--plan','--out',assetsPlan]);
   run('engineering-assets-apply',['assets','--apply','--plan-file',assetsPlan]);
-  const toolsPlan=path.join(path.dirname(root),'backend-tools.plan.json');run('backend-tools-plan',['skills','ensure','yss-layered-mvc-scaffold-generator','--plan','--out',toolsPlan]);run('backend-tools-apply',['skills','--apply','--plan-file',toolsPlan]);
+  const toolsPlan=path.join(path.dirname(root),'backend-tools.plan.json');run('backend-tools-plan',['skills','ensure','yss-layered-mvc-scaffold-generator','alibaba-java-code-style','yss-application','yss-dto','yss-web-controller','yss-repository','--plan','--out',toolsPlan]);run('backend-tools-apply',['skills','--apply','--plan-file',toolsPlan]);
   const sliceAssets=path.join(path.dirname(root),'slice-assets.plan.json');run('slice-assets-plan',['assets','ensure','stage.ticket-formalization','--plan','--out',sliceAssets]);run('slice-assets-apply',['assets','--apply','--plan-file',sliceAssets]);
   for(const ref of ['.template-spec/engineering/backend-platforms.json','docs/engineering/evidence'])fs.cpSync(path.join(e.root,ref),path.join(root,ref),{recursive:true});
   const feature='feature.engineering',cpRef='.work/engineering/checkpoint.json',project=fs.realpathSync(e.project);
@@ -30,7 +31,7 @@ test('installed Spec implements a current Slice and accepts delivery with four s
 const dir=fs.mkdtempSync(path.join(os.tmpdir(),'boundary-java-'));
 try{const main=path.join(dir,'BoundarySmoke.java');fs.writeFileSync(main,'public class BoundarySmoke {public static void main(String[] args){if(new web.Boundary().accept(2)!=3)throw new AssertionError();for(int n:new int[]{-1,101}){boolean rejected=false;try{new web.Boundary().accept(n);}catch(IllegalArgumentException e){rejected=true;}if(!rejected)throw new AssertionError("invalid input accepted: "+n);}}}');
 const walk=p=>fs.readdirSync(p,{withFileTypes:true}).flatMap(e=>e.isDirectory()?walk(path.join(p,e.name)):[path.join(p,e.name)]).filter(p=>p.endsWith('.java'));
-for(const [cmd,args]of [['javac',['-d',dir,...walk('src/main/java'),main]],['java',['-cp',dir,'BoundarySmoke']]]){const r=spawnSync(cmd,args,{encoding:'utf8'});process.stdout.write(r.stdout||'');process.stderr.write(r.stderr||'');if(r.status!==0)process.exitCode=1;if(process.exitCode)break;}if(!process.exitCode){fs.mkdirSync('results',{recursive:true});const r=spawnSync('jar',['--create','--file','results/boundary.jar','-C',dir,'.'],{encoding:'utf8'});if(r.status!==0)throw Error(r.stderr);}}finally{fs.rmSync(dir,{recursive:true,force:true});}`;
+for(const [cmd,args]of [['javac',['-d',dir,...walk('src/main/java'),main]],['java',['-cp',dir,'BoundarySmoke']]]){const r=spawnSync(cmd,args,{encoding:'utf8'});if(r.error)throw r.error;process.stdout.write(r.stdout||'');process.stderr.write(r.stderr||'');if(r.status!==0)process.exitCode=1;if(process.exitCode)break;}if(!process.exitCode){fs.mkdirSync('results',{recursive:true});const r=spawnSync('jar',['--create','--file','results/boundary.jar','-C',dir,'.'],{encoding:'utf8'});if(r.status!==0)throw Error(r.stderr);}}finally{fs.rmSync(dir,{recursive:true,force:true});}`;
   fs.writeFileSync(path.join(project,'verify-behavior.mjs'),verifier);
   fs.writeFileSync(path.join(project,'.gitignore'),'/results/\n');
   fs.writeFileSync(path.join(project,'mvnw'),'#!/bin/sh\nexec mvn "$@"\n');fs.chmodSync(path.join(project,'mvnw'),0o755);
@@ -94,8 +95,8 @@ for(const [cmd,args]of [['javac',['-d',dir,...walk('src/main/java'),main]],['jav
   f.finishTask(slicePrep);run('actual-slice-preparation',['contract','verify','--kind','task','--file',slicePrep.provenance.task_ref]);
   const sliceRef='slice-drafts/contract.json',sliceBinding={...versioned(sliceRef),id:prepared.slice_contract.contract_id,version:prepared.slice_contract.contract_version,approval_ref:cpRef};
   run('draft-does-not-authorize-implementation',['contract','verify','--kind','slice','--file',sliceRef,'--checkpoint',cpRef],'STAGE_PENDING');
-  s.record({gateId:'gate.implementation-admitted',scope:[feature],subjectRef:sliceRef,authorization:{kind:'stage',...asset('spec-stage.json')}});write('admission.json',JSON.parse(read('stage.json')));
-  cp.gates['gate.implementation-admitted']={record_ref:'admission.json',record_digest:asset('admission.json').digest};write(cpRef,cp);
+  s.record({gateId:'gate.implementation-admitted',scope:[feature],subjectRef:sliceRef,authorization:{kind:'stage',...asset('spec-stage.json')},notApplicable:Object.fromEntries(['check.openapi-draft-reviewed','check.openapi-frozen'].map(id=>[id,'当前 Slice 明确无 API 影响']))});write('admission.json',JSON.parse(read('stage.json')));
+  const admissionPlan=path.join(path.dirname(root),'admission.plan.json');run('automatic-admission-plan',['lifecycle','decision','plan','--checkpoint',cpRef,'--input','admission.json','--out',admissionPlan]);run('automatic-admission-apply',['lifecycle','decision','apply','--plan',admissionPlan]);Object.assign(cp,JSON.parse(read(cpRef)));const admissionRef=cp.gates['gate.implementation-admitted'].record_ref;
   run('actual-admitted-slice4',['contract','verify','--kind','slice','--file',sliceRef,'--checkpoint',cpRef]);
   const provenance={tool:'node',task_ref:'worker.json',execution_ref:'worker-execution.json',identity:{status:'unavailable',reason:'Node test process has no stable agent/session identifier'}};
   const worker=compileSliceTaskPackage(sliceBinding,{root,work_unit_id:'work-unit.worker',task_id:'worker.current',provenance});write('worker.json',worker);
@@ -104,11 +105,11 @@ for(const [cmd,args]of [['javac',['-d',dir,...walk('src/main/java'),main]],['jav
   write(provenance.execution_ref,{phase:'dispatch',dispatched_at:new Date().toISOString(),tool:provenance.tool,task_ref:provenance.task_ref,identity:provenance.identity,candidate:pending,input_bindings:worker.input_bindings,baseline:worker.baseline,scope:worker.allowed_write_paths,expected_outputs:worker.expected_outputs});
   run('actual-worker-dispatch',['contract','verify','--kind','task','--file','worker.json']);
   const testArgv=[process.execPath,'verify-behavior.mjs'],red=spawnSync(testArgv[0],testArgv.slice(1),{cwd:project,encoding:'utf8'});
-  f.calls.push({label:'actual-behavior-red',argv:testArgv,cwd:project,exit_code:red.status,stdout:red.stdout,stderr:red.stderr});assert.notEqual(red.status,0);
+  f.calls.push({label:'actual-behavior-red',argv:testArgv,cwd:project,exit_code:red.status,stdout:red.stdout,stderr:red.stderr});assert.notEqual(red.status,0);assert.match(red.stderr,/invalid input accepted/);
   const changed='src/main/java/application/Boundary.java';fs.writeFileSync(path.join(project,changed),fs.readFileSync(path.join(project,changed),'utf8').replace('if(n<0)','if(n<0||n>100)'));
   e.git('add',changed);e.git('commit','-qm','Implement approved input boundary');
   const candidate=run('actual-worker-output-candidate',['contract','verify','--kind','task-candidate','--file','worker.json']).coverage.task_candidate.candidate;
-  const green=spawnSync(testArgv[0],testArgv.slice(1),{cwd:project,encoding:'utf8'});assert.equal(green.status,0,green.stderr);
+  const green=spawnSync(testArgv[0],testArgv.slice(1),{cwd:project,encoding:'utf8'});assert.equal(green.status,0,green.stderr||green.stdout);
   const log={phase:'execution',tool:provenance.tool,task_ref:provenance.task_ref,identity:provenance.identity,command:worker.verification_commands[0],argv:testArgv,cwd:project,exit_code:green.status,executed_at:new Date().toISOString(),stdout:green.stdout,stderr:green.stderr,candidate_digest:candidate.digest,input_bindings:worker.input_bindings,baseline:worker.baseline,scope:worker.allowed_write_paths,expected_outputs:worker.expected_outputs,result:'passed',blocking_findings:[]};write(provenance.execution_ref,log);
   fs.mkdirSync(path.join(project,'results'),{recursive:true});fs.writeFileSync(path.join(project,'results/test.log'),JSON.stringify({argv:testArgv,cwd:project,exit_code:green.status,executed_at:log.executed_at,stdout:green.stdout,stderr:green.stderr}));
   worker.workflow_status='resolved';worker.verification_status='executed';worker.verification_results=[{command:log.command,status:'passed',exit_code:0,executed_at:log.executed_at,candidate_digest:candidate.digest,evidence_ref:provenance.execution_ref,evidence_digest:asset(provenance.execution_ref).digest}];
@@ -118,14 +119,16 @@ for(const [cmd,args]of [['javac',['-d',dir,...walk('src/main/java'),main]],['jav
   run('actual-slice4-execution-result',['contract','verify','--kind','slice-execution-result','--file','slice-result.json','--task','worker.json']);
   const original=structuredClone(result);result.changed_files=[];write('slice-result.json',result);run('unrelated-result-is-rejected',['contract','verify','--kind','slice-execution-result','--file','slice-result.json','--task','worker.json'],'SLICE_RESULT');write('slice-result.json',original);
   write('worker-stage.json',{project,sliceRef,sliceBinding,cpRef,feature,changed,completed:{worker:true}});
+  await backendTerminalFixture(f);
   // The execution report is native-validated and then shown with admission in
   // one actual acceptance request. No fresh-verification approval is created.
-  s.record({gateId:'gate.delivery-accepted',scope:[feature],subjectRef:'slice-result.json',extraAssets:['admission.json','worker.json']});
+  s.record({gateId:'gate.delivery-accepted',scope:[feature],subjectRef:'slice-result.json',extraAssets:[admissionRef,'worker.json']});
   const accepted=JSON.parse(read('stage.json'));accepted.provenance.task_ref='worker.json';write('delivery-stage.json',accepted);
-  cp.gates['gate.delivery-accepted']={record_ref:'delivery-stage.json',record_digest:asset('delivery-stage.json').digest};write(cpRef,cp);
-  run('actual-delivery-acceptance',['contract','verify','--kind','stage-result','--file','delivery-stage.json','--checkpoint',cpRef,'--gate','gate.delivery-accepted']);
+  const deliveryPlan=path.join(path.dirname(root),'delivery.plan.json');run('delivery-acceptance-plan',['lifecycle','decision','plan','--checkpoint',cpRef,'--input','delivery-stage.json','--out',deliveryPlan]);run('delivery-acceptance-apply',['lifecycle','decision','apply','--plan',deliveryPlan]);Object.assign(cp,JSON.parse(read(cpRef)));
+  const deliveryRef=cp.gates['gate.delivery-accepted'].record_ref;
+  run('actual-delivery-acceptance',['contract','verify','--kind','stage-result','--file',deliveryRef,'--checkpoint',cpRef,'--gate','gate.delivery-accepted']);
   assert.equal(Object.keys(cp.gates).length,4);assert.deepEqual(cp.checks,{});
   const stale=JSON.parse(read('slice-result.json'));stale.changed_files=[];write('slice-result.json',stale);
-  run('changed-delivery-refuses',['contract','verify','--kind','stage-result','--file','delivery-stage.json','--checkpoint',cpRef,'--gate','gate.delivery-accepted'],'EVIDENCE_DRIFT');
+  run('changed-delivery-refuses',['contract','verify','--kind','stage-result','--file',deliveryRef,'--checkpoint',cpRef,'--gate','gate.delivery-accepted'],'EVIDENCE_DRIFT');
  } finally {if(!process.env.YSS_CHAIN_PRESERVE)e.cleanup();f.cleanup();}
 });

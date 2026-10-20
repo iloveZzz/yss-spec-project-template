@@ -2226,8 +2226,6 @@ profiles:
           scripts/fixtures/role-independent-draft/stage-gates-plan.test.mjs
           scripts/fixtures/role-independent-draft/stage-gates-delivery.test.mjs
           scripts/fixtures/role-independent-draft/stage-gates-handoff.test.mjs
-          scripts/fixtures/role-independent-draft/stage-gates-installed.test.mjs
-          scripts/fixtures/role-independent-draft/stage-gates-worker.test.mjs
         resources: [native-cli]
         group: lifecycle
         inputs_complete: true
@@ -2245,6 +2243,24 @@ profiles:
           - .template-spec/process/schemas/lifecycle-checkpoint-v2.schema.json
         depends_on: []
         failure_mode: 四阶段范围、真实授权、实际证据或旧来源选择失效
+      - id: check.spec-stage-installed
+        run: node --test --test-concurrency=1 scripts/fixtures/role-independent-draft/stage-gates-installed.test.mjs
+        resources: [native-cli]
+        group: lifecycle
+        inputs_complete: true
+        timeout_ms: 600000
+        input_patterns: ["scripts/fixtures/role-independent-draft/stage-gates-installed.test.mjs", "scripts/lib/testing/stage-*.mjs", ".template-spec/process/orchestration/domain/stage-gates.yaml", ".template-source/distribution/bundle-profile.json"]
+        depends_on: []
+        failure_mode: 实际安装后的阶段登记、Spec 停止目标或冻结交接失效
+      - id: check.spec-stage-worker
+        run: node --test --test-concurrency=1 scripts/fixtures/role-independent-draft/stage-gates-worker.test.mjs
+        resources: [native-cli]
+        group: lifecycle
+        inputs_complete: true
+        timeout_ms: 600000
+        input_patterns: ["scripts/fixtures/role-independent-draft/stage-gates-worker.test.mjs", "scripts/lib/testing/stage-*.mjs", ".template-spec/process/orchestration/domain/stage-gates.yaml", "scripts/lib/slice-*.mjs", "scripts/lib/lifecycle-readiness.mjs"]
+        depends_on: []
+        failure_mode: 实际安装后的自动准入、执行证据或交付验收失效
   release:
     selection: impact
     required_checks:

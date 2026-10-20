@@ -92,7 +92,7 @@ test('approval cannot substitute a subject different from the consumer frozen di
 test('single, bundle, helper and checkpoint consume the same strict current binding',()=>fixture(f=>{
  const rolesDoc=loadDigitalHumanRoles(),checkId=f.expected.boundary,gateId='gate.slice-contract-approved';
  const registry={gates:[{id:gateId,requires_checks:[checkId],evidence:['evidence.contract-approval']}],checks:[{id:checkId,evidence:['evidence.fresh-verification']}]};
- const fullRegistry=loadRegistry();fullRegistry.gates=fullRegistry.gates.map(row=>row.id===gateId?{...row,...registry.gates[0]}:row);fullRegistry.checks=fullRegistry.checks.map(row=>row.id===checkId?{...row,...registry.checks[0]}:row);f.save('.template-spec/process/lifecycle-registry.yaml',fullRegistry);
+ const fullRegistry=loadRegistry(path.join(f.root,".template-spec/process/lifecycle-registry.yaml"));fullRegistry.gates=fullRegistry.gates.map(row=>row.id===gateId?{...row,...registry.gates[0]}:row);fullRegistry.checks=fullRegistry.checks.map(row=>row.id===checkId?{...row,...registry.checks[0]}:row);f.save('.template-spec/process/lifecycle-registry.yaml',fullRegistry);
  const state={schema_version:1,repository_mode:'project-instance',mode:'audit',status:'routing',stage:'stage.system-data-engineering',artifacts:{},gates:{},checks:{},context_reconciliation:{status:'pending',ref:null,evidence_refs:[]},next_work_unit:null,ticket_sync:{},verification:{},human_review:{},git_checkpoint:{},blockers:[],rollback:[]};
  const bundle=()=>({schema_version:1,kind:'review-bundle',bundle_id:'review-bundle.current',task_id:'task.current',work_unit_id:'work-unit.code-review',review_session_id:'session.current',role_id:f.record.role_id,runtime_id:f.record.runtime_id,principal_ref:f.record.principal_ref,reviews:[f.record]});
  const refresh=()=>{
@@ -158,7 +158,7 @@ test('one v2 capability task strictly binds different per-check subjects across 
  t.after(()=>rmSync(root,{recursive:true,force:true}));
  const write=(ref,value)=>{mkdirSync(path.dirname(path.join(root,ref)),{recursive:true});writeFileSync(path.join(root,ref),typeof value==='string'||Buffer.isBuffer(value)?value:JSON.stringify(value));};
  const asset=ref=>({ref,digest:digest(readFileSync(path.join(root,ref)))});
- const rolesDoc=loadDigitalHumanRoles(),sourceRegistry=loadRegistry(),checkIds=['check.openapi-draft-reviewed','check.engineering-baseline-accepted'],gateId='gate.slice-contract-approved';
+ const rolesDoc=loadDigitalHumanRoles(),sourceRegistry=loadRegistry(path.join(root,".template-spec/process/lifecycle-registry.yaml")),checkIds=['check.openapi-draft-reviewed','check.engineering-baseline-accepted'],gateId='gate.slice-contract-approved';
  const live={...sourceRegistry,gates:sourceRegistry.gates.map(gate=>gate.id===gateId?{...gate,requires_checks:checkIds,evidence:['evidence.contract-approval']}:gate),checks:sourceRegistry.checks.map(check=>checkIds.includes(check.id)?{...check,requires_checks:[],evidence:[`evidence.synthetic-${checkIds.indexOf(check.id)}`]}:check)};
  write('.template-spec/agents/digital-human-roles.yaml',readFileSync(path.join(ROOT,'.template-spec/agents/digital-human-roles.yaml')));
  write('.template-spec/process/lifecycle-registry.yaml',live);

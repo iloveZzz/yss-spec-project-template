@@ -32,6 +32,7 @@ export function stageGatesFixture({existingRoot}={}) {
  write('.template-spec/process/lifecycle-registry.yaml',registry);
  }
  let revision=0;
+ const decisionDirectory=gate=>{let ref;do{ref=path.join(root,'decisions',gate,String(++revision));}while(fs.existsSync(ref));return ref;};
  function record({gateId='gate.plan-approved',subjectRef='subject.md',scope=['feature.demo'],extraAssets=[],argvByCheck={},notApplicable={},authorization}={}) {
   if(!fs.existsSync(path.join(root,subjectRef)))write(subjectRef,'synthetic stage subject\n');
   if(gateId==='gate.plan-approved'){if(!fs.existsSync(path.join(root,'domain.json')))stageContentFixture({root,write},{ui:false});extraAssets=[...new Set([...extraAssets,'domain.json','stage-decision.json'])].filter(ref=>ref!==subjectRef);}
@@ -52,11 +53,11 @@ export function stageGatesFixture({existingRoot}={}) {
       extraAssets=[...new Set([...extraAssets,specRef,setRef,ticketRef])].filter(ref=>ref!==subjectRef);
     }
   }
-  const d=authorization?null:buildDecisionFixture(path.join(root,'decisions',gateId,String(++revision)),{referenceRoot:root,boundary:gateId,scope,subjectRef:path.join(root,subjectRef),subjectVersion:versionOf(subjectRef),basis:extraAssets.map(ref=>({...asset(ref),digest:'sha256:'+asset(ref).digest,ref:path.join(root,ref),version:versionOf(ref)}))});
+  const d=authorization?null:buildDecisionFixture(decisionDirectory(gateId),{referenceRoot:root,boundary:gateId,scope,subjectRef:path.join(root,subjectRef),subjectVersion:versionOf(subjectRef),basis:extraAssets.map(ref=>({...asset(ref),digest:'sha256:'+asset(ref).digest,ref:path.join(root,ref),version:versionOf(ref)}))});
   const bound=asset(subjectRef),members=[bound,...extraAssets.map(asset)],checks=[];
   for(const id of stage.gates.find(g=>g.id===gateId).checks) {
    const argv=argvByCheck[id]||[process.execPath,'-e',"require('fs').readFileSync(process.argv[1])",subjectRef];
-   const run=spawnSync(argv[0],argv.slice(1),{cwd:root,encoding:'utf8'});
+   const run=spawnSync(argv[0],argv.slice(1),{cwd:root,encoding:'utf8',maxBuffer:64*1024*1024,timeout:120000});
    if(run.status!==0){let detail=run.stderr;try{const d=JSON.parse(run.stdout);detail=JSON.stringify(d.result?.diagnostics||d.result);}catch{detail ||= run.stdout;}throw new Error(id+': '+detail.slice(0,3000));}
    const evidenceRef=id+'.execution.json';
    write(evidenceRef,{phase:'execution',argv,exit_code:run.status,executed_at:new Date().toISOString(),result:'passed',blocking_findings:[],input_bindings:members,...(notApplicable[id]?{applicable:false,reason:notApplicable[id]}:{}),check_ids:[id]});

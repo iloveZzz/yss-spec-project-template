@@ -29,6 +29,7 @@ test('installed four-stage Spec records one Plan decision, stops at Spec and exp
   assert.equal(ids.length,4);assert.ok(ids.includes('gate.implementation-admitted'));
   const skill='.agents/skills/yss-stage-decision';
   if(!fs.existsSync(path.join(root,skill,'SKILL.md'))){const out=path.join(path.dirname(root),'skills.plan.json');run('skill-plan',['skills','ensure','yss-stage-decision','--plan','--out',out]);run('skill-apply',['skills','--apply','--plan-file',out]);}
+  const handoffData=JSON.parse(fs.readFileSync(new URL('./handoff-data.json',import.meta.url)));write('CONTEXT.md',handoffData.assets['CONTEXT.md']);
   stageContentFixture(s,{ui:false});
   write('plan.md','# 方案\n当前范围只实现输入校验；无 UI。\n');
   const context=parseContextContract({root});
@@ -36,7 +37,12 @@ test('installed four-stage Spec records one Plan decision, stops at Spec and exp
   write(cpRef,{schema_version:2,repository_mode:'project-instance',feature_id:feature,mode:'orchestrate',status:'running',stage:'stage.plan',artifacts:{},checks:{},gates:{},context_reconciliation:{status:'reconciled',ref:'reconciliation.json',evidence_refs:['reconciliation.json']},next_work_unit:'work-unit.plan-requirements',ticket_sync:{},verification:{},human_review:{},git_checkpoint:{},blockers:[],rollback:[]});
   write('.work/feature-demo/map.md',`---\ncheckpoint_ref: ${cpRef}\n---\n# TEST feature\n`);
   const argvByCheck=Object.fromEntries([['domain-strategy','domain.json','check.domain-strategy-approved'],['stage-decision-package','stage-decision.json','check.stage-decision-package-approved']].map(([kind,ref,id])=>[id,[process.execPath,path.join(root,skill,'scripts/validate-'+kind+'.mjs'),path.join(root,ref),'--root',root]]));
-  s.record({subjectRef:'domain.json',extraAssets:['stage-decision.json','plan.md'],argvByCheck});
+  write('evidence/discovery-supplier.md','TEST business source: 供应商提交材料，失败保留输入；本场景无 UI。');
+  write('evidence/discovery-compliance.md','TEST business source: 只允许当前准入有效的供应商合作，失效状态拒绝。');
+  const reviewedArgv=argvByCheck['check.domain-strategy-approved'],reviewed=spawnSync(reviewedArgv[0],reviewedArgv.slice(1),{cwd:root,encoding:'utf8',maxBuffer:64*1024*1024,timeout:120000});assert.equal(reviewed.status,0,reviewed.stderr);
+  write('evidence/domain-strategy-review.json',{phase:'execution',argv:reviewedArgv,exit_code:reviewed.status,executed_at:new Date().toISOString(),result:'passed',input_bindings:[asset('domain.json')],stdout:reviewed.stdout,stderr:reviewed.stderr,blocking_findings:[]});
+  write('source-evidence-map.json',{'evidence.discovery.supplier':'evidence/discovery-supplier.md','evidence.discovery.compliance':'evidence/discovery-compliance.md','evidence.domain-strategy-review.supplier':'evidence/domain-strategy-review.json'});
+  s.record({subjectRef:'domain.json',extraAssets:['stage-decision.json','plan.md','source-evidence-map.json','evidence/discovery-supplier.md','evidence/discovery-compliance.md','evidence/domain-strategy-review.json'],argvByCheck});
   const pending=doc('stage.json');pending.outcome='ready-for-human';delete pending.authorization;write('pending-stage.json',pending);
   const pendingPlan=path.join(path.dirname(root),'pending-stage.plan.json');
   run('pending-plan',['lifecycle','decision','plan','--checkpoint',cpRef,'--input','pending-stage.json','--out',pendingPlan]);
@@ -63,7 +69,7 @@ test('installed four-stage Spec records one Plan decision, stops at Spec and exp
   for(const [kind,ref] of [['domain-strategy','domain.json'],['stage-decision-package','stage-decision.json']]){
    const r=spawnSync(process.execPath,[path.join(root,skill,'scripts/validate-'+kind+'.mjs'),path.join(root,ref),'--root',root,'--mode','stage','--checkpoint',cpRef],{cwd:root,encoding:'utf8'});assert.equal(r.status,0,r.stderr);
   }
-  const data=JSON.parse(fs.readFileSync(new URL('./handoff-data.json',import.meta.url)));
+  const data=handoffData;
   for(const [ref,bytes] of Object.entries(data.assets))if(ref!=='CONTEXT.md'&&!/strategy|stage/.test(ref))write(ref,bytes);
   for(const ref of ['source/spec.md','source/business-tickets/BT-001.md']) {
     let bytes=read(ref).toString().replaceAll('source/strategy.yaml','domain.json').replaceAll('source/stage.yaml','stage-decision.json');
@@ -79,7 +85,7 @@ test('installed four-stage Spec records one Plan decision, stops at Spec and exp
   const cp=doc(cpRef);Object.assign(cp,{stage:'stage.spec-architecture',next_work_unit:'work-unit.spec-synthesis',artifacts:Object.fromEntries(Object.entries({'artifact.spec':'source/spec.md','artifact.plan':'plan.md','artifact.domain-strategy':'domain.json','artifact.stage-decision-package':'stage-decision.json','artifact.business-ticket-set':'source/tickets.yaml'}).map(([id,ref])=>[id,{ref,status:"ready-for-human",evidence_refs:[]}]))});write(cpRef,cp);
   const prep=f.draftTask({taskRef:'spec-prepare.json',unit:'work-unit.spec-synthesis',stage:'stage.spec-architecture',impacts:['backend'],featureId:feature,checkpointRef:cpRef,inputs:['spec-input.json'],paths:outputs,outputs});f.finishTask(prep);run('Spec-preparation',['contract','verify','--kind','task','--file',prep.provenance.task_ref]);
   const argv=[process.env.YSS_NATIVE_BINARY,'contract','verify','--kind','business-tickets','--mode','draft','--file','source/tickets.yaml','--root',root,'--json'];
-  const check=spawnSync(argv[0],argv.slice(1),{cwd:root,encoding:'utf8'});assert.equal(check.status,0,check.stdout);
+  const check=spawnSync(argv[0],argv.slice(1),{cwd:root,encoding:'utf8',maxBuffer:64*1024*1024,timeout:120000});assert.equal(check.status,0,check.stdout);
   write('business-check.json',{phase:'execution',tool:'node',task_ref:prep.provenance.task_ref,identity:prep.provenance.identity,candidate_digest:asset('source/tickets.yaml').digest,scope:[feature],argv,cwd:root,exit_code:check.status,executed_at:new Date().toISOString(),result:'passed',blocking_findings:[],stdout:check.stdout,stderr:check.stderr});
   write('source/business-review.yaml',{schema_version:2,kind:'business-ticket-review',result:'passed',subject_ref:'source/tickets.yaml',subject_digest:'sha256:'+asset('source/tickets.yaml').digest,basis:[asset(prep.provenance.task_ref)],assessment:{mode:'self-check',provenance:{...prep.provenance,execution_ref:'business-check.json'}},evidence:[bound('business-check.json')]});
   run('business-formal',['contract','verify','--kind','business-tickets','--mode','formal','--file','source/tickets.yaml']);
@@ -89,7 +95,7 @@ test('installed four-stage Spec records one Plan decision, stops at Spec and exp
   const reached=run('Spec-only-target',['lifecycle','target','--checkpoint',cpRef]);assert.equal(reached.progression.status,'reached',JSON.stringify(reached));
   assert.equal(doc(cpRef).gates['gate.implementation-admitted'],undefined);
   assert.equal(fs.existsSync(path.join(root,'prototype.html')),false);
-  const handoff=structuredClone(data.handoff);handoff.package_export.approvals={};
+  const handoff=structuredClone(data.handoff);handoff.package_export.approvals={};handoff.package_export.reference_map=doc('source-evidence-map.json');
   for(const [key,source] of Object.entries(handoff.source)){
    const plan=['domain_strategy_ref','stage_decision_package_ref'].includes(key);
    if(plan){const ref=key==='domain_strategy_ref'?'domain.json':'stage-decision.json';source.persisted_ref=ref;source.digest=digest(doc(ref));const d=doc(ref);source.id=d.domain_strategy_id||d.stage_decision_id;source.version=d.domain_version||d.package_version;}
