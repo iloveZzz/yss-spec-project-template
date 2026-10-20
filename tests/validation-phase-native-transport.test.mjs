@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {withValidationPhase,registerValidationTransport,readdirSync,atValidationFinish,readFileSync,validationDependencies} from '../scripts/lib/validation-phase.mjs';
+import {withValidationPhase,registerValidationTransport,readdirSync,atValidationFinish,readFileSync,validationDependencies,verifyValidationDependencies} from '../scripts/lib/validation-phase.mjs';
 function fixture(t){const root=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'owned-transport-')));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));return root;}
 function transport(root){const work=path.join(root,'.work'),base=path.join(work,'native-candidates'),directory=path.join(base,'input-1-12345678-1234-1234-1234-123456789abc'),created=[];for(const ref of [work,base,directory])if(!fs.existsSync(ref)){fs.mkdirSync(ref);created.push(ref);}registerValidationTransport(directory,created);atValidationFinish(()=>{},()=>{fs.rmSync(directory,{recursive:true,force:true});for(const ref of created.slice(0,-1).reverse())if(fs.existsSync(ref)&&!fs.readdirSync(ref).length)fs.rmdirSync(ref);});return {directory,base};}
 
@@ -77,4 +77,13 @@ test('a rejected design child still blocks the compiler boundary',async t=>{
   const f=await designFixture(t);
   fs.writeFileSync(f.child,"process.stderr.write('controlled design rejection');process.exit(2);");
   assert.throws(()=>withValidationPhase({root:f.root,purpose:'rejected-design'},()=>f.enforce(f.state,{root:f.root,readOnly:true})),/controlled design rejection/);
+});
+
+// Overlay filesystems can expose 64-bit inode identities beyond Number's range.
+test('native inode receipts compare lossless 64-bit identities',t=>{
+ const root=fixture(t),original=fs.lstatSync,ino=9223372036855891836n;
+ const mocked=t.mock.method(fs,'lstatSync',(file,options)=>{const stat=original(file,options);if(file===root)stat.ino=options?.bigint?ino:Number(ino);return stat;});
+ const stat=original(root,{bigint:true});
+ assert.doesNotThrow(()=>verifyValidationDependencies({schema_version:1,files:[],observations:[{file:root,kind:'stat',value:{type:'directory',permissions:Number(stat.mode&0o7777n),ino:String(ino),dev:String(stat.dev)}}]}));
+ mocked.mock.restore();
 });
