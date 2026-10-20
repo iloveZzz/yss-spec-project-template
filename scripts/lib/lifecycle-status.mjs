@@ -184,7 +184,7 @@ export function lifecycleStatus({ root, checkpointRef, taskPackageRef, env }) {
   if(business.status==='missing'&&!['stage.entry-triage','stage.plan','stage.spec-architecture'].includes(value.stage))issue('business-decomposition-missing','Spec 后业务拆分尚未登记',checkpointRef,'补齐业务草案与覆盖，并回到业务正式化');
   check('business-decomposition',business.status,[setRef].filter(Boolean),'结构与来源只读检查；不证明批准或实现资格');
   let planReview = null;
-  if (value.plan_review_control || value.stage === 'stage.plan') {
+  if (!(value.schema_version === 2 && contract.value.stage_gates?.capability === 'stage-gates-v1') && (value.plan_review_control || value.stage === 'stage.plan')) {
     try {
       planReview = summarizePlanReview(value.plan_review_control, { root });
       const stopped = ['diagnosis-required','diagnosis-ready','blocked','history-unknown'].includes(planReview.status);

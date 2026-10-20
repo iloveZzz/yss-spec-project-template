@@ -5,8 +5,7 @@ description: 编排 YSS 研发全生命周期；当阶段、产物、门禁或 S
 
 # YSS Product Lifecycle
 
-当前 Spec 同时声明 `stage-gates-v1` 时，先读 `.template-spec/process/stage-gates.md`：仅保留 Plan 确认、Spec/适用设计确认、自动实施准入、交付验收四个出口。本文及引用中的旧专业批准、会签、角色、审查预算、独立产品设计/工程/切片/交接批准仅用于原政策历史读取，不适用于该模式。内部检查是质量结果，默认同一 Agent 自检；准备资产不等待未来批准，现有真实授权可按范围复用。
-
+Spec `stage-gates-v1` 先读 `.template-spec/process/stage-gates.md`，覆盖旧批准、角色、会签与审查预算。
 
 仅生成 DDD/MVC 脚手架时读[直接生成](references/conditional-guidance.md#直接生成脚手架)。
 

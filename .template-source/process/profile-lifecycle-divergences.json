@@ -30,6 +30,27 @@
         "disposition": "profile-active-intentional",
         "reason": "Backend 维护覆盖层仍按维护强度选择复核工作单元。",
         "migration_note": "由 Backend 编排合同继续解释。"
+      },
+      {
+        "id": "gate.backend-architecture-platform-approved",
+        "root_status": "deprecated",
+        "disposition": "profile-active-intentional",
+        "reason": "四阶段精简仅对 Spec 启用；Backend 继续核验本端实际架构与平台选择。",
+        "migration_note": "按 Backend 自身当前政策读取，不套用 Spec 四阶段政策。"
+      },
+      {
+        "id": "gate.engineering-contract-approved",
+        "root_status": "deprecated",
+        "disposition": "profile-active-intentional",
+        "reason": "四阶段精简仅对 Spec 启用；Backend 原政策继续核验工程实施合同。",
+        "migration_note": "按 Backend 自身当前政策读取，不套用 Spec 四阶段政策。"
+      },
+      {
+        "id": "gate.slice-contract-approved",
+        "root_status": "deprecated",
+        "disposition": "profile-active-intentional",
+        "reason": "四阶段精简仅对 Spec 启用；Backend 原政策继续核验当前 Slice 合同。",
+        "migration_note": "按 Backend 自身当前政策读取，不套用 Spec 四阶段政策。"
       }
     ]
   }

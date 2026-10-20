@@ -9,7 +9,7 @@ import { makeRoot, hasYss } from './helpers/yss-instance.mjs';
 import { loadOrchestrationContract } from '../scripts/lib/orchestration-contract.mjs';
 import { validateMattContract } from './helpers/scenario-checks.mjs';
 
-const baseline = parse(fs.readFileSync('.template-spec/process/templates/lifecycle-checkpoint-template.yaml', 'utf8'));
+const baseline = parse(fs.readFileSync('scripts/fixtures/role-independent-draft/legacy-checkpoint-template.yaml', 'utf8'));
 test('旧Matt场景消费者接收无需交接的prototype路由',()=>{
   const contract=loadOrchestrationContract(ref=>fs.readFileSync(ref),'.template-spec/process/orchestration-contract.yaml').value;
   // 旧场景仍检查独立 Plan 确认；本例只更新材料试验路由。

@@ -203,11 +203,6 @@
       "reason": "当前未发现 tests 直接引用，纳入待补测台账"
     },
     {
-      "path": "scripts/lib/structured-assets.mjs",
-      "category": "to-backfill",
-      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
-    },
-    {
       "path": "scripts/lib/task-package-schema.mjs",
       "category": "to-backfill",
       "reason": "当前未发现 tests 直接引用，纳入待补测台账"
