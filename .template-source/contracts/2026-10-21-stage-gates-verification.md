@@ -12,14 +12,16 @@
 
 ## 固定来源
 
-- 模板运行时源：`712a8c6908d7b497c064488c17a1d381a090af11`。
+- 模板运行时源：`9b3101085facc9da783346d3267d5a150893cacb`。
 - Bundle producer：`7b973956dbd57ea9f7f3f471775c41a307d4eb4e`，`bundle-producer-v4`。
-- CLI：`d74e1323a07f9d693b9ae83695b1c860824a6895`，开发版本 `2.6.0-dev.1`，未创建发行 tag。
+- CLI：`22c2e7cbba0024819f79ee104bd60ca20da01c01`，开发版本 `2.6.0-dev.1`，未创建发行 tag。
 - 平台构建摘要由实际构建回执写入 [CLI pin](../distribution/yss-cli-pin.json)，不代表非 Linux 平台运行验收。
-- 固定来源 `tools/artifacts.mjs generate --scope all` 成功，实际归档 7,092,010 字节；忽略的内嵌归档不入库。
+- 固定来源 `tools/artifacts.mjs generate --scope all` 成功，实际归档 7,089,080 字节；忽略的内嵌归档不入库。
 - CLI 实施与 CI：[yss-cli PR #49](https://github.com/iloveZzz/yss-cli/pull/49)。模板集成检查：[template-gate](https://github.com/iloveZzz/yss-spec-project-template/actions/workflows/template-gate.yml)。
 
 ## 本地已执行的复验
+
+安装与累计交付集成首先在 CLI `d74e1323` / 模板 `712a8c69` 上执行。随后仅压缩两个 Skill 的重复入口说明并重新装配固定来源，没有修改 Go 业务逻辑；最终 pin 的全新安装与 Worker 闭环由模板 CI 再次执行。
 
 - 四阶段合同、内容4、角色无关历史读取、原生阶段、检查输入关联、遗漏已知独立复核、候选与范围、准备快照及当前阻塞拒绝：针对性回归通过。
 - 官方 Plan 阶段登记后、未来实施准入前，实际脚手架准备通过；扩大原选择写路径被拒绝。
@@ -31,7 +33,8 @@
 - 大 inode 的 bigint 精度及 libuv 有符号表示修复覆盖8个传输与漂移回归，错误 inode 仍拒绝。
 - 当前代码全量 Go、gofmt、生产包构建、vet、固定摘要检查及文档事实检查通过。冷编译墙钟超过本地五分钟总范围后，另以 `timeout 300s go test -timeout 5m ./...` 成功复验，复用已有成功测试缓存。
 - 干净 CLI 提交的 Linux/amd64 完整 Bundle 候选构建与完整黑盒冒烟通过；Skill 投影、锁文件和模板文档事实检查通过。
-- CLI PR #49 的远端 Go、冒烟、全量生成产物复现与脚手架 Go/Node 对拍均已通过；这些结果不代替模板侧的新安装闭环。
+- CLI `d74e1323` 的远端 Go、冒烟、全量生成产物复现与脚手架 Go/Node 对拍均通过；最终装配提交的重复验证结果见 CLI PR #49，不以旧提交结果替代新来源检查。
+- 模板首轮 CI 发现 Skill 上下文超出原预算。两个入口改为先读共享规则，最大 Skill 为12,498字节，原12,500字节预算保持不变；预算、投影、锁与17个合同/历史读取测试通过，独立复核确认覆盖语义完整。
 - 最终 pin 更新后，按批准计划原基线选择118条相关维护命令，按当前 main 基线选择115条，未知文件均为空。原基线额外的两项 Skill 锁/同步用例（8个测试）和一项语法检查已在本地补验通过；其余必要回归结果由模板 CI 保留，不把选择计划记为执行通过。
 - 最终独立上下文复核及后续定向复核未发现剩余已确认 P1/P2；复核不代替执行测试。
 

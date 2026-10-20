@@ -2,18 +2,18 @@
   "schema_version": 1,
   "repository": "https://github.com/iloveZzz/yss-cli.git",
   "version": "2.6.0-dev.1",
-  "commit": "d74e1323a07f9d693b9ae83695b1c860824a6895",
+  "commit": "22c2e7cbba0024819f79ee104bd60ca20da01c01",
   "go_version": "1.27.1",
   "build": "node tools/build-candidate.mjs --out <仓库外新目录>（目标平台用 GOOS、GOARCH 指定；固定 Go 环境，-mod=readonly -trimpath -buildvcs=false，提交号与来源状态用 -X 写入）",
   "binaries": {
     "darwin-arm64": {
-      "sha256": "489436ec7e7616c812017866afe02485b4efc2dca8bd5b913840b7fdc12ce901"
+      "sha256": "e6f843d8ddbf24102f6e61a411bbb65d6f605659acb9592febe3c3876833766d"
     },
     "linux-amd64": {
-      "sha256": "a7d5ee7932ed0f93bdf8c33e7862de15d0267b19172c372d49a4384fc642b4ca"
+      "sha256": "c82cbb5b602cb09f50ae2bc266a598eee31e40fd34187c22cf19f13c6080e86e"
     },
     "linux-arm64": {
-      "sha256": "168f734f00c842a175bb0679ce63423ac749a5cd004f5960ef094bc7f8afccae"
+      "sha256": "ef3e541379fabfd757c168669155008a73b44bc57cc322cde3ec66a3754f0190"
     }
   }
 }
