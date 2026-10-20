@@ -53,12 +53,7 @@
 | `lifecycle target` | 读取或事务设置 Spec 单功能的本次推进目标。 | `yss help examples lifecycle target` |
 | `lifecycle verify` | 核验当前 checkpoint 的领域门禁。 | `yss help examples lifecycle verify` |
 | `lifecycle verify-daily` | 核验同一日常任务的当前差异、测试和独立审查。 | `yss help examples lifecycle verify-daily` |
-| `migrate` | 显式迁移旧实例 metadata、受管基线及 binding。 | `yss help examples migrate` |
-| `migrate apply` | 应用迁移计划。 | `yss help examples migrate apply` |
-| `migrate plan` | 生成只读迁移计划（默认动作）。 | `yss help examples migrate plan` |
-| `migrate recover` | 恢复未完成迁移事务。 | `yss help examples migrate recover` |
-| `migrate rollback` | 恢复迁移前实例。 | `yss help examples migrate rollback` |
-| `migrate status` | 查询迁移事务。 | `yss help examples migrate status` |
+| `migrate` | Spec/Backend 旧统一实例治理迁移：--plan --out 保存，--apply --plan-file 应用；完成后不支持降级。 | `yss help examples migrate` |
 | `profile` | 准备独立的下游 Profile 工程并登记显式关联。 | `yss help examples profile` |
 | `profile prepare` | 生成或执行单端、联合初始化保存计划。 | `yss help examples profile prepare` |
 | `project-ci` | 核验或配置项目 CI。 | `yss help examples project-ci` |

@@ -7,9 +7,9 @@
 ```text
 维护与恢复
 前置条件：分别确认程序、项目模板、旧实例及插件绑定的来源与事务范围。
-程序升级：upgrade；模板同步：sync；旧实例迁移：migrate。
-普通 recover/rollback 默认只读，增加 --apply 执行；migrate recover/rollback 与 update recover/rollback 本身写入。
-先核对状态及归档，在已确认范围内恢复。已绑定插件使用对应插件 project-upgrade-plan/apply 或 project-migration-plan/apply。
+程序升级：upgrade；当前原生实例同步：sync；受支持的旧统一实例治理迁移：migrate --plan/--apply。
+项目 recover/rollback 默认只读，增加 --apply 写入；程序 update recover/rollback 本身写入。未完成治理迁移用 recover --apply，已完成迁移不支持降级。
+先核对状态及归档，在已确认范围内恢复；当前支持的插件先核验接口与实际代际相容，不能套用退役插件。仅检查请求不执行写入。
 预期结果：计划、应用与恢复均绑定实际输入；后续用户修改阻止覆盖。
 下一步：核对 doctor/diff 或 update status，保留本次真实验证与恢复材料。
 失败恢复：冲突与输入漂移先保留现场，再检查诊断并重新规划；原始旧事务由对应固定旧执行器恢复。
@@ -20,42 +20,42 @@ YSS 离线入门教程
    yss version --json
    yss capabilities --json
    yss init --profile spec --root ./demo-spec --project-name 演示项目
-   也可选择 design、backend；在各自的新目录初始化。
+   也可选择 backend；当前只支持 Spec/Backend。
 
 2. 检查实例（只读）
    yss doctor --root ./demo-spec --json
    yss diff --root ./demo-spec --json
 
 3. 升级项目模板（先检查计划，再应用）
-   yss sync --root ./demo-spec --plan --out /tmp/yss-sync-plan.json
-   yss sync --root ./demo-spec --apply --plan-file /tmp/yss-sync-plan.json
+   yss sync --root ./demo-spec --plan --out /absolute/path/yss-sync-plan.json
+   yss sync --root ./demo-spec --apply --plan-file /absolute/path/yss-sync-plan.json
    计划文件须不存在；输入或定制冲突变化时重新生成计划。
 
 4. 查询和补装资源
    yss skills list --root ./demo-spec --json
-   yss skills ensure yss-research --root ./demo-spec --plan --out /tmp/yss-skill-plan.json
-   yss skills --root ./demo-spec --apply --plan-file /tmp/yss-skill-plan.json
+   yss skills ensure yss-research --root ./demo-spec --plan --out /absolute/path/yss-skill-plan.json
+   yss skills --root ./demo-spec --apply --plan-file /absolute/path/yss-skill-plan.json
    yss assets list --root ./demo-spec --json
    使用 list 的实际标识；阶段资源以当前 Profile 登记为准。
 
-5. 旧实例迁移
+5. 旧统一实例治理迁移（仅 Spec/Backend 的 metadata3 / identity1 / policy1）
    yss doctor --root ./old-project --json
-   yss migrate plan --root ./old-project --out /tmp/yss-migrate-plan.json --json
-   yss migrate apply --root ./old-project --plan-file /tmp/yss-migrate-plan.json --json
-   yss migrate rollback --root ./old-project --json
-   旧未完成事务先由对应仓外固定旧执行器恢复，不能跳过恢复直接迁移。
+   yss recover --root ./old-project --json
+   yss migrate --root ./old-project --profile spec --plan --out /absolute/path/yss-migrate-plan.json --json
+   yss migrate --root ./old-project --profile spec --apply --plan-file /absolute/path/yss-migrate-plan.json --json
+   未完成迁移在恢复授权内 recover --apply；已完成迁移不支持降级。
+   原政策和历史批准封存，不授予新资格；仅旧 npm 家族、Design 等不提供当前迁移。
 
 6. 升级 CLI 程序
    yss upgrade --check
-   yss upgrade
-   yss upgrade --to 1.3.0 --tool-root ./tools/yss --json
+   yss upgrade --to <本批固定版本> --tool-root /absolute/path/tools/yss --json
    自动识别实际运行的受管工具目录；未受管裸二进制须显式选择新工具目录。
 
    1.0.0 没有 upgrade 命令：首次进入新版从
    https://github.com/iloveZzz/yss-cli/releases 下载本机包和 checksums.json，
    读取其中对应归档 SHA-256，再执行现有离线入口：
-   yss update plan --tool-root ./tools/yss --artifact /path/yss_1.3.0_darwin_arm64.tar.gz --sha256 "<SHA-256>" --out /tmp/yss-install-plan.json --json
-   yss update apply --tool-root ./tools/yss --plan-file /tmp/yss-install-plan.json --json
+   yss update plan --tool-root ./tools/yss --artifact /path/yss_<本批固定版本>_darwin_arm64.tar.gz --sha256 "<SHA-256>" --out /absolute/path/yss-install-plan.json --json
+   yss update apply --tool-root ./tools/yss --plan-file /absolute/path/yss-install-plan.json --json
    ./tools/yss/yss version --json
    将该受管目录的 yss 链接到 PATH 后即可使用 upgrade。
 
