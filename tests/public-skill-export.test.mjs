@@ -4,6 +4,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { exportSkills } from "../scripts/lib/export-skills.mjs";
+import { composeProfileTree } from "../scripts/lib/profile-tree.mjs";
 
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
 
@@ -46,6 +47,22 @@ test("真实 canonical 技能可构建完整公开导出并通过 --check", (t) 
   assert.ok(fs.existsSync(path.join(out, ".yss-export-manifest.json")));
   assert.equal(fs.readdirSync(path.join(out, "skills")).length, 27);
   assert.match(exportSkills(["--output", out, "--check"]), /up to date/);
+});
+
+test("Backend 组合导出的共享维护技能与独立包一致", (t) => {
+  const canonical = output(t, "yss-export-canonical-");
+  const backend = output(t, "yss-export-backend-");
+  exportSkills(["--skill", "setup-yss-harness", "--output", canonical]);
+  exportSkills(["--skill", "setup-yss-harness", "--output", backend], {
+    sourceRoot: path.join(composeProfileTree("backend"), ".agents/skills"),
+  });
+  for (const ref of ["SKILL.md", "references/operation-contract.md", "references/project-operations.md", "references/program-installation.md", "references/cli-families.md"]) {
+    assert.deepEqual(
+      fs.readFileSync(path.join(backend, "skills/setup-yss-harness", ref)),
+      fs.readFileSync(path.join(canonical, "skills/setup-yss-harness", ref)),
+      ref,
+    );
+  }
 });
 
 test("越界链接阻断公开导出", (t) => {
