@@ -2257,7 +2257,7 @@ profiles:
         resources: [native-cli]
         group: lifecycle
         inputs_complete: true
-        timeout_ms: 600000
+        timeout_ms: 1200000
         input_patterns: ["scripts/fixtures/role-independent-draft/stage-gates-worker.test.mjs", "scripts/lib/testing/stage-*.mjs", ".template-spec/process/orchestration/domain/stage-gates.yaml", "scripts/lib/slice-*.mjs", "scripts/lib/lifecycle-readiness.mjs"]
         depends_on: []
         failure_mode: 实际安装后的自动准入、执行证据或交付验收失效

@@ -23,7 +23,8 @@ test('installed Spec implements a current Slice and accepts delivery with four s
   const assetsPlan=path.join(path.dirname(root),'engineering-assets.plan.json');
   run('engineering-assets-plan',['assets','ensure','stage.system-data-engineering','--plan','--out',assetsPlan]);
   run('engineering-assets-apply',['assets','--apply','--plan-file',assetsPlan]);
-  const toolsPlan=path.join(path.dirname(root),'backend-tools.plan.json');run('backend-tools-plan',['skills','ensure','yss-layered-mvc-scaffold-generator','alibaba-java-code-style','yss-application','yss-dto','yss-web-controller','yss-repository','--plan','--out',toolsPlan]);run('backend-tools-apply',['skills','--apply','--plan-file',toolsPlan]);
+  const discoverySkills=[...new Set(loadSkillRegistry(path.join(root,'.template-spec/agents/yss-skill-registry.yaml')).capabilities.filter(row=>row.provider?.kind==='yss-component').map(row=>row.primary_skill))];
+  const toolsPlan=path.join(path.dirname(root),'backend-tools.plan.json');run('backend-tools-plan',['skills','ensure','yss-layered-mvc-scaffold-generator','alibaba-java-code-style','yss-application','yss-dto','yss-web-controller','yss-repository',...discoverySkills,'--plan','--out',toolsPlan]);run('backend-tools-apply',['skills','--apply','--plan-file',toolsPlan]);
   const sliceAssets=path.join(path.dirname(root),'slice-assets.plan.json');run('slice-assets-plan',['assets','ensure','stage.ticket-formalization','--plan','--out',sliceAssets]);run('slice-assets-apply',['assets','--apply','--plan-file',sliceAssets]);
   for(const ref of ['.template-spec/engineering/backend-platforms.json','docs/engineering/evidence'])fs.cpSync(path.join(e.root,ref),path.join(root,ref),{recursive:true});
   const feature='feature.engineering',cpRef='.work/engineering/checkpoint.json',project=fs.realpathSync(e.project);
