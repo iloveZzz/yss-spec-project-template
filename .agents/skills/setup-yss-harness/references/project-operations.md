@@ -8,13 +8,14 @@
 |---|---|
 | 不存在或空目录，用户要求新建 | `init` 保存计划；无旧项目身份与 Context 是预期初始状态 |
 | 普通工程，无 YSS 实例 metadata 或身份，用户要求接管 | `attach` 保存计划；先读既有业务 Context、Git 与业务资产，缺 Context 的结果按执行器合同核对 |
-| 合法 `.yss.json` 原生实例 | 读取根身份、唯一 Context、Profile、受管基线及 binding 后 `sync` |
-| 可识别的旧家族实例 | 按 [家族适配](cli-families.md) 检查 schema 与旧事务，`migrate plan/apply` |
+| 当前 `.yss.json` metadata4 / identity2 的 Spec、Backend | 读取根身份、唯一 Context、Profile、受管基线及 binding 后 `sync` |
+| 旧统一 metadata3 / identity1 / policy1 的 Spec、Backend | 按 [家族适配](cli-families.md) 显式治理迁移；不能先 sync 或补装资源 |
+| 仅旧 npm 家族 metadata、Design、Frontend、旧 dev 或退役插件 | 当前执行器不提供迁移；保留原件，历史维护用匹配的固定旧执行器 |
 | 模板源、多个矛盾身份、既有实例缺必需身份、未知 schema 或来源 | 只诊断；不能重新 init、attach 或删 metadata 绕过 |
 
 新建/接管需明确 Profile、目标与工程范围；信息不足先调查，再补缺失决定。初始化治理资源不授予产品阶段批准或生产脚手架权限；实现工程接入与脚手架仍消费相应生命周期合同。
 
-对既有实例先 `doctor/diff` 并记录已有失败、dirty/untracked、HEAD/index/gitlink 和受管文件定制。用 `bundle inspect --profile <Profile> --json` 核对固定二进制内来源；真实业务工程先在隔离副本验证。旧未完成事务须由对应仓外固定旧执行器恢复，不能交给 Go 猜旧日志。
+对可读原生实例先 `doctor/diff` 并记录已有失败、dirty/untracked、HEAD/index/gitlink 和受管文件定制。用 `bundle inspect --profile <Profile> --json` 核对固定二进制内来源；真实业务工程先在隔离副本验证。当前项目保存计划 v3、metadata4、Bundle4、identity2、Profile3、governance2；envelope 和运行协议仍为 v1。旧未完成事务按其对应固定执行器处理，不能猜旧日志。仅要求检查时不生成应用或恢复写入。
 
 ## 新建与接管
 
@@ -32,11 +33,13 @@
 ```text
 <固定yss> sync --root <原生实例根> --plan --out <项目外新计划.json> --json
 <固定yss> sync --root <原生实例根> --apply --plan-file <计划.json> --json
-<固定yss> migrate plan --root <旧实例根> --profile <Profile> --out <项目外新计划.json> --json
-<固定yss> migrate apply --root <旧实例根> --profile <Profile> --plan-file <计划.json> --json
+<固定yss> migrate --root <旧统一实例根> --profile <Profile> --plan --out <项目外新计划.json> --json
+<固定yss> migrate --root <旧统一实例根> --profile <Profile> --apply --plan-file <计划.json> --json
 ```
 
-已绑定后端交付或产品设计插件的旧实例，使用对应插件 `project-migration-plan/apply`；绑定原生实例更换二进制、模板或 Bundle 来源时用 `project-upgrade-plan/apply`，身份、受管基线和 binding 原子更新。直接同步缺新 binding 的 `BINDING_REQUIRED`，或既有失配的 `BINDING_CONFLICT`，均不能手改绑定绕过。
+`migrate` 仅接受已核验的 metadata3 / identity1 / policy1 Spec、Backend；`sync` 对这类实例返回 `GOVERNANCE_MIGRATION_REQUIRED`。不支持的代际保留 `MIGRATION_UNSUPPORTED` 或实际身份错误，不能改 metadata、重 init 或 attach。迁移封存原政策、身份及记录；历史批准只按原语义读取，不授予新治理资格。治理语义变化须由已有授权覆盖，缺实质决定时先展示影响。当前不提供旧 npm 家族、Design 或跨家族迁移。
+
+当前受支持的后端交付插件 binding，先证明该插件提供匹配当前代际的公开接口；来源升级使用其 `project-upgrade-plan/apply`，只有明确支持当前治理迁移时才使用迁移接口。接口不可证明时停止该分支；不能把旧插件命令套用到新代际。直接同步缺新 binding 的 `BINDING_REQUIRED`，或既有失配的 `BINDING_CONFLICT`，均不能手改绑定绕过。
 
 `attach` 仅用于没有 YSS metadata 的普通工程。原生实例返回 `SYNC_REQUIRED`，旧实例返回 `MIGRATION_REQUIRED`；先识别身份再选择 `--full`。未知 schema、矛盾身份或未完成事务阻断写入，按诊断进入恢复。
 
@@ -50,9 +53,9 @@ yss sync --root ./project --apply --plan-file /review/resolved.json
 
 审查包的 `conflicts.json` 给出每项决议的绑定字段和可选项，`decisions.json` 默认空决议。将选定项及 `choice` 填入决议文件；`use-merged` 需提供普通候选文件 `candidateFile` 和原字节 SHA-256 `candidateDigest`。三方候选只用于审查，干净合并也需决议。固定来源资产不能任意合并，生成锁只由登记生成器重建。决议绑定原计划摘要、路径、本地和目标描述及迁移规则，输入变化使决议失效。
 
-历史材料先取核验过的事务归档，其次使用显式 `--base-bundle <完整导出目录或快照文件>`。Bundle 导出的 `.yss-bundle.snapshot.json` 同时保存初始与完整变体；原字节须匹配登记摘要。材料缺失标记“基线不可用”，使用双向对照和人工候选，默认不联网。旧保存计划应用返回 `PLAN_VERSION`，不能编辑重签；用当前现场重新生成计划。旧 metadata 原字节进入同一事务恢复材料。
+历史材料先取核验过的事务归档，其次使用显式 `--base-bundle <完整导出目录或快照文件>`。Bundle 导出的 `.yss-bundle.snapshot.json` 同时保存初始与完整变体；原字节须匹配登记摘要。材料缺失标记“基线不可用”，使用双向对照和人工候选，默认不联网。跨执行器或代际重新生成保存计划；按实际 `PLAN_VERSION`、`PLAN`、`BUNDLE` 或输入漂移诊断处理，不编辑重签或笼统承诺同一错误码。旧 metadata 原字节进入同一事务恢复材料。
 
-同步范围包含当前基础资源、已安装阶段、Skills 和已选运行时的依赖闭包；没有迁移规则的退役资产明确保留。删除、改名只在固定规则匹配、旧字节可信且未定制时自动规划，其他情况进入冲突。已决定保留的入口差异持续显示为例外，重复规划不产生额外变更。
+同步范围包含当前基础资源、已安装阶段、Skills 的依赖闭包；旧实例已登记的运行时投影按自身锁处理，新实例不要求旧运行时投影。没有迁移规则的退役资产明确保留。删除、改名只在固定规则匹配、旧字节可信且未定制时自动规划，其他情况进入冲突。已决定保留的入口差异持续显示为例外，重复规划不产生额外变更。
 
 ## 资源补装
 
@@ -77,6 +80,6 @@ yss sync --root ./project --apply --plan-file /review/resolved.json
 
 ## 恢复、回退与验收
 
-普通 `recover/rollback --root <目标> --json` 默认只读，明确恢复授权内增加 `--apply` 写入；`migrate status` 只读，`migrate recover/rollback` 本身写入，不加 `--apply`。程序 `update` 的事务不能作为项目恢复入口。
+项目 `recover/rollback --root <目标> --json` 默认只读，明确恢复授权内增加 `--apply` 写入。当前没有 `migrate status/recover/rollback` 子命令；未完成治理迁移使用 `recover --apply`，已完成治理迁移拒绝降级并返回 `DOWNGRADE_UNSUPPORTED`。程序 `update` 的事务不能作为项目恢复入口。
 
-操作后检查回执、`doctor/diff`、身份、Context、受管基线、锁与投影、插件 binding 和适用治理；再次用同来源、同选项保存新计划，确认无重复变更。`doctor` 只检查其实际覆盖范围，已有产品治理缺口单独记录。核对业务文件、工作区改动、Git 状态和权限仍保持；报告原失败与新增失败、计划/备份/回执及未覆盖项。回退最近成功适用事务前检查用户后续修改与归档；重复回退不退到更早事务，不改变程序版本或历史批准。
+操作后检查回执、`doctor/diff`、身份、Context、受管基线、锁与适用投影、插件 binding 和适用治理；同步及补装再次用同来源、同选项规划，确认无重复变更。治理迁移完成后按新身份做 `doctor/diff` 和只读 `sync --plan`，不再次 migrate 当前实例。`doctor` 只检查其实际覆盖范围，已有产品治理缺口单独记录。核对业务文件、工作区改动、Git 状态和权限仍保持；报告原失败与新增失败、计划/备份/回执及未覆盖项。普通项目回退最近成功适用事务前检查用户后续修改与归档；重复回退不退到更早事务，不改变程序版本或历史批准。

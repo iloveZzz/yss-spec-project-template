@@ -2003,12 +2003,16 @@ profiles:
         inputs_complete: true
         input_patterns:
           - ".agents/skills/**"
+          - "profiles/_specialist/.agents/skills/setup-yss-harness/**"
+          - "profiles/backend/.agents/skills/setup-yss-harness/**"
+          - "profiles/backend/.template-source/distribution/bundle-profile.json"
+          - "scripts/lib/profile-tree.mjs"
           - "yss-public-skills.json"
           - "scripts/export-yss-skills"
           - "scripts/lib/export-skills.mjs"
           - "tests/public-skill-export.test.mjs"
         depends_on: []
-        failure_mode: "公开技能包携带越界或失效链接、符号链接、凭据或不可移植路径"
+        failure_mode: "公开技能包携带越界或失效链接、符号链接、凭据或不可移植路径，或 Backend 覆盖层重新分发过期共享维护技能"
       - id: check.retired-skill-ids
         run: "node --test tests/retired-skill-ids.test.mjs"
         group: skills
