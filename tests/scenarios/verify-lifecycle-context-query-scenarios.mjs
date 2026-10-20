@@ -148,7 +148,7 @@ assert.match(prototype.lifecycle.work_unit.completion, /schema v4/);
 assert.throws(() => queryLifecycleContext({ workUnitId: "work-unit.prototype-design" }), /未知工作单元/);
 assert.match(prototype.lifecycle.evidence.find(item=>item.id==='evidence.prototype-deliverable-verification').description, /schema v4/);
 assert.ok(prototype.lifecycle.artifacts.some(item=>item.id==='artifact.prototype-review-v2' && item.trigger.includes('check.prototype-reviewed')));
-assert.ok(prototype.lifecycle.artifacts.some(item=>item.id==='artifact.prototype-confirmation-v2' && item.trigger.includes('gate.product-design-approved')));
+assert.ok(prototype.lifecycle.artifacts.some(item=>item.id==='artifact.prototype-confirmation-v2' && item.trigger.includes('gate.spec-baseline-approved')));
 assert.throws(()=>queryLifecycleContext({workUnitId:'work-unit.intensity-aware-verification'}),/未知工作单元/);
 assert.equal(queryLifecycleContext({workUnitId:'work-unit.intensity-aware-verification-v2'}).lifecycle.work_unit.scope,'template-source');
 assert.throws(() => queryLifecycleContext({ workUnitId: 'work-unit.service-project-initialization' }), /未知工作单元/);
