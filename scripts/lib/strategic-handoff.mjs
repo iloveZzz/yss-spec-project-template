@@ -84,7 +84,7 @@ export async function exportBundle({sourceRoot,handoffRef,output,zip=false,previ
   const root=project(sourceRoot); parseContextContract({root}); relative(handoffRef);
   const current=inspected||await inspectSource(root,handoffRef);
   let prior=null;
-  if(previous)prior=await openBundle(previous, b=>({manifest:b.manifest,indexes:b.indexes,handoff:b.handoff,rulesBytes:readFileSync(safe(b.root,'indexes/rules.json')),scenariosBytes:readFileSync(safe(b.root,'indexes/scenarios.json'))}));
+  if(previous)prior=await openBundle(previous, b=>({manifest:b.manifest,indexes:b.indexes,handoff:b.handoff,rulesBytes:readFileSync(safe(b.root,'indexes/rules.json')),scenariosBytes:readFileSync(safe(b.root,'indexes/scenarios.json'))}),evidenceRoot?{evidenceRoot}:{});
   if(prior){ensure(prior.manifest.bundle_id===current.handoff.handoff_id,'前版属于不同交接');ensure(Number(current.handoff.handoff_version.slice(1))>Number(prior.manifest.version.slice(1)),'更新必须提升交接版本');for(const[key,ref]of Object.entries(current.handoff.source)){const old=prior.handoff.source[key];if(old&&old.digest!==ref.digest)ensure(old.version!==ref.version,`源资产内容变化必须提升版本: ${key}`);}}
   const previousBundle=prior?{bundle_id:prior.manifest.bundle_id,version:prior.manifest.version,digest:prior.manifest.bundle_digest}:null;
   const snapshotFiles=collectSourceClosure(root,handoffRef,current.handoff,current.config,{proof:current});
@@ -118,8 +118,8 @@ export async function exportBundle({sourceRoot,handoffRef,output,zip=false,previ
   } finally {rmSync(staging,{recursive:true,force:true});rmSync(`${staging}.zip`,{force:true});}
 }
 
-export async function openDelivery(input,action,{readOnly=false}={}) {
- const root=path.resolve(input),result=nativeEvidenceVerify({root:ROOT,group:'handoff',kind:'delivery',file:root,needs:NEEDS.handoffDelivery});
+export async function openDelivery(input,action,{readOnly=false,evidenceRoot=ROOT}={}) {
+ const root=path.resolve(input),result=nativeEvidenceVerify({root:evidenceRoot,group:'handoff',kind:'delivery',file:root,needs:NEEDS.handoffDelivery});
  const source=nativeCoverage(result,'handoff_source'),pack=nativeCoverage(result,'handoff_package'),delivery=nativeCoverage(result,'handoff_delivery');
  // Native report locators belong to its transport root; consume the verified original delivery here.
  const recordBytes=readFileSync(safe(root,'delivery-record.json'));ensure(hash(recordBytes)===delivery.record_digest,'VALIDATION_INPUT_CHANGED: delivery record');
@@ -154,17 +154,17 @@ export function assertImportReceipt(root,receipt,bundle,capability) {
   for(const id of selected){const route=bundle.handoff.consumer_routes.find(row=>row.capability===id);ensure(route&&receipt.selected_consumer_capabilities.includes(id),'收据未选择当前消费者能力');consumerEntry(root,id,route.entry_work_unit);ensure(receipt.target_profile_id===physicalProfile,'收据消费者与当前Profile不一致');const bound=receipt.routes.find(row=>row.capability===id);ensure(bound?.route_id===route.route_id&&bound.activation===route.activation,'收据消费者路由与原交付不一致');}
 }
 
-export async function finalizeDelivery({sourceRoot,handoffRef,zip=false,previous}) {
+export async function finalizeDelivery({sourceRoot,handoffRef,zip=false,previous,evidenceRoot=ROOT}) {
   const root=project(sourceRoot);parseContextContract({root});relative(handoffRef);
   const current=await inspectSource(root,handoffRef);
   ensure(current.handoff.schema_version===5,'migration-required: v3/v4 只允许历史 verify/import；修改或重新交付必须迁移到 Handoff v5 并重新批准');
   const delivery=path.join(root,'docs/deliveries/strategic',current.handoff.handoff_id,current.handoff.handoff_version);
   const parent=path.dirname(delivery);mkdirSync(parent,{recursive:true});
   let previousPackage=previous;
-  if(previous&&isDeliveryDirectory(path.resolve(previous)))previousPackage=await openDelivery(path.resolve(previous),value=>value.packageRoot);
+  if(previous&&isDeliveryDirectory(path.resolve(previous)))previousPackage=await openDelivery(path.resolve(previous),value=>value.packageRoot,{evidenceRoot});
   const stage=mkdtempSync(path.join(parent,'.delivery-staging-'));
   try {
-    const exported=await exportBundle({sourceRoot:root,handoffRef,output:path.join(stage,'package'),zip,previous:previousPackage,inspected:current});
+    const exported=await exportBundle({sourceRoot:root,handoffRef,output:path.join(stage,'package'),zip,previous:previousPackage,evidenceRoot,inspected:current});
     // exportBundle 已对 staging 包整包验真；这里只读取同一份 manifest，不再重复验证。
     const manifest=read(path.join(stage,'package','manifest.json'));
     const handoffEntry=manifest.files.find(file=>file.original_ref===handoffRef);
@@ -175,9 +175,9 @@ export async function finalizeDelivery({sourceRoot,handoffRef,zip=false,previous
     const previousDelivery=manifest.previous_bundle?{handoff_id:manifest.previous_bundle.bundle_id,version:manifest.previous_bundle.version,bundle_digest:manifest.previous_bundle.digest}:null;
     const record={schema_version:1,kind:'strategic-handoff-delivery-v1',status:'packaged',handoff:{id:current.handoff.handoff_id,version:current.handoff.handoff_version,ref:handoffRef,sha256:handoffEntry.sha256,schema_version:5},source_assets:sourceAssets,package_ref:'package',manifest_ref:'package/manifest.json',bundle_digest:exported.bundle_digest,verification_ref:'verification.json',consumer_routes:current.handoff.consumer_routes.map(({route_id,capability,activation})=>({route_id,capability,activation})),...(zip?{zip:{ref:'package.zip',sha256:exported.zip_sha256}}:{}),previous_delivery:previousDelivery};
     schema(record,'.template-spec/process/schemas/strategic-handoff-delivery.schema.json');write(stage,'delivery-record.json',json(record));
-    await openDelivery(stage,()=>null);
+    await openDelivery(stage,()=>null,{evidenceRoot});
     if(existsSync(delivery)){
-      const existing=await openDelivery(delivery,value=>value.record);
+      const existing=await openDelivery(delivery,value=>value.record,{evidenceRoot});
       ensure(existing.bundle_digest===record.bundle_digest&&existing.handoff.sha256===record.handoff.sha256,'delivery-version-conflict: 同 Handoff ID/version 已存在不同内容；请提升 handoff_version 并重新批准');
       return {result:'already-packaged',handoff_id:record.handoff.id,version:record.handoff.version,bundle_digest:record.bundle_digest,delivery};
     }
@@ -185,15 +185,15 @@ export async function finalizeDelivery({sourceRoot,handoffRef,zip=false,previous
     return {result:'packaged',handoff_id:record.handoff.id,version:record.handoff.version,bundle_digest:record.bundle_digest,delivery,...(zip?{zip:path.join(delivery,'package.zip'),zip_sha256:record.zip.sha256}:{})};
   } finally {rmSync(stage,{recursive:true,force:true});}
 }
-export async function importBundle({bundle,targetRoot}) {
+export async function importBundle({bundle,targetRoot,evidenceRoot=ROOT}) {
   const target=project(targetRoot);const context=parseContextContract({root:target});
-  const open=isDeliveryDirectory(path.resolve(bundle))?action=>openDelivery(path.resolve(bundle),action):action=>openBundle(bundle,action);
+  const open=isDeliveryDirectory(path.resolve(bundle))?action=>openDelivery(path.resolve(bundle),action,{evidenceRoot}):action=>openBundle(bundle,action,{evidenceRoot});
   return open(async b=>{
     const rel=`docs/handoffs/${b.manifest.bundle_id}/${b.manifest.version}`,dest=safe(target,rel,{missing:true});
     if(existsSync(dest)) {
       const receipt=read(safe(dest,'import-receipt.json'));
       ensure(receipt.bundle_digest===b.manifest.bundle_digest,'同 ID/version 内容冲突');
-      await openBundle(safe(dest,'package'),existing=>assertImportReceipt(target,receipt,existing));
+      await openBundle(safe(dest,'package'),existing=>assertImportReceipt(target,receipt,existing),{evidenceRoot});
       return {result:'already-imported',receipt_ref:`${rel}/import-receipt.json`};
     }
     ensure(b.handoff.schema_version!==5||b.recordBytes,'Handoff v5 接入必须消费正式 delivery wrapper 与 Receipt v3');

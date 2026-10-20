@@ -6,10 +6,17 @@ import { tmpdir } from 'node:os';
 import {pathToFileURL} from 'node:url';
 import { baselineFixture, handoffFixture } from '../../scripts/fixtures/existing-ui-baseline/fixture.mjs';
 import { validateExistingUiBaseline } from '../../scripts/lib/existing-ui-baseline.mjs';
-import { exportBundle,openBundle,importBundle,inspectSource,finalizeDelivery } from '../../scripts/lib/strategic-handoff.mjs';
+import { exportBundle as nativeExportBundle,openBundle as nativeOpenBundle,importBundle as nativeImportBundle,inspectSource,finalizeDelivery as nativeFinalizeDelivery } from '../../scripts/lib/strategic-handoff.mjs';
 import { read,json,hash,digest,treeDigest,schema,ROOT } from '../../scripts/lib/strategic-handoff-io.mjs';
 import { loadDeliveryProfile } from '../../scripts/lib/harness-execution-scope.mjs';
 import { context } from '../../scripts/fixtures/strategic-handoff/fixture.mjs';
+// Each scenario file owns its authenticated transport host; parallel validation never observes another test's staging.
+const {makeRoot}=await import('../helpers/yss-instance.mjs');
+const evidenceRoot=makeRoot('existing-ui-validation-host-','spec');
+const exportBundle=options=>nativeExportBundle({...options,evidenceRoot});
+const openBundle=(input,action,options={})=>nativeOpenBundle(input,action,{...options,evidenceRoot});
+const importBundle=options=>nativeImportBundle({...options,evidenceRoot});
+const finalizeDelivery=options=>nativeFinalizeDelivery({...options,evidenceRoot});
 const root=t=>{const root=mkdtempSync(path.join(tmpdir(),'existing-ui-test-'));t.after(()=>rmSync(root,{recursive:true,force:true}));return root;};
 function useCustomRouteIds(f) {
  const ids={'route.backend':'route.custom-backend','route.frontend':'route.custom-frontend','route.coordination':'route.custom-coordination'};

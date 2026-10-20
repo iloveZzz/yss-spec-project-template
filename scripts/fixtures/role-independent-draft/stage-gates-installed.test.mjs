@@ -115,9 +115,9 @@ test('installed four-stage Spec records one Plan decision, stops at Spec and exp
   }
   handoff.package_export.approvals.handoff={record_ref:specRef,gate_id:'gate.spec-baseline-approved',digest_kind:'sha256-bytes'};
   write('handoff.json',handoff);
-  const delivery=await finalizeDelivery({sourceRoot:root,handoffRef:'handoff.json'});
+  const delivery=await finalizeDelivery({sourceRoot:root,handoffRef:'handoff.json',evidenceRoot:root});
   const transport=path.join(path.dirname(root),'transport');fs.cpSync(delivery.delivery,transport,{recursive:true});const offline=root+'.offline';fs.renameSync(root,offline);
-  let imported;try{imported=await importBundle({bundle:transport,targetRoot:receiver.root});}finally{fs.renameSync(offline,root);}
+  let imported;try{imported=await importBundle({bundle:transport,targetRoot:receiver.root,evidenceRoot:receiver.root});}finally{fs.renameSync(offline,root);}
   assert.equal(JSON.parse(receiver.read(imported.receipt_ref)).status,'pending-context-reconciliation');
   assert.equal(JSON.parse(receiver.read(imported.receipt_ref)).ready_for_agent,false);
  }finally {f.cleanup();receiver.cleanup();}
