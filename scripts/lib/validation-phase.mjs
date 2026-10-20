@@ -25,7 +25,7 @@ function ownedTransport(file,transports){
  const stat=fs.lstatSync(file);
  return stat.isDirectory()&&!stat.isSymbolicLink()&&fs.readdirSync(file).every(name=>ownedTransport(path.join(file,name),transports));
 }
-const statShape=stat=>({type:stat.isSymbolicLink()?'link':stat.isDirectory()?'directory':stat.isFile()?'file':'other',mode:Number(stat.mode),ino:String(stat.ino),dev:String(stat.dev)});
+const statShape=stat=>({type:stat.isSymbolicLink()?'link':stat.isDirectory()?'directory':stat.isFile()?'file':'other',mode:Number(stat.mode),ino:String(BigInt.asUintN(64,BigInt(stat.ino))),dev:String(stat.dev)});
 function observe(file,kind,read){const phase=current();if(!phase)return read();const key=`${kind}\0${file}`;if(!phase.observations.has(key))phase.observations.set(key,{file,kind,value:read()});return phase.observations.get(key).value;}
 function pathIdentity(file){let part=path.parse(file).root;for(const name of path.relative(part,file).split(path.sep).filter(Boolean)){part=path.join(part,name);const nameRef=part;observe(nameRef,'stat',()=>{try{return statShape(fs.lstatSync(nameRef,{bigint:true}));}catch(e){if(e.code==='ENOENT')return null;throw e;}});}}
 export function readFileSync(file,options){

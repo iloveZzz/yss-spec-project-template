@@ -87,3 +87,11 @@ test('native inode receipts compare lossless 64-bit identities',t=>{
  assert.doesNotThrow(()=>verifyValidationDependencies({schema_version:1,files:[],observations:[{file:root,kind:'stat',value:{type:'directory',permissions:Number(stat.mode&0o7777n),ino:String(ino),dev:String(stat.dev)}}]}));
  mocked.mock.restore();
 });
+
+test('native unsigned inode receipts match signed libuv 64-bit stats',t=>{
+ const root=fixture(t),original=fs.lstatSync,ino=9223372036855891836n;
+ t.mock.method(fs,'lstatSync',(file,options)=>{const stat=original(file,options);if(file===root)stat.ino=options?.bigint?BigInt.asIntN(64,ino):Number(BigInt.asIntN(64,ino));return stat;});
+ const stat=original(root,{bigint:true});
+ assert.doesNotThrow(()=>verifyValidationDependencies({schema_version:1,files:[],observations:[{file:root,kind:'stat',value:{type:'directory',permissions:Number(stat.mode&0o7777n),ino:String(ino),dev:String(stat.dev)}}]}));
+ assert.throws(()=>verifyValidationDependencies({schema_version:1,files:[],observations:[{file:root,kind:'stat',value:{ino:String(ino+1n),type:'directory',permissions:Number(stat.mode&0o7777n)}}]}),/VALIDATION_INPUT_CHANGED/);
+});
