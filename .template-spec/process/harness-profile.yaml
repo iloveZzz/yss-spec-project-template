@@ -6,7 +6,7 @@ purpose: 维护需求、必要产品设计与实现合同；按明确目标完�
 audience:
   qualification_registry: not-required
 lifecycle:
-  repository_modes: [project-instance]
+  repository_modes: [ project-instance ]
   allowed_stages:
     - stage.entry-triage
     - stage.plan
@@ -24,7 +24,7 @@ execution:
   product_design: all-applicable-inputs-checks-and-acceptance-retained
   frontend_implementation: external-toolchain-only
   handoff: explicit-external-consumer-only
-required_capabilities: [role-independent-governance-v1]
+required_capabilities: [ role-independent-governance-v1, stage-gates-v1 ]
 instantiation:
   cli_package: yss
   native_profile: spec

@@ -1,5 +1,8 @@
 # 本次推进目标与专职协作
 
+当前 Spec 四阶段协议见 [Spec 四阶段门禁](stage-gates.md)。启用 `stage-gates-v1` 时，阶段记录替代独立子批准；本页保留的旧批准格式只按其原政策读取。
+
+
 Spec Profile 是综合研发主控，Spec 文档只是其中一个批准点。支持新政策的正式功能默认推进到 `business-accepted`；日常任务仍按普通任务交付政策执行。尚未支持该政策的旧实例保持原路线；只读默认评估不补写历史意图配置，也不扩大职责范围。
 
 目标政策由主控合同的 `progression_target` 唯一定义。支持 `lifecycle-target-v1` 的 CLI 通过 `tracker.root` 下唯一 `map.md` 的 `checkpoint_ref` 定位功能包，在同目录保存 `progression-target.json`。它只保存目标、原始指令来源和显式消费者绑定，不保存阶段、门禁、批准、完成或下一工作单元。改变目标只更新这份意图文件，保留 checkpoint、原始批准与冻结交付包的字节。

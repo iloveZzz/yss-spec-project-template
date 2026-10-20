@@ -10,7 +10,7 @@
 - `concept_candidates`、`invariants`、`context_snapshot`；
 - `downstream_mapping`、`evidence_refs`、`approval`。
 
-`approval.approval_ref` 可以指向 `check.domain-strategy-approved` 单条记录，或指向包含该唯一结论的 `review-bundle.plan`；验证器按 check ID 选择结论并核对 `approval.approver`。bundle 中另一项检查的结论不能替代本检查。
+专业检查的 `approval_ref` 可以指向 `check.domain-strategy-approved` 单条记录，或指向包含该唯一结论的组合审查包。approval3 按实际任务、审查主体、范围、依据及证据核验，不比较 `role_id`；已有无版本注解中的 `approval.approver` 仅供历史批准记录匹配。bundle 中另一项检查的结论不能替代本检查。
 
 ## 业务责任区
 
@@ -34,4 +34,10 @@
 
 正式导出要求场景 `rule_refs / critical / success_results / evidence_refs` 和不变量 `rule_ref / evidence_refs`。`downstream_mapping` 必须使用稳定 `mapping_id`、来源 ID、消费者能力、影响项、传播规则和证据。已有 v2 文档继续只读兼容；修改或重发须显式迁移为 v3 `draft` 并重新批准。具体合同见 `.template-spec/process/strategic-handoff-package.md`，不得由导出器发明业务身份。
 
-新治理政策的战略/阶段批准注解使用显式 `schema_version: 2`，引用已完成的 Plan 审阅包及其实际批准记录，不填写岗位或数字人身份。交接来源另以版本 2 `approval_context` 绑定当前主体、范围和依据；approval3 的 `artifact_bindings` 保留资产 ID、版本和摘要，资产必须已被实际审查。旧无版本注解只按来源原政策只读核验。
+新治理政策的战略/阶段批准注解使用显式 `schema_version: 2`，引用已完成的 Plan 审阅包及其实际批准记录，不填写 `approver` 或岗位身份。内嵌 `approval.approval_context` 使用显式版本 2 绑定当前主体、范围和依据；approval3 的 `artifact_bindings` 保留资产 ID、版本和摘要，资产必须已被实际审查。注解版本 2 和批准记录版本 3 是两个独立版本。历史批准记录只按来源原政策只读核验；已有无版本注解引用当前有效 approval3 时，不重新施加旧角色限制。
+
+## 批准注解迁移
+
+`node .agents/skills/yss-stage-decision/scripts/migrate-contract-v3.mjs <asset.json> --kind domain-strategy --root . --approval-context <context.json>` 同时支持领域策略 v2 内容迁移和已有 v3 资产的批准注解迁移。上下文文件须提供真实的 `schema_version: 2`、`subject_ref`、`approval_scope` 与带摘要的非空 `basis`；当前实例缺少上下文时返回 `migration-required`，不猜测主体、范围或证据。历史政策的 v2 内容迁移继续支持原输入格式。
+
+工具只向标准输出生成版本递增的 `draft`，使用 `approval_ref: migration-required`，不改原文件、不生成批准记录。完成实际审查后再绑定有效记录并复验。领域策略变化后，须更新阶段包 `domain_strategy_ref` 的版本与摘要，再复验阶段包；不能沿用旧绑定。

@@ -1,3 +1,5 @@
+import {usesStageGates} from './stage-result.mjs';
+import {nativeContractVerify,NEEDS} from './native-evidence.mjs';
 import {approvalExpectationForBoundAsset} from './native-approval.mjs';
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from './validation-phase.mjs';
@@ -78,6 +80,11 @@ function requireEngineeringPackage(root, approval, contract, technical, data, ap
 
 export async function validateBackendScaffoldPrerequisites(contract, { contractFile, root = findGovernanceRoot(contractFile) } = {}) {
   if (![4, 5].includes(contract?.schema_version) || contract?.delivery_role !== "backend") fail("后端新生成只接受 Project Scaffold Contract v4/v5");
+  if(usesStageGates(root)) {
+    const result=nativeContractVerify({root,kind:'scaffold-inputs',file:contractFile,needs:NEEDS.stageResult});
+    if(result.exitCode!==0)throw new TypeError(result.message);
+    return structuredClone(contract.design_prerequisites);
+  }
   const prerequisites = contract.design_prerequisites;
   if (!prerequisites || typeof prerequisites !== "object") fail("后端脚手架合同缺少 design_prerequisites");
 

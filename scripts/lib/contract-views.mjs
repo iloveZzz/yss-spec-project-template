@@ -1,3 +1,4 @@
+import {assetSchema} from './structured-assets.mjs';
 import {readFileSync,withValidationPhase} from './validation-phase.mjs';
 import {safe,hash,schema} from './strategic-handoff-io.mjs';
 import {parseSliceYaml,readSliceContract} from './slice-contract.mjs';
@@ -10,6 +11,7 @@ import {readingViewModel} from './reading-view-model.mjs';
 
 // This is a presentation adapter table, never a lifecycle or approval registry.
 export const contractKinds=Object.freeze({
+ 'stage-result':'.template-spec/process/schemas/stage-result.schema.json',
  'domain-strategy':'.template-spec/process/schemas/domain-strategy-reading.schema.json',
  'stage-decision-package':'.template-spec/process/schemas/stage-decision-package-reading.schema.json',
  checkpoint:'.template-spec/process/schemas/lifecycle-checkpoint.schema.json','tracking-migration':null,
@@ -23,6 +25,7 @@ export const contractKinds=Object.freeze({
  approval:null,'user-decision':'.template-spec/process/schemas/user-decision.schema.json',
  'context-reconciliation':'.template-spec/process/schemas/context-reconciliation.schema.json'
 });
+const pathRelativeSchema=(kind,raw,root)=>assetSchema(kind,raw,root).slice(root.replace(/\/$/,'').length+1);
 const object=v=>v&&typeof v==='object'&&!Array.isArray(v);
 const stringify=v=>typeof v==='string'?v:JSON.stringify(v,null,2);
 const metadata=/^(schema_version|digest|sha256|subject_digest|document_digest|referenced_terms_digest)$/;
@@ -106,7 +109,7 @@ function view(ref,{root=process.cwd(),kind,profile='review',unit_id,task_layout=
  }else{
   const {bytes,raw}=load(ref,root);sourceRaw=raw;binding={ref,schema_version:raw.schema_version??null,id:raw.contract_id||raw.feature_id||raw.domain_strategy_id||raw.stage_decision_id||raw.technical_design_id||raw.decision_id||raw.request?.request_id||raw.handoff_id||raw.baseline_id||raw.spec_id||raw.plan_id||raw.id||null,version:raw.contract_version||raw.domain_version||raw.package_version||raw.decision_version||raw.handoff_version||raw.version||null,digest:hash(bytes)};
   blockers.push(...declaredBlockers(raw));
-  let schemaRef=contractKinds[kind];if(kind==='api-decision'&&raw.schema_version===2)schemaRef='.template-spec/process/schemas/api-contract-decision-v2.schema.json';
+  let schemaRef=contractKinds[kind];if(['domain-strategy','stage-decision-package','checkpoint'].includes(kind))schemaRef=pathRelativeSchema(kind,raw,root);if(kind==='api-decision'&&raw.schema_version===2)schemaRef='.template-spec/process/schemas/api-contract-decision-v2.schema.json';
   if(schemaRef)try{schema(raw,schemaRef);checks.push('结构校验');}catch(error){blockers.push(error.message);}
   else checks.push('结构与批准未核验，按资产所有者规则继续');
   sourceChecks=references(raw,root);if(sourceChecks.length)checks.push(`核对 ${sourceChecks.length} 项可识别来源摘要；其余语义由资产所有者核验`);for(const source of sourceChecks)if(!source.current)blockers.push(`来源不可读或过期：${source.ref}`);

@@ -6,6 +6,9 @@ disable-model-invocation: true
 
 # YSS Prototype Stage
 
+当前 Spec 同时声明 `stage-gates-v1` 时，先读 `.template-spec/process/stage-gates.md`：仅保留 Plan 确认、Spec/适用设计确认、自动实施准入、交付验收四个出口。本文及引用中的旧专业批准、会签、角色、审查预算、独立产品设计/工程/切片/交接批准仅用于原政策历史读取，不适用于该模式。内部检查是质量结果，默认同一 Agent 自检；准备资产不等待未来批准，现有真实授权可按范围复用。
+
+
 已有生命周期资产优先用 `scripts/contract view <资产> --kind <类型>` 阅读；执行任务用 `--profile task --unit <ID>`，绑定与校验明细用 `--profile full`。视图不授予执行权限，仍按本 Skill 的原始来源和批准门禁处理。类型、准备和迁移见 `.template-spec/process/contract-reading.md`。
 
 把产品设计影响收敛为跨 Agent 一致的原型交付物、证据和生命周期回流合同。它不替代 `yss-product-lifecycle` 的门禁裁决，也不把原型当作生产前端代码。

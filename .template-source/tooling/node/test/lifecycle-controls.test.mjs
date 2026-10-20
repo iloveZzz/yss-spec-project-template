@@ -23,20 +23,15 @@ function fixture(run) {
   const basis=[asset('evidence.txt')];
   const gateId='gate.slice-contract-approved',checkId='check.repository-identity-valid';
   const registry={gates:[{id:gateId,requires_checks:[checkId],evidence:['evidence.contract-approval']}],checks:[{id:checkId,evidence:['evidence.repository-identity-check']}]};
-  const fullRegistry=loadRegistry();fullRegistry.gates=fullRegistry.gates.map(row=>row.id===gateId?{...row,...registry.gates[0]}:row);fullRegistry.checks=fullRegistry.checks.map(row=>row.id===checkId?{...row,...registry.checks[0]}:row);save('.template-spec/process/lifecycle-registry.yaml',fullRegistry);
+  const fullRegistry=loadRegistry(path.join(dir,".template-spec/process/lifecycle-registry.yaml"));fullRegistry.gates=fullRegistry.gates.map(row=>row.id===gateId?{...row,...registry.gates[0]}:row);fullRegistry.checks=fullRegistry.checks.map(row=>row.id===checkId?{...row,...registry.checks[0]}:row);save('.template-spec/process/lifecycle-registry.yaml',fullRegistry);
   const state={schema_version:1,repository_mode:'project-instance',mode:'audit',status:'routing',stage:'stage.system-data-engineering',artifacts:{},context_reconciliation:{status:'pending',ref:null,evidence_refs:[]},next_work_unit:null,ticket_sync:{},verification:{},human_review:{},git_checkpoint:{},blockers:[],rollback:[],gates:{[gateId]:{status:'approved',reason:'Synthetic current gate',evidence_refs:['evidence.txt'],basis:structuredClone(basis),evidence:{'evidence.contract-approval':['evidence.txt']}}},checks:{[checkId]:{status:'passed',applicable:true,basis:structuredClone(basis),evidence:{'evidence.repository-identity-check':['evidence.txt']}}}};
   const persistRegistry=()=>{const current=structuredClone(fullRegistry);for(const gate of registry.gates){current.gates=current.gates.map(row=>row.id===gate.id?{...row,...gate}:row);}for(const check of registry.checks){current.checks=current.checks.map(row=>row.id===check.id?{...row,...check}:row);}save('.template-spec/process/lifecycle-registry.yaml',current);};const verify=()=>{persistRegistry();return assertGateChecks(gateId,state,{root:dir,registry});};
   run({dir,save,asset,gateId,checkId,state,registry,verify,persistRegistry});
  } finally {rmSync(dir,{recursive:true,force:true});}
 }
-test('registry retains seven approval gates, adds a conditional handoff gate and rejects cycles',()=>{
- const r=loadRegistry();assert.equal(r.stages.length,8);assert.equal(r.gates.length,8);assert.equal(r.checks.length,13);
- const handoffId='gate.strategic-design-handoff-approved';
- const retainedGateIds=['gate.plan-approved','gate.spec-baseline-approved','gate.product-design-approved','gate.backend-architecture-platform-approved','gate.engineering-contract-approved','gate.slice-contract-approved','gate.delivery-accepted'];
- assert.deepEqual(r.gates.filter(gate=>gate.id!==handoffId).map(gate=>gate.id).sort(),retainedGateIds.sort());
- const handoff=r.gates.find(gate=>gate.id===handoffId);
- assert.equal(handoff.stage,'stage.product-design');
- assert.deepEqual(handoff.requires_gates,['gate.plan-approved','gate.spec-baseline-approved','gate.product-design-approved']);
+test('current Spec retains four stage gates, conditional handoff and rejects cycles',()=>{
+ const r=loadRegistry();assert.equal(r.stages.length,8);assert.equal(r.gates.length,4);assert.equal(r.checks.length,13);
+ assert.deepEqual(r.gates.map(g=>g.id).sort(),['gate.plan-approved','gate.spec-baseline-approved','gate.implementation-admitted','gate.delivery-accepted'].sort());
  const orchestration=loadOrchestrationContract(ref=>readFileSync(path.join(root,ref)),'.template-spec/process/orchestration-contract.yaml').value;
  assert.equal(orchestration.work_unit_routes['work-unit.strategic-design-handoff'].applies_when,'explicit-user-package-request');
  const cyclic=structuredClone(r);cyclic.checks[0].requires_checks=[cyclic.checks[1].id];cyclic.checks[1].requires_checks=[cyclic.checks[0].id];

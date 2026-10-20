@@ -1,10 +1,9 @@
 schema_version: 1
 registry_id: yss.lifecycle
 status: active
-description: >-
-  YSS 生命周期结构化事实源。聚合门禁与内部检查分别登记，运行时查询、批准核验和派生阅读视图共同消费本注册表。
+description: YSS 生命周期结构化事实源。聚合门禁与内部检查分别登记，运行时查询、批准核验和派生阅读视图共同消费本注册表。
 id_policy:
-  pattern: '^(stage|gate|check|artifact|work-unit|evidence)\.[a-z0-9][a-z0-9-]*$'
+  pattern: ^(stage|gate|check|artifact|work-unit|evidence)\.[a-z0-9][a-z0-9-]*$
   published_ids_immutable: true
   baseline: .template-spec/process/lifecycle-registry-baseline.json
   deprecated_ids:
@@ -43,7 +42,11 @@ id_policy:
     - work-unit.intensity-aware-verification
     - work-unit.intensity-aware-review
     - work-unit.prototype-design
-
+    - gate.product-design-approved
+    - gate.backend-architecture-platform-approved
+    - gate.engineering-contract-approved
+    - gate.slice-contract-approved
+    - gate.strategic-design-handoff-approved
 stages:
   - id: stage.entry-triage
     name: 入口分诊
@@ -54,7 +57,14 @@ stages:
     goal: 确认目标、业务边界、关键规则、MVP / 非目标、优先级和交接责任，为 Spec 提供战略输入；按影响面探索并复用仍有效的结论。
     exit_criteria: 命中的战略与阶段决策检查通过，用户统一批准当前 Plan；影响业务边界、关键规则或 MVP 的问题已解决，其他未决项有责任人和解决时点；下游可进入 Spec，不代表可实现。
     spec_entry:
-      required_checks: [ goals, scope_and_priority, boundaries_and_rules, open_questions, handoff, context_reconciliation, grill_exit ]
+      required_checks:
+        - goals
+        - scope_and_priority
+        - boundaries_and_rules
+        - open_questions
+        - handoff
+        - context_reconciliation
+        - grill_exit
       gate_impacts:
         gate.plan-approved: plan
       check_impacts:
@@ -83,8 +93,8 @@ stages:
     goal: 在既有功能追踪入口下，将冻结范围正式化为垂直切片。
     exit_criteria: 工作单元窄、依赖清晰、验收和测试 seam 可执行。
     public_name: 实现切片拆分与合同准入
-    public_goal: 消费冻结工程契约和当前实现仓库准备，将业务 Ticket 细化为可独立验证的实现切片，并批准当前 Slice Implementation Contract。
-    public_exit_criteria: 切片范围窄、依赖清晰、验收与测试 seam 可执行；工程前置闭合、合同批准且当前，生命周期复算后才能 ready-for-agent。
+    public_goal: 消费当前工程契约与实现仓库准备，将业务 Ticket 细化为可独立验证的切片并复算实施准入。
+    public_exit_criteria: 切片范围窄、依赖清晰、验收与测试 seam 可执行；当前合同、工程与适用 API 条件通过，自动形成实施准入。
   - id: stage.vertical-slice-implementation
     name: 垂直切片实现
     goal: 以批准合同驱动 TDD 实现和跨仓库协作。
@@ -93,7 +103,6 @@ stages:
     name: 验证 / 发布 / 复盘
     goal: 完成 fresh verification、发布和回顾。
     exit_criteria: 所有命中门禁通过，人工审查点已完成，checkpoint 可追溯。
-
 evidence:
   - id: evidence.strategic-design-handoff
     name: 业务方案交接包验证证据
@@ -103,7 +112,8 @@ evidence:
     description: 工作单元在批准或流转前对根目录唯一 CONTEXT.md 的稳定术语回写、作用域解析和双摘要核对结果；不新增门禁。
   - id: evidence.artifact-consistency-analysis
     name: 跨资产一致性分析证据
-    description: 申请 Spec 基线批准前，scripts/analyze-artifacts 对功能包 Plan/Spec 质量、业务票覆盖与切片验收覆盖的汇总结论、发现与未评估项；status 为 consistent，或剩余发现已逐条处置。
+    description: 申请 Spec 基线批准前，scripts/analyze-artifacts 对功能包 Plan/Spec
+      质量、业务票覆盖与切片验收覆盖的汇总结论、发现与未评估项；status 为 consistent，或剩余发现已逐条处置。
   - id: evidence.impact-assessment
     name: 影响面分析记录
     description: 受影响仓库、资产、风险与最近可信阶段。
@@ -130,14 +140,14 @@ evidence:
     name: 仓库身份校验结果
     description: yss-project.yaml 的合法性与 repository_mode 裁决。
   - id: evidence.approval-record
-    name: 人工批准记录
-    description: 对需要人工批准的 Spec、设计、契约或发布裁决的可追溯记录。
+    name: 阶段决定记录
+    description: Plan、Spec 与适用设计、交付验收的真实决定及当前成果绑定。
   - id: evidence.design-review-result
     name: 设计审查结果
     description: API、架构或产品设计审查意见及处理结果。
   - id: evidence.prototype-review-result
     name: 原型评审结果
-    description: 低保真页面、流程、状态与 API 反推的独立评审结论和阻断项。
+    description: 低保真页面、流程、状态与 API 反推的内容复核结论和阻断项；按实际要求决定是否独立复核。
   - id: evidence.antd-cli-validation
     name: Ant Design CLI 校验证据
     description: 设计语言、组件、demo、token、semantic 与 lint 的实际 CLI/目标版本和可读输出引用。
@@ -149,18 +159,17 @@ evidence:
     description: 基于低保真评审后的风险触发、决定目标、H1/H2 计算结果以及人工升降级依据。
   - id: evidence.prototype-deliverable-verification
     name: 原型交付物验证证据
-    # description 保留已发布稳定 ID 的历史语义快照；当前产物版本读取 public_description 及原型证据合同。
     description: schema v3 共同证据与所选档位的浏览器、Design QA、无障碍、组件事实或真实组件合同验证结果。
     public_description: 新原型证据采用 schema v4，包含共同证据、Visual Baseline Bundle、浏览器、Design QA、无障碍及档位验证结果；历史 v3 仅供只读兼容。
   - id: evidence.prototype-confirmation
     name: 原型用户确认记录
-    description: 高保真原型、验证清单和进入下游阶段范围的人工确认结论。
+    description: 适用原型、验证清单和下游范围纳入同一次 Spec 基线阶段决定。
   - id: evidence.openapi-draft-review
     name: OpenAPI Draft 审查记录
     description: P0、错误、分页、幂等和契约测试审查记录。
   - id: evidence.contract-approval
-    name: Slice 合同批准记录
-    description: 生命周期编排器批准且已持久化的当前版本合同引用。
+    name: 实施准入记录
+    description: 已授权基线范围内，当前 Slice 合同和工程、API 条件的自动准入结果。
   - id: evidence.yss-skill-execution-result
     name: YSS Skill Execution Result
     description: 专项 skill 的合同版本、写入、验证、延期 seam 与偏离证据。
@@ -173,78 +182,36 @@ evidence:
   - id: evidence.checkpoint-and-rollback
     name: Checkpoint 与回滚点
     description: 可追溯的变更边界、发布记录和恢复动作。
-
 gates:
-  - id: gate.strategic-design-handoff-approved
-    name: 业务方案交接验收
-    stage: stage.product-design
-    trigger: 明确绑定外部 Backend 或 Frontend 实现消费者；Design 仅消费 SpecBaseline，本地综合研发直接消费资产时不适用。
-    evidence: [ evidence.strategic-design-handoff, evidence.approval-record, evidence.fresh-verification ]
-    requires_gates: [ gate.plan-approved, gate.spec-baseline-approved, gate.product-design-approved ]
   - id: gate.plan-approved
     name: Plan 批准
     stage: stage.plan
     trigger: Plan 结论进入 Spec；汇总战略检查，核验当前规划范围的原始批准或有效授权延续。
     evidence:
       - evidence.approval-record
-    requires_checks:
-      - check.domain-strategy-approved
-      - check.stage-decision-package-approved
+    requires_checks: []
   - id: gate.spec-baseline-approved
     name: Spec 基线批准
     stage: stage.spec-architecture
-    trigger: 新功能、行为变化或范围扩大进入 Spec 基线；已授权范围内细化复用当前有效授权，实质变化重新决定。
-    evidence:
-      - evidence.approval-record
-    requires_checks:
-      - check.artifact-consistency-analyzed
-  - id: gate.product-design-approved
-    name: 产品设计批准
-    stage: stage.product-design
-    trigger: 存在产品设计影响；独立原型评审与交付物验证通过后核验原批准或授权延续，新增体验取舍由用户决定。
-    evidence:
-      - evidence.prototype-confirmation
-    requires_checks:
-      - check.prototype-reviewed
-      - check.prototype-verified
-  - id: gate.backend-architecture-platform-approved
-    name: 后端架构与平台批准
-    stage: stage.system-data-engineering
-    trigger: 新建后端工程进入技术设计分支前，由用户在同一次决定中确认 domain-driven / layered-mvc 和精确 Spring Boot 版本；既有工程核验并复用当前登记架构及固定工程基线中的实际 Spring Boot 版本，记录 not-applicable，不重复询问。
+    trigger: Spec 与适用产品设计、业务验收基线一并确认，只形成一份阶段记录。
     evidence:
       - evidence.approval-record
     requires_checks: []
-  - id: gate.engineering-contract-approved
-    name: 工程契约批准
-    stage: stage.system-data-engineering
-    trigger: 存在 API、架构或工程基线影响；组合适用专业审查后统一批准并核验授权，有 API 影响时同时冻结当前 OpenAPI；范围内细化不重复请求用户确认。
-    evidence:
-      - evidence.approval-record
-      - evidence.fresh-verification
-    requires_gates:
-      - gate.backend-architecture-platform-approved
-    requires_checks:
-      - check.openapi-draft-reviewed
-      - check.design-reviewed
-      - check.architecture-reviewed
-      - check.engineering-baseline-accepted
-      - check.openapi-frozen
-  - id: gate.slice-contract-approved
-    name: 切片合同批准
+  - id: gate.implementation-admitted
+    name: 实施准入
     stage: stage.ticket-formalization
-    trigger: 主控在已授权范围内批准已持久化且当前的垂直切片合同；不代替就绪计算。
+    trigger: 当前 Slice、授权范围、工程和适用 API 条件通过；自动准入，不再申请独立工程或切片批准。
     evidence:
       - evidence.contract-approval
     requires_checks: []
   - id: gate.delivery-accepted
     name: 交付验收
     stage: stage.verification-release-retrospective
-    trigger: 实现交付验收；汇总独立审查、Fresh Verification 和回滚证据，不授予合并或发布权限。
+    trigger: 当前实现与约定验收实际通过，消费真实验收决定或有效延续；不授予提交、合并、发布或部署。
     evidence:
       - evidence.fresh-verification
       - evidence.checkpoint-and-rollback
     requires_checks: []
-
 artifacts:
   - id: artifact.strategic-design-handoff
     name: 业务方案交接包
@@ -304,7 +271,7 @@ artifacts:
   - id: artifact.prototype-confirmation-v2
     name: 原型确认记录
     stage: stage.product-design
-    trigger: 命中 gate.product-design-approved。
+    trigger: 命中 gate.spec-baseline-approved。
   - id: artifact.openapi-draft
     name: OpenAPI Draft
     stage: stage.system-data-engineering
@@ -366,7 +333,6 @@ artifacts:
     name: 业务 Ticket 集
     stage: stage.spec-architecture
     trigger: Spec 同步起草、产品设计校准和业务正式化；不依赖实现工程，不授予实现资格。
-
 work_units:
   - id: work-unit.strategic-design-handoff
     name: 业务方案交接
@@ -374,7 +340,8 @@ work_units:
     scope: project-instance
     input: 当前批准的 Plan、Spec、适用产品设计、正式业务 Ticket 与显式外部 Backend 或 Frontend 实现消费者。
     output: Handoff v5 不可变交付目录、delivery record 和整包 verification。
-    completion: 源角色独立审查与原始批准当前；finalize 成包且实际整包 verify 通过，写入 checkpoint。接收 Receipt 可异步；完成不等于整个业务验收。
+    completion: 来源 Plan / Spec 阶段记录及实际质量检查当前；finalize 成包且实际整包 verify 通过，写入 checkpoint。交接不另设批准；接收状态只以真实
+      Receipt 为准。
   - id: work-unit.maintenance-research
     name: 模板维护研究
     scope: template-source
@@ -416,8 +383,11 @@ work_units:
     scope: template-source
     input: 变更仓库、强度分级与对应最低证据。
     output: 命令输出与证据。
-    completion: L1 完成相关检查；L2 完成最小反例、维护者自检与本轮 fresh verification；L3 完成维护者自检与本轮 fresh verification，正式发布前另运行完整 scripts/verify-template。
-    public_completion: L1 完成相关检查；L2 完成维护者自检与本轮 fresh verification，权限边界、生命周期门禁、发布语义逐项补实际反例。日常完成本轮影响及依赖的定向检查；fast 计划扩大到全量时记录范围并改做定向检查，不冒充完整 profile 通过。main 集成验证与正式发布另运行 scripts/verify-template；其当前完整适用集合、已提交来源及真实执行证据由 release profile 核验。
+    completion: L1 完成相关检查；L2 完成最小反例、维护者自检与本轮 fresh verification；L3 完成维护者自检与本轮 fresh
+      verification，正式发布前另运行完整 scripts/verify-template。
+    public_completion: L1 完成相关检查；L2 完成维护者自检与本轮 fresh
+      verification，权限边界、生命周期门禁、发布语义逐项补实际反例。日常完成本轮影响及依赖的定向检查；fast 计划扩大到全量时记录范围并改做定向检查，不冒充完整 profile
+      通过。main 集成验证与正式发布另运行 scripts/verify-template；其当前完整适用集合、已提交来源及真实执行证据由 release profile 核验。
   - id: work-unit.intensity-aware-review-v2
     name: 分级审查
     scope: template-source
@@ -472,25 +442,29 @@ work_units:
     scope: project-instance
     input: Spec、产品设计影响和状态矩阵。
     output: 交互说明、低保真、状态矩阵、H1/H2 原型交付物、统一 Design QA、档位验证证据与前端实现交接事项。
-    completion: 低保真评审、schema v4 原型交付物验证和用户确认门禁均通过；Visual Baseline Bundle 和生产组件待验事项已交接到前端实现计划。 同步校准业务 Ticket，复用稳定 ID，随后进入业务正式化。
+    completion: 低保真复核、schema v4 原型交付物和档位验证通过；与 Spec 一并确认。Visual Baseline Bundle 和适用待验事项可读，同步校准稳定业务
+      Ticket 后进入正式化。
   - id: work-unit.technical-analysis
     name: 技术分析与契约冻结
     scope: project-instance
     input: 已正式化业务 Ticket 集及 Spec、原型、API/数据/工程影响面；新建后端的架构与平台候选，或既有工程当前登记的架构与平台配置。
-    output: 新建后端的 DDD / MVC 与精确 Spring Boot 版本用户决定，或既有工程复用核验；OpenAPI、数据架构、按确认架构形成的 DDD / MVC 技术设计合同、工程基线、架构审查和 Slice 合同草案。
-    completion: 新建后端的 gate.backend-architecture-platform-approved 已通过，既有工程已核验复用并记录该门禁不适用；命中契约已冻结；无 API 影响有可读记录；所有后端交付均有批准且当前的 Technical Design；数据影响为真时数据架构已批准，否则有可核验的不适用记录；架构、规则与场景承接无未解释冲突；gate.engineering-contract-approved 通过。
+    output: 新建后端的 DDD / MVC 与精确 Spring Boot 版本用户决定，或既有工程复用核验；OpenAPI、数据架构、按确认架构形成的 DDD / MVC
+      技术设计合同、工程基线、架构审查和 Slice 合同草案。
+    completion: 在准备授权范围内完成架构与平台选择、技术设计、工程基线及适用数据/API 条件；实际内容复核和契约冻结通过，不适用项有原因与当前证据。准备结果供后续准入计算，不要求未来实施准入已存在。
   - id: work-unit.implementation-repository-preparation
     name: 实现仓库准备
     scope: project-instance
-    input: 已完成的技术分析执行结果、Context reconciliation、战略交接消费结果、工程合同批准、工程影响面和实现仓库位置；新建后端还需批准且当前并绑定设计前置的 Project Scaffold Contract v4。
-    output: 已有工程的 Repository Onboarding Result，或新工程的 Scaffold Manifest v4 与 Scaffold Verification；并汇总 Implementation Repository Preparation Result v2。
-    completion: 每个后端项目均携带技术/数据设计门禁结果；新生成只接受 v4；历史 v3 仅在机械骨架未修改、设计补齐和恢复批准均通过时对账复用；检测到提前业务实现时保持 blocked。每个命中的交付面均为 existing-and-onboarded 或 initialized-and-verified，未命中的交付面有带原因的 not-applicable；聚合结果当前且证据可读。
+    input: 当前技术分析、Context 对账、适用来源材料、工程影响面和已登记实现仓库；新建工程使用当前 Scaffold Contract 准备机械骨架。
+    output: 已有工程的 Repository Onboarding Result，或新工程的 Scaffold Manifest v4 与 Scaffold Verification；并汇总
+      Implementation Repository Preparation Result v2。
+    completion: 技术、数据和 API 条件已核验；新生成使用
+      v4，历史机械骨架按原来源对账复用。每个命中工程均已接入或已初始化并验证；不适用项有原因。准备不要求未来实施准入，不授予业务实现资格；提前业务实现仍阻断。
   - id: work-unit.ticket-decomposition
     name: 垂直切片 Ticket 正式化
     public_name: 实现切片拆分与合同准入
     scope: project-instance
     input: 已正式化业务 Ticket、冻结 Spec、设计、契约、当前实现仓库准备和阻塞关系。
-    output: 更新既有功能父 Ticket 的关联、形成垂直切片和批准的 Slice Implementation Contract。
+    output: 更新既有功能父 Ticket 的关联，形成当前 Slice Implementation Contract，并按已授权基线自动计算实施准入。
     completion: 切片可独立验证；生命周期复算后才能 ready-for-agent。
   - id: work-unit.slice-implementation
     name: 垂直切片实现
@@ -499,11 +473,11 @@ work_units:
     output: 前后端实现、TDD 和 YSS Skill Execution Result。
     completion: 行为通过 `behavior-tdd`；UI 影响完成还原验证计划；无 drift/violation。
   - id: work-unit.code-review
-    name: 独立代码审查与验证
+    name: 代码审查与验证
     scope: project-instance
     input: 不可变候选快照、Spec、Ticket、合同和执行结果。
     output: Standards、Spec、UI fidelity 三轴 Review 与 fresh verification。
-    completion: findings 已处理；修复后重新捕获候选并全量复审。
+    completion: findings 已处理；首轮覆盖全部适用审查项，修复后按差异、受影响结论及直接 / 传递依赖定向复审；未受影响结论仅凭可核验依据复用，全部结论重新绑定当前候选。
     public_completion: findings 已处理；首轮覆盖全部适用审查项，修复后按差异、受影响结论及直接 / 传递依赖定向复审；未受影响结论仅凭可核验依据复用，全部结论重新绑定当前候选。
   - id: work-unit.backend-delivery
     name: 后端职责交付终点

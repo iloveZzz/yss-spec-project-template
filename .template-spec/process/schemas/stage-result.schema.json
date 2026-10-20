@@ -1,0 +1,238 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yss.dev/schemas/stage-result.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "kind",
+    "feature_id",
+    "gate_id",
+    "scope",
+    "assets",
+    "checks",
+    "outcome",
+    "blocking_findings",
+    "provenance"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "kind": {
+      "const": "stage-result"
+    },
+    "feature_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "gate_id": {
+      "enum": [
+        "gate.plan-approved",
+        "gate.spec-baseline-approved",
+        "gate.implementation-admitted",
+        "gate.delivery-accepted"
+      ]
+    },
+    "scope": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "assets": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/asset"
+      }
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/check"
+      }
+    },
+    "outcome": {
+      "enum": [
+        "ready-for-human",
+        "approved",
+        "blocked"
+      ]
+    },
+    "blocking_findings": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "required": [
+        "tool",
+        "execution_ref"
+      ],
+      "properties": {
+        "tool": {
+          "type": "string",
+          "minLength": 1
+        },
+        "execution_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "task_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "review_requirement_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "review": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": false
+    },
+    "authorization": {
+      "type": "object",
+      "required": [
+        "kind",
+        "ref",
+        "digest"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "user-decision",
+            "continuation",
+            "stage"
+          ]
+        },
+        "ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^(sha256:)?[a-f0-9]{64}$"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
+    "asset": {
+      "type": "object",
+      "required": [
+        "ref",
+        "digest"
+      ],
+      "properties": {
+        "ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^(sha256:)?[a-f0-9]{64}$"
+        },
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "check": {
+      "type": "object",
+      "required": [
+        "id",
+        "result",
+        "inputs",
+        "evidence"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^check\\.[a-z0-9][a-z0-9-]*$"
+        },
+        "result": {
+          "enum": [
+            "passed",
+            "failed",
+            "not-applicable"
+          ]
+        },
+        "inputs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/asset"
+          }
+        },
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/asset"
+          }
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "result": {
+                "enum": [
+                  "failed",
+                  "not-applicable"
+                ]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "reason"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "const": "approved"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "authorization"
+        ],
+        "properties": {
+          "blocking_findings": {
+            "maxItems": 0
+          }
+        }
+      }
+    }
+  ]
+}

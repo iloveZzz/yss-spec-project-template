@@ -1,5 +1,8 @@
 # 战略交接快照包
 
+当前 Spec 四阶段协议见 [Spec 四阶段门禁](stage-gates.md)。启用 `stage-gates-v1` 时，阶段记录替代独立子批准；本页保留的旧批准格式只按其原政策读取。
+
+
 本合同用于批准后的战略交付和研发接收，不增加生命周期阶段或门禁。`scripts/strategic-handoff` 是统一入口；Node 22+、Python 3 和现有 `jsonschema` 环境即可运行，不下载依赖、不执行交接包中的代码。新交付统一使用 Handoff v5，并生成 `Strategic Delivery Bundle`；交付记录、验证记录、逻辑包和可选 ZIP 的 schema 分别见 `schemas/strategic-handoff-delivery.schema.json`、`schemas/strategic-handoff-delivery-verification.schema.json`、`schemas/strategic-handoff-package.schema.json`。源规则仍由战略合同持有，README、索引与快照不成为第二套事实源。
 
 ## 源资产准备

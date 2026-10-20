@@ -1,0 +1,64 @@
+{
+  "stage_gates": {
+    "schema_version": 1,
+    "capability": "stage-gates-v1",
+    "gates": [
+      {
+        "id": "gate.plan-approved",
+        "work_stages": [
+          "stage.plan"
+        ],
+        "checks": [
+          "check.domain-strategy-approved",
+          "check.stage-decision-package-approved"
+        ],
+        "decision_mode": "user-or-continuation"
+      },
+      {
+        "id": "gate.spec-baseline-approved",
+        "work_stages": [
+          "stage.spec-architecture",
+          "stage.product-design"
+        ],
+        "checks": [
+          "check.artifact-consistency-analyzed",
+          "check.prototype-reviewed",
+          "check.prototype-verified"
+        ],
+        "decision_mode": "user-or-continuation"
+      },
+      {
+        "id": "gate.implementation-admitted",
+        "work_stages": [
+          "stage.system-data-engineering",
+          "stage.ticket-formalization",
+          "stage.vertical-slice-implementation"
+        ],
+        "checks": [
+          "check.openapi-draft-reviewed",
+          "check.design-reviewed",
+          "check.openapi-frozen",
+          "check.engineering-baseline-accepted",
+          "check.architecture-reviewed",
+          "check.implementation-repositories-ready",
+          "check.slice-ready-for-agent"
+        ],
+        "decision_mode": "authorized-admission"
+      },
+      {
+        "id": "gate.delivery-accepted",
+        "work_stages": [
+          "stage.verification-release-retrospective"
+        ],
+        "checks": [],
+        "decision_mode": "agreed-acceptance"
+      }
+    ],
+    "targets": {
+      "spec-approved": "gate.spec-baseline-approved",
+      "product-design-completed": "gate.spec-baseline-approved",
+      "backend-deliverable": "gate.implementation-admitted",
+      "business-accepted": "gate.delivery-accepted"
+    }
+  }
+}

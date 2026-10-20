@@ -1,3 +1,4 @@
+import {usesStageGates,verifyStageResult} from './stage-result.mjs';
 import {approvalExpectationForCheckpoint} from './native-approval.mjs';
 import fs from 'node:fs';
 import {businessAuthoringEnabled,businessPath,businessSetRef,checkBusinessTickets,assertBusinessDeferredApprovals} from './business-tickets.mjs';
@@ -12,6 +13,10 @@ export function assertBusinessApprovalBasis(root,state,{required=false}={}) {
   if(!required)return;
   const report=checkBusinessTickets({root,setRef:businessSetRef(state),mode:'formal'});
   if(report.status!=='passed')throw Error(`BUSINESS_FORMALIZATION_BLOCKED: ${report.diagnostics.map(x=>x.code).join(', ')}`);
+  if(usesStageGates(root)){
+   const stage=verifyStageResult({root,checkpoint:state,gateId:"gate.spec-baseline-approved",assetRef:report.spec.ref});
+   return stage;
+  }
   // approval3 不读取历史角色表；旧记录由 native-approval 按原政策自行解析。
   const proofRefs=[];
   for(const id of ['gate.spec-baseline-approved','gate.product-design-approved']) {

@@ -2,7 +2,8 @@
 # consumers: lifecycle route/query, current Profile workflows and governance validators
 work_unit_routes:
   work-unit.release-and-retrospective:
-    check_ids: [gate.delivery-accepted]
+    check_ids:
+      - gate.delivery-accepted
     impact_check_ids:
       wording: []
       ui-state: []

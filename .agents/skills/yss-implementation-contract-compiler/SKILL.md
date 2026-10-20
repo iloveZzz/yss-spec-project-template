@@ -6,6 +6,9 @@ disable-model-invocation: true
 
 # YSS Implementation Contract Compiler
 
+当前 Spec 同时声明 `stage-gates-v1` 时，先读 `.template-spec/process/stage-gates.md`：仅保留 Plan 确认、Spec/适用设计确认、自动实施准入、交付验收四个出口。本文及引用中的旧专业批准、会签、角色、审查预算、独立产品设计/工程/切片/交接批准仅用于原政策历史读取，不适用于该模式。内部检查是质量结果，默认同一 Agent 自检；准备资产不等待未来批准，现有真实授权可按范围复用。
+
+
 当前任务先一次性读取 `yss capabilities --json`；仅当 `result.readingViews.schemaVersion: 1` 且对应入口和模式已声明时，Slice 优先用 `yss contract view --root <项目> --kind slice --file <合同>` 阅读，任务加 `--view task --unit <唯一 ID>`，明细加 `--view full`。JSON 只消费结构化 `content`、绑定及检查范围；v3 任务仅展开关联验收，诊断其他验收时按 `full_acceptance_ref` 定向读取。全局、专项和未分类约束必须完整消费。旧 CLI 或其他合同继续用 `scripts/contract view <资产> --kind <类型> [--profile task --unit <ID>|--profile full]`，不向旧 CLI 追加新参数。视图不授予执行权限；原始来源和批准门禁仍适用。类型、准备和迁移见 `.template-spec/process/contract-reading.md`。
 
 同一任务已读且未变化的内容继续使用；来源变化、新影响、冲突、恢复或交接时刷新。证据先读结论与引用，需要诊断才定向读正文。验证复用须同时绑定资产与上游字节、工具及 Schema、参数、仓库根和相关环境；改变的输入只使受影响证据失效，不重复执行同输入命令，不建立跨会话校验缓存。

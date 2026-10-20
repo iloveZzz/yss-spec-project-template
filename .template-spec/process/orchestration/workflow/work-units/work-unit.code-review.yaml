@@ -2,24 +2,34 @@
 # consumers: lifecycle route/query, current Profile workflows and governance validators
 work_unit_routes:
   work-unit.code-review:
-    check_ids: [work-unit.code-review]
+    check_ids:
+      - work-unit.code-review
     impact_check_ids:
       wording: []
       ui-state: []
-      api-schema: [check.openapi-draft-reviewed, check.openapi-frozen]
+      api-schema:
+        - check.openapi-draft-reviewed
+        - check.openapi-frozen
       state-machine: []
       data-model: []
-      service-boundary: [check.architecture-reviewed]
+      service-boundary:
+        - check.architecture-reviewed
       nfr: []
       backend: []
       domain: []
-      api: [check.openapi-draft-reviewed, check.openapi-frozen]
+      api:
+        - check.openapi-draft-reviewed
+        - check.openapi-frozen
       data: []
       persistence: []
-      architecture: [check.architecture-reviewed]
-      cross-repo: [check.architecture-reviewed]
-      cross-boundary: [check.architecture-reviewed]
-      high-risk: [check.architecture-reviewed]
+      architecture:
+        - check.architecture-reviewed
+      cross-repo:
+        - check.architecture-reviewed
+      cross-boundary:
+        - check.architecture-reviewed
+      high-risk:
+        - check.architecture-reviewed
       frontend: []
       ui: []
     native:

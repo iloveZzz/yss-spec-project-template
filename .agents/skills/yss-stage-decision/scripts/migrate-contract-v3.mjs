@@ -4,6 +4,7 @@ import { resolve } from "node:path";
 import process from "node:process";
 import { parseArgs } from "node:util";
 import { parseDocument } from "../../../../scripts/vendor/yaml.mjs";
+import { validateAssetStructure } from "../../../../scripts/lib/structured-assets.mjs";
 
 function blocked(message) {
   process.stderr.write(`${JSON.stringify({ result: "blocked", reason_code: "migration-required", errors: [message] }, null, 2)}\n`);
@@ -28,17 +29,17 @@ function token(value, fallback) {
   return normalized || fallback;
 }
 
-function resetApproval(value, version) {
+function resetApproval(value, version, context) {
   value.status = "draft";
   value.approval = {
+    ...(context ? { schema_version: 2, approval_context: context } : { approver: "unassigned" }),
     approval_ref: "migration-required",
-    approver: "unassigned",
     persisted_ref: value.approval?.persisted_ref || "migration-output-not-persisted",
     current_version: version
   };
 }
 
-function migrateDomain(input) {
+function migrateDomain(input, context) {
   const output = structuredClone(input);
   if (output.schema_version !== 2) throw new TypeError("Domain Strategy 迁移仅支持 schema_version: 2");
   const evidence = Array.isArray(output.evidence_refs) && output.evidence_refs.length ? output.evidence_refs : ["migration-required:evidence"];
@@ -87,11 +88,11 @@ function migrateDomain(input) {
   output.traceability_version = 1;
   output.rule_catalog = rules;
   output.domain_version = nextVersion(output.domain_version);
-  resetApproval(output, output.domain_version);
+  resetApproval(output, output.domain_version, context);
   return output;
 }
 
-async function migrateStage(input, root) {
+async function migrateStage(input, root, context) {
   const output = structuredClone(input);
   if (output.schema_version !== 2) throw new TypeError("Stage Decision 迁移仅支持 schema_version: 2");
   const evidence = Array.isArray(output.evidence_refs) && output.evidence_refs.length ? output.evidence_refs : ["migration-required:evidence"];
@@ -123,20 +124,43 @@ async function migrateStage(input, root) {
   }));
   output.schema_version = 3;
   output.package_version = nextVersion(output.package_version);
-  resetApproval(output, output.package_version);
+  resetApproval(output, output.package_version, context);
   return output;
 }
 
 try {
   const { values, positionals } = parseArgs({
-    options: { kind: { type: "string" }, root: { type: "string", default: process.cwd() } },
+    options: { kind: { type: "string" }, root: { type: "string", default: process.cwd() }, "approval-context": { type: "string" }, "target-version": {type:"string",default:"4"} },
     allowPositionals: true,
     strict: true
   });
   const file = positionals[0];
-  if (!file || !["domain-strategy", "stage-decision"].includes(values.kind)) throw new TypeError("用法: migrate-contract-v3.mjs <contract.yaml> --kind <domain-strategy|stage-decision> [--root <project-root>]");
+  if (!file || !["domain-strategy", "stage-decision"].includes(values.kind)) throw new TypeError("用法: migrate-contract-v3.mjs <contract.yaml> --kind <domain-strategy|stage-decision> [--root <project-root>] [--approval-context <context.json>]");
   const value = parse(await readFile(file, "utf8"), "合同");
-  const migrated = values.kind === "domain-strategy" ? migrateDomain(value) : await migrateStage(value, values.root);
+  const identity = parse(await readFile(resolve(values.root, "yss-project.yaml"), "utf8"), "项目身份");
+  if (![1, 2].includes(identity.schema_version) || !["template-source", "project-instance"].includes(identity.repository_mode)
+    || (identity.schema_version === 2 && identity.repository_mode !== "project-instance")) throw new TypeError("项目身份不受支持");
+  if(!["3","4"].includes(values["target-version"]))throw new TypeError("target-version 必须为 3 或 4");
+  const context = values["approval-context"]
+    ? parse(await readFile(resolve(values.root, values["approval-context"]), "utf8"), "批准上下文")
+    : value.approval?.schema_version === 2 ? value.approval.approval_context : undefined;
+  if (values["target-version"]==="3" && !context && (identity.schema_version === 2 || value.schema_version === 3)) {
+    throw new TypeError("当前批准注解迁移需要 --approval-context <context.json>，提供实际 Plan 审阅主体、范围和依据；不生成角色或批准证据");
+  }
+  let migrated;
+  if (value.schema_version === 3) {
+    migrated = structuredClone(value);
+    const version = values.kind === "domain-strategy" ? "domain_version" : "package_version";
+    migrated[version] = nextVersion(migrated[version]);
+    resetApproval(migrated, migrated[version], context);
+  } else {
+    migrated = values.kind === "domain-strategy" ? migrateDomain(value, context) : await migrateStage(value, values.root, context);
+  }
+  if(values["target-version"]==="4") {
+    migrated.schema_version=4;migrated.status="draft";delete migrated.approval;
+    if(values.kind==="stage-decision")migrated.domain_strategy_ref.status="ready";
+  }
+  if (context||values["target-version"]==="4") validateAssetStructure(migrated, values.kind === "domain-strategy" ? "domain-strategy" : "stage-decision-package");
   process.stdout.write(`${JSON.stringify(migrated, null, 2)}\n`);
 } catch (error) {
   blocked(error.message);

@@ -2,7 +2,9 @@
 # consumers: lifecycle route/query, current Profile workflows and governance validators
 work_unit_routes:
   work-unit.spec-synthesis:
-    check_ids: [check.artifact-consistency-analyzed, gate.spec-baseline-approved]
+    check_ids:
+      - check.artifact-consistency-analyzed
+      - gate.spec-baseline-approved
     impact_check_ids:
       wording: []
       ui-state: []

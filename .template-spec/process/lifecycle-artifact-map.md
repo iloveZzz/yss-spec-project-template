@@ -14,7 +14,7 @@
 | `stage.spec-architecture` | Spec / 功能架构 | 固化解决方案和功能边界，同时按用户行为与验收结果起草业务 Ticket。 | Spec 基线和功能边界可审查；适用业务 Ticket 草案及 FR/AC 覆盖可读取。 |
 | `stage.product-design` | 产品设计与业务 Ticket 正式化 | 按产品设计影响校准页面流、状态和业务 Ticket；在技术分析前完成适用业务 Ticket 正式化。 | 命中的设计门禁通过，适用业务 Ticket 正式化及当前审查闭合；无产品设计影响时记录依据，从 Spec 进入业务正式化，不生成空原型。 |
 | `stage.system-data-engineering` | 系统 / 数据架构与工程契约 | 消费已正式化业务 Ticket 和当前批准的 Spec / 设计，围绕当前交付范围固化系统、数据、工程基线及 API 契约。 | 新建后端已由用户确认 DDD / MVC 与精确 Spring Boot 版本，既有工程已核验并复用登记值；受影响工程契约冻结或记录无 API 影响；required 脚手架证据齐全。 |
-| `stage.ticket-formalization` | 实现切片拆分与合同准入 | 消费冻结工程契约和当前实现仓库准备，将业务 Ticket 细化为可独立验证的实现切片，并批准当前 Slice Implementation Contract。 | 切片范围窄、依赖清晰、验收与测试 seam 可执行；工程前置闭合、合同批准且当前，生命周期复算后才能 ready-for-agent。 |
+| `stage.ticket-formalization` | 实现切片拆分与合同准入 | 消费当前工程契约与实现仓库准备，将业务 Ticket 细化为可独立验证的切片并复算实施准入。 | 切片范围窄、依赖清晰、验收与测试 seam 可执行；当前合同、工程与适用 API 条件通过，自动形成实施准入。 |
 | `stage.vertical-slice-implementation` | 垂直切片实现 | 以批准合同驱动 TDD 实现和跨仓库协作。 | 允许写路径、禁止模式、证据和验证命令全部满足。 |
 | `stage.verification-release-retrospective` | 验证 / 发布 / 复盘 | 完成 fresh verification、发布和回顾。 | 所有命中门禁通过，人工审查点已完成，checkpoint 可追溯。 |
 
@@ -26,14 +26,10 @@
 
 | 稳定 ID | 门禁 | 所属阶段 | 触发条件 | 前置门禁 / 检查 | 必须留下的证据 |
 |---|---|---|---|---|---|
-| `gate.strategic-design-handoff-approved` | 业务方案交接验收 | `stage.product-design` | 明确绑定外部 Backend 或 Frontend 实现消费者；Design 仅消费 SpecBaseline，本地综合研发直接消费资产时不适用。 | `gate.plan-approved`、`gate.spec-baseline-approved`、`gate.product-design-approved` | `evidence.strategic-design-handoff`、`evidence.approval-record`、`evidence.fresh-verification` |
-| `gate.plan-approved` | Plan 批准 | `stage.plan` | Plan 结论进入 Spec；汇总战略检查，核验当前规划范围的原始批准或有效授权延续。 | `check.domain-strategy-approved`、`check.stage-decision-package-approved` | `evidence.approval-record` |
-| `gate.spec-baseline-approved` | Spec 基线批准 | `stage.spec-architecture` | 新功能、行为变化或范围扩大进入 Spec 基线；已授权范围内细化复用当前有效授权，实质变化重新决定。 | `check.artifact-consistency-analyzed` | `evidence.approval-record` |
-| `gate.product-design-approved` | 产品设计批准 | `stage.product-design` | 存在产品设计影响；独立原型评审与交付物验证通过后核验原批准或授权延续，新增体验取舍由用户决定。 | `check.prototype-reviewed`、`check.prototype-verified` | `evidence.prototype-confirmation` |
-| `gate.backend-architecture-platform-approved` | 后端架构与平台批准 | `stage.system-data-engineering` | 新建后端工程进入技术设计分支前，由用户在同一次决定中确认 domain-driven / layered-mvc 和精确 Spring Boot 版本；既有工程核验并复用当前登记架构及固定工程基线中的实际 Spring Boot 版本，记录 not-applicable，不重复询问。 | 无 | `evidence.approval-record` |
-| `gate.engineering-contract-approved` | 工程契约批准 | `stage.system-data-engineering` | 存在 API、架构或工程基线影响；组合适用专业审查后统一批准并核验授权，有 API 影响时同时冻结当前 OpenAPI；范围内细化不重复请求用户确认。 | `gate.backend-architecture-platform-approved`、`check.openapi-draft-reviewed`、`check.design-reviewed`、`check.architecture-reviewed`、`check.engineering-baseline-accepted`、`check.openapi-frozen` | `evidence.approval-record`、`evidence.fresh-verification` |
-| `gate.slice-contract-approved` | 切片合同批准 | `stage.ticket-formalization` | 主控在已授权范围内批准已持久化且当前的垂直切片合同；不代替就绪计算。 | 无 | `evidence.contract-approval` |
-| `gate.delivery-accepted` | 交付验收 | `stage.verification-release-retrospective` | 实现交付验收；汇总独立审查、Fresh Verification 和回滚证据，不授予合并或发布权限。 | 无 | `evidence.fresh-verification`、`evidence.checkpoint-and-rollback` |
+| `gate.plan-approved` | Plan 批准 | `stage.plan` | Plan 结论进入 Spec；汇总战略检查，核验当前规划范围的原始批准或有效授权延续。 | 无 | `evidence.approval-record` |
+| `gate.spec-baseline-approved` | Spec 基线批准 | `stage.spec-architecture` | Spec 与适用产品设计、业务验收基线一并确认，只形成一份阶段记录。 | 无 | `evidence.approval-record` |
+| `gate.implementation-admitted` | 实施准入 | `stage.ticket-formalization` | 当前 Slice、授权范围、工程和适用 API 条件通过；自动准入，不再申请独立工程或切片批准。 | 无 | `evidence.contract-approval` |
+| `gate.delivery-accepted` | 交付验收 | `stage.verification-release-retrospective` | 当前实现与约定验收实际通过，消费真实验收决定或有效延续；不授予提交、合并、发布或部署。 | 无 | `evidence.fresh-verification`、`evidence.checkpoint-and-rollback` |
 
 ### 内部检查与自动前置条件
 
@@ -72,7 +68,7 @@
 | `artifact.state-matrix` | 状态矩阵 | `stage.product-design` | 存在状态流转、异常或恢复。 |
 | `artifact.prototype-deliverable` | 原型交付物 | `stage.product-design` | 低保真评审后需要 H1 视觉或 H2 流程校准。 |
 | `artifact.prototype-review-v2` | 原型评审记录 | `stage.product-design` | 命中 check.prototype-reviewed。 |
-| `artifact.prototype-confirmation-v2` | 原型确认记录 | `stage.product-design` | 命中 gate.product-design-approved。 |
+| `artifact.prototype-confirmation-v2` | 原型确认记录 | `stage.product-design` | 命中 gate.spec-baseline-approved。 |
 | `artifact.openapi-draft` | OpenAPI Draft | `stage.system-data-engineering` | 有 API 影响。 |
 | `artifact.openapi-freeze-record` | OpenAPI Freeze 记录 | `stage.system-data-engineering` | API 进入实现。 |
 | `artifact.data-architecture` | 数据架构 | `stage.system-data-engineering` | 数据模型、存储或一致性变化。 |
@@ -103,16 +99,16 @@
 | `evidence.stage-decision-package` | 方案决策包验证证据 | 阶段决策包的 Schema、引用、语义一致性、影响传播和下游消费验证结果。 |
 | `evidence.maintenance-intensity-checkpoint` | 模板维护强度 checkpoint | 当前 template-source 按 maintenance-intensity.yaml 的 L1 / L2 分级，记录触发项、最低验证证据、review 模式和升级依据。 |
 | `evidence.repository-identity-check` | 仓库身份校验结果 | yss-project.yaml 的合法性与 repository_mode 裁决。 |
-| `evidence.approval-record` | 人工批准记录 | 对需要人工批准的 Spec、设计、契约或发布裁决的可追溯记录。 |
+| `evidence.approval-record` | 阶段决定记录 | Plan、Spec 与适用设计、交付验收的真实决定及当前成果绑定。 |
 | `evidence.design-review-result` | 设计审查结果 | API、架构或产品设计审查意见及处理结果。 |
-| `evidence.prototype-review-result` | 原型评审结果 | 低保真页面、流程、状态与 API 反推的独立评审结论和阻断项。 |
+| `evidence.prototype-review-result` | 原型评审结果 | 低保真页面、流程、状态与 API 反推的内容复核结论和阻断项；按实际要求决定是否独立复核。 |
 | `evidence.antd-cli-validation` | Ant Design CLI 校验证据 | 设计语言、组件、demo、token、semantic 与 lint 的实际 CLI/目标版本和可读输出引用。 |
 | `evidence.browser-prototype-verification` | 浏览器原型验证证据 | 高保真原型的非空渲染、主流程、异常状态、视口和控制台验证记录。 |
 | `evidence.prototype-profile-decision` | 原型档位选择证据 | 基于低保真评审后的风险触发、决定目标、H1/H2 计算结果以及人工升降级依据。 |
 | `evidence.prototype-deliverable-verification` | 原型交付物验证证据 | 新原型证据采用 schema v4，包含共同证据、Visual Baseline Bundle、浏览器、Design QA、无障碍及档位验证结果；历史 v3 仅供只读兼容。 |
-| `evidence.prototype-confirmation` | 原型用户确认记录 | 高保真原型、验证清单和进入下游阶段范围的人工确认结论。 |
+| `evidence.prototype-confirmation` | 原型用户确认记录 | 适用原型、验证清单和下游范围纳入同一次 Spec 基线阶段决定。 |
 | `evidence.openapi-draft-review` | OpenAPI Draft 审查记录 | P0、错误、分页、幂等和契约测试审查记录。 |
-| `evidence.contract-approval` | Slice 合同批准记录 | 生命周期编排器批准且已持久化的当前版本合同引用。 |
+| `evidence.contract-approval` | 实施准入记录 | 已授权基线范围内，当前 Slice 合同和工程、API 条件的自动准入结果。 |
 | `evidence.yss-skill-execution-result` | YSS Skill Execution Result | 专项 skill 的合同版本、写入、验证、延期 seam 与偏离证据。 |
 | `evidence.fresh-verification` | Fresh Verification 记录 | 本轮实际执行的验证命令、结果和时间。 |
 | `evidence.implementation-repository-preparation` | 实现仓库准备证据 | 按项目记录交付面、已有仓库接入或新脚手架合同、生成清单、实际验证结果、仓库位置、Git 边界和当前版本。 |

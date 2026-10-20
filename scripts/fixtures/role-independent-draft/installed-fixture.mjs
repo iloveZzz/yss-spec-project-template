@@ -1,3 +1,4 @@
+import {installLegacySpecPolicy} from '../../lib/testing/legacy-spec-policy.mjs';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -5,7 +6,7 @@ import assert from 'node:assert/strict';
 import {spawnSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 export const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
-export function installedFixture(profile='spec',{existingRoot}={}) {
+export function installedFixture(profile='spec',{existingRoot,legacySpec=false}={}) {
  const binary=process.env.YSS_NATIVE_BINARY;
  assert.ok(binary&&path.isAbsolute(binary),'current native candidate required');
  const scratch=existingRoot?path.dirname(existingRoot):fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'role-free-chain-'))),root=existingRoot||path.join(scratch,profile),calls=[];
@@ -13,12 +14,14 @@ export function installedFixture(profile='spec',{existingRoot}={}) {
  const read=ref=>fs.readFileSync(path.join(root,ref));
  const asset=ref=>({ref,digest:hash(read(ref))});
  const run=(label,args,expected='OK')=>{
+  if(process.env.YSS_CHAIN_PROGRESS)process.stderr.write('[fixture] '+label+'\n');
   const argv=[...args,'--root',root,'--json'],r=spawnSync(binary,argv,{encoding:'utf8',maxBuffer:64*1024*1024});
   calls.push({label,argv:[binary,...argv],exit_code:r.status,stdout:r.stdout,stderr:r.stderr});
   const d=JSON.parse(r.stdout);assert.equal(d.code,expected,`${label}: ${JSON.stringify(d.result.diagnostics||d.result.message)}`);assert.equal(r.status===0,expected==='OK');return d.result;
  };
  const git=(...args)=>{const r=spawnSync('git',args,{cwd:root,encoding:'utf8'});assert.equal(r.status,0,r.stderr);return r.stdout.trim();};
  if(!existingRoot)run('actual-install',['init','--profile',profile]);
+ if(legacySpec&&profile==='spec'&&!existingRoot)installLegacySpecPolicy(root);
  assert.equal(JSON.parse(read('.yss.json')).schemaVersion,4);
  assert.equal(fs.existsSync(path.join(root,'.template-spec/agents/digital-human-roles.yaml')),false);
  if(!existingRoot){git('init','-q');git('-c','user.name=test','-c','user.email=test@example.invalid','commit','--allow-empty','-qm','base');}

@@ -55,7 +55,7 @@ export function lifecycleStatus({ root, checkpointRef, taskPackageRef, env }) {
   const checkpoint = source(root, checkpointRef), registry = source(root, registryRef), contract = orchestrationSource(root, contractRef);
   const value = checkpoint.value;
   const registeredText = value => typeof value === 'string' && value.trim() ? value : null;
-  if (value.schema_version !== 1 || value.repository_mode !== 'project-instance') throw new TypeError('checkpoint 身份或版本无效');
+  if (![1,2].includes(value.schema_version) || value.repository_mode !== 'project-instance') throw new TypeError('checkpoint 身份或版本无效');
   const items = value.stage_tracking?.items ?? [];
   if (!Array.isArray(items)) throw new TypeError('阶段追踪 items 必须为数组');
   const activeItems = items.filter(item => item.work_unit === value.next_work_unit && item.progress !== 'cancelled');
@@ -103,10 +103,15 @@ export function lifecycleStatus({ root, checkpointRef, taskPackageRef, env }) {
   check('stage-and-route', diagnostics.some(x => ['unknown-stage', 'unknown-work-unit', 'missing-route'].includes(x.code)) ? 'failed' : 'passed', [registryRef, contractRef], '仅检查身份与路由存在，不计算完整 frontier');
   if (value.context_reconciliation?.status === 'blocked') issue('context-blocked', '术语对账受阻', checkpointRef, '修复词汇对账并执行适用校验');
   check('context-reconciliation', value.context_reconciliation?.status === 'blocked' ? 'failed' : 'not-checked', [value.context_reconciliation?.ref].filter(Boolean), '读取登记状态；当前对账内容和摘要仍须由原验证器核验');
-  const gateNames = {blocked: '受阻', stale: '依据已过期', pending: '等待处理', failed: '未通过', 'ready-for-human': '等待会签', 'not-evaluated': '尚未评估'};
+  const gateNames = {blocked: '受阻', stale: '依据已过期', pending: '等待处理', failed: '未通过', 'ready-for-human': '等待阶段决定', 'not-evaluated': '尚未评估'};
   const gates = value.gates && typeof value.gates === 'object' && !Array.isArray(value.gates) ? Object.entries(value.gates) : [];
   if (!Object.hasOwn(value, 'gates') || !value.gates || typeof value.gates !== 'object' || Array.isArray(value.gates)) issue('gates-unverifiable', '门禁登记缺失或格式不可核验', checkpointRef, '核对原始门禁记录并执行正式预检', 'warning');
-  for (const [id, gate] of gates) {
+  for (const [id, binding] of gates) {
+    let gate=binding;
+    if(value.schema_version===2){
+      try{const record=source(root,binding.record_ref);if(record.digest.replace(/^sha256:/,'')!==binding.record_digest.replace(/^sha256:/,''))throw new Error('阶段记录摘要漂移');gate={status:record.value.outcome};}
+      catch(error){gate={status:'stale',reason:error.message};}
+    }
     const status = gateNames[gate?.status];
     const hardBlocked = ['blocked', 'stale'].includes(gate?.status);
     const failed = hardBlocked || (['pending', 'failed', 'ready-for-human', 'not-evaluated'].includes(gate?.status) && gate?.applicable === true);
@@ -121,7 +126,7 @@ export function lifecycleStatus({ root, checkpointRef, taskPackageRef, env }) {
     }
   }
   const gateDiagnostics = diagnostics.filter(x => ['gate-blocked', 'gate-unverified', 'gates-unverifiable'].includes(x.code));
-  check('registered-gates', gateDiagnostics.some(x => x.severity === 'error') ? 'failed' : gateDiagnostics.length || !gates.length ? 'not-checked' : 'passed', [checkpointRef], '仅读取已登记状态；适用性未登记、待处理或记录缺失时不能判定门禁通过；不核验完整批准');
+  check('registered-gates', gateDiagnostics.some(x => x.severity === 'error') ? 'failed' : gateDiagnostics.length || !gates.length || value.schema_version===2 ? 'not-checked' : 'passed', [checkpointRef], '仅读取已登记状态；适用性未登记、待处理或记录缺失时不能判定门禁通过；不核验完整批准');
   const evidenceRefs = [value.context_reconciliation?.ref, ...Object.values(value.artifacts ?? {}).filter(item => item?.status === 'approved').map(item => item.ref)].filter(Boolean);
   for (const ref of evidenceRefs) {
     try { readFileSync(safeTrackingPath(root, ref)); }

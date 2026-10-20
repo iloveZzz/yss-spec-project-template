@@ -115,7 +115,10 @@
       ".template-spec/process/schemas/strategic-design-handoff-v3.schema.json",
       ".template-spec/agents/digital-human-roles.yaml",
       ".template-spec/agents/digital-human-roles.md",
-      "scripts/verify-digital-human-roles"
+      "scripts/verify-digital-human-roles",
+      "scripts/lib/testing",
+      ".template-spec/process/schemas/strategic-handoff-domain-strategy.schema.json",
+      ".template-spec/process/schemas/strategic-handoff-stage-decision-package.schema.json"
     ],
     "excludePathSuffixes": [
       "-scenarios"
@@ -342,7 +345,13 @@
       ".template-spec/process/schemas/strategic-handoff-export.schema.json",
       ".template-spec/process/schemas/strategic-handoff-export-v2.schema.json",
       ".template-spec/process/schemas/strategic-handoff-package.schema.json",
-      ".template-spec/process/harness-profile.yaml"
+      ".template-spec/process/harness-profile.yaml",
+      ".template-spec/process/schemas/stage-result.schema.json",
+      ".template-spec/process/schemas/lifecycle-checkpoint-v2.schema.json",
+      ".template-spec/process/schemas/strategic-handoff-domain-strategy-v4.schema.json",
+      ".template-spec/process/schemas/strategic-handoff-stage-decision-package-v4.schema.json",
+      ".template-spec/process/stage-gates.md",
+      ".template-spec/process/schemas/slice-implementation-contract-v4.schema.json"
     ],
     "scripts": [
       "scripts/verify-project-instance",

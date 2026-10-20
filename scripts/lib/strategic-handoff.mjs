@@ -17,11 +17,6 @@ const own = (a,b) => JSON.stringify(canonical(a)) === JSON.stringify(canonical(b
 const nonempty = x => typeof x === 'string' && x.trim();
 const bytesDigest = (bytes, kind) => kind === 'canonical-json' ? digest(parse(bytes)) : kind === 'sha256-bytes' ? hash(bytes) : (() => { throw new TypeError(`未知摘要算法: ${kind}`); })();
 const HANDOFF_SCHEMAS = new Map([[4,'.template-spec/process/schemas/strategic-design-handoff-v4.schema.json'],[5,'.template-spec/process/schemas/strategic-design-handoff-v5.schema.json']]);
-const SOURCE_SCHEMAS = new Map([
-  [3,['.template-spec/process/schemas/strategic-handoff-domain-strategy.schema.json','.template-spec/process/schemas/strategic-handoff-stage-decision-package.schema.json']],
-  [4,['.template-spec/process/schemas/strategic-handoff-domain-strategy-v3.schema.json','.template-spec/process/schemas/strategic-handoff-stage-decision-package-v3.schema.json']],
-  [5,['.template-spec/process/schemas/strategic-handoff-domain-strategy-v3.schema.json','.template-spec/process/schemas/strategic-handoff-stage-decision-package-v3.schema.json']],
-]);
 const CAPABILITIES=['backend-technical-design','frontend-engineering-design','delivery-coordination'];
 // 前端实现已从生命周期移除：交接包里仍声明前端消费者路线（协议兼容，常驻两代），但接收方不再生成或消费前端草案。
 const CONSUMER_CAPABILITIES=['backend-technical-design','delivery-coordination'];

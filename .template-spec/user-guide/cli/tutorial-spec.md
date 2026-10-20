@@ -2,6 +2,8 @@
 
 本页是[统一 CLI 操作说明](../unified-cli.md)的一部分。
 
+当前 `stage-gates-v1` 实例以[四阶段门禁](../../process/stage-gates.md)为准：Plan 一次确认 → Spec 与适用设计一次确认 → 当前切片自动准入 → 交付验收。专业检查保留质量结论和实际证据，不分别办理批准。下文按工作阶段展开步骤；工作阶段不是新增审批点。历史实例按原政策读取，显式迁移后使用新入口。
+
 ## 教程：spec
 
 ```text
@@ -32,10 +34,10 @@ Profile spec
 当前实例须启用 lifecycle-target-v1 政策；用 capabilities 查看 CLI 能力，并核验当前实例政策，不能仅凭版本号判断。旧原生实例缺能力时显式 sync --plan，审阅后 apply；不会静默补目标或改 checkpoint。此机制用于 governed，daily 仍走原分流政策。
 
 三个完成结论分别核验：本次目标达到、Profile 职责完成、业务整体完成。新正式 Spec 功能默认 business-accepted；短目标达到不等于整体业务完成。已有 plan-to-backend 职责默认 backend-deliverable，仅允许前三目标，不能通过改目标扩大职责。
-五个可写目标：
+四个可写目标：
   spec-approved：当前 Spec 批准、业务 Ticket 草案和需求/验收覆盖已核验。
-  product-design-completed：适用产品设计审查、验证、批准和业务 Ticket 正式化闭合；产品设计不适用须有当前依据，不生成空原型。
-  backend-deliverable：当前批准合同、适用 API、后端实现、独立审查、构建及契约/部署验证闭合。
+  product-design-completed：Spec 与适用产品设计集中确认、验证和业务 Ticket 正式化闭合；产品设计不适用须有当前依据，不生成空原型。
+  backend-deliverable：当前批准合同、适用 API、后端实现、适用复核、构建及契约/部署验证闭合。
   business-accepted：Spec 主控完成同一业务范围的统一验收。验收完成不自动提交、合并或发布。
 专职工程只读显示 profile-terminal，它是本端职责终点，不是可写目标。
 
@@ -116,7 +118,7 @@ plan 只保存计划；apply 重新核验当前输入并拒绝篡改或漂移，
   仅命中产品设计影响时使用原型与设计技能；未命中项按权威条件说明适用性。
   产品设计校准后完成 work-unit.business-ticket-formalization，再进入技术分析；无产品设计影响时从 Spec 直接进入业务正式化，不生成空原型。
 预期结果：查询/核验当前输入与适用条件。
-下一步条件：命中的设计门禁通过，适用业务 Ticket 正式化及当前审查闭合；无产品设计影响时记录依据，从 Spec 进入业务正式化，不生成空原型。
+下一步条件：当前 Spec 与适用设计阶段确认通过，适用业务 Ticket 正式化及当前审查闭合；无产品设计影响时记录依据，从 Spec 进入业务正式化，不生成空原型。
 失败恢复：查看当前报告的逐项诊断，从最近可信阶段补齐受影响材料；yss help errors。
 
 5. 系统 / 数据架构与工程契约（stage.system-data-engineering）
@@ -125,19 +127,19 @@ plan 只保存计划；apply 重新核验当前输入并拒绝篡改或漂移，
   消费已正式化业务 Ticket 和当前批准的 Spec / 设计；工程契约围绕当前已确认交付范围形成。
   yss contract verify --root ./demo-spec --kind scaffold --file docs/scaffold.json --json --diagnostics
   yss handoff verify --root ./demo-spec --kind package --package docs/handoff --json
-  API：OAS 3.1 YAML Draft → 锁定工具校验 → 独立 Review → Freeze → 实现与契约测试；由 OpenAPI 技能及负责人完成。
+  API：OAS 3.1 YAML Draft → 锁定工具校验 → 内容复核 → Freeze → 实现与契约测试；由 OpenAPI 技能及负责人完成。
 预期结果：查询/核验当前输入与适用条件。
 下一步条件：新建后端已由用户确认 DDD / MVC 与精确 Spring Boot 版本，既有工程已核验并复用登记值；受影响工程契约冻结或记录无 API 影响；required 脚手架证据齐全。
 失败恢复：查看当前报告的逐项诊断，从最近可信阶段补齐受影响材料；yss help errors。
 
 6. 实现切片拆分与合同准入（stage.ticket-formalization）
-目标：消费冻结工程契约和当前实现仓库准备，将业务 Ticket 细化为可独立验证的实现切片，并批准当前 Slice Implementation Contract。
+目标：消费冻结工程契约和当前实现仓库准备，将业务 Ticket 细化为可独立验证的实现切片，并复算当前 Slice Implementation Contract 的实施准入。
   yss stage query --root ./demo-spec --id stage.ticket-formalization --json
   yss contract verify --root ./demo-spec --kind slice --file docs/contract.json --checkpoint .work/feature/checkpoint.yaml --json --diagnostics
   输入为批准且当前的 Slice 合同及其消费证据；校验器不创建批准或设置 ready-for-agent。
   本阶段承接实现切片拆分与合同准入，工程契约和实现仓库准备须先闭合；业务 Ticket 正式化已在技术分析前完成。
 预期结果：查询/核验当前输入与适用条件。
-下一步条件：切片范围窄、依赖清晰、验收与测试 seam 可执行；工程前置闭合、合同批准且当前，生命周期复算后才能 ready-for-agent。
+下一步条件：切片范围窄、依赖清晰、验收与测试 seam 可执行；工程前置闭合、当前合同属于有效实施准入，生命周期复算后才能 ready-for-agent。
 失败恢复：查看当前报告的逐项诊断，从最近可信阶段补齐受影响材料；yss help errors。
 
 7. 垂直切片实现（stage.vertical-slice-implementation）

@@ -1,3 +1,4 @@
+import {installLegacySpecPolicy} from '../../lib/testing/legacy-spec-policy.mjs';
 // Synthetic decision sources verify the protocol; they are not real product approval.
 import fs from 'node:fs';
 import os from 'node:os';
@@ -26,6 +27,7 @@ test('installed Spec prepares Plan once, uses actual self-check and current huma
  };
  try {
   run('actual-install',['init','--profile','spec']);
+  installLegacySpecPolicy(root);
   assert.equal(JSON.parse(fs.readFileSync(path.join(root,'.yss.json'))).schemaVersion,4);
   assert.equal(fs.existsSync(path.join(root,'.template-spec/agents/digital-human-roles.yaml')),false);
   for(const argv of [['init','-q'],['-c','user.name=test','-c','user.email=test@example.invalid','commit','--allow-empty','-qm','base']])assert.equal(spawnSync('git',argv,{cwd:root}).status,0);

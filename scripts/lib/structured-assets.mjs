@@ -6,7 +6,7 @@ import { parseDocument, YAMLMap, YAMLSeq } from '../vendor/yaml.mjs';
 import { validateJsonSchema } from './json-schema.mjs';
 
 export const TOOL_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
-export const ASSET_KINDS = Object.freeze(['checkpoint', 'domain-strategy', 'stage-decision-package', 'task-package', 'approval-record']);
+export const ASSET_KINDS = Object.freeze(['checkpoint', 'domain-strategy', 'stage-decision-package', 'task-package', 'approval-record', 'stage-result']);
 export const byteDigest = bytes => `sha256:${createHash('sha256').update(bytes).digest('hex')}`;
 export const canonicalValue = value => Array.isArray(value) ? value.map(canonicalValue) : value && typeof value === 'object' ? Object.fromEntries(Object.keys(value).sort().map(key => [key, canonicalValue(value[key])])) : value;
 export const semanticDigest = value => byteDigest(JSON.stringify(canonicalValue(value)));
@@ -60,11 +60,15 @@ export function parseAsset(bytes, file = 'asset.yaml') {
 export function assetSchema(kind, value, root = TOOL_ROOT) {
   if (!ASSET_KINDS.includes(kind)) throw new TypeError(`ASSET_KIND: ${kind}`);
   if (['domain-strategy', 'stage-decision-package'].includes(kind)) {
-    if (![2, 3].includes(value.schema_version)) throw new TypeError('migration-required: unsupported strategy schema_version');
+    if (![2, 3, 4].includes(value.schema_version)) throw new TypeError('migration-required: unsupported strategy schema_version');
+    if (value.schema_version === 4) {
+      const authoring = path.join(root, `.agents/skills/yss-stage-decision/references/${kind}-v4.schema.json`);
+      return fs.existsSync(authoring) ? authoring : path.join(root, `.template-spec/process/schemas/strategic-handoff-${kind}-v4.schema.json`);
+    }
     const authoring = path.join(root, `.agents/skills/yss-stage-decision/references/${kind}.schema.json`);
     return fs.existsSync(authoring) ? authoring : path.join(root, `.template-spec/process/schemas/${kind}-reading.schema.json`);
   }
-  const name = { checkpoint: 'lifecycle-checkpoint', 'task-package': 'digital-human-task-package', 'approval-record': value.kind === 'review-bundle' ? 'review-bundle' : 'approval-record' }[kind];
+  const name = { checkpoint: value.schema_version === 2 ? 'lifecycle-checkpoint-v2' : 'lifecycle-checkpoint', 'stage-result': 'stage-result', 'task-package': 'digital-human-task-package', 'approval-record': value.kind === 'review-bundle' ? 'review-bundle' : 'approval-record' }[kind];
   return path.join(root, `.template-spec/process/schemas/${name}.schema.json`);
 }
 

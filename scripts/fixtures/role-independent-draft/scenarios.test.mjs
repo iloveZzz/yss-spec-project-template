@@ -1,3 +1,4 @@
+import {installLegacySpecPolicy} from '../../lib/testing/legacy-spec-policy.mjs';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -23,6 +24,7 @@ scenarios:try{
  write('.template-spec/process/harness-profile.yaml',{schema_version:3,profile_id:'harness.spec-template',status:'active',required_capabilities:['role-independent-governance-v1'],lifecycle:{},execution:{}});
  fs.copyFileSync(path.join(source,'CONTEXT.md'),path.join(root,'CONTEXT.md'));
  }
+ installLegacySpecPolicy(root);
  const policies=loadOrchestrationContract(ref=>fs.readFileSync(path.join(root,ref)),'.template-spec/process/orchestration-contract.yaml');
  if(!process.env.YSS_TASK_PRODUCER_ONLY&&!process.env.YSS_REVIEW_PRODUCER_ONLY&&!process.env.YSS_REVIEW_PUBLISH_ONLY)for(const [unit,route] of Object.entries(policies.value.work_unit_routes)){
   write('selection.json',{work_unit_id:unit,impacts:Object.keys(route.impact_check_ids)});

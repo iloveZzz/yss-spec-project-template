@@ -1,3 +1,4 @@
+import {usesStageGates,verifyStageResult} from './stage-result.mjs';
 import { existsSync, readFileSync } from './validation-phase.mjs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -72,7 +73,7 @@ export function authorizeBackendDelivery({root = ROOT, checkpointRef, assetRef, 
   check([1,2].includes(identity.schema_version) && identity.repository_mode === 'project-instance' && metadata?.kind === 'native' && metadata.profile === 'spec', '条件后端交付仅适用于真实 native Spec 实例，不能扩专职 Profile');
   const checkpoint = read(root, intent.checkpoint_ref);
   check(!checkpoint.profile_id || checkpoint.profile_id === 'harness.spec-template', 'checkpoint Profile 与 Spec 工程不一致');
-  const contract = read(root, intent.contract_ref);
+  const contract = readContract(root, intent.contract_ref);
   check(contract.work_unit_routes?.['work-unit.backend-delivery']?.applies_when === 'backend-delivery-requested', '当前合同不支持条件后端交付');
   const terminalRef = `${path.posix.dirname(intent.map_ref)}/backend-delivery.json`;
   const external = intent.consumers.some(consumer => consumer.profile === 'backend' && path.resolve(consumer.root) !== intent.root);
@@ -81,14 +82,27 @@ export function authorizeBackendDelivery({root = ROOT, checkpointRef, assetRef, 
   const business = !external && (['backend-deliverable', 'business-accepted'].includes(intent.target) || existingLocal);
   if (business) {
     check(contract.progression_target?.completion_policy?.['business-accepted']?.conditional_required_checks?.['backend-delivery'] === 'backend-api-data-impact', '当前业务政策缺少本地后端条件核验');
-    const sliceRef = checkpoint.human_review?.implementation?.slice_contract_ref || checkpoint.review_input?.slice_contract_ref
+    const stageMode=usesStageGates(root);
+    let admittedSlice;
+    if(stageMode) {
+      verifyStageResult({root,checkpointRef:intent.checkpoint_ref,gateId:'gate.implementation-admitted'});
+      const admission=read(root,checkpoint.gates['gate.implementation-admitted'].record_ref);
+      const candidates=admission.assets.filter(a=>{try{const raw=read(root,a.ref),s=raw.slice_contract||raw;return s.schema_version===4&&s.applicability?.backend?.status==='required';}catch{return false;}});
+      const requestedSlice=assetRef&&candidates.find(a=>a.ref===assetRef);
+      check(requestedSlice||candidates.length===1,'多个后端 Slice 需要明确当前交付成果引用');
+      admittedSlice=(requestedSlice||candidates[0]).ref;
+    }
+    const sliceRef = admittedSlice || checkpoint.human_review?.implementation?.slice_contract_ref || checkpoint.review_input?.slice_contract_ref
       || checkpoint.artifacts?.['artifact.slice-implementation-contract']?.ref || checkpoint.slice_contract?.ref
       || checkpoint.gates?.['gate.slice-contract-approved']?.subject_ref;
     check(sliceRef, '本地业务交付缺少当前功能 Slice');
     const saved = read(root, sliceRef), slice = saved.slice_contract || saved;
-    check(slice.status === 'approved' && (slice.schema_version === 3 ? slice.applicability?.backend?.status : slice.backend?.status) === 'required', '本地业务交付需要当前批准且适用的后端 Slice');
-    const gate = checkpoint.gates?.['gate.slice-contract-approved'];
-    check(gate?.status === 'approved' && gate.subject_ref === sliceRef, '本地业务交付需要当前 checkpoint 的 Slice 批准门禁');
+    check((stageMode || slice.status === 'approved') && ([3,4].includes(slice.schema_version) ? slice.applicability?.backend?.status : slice.backend?.status) === 'required', '本地业务交付需要当前批准且适用的后端 Slice');
+    if(usesStageGates(root))verifyStageResult({root,checkpointRef:intent.checkpoint_ref,gateId:'gate.implementation-admitted',assetRef:sliceRef});
+    else {
+     const gate = checkpoint.gates?.['gate.slice-contract-approved'];
+     check(gate?.status === 'approved' && gate.subject_ref === sliceRef, '本地业务交付需要当前 checkpoint 的 Slice 批准门禁');
+    }
   }
   const requested = external || business
     || (deliveryMode === 'local-evidence' && intent.target === 'backend-deliverable');
