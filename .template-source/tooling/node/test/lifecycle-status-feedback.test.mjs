@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {installLegacySpecPolicy} from '../../../../scripts/lib/testing/legacy-spec-policy.mjs';
 import test from 'node:test';
 import {loadOrchestrationContract} from '../../../../scripts/lib/orchestration-contract.mjs';
 import {cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync} from 'node:fs';
@@ -26,6 +27,9 @@ function fixture(run) {
       mkdirSync(path.dirname(path.join(root, ref)), {recursive: true});
       cpSync(path.join(sourceRoot, ref), path.join(root, ref), {recursive:true});
     }
+    put('.template-spec/process/harness-profile.yaml', {schema_version: 1, profile_id: 'harness.spec-template'});
+    installLegacySpecPolicy(root);
+    rmSync(path.join(root, '.template-spec/process/harness-profile.yaml'));
     const checkpoint = {
       schema_version: 1, repository_mode: 'project-instance', mode: 'route', status: 'routing', stage: 'stage.plan',
       artifacts: {}, gates: {}, context_reconciliation: {status: 'pending', ref: null, evidence_refs: []},

@@ -269,3 +269,48 @@ test('v5 MVC 绑定默认示例，v4 不允许参数追加', async t => {
     else await assert.rejects(stat(path.join(data.project, 'examples')), { code: 'ENOENT' });
   }
 });
+
+test('四阶段准备复用一次真实 Plan 授权且不依赖工程子批准或未来准入', async t => {
+  const data=await fixture(t);
+  const {installedFixture}=await import('../../../../scripts/fixtures/role-independent-draft/installed-fixture.mjs');
+  const native=installedFixture('spec');t.after(()=>native.cleanup());const {root}=native;
+  const contract=structuredClone(data.contract),contractFile=path.join(root,'contract.json'),decisionFile=path.join(root,'scaffold-architecture-decisions.yaml');
+  for(const entry of await readdir(data.root))if(!['.template-spec','.agents','yss-project.yaml','CONTEXT.md'].includes(entry))await cp(path.join(data.root,entry),path.join(root,entry),{recursive:true});
+  contract.decision_ref=decisionFile;
+  const assetsPlan=path.join(path.dirname(root),'preparation-assets.plan.json');native.run('engineering-assets-plan',['assets','ensure','stage.system-data-engineering','--plan','--out',assetsPlan]);native.run('engineering-assets-apply',['assets','--apply','--plan-file',assetsPlan]);
+  const {stageGatesFixture}=await import('../../../../scripts/lib/testing/stage-gates-fixture.mjs');
+  const {digest:canonicalDigest}=await import('../../../../scripts/lib/strategic-handoff-io.mjs');
+  const source=path.resolve(import.meta.dirname,'../../../..');
+  const f=stageGatesFixture({existingRoot:root}),cpRef='.work/demo/checkpoint.json';
+  const decisions=JSON.parse(await readFile(decisionFile,'utf8')),choice=decisions.decisions[0];
+  const choiceSnapshot=structuredClone(choice);for(const key of ['user_confirmation','status','decision_inputs_digest'])delete choiceSnapshot[key];
+  const catalog=JSON.parse(await readFile(path.join(root,'.template-spec/engineering/backend-platforms.json'),'utf8'));
+  const profile=catalog.profiles.find(p=>p.id===choice.platform_profile&&(!choice.platform_configuration?.spring_boot_version||p.spring_boot_version===choice.platform_configuration.spring_boot_version));
+  choiceSnapshot.platform_selection={profile_id:profile.id,spring_boot_version:profile.spring_boot_version,java_version:profile.java_version};
+  f.write('choice-inputs.json',choiceSnapshot);
+  const normalizedDecision=structuredClone(decisions);for(const row of normalizedDecision.decisions)delete row.user_confirmation;
+  const initialTechnical=JSON.parse(await readFile(path.join(root,'technical-design.json'),'utf8'));
+  initialTechnical.inputs=initialTechnical.inputs.map(input=>input.kind==='context'?{...input,digest:digest(f.read('CONTEXT.md'))}:input);f.write('technical-design.json',initialTechnical);
+  const normalizedTechnical=structuredClone(initialTechnical);delete normalizedTechnical.digest;normalizedTechnical.architecture.decision_digest=canonicalDigest(normalizedDecision);
+  const snapshot=structuredClone(contract);for(const key of ['approval','lifecycle_approval_ref','status'])delete snapshot[key];snapshot.decision_digest=canonicalDigest(normalizedDecision);delete snapshot.design_prerequisites.engineering_contract_approval_ref;snapshot.design_prerequisites.technical_design=normalizedTechnical;
+  f.write('generation-inputs.json',snapshot);
+  f.write(cpRef,{schema_version:2,repository_mode:'project-instance',feature_id:'feature.demo',mode:'orchestrate',status:'running',stage:'stage.plan',artifacts:{},checks:{},gates:{},context_reconciliation:{status:'pending',ref:null,evidence_refs:[]},next_work_unit:'work-unit.plan-requirements',ticket_sync:{},verification:{},human_review:{},git_checkpoint:{},blockers:[],rollback:[]});
+  f.record({extraAssets:['choice-inputs.json','generation-inputs.json']});
+  const invoke=(...args)=>{const r=spawnSync(process.env.YSS_NATIVE_BINARY,[...args,'--root',root,'--json'],{encoding:'utf8',maxBuffer:64*1024*1024});const d=JSON.parse(r.stdout);assert.equal(r.status,0,JSON.stringify(d).slice(0,4000));return d.result;};
+  const plan=path.join(path.dirname(root),path.basename(root)+'.stage-plan.json');t.after(()=>rm(plan,{force:true}));
+  invoke('lifecycle','decision','plan','--checkpoint',cpRef,'--input','stage.json','--out',plan);
+  invoke('lifecycle','decision','apply','--plan',plan);
+  const stage=f.doc(cpRef).gates['gate.plan-approved'].record_ref;
+  Object.assign(choice.user_confirmation,{stage_record_ref:stage,checkpoint_ref:cpRef,decision_subject_ref:'choice-inputs.json',generation_inputs_ref:'generation-inputs.json'});
+  await writeFile(decisionFile,JSON.stringify(decisions));contract.decision_digest=digest(await readFile(decisionFile));
+  const technical=JSON.parse(await readFile(path.join(root,'technical-design.json'),'utf8'));technical.architecture.decision_digest=contract.decision_digest;
+  const {technicalDigest}=await import('../../yss-technical-design/scripts/validate-technical-design.mjs');technical.digest=technicalDigest(technical);f.write('technical-design.json',technical);
+  contract.design_prerequisites.technical_design.digest=digest(await readFile(path.join(root,'technical-design.json')));
+  delete contract.design_prerequisites.engineering_contract_approval_ref;
+  contract.lifecycle_approval_ref=stage;contract.approval.approval_ref=stage;await writeFile(contractFile,JSON.stringify(contract));
+  await rm(path.join(root,'engineering-contract-approval.json'),{force:true});
+  invoke('contract','verify','--kind','scaffold-inputs','--file','contract.json');
+  assert.equal(f.doc(cpRef).gates['gate.implementation-admitted'],undefined);
+  contract.allowed_write_paths.push('../outside');await writeFile(contractFile,JSON.stringify(contract));
+  const rejected=spawnSync(process.env.YSS_NATIVE_BINARY,['contract','verify','--kind','scaffold-inputs','--file','contract.json','--root',root,'--json'],{encoding:'utf8'});assert.notEqual(rejected.status,0);
+});

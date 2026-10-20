@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import {verifyStageResult} from "../../../../scripts/lib/stage-result.mjs";
 import {nativeEvidenceVerify,nativeCoverage,NEEDS} from "../../../../scripts/lib/native-evidence.mjs";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
@@ -59,11 +60,11 @@ function validate(data, contextRoot, currentRef) {
   if (data?.traceability_version !== undefined) { try { extractTraceability(data); } catch(error) { errors.push(error.message); } }
   if (!data || typeof data !== "object" || Array.isArray(data)) return ["合同必须是对象"];
   if (data.schema_version === 1) return ["migration-required: domain strategy v1 必须迁移到 v2 context_snapshot"];
-  for (const field of required) requireField(data, field, "root", errors);
-  if (![2, 3].includes(data.schema_version)) errors.push("schema_version 不受支持；支持版本: 2, 3；新交付请迁移到 3");
+  for (const field of required.filter(field=>data.schema_version!==4||field!=="approval")) requireField(data, field, "root", errors);
+  if (![2, 3, 4].includes(data.schema_version)) errors.push("schema_version 不受支持；支持版本: 2, 3, 4；新内容使用 4");
   if (!idPatterns.domain_strategy_id.test(String(data.domain_strategy_id ?? ""))) errors.push("domain_strategy_id 格式非法");
   if (!/^v[0-9]+$/.test(String(data.domain_version ?? ""))) errors.push("domain_version 必须形如 v1");
-  if (!["draft", "ready-for-human", "approved", "stale", "blocked"].includes(data.status)) errors.push("status 非法");
+  if (!(data.schema_version===4?["draft","ready","stale","blocked"]:["draft", "ready-for-human", "approved", "stale", "blocked"]).includes(data.status)) errors.push("status 非法");
 
   requireArray(data, "contexts", "root", errors, 1, "object");
   const contexts = list(data.contexts) ? data.contexts : [];
@@ -79,7 +80,7 @@ function validate(data, contextRoot, currentRef) {
   }
 
   const sourceIds = new Set();
-  if (data.schema_version === 3) {
+  if (data.schema_version >= 3) {
     if (data.traceability_version !== 1) errors.push("traceability_version 必须为 1");
     requireArray(data, "rule_catalog", "root", errors, 1, "object");
     const rules = list(data.rule_catalog) ? data.rule_catalog : [];
@@ -135,7 +136,7 @@ function validate(data, contextRoot, currentRef) {
     if (scenario?.responsible_context && !contextIds.includes(scenario.responsible_context)) errors.push(`${path}.responsible_context 未声明`);
     for (const consumer of scenario?.consumers ?? []) if (!contextIds.includes(consumer)) errors.push(`${path}.consumers 引用了未声明上下文: ${consumer}`);
     if (scenario?.scenario_id) sourceIds.add(scenario.scenario_id);
-    if (data.schema_version === 3) {
+    if (data.schema_version >= 3) {
       requireArray(scenario ?? {}, "rule_refs", path, errors, 1);
       requireArray(scenario ?? {}, "success_results", path, errors, 1);
       requireArray(scenario ?? {}, "evidence_refs", path, errors, 1);
@@ -165,7 +166,7 @@ function validate(data, contextRoot, currentRef) {
     if (invariant?.responsible_context && !contextIds.includes(invariant.responsible_context)) errors.push(`${path}.responsible_context 未声明`);
     for (const reference of invariant?.scenario_refs ?? []) if (!scenarioIds.includes(reference)) errors.push(`${path}.scenario_refs 引用了未声明场景: ${reference}`);
     if (invariant?.invariant_id) sourceIds.add(invariant.invariant_id);
-    if (data.schema_version === 3) {
+    if (data.schema_version >= 3) {
       requireString(invariant ?? {}, "rule_ref", path, errors);
       requireArray(invariant ?? {}, "evidence_refs", path, errors, 1);
       if (invariant?.rule_ref && !sourceIds.has(invariant.rule_ref)) errors.push(`${path}.rule_ref 引用了未声明规则: ${invariant.rule_ref}`);
@@ -179,10 +180,10 @@ function validate(data, contextRoot, currentRef) {
   }
   requireArray(data, "evidence_refs", "root", errors, 1);
   const mappings = list(data.downstream_mapping) ? data.downstream_mapping : [];
-  if (data.schema_version === 3) unique(mappings.map((item) => item?.mapping_id).filter(Boolean), "mapping_id", errors);
+  if (data.schema_version >= 3) unique(mappings.map((item) => item?.mapping_id).filter(Boolean), "mapping_id", errors);
   for (const [index, mapping] of mappings.entries()) {
     const path = `downstream_mapping[${index}]`;
-    if (data.schema_version === 3) {
+    if (data.schema_version >= 3) {
       for (const field of ["mapping_id", "consumer_capability", "propagation", "reapproval_condition"]) requireString(mapping ?? {}, field, path, errors);
       for (const field of ["source_refs", "impacts", "evidence_refs"]) requireArray(mapping ?? {}, field, path, errors, 1);
       if (!/^mapping\.[a-z0-9][a-z0-9-]*$/.test(String(mapping?.mapping_id ?? ""))) errors.push(`${path}.mapping_id 格式非法`);
@@ -195,6 +196,7 @@ function validate(data, contextRoot, currentRef) {
       if (mapping?.propagation && !["direct", "transitive", "stale"].includes(mapping.propagation)) errors.push(`${path}.propagation 非法`);
     }
   }
+  if(data.schema_version!==4) {
   const approval = data.approval ?? {};
   for (const field of (approval.schema_version===2?["approval_ref", "persisted_ref", "current_version"]:["approval_ref", "approver", "persisted_ref", "current_version"])) requireString(approval, field, "approval", errors);
   if (data.status === "approved") {
@@ -211,25 +213,33 @@ function validate(data, contextRoot, currentRef) {
       const record = loadApprovalRecord(approvalPath, "check.domain-strategy-approved", options);
       validateApprovalRecordFile(approvalPath, { gate: 'check.domain-strategy-approved', ...options, requireApproved: true, expected });
       if (record.gate_id !== "check.domain-strategy-approved") errors.push("approval.approval_ref 的 gate_id 必须为 check.domain-strategy-approved");
-      if (record.role_id !== approval.approver) errors.push("approval.approver 必须与会签记录 role_id 一致");
+      // approval3 is validated against its actual task, subject and scope above;
+      // an existing annotation's approver is only meaningful for legacy records.
+      if (record.schema_version !== 3 && record.role_id !== approval.approver) errors.push("历史 approval.approver 必须与批准记录 role_id 一致");
       }
-    } catch (error) { errors.push(`approval.approval_ref 会签记录无效: ${error.message}`); }
+    } catch (error) { errors.push(`approval.approval_ref 批准记录无效: ${error.message}`); }
+  }
   }
   return errors;
 }
 
-const { values, positionals } = parseArgs({ options: { root: { type: "string", default: process.cwd() } }, allowPositionals: true, strict: true });
+const { values, positionals } = parseArgs({ options: { root: { type: "string", default: process.cwd() }, mode: {type:"string",default:"content"}, checkpoint:{type:"string"} }, allowPositionals: true, strict: true });
 const file = positionals[0];
 if (!file) fail(["用法: validate-domain-strategy.mjs <contract.yaml> [--root <project-root>]"]);
 else {
   try {
+    if(!["content","stage"].includes(values.mode))throw new TypeError("mode 必须为 content 或 stage");
+    if(values.mode==="stage"&&!values.checkpoint)throw new TypeError("stage 模式必须提供 --checkpoint");
     assertAssetTransactionIdle(values.root);
     assertCurrentAssetReference(values.root, path.relative(path.resolve(values.root), path.resolve(file)));
     const source = await readFile(file, "utf8");
     {
       const errors = validate(parseAsset(source, file), values.root, path.resolve(file));
       if (errors.length) fail(errors);
-      else process.stdout.write(JSON.stringify({ result: "completed", contract: file }, null, 2) + "\n");
+      else {
+       if(values.mode==="stage")verifyStageResult({root:values.root,checkpointRef:values.checkpoint,gateId:"gate.plan-approved",assetRef:path.relative(path.resolve(values.root),path.resolve(file))});
+       process.stdout.write(JSON.stringify({ result: "completed", contract: file }, null, 2) + "\n");
+      }
     }
   } catch (error) { fail([error.message]); }
 }

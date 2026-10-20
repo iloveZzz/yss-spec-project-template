@@ -2,7 +2,8 @@
 # consumers: lifecycle route/query, current Profile workflows and governance validators
 work_unit_routes:
   work-unit.stage-decision:
-    check_ids: [check.stage-decision-package-approved]
+    check_ids:
+      - check.stage-decision-package-approved
     impact_check_ids:
       wording: []
       ui-state: []

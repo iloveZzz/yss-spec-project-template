@@ -27,8 +27,10 @@ export function readingLocation(root, checkpoint){
    const contract=loadOrchestrationContract(read,contractRef).value;
    if(Object.hasOwn(contract,'progression_target')){
     const policy=contract.progression_target;
-    if(![1,2].includes(profile.schema_version)||policy?.schema_version!==1||policy.config_file!=='progression-target.json'||!Array.isArray(policy.required_capabilities)||!policy.required_capabilities.includes('lifecycle-target-v1')||policy.required_capabilities.some(cap=>cap!=='lifecycle-target-v1'))throw Error('reading-capability-unsupported');
-    if(cp.schema_version!==1||cp.repository_mode!=='project-instance'||cp.feature_id==='feature.')throw Error('reading-feature-identity');
+    if(![1,2,3].includes(profile.schema_version)||policy?.schema_version!==1||policy.config_file!=='progression-target.json'||!Array.isArray(policy.required_capabilities)||!policy.required_capabilities.includes('lifecycle-target-v1')||policy.required_capabilities.some(cap=>cap!=='lifecycle-target-v1'))throw Error('reading-capability-unsupported');
+    const stageGates=profile.required_capabilities?.includes('stage-gates-v1')===true;
+    if(stageGates!==(contract.stage_gates?.capability==='stage-gates-v1'))throw Error('reading-capability-unsupported');
+    if(cp.schema_version!==(stageGates?2:1)||stageGates&&profile.schema_version!==3||cp.repository_mode!=='project-instance'||cp.feature_id==='feature.')throw Error('reading-feature-identity');
     const layout=readWorkLayout(root,{read:ref=>read(ref)}),matches=[];
     const directory=safe(root,layout.root,{missing:true});
     if(existsSync(directory))for(const entry of readdirSync(directory,{withFileTypes:true})){

@@ -25,9 +25,9 @@ function ownedTransport(file,transports){
  const stat=fs.lstatSync(file);
  return stat.isDirectory()&&!stat.isSymbolicLink()&&fs.readdirSync(file).every(name=>ownedTransport(path.join(file,name),transports));
 }
-const statShape=stat=>({type:stat.isSymbolicLink()?'link':stat.isDirectory()?'directory':stat.isFile()?'file':'other',mode:Number(stat.mode),ino:String(stat.ino),dev:String(stat.dev)});
+const statShape=stat=>({type:stat.isSymbolicLink()?'link':stat.isDirectory()?'directory':stat.isFile()?'file':'other',mode:Number(stat.mode),ino:String(BigInt.asUintN(64,BigInt(stat.ino))),dev:String(stat.dev)});
 function observe(file,kind,read){const phase=current();if(!phase)return read();const key=`${kind}\0${file}`;if(!phase.observations.has(key))phase.observations.set(key,{file,kind,value:read()});return phase.observations.get(key).value;}
-function pathIdentity(file){let part=path.parse(file).root;for(const name of path.relative(part,file).split(path.sep).filter(Boolean)){part=path.join(part,name);const nameRef=part;observe(nameRef,'stat',()=>{try{return statShape(fs.lstatSync(nameRef));}catch(e){if(e.code==='ENOENT')return null;throw e;}});}}
+function pathIdentity(file){let part=path.parse(file).root;for(const name of path.relative(part,file).split(path.sep).filter(Boolean)){part=path.join(part,name);const nameRef=part;observe(nameRef,'stat',()=>{try{return statShape(fs.lstatSync(nameRef,{bigint:true}));}catch(e){if(e.code==='ENOENT')return null;throw e;}});}}
 export function readFileSync(file,options){
  if(typeof file==='number')return fs.readFileSync(file,options);
  const ref=filename(file),phase=current();if(!phase||(typeof options==='object'&&options?.flag&&options.flag!=='r'))return fs.readFileSync(ref,options);
@@ -39,7 +39,7 @@ export function readFileSync(file,options){
 export async function readFile(file,options){return readFileSync(file,options);}
 export async function readdir(file,options){return readdirSync(file,options);}
 export function existsSync(file){const phase=current();if(!phase||typeof file==='number')return fs.existsSync(file);const ref=filename(file);pathIdentity(ref);return observe(ref,'exists',()=>fs.existsSync(ref));}
-export function lstatSync(file,options){const result=fs.lstatSync(file,options);const phase=current();if(phase&&result){const ref=filename(file);observe(ref,'stat',()=>statShape(result));}return result;}
+export function lstatSync(file,options){const result=fs.lstatSync(file,options);const phase=current();if(phase&&result){const ref=filename(file);observe(ref,'stat',()=>statShape(fs.lstatSync(file,{bigint:true})));}return result;}
 export function readdirSync(file,options){
  let result=fs.readdirSync(file,options);const phase=current();
  if(phase)result=result.filter(entry=>!ownedTransport(path.join(filename(file),String(typeof entry==='string'||Buffer.isBuffer(entry)?entry:entry.name)),phase.transports));
@@ -52,7 +52,7 @@ export function readdirSync(file,options){
  }
  return result;
 }
-function actualObservation(row){if(row.kind==='exists')return fs.existsSync(row.file);if(row.kind==='directory')return fs.readdirSync(row.file).sort();if(row.kind==='stat'){try{return statShape(fs.lstatSync(row.file));}catch(e){if(e.code==='ENOENT')return null;throw e;}}throw error('VALIDATION_RECEIPT_INVALID','未知依赖类型');}
+function actualObservation(row){if(row.kind==='exists')return fs.existsSync(row.file);if(row.kind==='directory')return fs.readdirSync(row.file).sort();if(row.kind==='stat'){try{return statShape(fs.lstatSync(row.file,{bigint:true}));}catch(e){if(e.code==='ENOENT')return null;throw e;}}throw error('VALIDATION_RECEIPT_INVALID','未知依赖类型');}
 function sameObservation(actual,expected,kind){
  if(kind!=='stat'||expected===null)return JSON.stringify(actual)===JSON.stringify(expected);
  if(!expected||typeof expected!=='object'||!Object.hasOwn(expected,'type')||(!Object.hasOwn(expected,'mode')&&!Object.hasOwn(expected,'permissions'))||Object.keys(expected).some(key=>!['type','mode','permissions','ino','dev'].includes(key)))throw error('VALIDATION_RECEIPT_INVALID','非法原生路径身份');

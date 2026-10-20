@@ -20,7 +20,7 @@ for(const ticketPolicy of [false,true])test(`Slice4 sources and Node views prese
  try{
  fs.cpSync(path.join(source,'.template-spec/process'),path.join(root,'.template-spec/process'),{recursive:true});
  write('yss-project.yaml',{schema_version:2,repository_mode:'project-instance'});
- write('.template-spec/process/harness-profile.yaml',{schema_version:3,profile_id:'harness.spec-template',status:'active',required_capabilities:['role-independent-governance-v1'],lifecycle:{},execution:{}});
+ write('.template-spec/process/harness-profile.yaml',{schema_version:3,profile_id:'harness.spec-template',status:'active',required_capabilities:['role-independent-governance-v1','stage-gates-v1'],lifecycle:{},execution:{}});
  fs.copyFileSync(path.join(source,'CONTEXT.md'),path.join(root,'CONTEXT.md'));
  const registryRef='.template-spec/agents/yss-skill-registry.yaml',compilerRef='.agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml';
  for(const ref of [registryRef,compilerRef])write(ref,fs.readFileSync(path.join(source,ref),'utf8'));

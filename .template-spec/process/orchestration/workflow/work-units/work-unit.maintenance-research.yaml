@@ -2,7 +2,8 @@
 # consumers: lifecycle route/query, current Profile workflows and governance validators
 work_unit_routes:
   work-unit.maintenance-research:
-    check_ids: [check.repository-identity-valid]
+    check_ids:
+      - check.repository-identity-valid
     impact_check_ids:
       wording: []
       ui-state: []

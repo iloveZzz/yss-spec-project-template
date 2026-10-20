@@ -13,14 +13,15 @@
       }
     },
     "strategic-handoff-stage-decision-package": {
-      "current": 3,
+      "current": 4,
       "resident": [
-        3,
-        2
+        4,
+        3
       ],
       "schemas": {
         "2": "strategic-handoff-stage-decision-package.schema.json",
-        "3": "strategic-handoff-stage-decision-package-v3.schema.json"
+        "3": "strategic-handoff-stage-decision-package-v3.schema.json",
+        "4": "strategic-handoff-stage-decision-package-v4.schema.json"
       }
     },
     "strategic-handoff-export": {
@@ -35,14 +36,15 @@
       }
     },
     "strategic-handoff-domain-strategy": {
-      "current": 3,
+      "current": 4,
       "resident": [
-        3,
-        2
+        4,
+        3
       ],
       "schemas": {
         "2": "strategic-handoff-domain-strategy.schema.json",
-        "3": "strategic-handoff-domain-strategy-v3.schema.json"
+        "3": "strategic-handoff-domain-strategy-v3.schema.json",
+        "4": "strategic-handoff-domain-strategy-v4.schema.json"
       }
     },
     "strategic-design-handoff": {
@@ -93,6 +95,26 @@
         "2": "original-native-semantic-reader-preserved"
       },
       "migration": "explicit-new-draft-no-historical-rewrite"
+    },
+    "lifecycle-checkpoint": {
+      "current": 2,
+      "resident": [
+        2,
+        1
+      ],
+      "schemas": {
+        "1": "lifecycle-checkpoint.schema.json",
+        "2": "lifecycle-checkpoint-v2.schema.json"
+      }
+    },
+    "stage-result": {
+      "current": 1,
+      "resident": [
+        1
+      ],
+      "schemas": {
+        "1": "stage-result.schema.json"
+      }
     }
   },
   "migration_command": "yss migrate plan --migration-kind asset-schema --input <file>",

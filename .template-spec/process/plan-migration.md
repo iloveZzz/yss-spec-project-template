@@ -1,5 +1,8 @@
 # Plan 阶段切换说明
 
+当前 Spec 四阶段协议见 [Spec 四阶段门禁](stage-gates.md)。启用 `stage-gates-v1` 时，阶段记录替代独立子批准；本页保留的旧批准格式只按其原政策读取。
+
+
 新流程仅使用 `stage.plan`、`artifact.plan-record`、`work-unit.plan-opportunity` 和 `work-unit.plan-requirements`。不提供 Discovery 阶段别名、旧标识解析或兼容入口；旧 ID 在注册表中仅作为弃用清单保留，以防重新分配，不可执行。
 
 新工作从 `.template-spec/plan/templates/plan-template.md` 起草，工作目录为 `.work/<feature>/plan/`。问题、机会和事实探索是 Plan 内按影响面执行的活动。

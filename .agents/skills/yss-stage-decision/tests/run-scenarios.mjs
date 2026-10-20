@@ -168,7 +168,7 @@ try {
   const v2Pass = run(validator, v2DomainFile, temporaryRoot);
   if (v2Pass.status !== 0) throw new Error(`read-only v2 fixture should pass: ${v2Pass.stderr}`);
 
-  const migratedDomainV3 = spawnSync(process.execPath, [v3MigrationTool, v2DomainFile, "--kind", "domain-strategy", "--root", temporaryRoot], { cwd: projectRoot, encoding: "utf8" });
+  const migratedDomainV3 = spawnSync(process.execPath, [v3MigrationTool, v2DomainFile, "--target-version", "3", "--kind", "domain-strategy", "--root", temporaryRoot], { cwd: projectRoot, encoding: "utf8" });
   if (migratedDomainV3.status !== 0) throw new Error(`v2 domain strategy should migrate: ${migratedDomainV3.stderr}`);
   const migratedDomainV3Value = JSON.parse(migratedDomainV3.stdout);
   if (migratedDomainV3Value.schema_version !== 3 || migratedDomainV3Value.status !== "draft" || migratedDomainV3Value.approval.approval_ref !== "migration-required") throw new Error("domain v2 -> v3 migration must reset approval and status");
@@ -326,7 +326,7 @@ try {
   const v2StagePass = run(packageValidator, v2StageFile, temporaryRoot);
   if (v2StagePass.status !== 0) throw new Error(`read-only v2 stage decision package should pass: ${v2StagePass.stderr}`);
 
-  const migratedV3 = spawnSync(process.execPath, [v3MigrationTool, v2StageFile, "--kind", "stage-decision", "--root", temporaryRoot], { cwd: projectRoot, encoding: "utf8" });
+  const migratedV3 = spawnSync(process.execPath, [v3MigrationTool, v2StageFile, "--target-version", "3", "--kind", "stage-decision", "--root", temporaryRoot], { cwd: projectRoot, encoding: "utf8" });
   if (migratedV3.status !== 0) throw new Error(`v2 stage decision should migrate: ${migratedV3.stderr}`);
   const migratedV3Value = JSON.parse(migratedV3.stdout);
   if (migratedV3Value.schema_version !== 3 || migratedV3Value.status !== "draft" || migratedV3Value.approval.approval_ref !== "migration-required") throw new Error("v2 -> v3 migration must reset approval and status");

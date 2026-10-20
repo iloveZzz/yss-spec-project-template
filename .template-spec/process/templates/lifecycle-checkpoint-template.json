@@ -27,7 +27,7 @@
   },
   "repository_mode": "project-instance",
   "rollback": [],
-  "schema_version": 1,
+  "schema_version": 2,
   "stage": "stage.entry-triage",
   "stage_trace": {
     "artifact_refs": [],
@@ -44,5 +44,6 @@
   "verification": {
     "commands": [],
     "evidence_refs": []
-  }
+  },
+  "checks": {}
 }

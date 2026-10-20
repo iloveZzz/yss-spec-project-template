@@ -10,6 +10,7 @@ const text=value=>typeof value==='string'&&value.trim().length>0;
 const same=(a,b)=>JSON.stringify(canonicalValue(a))===JSON.stringify(canonicalValue(b));
 export function assertPlanSpecEntry(state,options={}) {
  nativeCoverage(nativeContractVerify({root:options.root||ROOT,kind:'plan-entry',document:state,needs:NEEDS.planEntry}),'plan_entry');
+ if(state.schema_version===2)return {result:'allowed',blocking_signals:[],missing_requirements:[],evidence_refs:[state.gates['gate.plan-approved'].record_ref],next_work_unit:null};
  const review=decisionIO(options).document(state.plan_review_ref);
  return {result:'allowed',blocking_signals:[],missing_requirements:[],evidence_refs:[state.plan_review_ref,state.plan_approval_ref||state.gates?.['gate.plan-approved']?.approval_ref,...review.basis.map(row=>row.ref)],next_work_unit:null};
 }
@@ -25,7 +26,7 @@ export function planEntryPolicy(options = {}) {
 }
 
 export function assertPlanAggregateApproval(state, options = {}) {
-  if (state?.gates?.['gate.plan-approved']?.status !== 'approved') fail('gate.plan-approved 未批准');
+  if (state.schema_version!==2 && state?.gates?.['gate.plan-approved']?.status !== 'approved') fail('gate.plan-approved 未批准');
   return assertPlanSpecEntry(state, options);
 }
 export function validatePlanSpecEntry(state, options = {}) {
@@ -34,6 +35,11 @@ export function validatePlanSpecEntry(state, options = {}) {
 }
 export function assertPlanCheckpoint(checkpoint, options = {}) {
   if (checkpoint.repository_mode !== 'project-instance') return;
+  if(checkpoint.schema_version===2){
+    const entering=checkpoint.next_work_unit==='work-unit.spec-synthesis'||checkpoint.stage==='stage.spec-architecture';
+    if(entering)return assertPlanSpecEntry(checkpoint,options);
+    return;
+  }
   const entering = checkpoint.next_work_unit === 'work-unit.spec-synthesis' || checkpoint.stage === 'stage.spec-architecture' || checkpoint.stage_trace?.completed_work_unit === 'work-unit.spec-synthesis';
   if (entering) return assertPlanSpecEntry(checkpoint, options);
   if (checkpoint.stage !== 'stage.plan' || !['resume','orchestrate'].includes(checkpoint.mode)) return;

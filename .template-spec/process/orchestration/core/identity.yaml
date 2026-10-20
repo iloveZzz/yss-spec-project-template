@@ -2,6 +2,7 @@
 # consumers: lifecycle route/query, current Profile workflows and governance validators
 supported_state_schema_versions:
   - 1
+  - 2
 modes:
   route: read_only
   audit: read_only

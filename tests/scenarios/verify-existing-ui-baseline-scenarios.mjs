@@ -6,10 +6,19 @@ import { tmpdir } from 'node:os';
 import {pathToFileURL} from 'node:url';
 import { baselineFixture, handoffFixture } from '../../scripts/fixtures/existing-ui-baseline/fixture.mjs';
 import { validateExistingUiBaseline } from '../../scripts/lib/existing-ui-baseline.mjs';
-import { exportBundle,openBundle,importBundle,inspectSource,finalizeDelivery } from '../../scripts/lib/strategic-handoff.mjs';
+import { exportBundle as nativeExportBundle,openBundle as nativeOpenBundle,importBundle as nativeImportBundle,inspectSource,finalizeDelivery as nativeFinalizeDelivery } from '../../scripts/lib/strategic-handoff.mjs';
 import { read,json,hash,digest,treeDigest,schema,ROOT } from '../../scripts/lib/strategic-handoff-io.mjs';
 import { loadDeliveryProfile } from '../../scripts/lib/harness-execution-scope.mjs';
 import { context } from '../../scripts/fixtures/strategic-handoff/fixture.mjs';
+// Each scenario file owns its authenticated transport host; parallel validation never observes another test's staging.
+const {makeRoot}=await import('../helpers/yss-instance.mjs');
+const evidenceRoot=makeRoot('existing-ui-validation-host-','spec');
+// The frozen host supplies transport identity; current schema closure supports existing-UI package validation.
+cpSync(path.join(ROOT,'.template-spec/process/schemas'),path.join(evidenceRoot,'.template-spec/process/schemas'),{recursive:true});
+const exportBundle=options=>nativeExportBundle({...options,evidenceRoot});
+const openBundle=(input,action,options={})=>nativeOpenBundle(input,action,{...options,evidenceRoot});
+const importBundle=options=>nativeImportBundle({...options,evidenceRoot});
+const finalizeDelivery=options=>nativeFinalizeDelivery({...options,evidenceRoot});
 const root=t=>{const root=mkdtempSync(path.join(tmpdir(),'existing-ui-test-'));t.after(()=>rmSync(root,{recursive:true,force:true}));return root;};
 function useCustomRouteIds(f) {
  const ids={'route.backend':'route.custom-backend','route.frontend':'route.custom-frontend','route.coordination':'route.custom-coordination'};
@@ -28,7 +37,7 @@ test('既有 UI 拒绝未知版本、UI 变更和自洽但跨来源 capture',t=>
  for(const [key,value]of [['schema_version',2],['source_kind','generated'],['ui_change','changed']]){const old=f.data[key];f.data[key]=value;assert(check().length);f.data[key]=old;}
  const capture=read(path.join(base,'capture.json'));capture.cases[0].actions={...capture.cases[0].actions,digest:`sha256:${'9'.repeat(64)}`};f.put('capture.json',capture);f.data.capture=f.binding('capture.json');assert.match(check().join(' '),/动作绑定/);
 });
-test('Handoff v5 既有基线从源导出、离线只读验包、前端导入 v2 预检草案',async t=>{
+test('Handoff v5 既有基线从源导出、离线只读验包并导入 Receipt3',async t=>{
  const base=root(t),source=path.join(base,'source');mkdirSync(source);const f=await handoffFixture(source),output=path.join(base,'package');
  useCustomRouteIds(f);
  const result=await exportBundle({sourceRoot:source,handoffRef:'handoff.yaml',output,zip:true});const before=treeDigest(base,'package');

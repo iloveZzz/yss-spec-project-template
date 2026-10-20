@@ -1,3 +1,4 @@
+import {installLegacySpecPolicy} from '../../lib/testing/legacy-spec-policy.mjs';
 import {loadOrchestrationContract} from '../../lib/orchestration-contract.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -35,7 +36,8 @@ function registeredFixture({workRoot='.work'}={}){
  const owner=repo;put(root,'.template-spec/process/harness-profile.yaml',{schema_version:1,profile_id:'harness.spec-template'});
  const contract='.template-spec/process/orchestration-contract.yaml';
  put(root,contract,JSON.stringify(loadOrchestrationContract(ref=>readFileSync(path.join(owner,ref)),contract).value));
- const cp=parseYaml(readFileSync(path.join(repo,'.template-spec/process/templates/lifecycle-checkpoint-template.yaml'),'utf8'));cp.feature_id='feature.supplier';cp.stage='stage.plan';cp.next_work_unit='work-unit.plan-requirements';put(root,ref,cp);
+ installLegacySpecPolicy(root);
+ const cp=parseYaml(readFileSync(path.join(repo,'scripts/fixtures/role-independent-draft/legacy-checkpoint-template.yaml'),'utf8'));cp.feature_id='feature.supplier';cp.stage='stage.plan';cp.next_work_unit='work-unit.plan-requirements';put(root,ref,cp);
  put(root,`${base}/map.md`,`---\ncheckpoint_ref: ${ref}\n---\n# 登记\n`);return {root,ref,base,contract};
 }
 test('registered current Spec migration use map directory and preserve original approval fields',()=>{

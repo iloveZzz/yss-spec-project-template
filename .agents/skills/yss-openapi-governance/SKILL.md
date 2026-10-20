@@ -10,6 +10,9 @@ description: "维护、校验、冻结或导出 YSS OpenAPI 3.1 设计合同；�
 
 # YSS OpenAPI Governance
 
+当前 Spec 同时声明 `stage-gates-v1` 时，先读 `.template-spec/process/stage-gates.md`：仅保留 Plan 确认、Spec/适用设计确认、自动实施准入、交付验收四个出口。本文及引用中的旧专业批准、会签、角色、审查预算、独立产品设计/工程/切片/交接批准仅用于原政策历史读取，不适用于该模式。内部检查是质量结果，默认同一 Agent 自检；准备资产不等待未来批准，现有真实授权可按范围复用。
+
+
 先消费已判定的交付路径；本技能不自行授予 `daily`。只有当前 Profile 的 `request_triage.delivery_path` 已启用且固定 CLI 支持 `yss lifecycle route|verify-daily` 时可使用普通路径；缺政策或能力的 Profile / 旧 CLI 明确不支持。本任务的正式绑定保留 `governed`。正式资产按 `.template-spec/process/contract-reading.md` 阅读，普通任务直接消费其 API 段和权威 YAML。
 
 本 skill 负责 YSS OpenAPI 的 **YAML-first** 工作流：

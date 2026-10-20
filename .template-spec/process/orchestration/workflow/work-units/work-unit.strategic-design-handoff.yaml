@@ -2,7 +2,7 @@
 # consumers: lifecycle route/query, current Profile workflows and governance validators
 work_unit_routes:
   work-unit.strategic-design-handoff:
-    check_ids: [gate.strategic-design-handoff-approved]
+    check_ids: []
     impact_check_ids:
       wording: []
       ui-state: []
@@ -30,11 +30,11 @@ work_unit_routes:
     supporting_skills: []
     skills:
       - yss-product-lifecycle
-    human_gate: gate.strategic-design-handoff-approved
     applies_when: explicit-user-package-request
     not_applicable_reason: local-spec-assets-consumed-directly
     post_approval_action:
-      command: scripts/strategic-handoff finalize --source-root <project-root> --handoff <approved-v5-ref>
+      command: scripts/strategic-handoff finalize --source-root <project-root>
+        --handoff <approved-v5-ref>
       output_root: docs/deliveries/strategic/<handoff-id>/<version>
       checkpoint_artifact: artifact.strategic-design-handoff
       checkpoint_evidence:

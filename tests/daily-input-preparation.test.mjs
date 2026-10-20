@@ -25,7 +25,7 @@ function dailyFixture(t, {profile = 'spec'} = {}) {
   if (profile === 'backend') fs.cpSync(path.join(source, 'profiles/backend/.template-spec/process'), path.join(root, '.template-spec/process'), {recursive: true});
   for (const ref of ['CONTEXT.md', 'AGENTS.md', '.template-spec/agents/issue-tracker.md']) write(ref, fs.readFileSync(path.join(source, ref), 'utf8'));
   write('yss-project.yaml', {schema_version: 2, repository_mode: 'project-instance'});
-  write('.template-spec/process/harness-profile.yaml', {schema_version: 3, profile_id: profile === 'spec' ? 'harness.spec-template' : 'harness.backend-delivery', status: 'active', required_capabilities: ['role-independent-governance-v1'], lifecycle: {}, execution: {}});
+  write('.template-spec/process/harness-profile.yaml', {schema_version: 3, profile_id: profile === 'spec' ? 'harness.spec-template' : 'harness.backend-delivery', status: 'active', required_capabilities: ['role-independent-governance-v1', ...(profile === 'spec' ? ['stage-gates-v1'] : [])], lifecycle: {}, execution: {}});
   write('facts.md', '目标、验收、工程基线、回滚和风险。\n');
   write('skill.md', '本次适用检查\n'); write('资料.md', '已有规则\n');
   fs.mkdirSync(path.join(repo, 'src'));

@@ -30,7 +30,7 @@ planning:
   deferred_details: excluded-from-frontier-only-after-user-confirms-deferral
   review_control:
     protocol: bounded-plan-review-v1
-    enabled: true
+    enabled: false
     checkpoint_field: plan_review_control
     schema: .template-spec/process/schemas/plan-review-control.schema.json
     bundle_id: review-bundle.plan
@@ -110,6 +110,7 @@ planning:
       - plan-to-spec-entry
     applies_to:
       - stage.plan
+    applies_when: original-policy-without-stage-gates-v1
   clarification_policy:
     trigger: required-plan-user-decision-unresolved
     skill: grilling
@@ -155,8 +156,9 @@ planning:
       final_confirmation_proof: plan_user_decision_ref-or-valid-plan_continuation_ref
       confirmation_writeback: external-proof-without-review-or-basis-rewrite
       completion: passed-preparation-and-valid-current-user-decision
+  stage_result_ref: .template-spec/process/stage-gates.md
 grill_exit:
-  preparation_required: [facts_resolved_or_routed, no_unresolved_runnable_blocker]
+  preparation_required: [ facts_resolved_or_routed, no_unresolved_runnable_blocker ]
   preparation_does_not_claim_user_confirmation: true
   required:
     - frontier_empty

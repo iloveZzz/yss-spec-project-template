@@ -5,6 +5,8 @@ description: 编排 YSS 研发全生命周期；当阶段、产物、门禁或 S
 
 # YSS Product Lifecycle
 
+Spec `stage-gates-v1` 先读 `.template-spec/process/stage-gates.md`，覆盖旧批准、角色、会签与审查预算。
+
 仅生成 DDD/MVC 脚手架时读[直接生成](references/conditional-guidance.md#直接生成脚手架)。
 
 有需求、说明、技术文档或 Spec 材料时，先按 `request_triage.material_intake` 与[材料分析](references/conditional-guidance.md#材料分析与按需读取)提取并复用本端记录；来源格式、源工程身份及源批准不作为分析前提。普通材料按需读取，不强制变化检测、同步或恢复，提取不授予批准或实施权限。

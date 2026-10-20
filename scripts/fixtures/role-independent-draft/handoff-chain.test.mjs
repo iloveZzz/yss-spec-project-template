@@ -6,7 +6,7 @@ import {digest} from '../../lib/strategic-handoff-io.mjs';import {finalizeDelive
 
 test('installed Spec completes role-free Handoff5; Backend imports Receipt3 while source is unavailable',async()=>{
  const previous=process.env.YSS_CHAIN_RESUME?JSON.parse(fs.readFileSync(process.env.YSS_CHAIN_RESUME)):null;
- const f=installedFixture('spec',{existingRoot:previous?.source}),receiver=installedFixture('backend',{existingRoot:previous?.receiver}),{root,read,write,asset,run}=f,feature='feature.demo',data=JSON.parse(fs.readFileSync(new URL('./handoff-data.json',import.meta.url)));
+ const f=installedFixture('spec',{existingRoot:previous?.source,legacySpec:true}),receiver=installedFixture('backend',{existingRoot:previous?.receiver}),{root,read,write,asset,run}=f,feature='feature.demo',data=JSON.parse(fs.readFileSync(new URL('./handoff-data.json',import.meta.url)));
  const doc=ref=>parseSliceYaml(read(ref)),bind=ref=>({...asset(ref),version:'v1',digest:'sha256:'+asset(ref).digest}),cpRef='.work/feature-demo/checkpoint.json',sourceSkillCommands=[];let delivery,imported;
  try{
   if(previous){f.calls.push(...previous.source_calls);receiver.calls.push(...previous.receiver_calls);}

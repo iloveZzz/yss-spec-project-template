@@ -2,7 +2,9 @@
 # consumers: lifecycle route/query, current Profile workflows and governance validators
 work_unit_routes:
   work-unit.prototype-design-v2:
-    check_ids: [check.prototype-reviewed, check.prototype-verified]
+    check_ids:
+      - check.prototype-reviewed
+      - check.prototype-verified
     impact_check_ids:
       wording: []
       ui-state: []
@@ -68,6 +70,6 @@ work_unit_routes:
       h2_design_standard: html-css-js-offline
       prototype_must_not_call: production-component-library
       production_version_source: implementation-lockfile
-    human_gate: gate.product-design-approved
+    human_gate: gate.spec-baseline-approved
     applies_when: product_design_impact
     not_applicable_reason: no_ui_or_product_design_impact

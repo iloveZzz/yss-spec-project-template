@@ -80,8 +80,7 @@
       "required": [
         "technical_design",
         "data_architecture_decision",
-        "api_contract_decision",
-        "engineering_contract_approval_ref"
+        "api_contract_decision"
       ],
       "properties": {
         "technical_design": {

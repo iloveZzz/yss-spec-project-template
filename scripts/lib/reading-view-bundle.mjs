@@ -9,7 +9,7 @@ import {readingPolicy,managedReading,readingLocation} from './reading-view-polic
 import {nativeInvoke,NEEDS} from './native-evidence.mjs';
 const json=value=>JSON.stringify(value,null,2)+'\n';
 const bytes=(root,ref)=>{const file=safe(root,ref,{missing:true});return existsSync(file)?readFileSync(file):null;};
-function identity(root){const id=parseSliceYaml(bytes(root,'yss-project.yaml'));if(id?.schema_version!==1||id.repository_mode!=='project-instance')throw Error('reading-project-instance-required');}
+function identity(root){const id=parseSliceYaml(bytes(root,'yss-project.yaml'));if(![1,2].includes(id?.schema_version)||id.repository_mode!=='project-instance')throw Error('reading-project-instance-required');}
 // 业务拒绝（退出码 1、2）原样带回 yss 的错误码；协议、中断与能力缺失由 nativeInvoke 抛出。
 function reading(root,sub,args,needs){return nativeInvoke({root,args:['reading',sub,'--root',root,...args],needs});}
 const refused=result=>Object.assign(new Error(`${result.code}: ${result.message}`),{code:result.code,native:true});

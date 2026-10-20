@@ -25,7 +25,9 @@ function assertLegacyCheckIDs(policy, profile, rolesRef) {
  assert.deepEqual(new Set(policy.technical_checks.filter(row=>row.profiles.includes(profile)).map(row=>row.id)),new Set(legacy.review_capabilities.map(row=>row.id)),`${profile}: professional check groups`);
  const currentIDs=[...current.automatic_checks,...current.evidence_only,...current.user_decision_gates,...current.contract_approval_gates,...current.check_reviews.map(row=>row.gate),...current.technical_reviews.map(row=>row.gate)];
  const legacyIDs=[...old.automatic_checks,...old.evidence_only,...old.biological_human,...old.orchestrator,...old.check_reviews.map(row=>row.gate),...old.dual_digital_human.map(row=>row.gate),...old.digital_human_review.map(row=>row.gate)];
- assert.deepEqual(new Set(currentIDs),new Set(legacyIDs),`${profile}: complete gate/check IDs`);
+ if(profile==='spec'&&policy.stage_gates) {
+  assert.deepEqual(new Set(currentIDs),new Set([...policy.stage_gates.gates.map(g=>g.id),...legacyIDs.filter(id=>id.startsWith('check.'))]),'Spec retains quality checks within four stage exits');
+ } else assert.deepEqual(new Set(currentIDs),new Set(legacyIDs),`${profile}: complete gate/check IDs`);
 }
 
 test('new task3, approval3 and review-bundle3 accept role-free self-check without stable identity', () => { accepts('digital-human-task-package', task); accepts('approval-record', check); accepts('review-bundle', bundle); });

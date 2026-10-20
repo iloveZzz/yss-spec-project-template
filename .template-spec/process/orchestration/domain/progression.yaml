@@ -37,15 +37,14 @@ progression_target:
         - business-tickets-draft
       allowed_execution_scopes:
         - plan-to-backend
+      conditional_gates: {}
     product-design-completed:
       public_name: 产品设计完成
       required_gates:
         - gate.spec-baseline-approved
-        - gate.product-design-approved
       required_checks:
         - business-tickets-formal
-      conditional_gates:
-        gate.product-design-approved: product-design-impact
+      conditional_gates: {}
       no_ui_presentation: not-applicable-with-current-impact-evidence
       strategic_handoff_terminal: separate-responsibility
       allowed_execution_scopes:
@@ -53,13 +52,13 @@ progression_target:
     backend-deliverable:
       public_name: 后端可交付
       required_gates:
-        - gate.engineering-contract-approved
-        - gate.slice-contract-approved
+        - gate.implementation-admitted
       required_checks:
         - backend-delivery
       backend_completion_mode: local-current-verification-or-required-external-package
       allowed_execution_scopes:
         - plan-to-backend
+      conditional_gates: {}
     business-accepted:
       public_name: 业务验收
       required_gates:
@@ -69,9 +68,10 @@ progression_target:
       conditional_required_checks:
         backend-delivery: backend-api-data-impact
       allowed_execution_scopes: []
+      conditional_gates: {}
   external_strategic_handoff:
     work_unit: work-unit.strategic-design-handoff
-    gate: gate.strategic-design-handoff-approved
+    gate: gate.spec-baseline-approved
     artifact: artifact.strategic-design-handoff
     trigger: explicit-user-package-request
     source_capability: business-ticket-approval-v1

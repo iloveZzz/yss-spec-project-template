@@ -27,3 +27,4 @@ parts:
   - orchestration/workflow/transitions.yaml
   - orchestration/domain/planning.yaml
   - orchestration/domain/review.yaml
+  - orchestration/domain/stage-gates.yaml

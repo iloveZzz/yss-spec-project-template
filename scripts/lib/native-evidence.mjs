@@ -10,6 +10,7 @@ const digest=bytes=>createHash('sha256').update(bytes).digest('hex');
 const inside=(root,file)=>file===root||file.startsWith(root+path.sep);
 const fail=(code,message)=>{throw Object.assign(new Error(`${code}: ${message}`),{code});};
 export const NEEDS={
+ stageResult:['stage-gates-v1'],
  userDecision:['user-decision.requirements-object.v1','user-decision.validated-rows.v1','user-decision.result.v1'],
  approval:['approval.expected.v1','approval.binding.v1','approval.rule-rows.v1'],
  task:['task.directory-write-scope.v1'],checkpoint:['lifecycle.legacy-untracked-checkpoint.v1','template-source.verify-root.v1'],
@@ -146,11 +147,11 @@ export function nativeEvidenceVerify({root:given,kind,file,extra=[],environment=
   } finally {if(!deferred)temporary.cleanup();}
  });
 }
-export function nativeCoverage(result,key,{allowBlocked=false}={}) {
+export function nativeCoverage(result,key,{allowBlocked=false,successStatus='passed'}={}) {
  const value=result.envelope.result?.coverage?.[key];
  if(result.exitCode!==0&&(!allowBlocked||!value))throw Object.assign(new Error(result.message),{code:result.diagnostics[0]?.code??result.code,native:true});
  if(!value||typeof value!=='object')fail('NATIVE_PROTOCOL',`缺少 ${key} 报告`);
- if(value.status&&((value.status==='passed')!==(result.exitCode===0)))fail('NATIVE_PROTOCOL',`${key} 与实际退出码不一致`);
+ if(value.status&&((value.status===successStatus)!==(result.exitCode===0)))fail('NATIVE_PROTOCOL',`${key} 与实际退出码不一致`);
  return value;
 }
 export const nativeContractVerify=options=>nativeEvidenceVerify({...options,group:'contract'});

@@ -28,6 +28,7 @@
     ],
     "excludePathSuffixes": [],
     "excludePaths": [
+      "scripts/lib/testing",
       ".pi/skills",
       ".cursor/skills",
       ".codex/skills",

@@ -1,3 +1,5 @@
+import {usesStageGates} from './stage-result.mjs';
+import {nativeContractVerify,NEEDS} from './native-evidence.mjs';
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
@@ -125,6 +127,10 @@ export function approvalPackageReady(approval, prerequisites, technical, data, a
 }
 
 export function backendDesignPrerequisitesReady(prerequisites, exists, root, projectId) {
+  if (usesStageGates(root)) {
+    try { const result=nativeContractVerify({root,kind:'backend-preparation-inputs',document:{project_id:projectId,design_prerequisites:prerequisites},needs:NEEDS.stageResult}); if(result.exitCode!==0)throw new TypeError(result.message); return true; }
+    catch { return false; }
+  }
   const structurallyReady = artifactBindingReady(prerequisites?.technical_design, exists)
     && artifactBindingReady(prerequisites?.data_architecture_decision, exists)
     && ["required", "not-applicable"].includes(prerequisites?.data_architecture_decision?.impact)
@@ -216,7 +222,7 @@ export function validateImplementationRepositoriesReady(state, { exists = exists
       }
       if (role === "backend" && !backendDesignPrerequisitesReady(project.design_prerequisites, exists, path.resolve(root), project.project_id)) {
         signals.push(BLOCKING_SIGNALS.backendDesignPrerequisitesMissing);
-        missing.push(`${project.project_id} readable Technical Design, Data Architecture Decision, API Contract Decision and atomic engineering approval bindings`);
+        missing.push(`${project.project_id} current Technical Design, Data Architecture Decision and API Contract Decision inputs`);
       }
       if (project.status === "existing-and-onboarded") {
         if (project.onboarding_result?.status !== "completed" || !isReadable(project.onboarding_result?.ref, exists)) {
