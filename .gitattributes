@@ -1,1 +1,5 @@
 .template-source/profile-skill-patches/**/*.patch -whitespace
+# Generated resources preserve canonical bytes, including upstream whitespace.
+# sync-skills --check and WorkBuddy resource identity checks validate these copies.
+.codebuddy/skills/** -whitespace
+profiles/backend/.codebuddy/skills/** -whitespace

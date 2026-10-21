@@ -203,7 +203,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/java-backend-commit/SKILL.md",
-        "effectiveHash": "d0968d2c4fce73fd44efafa8eb859c73147342feb8dd0741b7ee9f199407d520",
+        "effectiveHash": "44b44ad29aa36cbef149b4bb635063f6838d16cc9d6445829595b2978303a77b",
         "targets": [
           ".agents/skills",
           ".codebuddy/skills"
@@ -492,7 +492,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-excel-mvc/SKILL.md",
-        "effectiveHash": "080e2859bf6b5f4344161a779b70e06f808c0c59b639c3cae837b750c06a5c14",
+        "effectiveHash": "092d9177b77b2f82743eb9055b1d4c21ccef55bbf5002264ffdcda6ed45a7e1e",
         "targets": [
           ".agents/skills",
           ".codebuddy/skills"

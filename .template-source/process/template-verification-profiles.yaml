@@ -982,6 +982,7 @@ profiles:
         group: skills
         inputs_complete: true
         input_patterns:
+          - ".gitattributes"
           - "scripts/lib/workbuddy-projection.mjs"
           - ".template-source/tooling/node/test/workbuddy-projection.test.mjs"
           - "scripts/lib/skill-discovery.mjs"
