@@ -79,6 +79,23 @@ test('CI 文档计划保留 schema 前置但不准备无关重工具',async()=>{
  const cli=planTemplateVerification({changedFiles:['tests/cli-retirement.test.mjs']});assert.equal(verificationToolRequirements(cli).native_cli,true);
 });
 
+test('实例漂移的 CI 计划要求原生工具',async()=>{
+ const {verificationToolRequirements}=await import('../.template-source/scripts/lib/verification-preflight.mjs');
+ const {planTemplateVerification}=await import('../scripts/lib/template-verification.mjs');
+ for(const ref of ['tests/native-instance-drift.test.mjs','tests/instance-metadata.test.mjs','scripts/lib/instance-metadata.mjs']){
+  const plan=planTemplateVerification({changedFiles:[ref],ciGuards:true});
+  assert.equal(plan.commands.filter(row=>row.id==='check.instance-metadata').length,1,ref);
+  const needs=verificationToolRequirements(plan,{reportValidation:true});
+  assert.equal(needs.native_cli,true,ref);
+  assert.equal(needs.tooling,false,ref);assert.equal(needs.vue,false,ref);
+  const preflight=verificationPreflight({root:path.resolve(import.meta.dirname,'..'),plan,nodeVersion:'v24.21.0',environment:{},probe:file=>{
+   assert.equal(file,'python3');
+   return {status:0,stdout:JSON.stringify({version:[3,12],jsonschema:'4.23.0',executable:'/fixture/python'})};
+  }});
+  assert.deepEqual(preflight.errors.map(row=>row.name),['native-cli'],ref);
+ }
+});
+
 test('准备后的原生执行 tuple 消费显式环境而非父进程环境',async t=>{
  const {compileTaskExecution}=await import('../.template-source/scripts/lib/verification-execution-plan.mjs');
  const temp=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'ci-compiled-environment-')));t.after(()=>fs.rmSync(temp,{recursive:true,force:true}));
