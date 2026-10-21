@@ -97,15 +97,16 @@ test("实例锁的 effectiveHash 由 update-skill-lock 保持在 skillPath 之�
 });
 
 
-for (const command of ['sync-skills', 'update-skill-lock']) test(`Profile generation entry ${command} rejects project instances before loading source tooling`, () => {
+for (const command of ['sync', 'lock']) test(`Profile generation entry ${command} rejects project instances before loading source tooling`, () => {
   const root = mkdtempSync(path.join(os.tmpdir(), 'yss-profile-entry-'));
   try {
     mkdirSync(path.join(root, 'scripts/lib'), { recursive: true });
     mkdirSync(path.join(root, 'scripts/vendor'), { recursive: true });
-    for (const ref of [`scripts/${command}`, 'scripts/lib/skill-supply-chain.mjs', 'scripts/lib/workbuddy-projection.mjs', 'scripts/lib/repository-mode.mjs', 'scripts/vendor/yaml.mjs']) cpSync(path.resolve(ref), path.join(root, ref));
+    mkdirSync(path.join(root, '.template-source/scripts'), { recursive: true });
+    for (const ref of ['.template-source/scripts/manage-profile-skills.mjs', 'scripts/lib/skill-supply-chain.mjs', 'scripts/lib/workbuddy-projection.mjs', 'scripts/lib/repository-mode.mjs', 'scripts/vendor/yaml.mjs']) cpSync(path.resolve(ref), path.join(root, ref));
     writeFileSync(path.join(root, 'yss-project.yaml'), 'schema_version: 1\nrepository_mode: project-instance\n');
     const before = readdirSync(root).sort();
-    const result = spawnSync(process.execPath, [path.join(root, 'scripts', command), '--profile', 'backend'], { cwd: root, encoding: 'utf8' });
+    const result = spawnSync(process.execPath, [path.join(root, '.template-source/scripts/manage-profile-skills.mjs'), command, '--profile', 'backend'], { cwd: root, encoding: 'utf8' });
     assert.equal(result.status, 1);
     assert.match(result.stderr, /Profile 生成仅适用于 template-source/);
     assert.deepEqual(readdirSync(root).sort(), before);
@@ -113,7 +114,7 @@ for (const command of ['sync-skills', 'update-skill-lock']) test(`Profile genera
 });
 
 
-for (const command of ['sync-skills', 'update-skill-lock']) for (const [kind, identity] of [
+for (const command of ['sync', 'lock']) for (const [kind, identity] of [
   ['unsupported-schema', 'schema_version: 99\nrepository_mode: template-source\n'],
   ['duplicate-mode', 'schema_version: 1\nrepository_mode: project-instance\nrepository_mode: template-source\n'],
 ]) test(`Profile generation entry ${command} rejects ${kind} identity without writes`, () => {
@@ -121,10 +122,11 @@ for (const command of ['sync-skills', 'update-skill-lock']) for (const [kind, id
   try {
     mkdirSync(path.join(root, 'scripts/lib'), { recursive: true });
     mkdirSync(path.join(root, 'scripts/vendor'), { recursive: true });
-    for (const ref of [`scripts/${command}`, 'scripts/lib/skill-supply-chain.mjs', 'scripts/lib/workbuddy-projection.mjs', 'scripts/lib/repository-mode.mjs', 'scripts/vendor/yaml.mjs']) cpSync(path.resolve(ref), path.join(root, ref));
+    mkdirSync(path.join(root, '.template-source/scripts'), { recursive: true });
+    for (const ref of ['.template-source/scripts/manage-profile-skills.mjs', 'scripts/lib/skill-supply-chain.mjs', 'scripts/lib/workbuddy-projection.mjs', 'scripts/lib/repository-mode.mjs', 'scripts/vendor/yaml.mjs']) cpSync(path.resolve(ref), path.join(root, ref));
     writeFileSync(path.join(root, 'yss-project.yaml'), identity);
     const before = readdirSync(root).sort();
-    const result = spawnSync(process.execPath, [path.join(root, 'scripts', command), '--profile', 'backend'], { cwd: root, encoding: 'utf8' });
+    const result = spawnSync(process.execPath, [path.join(root, '.template-source/scripts/manage-profile-skills.mjs'), command, '--profile', 'backend'], { cwd: root, encoding: 'utf8' });
     assert.equal(result.status, 1);
     assert.match(result.stderr, /yss-project.yaml.*(?:schema_version|解析)|无法解析 yss-project.yaml/);
     assert.deepEqual(readdirSync(root).sort(), before);
@@ -132,7 +134,7 @@ for (const command of ['sync-skills', 'update-skill-lock']) for (const [kind, id
   } finally { rmSync(root, { recursive: true, force: true }); }
 });
 
-for (const command of ['sync-skills', 'update-skill-lock']) test(`Profile generation entry ${command} rejects a linked profiles ancestor without external writes`, () => {
+for (const command of ['sync', 'lock']) test(`Profile generation entry ${command} rejects a linked profiles ancestor without external writes`, () => {
   const base = mkdtempSync(path.join(os.tmpdir(), 'yss-profile-boundary-'));
   const root = path.join(base, 'repository'), outside = path.join(base, 'outside'), backend = path.join(outside, 'backend');
   try {
@@ -140,14 +142,15 @@ for (const command of ['sync-skills', 'update-skill-lock']) test(`Profile genera
     mkdirSync(path.join(backend, 'scripts/lib'), { recursive: true });
     mkdirSync(path.join(root, 'scripts'), { recursive: true });
     for (const ref of ['scripts/lib', 'scripts/vendor']) cpSync(path.resolve(ref), path.join(root, ref), { recursive: true });
-    cpSync(path.resolve('scripts', command), path.join(root, 'scripts', command));
+    mkdirSync(path.join(root, '.template-source/scripts'), { recursive: true });
+    cpSync(path.resolve('.template-source/scripts/manage-profile-skills.mjs'), path.join(root, '.template-source/scripts/manage-profile-skills.mjs'));
     cpSync(path.resolve('profiles/backend/scripts/lib/skill-supply-chain.mjs'), path.join(backend, 'scripts/lib/skill-supply-chain.mjs'));
     writeFileSync(path.join(root, 'yss-project.yaml'), 'schema_version: 1\nrepository_mode: template-source\n');
     writeFileSync(path.join(root, '.agents/skills/probe/SKILL.md'), '---\nname: probe\n---\n');
     const originalLock = JSON.stringify({ version: 3, skills: { shared: { probe: {} }, platform: {} } });
     writeFileSync(path.join(backend, 'skills-lock.json'), originalLock);
     symlinkSync(outside, path.join(root, 'profiles'));
-    const result = spawnSync(process.execPath, [path.join(root, 'scripts', command), '--profile', 'backend'], { cwd: root, encoding: 'utf8' });
+    const result = spawnSync(process.execPath, [path.join(root, '.template-source/scripts/manage-profile-skills.mjs'), command, '--profile', 'backend'], { cwd: root, encoding: 'utf8' });
     assert.equal(result.status, 1, result.stdout + result.stderr);
     assert.match(result.stderr, /WORKBUDDY_PROJECTION_CONFLICT.*ordinary directory/);
     assert.equal(readFileSync(path.join(backend, 'skills-lock.json'), 'utf8'), originalLock);
@@ -197,4 +200,43 @@ for (const profile of ['spec', 'backend']) for (const [kind, identity] of [
     assert.equal(existsSync(path.join(root, '.workbuddy')), false);
     assert.equal(readFileSync(path.join(legacy, 'SKILL.md'), 'utf8'), readFileSync(path.join(canonical, 'SKILL.md'), 'utf8'));
   }
+});
+
+test('Source Profile entry sync and lock accept quoted identity and generate the complete Backend projection', () => {
+  const root = mkdtempSync(path.join(os.tmpdir(), 'yss-source-profile-entry-'));
+  try {
+    const entry = '.template-source/scripts/manage-profile-skills.mjs';
+    const backend = path.join(root, 'profiles/backend');
+    const canonical = path.join(root, '.agents/skills/probe');
+    const legacy = path.join(backend, '.codebuddy/skills/probe');
+    mkdirSync(path.join(root, '.template-source/scripts'), { recursive: true });
+    mkdirSync(path.join(root, 'scripts'), { recursive: true });
+    mkdirSync(path.join(backend, 'scripts/lib'), { recursive: true });
+    mkdirSync(canonical, { recursive: true });
+    mkdirSync(path.dirname(legacy), { recursive: true });
+    for (const ref of ['scripts/lib', 'scripts/vendor']) cpSync(path.resolve(ref), path.join(root, ref), { recursive: true });
+    cpSync(path.resolve(entry), path.join(root, entry));
+    cpSync(path.resolve('profiles/backend/scripts/lib/skill-supply-chain.mjs'), path.join(backend, 'scripts/lib/skill-supply-chain.mjs'));
+    writeFileSync(path.join(root, 'yss-project.yaml'), 'schema_version: 1\nrepository_mode: "template-source"\n');
+    writeFileSync(path.join(canonical, 'SKILL.md'), '---\nname: probe\n---\nold canonical\n');
+    chmodSync(path.join(canonical, 'SKILL.md'), 0o644);
+    cpSync(canonical, legacy, { recursive: true });
+    const originalLock = JSON.stringify({ version: 3, projectionRoots: ['.codebuddy/skills'], skills: { shared: { probe: { effectiveHash: 'previous' } }, platform: {} } });
+    writeFileSync(path.join(backend, 'skills-lock.json'), originalLock);
+    const git = args => { const result = spawnSync('git', ['-c', 'user.name=Probe', '-c', 'user.email=probe@example.invalid', ...args], { cwd: root, encoding: 'utf8' }); assert.equal(result.status, 0, result.stderr); };
+    git(['init', '-q']); git(['add', 'profiles/backend/.codebuddy']); git(['commit', '-qm', 'committed legacy projection']);
+    writeFileSync(path.join(canonical, 'SKILL.md'), '---\nname: probe\n---\nnew canonical\n');
+    const run = (action, check = false) => spawnSync(process.execPath, [path.join(root, entry), action, '--profile', 'backend', ...(check ? ['--check'] : [])], { cwd: root, encoding: 'utf8' });
+    for (const action of ['sync', 'lock']) assert.equal(run(action, true).status, 1, `${action} must report stale generated content`);
+    assert.equal(existsSync(path.join(backend, '.workbuddy')), false);
+    assert.equal(readFileSync(path.join(backend, 'skills-lock.json'), 'utf8'), originalLock);
+    for (const action of ['sync', 'lock']) { const result = run(action); assert.equal(result.status, 0, result.stderr); }
+    assert.equal(existsSync(path.join(backend, '.codebuddy')), false);
+    assert.equal(readFileSync(path.join(backend, '.workbuddy/skills/probe/SKILL.md'), 'utf8'), readFileSync(path.join(canonical, 'SKILL.md'), 'utf8'));
+    const lock = JSON.parse(readFileSync(path.join(backend, 'skills-lock.json'), 'utf8'));
+    assert.deepEqual(lock.projectionRoots, ['.workbuddy/skills']);
+    assert.deepEqual(lock.skills.shared.probe.targets, ['.agents/skills', '.workbuddy/skills']);
+    assert.match(lock.skills.shared.probe.effectiveHash, /^[a-f0-9]{64}$/);
+    for (const action of ['sync', 'lock']) { const result = run(action, true); assert.equal(result.status, 0, result.stderr); }
+  } finally { rmSync(root, { recursive: true, force: true }); }
 });

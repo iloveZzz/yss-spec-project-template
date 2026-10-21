@@ -364,11 +364,25 @@ test('Retired WorkBuddy projection deletion remains covered during root migratio
  assert.ok(plan.commands.some(check=>check.id==='check.research-evidence-scenarios'));
 });
 
-test('WorkBuddy Profile generation entrypoints select projection and idempotence checks', () => {
+test('WorkBuddy root generation entrypoints retain projection and idempotence checks', () => {
  for (const ref of ['scripts/sync-skills', 'scripts/update-skill-lock']) {
   const plan=planTemplateVerification({changedFiles:[ref]});
   for (const id of ['check.workbuddy-skills','check.c80aaecf300ddc1f']) {
    assert.ok(plan.commands.some(check=>check.id===id),`${ref}: ${id}`);
   }
  }
+});
+
+test('WorkBuddy source-only Profile entrypoint selects behavior and syntax checks', t => {
+ const directory=fs.mkdtempSync(path.join(os.tmpdir(),'profile-skills-selection-'));
+ t.after(()=>fs.rmSync(directory,{recursive:true,force:true}));
+ const ref='.template-source/scripts/manage-profile-skills.mjs';
+ const plan=planTemplateVerification({changedFiles:[ref]});
+ for (const id of ['check.workbuddy-skills','check.c80aaecf300ddc1f']) {
+  assert.ok(plan.commands.some(check=>check.id===id),`${ref}: ${id}`);
+ }
+ assert.deepEqual(plan.unknown_files,[]);
+ const release=planTemplateVerification({profile:'release',changedFiles:[ref]});
+ const compiled=addVerificationExecutionTasks(release,{root:ROOT,reference:true,reportDir:path.join(directory,'report')});
+ assert.ok(compiled.commands.some(task=>task.kind==='syntax'&&task.command.endsWith(`'${ref}'`)));
 });

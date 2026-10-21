@@ -985,6 +985,7 @@ profiles:
           - ".gitattributes"
           - "scripts/sync-skills"
           - "scripts/update-skill-lock"
+          - ".template-source/scripts/manage-profile-skills.mjs"
           - "scripts/lib/workbuddy-projection.mjs"
           - "scripts/lib/repository-mode.mjs"
           - "scripts/vendor/yaml.mjs"
@@ -1709,6 +1710,7 @@ profiles:
         input_patterns:
           - "scripts/sync-skills"
           - "scripts/update-skill-lock"
+          - ".template-source/scripts/manage-profile-skills.mjs"
           - "scripts/lib/skill-supply-chain.mjs"
           - "scripts/lib/workbuddy-projection.mjs"
           - "scripts/lib/repository-mode.mjs"
@@ -2596,6 +2598,7 @@ syntax_files:
   - scripts/verify-user-decision-scenarios
   - scripts/sync-skills
   - scripts/update-skill-lock
+  - .template-source/scripts/manage-profile-skills.mjs
   - scripts/verify-upstream-skill-source
   - scripts/lib/skill-supply-chain.mjs
   - .agents/skills/yss-skill-source-index-refresh/scripts/refresh-yss-skill-index.mjs
@@ -2705,6 +2708,8 @@ syntax_files:
   - tests/verification-selection.test.mjs
   - tests/verification-delivery-run.test.mjs
 routing:
+  - patterns: [".template-source/scripts/manage-profile-skills.mjs"]
+    groups: [skills]
   - patterns: [".gitattributes", ".codebuddy/skills/**", ".workbuddy/skills/**", "tests/workbuddy-entry.test.mjs", ".template-source/tooling/node/test/workbuddy-projection.test.mjs"]
     groups: [skills]
   - patterns:

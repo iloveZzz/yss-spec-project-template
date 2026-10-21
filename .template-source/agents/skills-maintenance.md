@@ -45,11 +45,11 @@
    scripts/update-skill-lock
    ```
 
-   Backend 投影与锁同样从模板仓根生成；入口内部组合完整 canonical 技能源并安全回写覆盖层，不手工复制临时组合树：
+   Backend 投影与锁从模板仓根使用专用模板源入口生成；入口内部组合完整 canonical 技能源并安全回写覆盖层，不手工复制临时组合树：
 
    ```bash
-   scripts/sync-skills --profile backend
-   scripts/update-skill-lock --profile backend
+   node .template-source/scripts/manage-profile-skills.mjs sync --profile backend
+   node .template-source/scripts/manage-profile-skills.mjs lock --profile backend
    ```
 
    若来源来自可访问的上游 checkout，还应显式校验锁定 revision 与每个上游目录哈希：
@@ -94,8 +94,8 @@ fixture 只允许隔离目录中的本地操作，Git、网络和包管理器使
 ```bash
 scripts/sync-skills --check
 scripts/update-skill-lock --check
-scripts/sync-skills --profile backend --check
-scripts/update-skill-lock --profile backend --check
+node .template-source/scripts/manage-profile-skills.mjs sync --profile backend --check
+node .template-source/scripts/manage-profile-skills.mjs lock --profile backend --check
 # 可选：对照锁文件中的 source revision 与上游目录哈希
 scripts/verify-upstream-skill-source --source=mattpocock/skills --source-root <matt-skills-checkout>
 ```
