@@ -51,4 +51,6 @@ Required before declaring done:
 - [ ] Regression test passes (or absence of seam is documented)
 - [ ] All `[DEBUG-...]` instrumentation removed (`grep` the prefix)
 - [ ] Throwaway prototypes deleted (or moved to a clearly-marked debug location)
-- [ ] The hypothesis that turned out correct is stated in the commit / PR message, so the next debugger learns
+- [ ] 实际确认的原因和原症状的修复前后证据写回当前任务或交付说明；起草 PR / MR 时读取当前项目根 `.template-spec/process/document-writing.md` 的“PR / MR 描述”，复用已有证据。
+
+用户要求复盘，或本轮存在返工、漏检、信息定位或工具使用阻碍时，读取该文“复盘中的改进与沉淀”做轻量回看。缺少正确测试 seam 时保留其证据和覆盖限制，交回当前任务评估架构改进；不自动扩展修复范围、重路由或执行重构。

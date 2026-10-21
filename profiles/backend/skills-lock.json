@@ -95,7 +95,7 @@
         "source": "mattpocock/skills",
         "sourceType": "github",
         "skillPath": "skills/engineering/diagnosing-bugs/SKILL.md",
-        "effectiveHash": "fe456a3e1b36561e067e7ddaeb456c58f6a616cc2571e6476f41cffb490e34ba",
+        "effectiveHash": "90f47050ac2191b30834ea4212b016b70a74e92956487971cd6ae8d01d643749",
         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
         "upstreamHash": "bcdaec9e1033901c396437fcb102161d8ad3cd87632007aaf270b19e03e70117",
         "adaptationRef": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
