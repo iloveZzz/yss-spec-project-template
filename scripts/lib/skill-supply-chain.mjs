@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { readRepositoryMode } from "./repository-mode.mjs";
 import { syncWorkBuddyProjections, removeWorkBuddyProjection } from "./workbuddy-projection.mjs";
 import { cpSync, existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, readlinkSync, realpathSync, rmSync, symlinkSync, unlinkSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
@@ -12,7 +13,7 @@ const LOCK_PATH = path.join(ROOT, "skills-lock.json");
 export const PROJECTION_ROOTS = [".claude/skills", ".workbuddy/skills"];
 function projectionRootsFor(lock) {
   const identityPath = path.join(ROOT, "yss-project.yaml");
-  const isInstance = existsSync(identityPath) && /^repository_mode:\s*project-instance\s*$/m.test(readFileSync(identityPath, "utf8"));
+  const isInstance = existsSync(identityPath) && readRepositoryMode(ROOT) === "project-instance";
   if (!isInstance) return PROJECTION_ROOTS;
   const roots = lock?.projectionRoots;
   if (!Array.isArray(roots) || new Set(roots).size !== roots.length || roots.some(root => ![".codex/skills", ".claude/skills", ".cursor/skills", ".pi/skills", ".workbuddy/skills"].includes(root))) throw new TypeError("project-instance skills-lock.json 缺少有效 projectionRoots");
@@ -131,9 +132,9 @@ export function syncSkills({ check = false, hashCache = new Map(), workbuddyRepo
   const shared = sharedFromLock(lock);
   const projectionRoots = projectionRootsFor(lock);
   const identityPath = path.join(ROOT, "yss-project.yaml");
-  const isInstance = existsSync(identityPath) && /^repository_mode:\s*project-instance\s*$/m.test(readFileSync(identityPath, "utf8"));
+  const isInstance = existsSync(identityPath) && readRepositoryMode(ROOT) === "project-instance";
   const sourceIdentityPath = path.join(templateSourceRoot, "yss-project.yaml");
-  const retireLegacy = !isInstance && existsSync(sourceIdentityPath) && /^repository_mode:\s*template-source\s*$/m.test(readFileSync(sourceIdentityPath, "utf8"));
+  const retireLegacy = !isInstance && existsSync(sourceIdentityPath) && readRepositoryMode(templateSourceRoot) === "template-source";
   if (!check && projectionRoots.includes(".workbuddy/skills") && isInstance) throw new TypeError("WorkBuddy 实例写入须使用 yss skills ensure / sync 事务；此入口只允许 --check");
   const absent = shared.filter((name) => !lstatSafe(path.join(SOURCE_ROOT, name))?.isDirectory());
   if (absent.length) throw new TypeError(`锁文件声明的共享 skills 缺少权威内容: ${absent.join(", ")}`);

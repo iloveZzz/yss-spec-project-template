@@ -13,6 +13,8 @@ for (const sourceRoot of ["profiles/backend"]) test(`FR-006：${sourceRoot} Skil
     mkdirSync(path.join(root, "scripts/lib"), { recursive: true });
     cpSync(path.resolve(sourceRoot, "scripts/lib/skill-supply-chain.mjs"), path.join(root, "scripts/lib/skill-supply-chain.mjs"));
     cpSync(path.resolve("scripts/lib/workbuddy-projection.mjs"), path.join(root, "scripts/lib/workbuddy-projection.mjs"));
+    mkdirSync(path.join(root, "scripts/vendor"), { recursive: true });
+    for (const ref of ["scripts/lib/repository-mode.mjs", "scripts/vendor/yaml.mjs"]) cpSync(path.resolve(ref), path.join(root, ref));
     const source = path.join(root, ".agents/skills/probe");
     mkdirSync(source, { recursive: true });
     writeFileSync(path.join(source, "SKILL.md"), "---\nname: probe\n---\n");
@@ -26,7 +28,7 @@ for (const sourceRoot of ["profiles/backend"]) test(`FR-006：${sourceRoot} Skil
     assert.deepEqual(readdirSync(root).filter((name) => name.endsWith("skills")), []);
     assert.equal(lstatSync(path.join(root, ".workbuddy/skills/probe")).isSymbolicLink(), false);
     assert.equal(readFileSync(path.join(root, ".workbuddy/skills/probe/SKILL.md"), "utf8"), readFileSync(path.join(source, "SKILL.md"), "utf8"));
-    writeFileSync(path.join(root, "yss-project.yaml"), "schema_version: 1\nrepository_mode: project-instance\n");
+    writeFileSync(path.join(root, "yss-project.yaml"), 'schema_version: 1\nrepository_mode: "project-instance"\n');
     for (const roots of [[".codebuddy/skills"], [".workbuddy/skills", ".codebuddy/skills"]]) {
       writeFileSync(path.join(root, "skills-lock.json"), JSON.stringify({ version: 3, projectionRoots: roots, skills: { shared: { probe: {} }, platform: {} } }));
       assert.throws(() => syncSkills({ check: true }), /projectionRoots/);
@@ -48,12 +50,14 @@ test("根 Skill 同步：相同投影不重写，结构、换行或权限漂移�
     mkdirSync(path.join(root, "scripts/lib"), { recursive: true });
     cpSync(path.resolve("scripts/lib/skill-supply-chain.mjs"), path.join(root, "scripts/lib/skill-supply-chain.mjs"));
     cpSync(path.resolve("scripts/lib/workbuddy-projection.mjs"), path.join(root, "scripts/lib/workbuddy-projection.mjs"));
+    mkdirSync(path.join(root, "scripts/vendor"), { recursive: true });
+    for (const ref of ["scripts/lib/repository-mode.mjs", "scripts/vendor/yaml.mjs"]) cpSync(path.resolve(ref), path.join(root, ref));
     const source = path.join(root, ".agents/skills/probe");
     mkdirSync(source, { recursive: true });
     writeFileSync(path.join(source, "SKILL.md"), "---\r\nname: probe\r\n---\r\n");
     writeFileSync(path.join(source, "payload.txt"), "payload\n");
     symlinkSync("payload.txt", path.join(source, "linked.txt"));
-    writeFileSync(path.join(root, "yss-project.yaml"), "schema_version: 1\nrepository_mode: project-instance\n");
+    writeFileSync(path.join(root, "yss-project.yaml"), 'schema_version: 1\nrepository_mode: "project-instance"\n');
     const target = path.join(root, ".claude/skills/probe");
     mkdirSync(path.dirname(target), { recursive: true });
     cpSync(source, target, { recursive: true, verbatimSymlinks: true });
@@ -150,4 +154,47 @@ for (const command of ['sync-skills', 'update-skill-lock']) test(`Profile genera
     assert.equal(existsSync(path.join(backend, '.workbuddy')), false);
     assert.deepEqual(readdirSync(backend).sort(), ['scripts', 'skills-lock.json']);
   } finally { rmSync(base, { recursive: true, force: true }); }
+});
+
+
+for (const profile of ['spec', 'backend']) for (const [kind, identity] of [
+  ['quoted-source', 'schema_version: 1\nrepository_mode: "template-source"\n'],
+  ['quoted-instance', 'schema_version: 1\nrepository_mode: "project-instance"\n'],
+  ['unsupported-schema', 'schema_version: 99\nrepository_mode: template-source\n'],
+  ['duplicate-mode', 'schema_version: 1\nrepository_mode: project-instance\nrepository_mode: template-source\n'],
+]) test(`WorkBuddy ${profile} supply consumes strict ${kind} repository identity`, async t => {
+  const root = mkdtempSync(path.join(os.tmpdir(), 'yss-workbuddy-identity-'));
+  t.after(() => rmSync(root, { recursive: true, force: true }));
+  mkdirSync(path.join(root, 'scripts/lib'), { recursive: true });
+  mkdirSync(path.join(root, 'scripts/vendor'), { recursive: true });
+  const origin = profile === 'backend' ? 'profiles/backend/scripts/lib/skill-supply-chain.mjs' : 'scripts/lib/skill-supply-chain.mjs';
+  cpSync(path.resolve(origin), path.join(root, 'scripts/lib/skill-supply-chain.mjs'));
+  for (const ref of ['scripts/lib/workbuddy-projection.mjs', 'scripts/lib/repository-mode.mjs', 'scripts/vendor/yaml.mjs']) cpSync(path.resolve(ref), path.join(root, ref));
+  const canonical = path.join(root, '.agents/skills/probe'), legacy = path.join(root, '.codebuddy/skills/probe');
+  mkdirSync(canonical, { recursive: true }); mkdirSync(path.dirname(legacy), { recursive: true });
+  writeFileSync(path.join(canonical, 'SKILL.md'), '---\nname: probe\n---\n');
+  chmodSync(path.join(canonical, 'SKILL.md'), 0o644);
+  cpSync(canonical, legacy, { recursive: true });
+  writeFileSync(path.join(root, 'skills-lock.json'), JSON.stringify({ version: 3, projectionRoots: ['.workbuddy/skills'], skills: { shared: { probe: {} }, platform: {} } }));
+  writeFileSync(path.join(root, 'yss-project.yaml'), identity);
+  const git = args => { const result = spawnSync('git', ['-c','user.name=Probe','-c','user.email=probe@example.invalid',...args], { cwd: root, encoding: 'utf8' }); assert.equal(result.status, 0, result.stderr); };
+  git(['init','-q']); git(['add','.codebuddy']); git(['commit','-qm','committed legacy projection']);
+  const { syncSkills } = await import(pathToFileURL(path.join(root, 'scripts/lib/skill-supply-chain.mjs')).href);
+  if (kind === 'quoted-source') {
+    assert.match(syncSkills(), /synchronized 1 shared skills/);
+    assert.equal(existsSync(path.join(root, '.codebuddy')), false);
+    assert.equal(readFileSync(path.join(root, '.workbuddy/skills/probe/SKILL.md'), 'utf8'), readFileSync(path.join(canonical, 'SKILL.md'), 'utf8'));
+    assert.equal(syncSkills({ check: true }), 'skill projections are synchronized');
+  } else if (kind === 'quoted-instance') {
+    rmSync(path.join(root, '.codebuddy'), { recursive: true });
+    symlinkSync(canonical, path.join(root, '.codebuddy'));
+    mkdirSync(path.join(root, '.workbuddy/skills'), { recursive: true });
+    cpSync(canonical, path.join(root, '.workbuddy/skills/probe'), { recursive: true });
+    assert.equal(syncSkills({ check: true }), 'skill projections are synchronized');
+    assert.throws(() => syncSkills(), /实例写入须使用/);
+  } else {
+    assert.throws(() => syncSkills(), /yss-project.yaml/);
+    assert.equal(existsSync(path.join(root, '.workbuddy')), false);
+    assert.equal(readFileSync(path.join(legacy, 'SKILL.md'), 'utf8'), readFileSync(path.join(canonical, 'SKILL.md'), 'utf8'));
+  }
 });

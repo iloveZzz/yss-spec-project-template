@@ -986,6 +986,8 @@ profiles:
           - "scripts/sync-skills"
           - "scripts/update-skill-lock"
           - "scripts/lib/workbuddy-projection.mjs"
+          - "scripts/lib/repository-mode.mjs"
+          - "scripts/vendor/yaml.mjs"
           - ".template-source/tooling/node/test/workbuddy-projection.test.mjs"
           - "scripts/lib/skill-discovery.mjs"
           - "scripts/inspect-skill-discovery"
@@ -1016,6 +1018,8 @@ profiles:
           - ".template-source/tooling/node/test/skill-supply-chain.test.mjs"
           - "scripts/lib/skill-supply-chain.mjs"
           - "scripts/lib/workbuddy-projection.mjs"
+          - "scripts/lib/repository-mode.mjs"
+          - "scripts/vendor/yaml.mjs"
         depends_on: []
         failure_mode: "根投影根偏离 Claude/WorkBuddy 声明，或 Skill 派生文件和引用规范化不一致"
       - id: check.1ebcb1124ce67eb1
@@ -1707,6 +1711,8 @@ profiles:
           - "scripts/update-skill-lock"
           - "scripts/lib/skill-supply-chain.mjs"
           - "scripts/lib/workbuddy-projection.mjs"
+          - "scripts/lib/repository-mode.mjs"
+          - "scripts/vendor/yaml.mjs"
           - "tests/skill-sync-efficiency.test.mjs"
           - "profiles/*/scripts/lib/skill-supply-chain.mjs"
           - "profiles/*/skills-lock.json"
