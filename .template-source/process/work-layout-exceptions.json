@@ -306,6 +306,15 @@
       "count": 1,
       "category": "history",
       "reason": "记录实例资产保护边界，说明历史临时工作根不得移植到实例"
+    },
+    {
+      "repository": ".",
+      "file": ".codebuddy/skills/yss-prototype-stage/tests/reliability.test.mjs",
+      "kind": "content",
+      "text": " for(const workRoot of ['.work','docs/custom-work','docs/.scratch']){",
+      "count": 1,
+      "category": "compatibility-test",
+      "reason": "WorkBuddy 普通投影保留 canonical 中已登记的历史路径拒绝回归；限定原文与出现次数，资源身份检查约束副本一致"
     }
   ]
 }

@@ -113,7 +113,9 @@ function hardViolations(root) {
     for (const [name, entry] of Object.entries(status?.profiles ?? {})) {
       if (entry?.status !== "active") continue;
       const base = "profiles/" + name;
-      for (const skill of obsolete) if (existsSync(path.join(root, base, ".agents/skills", skill))) found.push("physical:" + base + "/.agents/skills/" + skill);
+      for (const skillRoot of [".agents/skills", ...PROJECTION_ROOTS]) {
+        for (const skill of obsolete) if (existsSync(path.join(root, base, skillRoot, skill))) found.push("physical:" + base + "/" + skillRoot + "/" + skill);
+      }
       for (const skill of registryNames(path.join(root, base, ".template-spec/agents/yss-skill-registry.yaml"))) if (obsolete.has(skill)) found.push("registry:" + base + ":" + skill);
       for (const skill of lockNames(path.join(root, base, "skills-lock.json"))) if (obsolete.has(skill)) found.push("lock:" + base + ":" + skill);
     }

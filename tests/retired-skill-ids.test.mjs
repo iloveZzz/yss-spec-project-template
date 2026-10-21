@@ -65,10 +65,12 @@ test("物理退役技能目录与现役 Profile 锁由硬检查发现", (t) => {
   write(root, ".agents/skills/yss-ui/SKILL.md", "# retired\n");
   write(root, ".template-source/process/profile-status.yaml", "schema_version: 1\nprofiles:\n  spec:\n    status: kernel\n  backend:\n    status: active\n");
   write(root, "profiles/backend/skills-lock.json", JSON.stringify({ version: 3, skills: { shared: { "yss-ui": {} } } }) + "\n");
+  write(root, "profiles/backend/.codebuddy/skills/yss-ui/SKILL.md", "# retired\n");
   git("add", "-A");
   const result = scanRetiredSkillIds({ root });
   assert.ok(result.hard.some((entry) => entry.includes("physical:.agents/skills/yss-ui")), result.hard.join("\n"));
   assert.ok(result.hard.some((entry) => entry.includes("lock:profiles/backend:yss-ui")), result.hard.join("\n"));
+  assert.ok(result.hard.includes("physical:profiles/backend/.codebuddy/skills/yss-ui"), result.hard.join("\n"));
 });
 
 test("策略包含未知退役 ID 或未写原因时失败", (t) => {
