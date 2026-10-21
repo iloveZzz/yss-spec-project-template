@@ -2688,7 +2688,7 @@ syntax_files:
   - tests/verification-selection.test.mjs
   - tests/verification-delivery-run.test.mjs
 routing:
-  - patterns: [".codebuddy/skills/**", "tests/workbuddy-entry.test.mjs", ".template-source/tooling/node/test/workbuddy-projection.test.mjs"]
+  - patterns: [".gitattributes", ".codebuddy/skills/**", "tests/workbuddy-entry.test.mjs", ".template-source/tooling/node/test/workbuddy-projection.test.mjs"]
     groups: [skills]
   - patterns:
       - .template-source/scripts/replay-lifecycle-triage
