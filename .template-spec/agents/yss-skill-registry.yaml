@@ -9,8 +9,8 @@ canonical_content_root: .agents/skills
 instance_distribution:
   schema_version: 1
   initial_skills: [yss-product-lifecycle, yss-research, i-have-adhd, setup-yss-harness]
-  runtimes: [claude]
-  projection_roots: { claude: .claude/skills }
+  runtimes: [claude, workbuddy]
+  projection_roots: { claude: .claude/skills, workbuddy: .codebuddy/skills }
   dependency_types_for_ensure: [context-required, context-conditional]
   initial_example_docs: false
 backend_skill_domains:
@@ -361,6 +361,7 @@ invocation_contract:
       invocation_mode: user
 agent_runtime_roots:
   claude: .claude/skills
+  workbuddy: .codebuddy/skills
 skills:
   - { id: i-have-adhd, layer: core, maturity: supported, instance_default_discoverable: true, aliases: [], impacts: [writing] }
   - id: alibaba-java-code-style

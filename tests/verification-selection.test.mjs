@@ -334,3 +334,10 @@ test('检查超时：默认值、显式值与非法值', async () => {
   assert.equal(compileVerificationCheck({ run: 'node --test x', timeout_ms: 1234 }, { profile: 'fast' }).timeout_ms, 1234);
   assert.throws(() => compileVerificationCheck({ run: 'node --test x', timeout_ms: -1 }, { profile: 'fast' }), /VERIFICATION_TIMEOUT_INVALID/);
 });
+
+test('WorkBuddy projection changes route to skill checks while private host configuration remains unknown', () => {
+ const plan=planTemplateVerification({changedFiles:['.codebuddy/skills/code-review/SKILL.md','tests/workbuddy-entry.test.mjs','scripts/lib/workbuddy-projection.mjs']});
+ assert.ok(plan.commands.some(check=>check.id==='check.workbuddy-skills'));
+ assert.equal(plan.unknown_files.length,0);
+ assert.throws(()=>planTemplateVerification({changedFiles:['.codebuddy/private.json']}),/UNKNOWN_VERIFICATION_PATH/);
+});

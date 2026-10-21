@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "profile": "strategy-evidence",
+  "mode": "evidence-audited",
+  "scope": {
+    "topic": "<竞品调研主题>",
+    "audience": "<audience>",
+    "time_horizon": "<time horizon>",
+    "research_questions": [
+      "<指定产品、套餐与地区范围内的能力支持情况>"
+    ],
+    "inclusion_criteria": [
+      "<criterion>"
+    ],
+    "exclusion_criteria": [
+      "<criterion>"
+    ]
+  },
+  "ownership": {
+    "research_owner": "yss-research",
+    "downstream_owner": "<lifecycle skill or role>",
+    "decision_ref": null
+  },
+  "search_log": [
+    {
+      "id": "search-001",
+      "channel": "<channel or corpus>",
+      "query_or_corpus": "<query or inspected material>",
+      "searched_at": "YYYY-MM-DD",
+      "result": "results-found"
+    },
+    {
+      "id": "search-002",
+      "channel": "<counter-signal channel>",
+      "query_or_corpus": "<counter-signal query>",
+      "searched_at": "YYYY-MM-DD",
+      "result": "none-found"
+    }
+  ],
+  "evidence_items": [
+    {
+      "id": "evidence-001",
+      "source_level": "direct-experience",
+      "visibility": "internal",
+      "source_class": "<interview, support, ticket, docs, specification, source-code, dataset, report>",
+      "source_ref": "<URL or repository reference>",
+      "locator": "<line, section, record, timestamp, or comment>",
+      "stance": "support",
+      "observed_at": "YYYY-MM-DD",
+      "evidence_date": "YYYY-MM-DD",
+      "observation": "<what the source directly shows>",
+      "limitations": [
+        "<sampling, recency, access, or independence limit>"
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "id": "claim-001",
+      "claim_kind": "business-constraint",
+      "statement": "<在已确认的产品版本、套餐与地区内，竞品A支持能力1；据来源实际内容填写>",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-001"
+      ],
+      "counter_signal_refs": [
+        "search-002"
+      ],
+      "audit_status": "supported",
+      "confidence": "medium",
+      "disposition": "publish"
+    }
+  ],
+  "source_gaps": [],
+  "audit_summary": {
+    "status": "complete",
+    "audited_claim_ids": [
+      "claim-001"
+    ],
+    "notes": []
+  },
+  "competitive_analysis": {
+    "schema_version": 1,
+    "output_selection": "both",
+    "as_of": "YYYY-MM-DD",
+    "comparison_scope": "<用户、竞品、能力与资料边界；未知字段使用 unknown>",
+    "competitors": [
+      {
+        "id": "competitor-a",
+        "name": "<竞品A>",
+        "type": "direct",
+        "product": "<产品>",
+        "version": "<已确认版本或 unknown>",
+        "edition": "<已确认套餐或 unknown>",
+        "region": "<已确认地区或 unknown>"
+      },
+      {
+        "id": "competitor-b",
+        "name": "<竞品B>",
+        "type": "adjacent",
+        "product": "<产品>",
+        "version": "unknown",
+        "edition": "unknown",
+        "region": "unknown"
+      }
+    ],
+    "capabilities": [
+      {
+        "id": "capability-001",
+        "module": "<功能模块>",
+        "name": "<功能点>",
+        "definition": "<可观察的能力定义>",
+        "user_value": "<用户价值>"
+      }
+    ],
+    "assessments": [
+      {
+        "competitor_id": "competitor-a",
+        "capability_id": "capability-001",
+        "status": "supported",
+        "claim_refs": [
+          "claim-001"
+        ],
+        "limitations": [
+          "<来源实际支持的版本、套餐、地区及其他限制；不能仅按示例填写>"
+        ],
+        "gap": null
+      },
+      {
+        "competitor_id": "competitor-b",
+        "capability_id": "capability-001",
+        "status": "unknown",
+        "claim_refs": [],
+        "limitations": [],
+        "gap": {
+          "reason": "<公开资料尚未确认支持情况；未搜索到不代表不支持>",
+          "next_step": "<明确补充官方资料、试用或访谈的执行计划>"
+        }
+      }
+    ],
+    "artifacts": {
+      "matrix": "<slug>-competitive-matrix.md",
+      "report": "<slug>-competitive-analysis.md"
+    }
+  }
+}

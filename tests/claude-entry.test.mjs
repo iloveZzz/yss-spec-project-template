@@ -18,9 +18,9 @@ test("FR-006：根目录 CLAUDE.md 只导入 AGENTS.md 并带一行说明，不�
   assert.ok(lines.every((line) => line === "@AGENTS.md" || !line.includes("@")), "不得再导入其它文件");
 });
 
-test("FR-006：.claude/skills 是唯一投影根，与 canonical 一一对应且全部为指向 .agents/skills 的符号链接", () => {
+test("FR-006：.claude/skills 保留原投影行为，与 canonical 一一对应且全部为指向 .agents/skills 的符号链接", () => {
   // Claude Code 只从 .claude/skills 发现项目技能，不读 .agents/skills，所以必须保留这一投影。
-  assert.deepEqual(PROJECTION_ROOTS, [".claude/skills"]);
+  assert.deepEqual(PROJECTION_ROOTS, [".claude/skills", ".codebuddy/skills"]);
   for (const old of [".codex/skills", ".cursor/skills", ".pi/skills"]) assert.equal(fs.existsSync(path.join(ROOT, old)), false, `${old} 不应存在`);
   const lock = json("skills-lock.json");
   const shared = Object.keys(lock.skills.shared).sort();
@@ -36,13 +36,13 @@ test("FR-006：.claude/skills 是唯一投影根，与 canonical 一一对应且
 });
 
 test("注册表与锁在 claude 上一致：运行时、投影根、agent_runtime_roots、lock 的 projectionRoots 与每个技能的 targets", () => {
-  assert.deepEqual(registry.instance_distribution.runtimes, ["claude"]);
-  assert.deepEqual(registry.instance_distribution.projection_roots, { claude: ".claude/skills" });
-  assert.deepEqual(registry.agent_runtime_roots, { claude: ".claude/skills" });
+  assert.deepEqual(registry.instance_distribution.runtimes, ["claude", "workbuddy"]);
+  assert.deepEqual(registry.instance_distribution.projection_roots, { claude: ".claude/skills", workbuddy: ".codebuddy/skills" });
+  assert.deepEqual(registry.agent_runtime_roots, { claude: ".claude/skills", workbuddy: ".codebuddy/skills" });
   const lock = json("skills-lock.json");
   assert.deepEqual(lock.projectionRoots, PROJECTION_ROOTS);
   assert.deepEqual(lock.skills.platform, {});
-  for (const [name, item] of Object.entries(lock.skills.shared)) assert.deepEqual(item.targets, [".agents/skills", ".claude/skills"], `${name} 的 targets 应为 canonical 与 .claude/skills`);
+  for (const [name, item] of Object.entries(lock.skills.shared)) assert.deepEqual(item.targets, [".agents/skills", ".claude/skills", ".codebuddy/skills"], `${name} 的 targets 应为 canonical 与 .claude/skills`);
 });
 
 test("实例分发：包含 CLAUDE.md 与 .claude 投影，不包含 Stop hook 设置", () => {

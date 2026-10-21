@@ -1,0 +1,162 @@
+# Matt / YSS 工作流适配
+
+本文件的工作单元预检、正式结果和阶段入口适用于 `governed` 或模板维护；显式兼容入口仍按其正式合同执行。普通任务先由当前 Spec 政策与支持的 CLI 判定，合格时按 [普通任务交付](daily-delivery.md) 使用 YSS 技术规则、测试和独立审查，不先建立正式阶段资产。旧 CLI 或其他 Profile 明确不支持，不以 Matt 通用指令越过原边界。
+
+上游来源是 [mattpocock/skills](https://github.com/mattpocock/skills)。固定提交、原始哈希和实际生效的 YSS 适配哈希以根 `skills-lock.json` 为准；补装使用模板快照中的适配版，不直接覆盖为上游最新版本。
+
+项目实例按需分发：注册表中受支持的技能可能尚未安装；改名与别名由 `.template-spec/agents/yss-skill-registry.yaml` 解析；已退役名称按 `.template-spec/agents/skill-migrations.md` 重新路由。这三种情况不能混用，也不需要把整个上游仓库装进实例。
+
+## 按任务发现与读取内置技能
+
+先用固定执行器的 `skills resolve --help` 确认能力；旧 CLI 沿用下节预检，不把版本号或查询退出成功当成支持或就绪。spec、backend、frontend 的自然语言任务由 Agent 对照 `skills list --details --root <项目根> --json` 的描述和 `invocation` 选择规范 ID，例如“审查代码”选择 `code-review`，“分析模块边界”选择 `codebase-design`。详情仅观察注册信息和安装声明，不核验整个技能库。
+
+```text
+<固定yss> skills resolve <id...> --root <项目根> --json
+```
+
+条件依赖使用逗号分隔的 `--when <已登记条件列表>`；只展开 `context-required` 和命中的 `context-conditional`，不加载整套角色技能。消费 `result.status`，查询退出 0 仅表示查询完成：
+
+- `ready`：直接读取所选闭包每项的绝对 `entryPath`，以 `contentDigest` 绑定实际读取记录，再按入口及需要的引用执行当前任务；无需等待 Codex 原生技能列表刷新。调用仍遵守 `invocation.invocation_mode`，`user` 入口必须有用户明确调用。
+- `missing`：只将规范 `missing` 集合传给既有 `skills ensure` 保存计划；已有任务授权覆盖且无冲突时应用。安装后重新执行同一 resolve，整体 `ready` 才读取与调用。
+- `blocked` 或查询失败：停止受影响调用并报告 `issues`；受管文件丢失、字节或权限漂移、同名路径占用、来源不匹配、退役及外部技能均不能自动补装。
+
+不隐式同步、迁移、覆盖或创建业务批准。就绪只证明本次核验的技能入口和依赖；文件变化后重验，不将技能就绪当成阶段资格或任务完成。
+
+## 工作单元技能预检与补装
+
+准备调用原生工作单元的专项技能前，运行：
+
+```bash
+scripts/query-lifecycle-context --work-unit work-unit.plan-requirements --check-skills
+```
+
+运行时只在实例登记了唯一平台时可以省略；条件依赖用重复的 `--when <条件>` 传入。查询只检查当前工作单元和已触发依赖，不加载兼容入口的纯引用或整个角色技能包。普通查询仍不证明技能已安装。
+
+`skill_readiness` 为 `ready` 时退出 0；`missing` / `blocked` 时退出 2；非法输入或查询失败退出 1。技能可用不证明阶段批准、切片资格或任务完成。
+
+收到 `missing` 后，由 Agent 执行结果中的 `remediation.plan_command`，核对新增技能、路径和依赖。已有任务授权覆盖该范围且计划无冲突时执行 `apply_command`，利用现有事务刷新锁文件并校验实例；随后重新执行同一预检，通过后才调用技能。安装 user-invoked 技能不授予调用资格。
+
+`blocked` 中的受管文件丢失、哈希／投影漂移、同名路径冲突、运行时未配置、退役或外部技能缺失必须分别处理；CLI 快照不匹配时补装计划也会拒绝。不得自动覆盖、强制同步或扩展迁移范围。旧实例只读检查现有文件，缺失时按本家族 CLI 规划同步或迁移，不自动转换分发模式。
+
+Matt skills 决定如何工作；YSS 生命周期决定是否允许推进；YSS 专项 skills 决定如何符合工程规范。
+
+生命周期默认使用 `work_unit_routes.*.native`；下表中的 Matt flow 是 `work_unit_routes.*.compatibility` 显式兼容输入。兼容入口的正式资产由用户创建并回交生命周期验收，原生工作单元的正式资产由生命周期编排器创建。
+
+## 入口与仓库身份裁决
+
+- 所有入口先读取 `yss-project.yaml`。缺失、解析失败、schema 不支持或 `repository_mode` 非法时，停止路由并进入 migration-check。
+- **直接调用生命周期管理的 Matt user-invoked skill**（`setup-matt-pocock-skills`、`to-spec`、`to-tickets`、`implement`）时，用户仍是正式资产的创建者；生命周期先校验前置条件，再接受结果并重新计算阶段、门禁和状态。其他 user-invoked skill 同样不得由生命周期自动调用；只有在其专属适配合同存在时才进入 YSS 流程。
+- **直接调用 `yss-product-lifecycle`** 时，不机械嵌套调用任何 Matt user-invoked skill；编排器直接使用原生工作单元和允许的 model-invoked 原语。Matt user-invoked skill 保持显式兼容入口，生命周期负责准备、校验并验收其结果。
+- `template-source` 只允许进入模板维护流程。命中 `to-spec`、`to-tickets`、`implement`、Release 或 Retrospective 时返回 `blocked`，原因是 `template-source-product-artifact-forbidden`；`setup-matt-pocock-skills` 不得为具体产品生成 Spec、prototype、OpenAPI 或垂直切片 Ticket。
+- `project-instance` 才允许进入产品 Plan → Spec → 设计 → 契约 → Ticket → 实现 → Release / Retrospective 链路。
+
+| 情形 | Matt flow | 生命周期验收 |
+|---|---|---|
+| 首次启用或配置缺失 | `setup-matt-pocock-skills`（用户显式） | `needs-human`，说明缺失项；用户完成 setup 后重新计算 readiness |
+| 需求澄清 | 原生 `work-unit.plan-requirements`，按 `planning.clarification_policy` 主动调用 `grilling` 处理必须确认的未决决定，术语使用 `domain-modeling` | 逐项验收未决项和证据回流；完整退出联合当前 Plan 用户决定 |
+| 信息在其他人手中 | 生命周期外部输入问卷 | 使用 `external-input-required` 暂停；答案回流后记录 response、重新分类影响面，再进入 `work-unit.plan-requirements` 或 `to-spec` |
+| 大型模糊工作 | `wayfinder`（可选） | 仅在跨会话 / 跨 Agent 或 frontier 不清晰时启用；map 真正完成后继续当前原生 Spec 工作；handoff / to-spec 仅用户显式调用 |
+| 技术或战略事实 | `yss-research`（`research` 为 deprecated alias） | `technical-evidence` 核验一手技术资料；`strategy-evidence` 为领域战略和阶段决策提供可审计证据；研究包不得自行修改或批准下游资产 |
+| runnable 问题 | `prototype` | 生成单文件可分享 HTML，保留 `prototype/<name>` 分支作为主来源；必须有运行证据、结论、权威资产回填和未决项；source/return handoff 仅实际手动交接时需要，只能作为阶段 4 输入，不得替代低保真评审、H1/H2 档位路由、schema v4 验证和用户确认 |
+| Spec 综合 | 原生 `work-unit.spec-synthesis`；`to-spec`（用户显式兼容） | 初稿进入 `ready-for-human`，不得直接实现 |
+| 切片 | 原生 `work-unit.ticket-decomposition`；`to-tickets`（用户显式兼容） | 仅在冻结/无影响记录后拆垂直切片，初始 Ticket 状态为 `ready-for-human` |
+| 实现 | 原生 `work-unit.slice-implementation`；`implement`（用户显式兼容） | 当前合同批准并持久化后执行；内部使用 `tdd`，结果回交后再次核验 |
+| Bug | `diagnosing-bugs`、`tdd` | 先建立红色反馈；高风险影响升级上游门禁 |
+| 审查 | `code-review` | 唯一默认代码审查入口；审查者独立且不得写实现；Standards 消费 Spec、仓库治理规则、Slice `required_skills` 和 YSS / Alibaba 专项检查输入；finding 按合同分流修复或 stale 回 实现合同编译器 |
+| 用户明确要求跨上下文交接 | `handoff` | 默认临时续接说明和产物引用；明确正式打包才走原冻结包协议 |
+| 阶段边界 | 生命周期 phase-boundary 合同 | 按 `Continue → /clear → /handoff → subagent → /compact` 选择上下文动作；只记录证据，不扩展生命周期状态 |
+| 解释未落地 | 普通对话与文档写作规范 | 只重新解释当前结论，不改变阶段、门禁、Ticket 或 `ready-for-agent` |
+| 人工步骤 | 人工 checkpoint | 记录 Agent 无法替代的点击、审批、凭据和迁移步骤；秘密值必须隐藏并脱敏 |
+| 编写 Agent 文档 | `writing-for-agents`；维护 skill 时使用 `maintaining-skills` | 共享 skill 只改 `.agents/skills`；流程文档保持简体中文 |
+
+尽量不修改 Matt skill 以复制 YSS 规则。只有它违反模板硬门禁时才做最小兼容修改。
+
+实现合同编译器 只能返回 `draft`、`blocked` 或 `ready-for-lifecycle-review`，不得自行批准合同、设置 `ready-for-agent` 或宣布完成。`new_impacts`、`drift`、`violation`、越界路径或缺失实际验证阻断依赖动作，由本编排器先调查实际变化及依赖，再修复、补证据或回到受影响生命周期工作单元；不因此默认全轴复审或向用户索取新决定。
+
+## Workflow Execution Result
+
+生命周期工作单元必须输出 `Workflow Execution Result`，再由编排器验收。旧 `Matt Skill Result` 仅可通过只读 compatibility adapter 归一化，且不得影响路由或作为行为基线；workflow reference 不表示调用了对应 Matt user-invoked skill。结果至少包含：
+
+```yaml
+result_schema: workflow-execution-result-v1
+work_unit: work-unit.spec-synthesis
+workflow_reference:
+  source: mattpocock/skills
+  skill: to-spec
+  invocation_mode: reference
+result: completed # completed / blocked / needs-human / failed
+evidence_refs:
+  - .template-spec/process/yss-product-lifecycle-orchestrator-validation.md
+changed_artifacts: []
+new_impacts: []
+stale_candidates: []
+next_route: <next-work-unit-or-null>
+blocking_signals: []
+```
+
+存在 `drift`、`new_impacts`、`violation`、`missing_evidence` 或 `stale_candidates`，以及证据缺失时，不得返回 `completed`；由编排器调查变化、受影响结论 / 行为及依赖，定向修复 / 重路由、复验并重绑定当前候选。专业等待自主派发并等待，缺真实决定或新授权才展示资产后询问，无依赖的已授权工作继续。
+
+实现合同编译器 状态映射为：`draft → completed`、`blocked → blocked`、`ready-for-lifecycle-review → needs-human`。这里的 `completed` 只表示 Matt 工作单元已产出可验收结果，不表示生命周期完成或可发布。
+
+`completed` 的 `evidence_refs` 至少包含一条可读取或可解析的证据引用；只有字段存在但为空，不能证明工作单元完成。兼容入口下的正式 Spec、Ticket 或实现资产仍只能由对应显式用户入口创建；原生工作单元由生命周期编排器创建并持有状态。
+
+## Matt flow 前置条件
+
+| Matt flow | 进入条件 | 生命周期结果 |
+|---|---|---|
+| `to-spec`（用户显式） | Plan work unit 或 `work-unit.plan-requirements` 已满足退出条件，且不存在未回流 runnable blocker；用户问题、MVP/非目标、成功标准、测试 seam 和术语审查均有证据，澄清决定已记入功能包 `clarification-log.md` | 生命周期只准备/验收；Spec 初稿为 `ready-for-human`，不等于批准；申请 Spec 基线批准前须有 `check.artifact-consistency-analyzed` 证据 |
+| `to-tickets`（用户显式） | OpenAPI Freeze 或 `no-api-impact` 记录、必要门禁、垂直切片范围和阻塞边均已明确 | 生命周期只准备/验收；只能生成垂直切片 Ticket，初始统一为 `ready-for-human`；必须留下 `ticket_decomposition_result_ref` 和 `vertical_slice_ticket_ref` |
+| `implement`（用户显式） | `ready-for-agent` 公式、实现切片拆分与合同准入结果、垂直切片引用/类型/状态、Contract 已批准/持久化/版本一致、Build Architecture Checklist、实现仓库/分支/CI/验证命令/回滚点，以及后端 Contract（适用时）均满足 | 生命周期只准备/验收；单会话实现同样适用，不得绕过门禁；父 Ticket、`ready-for-human` 切片或跳过实现切片拆分与合同准入的 `next_route` 必须 `blocked` |
+
+`grill_exit` 不是“已经聊过”的自然语言声明。它必须同时证明 frontier 为空、事实已解决或分别路由到 `yss-research` / prototype / external input、用户决策已确认、双方共同理解已确认，并且没有未回流的 runnable blocker。
+
+按 `planning.clarification_policy` 主动开始必要澄清，调查、实验和专业审查分别取得证据，分轮仅询问前提已明确的必要决定。审阅包中的 `checks.grill_exit=passed` 表示澄清准备就绪；共同理解总述与完整当前 Plan 审阅包合并展示，由同一真实回复确认。入口联合准备检查与当前 `gate.plan-approved` 决定后才判断完整退出；回复独立保存，不回写审阅包或依据，不增加批准阶段。
+
+`grilling` 每轮的问题、选项与建议、决定、影响的 FR/AC、决策人和原始回复引用，由本适配层按 `.template-spec/templates/clarification-log-template.md` 写入功能包 `clarification-log.md`，不修改上游 Skill；`to-spec` 只消费状态为 decided 的条目，open 条目留作 Spec 未决项。
+
+## Review 候选与 Git 授权
+
+YSS 调用 `code-review` 前必须形成 review input，至少包含 `review_mode`、`review_base_ref`、`implementation_candidate_ref`、`candidate_snapshot_ref`、`candidate_digest`、`spec_ref`、`ticket_ref`、`slice_contract_ref`、`build_architecture_checklist_ref` 和 `yss_execution_result_refs`，并满足 `.template-spec/process/orchestration-contract.yaml.review_input.manifest_required_by_mode`。Standards 还必须编译 `review_standards_route`：合同 `required_skills`、影响面专项检查输入、报告模板与 `finding_disposition`；机器检查按 `run_if_present` 执行。质量标准只从 `engineering-baseline` 引用，禁止在 review input 或切片中另起一份。命中高风险影响时，review input 还要引用 Doubt-Driven 主张 / 反证记录；缺少反证或残余风险未处理时返回 `blocked`。`committed` 审查 merge-base 到不可变 `HEAD`；`worktree` 一次捕获 merge-base 到 working tree 的 committed、staged、unstaged 和 untracked 内容，使用 `yss-worktree-candidate-v1` 规定的 raw path、uint64 big-endian 长度、tracked/untracked record 和不支持条目阻断规则计算 SHA-256，让所有参与审查者（人数按 `.template-spec/process/orchestration-contract.yaml.gate_consolidation`）消费同一不可变快照，并在返回和完成 checkpoint 复核摘要未变化。缺少输入、候选为空、专项覆盖缺失、未关闭 mandatory `violation`、适用行空白或摘要变化时返回 `blocked`，不能漏掉首轮适用项、另起通用审查 skill、由审查者改实现，或合并未重绑定的不同候选结论。`violation` 类 finding 交实现者在原合同路径修复，按差异、受影响结论 / 行为及依赖定向复审并重绑定；摘要变化、UI 或 `new_impacts` 不触发全轴默认或兜底，未知先调查。`drift` / `new_impacts` 使合同 `stale` 并回 实现合同编译器更新受影响合同；未受影响项须有可读比较依据才能复用。
+
+Matt `implement` 的通用提交指令不构成 YSS Git 授权。执行 commit 必须同时具备 `commit_authorized=true`、非空 `commit_scope` 和 `commit_authorization_ref`；执行 push 必须同时具备 `push_authorized=true`、非空 `push_scope` 和 `push_authorization_ref`。commit 与 push 分别检查，commit 授权不包含 push。`git-submodule` 还必须按仓授权、禁止 detached HEAD 提交，并先推子仓再更新父仓 gitlink。
+
+按既有 [用户决定协议](user-decisions.md)，编排器可以把具体 Git 动作、仓库和改动范围明确的真实用户回复整理成上述三字段，并保留可读原始来源，不要求用户再填写内部字段。结合可读原始上下文，指向明确范围的“做完提交”可整理为 commit 授权；泛泛的“继续”、实现授权、当前分支或测试通过不能补足动作和范围。字段缺失、来源不可读、授权撤回或动作超出范围时不执行对应 Git 动作，只记录 checkpoint 判断；不得补造同意或扩大原回复范围。
+
+## Setup readiness
+
+编排器先做幂等 readiness 检查。`missing` 时不得调用 `setup-matt-pocock-skills`，而是结构化暂停并请用户显式运行它。检查结果只能是：
+
+`ready`、`missing`、`conflict`、`degraded`、`not-applicable`。
+
+该检查每个任务只执行一次并缓存；只有 tracker、主远端、真实标签或配置变化时重查。
+
+证据必须覆盖实际 platform、五态 `label_check` 或 Local `Status:` 检查、`domain_layout`、`artifact_root` 和 `migration_ref`。已持久化 tracker 配置优先于主远端；配置之间或真实标签/Local 状态之间冲突时不覆盖。Local 主 tracker 使用 `.work/<feature>/` 完整功能包，不要求远程 Ticket；根 `.scratch/` 与 `docs/requirements/tickets/` 只可作为旧路径迁移来源。仅发现旧路径资产时返回迁移所需结果并暂停写入；新旧路径同时存在时返回 `conflict`。已选择的 GitHub/GitLab 暂不可用时才保留“待发布平台”草案，并在父 Ticket 保留目标平台、`publication: pending` 和 `pending_publication_to`。`template-source` 只执行 validate-only，不初始化具体产品 tracker。
+
+当 YSS 生命周期处于 active 状态时，Matt `to-spec` 中独立运行时的 `ready-for-agent` 发布提示由本适配层覆盖为 `ready-for-human`：Spec 必须先经过产品总体设计 / 功能架构、必要的设计与契约门禁，之后才由生命周期编排器决定垂直切片 Ticket 的 `ready-for-agent`。这只约束 YSS 编排下的状态写入，不修改 Matt skill 单独运行时的核心行为。
+
+`setup-matt-pocock-skills` 仅由用户显式启动。readiness=`missing` 时返回 `needs-human`、`requested_skill=setup-matt-pocock-skills` 和 `resume_route=setup-readiness`；仅发现旧路径资产仍进入 migration-check 并暂停写入。`ready` 直接继续，`conflict` 进入迁移裁决，`degraded` 保留待发布草案，`not-applicable` 仅验证模板契约。通用 setup 文案与 YSS tracker 合同冲突时，以 `.template-spec/agents/issue-tracker.md` 和本编排契约为准。
+
+### Local Markdown 兼容映射
+
+当 `.template-spec/agents/issue-tracker.md` 的 `platform` 为 `local-markdown` 时，Matt flow 的本地输出归一化为以下 YSS 载体：
+
+| Matt 产物 | Local 载体 |
+|---|---|
+| Plan | `.work/<feature>/plan/` |
+| Spec | `.work/<feature>/spec.md` |
+| Spec Delta | `.work/<feature>/spec-delta/` |
+| 功能父 Ticket | `.work/<feature>/parent-ticket.md` |
+| Wayfinder map | `.work/<feature>/map.md` |
+| 垂直切片 Ticket | `.work/<feature>/issues/NN-<slug>.md` |
+| 设计 / API / 架构草案 | `.work/<feature>/design/`、`api/`、`architecture/` |
+| 门禁 / 验证 / checkpoint | `.work/<feature>/gates/`、`verification/` |
+
+Local Ticket 的文件路径是稳定身份，顶部 `Status:` 保存 Matt 五态；远程 URL 只作为显式镜像引用。`ready-for-agent` 仍只能由生命周期编排器在所有必要门禁、阻塞边、实现上下文和 Slice Implementation Contract 满足后设置。
+
+## Phase boundary 优先级
+
+Matt 的上下文建议不能覆盖 YSS 的 phase-boundary 契约。固定按 `Continue → /clear → /handoff → subagent → /compact` 判断，`/clear` 不是每个 Ticket 的强制动作；任何选择都不得改变生命周期阶段、门禁或 Ticket 五态。
+
+## Release / Retrospective
+
+Release 和 Retrospective 是生命周期编排器拥有的工作单元，不由任何兼容流程隐式完成。进入发布或完成结论前必须重新取得 fresh verification、发布/回滚证据和独立审查结果；复盘同样必须有 fresh verification，再按模板治理规则回流 `AGENTS.md`、`CONTEXT.md`、ADR 或 Skill。

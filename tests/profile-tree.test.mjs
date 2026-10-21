@@ -33,10 +33,11 @@ test("FR-008：Profile 目录 = 内核 + _specialist + 该 Profile 的覆盖层�
   }
 });
 
-test("FR-006：现役 Profile 组合目录只保留 canonical 技能，不生成投影根", () => {
+test("FR-006：现役 Profile 保留 canonical 与 WorkBuddy 技能，不恢复历史投影根", () => {
   for (const profile of PROFILE_NAMES) {
     const tree = composeProfileTree(profile);
     assert.ok(fs.existsSync(path.join(tree, ".agents/skills")));
+    assert.ok(fs.existsSync(path.join(tree, ".codebuddy/skills")));
     for (const agent of [".claude", ".codex", ".cursor", ".pi"]) {
       assert.equal(fs.existsSync(path.join(tree, agent, "skills")), false, `${profile}: ${agent}/skills 不应存在`);
     }
@@ -74,14 +75,14 @@ test("FR-007：两端查询保留各自合同、输出结构与完整内容摘�
   }
 });
 
-test("FR-006：现役专用 Profile 的锁与注册表接受无投影模型并保留技能哈希", () => {
+test("FR-006：现役专用 Profile 的锁与注册表声明 WorkBuddy 投影并保留技能哈希", () => {
   for (const profile of ACTIVE_PROFILES) {
     const tree = composeProfileTree(profile);
     const lock = JSON.parse(fs.readFileSync(path.join(tree, "skills-lock.json"), "utf8"));
-    assert.deepEqual(lock.projectionRoots, []);
+    assert.deepEqual(lock.projectionRoots, [".codebuddy/skills"]);
     assert.deepEqual(lock.skills.platform, {});
     for (const entry of Object.values(lock.skills.shared)) {
-      assert.deepEqual(entry.targets, [".agents/skills"]);
+      assert.deepEqual(entry.targets, [".agents/skills", ".codebuddy/skills"]);
       assert.match(entry.effectiveHash, /^[0-9a-f]{64}$/);
     }
     for (const script of ["verify-skill-registry", "update-skill-lock"]) {
@@ -94,6 +95,6 @@ test("FR-006：现役专用 Profile 的锁与注册表接受无投影模型并�
     const readiness = JSON.parse(query.stdout).skill_readiness;
     assert.ok(readiness.required_skills.length > 0, `${profile}: 必须核验真实工作单元的技能`);
     assert.deepEqual(readiness.issues, []);
-    assert.equal(readiness.agent_runtime, null);
+    assert.equal(readiness.agent_runtime, "workbuddy");
   }
 });

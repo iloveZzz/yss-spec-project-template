@@ -1,0 +1,4 @@
+interface:
+  display_name: "yss-userinfo"
+  short_description: "YSS component skill for yss-userinfo"
+  default_prompt: "Use yss-userinfo for this YSS backend component task."

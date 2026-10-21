@@ -1,0 +1,26 @@
+# 方案决策包合同
+
+内部对象 `stage_decision_package` 是 Plan、需求/产品/商务决策与业务边界和规则设计之间的冻结入口。它记录“做什么、为什么做、范围是什么、哪些仍未决”，不复制业务边界与规则事实。
+
+## 必须包含
+
+- 问题陈述、目标用户、MVP、非目标，以及带稳定 ID、来源 ID 和证据的成功标准与可执行测试 seam；
+- 带稳定 ID、来源 ID 和证据的已确认决策、假设、约束，以及有责任人的未决项；
+- `context_snapshot`：只引用根 `CONTEXT.md`，并绑定结构化术语身份、全文摘要和引用集摘要；
+- `domain_strategy_ref`：领域战略合同的稳定 ID、版本、digest 和批准状态；
+- UI/API/Data/Backend/Frontend/跨仓/高风险影响面布尔值；
+- 每个消费者能力的稳定 `mapping_id`、领域来源 ID、传播方式、重新批准条件、证据引用和审查记录。专业检查的 `approval_ref` 指向可读取的 `check.stage-decision-package-approved` 单条记录，或包含该唯一结论的组合审查包；验证器按 check ID 选择并核验实际批准证据。approval3 不包含 `role_id`，已有无版本注解中的 `approval.approver` 只对历史批准记录比较。该检查结论汇入 `gate.plan-approved`，不单独暂停用户。
+
+## 未决项规则
+
+`blocker` 必须阻断批准；`deferred` 必须同时记录责任人、下一动作和目标版本/发布日期。没有责任人或恢复路径的未决项不得隐藏在备注中。
+
+## 下游消费规则
+
+只有 `approved` 且引用的领域战略为 `approved`、版本当前的阶段包，才可以进入 Spec synthesis。任何领域战略 digest、版本或影响面变化都使阶段包 `stale`，并要求重新评估。
+
+新写入阶段包使用 `schema_version: 3`，且只能引用 Domain Strategy v3。v2 仅只读；修改或重新交付须用 `scripts/migrate-contract-v3.mjs` 生成未批准的 `draft` 后补齐来源并重新批准。旧版字符串路径或 Markdown 锚点先通过上下文迁移器读取；无法唯一映射到 `<ContextId>/<EnglishIdentifier>` 时返回 `migration-required`，不得猜测。
+
+新治理政策的内嵌 `approval` 使用显式 `schema_version: 2`，引用实际 Plan 聚合批准，携带版本 2 `approval_context` 的真实主体、范围与依据，不填写 `approver`。这是资产注解版本，不能用批准记录的 `schema_version: 3` 替代。
+
+已有 v3 阶段包也可用 `migrate-contract-v3.mjs <asset.json> --kind stage-decision --root . --approval-context <context.json>` 显式迁移批准注解，规则见 [领域策略的批准注解迁移](domain-strategy-contract.md#批准注解迁移)。只输出未批准的新版本 `draft`，保留业务内容，不写原文件。先更新领域策略，再更新阶段包对其版本和摘要的绑定；实际批准与专业检查仍须复验。

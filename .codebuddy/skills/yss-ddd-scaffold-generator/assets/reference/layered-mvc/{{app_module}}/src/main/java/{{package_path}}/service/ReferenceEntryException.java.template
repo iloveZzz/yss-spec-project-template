@@ -1,0 +1,15 @@
+package {{base_package}}.service;
+
+public class ReferenceEntryException extends RuntimeException {
+    private static final long serialVersionUID = 1L;
+    private final String code;
+
+    public ReferenceEntryException(String code, String message) {
+        super(message);
+        this.code = code;
+    }
+
+    public String getCode() {
+        return code;
+    }
+}

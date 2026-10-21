@@ -1,0 +1,4 @@
+interface:
+  display_name: "Alibaba Java Code Style"
+  short_description: "Apply Alibaba Java development guidelines"
+  default_prompt: "Use $alibaba-java-code-style to implement or review Java code against Alibaba Java development conventions."

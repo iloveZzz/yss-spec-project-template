@@ -118,6 +118,22 @@
     {
       "path": "CONTEXT.md",
       "reason": "词汇表说明可能引用旧术语"
+    },
+    {
+      "path": ".codebuddy/skills/publish-skills-sh/references/yss-export.md",
+      "reason": "WorkBuddy 完整普通投影保留 canonical 的发布说明中的历史入口说明；资源身份检查约束副本一致，仅允许此文件"
+    },
+    {
+      "path": ".codebuddy/skills/yss-implementation-contract-compiler/tests/compiler-scenarios.test.mjs",
+      "reason": "WorkBuddy 完整普通投影保留 canonical 的以旧 ID 为拒绝输入的回归；资源身份检查约束副本一致，仅允许此文件"
+    },
+    {
+      "path": ".codebuddy/skills/yss-prototype-stage/tests/run-scenarios.mjs",
+      "reason": "WorkBuddy 完整普通投影保留 canonical 的以旧组件名为输入的回归夹具；资源身份检查约束副本一致，仅允许此文件"
+    },
+    {
+      "path": ".codebuddy/skills/yss-up-springboot3/SKILL.md",
+      "reason": "WorkBuddy 完整普通投影保留 canonical 的禁止虚构退役组件的指令；资源身份检查约束副本一致，仅允许此文件"
     }
   ]
 }

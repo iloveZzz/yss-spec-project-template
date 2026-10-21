@@ -1,0 +1,5 @@
+version: 1
+interface:
+  display_name: "YSS Repository"
+  short_description: "按架构 Profile 实现并验证 YSS 持久层结构"
+  default_prompt: "Use $yss-repository to route and implement persistence structures from an approved architecture profile and contract without inventing domain, service, or API contracts."

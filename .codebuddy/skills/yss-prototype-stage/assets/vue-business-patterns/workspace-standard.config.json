@@ -1,0 +1,6 @@
+{
+  "schema_version": 1,
+  "title": "YSS 企业工作区",
+  "entry": "workspace-standard.ts",
+  "scenarios": "workspace.scenarios.json"
+}

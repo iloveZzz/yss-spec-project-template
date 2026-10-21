@@ -1,0 +1,15 @@
+package {{base_package}};
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+/**
+ * {{project_name}} 服务的机械启动入口。
+ */
+@SpringBootApplication(scanBasePackages = "{{base_package}}")
+public class {{application_class_name}} {
+
+    public static void main(String[] args) {
+        SpringApplication.run({{application_class_name}}.class, args);
+    }
+}

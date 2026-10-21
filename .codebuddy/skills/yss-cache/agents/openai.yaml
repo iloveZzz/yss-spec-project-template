@@ -1,0 +1,5 @@
+version: 1
+interface:
+  display_name: "YSS Cache"
+  short_description: "YSS 缓存注解、Redis 拓扑、降级与序列化诊断"
+  default_prompt: "Use $yss-cache to configure or diagnose YSS cache annotations, Redis topology, fallback, TTL, and serialization behavior."

@@ -1,0 +1,14 @@
+package {{base_package}}.{{web_package}}.convertor;
+
+import {{base_package}}.{{app_package}}.command.ReferenceEntryCommand;
+import {{base_package}}.{{app_package}}.result.ReferenceEntryResult;
+import {{base_package}}.{{web_package}}.dto.ReferenceEntryRequest;
+import {{base_package}}.{{web_package}}.vo.ReferenceEntryVO;
+import org.mapstruct.Mapper;
+import org.mapstruct.ReportingPolicy;
+
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
+public interface ReferenceEntryWebConvertor {
+    ReferenceEntryCommand toCommand(ReferenceEntryRequest request);
+    ReferenceEntryVO toVO(ReferenceEntryResult result);
+}

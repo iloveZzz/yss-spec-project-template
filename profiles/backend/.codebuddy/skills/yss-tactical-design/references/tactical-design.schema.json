@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yss.dev/schemas/tactical-design.schema.json",
+  "title": "YSS Tactical DDD Design Contract",
+  "type": "object",
+  "required": ["schema_version", "tactical_design_id", "tactical_version", "status", "context_ref", "aggregate_catalog", "entity_catalog", "value_object_catalog", "behavior_catalog", "invariant_catalog", "state_transition_catalog", "consistency_policy", "domain_event_catalog", "gateway_catalog", "persistence_mapping", "test_seams", "adr_candidates", "upstream_impact", "version", "digest", "evidence_refs"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "tactical_design_id": {"type": "string", "pattern": "^tactical-design\\.[a-z0-9][a-z0-9-]*$"},
+    "tactical_version": {"type": "string", "pattern": "^v[0-9]+$"},
+    "status": {"enum": ["draft", "ready-for-human", "approved", "blocked", "stale", "drift", "new_impacts", "not-applicable"]},
+    "context_ref": {"type": "string", "minLength": 1},
+    "aggregate_catalog": {"type": "array", "minItems": 1},
+    "entity_catalog": {"type": "array", "minItems": 1},
+    "value_object_catalog": {"type": "array"},
+    "behavior_catalog": {"type": "array", "minItems": 1},
+    "invariant_catalog": {"type": "array", "minItems": 1},
+    "state_transition_catalog": {"type": "array", "minItems": 1},
+    "consistency_policy": {"type": "object", "minProperties": 1},
+    "domain_event_catalog": {"type": "array"},
+    "gateway_catalog": {"type": "array", "minItems": 1},
+    "persistence_mapping": {"type": "array", "minItems": 1},
+    "test_seams": {"type": "array", "minItems": 1},
+    "adr_candidates": {"type": "array"},
+    "upstream_impact": {"type": "object", "minProperties": 1},
+    "version": {"type": "string", "pattern": "^v[0-9]+$"},
+    "digest": {"type": "string", "pattern": "^sha256:[A-Fa-f0-9]{64}$"},
+    "evidence_refs": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": true
+}

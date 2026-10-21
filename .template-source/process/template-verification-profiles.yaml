@@ -977,6 +977,31 @@ profiles:
         depends_on: []
         failure_mode: "Profile 的组合目录没有按「内核 < _specialist < Profile
           覆盖层」取值、技能投影复活、锁或注册表仍依赖投影，或 checkpoint 仍接受已不存在的专职仓 --root"
+      - id: check.workbuddy-skills
+        run: "node --test .template-source/tooling/node/test/workbuddy-projection.test.mjs tests/workbuddy-entry.test.mjs tests/skill-sync-efficiency.test.mjs .template-source/tooling/node/test/skill-discovery.test.mjs"
+        group: skills
+        inputs_complete: true
+        input_patterns:
+          - ".gitattributes"
+          - "scripts/lib/workbuddy-projection.mjs"
+          - ".template-source/tooling/node/test/workbuddy-projection.test.mjs"
+          - "scripts/lib/skill-discovery.mjs"
+          - "scripts/inspect-skill-discovery"
+          - ".template-source/tooling/node/test/skill-discovery.test.mjs"
+          - "tests/workbuddy-entry.test.mjs"
+          - "tests/skill-sync-efficiency.test.mjs"
+          - ".codebuddy/skills/**"
+          - ".codebuddy/skills/*/**"
+          - "skills-lock.json"
+          - "profiles/backend/.codebuddy/skills/**"
+          - "profiles/backend/skills-lock.json"
+          - "profiles/backend/scripts/lib/skill-supply-chain.mjs"
+          - "profiles/backend/.template-spec/agents/yss-skill-registry.yaml"
+          - "scripts/lib/instance-metadata.mjs"
+          - ".template-source/distribution/bundle-profile.json"
+          - "profiles/backend/.template-source/distribution/bundle-profile.json"
+        depends_on: []
+        failure_mode: "WorkBuddy 普通投影缺失、冲突覆盖、Profile 或受管元数据与锁不一致"
       - id: check.skill-supply-chain-unit
         run: "node --test
           .template-source/tooling/node/test/skill-supply-chain.test.mjs"
@@ -985,8 +1010,9 @@ profiles:
         input_patterns:
           - ".template-source/tooling/node/test/skill-supply-chain.test.mjs"
           - "scripts/lib/skill-supply-chain.mjs"
+          - "scripts/lib/workbuddy-projection.mjs"
         depends_on: []
-        failure_mode: "根投影根偏离 .claude/skills，或 Skill 派生文件和引用规范化不一致"
+        failure_mode: "根投影根偏离 Claude/WorkBuddy 声明，或 Skill 派生文件和引用规范化不一致"
       - id: check.1ebcb1124ce67eb1
         run: "node --test scripts/fixtures/contract-efficiency/api-v2.test.mjs
           tests/api-contract-decision.test.mjs"
@@ -1196,6 +1222,7 @@ profiles:
           - "skills-lock.json"
           - ".template-spec/agents/yss-skill-registry.yaml"
           - "scripts/lib/skill-supply-chain.mjs"
+          - "scripts/lib/workbuddy-projection.mjs"
           - "tests/claude-entry.test.mjs"
           - ".codex/skills/*"
           - ".codex/skills/*/**"
@@ -1551,10 +1578,12 @@ profiles:
           - ".cursor/skills/**"
           - ".pi/skills/**"
           - ".claude/skills/**"
+          - ".codebuddy/skills/**"
           - "skills-lock.json"
           - "scripts/sync-skills"
           - "scripts/update-skill-lock"
           - "scripts/lib/skill-supply-chain.mjs"
+          - "scripts/lib/workbuddy-projection.mjs"
         depends_on: []
         failure_mode: "技能投影缺失或与 canonical 字节不一致的错误"
       - id: "check.skill-lock-current"
@@ -1565,10 +1594,12 @@ profiles:
           - ".cursor/skills/**"
           - ".pi/skills/**"
           - ".claude/skills/**"
+          - ".codebuddy/skills/**"
           - "skills-lock.json"
           - "scripts/sync-skills"
           - "scripts/update-skill-lock"
           - "scripts/lib/skill-supply-chain.mjs"
+          - "scripts/lib/workbuddy-projection.mjs"
         depends_on: []
         failure_mode: "技能锁摘要与当前内容不一致的错误"
       - id: check.skill-lock-readers
@@ -1578,6 +1609,7 @@ profiles:
         input_patterns:
           - "skills-lock.json"
           - "scripts/lib/skill-supply-chain.mjs"
+          - "scripts/lib/workbuddy-projection.mjs"
           - "scripts/lib/lifecycle-context-query.mjs"
           - "scripts/lib/lifecycle-context-query-core.mjs"
           - "scripts/query-lifecycle-context"
@@ -1632,6 +1664,7 @@ profiles:
           - ".cursor/skills/**"
           - ".pi/skills/**"
           - ".claude/skills/**"
+          - ".codebuddy/skills/**"
           - "scripts/verify-skill-governance"
           - "scripts/lib/skill-governance.mjs"
           - ".cursorrules"
@@ -1663,6 +1696,7 @@ profiles:
         inputs_complete: true
         input_patterns:
           - "scripts/lib/skill-supply-chain.mjs"
+          - "scripts/lib/workbuddy-projection.mjs"
           - "tests/skill-sync-efficiency.test.mjs"
           - "profiles/*/scripts/lib/skill-supply-chain.mjs"
           - "profiles/*/skills-lock.json"
@@ -2186,6 +2220,7 @@ profiles:
           - ".template-source/process/retired-skill-scan-policy.json"
           - "scripts/lib/skill-retirement.mjs"
           - "scripts/lib/skill-supply-chain.mjs"
+          - "scripts/lib/workbuddy-projection.mjs"
           - "scripts/verify-retired-skill-ids"
           - "tests/retired-skill-ids.test.mjs"
         depends_on: []
@@ -2204,6 +2239,7 @@ profiles:
           - ".template-spec/process/lifecycle-registry.yaml"
           - "scripts/lib/profile-tree.mjs"
           - "scripts/lib/skill-supply-chain.mjs"
+          - "scripts/lib/workbuddy-projection.mjs"
           - "tests/profile-consistency.test.mjs"
           - .template-source/plugins/yss-product-design/**
         depends_on: []
@@ -2653,6 +2689,8 @@ syntax_files:
   - tests/verification-selection.test.mjs
   - tests/verification-delivery-run.test.mjs
 routing:
+  - patterns: [".gitattributes", ".codebuddy/skills/**", "tests/workbuddy-entry.test.mjs", ".template-source/tooling/node/test/workbuddy-projection.test.mjs"]
+    groups: [skills]
   - patterns:
       - .template-source/scripts/replay-lifecycle-triage
       - tests/lifecycle-triage-replay.test.mjs

@@ -1,7 +1,8 @@
 {
   "manifest": {
     "allowFiles": [
-      ".template-spec/adr/README.md"
+      ".template-spec/adr/README.md",
+      ".codebuddy/skills"
     ],
     "allowRootEntries": [
       ".agents",

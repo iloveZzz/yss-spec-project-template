@@ -27,6 +27,7 @@ test("FR-006：大型 Git 清单下技能同步不再检查或删除用户保留
     git(["update-index", "--index-info"], inventory);
     mkdirSync(path.join(root, "scripts/lib"), { recursive: true });
     cpSync(new URL("../../../../scripts/lib/skill-supply-chain.mjs", import.meta.url), path.join(root, "scripts/lib/skill-supply-chain.mjs"));
+    cpSync(new URL("../../../../scripts/lib/workbuddy-projection.mjs", import.meta.url), path.join(root, "scripts/lib/workbuddy-projection.mjs"));
     mkdirSync(path.join(root, ".codex/skills/unlocked"), { recursive: true });
     writeFileSync(path.join(root, ".codex/skills/unlocked/SKILL.md"), "unlocked");
     git(["add", ".codex/skills/unlocked/SKILL.md"]);
@@ -68,8 +69,8 @@ test("physical canonical skills must be present in the lock", () => {
   );
 });
 
-test("FR-006：根只保留 Claude Code 需要的 .claude/skills 投影根", () => {
-  assert.deepEqual(PROJECTION_ROOTS, [".claude/skills"]);
+test("WorkBuddy：根声明 Claude 与 WorkBuddy 两个必要投影根", () => {
+  assert.deepEqual(PROJECTION_ROOTS, [".claude/skills", ".codebuddy/skills"]);
 });
 
 test("nested SKILL.md files cannot bypass external skill registration", () => {

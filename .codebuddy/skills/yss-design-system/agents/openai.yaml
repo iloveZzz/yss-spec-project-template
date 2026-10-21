@@ -1,0 +1,5 @@
+version: 1
+interface:
+  display_name: "YSS Design System"
+  short_description: "YSS 产品设计系统与 Ant Design 风格基线"
+  default_prompt: "Use $yss-design-system to design or review a YSS UI against the project design system."

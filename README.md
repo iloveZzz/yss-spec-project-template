@@ -118,3 +118,7 @@ PR 执行 `scripts/verify-template-fast --base <完整 SHA>`；显式 main 集�
 ## 按职责使用与升级
 
 [现行家族用户手册](.template-spec/user-guide/用户手册.md)提供选型、初始化及升级；[设备借用贯穿案例](.template-spec/user-guide/设备借用贯穿案例.md)演示战略、后端、前端与统一验收。[全部手册](.template-spec/user-guide/用户手册索引.md)给出本体和子项目入口。GitHub 当前能力、npm 发布版本与实例模板快照分别核对。
+
+## WorkBuddy 接入
+
+WorkBuddy 项目级技能适配使用 `.codebuddy/skills` 普通文件投影，由 `.agents/skills` 统一生成。Spec 只为已安装技能及依赖分发投影；Backend 保持全量 Profile 语义。已有实例通过支持该适配的 CLI 显式 `sync`，查询不会自动迁移或补装平台。首次会话显式要求读取根 `AGENTS.md` 和 `CONTEXT.md`；调用前用 `yss skills resolve <id> --agent-runtime workbuddy --root <项目根> --json` 核验文件。桌面入口、发现与刷新行为尚需实机验证，不能因文件 ready 声明已验收。

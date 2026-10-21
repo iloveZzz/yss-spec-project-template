@@ -1,0 +1,324 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yss.example/schemas/competitive-analysis-v1.schema.json",
+  "title": "YSS competitive analysis evidence extension v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "output_selection",
+    "as_of",
+    "comparison_scope",
+    "competitors",
+    "capabilities",
+    "assessments",
+    "artifacts"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "output_selection": {
+      "enum": [
+        "matrix",
+        "report",
+        "both"
+      ]
+    },
+    "as_of": {
+      "type": "string",
+      "format": "date"
+    },
+    "comparison_scope": {
+      "$ref": "#/$defs/text"
+    },
+    "competitors": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name",
+          "type",
+          "product",
+          "version",
+          "edition",
+          "region"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/id"
+          },
+          "name": {
+            "$ref": "#/$defs/text"
+          },
+          "type": {
+            "enum": [
+              "direct",
+              "indirect",
+              "substitute",
+              "adjacent",
+              "our-product"
+            ]
+          },
+          "product": {
+            "$ref": "#/$defs/text"
+          },
+          "version": {
+            "$ref": "#/$defs/text"
+          },
+          "edition": {
+            "$ref": "#/$defs/text"
+          },
+          "region": {
+            "$ref": "#/$defs/text"
+          }
+        }
+      }
+    },
+    "capabilities": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "module",
+          "name",
+          "definition",
+          "user_value"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/id"
+          },
+          "module": {
+            "$ref": "#/$defs/text"
+          },
+          "name": {
+            "$ref": "#/$defs/text"
+          },
+          "definition": {
+            "$ref": "#/$defs/text"
+          },
+          "user_value": {
+            "$ref": "#/$defs/text"
+          }
+        }
+      }
+    },
+    "assessments": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "competitor_id",
+          "capability_id",
+          "status",
+          "claim_refs",
+          "limitations",
+          "gap"
+        ],
+        "properties": {
+          "competitor_id": {
+            "$ref": "#/$defs/id"
+          },
+          "capability_id": {
+            "$ref": "#/$defs/id"
+          },
+          "status": {
+            "enum": [
+              "supported",
+              "partial",
+              "absent",
+              "unknown"
+            ]
+          },
+          "claim_refs": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "$ref": "#/$defs/text"
+            }
+          },
+          "limitations": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "$ref": "#/$defs/text"
+            }
+          },
+          "gap": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/$defs/gap"
+              }
+            ]
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "status": {
+                  "const": "unknown"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "gap": {
+                  "$ref": "#/$defs/gap"
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "claim_refs": {
+                  "minItems": 1
+                }
+              }
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "status": {
+                  "const": "partial"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "limitations": {
+                  "minItems": 1
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "artifacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "matrix": {
+          "$ref": "#/$defs/filename"
+        },
+        "report": {
+          "$ref": "#/$defs/filename"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "output_selection": {
+            "const": "matrix"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "artifacts": {
+            "required": [
+              "matrix"
+            ],
+            "properties": {
+              "report": false
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "output_selection": {
+            "const": "report"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "artifacts": {
+            "required": [
+              "report"
+            ],
+            "properties": {
+              "matrix": false
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "output_selection": {
+            "const": "both"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "artifacts": {
+            "required": [
+              "matrix",
+              "report"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9._-]*$",
+      "not": {
+        "pattern": "\\s"
+      }
+    },
+    "filename": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^/\\\\]+\\.md$",
+      "not": {
+        "pattern": "[\\u0000-\\u001f\\u007f]"
+      }
+    },
+    "gap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reason",
+        "next_step"
+      ],
+      "properties": {
+        "reason": {
+          "$ref": "#/$defs/text"
+        },
+        "next_step": {
+          "$ref": "#/$defs/text"
+        }
+      }
+    }
+  }
+}

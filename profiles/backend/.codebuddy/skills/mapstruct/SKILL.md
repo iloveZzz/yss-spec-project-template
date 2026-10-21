@@ -1,0 +1,34 @@
+---
+name: mapstruct
+description: "实现或排查 MapStruct DTO、PO、Domain 映射及 Lombok 集成；核验字段完整性与更新语义。"
+---
+# MapStruct Object Mapping
+
+执行路线消费当前 Profile 主控合同的 `request_triage.delivery_path` 与固定 CLI 的 `route` / `verify-daily` 结果。仅已启用且合格的 Spec、Backend、Frontend `daily` 使用同一 Ticket 的范围、验收、工程基线、实际测试与独立审查；本端写范围不扩大。缺政策或能力时保持正式路径，已有正式任务不得降级；本技能不授予执行授权。
+
+只读排障先核验实际对象、工程基线和处理器配置。`governed` 写入消费批准且当前的 Slice/work unit；合格 `daily` 写入消费同 Ticket 的对象、验收、已有工程处理器基线与实际 `scope.paths`，不因缺 Slice 补造正式资产。
+
+## YSS 阶段 7 执行结果
+
+- Java、依赖与处理器版本来自工程基线，不从下面通用示例推断。Java 语法、API、处理器与测试工具均消费当前路线已核验的精确平台事实（`daily` 为同 Ticket 的已有工程基线，`governed` 为批准配置）；MVC 的 wire/internal 转换在 server，core/service 不依赖 client，Repository 不依赖上层 DTO。采用 Spring Bean 和构造器注入，显式映射或忽略字段；禁止通过全局 IGNORE 掩盖合同字段遗漏。
+- `governed` 消费批准后的 Slice Contract/work unit；合格 `daily` 消费同 Ticket 已确认的对象与 seam，只在实际允许路径内调整 DTO/VO/PO/Domain 转换。
+- 受控生成必须记录 source/target、忽略字段、更新语义、Lombok processor 配置和 mapper 行为测试。
+- `daily` 在同 Ticket 返回实际文件、适用注解/转换约束、真实编译/测试命令与退出码，接受当前候选的独立审查；`governed` 按 `yss-implementation-contract-compiler` 的正式 Execution Result 返回。未映射字段、反射/BeanUtils 退化或越界路径返回 `violation`。
+
+## 按需读取
+
+先确认当前任务涉及的对象与有效输入（`daily` 同 Ticket/已有工程基线，`governed` 批准合同），只读取对应参考段落：
+
+| 任务 | 参考 |
+|---|---|
+| 字段、嵌套对象或集合转换 | [Basic Mapper / Field Mapping / Collection Mapping](references/annotation-examples.md) |
+| 局部或全量更新、null 语义 | [Update Mapping](references/annotation-examples.md#update-mapping) |
+| 编译不生成实现或 Lombok 集成 | [Maven Configuration](references/annotation-examples.md#maven-configuration) |
+
+优先复用工程已有 MapperConfig。新增目标字段须显式映射或按合同忽略，不能用全局 `ReportingPolicy.IGNORE` 消除遗漏。局部更新与全量替换的 null 语义来自合同，不能从示例推断。
+
+按变更验证字段覆盖、null、更新和边界值；处理器调整需实际编译。不要把所有参考示例当作必跑清单。
+
+查第三方行为时使用 `yss-research`，来源为 [MapStruct 官方文档](https://mapstruct.org/documentation/stable/reference/html/)；不假定某个 MCP 工具已安装。
+
+聚合重建使用领域工厂或有测试的显式映射方法；MapStruct 只承担机械映射，不得为处理器增加破坏不变量的 setter。该方式不豁免字段覆盖、null 语义和往返一致性验证。

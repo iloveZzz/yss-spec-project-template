@@ -25,7 +25,9 @@
       "yss-project.yaml",
       "yss-public-skills.json"
     ],
-    "allowFiles": [],
+    "allowFiles": [
+      ".codebuddy/skills"
+    ],
     "excludeRootEntries": [
       ".git",
       ".codegraph",
@@ -140,7 +142,9 @@
       ".agents/skills/yss-design-system/references/data-quality-theme.md",
       ".claude/skills/yss-design-system/SKILL.md",
       ".claude/skills/yss-design-system/references/data-quality-theme.md",
-      "yss-project.yaml"
+      "yss-project.yaml",
+      ".codebuddy/skills/yss-design-system/SKILL.md",
+      ".codebuddy/skills/yss-design-system/references/data-quality-theme.md"
     ],
     "exampleDocPaths": [],
     "initExcludeRootEntries": [],
