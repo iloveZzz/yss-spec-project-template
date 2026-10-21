@@ -9,13 +9,23 @@ import {pilotFixture} from './pilot-fixture.mjs';
 import {prepareSliceImplementationContract,persistSliceDraft} from '../../lib/slice-contract-preparation.mjs';
 import {readSliceContract} from '../../lib/slice-contract.mjs';
 import {renderSliceContractView} from '../../lib/slice-contract-views.mjs';
+import {stringify} from '../../vendor/yaml.mjs';
+
+// Seed archived inputs only after proving the public writer rejects legacy governance.
+function seedHistoricalDraft(f,result,ref){
+ assert.throws(()=>persistSliceDraft(result,ref,{root:f.root}),/GOVERNANCE_MIGRATION_REQUIRED/);
+ assert.equal(fs.existsSync(path.join(f.root,ref)),false);
+ assert.equal(fs.existsSync(path.join(f.root,ref+'.preparation.json')),false);
+ const binding=f.write(ref,stringify({slice_contract:result.slice_contract}));
+ f.write(ref+'.preparation.json',{binding,...result.report});
+}
 
 test('frozen Ticket keeps tracker updates outside the requirement binding and rejects changed requirements',()=>{
  const f=pilotFixture();try {
   const prepared=prepareSliceImplementationContract({root:f.root,ticket_ref:f.ticket,sources:{...f.sources,ticket:{ref:f.ticket,version:'v1'}},refinements:f.refinements});
   assert.equal(prepared.slice_contract.ticket_policy?.mode,'frozen-requirements');
   assert.equal(prepared.slice_contract.status,'ready-for-lifecycle-review',JSON.stringify(prepared.report));
-  persistSliceDraft(prepared,'round2.yaml',{root:f.root});
+  seedHistoricalDraft(f,prepared,'round2.yaml');
   const before=readSliceContract('round2.yaml',{root:f.root}).binding;
   f.write('task-progress.json',{status:'active',acceptance_results:{'AC-1':'passed'}});
   assert.deepEqual(readSliceContract('round2.yaml',{root:f.root}).binding,before);
@@ -45,7 +55,7 @@ test('preparation reports independent missing sources together and blocked draft
   assert.ok(result.report.blockers.some(b=>b.field==='basis.engineering_baseline'&&b.code==='SLICE_SOURCE_UNREADABLE'));
   assert.ok(result.report.blockers.every(b=>b.responsibility&&b.recovery&&b.code));
   assert.ok(result.report.checks.some(c=>c.result==='not-executed'));
-  persistSliceDraft(result,'blocked.yaml',{root:f.root});
+  seedHistoricalDraft(f,result,'blocked.yaml');
   const view=renderSliceContractView('blocked.yaml',{root:f.root});
   assert.equal(view.diagnostic_only,true);
   assert.equal(view.binding.digest.length,71);
@@ -55,7 +65,7 @@ test('preparation reports independent missing sources together and blocked draft
 
 test('review reads each aliased source once and exposes missing explanations without repeating acceptance',()=>{
  const f=pilotFixture();try {
-  persistSliceDraft(f.prepared,'review.yaml',{root:f.root});
+  seedHistoricalDraft(f,f.prepared,'review.yaml');
   const original=fs.readFileSync,counts=new Map();
   fs.readFileSync=function(file,...args){const key=String(file);counts.set(key,(counts.get(key)||0)+1);return original.call(this,file,...args);};
   let view;try{view=renderSliceContractView('review.yaml',{root:f.root});}finally{fs.readFileSync=original;}
@@ -66,7 +76,7 @@ test('review reads each aliased source once and exposes missing explanations wit
  }finally{f.cleanup();}
 });
 
-test('registered cross-repo preparation and approved dispatch keep same-name paths and cwd distinct',async()=>{
+test('historical cross-repo inspection keeps same-name paths distinct and refuses new dispatch',async()=>{
  const {crossRepoFixture}=await import('./cross-repo-fixture.mjs');
  const {createApprovedExecutionContext,assertApprovedExecutionContext}=await import('../../lib/approved-execution-context.mjs');
  const {compileSliceTaskPackage}=await import('../../lib/slice-task-package.mjs');
@@ -74,11 +84,12 @@ test('registered cross-repo preparation and approved dispatch keep same-name pat
  const f=crossRepoFixture();try {
   const n=normalizeSliceContract(f.contract,{root:f.root});assert.equal(Object.keys(n.repositories).length,2);
   const approved=f.approve();
-  assert.throws(()=>createApprovedExecutionContext(approved.binding,{root:f.root}),/work_unit_id/);
-  const execution=createApprovedExecutionContext(approved.binding,{root:f.root,work_unit_id:'work-unit.peer'});
-  assert.equal(assertApprovedExecutionContext(execution,{root:f.root}).contract.resolution.architecture_identity.repository_id,'synthetic-peer');
-  const task=compileSliceTaskPackage(approved.binding,{root:f.root,work_unit_id:'work-unit.peer',task_id:'task.peer',actor_id:'peer.worker',runtime_id:'runtime.generic'});
-  assert.match(task.objective,/peer/);
+  assert.throws(()=>createApprovedExecutionContext(approved.binding,{root:f.root}),/GOVERNANCE_MIGRATION_REQUIRED/);
+  assert.throws(()=>createApprovedExecutionContext(approved.binding,{root:f.root,readOnly:true}),/work_unit_id/);
+  const execution=createApprovedExecutionContext(approved.binding,{root:f.root,work_unit_id:'work-unit.peer',readOnly:true});
+  assert.equal(assertApprovedExecutionContext(execution,{root:f.root,readOnly:true}).contract.resolution.architecture_identity.repository_id,'synthetic-peer');
+  assert.throws(()=>assertApprovedExecutionContext(execution,{root:f.root}),/EXECUTION_CONTEXT_READ_ONLY/);
+  assert.throws(()=>compileSliceTaskPackage(approved.binding,{root:f.root,work_unit_id:'work-unit.peer',task_id:'task.peer',actor_id:'peer.worker',runtime_id:'runtime.generic'}),/GOVERNANCE_MIGRATION_REQUIRED/);
   for(const profile of ['backend']) {
     const receiver=await import(pathToFileURL(path.join(composeProfileTree(profile),'scripts/lib/slice-contract.mjs')).href);
     assert.throws(()=>receiver.readSliceContract(approved.binding.ref,{root:f.root}),/不支持当前来源/);
@@ -99,7 +110,8 @@ test('cross-repo execution result rejects same-name evidence substitution and mi
  const {validateExecutionResult,loadCompilerContract}=await import('../../lib/implementation-contract-compiler.mjs');
  const {loadSkillRegistry}=await import('../../lib/skill-registry.mjs');
  const f=crossRepoFixture();try {
-  const {binding}=f.approve(),current={root:f.root,approved_slice:binding,registry:loadSkillRegistry(),compilerContract:loadCompilerContract()};
+  // Validate archived results without granting permission for a new implementation.
+  const {binding}=f.approve(),current={root:f.root,approved_slice:binding,readOnly:true,registry:loadSkillRegistry(),compilerContract:loadCompilerContract()};
   f.write('peer/results/test.log','synthetic peer result');f.write('project/results/test.log','synthetic source result');f.write('project/results/joint.log','synthetic joint result');
   const result={schema_version:2,status:'implemented',work_unit_id:'work-unit.peer',architecture_identity:f.contract.basis.peer_registration?JSON.parse(fs.readFileSync(path.join(f.root,'peer-registration.json'),'utf8')).architecture_identity:undefined,consumed_contract:{contract_id:f.contract.contract_id,contract_version:f.contract.contract_version,registry_digest:f.contract.resolution.registry_digest,compiler_contract_digest:f.contract.resolution.compiler_contract_digest},changed_files:[{path:'src/main/java/Example.java',project_root:f.peer}],evidence_files:[{path:'results/test.log',project_root:f.peer}],verification_results:[{command:'./mvnw test',cwd:f.peer,exit_code:0,executed_at:'2026-09-16T00:00:00Z'}],new_impacts:[]};
   bindSyntheticEvidence(result,f.contract,current);
