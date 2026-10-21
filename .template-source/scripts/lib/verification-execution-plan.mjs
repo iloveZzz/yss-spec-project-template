@@ -251,7 +251,9 @@ export function addVerificationExecutionTasks(plan,{root,repositoryMode='templat
     if(preparation.tasks.length){const tasks=[...preparation.tasks,...preparation.cleanupTask?[preparation.cleanupTask]:[]];plan.commands.unshift(...preparation.tasks);if(preparation.cleanupTask)append(preparation.cleanupTask);if(!plan.groups.includes('artifact-preparation'))plan.groups.unshift('artifact-preparation');if(preparation.cleanupTask&&!plan.groups.includes('cleanup'))plan.groups.push('cleanup');for(const gate of plan.gates||[]){const related=tasks.filter(task=>task.gate_ids.includes(gate.id));if(related.length){gate.selected=true;gate.selection_reason='four-family-release-preparation';gate.check_ids=[...new Set([...(gate.check_ids||[]),...related.map(task=>task.id)])];gate.task_ids=[...new Set([...(gate.task_ids||[]),...related.map(task=>task.task_id)])];}}}
   }
   if(!plan.commands.some(task=>task.task_id==='check.verification-environment')) {
-    const preflightPlan={source_requirement:plan.source_requirement,...daily?{strategy:plan.strategy}:{},commands:plan.commands.map(task=>({command:task.command,...daily?{resources:task.resources||[]}:{}}))};
+    // Node --check parses files without running their application dependencies.
+    // Keep the syntax tasks in the plan; Node itself is always checked by preflight.
+    const preflightPlan={source_requirement:plan.source_requirement,...daily?{strategy:plan.strategy}:{},commands:plan.commands.filter(task=>task.kind!=='syntax').map(task=>({command:task.command,...daily?{resources:task.resources||[]}:{}}))};
     const command=`${quote(process.execPath)} ${quote(path.join(root,'.template-source/scripts/lib/verification-preflight.mjs'))} --root ${quote(root)} --purpose ${quote(purpose)} --plan-json ${quote(JSON.stringify(preflightPlan))}`;
     plan.commands.unshift({id:'check.verification-environment',task_id:'check.verification-environment',kind:'preflight',group:'preflight',command,gate_ids:['check.verification-environment'],depends_on:[],...daily?{selection_reason:'selected-commands -> 所选命令所需工具缺失或版本错误；合同：fast 执行前置'}:{}});
     plan.groups.unshift('preflight');

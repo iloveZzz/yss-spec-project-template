@@ -4,10 +4,23 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
+import {spawnSync} from 'node:child_process';
 import {verificationPreflight,validateVerificationReportDirectory} from '../.template-source/scripts/lib/verification-preflight.mjs';
 import {PIN_FILE,platformKey} from '../.template-source/scripts/lib/yss-cli-pin.mjs';
 test('日常 Node 检查无需 Python 或无关子模块环境',()=>{
  const result=verificationPreflight({root:process.cwd(),nodeVersion:'v24.21.0',environment:{},plan:{strategy:'daily-necessary',commands:[{command:'node --test .template-source/tooling/node/test/plan-spec-quality.test.mjs'}]},probe:()=>{throw new Error('不应探测未选工具');}});
+ assert.equal(result.status,'passed',JSON.stringify(result.errors));
+ assert.deepEqual(result.observations.map(row=>row.name),['node']);
+});
+test('仅检查投影脚本语法不要求执行脚本所需的 Vue 工具链',async()=>{
+ const {addVerificationExecutionTasks}=await import('../.template-source/scripts/lib/verification-execution-plan.mjs');
+ const file='.codebuddy/skills/yss-prototype-stage/scripts/build-shadcn-vue-prototype.mjs';
+ const compiled=addVerificationExecutionTasks({strategy:'daily-necessary',source_requirement:'current',requested_profile:'fast',effective_profile:'fast',commands:[],changed_files:[file],syntax_files:[]},{root:process.cwd()});
+ assert.ok(compiled.commands.some(task=>task.kind==='syntax'&&task.command.endsWith(`'${file}'`)));
+ const preflight=compiled.commands.find(task=>task.kind==='preflight');
+ const child=spawnSync('/bin/sh',['-c',preflight.command],{cwd:process.cwd(),env:{},encoding:'utf8'});
+ assert.equal(child.status,0,child.stderr||child.stdout);
+ const result=JSON.parse(child.stdout);
  assert.equal(result.status,'passed',JSON.stringify(result.errors));
  assert.deepEqual(result.observations.map(row=>row.name),['node']);
 });
