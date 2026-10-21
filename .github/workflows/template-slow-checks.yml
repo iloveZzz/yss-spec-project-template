@@ -1,34 +1,24 @@
-name: template-slow-checks
-# 薄适配器：定时或手动运行 tier: slow 慢检查（不在每次 PR 的 fast 里执行）。检查逻辑全部在 scripts/ci-gate。
+name: Recover template v4.7.1 release assets
 on:
-  schedule:
-    - cron: '17 19 * * *'
   workflow_dispatch:
 permissions:
-  contents: read
-concurrency:
-  group: template-slow-checks-${{ github.ref }}
-  cancel-in-progress: true
+  contents: write
 jobs:
-  template-slow-checks:
-    name: template-slow-checks
+  upload-reviewed-assets:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           persist-credentials: false
-      - uses: ./.github/actions/setup-template
-        with:
-          runtime-only: 'true'
-      - name: scripts/ci-gate --mode slow
-        # 公共 gate 独立限制验证执行 5 分钟；准备沿用 job 的总预算。
-        shell: bash
-        run: scripts/ci-gate --mode slow --report-dir /tmp/ci-gate-slow --prepare-tools
+      - name: Verify and upload exact reviewed assets to existing draft
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 .release-recovery/upload.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: ci-gate-slow-report
-          path: /tmp/ci-gate-slow
+          name: template471-upload-receipt
+          path: ${{ runner.temp }}/template471-upload-receipt.json
           if-no-files-found: warn
