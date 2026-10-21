@@ -1,6 +1,6 @@
 # Matt / YSS 工作流适配
 
-本文件的工作单元预检、正式结果和阶段入口适用于 `governed` 或模板维护；显式兼容入口仍按其正式合同执行。普通任务先由当前 Spec 政策与支持的 CLI 判定，合格时按 [普通任务交付](daily-delivery.md) 使用 YSS 技术规则、测试和独立审查，不先建立正式阶段资产。旧 CLI 或其他 Profile 明确不支持，不以 Matt 通用指令越过原边界。
+本文件的工作单元预检、正式结果和阶段入口适用于 `governed` 或模板维护；显式兼容入口仍按其正式合同执行。普通任务先由当前 Spec 政策与支持的 CLI 判定，合格时按 [普通任务交付](daily-delivery.md) 使用 YSS 技术规则、测试和适用复核，不先建立正式阶段资产。旧 CLI 或其他 Profile 明确不支持，不以 Matt 通用指令越过原边界。
 
 上游来源是 [mattpocock/skills](https://github.com/mattpocock/skills)。固定提交、原始哈希和实际生效的 YSS 适配哈希以根 `skills-lock.json` 为准；补装使用模板快照中的适配版，不直接覆盖为上游最新版本。
 
@@ -40,6 +40,8 @@ scripts/query-lifecycle-context --work-unit work-unit.plan-requirements --check-
 
 Matt skills 决定如何工作；YSS 生命周期决定是否允许推进；YSS 专项 skills 决定如何符合工程规范。
 
+复核方式消费当前 Profile 的 `review_modes`：默认真实自检，明确用户要求或已知适用外部规则要求时执行独立复核，核验不同真实上下文、同一冻结候选和只读结果。Matt 兼容入口不新增固定审查人数；历史任务与批准仍按原政策核验，不用当前默认改写历史要求。
+
 生命周期默认使用 `work_unit_routes.*.native`；下表中的 Matt flow 是 `work_unit_routes.*.compatibility` 显式兼容输入。兼容入口的正式资产由用户创建并回交生命周期验收，原生工作单元的正式资产由生命周期编排器创建。
 
 ## 入口与仓库身份裁决
@@ -59,10 +61,11 @@ Matt skills 决定如何工作；YSS 生命周期决定是否允许推进；YSS 
 | 技术或战略事实 | `yss-research`（`research` 为 deprecated alias） | `technical-evidence` 核验一手技术资料；`strategy-evidence` 为领域战略和阶段决策提供可审计证据；研究包不得自行修改或批准下游资产 |
 | runnable 问题 | `prototype` | 生成单文件可分享 HTML，保留 `prototype/<name>` 分支作为主来源；必须有运行证据、结论、权威资产回填和未决项；source/return handoff 仅实际手动交接时需要，只能作为阶段 4 输入，不得替代低保真评审、H1/H2 档位路由、schema v4 验证和用户确认 |
 | Spec 综合 | 原生 `work-unit.spec-synthesis`；`to-spec`（用户显式兼容） | 初稿进入 `ready-for-human`，不得直接实现 |
-| 切片 | 原生 `work-unit.ticket-decomposition`；`to-tickets`（用户显式兼容） | 仅在冻结/无影响记录后拆垂直切片，初始 Ticket 状态为 `ready-for-human` |
+| 业务 Ticket | 原生 `work-unit.spec-synthesis` / `work-unit.business-ticket-formalization`；`to-tickets`（用户显式兼容） | Spec 起草、产品设计校准同一组业务票，保留 FR/AC 引用；不要求实现仓或 OpenAPI Freeze，正式化消费当前 Spec、适用设计批准与检查，不授予实现资格 |
+| 实现切片 | 原生 `work-unit.ticket-decomposition`；`to-tickets`（用户显式兼容） | 研发消费业务票细化垂直 Slice；技术分析可起草，正式化仍需正式业务集合、当前工程契约、仓库准备及适用冻结/无影响记录，主控完成合同批准和就绪校验后才可 `ready-for-agent` |
 | 实现 | 原生 `work-unit.slice-implementation`；`implement`（用户显式兼容） | 当前合同批准并持久化后执行；内部使用 `tdd`，结果回交后再次核验 |
 | Bug | `diagnosing-bugs`、`tdd` | 先建立红色反馈；高风险影响升级上游门禁 |
-| 审查 | `code-review` | 唯一默认代码审查入口；审查者独立且不得写实现；Standards 消费 Spec、仓库治理规则、Slice `required_skills` 和 YSS / Alibaba 专项检查输入；finding 按合同分流修复或 stale 回 实现合同编译器 |
+| 审查 | `code-review` | 唯一默认代码审查入口，按当前政策选择自检或所需独立复核；冻结候选复核期间只读；Standards 消费 Spec、仓库治理规则、Slice `required_skills` 和 YSS / Alibaba 专项检查输入；finding 按合同分流修复或 stale 回 实现合同编译器 |
 | 用户明确要求跨上下文交接 | `handoff` | 默认临时续接说明和产物引用；明确正式打包才走原冻结包协议 |
 | 阶段边界 | 生命周期 phase-boundary 合同 | 按 `Continue → /clear → /handoff → subagent → /compact` 选择上下文动作；只记录证据，不扩展生命周期状态 |
 | 解释未落地 | 普通对话与文档写作规范 | 只重新解释当前结论，不改变阶段、门禁、Ticket 或 `ready-for-agent` |
@@ -105,7 +108,8 @@ blocking_signals: []
 | Matt flow | 进入条件 | 生命周期结果 |
 |---|---|---|
 | `to-spec`（用户显式） | Plan work unit 或 `work-unit.plan-requirements` 已满足退出条件，且不存在未回流 runnable blocker；用户问题、MVP/非目标、成功标准、测试 seam 和术语审查均有证据，澄清决定已记入功能包 `clarification-log.md` | 生命周期只准备/验收；Spec 初稿为 `ready-for-human`，不等于批准；申请 Spec 基线批准前须有 `check.artifact-consistency-analyzed` 证据 |
-| `to-tickets`（用户显式） | OpenAPI Freeze 或 `no-api-impact` 记录、必要门禁、垂直切片范围和阻塞边均已明确 | 生命周期只准备/验收；只能生成垂直切片 Ticket，初始统一为 `ready-for-human`；必须留下 `ticket_decomposition_result_ref` 和 `vertical_slice_ticket_ref` |
+| `to-tickets`：业务 Ticket（用户显式） | 当前工作单元为 Spec 起草、产品设计校准或业务正式化；按当前 Spec、FR/AC、适用设计及已有集合起草或校准，不要求实现仓库或 OpenAPI Freeze；正式化另消费已有 Spec / 适用设计批准及当前专业检查 | 生命周期只准备/验收；业务票保持 `draft` / `ready-for-human`，集合保留引用与覆盖证据；不得授予实现资格 |
+| `to-tickets`：实现 Slice（用户显式） | 研发消费业务票细化；技术分析可起草，正式化须有正式业务集合、当前工程契约、实现仓库准备、适用 OpenAPI Freeze 或 `no-api-impact` 记录、必要门禁、切片范围和阻塞边 | 生命周期只准备/验收；正式实现切片初始为 `ready-for-human`；必须留下 `ticket_decomposition_result_ref` 和 `vertical_slice_ticket_ref`，合同批准和完整就绪检查后才可由主控提升 `ready-for-agent` |
 | `implement`（用户显式） | `ready-for-agent` 公式、实现切片拆分与合同准入结果、垂直切片引用/类型/状态、Contract 已批准/持久化/版本一致、Build Architecture Checklist、实现仓库/分支/CI/验证命令/回滚点，以及后端 Contract（适用时）均满足 | 生命周期只准备/验收；单会话实现同样适用，不得绕过门禁；父 Ticket、`ready-for-human` 切片或跳过实现切片拆分与合同准入的 `next_route` 必须 `blocked` |
 
 `grill_exit` 不是“已经聊过”的自然语言声明。它必须同时证明 frontier 为空、事实已解决或分别路由到 `yss-research` / prototype / external input、用户决策已确认、双方共同理解已确认，并且没有未回流的 runnable blocker。
@@ -159,4 +163,4 @@ Matt 的上下文建议不能覆盖 YSS 的 phase-boundary 契约。固定按 `C
 
 ## Release / Retrospective
 
-Release 和 Retrospective 是生命周期编排器拥有的工作单元，不由任何兼容流程隐式完成。进入发布或完成结论前必须重新取得 fresh verification、发布/回滚证据和独立审查结果；复盘同样必须有 fresh verification，再按模板治理规则回流 `AGENTS.md`、`CONTEXT.md`、ADR 或 Skill。
+Release 和 Retrospective 是生命周期编排器拥有的工作单元，不由任何兼容流程隐式完成。进入发布或完成结论前必须重新取得 fresh verification、发布/回滚证据和适用复核结果；明确独立复核要求不能由自检替代。复盘同样必须有 fresh verification，再按模板治理规则回流 `AGENTS.md`、`CONTEXT.md`、ADR 或 Skill。

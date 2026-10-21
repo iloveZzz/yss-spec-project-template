@@ -70,4 +70,4 @@ Spec Delta 仍只处理既有冻结基线的适用高风险变化，引用 FR/NF
 
 解析采用 [unified](https://github.com/unifiedjs/unified)、[remark-parse](https://github.com/remarkjs/remark/tree/main/packages/remark-parse)、[remark-gfm](https://github.com/remarkjs/remark-gfm)；frontmatter 使用现有 YAML 工具。维护侧由 pnpm 精确锁定和 vendor 构建分发；实例运行无须安装依赖。
 
-本轮始终为独立诊断，不接入阶段阻断。回退时停用诊断调用和新模板默认入口，保留已生成文档、格式读取能力及证据；不回写历史资产或恢复过期批准。升级门禁须另立变更。
+`inspect-plan-spec` 的单项诊断不直接改变阶段、批准或就绪状态；`analyze-artifacts` 汇总报告已作为上文所述的 Spec 基线批准证据，由现行生命周期门禁消费。回退可选诊断调用或创作格式时，保留已生成文档、格式读取能力及证据，不撤销现行汇总证据要求，也不回写历史资产或恢复过期批准。调整正式门禁及其证据要求须另立变更。
