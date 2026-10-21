@@ -69,8 +69,9 @@ function fixture(t, options) {
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   return buildPlanReviewFixture(root, options);
 }
+// The bounded professional Plan protocol is an explicit historical policy.
 function currentFixture(t) {
-  const installed = installedFixture(); t.after(() => installed.cleanup());
+  const installed = installedFixture('spec',{legacySpec:true}); t.after(() => installed.cleanup());
   const prepared = prepareProfessionalPlanFixture(installed, {outputDir: '.work/feature-demo/reviews/initial'});
   const {cpRef: checkpointRef, cp: checkpoint, options} = prepared;
   return {...installed, checkpointRef, checkpoint, options,

@@ -3,15 +3,22 @@ import fs from 'node:fs';import path from 'node:path';import assert from 'node:a
 import {installedFixture,hash} from './installed-fixture.mjs';import {professionalPlanFixture} from './professional-plan-fixture.mjs';
 import {parseContextContract,resolveContextTermRefs} from '../../lib/context-contract.mjs';import {parseSliceYaml} from '../../lib/slice-contract.mjs';
 import {digest} from '../../lib/strategic-handoff-io.mjs';import {finalizeDelivery,importBundle} from '../../lib/strategic-handoff.mjs';
+import {installLegacySpecPolicy} from '../../lib/testing/legacy-spec-policy.mjs';
 
 test('installed Spec completes role-free Handoff5; Backend imports Receipt3 while source is unavailable',async()=>{
  const previous=process.env.YSS_CHAIN_RESUME?JSON.parse(fs.readFileSync(process.env.YSS_CHAIN_RESUME)):null;
- const f=installedFixture('spec',{existingRoot:previous?.source,legacySpec:true}),receiver=installedFixture('backend',{existingRoot:previous?.receiver}),{root,read,write,asset,run}=f,feature='feature.demo',data=JSON.parse(fs.readFileSync(new URL('./handoff-data.json',import.meta.url)));
+ const f=installedFixture('spec',{existingRoot:previous?.source}),receiver=installedFixture('backend',{existingRoot:previous?.receiver}),{root,read,write,asset,run}=f,feature='feature.demo',data=JSON.parse(fs.readFileSync(new URL('./handoff-data.json',import.meta.url)));
  const doc=ref=>parseSliceYaml(read(ref)),bind=ref=>({...asset(ref),version:'v1',digest:'sha256:'+asset(ref).digest}),cpRef='.work/feature-demo/checkpoint.json',sourceSkillCommands=[];let delivery,imported;
  try{
   if(previous){f.calls.push(...previous.source_calls);receiver.calls.push(...previous.receiver_calls);}
   if(!fs.existsSync(path.join(root,'.agents/skills/yss-stage-decision/scripts/validate-domain-strategy.mjs'))){const plan=path.join(path.dirname(root),'source-skill-plan.json');run('plan-source-skill-install',['skills','ensure','yss-stage-decision','--plan','--out',plan]);run('apply-source-skill-install',['skills','--apply','--plan-file',plan]);}
   if(!previous){
+  // Finish managed installation before arranging the historical Handoff5 policy.
+  installLegacySpecPolicy(root);
+  for(const name of ['domain-strategy','stage-decision-package']){
+   const ref=`.template-spec/process/schemas/strategic-handoff-${name}-v3.schema.json`;
+   write(ref,fs.readFileSync(new URL('../../../'+ref,import.meta.url)));
+  }
   for(const [ref,bytes]of Object.entries(data.assets))write(ref,bytes);
   write('progression-target.json',{schema_version:1,kind:'lifecycle-progression-target',target:'spec-approved'});
   write('spec-input.json',{feature_id:feature,scope:{impacted_areas:['backend']},status:'draft'});
