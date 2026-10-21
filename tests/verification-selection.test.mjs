@@ -9,6 +9,26 @@ import {spawnSync} from 'node:child_process';
 import {compileTaskExecution,addVerificationExecutionTasks} from '../.template-source/scripts/lib/verification-execution-plan.mjs';
 const pilot='.agents/skills/yss-research/SKILL.md';
 const pilotConfig=()=>loadVerificationProfiles();
+test('删除的 Design 插件测试选择现役插件边界检查',()=>{
+ const plan=planTemplateVerification({changedFiles:[
+  '.template-source/tooling/node/test/product-design-plugin.test.mjs',
+  '.template-source/tooling/node/scripts/test-with-plugin-clis.mjs',
+ ]});
+ assert.equal(plan.commands.filter(row=>row.id==='check.plugin-supported-scope').length,1);
+});
+test('交接分发脚本选择实际离线兼容链',()=>{
+ const plan=planTemplateVerification({changedFiles:['.template-source/scripts/verify-strategic-handoff-distribution.mjs']});
+ const checks=plan.commands.filter(row=>row.id==='check.strategic-handoff-distribution');
+ assert.equal(checks.length,1);
+ assert.ok(checks[0].resources.includes('native-cli'));
+ assert.ok(checks[0].resources.includes('repo-root-evidence'));
+});
+test('分诊回放入口选择离线行为测试',()=>{
+ for(const ref of ['.template-source/scripts/replay-lifecycle-triage','tests/lifecycle-triage-replay.test.mjs']) {
+  const plan=planTemplateVerification({changedFiles:[ref]});
+  assert.equal(plan.commands.filter(row=>row.id==='check.lifecycle-triage-replay').length,1,ref);
+ }
+});
 const releaseRequired=['check.release-profile-consumers','check.daily-execution','check.verification-script-retirement','check.daily-preflight','check.verification-report-v2','check.verification-artifacts','check.legacy-coverage','check.yss-cli-pin'];
 test('本地 Codex 配置移出跟踪仍选择现有 hook 检查，未知相邻路径继续拒绝', () => {
  const plan=planTemplateVerification({changedFiles:['.codex/settings.local.json']});

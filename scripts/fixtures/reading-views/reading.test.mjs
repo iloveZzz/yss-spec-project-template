@@ -57,9 +57,14 @@ test('stable IDs align field changes while order and unknown constraints remain 
  }finally{f.cleanup();}
 });
 
-test('unsupported version and duplicate stable IDs remain diagnostic, with unknown constraints visible',()=>{
+test('unsupported versions are refused and supported versions retain duplicate and unknown-constraint diagnostics',()=>{
  const f=readingFixture();try{
-  f.strategy.schema_version=99;f.strategy.scenarios.push(structuredClone(f.strategy.scenarios[0]));f.strategy.extra_constraint.password_digest='不得缓存明文';f.put('invalid.yaml',f.strategy);
+  const version=f.strategy.schema_version;f.strategy.schema_version=99;f.put('unsupported.yaml',f.strategy);
+  const before=readFileSync(path.join(f.root,'unsupported.yaml'));
+  const unsupported=f.cli('view','unsupported.yaml','--kind','domain-strategy','--json');
+  assert.equal(unsupported.status,1);assert.match(unsupported.stderr,/migration-required: unsupported strategy schema_version/);
+  assert.deepEqual(readFileSync(path.join(f.root,'unsupported.yaml')),before);
+  f.strategy.schema_version=version;f.strategy.scenarios.push(structuredClone(f.strategy.scenarios[0]));f.strategy.extra_constraint.password_digest='不得缓存明文';f.put('invalid.yaml',f.strategy);
   const r=f.cli('view','invalid.yaml','--kind','domain-strategy','--json');assert.equal(r.status,1);const v=JSON.parse(r.stdout);
   assert.ok(v.blockers.some(x=>x.includes('duplicate-stable-id')));assert.match(v.markdown,/不得缓存明文/);assert.equal(v.execution_allowed,false);
   f.put('duplicate.yaml','schema_version: 2\nschema_version: 3\n');assert.equal(f.cli('view','duplicate.yaml','--kind','domain-strategy').status,1);

@@ -143,9 +143,9 @@ test('第三批分发保留替代核心库并且当前阶段直接安装新路�
   const cliSource=process.env.YSS_NATIVE_SOURCE_ROOT;
   const readFrom=(base,ref)=>JSON.parse(fs.readFileSync(path.join(base,ref),'utf8'));
   const read=ref=>readFrom(root,ref);
-  if(!cliSource)t.diagnostic('未提供 YSS_NATIVE_SOURCE_ROOT：跳过 yss-cli 内置策略 rules/design.json、rules/spec.json 的核对');
+  if(!cliSource)t.diagnostic('未提供 YSS_NATIVE_SOURCE_ROOT：跳过 yss-cli 内置策略 rules/backend.json、rules/spec.json 的核对');
   const profilePolicies=[['profiles/backend/.template-source/distribution/bundle-profile.json',()=>read('profiles/backend/.template-source/distribution/bundle-profile.json')]];
-  if(cliSource)for(const profile of ['backend','design'])profilePolicies.push([`yss-cli internal/bundle/rules/${profile}.json`,()=>readFrom(cliSource,`internal/bundle/rules/${profile}.json`)]);
+  if(cliSource)profilePolicies.push(['yss-cli internal/bundle/rules/backend.json',()=>readFrom(cliSource,'internal/bundle/rules/backend.json')]);
   for(const [ref,load] of profilePolicies){
     const policy=load();
     for(const name of ['implementation-path-policy','repository-scope-policy']){

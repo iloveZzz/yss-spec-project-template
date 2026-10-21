@@ -124,45 +124,44 @@ test('preparation reuses Ticket facts, renders persisted YAML and refuses source
   }finally{f.cleanup();}
 });
 
-test('MVC v3 requires real approval bindings and independent review before execution',async()=>{
+test('historical MVC v3 inspection requires bound independent approvals and refuses new execution',async()=>{
   const {pilotFixture}=await import('./pilot-fixture.mjs');
   const {createApprovedExecutionContext,assertApprovedExecutionContext}=await import('../../lib/approved-execution-context.mjs');
   const {validateExecutionResult,loadCompilerContract}=await import('../../lib/implementation-contract-compiler.mjs');
   const {loadSkillRegistry}=await import('../../lib/skill-registry.mjs');
-  const f=pilotFixture();try{
+  const f=pilotFixture(),options={root:f.root,readOnly:true};try{
     const approved=f.approve();
-    const context=createApprovedExecutionContext(approved.binding,{root:f.root});
-    assert.deepEqual(assertApprovedExecutionContext(context,{root:f.root}).allowed_write_paths,['src/main/java']);
+    assert.throws(()=>createApprovedExecutionContext(approved.binding,{root:f.root}),/GOVERNANCE_MIGRATION_REQUIRED/);
+    const context=createApprovedExecutionContext(approved.binding,options);
+    assert.deepEqual(assertApprovedExecutionContext(context,options).allowed_write_paths,['src/main/java']);
+    assert.throws(()=>assertApprovedExecutionContext(context,{root:f.root}),/EXECUTION_CONTEXT_READ_ONLY/);
     const responseCount=approved.decision.record.responses.length;
     const originalDecision=fs.readFileSync(approved.decision.ref);
-    createApprovedExecutionContext(approved.binding,{root:f.root});
+    createApprovedExecutionContext(approved.binding,options);
     assert.equal(approved.decision.record.responses.length,responseCount);
     assert.deepEqual(fs.readFileSync(approved.decision.ref),originalDecision);
     const authoritative=fs.readFileSync(path.join(f.root,approved.binding.ref));
     fs.appendFileSync(path.join(f.root,approved.binding.ref),'\n# changed bytes\n');
-    assert.throws(()=>createApprovedExecutionContext(approved.binding,{root:f.root}));
+    assert.throws(()=>createApprovedExecutionContext(approved.binding,options));
     const changedBinding={...approved.binding,digest:hash(fs.readFileSync(path.join(f.root,approved.binding.ref)))};
-    assert.throws(()=>createApprovedExecutionContext(changedBinding,{root:f.root}));
+    assert.throws(()=>createApprovedExecutionContext(changedBinding,options));
     fs.writeFileSync(path.join(f.root,approved.binding.ref),authoritative);
-    assert.throws(()=>assertApprovedExecutionContext({kind:'approved-slice-execution-context'},{root:f.root}),/UNTRUSTED/);
-    const {compileSliceTaskPackage,assertSliceV3TaskPackage}=await import('../../lib/task-package.mjs');
-    const task=compileSliceTaskPackage(approved.binding,{root:f.root,work_unit_id:'work-unit.slice-backend',task_id:'task.synthetic',actor_id:'synthetic.worker',runtime_id:'runtime.generic'});
-    assert.deepEqual(task.verification_commands,['./mvnw test']);
-    assert.ok(task.forbidden_actions.includes('不得绕过持久化约束'));
-    assert.throws(()=>assertSliceV3TaskPackage({...task,verification_commands:[]},f.contract,{root:f.root}),/遗漏/);
+    assert.throws(()=>assertApprovedExecutionContext({kind:'approved-slice-execution-context'},options),/UNTRUSTED/);
+    const {compileSliceTaskPackage}=await import('../../lib/task-package.mjs');
+    assert.throws(()=>compileSliceTaskPackage(approved.binding,{root:f.root,work_unit_id:'work-unit.slice-backend',task_id:'task.synthetic',actor_id:'synthetic.worker',runtime_id:'runtime.generic'}),/GOVERNANCE_MIGRATION_REQUIRED/);
 
     const result={schema_version:2,status:'implemented',work_unit_id:'work-unit.slice-backend',architecture_identity:f.identity,consumed_contract:{contract_id:f.contract.contract_id,contract_version:f.contract.contract_version,registry_digest:f.contract.resolution.registry_digest,compiler_contract_digest:f.contract.resolution.compiler_contract_digest,component_bindings_digest:f.contract.resolution.component_bindings_digest},changed_files:[{path:'src/main/java/Example.java'}],evidence_files:[{path:'results/test.log'}],verification_results:[{command:'./mvnw test',cwd:f.project,exit_code:0,executed_at:'2026-09-16T00:00:00Z'}],new_impacts:[]};
     f.write('results/test.log','Synthetic actual-exit-code mechanism evidence; not a Maven run.');
-    const current={root:f.root,registry:loadSkillRegistry(),compilerContract:loadCompilerContract(),approved_slice:approved.binding};
+    const current={...options,registry:loadSkillRegistry(),compilerContract:loadCompilerContract(),approved_slice:approved.binding};
     bindSyntheticEvidence(result,f.contract,current);
     assert.equal(validateExecutionResult(result,f.contract,current).status,'accepted');
     assert.equal(validateExecutionResult({...result,evidence_files:[]},f.contract,current).status,'blocked');
     assert.equal(validateExecutionResult({...result,changed_files:[{path:'src/main/java-escape/Bad.java'}]},f.contract,current).status,'blocked');
     const review={...approved.review,principal_ref:approved.review.drafter_principal_ref};f.write('v3-review.json',review);
-    assert.throws(()=>createApprovedExecutionContext(approved.binding,{root:f.root}),/INDEPENDENT|APPROVAL_CURRENT_INVALID.*(独立|自签)/);
+    assert.throws(()=>createApprovedExecutionContext(approved.binding,options),/INDEPENDENT|APPROVAL_CURRENT_INVALID.*(独立|自签)/);
     f.write('v3-review.json',approved.review);
     approved.decision.record.responses=[];approved.decision.save();
-    assert.throws(()=>createApprovedExecutionContext(approved.binding,{root:f.root}),/response-required/);
+    assert.throws(()=>createApprovedExecutionContext(approved.binding,options),/response-required/);
   }finally{f.cleanup();}
 });
 
@@ -217,7 +216,7 @@ test('conditional contracts and source bindings never turn missing information i
 });
 
 test('explicit v2 migration preserves effective scope, rejects conflicts and never inherits approval',async()=>{
-  const {migrateSliceContractV2,persistSliceDraft}=await import('../../lib/slice-contract-preparation.mjs');
+  const {migrateSliceContractV2}=await import('../../lib/slice-contract-preparation.mjs');
   const {compileDefaultImplementationContract}=await import('../../lib/implementation-contract-compiler.mjs');
   const f=fixture();try {
     const resolution=compileDefaultImplementationContract({requiredCapabilities:['quality.java-code-style']});
@@ -231,8 +230,8 @@ test('explicit v2 migration preserves effective scope, rejects conflicts and nev
     assert.deepEqual(n.common.required_skills,old.common.required_skills);
     assert.deepEqual(n.work_units[0].work_unit.verification_commands,['pnpm test']);
     assert.equal(migrated.slice_contract.work_units[0].workflow_status,undefined);
-    persistSliceDraft(migrated,'new.yaml',{root:f.root});
-    assert.throws(()=>persistSliceDraft(migrated,'new.yaml',{root:f.root}),/EEXIST/);
+    // This bare source fixture exercises read-only conversion, not governance writes.
+    assert.equal(fs.existsSync(path.join(f.root,'new.yaml')),false);
     assert.deepEqual(fs.readFileSync(path.join(f.root,'old.json')),before);
     old.common.required_skills=['different'];
     const conflict=migrateSliceContractV2(old,{root:f.root,sources:{ticket:{ref:'ticket.md',version:'v1'}},refinements:{contract_version:'v2',acceptance:f.contract.acceptance}});

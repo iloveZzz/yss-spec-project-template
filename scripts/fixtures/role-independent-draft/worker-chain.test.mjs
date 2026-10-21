@@ -7,7 +7,7 @@ import {mvcFixture} from '../../../.agents/skills/yss-technical-design/tests/fix
 import {technicalDigest} from '../../../.agents/skills/yss-technical-design/scripts/validate-technical-design.mjs';
 import {buildDecisionFixture} from '../../lib/testing/user-decision-fixture.mjs';
 import {compileSliceTaskPackage} from '../../lib/slice-task-package.mjs';
-import {prepareSliceImplementationContract} from '../../lib/slice-contract-preparation.mjs';
+import {prepareSliceImplementationContract,persistSliceDraft} from '../../lib/slice-contract-preparation.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -82,6 +82,13 @@ for(const [cmd,args]of [['javac',['-d',dir,...walk('src/main/java'),main]],['jav
   assert.deepEqual(prepared.report.blockers,[]);write('slice.json',prepared.slice_contract);
   run('current-backend-slice4-draft',['contract','verify','--kind','slice-draft','--file','slice.json']);
   assert.equal(prepared.slice_contract.schema_version,4);
+  // Current native-installed governance owns the positive persistence path.
+  persistSliceDraft(prepared,'persisted-draft.yaml',{root});
+  const draftBytes=read('persisted-draft.yaml'),reportBytes=read('persisted-draft.yaml.preparation.json');
+  run('current-backend-persisted-slice4-draft',['contract','verify','--kind','slice-draft','--file','persisted-draft.yaml']);
+  assert.throws(()=>persistSliceDraft(prepared,'persisted-draft.yaml',{root}),/EEXIST/);
+  assert.deepEqual(read('persisted-draft.yaml'),draftBytes);
+  assert.deepEqual(read('persisted-draft.yaml.preparation.json'),reportBytes);
   prepared.slice_contract.status='approved';write('slice-drafts/contract.json',prepared.slice_contract);
   write('slice-input.json',{feature_id:feature,scope:{impacted_areas:['backend']},status:'draft'});
   const slicePrep=f.draftTask({taskRef:'slice-prepare.json',unit:'work-unit.slice-contract',stage:'stage.slice-contract',impacts:['backend'],featureId:feature,checkpointRef:cpRef,inputs:['slice-input.json','spec.md','technical-design.json'],paths:['slice-drafts'],outputs:['slice-drafts/contract.json']});

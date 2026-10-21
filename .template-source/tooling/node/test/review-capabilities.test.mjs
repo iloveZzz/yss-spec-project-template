@@ -8,7 +8,8 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { parseDocument } from '../../../../scripts/vendor/yaml.mjs';
 import { loadRegistry, ROOT } from '../../../../scripts/lib/lifecycle-registry.mjs';
-import { loadDigitalHumanRoles, taskPackageDefaults, validateDefaultDigitalHumanRoles, countersignRuleForGate } from '../../../../scripts/lib/digital-human-roles.mjs';
+import { loadDigitalHumanRoles, taskPackageDefaults, validateDigitalHumanRoles, skillIdsFromRegistry, countersignRuleForGate } from '../../../../scripts/lib/digital-human-roles.mjs';
+import { loadSkillRegistry } from '../../../../scripts/lib/skill-registry.mjs';
 import { compileReviewCapabilities, validateReviewCapabilityPolicy, validateReviewTaskBinding, approvalExpectedFromTask, assertReviewCapabilityBinding, reviewDigest, currentApprovalsFromCheckpoint } from '../../../../scripts/lib/review-capabilities.mjs';
 import { buildReviewPackage, prepareReviewPackage } from '../../../../scripts/lib/review-package.mjs';
 import { validateTaskPackageSchema } from '../../../../scripts/lib/task-package-schema.mjs';
@@ -78,7 +79,13 @@ test('one independent tester covers API draft and engineering baseline without c
   assert.deepEqual(result.review_skills, ['code-review', 'yss-openapi-draft-review']);
   assert.deepEqual(taskPackageDefaults('role.test-engineer'), before);
   assert.ok(before.forbidden_skills.includes('implement'));
-  assert.equal(validateDefaultDigitalHumanRoles().claimed_gates, registry.gates.length);
+  const skills=loadSkillRegistry(),ids=rows=>new Set(rows.map(row=>row.id));
+  // This role fixture belongs to the explicitly frozen lifecycle above.
+  assert.equal(validateDigitalHumanRoles(rolesDoc,{
+    skillIds:skillIdsFromRegistry(skills),skillRegistry:skills,
+    stageIds:ids(registry.stages),gateIds:ids(registry.gates),checkIds:ids(registry.checks),
+    artifactIds:ids(registry.artifacts),evidenceIds:ids(registry.evidence),workUnitIds:ids(registry.work_units)
+  }).claimed_gates, registry.gates.length);
 });
 
 test('Worker, unknown boundary, missing expertise, and forbidden supplement fail closed', () => {

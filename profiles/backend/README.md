@@ -1,6 +1,6 @@
 # YSS 后端专职 Harness 模板
 
-本仓库是 Harness Agent 的 `template-source`。入口见 [AGENTS.md](AGENTS.md)，职责见 [profile](.template-spec/process/harness-profile.yaml)，接力合同见 [战略与后端交付](.template-spec/process/frontend-backend-delivery.md)。
+本仓库是 Harness Agent 的 `template-source`。入口见 [AGENTS.md](AGENTS.md)，职责见 [profile](.template-spec/process/harness-profile.yaml)，接力合同见 [战略交接](.template-spec/process/strategic-handoff-package.md)与[后端交付约定](.template-spec/process/backend-delivery-defaults.md)。
 
 本仓从通用研发 Harness 分出，继续共享校验工具和技能来源；运行时代码通过登记的实现仓接入。后端按业务切片交付已验证的冻结接口、构建与部署身份。
 

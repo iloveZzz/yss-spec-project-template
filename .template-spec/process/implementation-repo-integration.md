@@ -4,7 +4,7 @@
 
 ## 1. 接入清单
 
-已合格且政策启用的 Spec、Backend、Frontend `daily` 使用已有且可核验的单实现仓：普通 Ticket 绑定真实 Git 根、当前基线、允许写路径、可逆依据和实际验证命令，核验复用现有工程事实，不为了小任务重建阶段接入、脚手架合同或工程批准包。适用 YSS 技术基线、路径边界、测试和独立审查仍须完成。新仓、未确认根、跨仓、平台/架构转换或无法证明回滚时先调查并按 `request_triage.delivery_path` 升级；缺政策或能力的 CLI/Profile 不因此得到普通准入。以下正式接入和切片绑定要求仍适用于 `governed`。
+已合格且政策启用的 Spec、Backend `daily` 使用已有且可核验的单实现仓：普通 Ticket 绑定真实 Git 根、当前基线、允许写路径、可逆依据和实际验证命令，核验复用现有工程事实，不为了小任务重建阶段接入、脚手架合同或工程批准包。适用 YSS 技术基线、路径边界、测试和当前政策要求的复核仍须完成。新仓、未确认根、跨仓、平台/架构转换或无法证明回滚时先调查并按 `request_triage.delivery_path` 升级；缺政策或能力的 CLI/Profile 不因此得到普通准入。以下正式接入和切片绑定要求仍适用于 `governed`。
 
 每个受影响实现仓库必须登记：仓库地址、分支、代码所有者、CI 入口、测试 / 构建命令、允许写路径、回滚点和 MR / PR。没有登记记录时，先完成 onboarding，不能用本仓库目录代替实现仓库。
 
@@ -41,9 +41,9 @@ apps/
 - Ticket、Slice Implementation Contract、CI 和 Review 证据必须写下实际执行的上述命令。既有仓库缺少 `pnpm` 或 Maven Wrapper 时，先记录受控例外、替代命令和责任人，再执行。
 - 本模板源仓库没有产品 frontend / backend 运行时；模板源维护侧的 Node 校验命令和环境约束只记录在 `.template-source/` 治理区及 CI 配置中，不属于项目实例实现命令。
 
-## 1.4 独立审查运行时
+## 1.4 适用复核运行时
 
-`work-unit.code-review` 仍使用唯一 skill `code-review`，不新增第二套审查环境或审查 skill。独立 Reviewer 必须与实现者不同 `actor_id`，并在**能执行已登记验证命令**的运行时中工作：
+`work-unit.code-review` 使用 `code-review`。当前 Spec 默认由同一 Agent 诚实自检；仅在明确用户要求或已知外部要求触发时执行独立复核。独立复核应绑定不同真实上下文或执行轨迹、同一冻结候选与范围，并在**能执行已登记验证命令**的运行时中工作：
 
 - 前端：已登记项目根的 `pnpm` 测试 / type-check / lint（若存在）。
 - 后端：已登记项目根的 `./mvnw` 校验 / 测试；若工程已配置 Checkstyle、P3C 或 Spotless，审查时实际执行。
@@ -75,7 +75,7 @@ apps/
 
 ## 2. 影响面路由
 
-采用后端交付驱动前端的专职项目，按 [前后端交付与联合接收](frontend-backend-delivery.md) 执行输入校验。该条件同时进入合同编译、任务派发、生命周期实施/恢复和正式前端证据检查；原通用研发 profile 保留兼容，不能以兼容入口替专职项目跳过接收。
+显式战略交接按[战略交接包](strategic-handoff-package.md)核验固定来源与接收证据，职责接续与终点按[生命周期推进](lifecycle-progression.md)处理。前端实现由独立规格与 CLI 维护，不在本模板恢复前端 Profile 或实现路由。
 
 | 影响面 | 必须绑定的记录 |
 |---|---|
@@ -90,18 +90,12 @@ apps/
 - 模板仓库负责 `yss-project.yaml`、流程事实源、迁移指南、技能投影、模板校验脚本和快照可发布状态。
 - CLI 仓库负责 `attach`、`sync`、受管 manifest、快照 commit、metadata、迁移计划、备份 / 回滚、端到端测试和用户说明。
 - CLI 只写研发管理资产；不得创建或覆盖前后端运行时代码，不删除目标 `.git`，也不创建、覆盖或删除 `.gitmodules` 与 gitlink。
-- 模板 commit 必须是 40 位不可变提交；开发测试可通过 `YSS_SPEC_TEMPLATE_REF` 覆盖，正式发布不得跟随浮动 `main`。
+- 模板来源必须绑定完整不可变提交；正式发布不得跟随浮动 `main`。
 
 ## 4. Fresh verification 与 checkpoint
 
-模板仓库至少执行：
+模板源码维护先用 `scripts/verify-template-fast --plan` 选择当前变化及直接、传递消费者，再执行所选必要检查。仅当 canonical Skill、投影或锁实际变化时，检查 `scripts/sync-skills --check` 与 `scripts/update-skill-lock --check`。未知路径或缺输入映射先补登记，不自动回退全量。
 
-```bash
-scripts/sync-skills --check
-scripts/update-skill-lock --check
-scripts/verify-template
-```
-
-CLI 仓库至少执行固定 commit 的 `YSS_SPEC_TEMPLATE_REF=<pinned-commit> npm test`、`npm pack --dry-run`，并在解包后的 CLI 上验证 init、attach、sync、迁移冲突和回滚。共同发布前记录两个仓库的 commit、模板快照 hash、测试结果、独立审查结论和 rollback 路径。
+CLI 验证遵循固定源码仓库本地 `AGENTS.md`，分别记录构建、测试及适用原生验证结果。共同发布前记录两个仓库的完整提交、模板快照摘要、实际验证、适用复核和回滚路径；日常维护结果不替代正式发行资格。
 
 用户只要求新建后端开发脚手架时，按 [直接生成说明](../../.agents/skills/yss-ddd-scaffold-generator/references/standalone-generation.md) 提供工程名、包名、精确平台版本、Maven 坐标和目标目录，直接调用 DDD/MVC 生成技能。未传合同或批准参数时默认独立生成，`--standalone` 可省略；无需需求合同、原型、设计审批、仓库登记或治理实例。目录与已有工程保护继续有效。显式合同调用必须通过原有校验，不自动降级已有正式任务；独立 Manifest 不含 approved、ready-for-agent 或正式业务批准。真实 Maven 验证和后续治理接入分别记录。

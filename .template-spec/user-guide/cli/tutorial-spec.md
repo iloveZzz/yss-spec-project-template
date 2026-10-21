@@ -147,7 +147,7 @@ plan 只保存计划；apply 重新核验当前输入并拒绝篡改或漂移，
   yss stage query --root ./demo-spec --id stage.vertical-slice-implementation --json
   yss skills list --root ./demo-spec --json
   yss lifecycle status --root ./demo-spec --checkpoint .work/feature/checkpoint.yaml --json
-  仅按批准合同的写范围实现；需要的 Skill 闭包来自当前合同。后端优先根 ./mvnw（前端实现由独立前端规格与 CLI 维护）；记录真实测试并由独立审查者审查。
+  仅按批准合同的写范围实现；需要的 Skill 闭包来自当前合同。后端优先根 ./mvnw（前端实现由独立前端规格与 CLI 维护）；记录真实测试并按当前政策完成适用复核；明确要求独立复核时，核验独立来源与当前候选。
 预期结果：查询/核验当前输入与适用条件。
 下一步条件：允许写路径、禁止模式、证据和验证命令全部满足。
 失败恢复：查看当前报告的逐项诊断，从最近可信阶段补齐受影响材料；yss help errors。

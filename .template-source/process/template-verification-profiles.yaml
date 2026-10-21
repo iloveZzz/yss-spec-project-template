@@ -6,6 +6,20 @@ profiles:
     always_groups:
       - hygiene
     checks:
+      - id: check.lifecycle-triage-replay
+        run: "node --test tests/lifecycle-triage-replay.test.mjs"
+        group: lifecycle
+        inputs_complete: true
+        input_patterns:
+          - ".template-source/scripts/replay-lifecycle-triage"
+          - "tests/lifecycle-triage-replay.test.mjs"
+          - "scripts/lib/orchestration-contract.mjs"
+          - ".template-spec/process/orchestration-contract.yaml"
+          - ".template-spec/process/orchestration/**"
+          - ".agents/skills/yss-product-lifecycle/SKILL.md"
+          - ".agents/skills/yss-product-lifecycle/references/request-triage*"
+        depends_on: []
+        failure_mode: "baseline 和 candidate 合同部件混用、摘要遗漏，或缺失和非法分片仍启动模型"
       - id: check.lifecycle-core-views
         run: "node --test scripts/fixtures/lifecycle-core/views.test.mjs"
         group: lifecycle
@@ -830,6 +844,24 @@ profiles:
           - "scripts/lib/strategic-handoff-consumption.mjs"
         depends_on: []
         failure_mode: "既有 UI 基线的交接导出、验包与导入被错放行或误拒，或导入重新生成前端草案"
+      - id: check.strategic-handoff-distribution
+        run: "node .template-source/scripts/verify-strategic-handoff-distribution.mjs"
+        group: strategic-handoff-package
+        resources: [native-cli, repo-root-evidence]
+        inputs_complete: true
+        input_patterns:
+          - ".template-source/scripts/verify-strategic-handoff-distribution.mjs"
+          - ".template-source/scripts/lib/native-yss.mjs"
+          - ".template-source/distribution/yss-cli-pin.json"
+          - "scripts/fixtures/strategic-handoff/**"
+          - "tests/helpers/yss-instance.mjs"
+          - "tests/helpers/fixtures/native-legacy.*"
+          - "scripts/strategic-handoff"
+          - "scripts/lib/strategic-handoff*.mjs"
+          - "scripts/verify-strategic-handoff-consumption"
+          - ".agents/skills/yss-tactical-design/tests/fixtures/valid-tactical-design.yaml"
+        depends_on: []
+        failure_mode: "来源删除后目录或 ZIP 验包失败、Receipt3 或原始交付记录丢失、Backend 战术和切片消费失败"
       - id: check.strategic-handoff-package-scenarios
         resources: [ native-cli, "repo-root-evidence" ]
         run: "node tests/scenarios/verify-strategic-handoff-package-scenarios.mjs"
@@ -2253,6 +2285,7 @@ profiles:
           - .template-source/plugins/yss-backend-delivery/**
           - scripts/fixtures/contract-efficiency/plugin-smoke.mjs
           - .template-source/tooling/node/scripts/test-with-plugin-clis.mjs
+          - .template-source/tooling/node/test/product-design-plugin.test.mjs
         depends_on: []
         failure_mode: 已移除插件 Profile 仍被接受，或权限与固定可执行路径的支持边界回退
       - id: check.spec-stage-gates
@@ -2656,6 +2689,10 @@ syntax_files:
 routing:
   - patterns: [".codebuddy/skills/**", "tests/workbuddy-entry.test.mjs", ".template-source/tooling/node/test/workbuddy-projection.test.mjs"]
     groups: [skills]
+  - patterns:
+      - .template-source/scripts/replay-lifecycle-triage
+      - tests/lifecycle-triage-replay.test.mjs
+    groups: [lifecycle]
   - patterns: ["tests/stage-gates-contract.test.mjs", "tests/stage-result-native.test.mjs"]
     groups: [lifecycle]
 
@@ -3880,6 +3917,7 @@ gates:
       - check.release-template
       - check.ensure-native-yss
       - check.daily-checkpoint
+      - check.lifecycle-triage-replay
     audit_status: conservative-complete
     display_id: G07
     audit_basis: Every registered changed path retains this risk; no narrowing or
@@ -3944,6 +3982,7 @@ gates:
       - check.0b0ff4c1ba24fa6e
       - check.progression-target-evidence
       - check.strategic-handoff-package-scenarios
+      - check.strategic-handoff-distribution
     audit_status: conservative-complete
     display_id: G09
     audit_basis: Every registered changed path retains this risk; no narrowing or

@@ -4,40 +4,45 @@ import assert from 'node:assert/strict';
 import {readFileSync,existsSync,cpSync} from 'node:fs';
 import path from 'node:path';
 import {readingFixture,repo} from './fixture.mjs';
+import {parseSliceYaml} from '../../lib/slice-contract.mjs';
 const cp='.work/demo/checkpoint.yaml';
-function registeredReading(profile='spec',checkpoint='intake-checkpoint.json'){
+function registeredReading(checkpoint='intake-checkpoint.json'){
  const f=readingFixture(),owner=repo;
- if(profile==='spec')f.put('.template-spec/process/harness-profile.yaml',{schema_version:1,profile_id:'harness.spec-template'});else f.put('.template-spec/process/harness-profile.yaml',readFileSync(path.join(owner,'.template-spec/process/harness-profile.yaml'),'utf8'));
+ const profile=readFileSync(path.join(owner,'.template-spec/process/harness-profile.yaml'),'utf8');
+ f.put('.template-spec/process/harness-profile.yaml',profile);
  const contract='.template-spec/process/orchestration-contract.yaml';f.put(contract,JSON.stringify(loadOrchestrationContract(ref=>readFileSync(path.join(owner,ref)),contract).value));
  f.put('.template-spec/agents/issue-tracker.md','---\ntracker:\n  platform: local-markdown\n  root: .work\n---\n');
- const c=JSON.parse(readFileSync(path.join(repo,'scripts/fixtures/reading-views/checkpoint.json'),'utf8'));c.feature_id='feature.supplier';c.artifacts={};f.put(checkpoint,JSON.stringify(c));
+ const c=JSON.parse(readFileSync(path.join(repo,'scripts/fixtures/reading-views/checkpoint.json'),'utf8'));c.schema_version=parseSliceYaml(profile).required_capabilities.includes('stage-gates-v1')?2:1;c.feature_id='feature.supplier';c.artifacts={};f.put(checkpoint,JSON.stringify(c));
  f.put('.work/supplier/map.md','---\ncheckpoint_ref: '+checkpoint+'\n---\n# 当前功能\n');
  return {...f,checkpoint};
 }
 test('current registered Spec reading separates canonical ID and checkpoint directory',async()=>{
- const {readingLocation}=await import('../../lib/reading-view-policy.mjs');const f=registeredReading('spec');
+ const {readingLocation}=await import('../../lib/reading-view-policy.mjs');const f=registeredReading();
  try{assert.deepEqual(readingLocation(f.root,f.checkpoint),{feature:'feature.supplier',base:'.work/supplier',directory:'.work/supplier/reading'});}finally{f.cleanup();}
 });
 
 test('registered reading refuses missing, duplicate and conflicting maps and unsupported declared policies',async()=>{
  const {readingLocation}=await import('../../lib/reading-view-policy.mjs');const {rmSync}=await import('node:fs');
- for(const scenario of ['missing','duplicate','wrong-checkpoint','wrong-tracker','unknown-version','null-policy']){
+ for(const scenario of ['missing','duplicate','wrong-checkpoint','wrong-tracker','unknown-version','null-policy','legacy-profile','legacy-checkpoint']){
   const f=registeredReading();try{
    const contract='.template-spec/process/orchestration-contract.yaml';
    if(scenario==='missing')rmSync(path.join(f.root,'.work/supplier/map.md'));
    if(scenario==='duplicate')f.put('.work/duplicate/map.md','---\ncheckpoint_ref: '+f.checkpoint+'\n---\n');
    if(scenario==='wrong-checkpoint'){f.put('other-checkpoint.json',readFileSync(path.join(f.root,f.checkpoint),'utf8'));f.put('.work/supplier/map.md','---\ncheckpoint_ref: other-checkpoint.json\n---\n');}
    if(scenario==='wrong-tracker')f.put('.template-spec/agents/issue-tracker.md','---\ntracker:\n  platform: local-markdown\n  root: elsewhere\n---\n');
+   if(scenario==='legacy-profile')f.put('.template-spec/process/harness-profile.yaml',{schema_version:1,profile_id:'harness.spec-template'});
+   if(scenario==='legacy-checkpoint'){const c=JSON.parse(readFileSync(path.join(f.root,f.checkpoint),'utf8'));c.schema_version=1;f.put(f.checkpoint,c);}
    if(scenario==='unknown-version'||scenario==='null-policy'){
     const {parseSliceYaml}=await import('../../lib/slice-contract.mjs'),value=parseSliceYaml(readFileSync(path.join(f.root,contract)));
     if(scenario==='unknown-version')value.progression_target.schema_version=99;else value.progression_target=null;f.put(contract,value);
    }
-   assert.throws(()=>readingLocation(f.root,f.checkpoint),/registration-not-unique|capability-unsupported/,scenario);
+   const expected=['unknown-version','null-policy','legacy-profile'].includes(scenario)?/reading-capability-unsupported/:scenario==='legacy-checkpoint'?/reading-feature-identity/:/reading-feature-registration-not-unique/;
+   assert.throws(()=>readingLocation(f.root,f.checkpoint),expected,scenario);
   }finally{f.cleanup();}
  }
 });
 test('reading policy root references retain traversal and absolute-path rejection',async()=>{
- const {readingPolicy}=await import('../../lib/reading-view-policy.mjs');const f=registeredReading('spec');try{
+ const {readingPolicy}=await import('../../lib/reading-view-policy.mjs');const f=registeredReading();try{
   for(const ref of ['intake-checkpoint.json','.work/demo/中文 状态.json']){
    f.put('.template-spec/process/reading-policy.yaml',{schema_version:1,mode:'managed',checkpoints:[ref]});assert.deepEqual(readingPolicy(f.root).checkpoints,[ref]);
   }

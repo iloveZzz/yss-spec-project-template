@@ -1,6 +1,6 @@
 # 实现仓库接入与跨仓库切片绑定
 
-本文件是 Harness 仓库连接外部实现仓库的事实源。当前 `yss-harness-dev-agent` 与 `create-yss-harness-dev` 的模板接管 / 同步变更属于 Harness-only 加 release-only 影响，不创建前端、后端或运行时代码目录。
+本文件是 Harness 仓库连接外部实现仓库的事实源。当前 Backend Profile 与统一原生 `yss` 的模板接管 / 同步变更属于 Harness-only 加 release-only 影响，不创建前端、后端或运行时代码目录。
 
 ## 1. 接入清单
 
@@ -52,7 +52,7 @@ apps/
 - clone / CI / Cloud Agent 必须递归检出：`git clone --recurse-submodules`，或事后 `git submodule update --init`。GitHub Actions 须显式 `submodules: true|recursive` 且私有子仓另给 PAT / SSH；GitLab 须设 `GIT_SUBMODULE_STRATEGY` 并配置 job token 访问。默认不递归时目录为空，不得当作「工程不存在」去脚手架。
 - 空 gitlink、未初始化、detached HEAD 或 `--force` 覆盖挂载点一律不得当成普通目录：`scaffold_status=required` 阻断，脚手架生成器即使收到 `--force` 也不得覆盖 gitlink，且不得进入「请显式传入 `--force`」普通目录覆盖 / rename 路径；禁止在 detached HEAD 上 commit，也不得把 `--output-dir` 指向 detached HEAD 子仓后 mkdir、staging 或生成工程。先在子仓检出跟踪分支，再写代码。写入前必须读取 `inspectWorkingTreeScope` 的对象结果：只有 `.writable === true` 才可写。已登记为 `git-submodule` 的空 gitlink / uninitialized / detached HEAD 必须 `.writable === false`，即使工作树探测失败也不得把返回值当成可写。
 - Git 授权按仓分别计算，顺序强制为 **先子仓 commit/push，再父仓更新 gitlink**。父仓 push 使用 `git push --recurse-submodules=check`。跨仓库切片的 `delivery_order` 必须包含 `superproject-gitlink-update`。
-- `.gitmodules`、gitlink 和子仓工作树不是 `create-yss-harness-dev` 受管资产；CLI `sync` 不得创建、覆盖或删除它们。
+- `.gitmodules`、gitlink 和子仓工作树不是 `yss` 模板同步受管资产；CLI `sync` 不得创建、覆盖或删除它们。
 
 ## 2. 影响面路由
 
@@ -67,21 +67,15 @@ apps/
 ## 3. 本变更的跨仓库合同
 
 - 模板仓库负责 `yss-project.yaml`、Harness Profile、流程事实源、迁移指南、技能投影、分发清单、模板校验脚本和快照可发布状态。
-- CLI 仓库 `create-yss-harness-dev` 负责 `init`、`attach`、`sync`、受管 manifest 快照、`.yss-harness-dev.json`、迁移计划、备份 / 回滚、端到端测试和用户说明。
+- CLI 仓库的原生 `yss` 负责 `init`、`attach`、`sync`、受管 manifest 快照、`.yss.json`、迁移计划、备份 / 回滚、端到端测试和用户说明。
 - CLI 只写研发管理资产；不得创建或覆盖前后端运行时代码，不删除目标 `.git`，也不创建、覆盖或删除 `.gitmodules` 与 gitlink。
-- 模板 commit 必须是 40 位不可变提交；开发测试可通过 `YSS_HARNESS_TEMPLATE_REF` 覆盖，正式发布不得跟随浮动 `main`。
-- 目标已有 `.yss-template.json` 时拒绝：那是 `create-yss-spec` 全生命周期家族，不是本 Harness。
+- 模板来源必须绑定完整不可变提交；正式发布不得跟随浮动 `main`。
+- 仅含 `.yss-template.json` 等旧家族 metadata 的目录不授予当前 Backend 身份；保留原文件，按原固定版本进行历史识别和匹配旧执行器的恢复，不手改 metadata 转换家族。
 
 ## 4. Fresh verification 与 checkpoint
 
-模板仓库至少执行：
+模板源码维护先用 `scripts/verify-template-fast --plan` 选择当前变化及直接、传递消费者，再执行所选必要检查。仅当 canonical Skill、投影或锁实际变化时，检查 `scripts/sync-skills --check` 与 `scripts/update-skill-lock --check`。未知路径或缺输入映射先补登记，不自动回退全量。
 
-```bash
-scripts/sync-skills --check
-scripts/update-skill-lock --check
-scripts/verify-template
-```
-
-CLI 仓库至少执行固定 commit 的 `YSS_HARNESS_TEMPLATE_REF=<pinned-commit> npm test`、`npm pack --dry-run`，并在解包后的 CLI 上验证 init、attach、sync、家族隔离、迁移冲突和回滚。共同发布前记录两个仓库的 commit、模板快照 hash、测试结果、独立审查结论和 rollback 路径。
+CLI 验证遵循固定源码仓库本地 `AGENTS.md`，分别记录构建、测试及适用原生验证结果。共同发布前记录两个仓库的完整提交、模板快照摘要、实际验证、适用复核和回滚路径；日常维护结果不替代正式发行资格。
 
 仅请求生成新 MVC/DDD 开发脚手架时，按[直接生成说明](../../.agents/skills/yss-ddd-scaffold-generator/references/standalone-generation.md) 调用对应技能，无需需求合同、原型确认、设计审批或先登记治理工程。目录与已有工程保护继续有效；显式合同调用仍校验原合同，之后选择接入正式治理时按既有工程完成接入。

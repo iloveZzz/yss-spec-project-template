@@ -53,7 +53,7 @@ yss init --profile spec --root /absolute/path/project --plan --out /absolute/pat
 yss init --profile spec --root /absolute/path/project --apply --plan-file /absolute/path/init-plan.json --json
 ```
 
-`init` 默认直接初始化；上述 `--plan` 路线先生成可审阅计划。使用已固定版本和 SHA-256 的二进制；稳定版发行状态以发行清单为准。旧格式保持明确的读取范围；统一 metadata3 实例通过 `yss migrate --plan --out <新文件>` 显式迁移，Design 必须指定 `--profile spec`。更早或未知格式保留原件并报告不支持。完整安装、补装、恢复及退役边界见 [统一 CLI 操作说明](.template-spec/user-guide/unified-cli.md)。
+`init` 默认直接初始化；上述 `--plan` 路线先生成可审阅计划。使用已固定版本和 SHA-256 的二进制；稳定版发行状态以发行清单为准。旧格式保持明确的读取范围；受支持的旧统一 Spec/Backend 实例通过 `yss migrate --plan --out <新文件>` 同 Profile 显式迁移；旧 Design 保留原版本与原始资产，当前不提供转为 Spec 的迁移。更早或未知格式保留原件并报告不支持。完整安装、补装、恢复及退役边界见 [统一 CLI 操作说明](.template-spec/user-guide/unified-cli.md)。
 
 ## 模板配置取舍
 

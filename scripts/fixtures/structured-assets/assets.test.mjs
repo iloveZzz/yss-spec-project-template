@@ -26,7 +26,7 @@ const spec = (ref='docs/checkpoint.json') => ({ref,kind:'checkpoint',value:check
 test('validated writer adapter rolls back its own matching bytes after failure',t=>{
  const root=fixture(t),ref='checkpoint.json',file=path.join(root,ref),before='{"before":true}',after='{"after":true}';
  fs.writeFileSync(file,before);
- assert.throws(()=>runAssetTransaction(root,[{ref,before:{digest:byteDigest(before),mode:0o644},after_digest:byteDigest(after)}],()=>{fs.writeFileSync(file,after);throw Error('injected writer failure');}),/injected writer failure; rolled-back/);
+ assert.throws(()=>runAssetTransaction(root,[{ref,before:{digest:byteDigest(before),mode:fs.statSync(file).mode&0o777},after_digest:byteDigest(after)}],()=>{fs.writeFileSync(file,after);throw Error('injected writer failure');}),/injected writer failure; rolled-back/);
  assert.equal(fs.readFileSync(file,'utf8'),before);assert.doesNotThrow(()=>assertAssetTransactionIdle(root));
 });
 test('validated writer adapter preserves a concurrent user edit and leaves recovery pending',t=>{
