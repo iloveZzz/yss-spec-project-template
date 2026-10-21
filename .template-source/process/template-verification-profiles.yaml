@@ -1303,6 +1303,7 @@ profiles:
       - id: check.instance-metadata
         run: "node --test --test-concurrency=1 tests/instance-metadata.test.mjs
           tests/native-instance-drift.test.mjs"
+        resources: [ native-cli ]
         group: drift-identity
         inputs_complete: true
         input_patterns:
