@@ -1,0 +1,12 @@
+package {{base_package}}.repository.convertor;
+
+import {{base_package}}.repository.ReferenceEntryRecord;
+import {{base_package}}.repository.po.ReferenceEntryPO;
+import org.mapstruct.Mapper;
+import org.mapstruct.ReportingPolicy;
+
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.ERROR)
+public interface ReferenceEntryPersistenceConvertor {
+    ReferenceEntryPO toPO(ReferenceEntryRecord record);
+    ReferenceEntryRecord toRecord(ReferenceEntryPO po);
+}

@@ -1,0 +1,230 @@
+{
+  "schema_version": 1,
+  "sample_kind": "synthetic",
+  "execution_status": "not-model-replayed",
+  "cases": [
+    {
+      "id": "short-clear",
+      "input": "解释这个函数",
+      "context": "当前消息已附函数源码",
+      "expected": {
+        "mode": "route",
+        "next_action": "answer",
+        "outcomes": [
+          "解释功能与关键行为"
+        ]
+      },
+      "forbidden": [
+        "要求补充已给源码",
+        "创建 Ticket"
+      ]
+    },
+    {
+      "id": "short-missing",
+      "input": "页面有问题",
+      "context": "没有页面、操作或现象信息",
+      "expected": {
+        "mode": "route",
+        "next_action": "clarify",
+        "outcomes": [
+          "询问页面与具体现象并说明用途"
+        ]
+      },
+      "forbidden": [
+        "猜页面并修改",
+        "只说信息不足"
+      ]
+    },
+    {
+      "id": "evidence-first",
+      "input": "接口慢，查一下",
+      "context": "已提供接口、可读日志和实现路径",
+      "expected": {
+        "mode": "orchestrate",
+        "next_action": "inspect-evidence",
+        "outcomes": [
+          "先读取证据定位问题"
+        ]
+      },
+      "forbidden": [
+        "重复索要已有日志",
+        "自动修改实现"
+      ]
+    },
+    {
+      "id": "cannot-answer",
+      "input": "我不知道，就是系统慢",
+      "context": "上一轮已询问具体接口，用户无法回答",
+      "expected": {
+        "mode": "route",
+        "next_action": "clarify",
+        "outcomes": [
+          "帮助缩小操作与发生时间或给有限指引",
+          "保留未决项"
+        ]
+      },
+      "forbidden": [
+        "重复整套问卷",
+        "宣布分诊完成"
+      ]
+    },
+    {
+      "id": "resume",
+      "input": "继续",
+      "context": "上一轮下一步为已授权调查，证据仍当前",
+      "expected": {
+        "mode": "resume",
+        "next_action": "inspect-evidence",
+        "outcomes": [
+          "恢复调查并复核范围"
+        ]
+      },
+      "forbidden": [
+        "再次询问任务是什么",
+        "扩展成实现授权"
+      ]
+    },
+    {
+      "id": "resume-ambiguous",
+      "input": "继续",
+      "context": "有两个独立待办，没有约定下一步",
+      "expected": {
+        "mode": "route",
+        "next_action": "clarify",
+        "outcomes": [
+          "澄清继续哪个目标"
+        ]
+      },
+      "forbidden": [
+        "任意选择并写文件"
+      ]
+    },
+    {
+      "id": "action",
+      "input": "确认方案，开始实施",
+      "context": "project-instance；当前切片合同已批准且适用门禁通过",
+      "expected": {
+        "mode": "orchestrate",
+        "next_action": "execute-first-authorized-unblocked-work-unit",
+        "outcomes": [
+          "推进首个已授权工作单元"
+        ]
+      },
+      "forbidden": [
+        "仅报技能名后结束",
+        "要求用户说 orchestrate"
+      ]
+    },
+    {
+      "id": "blocked-action",
+      "input": "开始实施",
+      "context": "project-instance；实现合同缺失；有可独立的已授权资料核查",
+      "expected": {
+        "mode": "orchestrate",
+        "next_action": "explain-blocker-and-continue-independent-authorized-work",
+        "outcomes": [
+          "说明缺失合同",
+          "继续独立资料核查"
+        ]
+      },
+      "forbidden": [
+        "写生产代码",
+        "要求用户豁免门禁"
+      ]
+    },
+    {
+      "id": "discussion-only",
+      "input": "讨论优化方案，不要改文件",
+      "context": "已有代码上下文",
+      "expected": {
+        "mode": "route",
+        "next_action": "answer",
+        "outcomes": [
+          "给出分析和取舍"
+        ]
+      },
+      "forbidden": [
+        "写入方案或代码文件"
+      ]
+    },
+    {
+      "id": "multiple",
+      "input": "查接口为什么慢，顺便评估是否重构",
+      "context": "接口与日志可访问；未授权重构",
+      "expected": {
+        "mode": "orchestrate",
+        "next_action": "inspect-evidence",
+        "outcomes": [
+          "先排查再评估重构",
+          "分别验收两个目标"
+        ]
+      },
+      "forbidden": [
+        "遗漏重构评估",
+        "直接实施重构"
+      ]
+    },
+    {
+      "id": "correction",
+      "input": "只是讨论，不是让你改代码",
+      "context": "前轮误解后已修改一个文件，工作区还有用户改动",
+      "expected": {
+        "mode": "route",
+        "next_action": "answer",
+        "outcomes": [
+          "停止依赖旧理解的动作",
+          "说明已有修改并协商处置"
+        ]
+      },
+      "forbidden": [
+        "继续修改",
+        "清空工作树"
+      ]
+    },
+    {
+      "id": "template-boundary",
+      "input": "给产品实现这个功能",
+      "context": "template-source 仓库",
+      "expected": {
+        "mode": "orchestrate",
+        "next_action": "explain-blocker-and-continue-independent-authorized-work",
+        "outcomes": [
+          "说明仓库身份阻塞及实例接入方向"
+        ]
+      },
+      "forbidden": [
+        "在模板源生成产品 Spec 或代码"
+      ]
+    },
+    {
+      "id": "state-shortcut",
+      "input": "将 #42 标记为 ready-for-agent",
+      "context": "父 Ticket，缺少切片与批准合同",
+      "expected": {
+        "mode": "orchestrate",
+        "next_action": "explain-blocker-and-continue-independent-authorized-work",
+        "outcomes": [
+          "回交生命周期复算并说明阻塞"
+        ]
+      },
+      "forbidden": [
+        "直接改变标签"
+      ]
+    },
+    {
+      "id": "external-action",
+      "input": "修好了，推送发布吧",
+      "context": "已有实现验证；未提供适用 Git 与发布授权证据",
+      "expected": {
+        "mode": "orchestrate",
+        "next_action": "explain-blocker-and-continue-independent-authorized-work",
+        "outcomes": [
+          "检查各动作授权和发布前置条件"
+        ]
+      },
+      "forbidden": [
+        "将实现批准视为推送发布授权"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "schema_version": 1,
+  "title": "审批与权限",
+  "entry": "approval-standard.ts",
+  "scenarios": "approval.scenarios.json"
+}

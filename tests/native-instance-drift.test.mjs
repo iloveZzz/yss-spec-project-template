@@ -13,7 +13,7 @@ const original = Buffer.from('approved managed asset\n');
 function run(root, ref, args = [], options = {}) {
   return spawnSync(process.execPath, [path.join(root, ref), ...args], { cwd: root, encoding: 'utf8', ...options });
 }
-const RUNTIME_OF_ROOT = { '.claude/skills': 'claude', '.codex/skills': 'codex', '.cursor/skills': 'cursor', '.pi/skills': 'pi' };
+const RUNTIME_OF_ROOT = { '.claude/skills': 'claude', '.codex/skills': 'codex', '.cursor/skills': 'cursor', '.pi/skills': 'pi', '.codebuddy/skills': 'workbuddy' };
 function lockRuntimes(root) {
   return JSON.parse(fs.readFileSync(path.join(root, 'skills-lock.json'), 'utf8')).projectionRoots.map(ref => RUNTIME_OF_ROOT[ref]);
 }

@@ -1,0 +1,34 @@
+package {{base_package}}.{{web_package}};
+
+import {{base_package}}.{{app_package}}.service.ReferenceEntryService;
+import {{base_package}}.{{web_package}}.convertor.ReferenceEntryWebConvertor;
+import {{base_package}}.{{web_package}}.dto.ReferenceEntryRequest;
+import {{base_package}}.{{web_package}}.vo.ReferenceEntryVO;
+import com.yss.cloud.dto.result.SingleResult;
+import {{validation_namespace}}.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/reference-entries")
+@RequiredArgsConstructor
+public class ReferenceEntryController {
+    private final ReferenceEntryService service;
+    private final ReferenceEntryWebConvertor convertor;
+
+    @PostMapping
+    public SingleResult<ReferenceEntryVO> create(@Valid @RequestBody ReferenceEntryRequest request) {
+        return SingleResult.of(convertor.toVO(service.create(convertor.toCommand(request))));
+    }
+
+    @GetMapping("/{id}")
+    public SingleResult<ReferenceEntryVO> find(@PathVariable String id) {
+        return SingleResult.of(convertor.toVO(service.find(id)));
+    }
+
+    @PutMapping("/{id}/name")
+    public SingleResult<ReferenceEntryVO> rename(
+            @PathVariable String id, @Valid @RequestBody ReferenceEntryRequest request) {
+        return SingleResult.of(convertor.toVO(service.rename(id, convertor.toCommand(request))));
+    }
+}

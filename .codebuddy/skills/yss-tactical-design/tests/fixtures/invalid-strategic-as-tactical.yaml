@@ -1,0 +1,21 @@
+schema_version: 1
+tactical_design_id: tactical-design.invalid-strategic
+tactical_version: v1
+status: ready-for-human
+context_ref: context.example
+aggregate_catalog: [{aggregate_id: aggregate.example, name: Example, context_ref: context.example, root_entity: entity.example-root, model_origin: strategic-concept, invariant_refs: [invariant.example], behavior_refs: [behavior.example], consistency_boundary: single, api_exposure: internal-only}]
+entity_catalog: [{entity_id: entity.example-root, name: Root, aggregate_id: aggregate.example, identity: id, lifecycle: active}]
+value_object_catalog: []
+behavior_catalog: [{behavior_id: behavior.example, name: Do, aggregate_id: aggregate.example, command: do, preconditions: [ready], invariant_refs: [invariant.example], postconditions: [done], event_refs: []}]
+invariant_catalog: [{invariant_id: invariant.example, aggregate_id: aggregate.example, statement: required}]
+state_transition_catalog: [{transition_id: transition.example, aggregate_id: aggregate.example, from: draft, to: done, behavior_id: behavior.example}]
+consistency_policy: {transaction_boundary: single, concurrency: optimistic, idempotency: guarded, cross_aggregate_strategy: none}
+domain_event_catalog: []
+gateway_catalog: [{gateway_id: gateway.example, name: Gateway, context_ref: context.example, layer: Domain, capabilities: [load]}]
+persistence_mapping: [{aggregate_id: aggregate.example, storage_model: example, notes: mapping}]
+test_seams: [{seam_id: test-seam.example, kind: domain, subject_ref: invariant.example, assertion: behavior}]
+adr_candidates: []
+upstream_impact: {spec_ref: spec@v1, strategic_ref: strategy@v1, api_ref: api@draft, data_ref: data@v1, upstream_current: true}
+version: v1
+digest: sha256:0000000000000000000000000000000000000000000000000000000000000000
+evidence_refs: []

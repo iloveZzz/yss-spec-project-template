@@ -1,0 +1,2015 @@
+{
+  "schema_version": 1,
+  "scenarios": [
+    {
+      "id": "primary",
+      "label": "正常工作区",
+      "state_ref": ".agents/skills/yss-prototype-stage/references/enterprise-workspace.md",
+      "initial_data": {
+        "pages": {
+          "list-detail": {
+            "id": "primary",
+            "label": "正常",
+            "state_ref": ".agents/skills/yss-prototype-stage/references/business-patterns.md",
+            "initial_data": {
+              "rows": [
+                {
+                  "id": "M-001",
+                  "name": "季度经营分析资料",
+                  "owner": "张明",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-002",
+                  "name": "跨部门业务协作与异常处理说明（长名称示例）",
+                  "owner": "李华",
+                  "status": "待核对",
+                  "version": 1
+                },
+                {
+                  "id": "M-003",
+                  "name": "归档清单",
+                  "owner": "王宁",
+                  "status": "已更新",
+                  "version": 1
+                }
+              ],
+              "server_rows": [
+                {
+                  "id": "M-001",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "已更新",
+                  "version": 2
+                },
+                {
+                  "id": "M-002",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "待核对",
+                  "version": 2
+                },
+                {
+                  "id": "M-003",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "已更新",
+                  "version": 2
+                }
+              ],
+              "content": "待编辑内容",
+              "server_content": "重新加载的最新内容",
+              "outcome": "success"
+            },
+            "source_ref": "authoring-sources/list-detail.scenarios.json",
+            "source_digest": "sha256:5da5ae1309028b479a0251892f7d0168d482be18811fac8e215f10aa39aee31b"
+          },
+          "multi-step": {
+            "id": "primary",
+            "label": "正常",
+            "state_ref": ".agents/skills/yss-prototype-stage/references/business-patterns.md",
+            "initial_data": {
+              "rows": [
+                {
+                  "id": "M-001",
+                  "name": "季度经营分析资料",
+                  "owner": "张明",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-002",
+                  "name": "跨部门业务协作与异常处理说明（长名称示例）",
+                  "owner": "李华",
+                  "status": "待核对",
+                  "version": 1
+                },
+                {
+                  "id": "M-003",
+                  "name": "归档清单",
+                  "owner": "王宁",
+                  "status": "已更新",
+                  "version": 1
+                }
+              ],
+              "server_rows": [
+                {
+                  "id": "M-001",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "已更新",
+                  "version": 2
+                },
+                {
+                  "id": "M-002",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "待核对",
+                  "version": 2
+                },
+                {
+                  "id": "M-003",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "已更新",
+                  "version": 2
+                }
+              ],
+              "content": "待编辑内容",
+              "server_content": "重新加载的最新内容",
+              "outcome": "success",
+              "form": {
+                "name": "",
+                "owner": "",
+                "note": ""
+              }
+            },
+            "source_ref": "authoring-sources/multi-step.scenarios.json",
+            "source_digest": "sha256:3f837285023a7b092564d5c97c536e7dcd9a6dac375e34e86a949029ce9c3630"
+          },
+          "approval": {
+            "id": "primary",
+            "label": "正常",
+            "state_ref": ".agents/skills/yss-prototype-stage/references/business-patterns.md",
+            "initial_data": {
+              "rows": [
+                {
+                  "id": "M-001",
+                  "name": "季度经营分析资料",
+                  "owner": "张明",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-002",
+                  "name": "跨部门业务协作与异常处理说明（长名称示例）",
+                  "owner": "李华",
+                  "status": "待核对",
+                  "version": 1
+                },
+                {
+                  "id": "M-003",
+                  "name": "归档清单",
+                  "owner": "王宁",
+                  "status": "已更新",
+                  "version": 1
+                }
+              ],
+              "server_rows": [
+                {
+                  "id": "M-001",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "已更新",
+                  "version": 2
+                },
+                {
+                  "id": "M-002",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "待核对",
+                  "version": 2
+                },
+                {
+                  "id": "M-003",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "已更新",
+                  "version": 2
+                }
+              ],
+              "content": "待编辑内容",
+              "server_content": "重新加载的最新内容",
+              "outcome": "success"
+            },
+            "source_ref": "authoring-sources/approval.scenarios.json",
+            "source_digest": "sha256:f61e6b1db04bfc5743082019f125c3d627224c31eb003edcdd3948325ee11c0a"
+          },
+          "conflict": {
+            "id": "primary",
+            "label": "正常",
+            "state_ref": ".agents/skills/yss-prototype-stage/references/business-patterns.md",
+            "initial_data": {
+              "rows": [
+                {
+                  "id": "M-001",
+                  "name": "季度经营分析资料",
+                  "owner": "张明",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-002",
+                  "name": "跨部门业务协作与异常处理说明（长名称示例）",
+                  "owner": "李华",
+                  "status": "待核对",
+                  "version": 1
+                },
+                {
+                  "id": "M-003",
+                  "name": "归档清单",
+                  "owner": "王宁",
+                  "status": "已更新",
+                  "version": 1
+                }
+              ],
+              "server_rows": [
+                {
+                  "id": "M-001",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "已更新",
+                  "version": 2
+                },
+                {
+                  "id": "M-002",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "待核对",
+                  "version": 2
+                },
+                {
+                  "id": "M-003",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "已更新",
+                  "version": 2
+                }
+              ],
+              "content": "待编辑内容",
+              "server_content": "重新加载的最新内容",
+              "outcome": "success"
+            },
+            "source_ref": "authoring-sources/conflict.scenarios.json",
+            "source_digest": "sha256:b5981bd621fcbc68cf2ee246485a3c67dd3858478ad478d55fc9aa563bbf1828"
+          },
+          "analysis": {
+            "id": "primary",
+            "label": "正常",
+            "state_ref": ".agents/skills/yss-prototype-stage/references/business-patterns.md",
+            "initial_data": {
+              "rows": [
+                {
+                  "id": "M-001",
+                  "name": "第1期 · 季度经营分析资料",
+                  "owner": "张明",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-002",
+                  "name": "第2期 · 跨部门业务协作与异常处理说明（长名称示例）",
+                  "owner": "李华",
+                  "status": "待核对",
+                  "version": 1
+                },
+                {
+                  "id": "M-003",
+                  "name": "第3期 · 归档清单",
+                  "owner": "王宁",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-004",
+                  "name": "第4期 · 季度经营分析资料",
+                  "owner": "张明",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-005",
+                  "name": "第5期 · 跨部门业务协作与异常处理说明（长名称示例）",
+                  "owner": "李华",
+                  "status": "待核对",
+                  "version": 1
+                },
+                {
+                  "id": "M-006",
+                  "name": "第6期 · 归档清单",
+                  "owner": "王宁",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-007",
+                  "name": "第7期 · 季度经营分析资料",
+                  "owner": "张明",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-008",
+                  "name": "第8期 · 跨部门业务协作与异常处理说明（长名称示例）",
+                  "owner": "李华",
+                  "status": "待核对",
+                  "version": 1
+                },
+                {
+                  "id": "M-009",
+                  "name": "第9期 · 归档清单",
+                  "owner": "王宁",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-010",
+                  "name": "第10期 · 季度经营分析资料",
+                  "owner": "张明",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-011",
+                  "name": "第11期 · 跨部门业务协作与异常处理说明（长名称示例）",
+                  "owner": "李华",
+                  "status": "待核对",
+                  "version": 1
+                },
+                {
+                  "id": "M-012",
+                  "name": "第12期 · 归档清单",
+                  "owner": "王宁",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-013",
+                  "name": "第13期 · 季度经营分析资料",
+                  "owner": "张明",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-014",
+                  "name": "第14期 · 跨部门业务协作与异常处理说明（长名称示例）",
+                  "owner": "李华",
+                  "status": "待核对",
+                  "version": 1
+                },
+                {
+                  "id": "M-015",
+                  "name": "第15期 · 归档清单",
+                  "owner": "王宁",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-016",
+                  "name": "第16期 · 季度经营分析资料",
+                  "owner": "张明",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-017",
+                  "name": "第17期 · 跨部门业务协作与异常处理说明（长名称示例）",
+                  "owner": "李华",
+                  "status": "待核对",
+                  "version": 1
+                },
+                {
+                  "id": "M-018",
+                  "name": "第18期 · 归档清单",
+                  "owner": "王宁",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-019",
+                  "name": "第19期 · 季度经营分析资料",
+                  "owner": "张明",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-020",
+                  "name": "第20期 · 跨部门业务协作与异常处理说明（长名称示例）",
+                  "owner": "李华",
+                  "status": "待核对",
+                  "version": 1
+                },
+                {
+                  "id": "M-021",
+                  "name": "第21期 · 归档清单",
+                  "owner": "王宁",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-022",
+                  "name": "第22期 · 季度经营分析资料",
+                  "owner": "张明",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-023",
+                  "name": "第23期 · 跨部门业务协作与异常处理说明（长名称示例）",
+                  "owner": "李华",
+                  "status": "待核对",
+                  "version": 1
+                },
+                {
+                  "id": "M-024",
+                  "name": "第24期 · 归档清单",
+                  "owner": "王宁",
+                  "status": "已更新",
+                  "version": 1
+                }
+              ],
+              "server_rows": [
+                {
+                  "id": "M-001",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "已更新",
+                  "version": 2
+                },
+                {
+                  "id": "M-002",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "待核对",
+                  "version": 2
+                },
+                {
+                  "id": "M-003",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "已更新",
+                  "version": 2
+                }
+              ],
+              "content": "待编辑内容",
+              "server_content": "重新加载的最新内容",
+              "outcome": "success"
+            },
+            "source_ref": "authoring-sources/analysis.scenarios.json",
+            "source_digest": "sha256:5591cea8fb9adc4986b8f19bc5102d6fb83e5076f329a31802ccded616c2dccd"
+          },
+          "combined-query": {
+            "id": "primary",
+            "label": "正常",
+            "state_ref": ".agents/skills/yss-prototype-stage/references/search-date-patterns.md",
+            "initial_data": {
+              "fixture": "维护教学示例，非产品 Spec",
+              "referenceDate": "2024-02-15",
+              "name": "",
+              "ownerId": "",
+              "range": {
+                "start": "",
+                "end": ""
+              },
+              "optionState": "ready",
+              "options": [
+                {
+                  "id": "U-001",
+                  "name": "张明"
+                },
+                {
+                  "id": "U-002",
+                  "name": "张明"
+                },
+                {
+                  "id": "U-003",
+                  "name": "李华（跨部门业务协作与异常恢复负责人长名称示例）"
+                },
+                {
+                  "id": "U-004",
+                  "name": "停用负责人",
+                  "disabled": true
+                }
+              ],
+              "rows": [
+                {
+                  "id": "M-001",
+                  "name": "季度资料",
+                  "ownerId": "U-001",
+                  "date": "2024-02-29"
+                },
+                {
+                  "id": "M-002",
+                  "name": "跨部门协作说明",
+                  "ownerId": "U-002",
+                  "date": "2024-03-01"
+                },
+                {
+                  "id": "M-003",
+                  "name": "归档清单",
+                  "ownerId": "U-001",
+                  "date": "2024-12-31"
+                }
+              ]
+            },
+            "source_ref": "authoring-sources/combined-query.scenarios.json",
+            "source_digest": "sha256:d904d41797d47208ad909e8db682204a5ccea70d8974dbfd350523f42a3fd22b"
+          },
+          "owner-validity": {
+            "id": "primary",
+            "label": "正常",
+            "state_ref": ".agents/skills/yss-prototype-stage/references/search-date-patterns.md",
+            "initial_data": {
+              "fixture": "维护教学示例，非产品 Spec",
+              "referenceDate": "2024-02-15",
+              "name": "",
+              "ownerId": "",
+              "range": {
+                "start": "",
+                "end": ""
+              },
+              "optionState": "ready",
+              "options": [
+                {
+                  "id": "U-001",
+                  "name": "张明"
+                },
+                {
+                  "id": "U-002",
+                  "name": "张明"
+                },
+                {
+                  "id": "U-003",
+                  "name": "李华（跨部门业务协作与异常恢复负责人长名称示例）"
+                },
+                {
+                  "id": "U-004",
+                  "name": "停用负责人",
+                  "disabled": true
+                }
+              ],
+              "rows": [
+                {
+                  "id": "M-001",
+                  "name": "季度资料",
+                  "ownerId": "U-001",
+                  "date": "2024-02-29"
+                },
+                {
+                  "id": "M-002",
+                  "name": "跨部门协作说明",
+                  "ownerId": "U-002",
+                  "date": "2024-03-01"
+                },
+                {
+                  "id": "M-003",
+                  "name": "归档清单",
+                  "ownerId": "U-001",
+                  "date": "2024-12-31"
+                }
+              ]
+            },
+            "source_ref": "authoring-sources/owner-validity.scenarios.json",
+            "source_digest": "sha256:d904d41797d47208ad909e8db682204a5ccea70d8974dbfd350523f42a3fd22b"
+          }
+        }
+      }
+    },
+    {
+      "id": "exceptions",
+      "label": "失败与冲突恢复",
+      "state_ref": ".agents/skills/yss-prototype-stage/references/enterprise-workspace.md",
+      "initial_data": {
+        "pages": {
+          "list-detail": {
+            "id": "primary",
+            "label": "正常",
+            "state_ref": ".agents/skills/yss-prototype-stage/references/business-patterns.md",
+            "initial_data": {
+              "rows": [
+                {
+                  "id": "M-001",
+                  "name": "季度经营分析资料",
+                  "owner": "张明",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-002",
+                  "name": "跨部门业务协作与异常处理说明（长名称示例）",
+                  "owner": "李华",
+                  "status": "待核对",
+                  "version": 1
+                },
+                {
+                  "id": "M-003",
+                  "name": "归档清单",
+                  "owner": "王宁",
+                  "status": "已更新",
+                  "version": 1
+                }
+              ],
+              "server_rows": [
+                {
+                  "id": "M-001",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "已更新",
+                  "version": 2
+                },
+                {
+                  "id": "M-002",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "待核对",
+                  "version": 2
+                },
+                {
+                  "id": "M-003",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "已更新",
+                  "version": 2
+                }
+              ],
+              "content": "待编辑内容",
+              "server_content": "重新加载的最新内容",
+              "outcome": "success"
+            },
+            "source_ref": "authoring-sources/list-detail.scenarios.json",
+            "source_digest": "sha256:5da5ae1309028b479a0251892f7d0168d482be18811fac8e215f10aa39aee31b"
+          },
+          "multi-step": {
+            "id": "failure",
+            "label": "保存失败",
+            "state_ref": ".agents/skills/yss-prototype-stage/references/business-patterns.md",
+            "initial_data": {
+              "rows": [
+                {
+                  "id": "M-001",
+                  "name": "季度经营分析资料",
+                  "owner": "张明",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-002",
+                  "name": "跨部门业务协作与异常处理说明（长名称示例）",
+                  "owner": "李华",
+                  "status": "待核对",
+                  "version": 1
+                },
+                {
+                  "id": "M-003",
+                  "name": "归档清单",
+                  "owner": "王宁",
+                  "status": "已更新",
+                  "version": 1
+                }
+              ],
+              "server_rows": [
+                {
+                  "id": "M-001",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "已更新",
+                  "version": 2
+                },
+                {
+                  "id": "M-002",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "待核对",
+                  "version": 2
+                },
+                {
+                  "id": "M-003",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "已更新",
+                  "version": 2
+                }
+              ],
+              "content": "待编辑内容",
+              "server_content": "重新加载的最新内容",
+              "outcome": "failure",
+              "form": {
+                "name": "",
+                "owner": "",
+                "note": ""
+              }
+            },
+            "source_ref": "authoring-sources/multi-step.scenarios.json",
+            "source_digest": "sha256:3f837285023a7b092564d5c97c536e7dcd9a6dac375e34e86a949029ce9c3630"
+          },
+          "approval": {
+            "id": "failure",
+            "label": "保存失败",
+            "state_ref": ".agents/skills/yss-prototype-stage/references/business-patterns.md",
+            "initial_data": {
+              "rows": [
+                {
+                  "id": "M-001",
+                  "name": "季度经营分析资料",
+                  "owner": "张明",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-002",
+                  "name": "跨部门业务协作与异常处理说明（长名称示例）",
+                  "owner": "李华",
+                  "status": "待核对",
+                  "version": 1
+                },
+                {
+                  "id": "M-003",
+                  "name": "归档清单",
+                  "owner": "王宁",
+                  "status": "已更新",
+                  "version": 1
+                }
+              ],
+              "server_rows": [
+                {
+                  "id": "M-001",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "已更新",
+                  "version": 2
+                },
+                {
+                  "id": "M-002",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "待核对",
+                  "version": 2
+                },
+                {
+                  "id": "M-003",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "已更新",
+                  "version": 2
+                }
+              ],
+              "content": "待编辑内容",
+              "server_content": "重新加载的最新内容",
+              "outcome": "failure"
+            },
+            "source_ref": "authoring-sources/approval.scenarios.json",
+            "source_digest": "sha256:f61e6b1db04bfc5743082019f125c3d627224c31eb003edcdd3948325ee11c0a"
+          },
+          "conflict": {
+            "id": "conflict",
+            "label": "并发冲突",
+            "state_ref": ".agents/skills/yss-prototype-stage/references/business-patterns.md",
+            "initial_data": {
+              "rows": [
+                {
+                  "id": "M-001",
+                  "name": "季度经营分析资料",
+                  "owner": "张明",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-002",
+                  "name": "跨部门业务协作与异常处理说明（长名称示例）",
+                  "owner": "李华",
+                  "status": "待核对",
+                  "version": 1
+                },
+                {
+                  "id": "M-003",
+                  "name": "归档清单",
+                  "owner": "王宁",
+                  "status": "已更新",
+                  "version": 1
+                }
+              ],
+              "server_rows": [
+                {
+                  "id": "M-001",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "已更新",
+                  "version": 2
+                },
+                {
+                  "id": "M-002",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "待核对",
+                  "version": 2
+                },
+                {
+                  "id": "M-003",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "已更新",
+                  "version": 2
+                }
+              ],
+              "content": "待编辑内容",
+              "server_content": "重新加载的最新内容",
+              "outcome": "conflict"
+            },
+            "source_ref": "authoring-sources/conflict.scenarios.json",
+            "source_digest": "sha256:b5981bd621fcbc68cf2ee246485a3c67dd3858478ad478d55fc9aa563bbf1828"
+          },
+          "analysis": {
+            "id": "primary",
+            "label": "正常",
+            "state_ref": ".agents/skills/yss-prototype-stage/references/business-patterns.md",
+            "initial_data": {
+              "rows": [
+                {
+                  "id": "M-001",
+                  "name": "第1期 · 季度经营分析资料",
+                  "owner": "张明",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-002",
+                  "name": "第2期 · 跨部门业务协作与异常处理说明（长名称示例）",
+                  "owner": "李华",
+                  "status": "待核对",
+                  "version": 1
+                },
+                {
+                  "id": "M-003",
+                  "name": "第3期 · 归档清单",
+                  "owner": "王宁",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-004",
+                  "name": "第4期 · 季度经营分析资料",
+                  "owner": "张明",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-005",
+                  "name": "第5期 · 跨部门业务协作与异常处理说明（长名称示例）",
+                  "owner": "李华",
+                  "status": "待核对",
+                  "version": 1
+                },
+                {
+                  "id": "M-006",
+                  "name": "第6期 · 归档清单",
+                  "owner": "王宁",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-007",
+                  "name": "第7期 · 季度经营分析资料",
+                  "owner": "张明",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-008",
+                  "name": "第8期 · 跨部门业务协作与异常处理说明（长名称示例）",
+                  "owner": "李华",
+                  "status": "待核对",
+                  "version": 1
+                },
+                {
+                  "id": "M-009",
+                  "name": "第9期 · 归档清单",
+                  "owner": "王宁",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-010",
+                  "name": "第10期 · 季度经营分析资料",
+                  "owner": "张明",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-011",
+                  "name": "第11期 · 跨部门业务协作与异常处理说明（长名称示例）",
+                  "owner": "李华",
+                  "status": "待核对",
+                  "version": 1
+                },
+                {
+                  "id": "M-012",
+                  "name": "第12期 · 归档清单",
+                  "owner": "王宁",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-013",
+                  "name": "第13期 · 季度经营分析资料",
+                  "owner": "张明",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-014",
+                  "name": "第14期 · 跨部门业务协作与异常处理说明（长名称示例）",
+                  "owner": "李华",
+                  "status": "待核对",
+                  "version": 1
+                },
+                {
+                  "id": "M-015",
+                  "name": "第15期 · 归档清单",
+                  "owner": "王宁",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-016",
+                  "name": "第16期 · 季度经营分析资料",
+                  "owner": "张明",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-017",
+                  "name": "第17期 · 跨部门业务协作与异常处理说明（长名称示例）",
+                  "owner": "李华",
+                  "status": "待核对",
+                  "version": 1
+                },
+                {
+                  "id": "M-018",
+                  "name": "第18期 · 归档清单",
+                  "owner": "王宁",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-019",
+                  "name": "第19期 · 季度经营分析资料",
+                  "owner": "张明",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-020",
+                  "name": "第20期 · 跨部门业务协作与异常处理说明（长名称示例）",
+                  "owner": "李华",
+                  "status": "待核对",
+                  "version": 1
+                },
+                {
+                  "id": "M-021",
+                  "name": "第21期 · 归档清单",
+                  "owner": "王宁",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-022",
+                  "name": "第22期 · 季度经营分析资料",
+                  "owner": "张明",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-023",
+                  "name": "第23期 · 跨部门业务协作与异常处理说明（长名称示例）",
+                  "owner": "李华",
+                  "status": "待核对",
+                  "version": 1
+                },
+                {
+                  "id": "M-024",
+                  "name": "第24期 · 归档清单",
+                  "owner": "王宁",
+                  "status": "已更新",
+                  "version": 1
+                }
+              ],
+              "server_rows": [
+                {
+                  "id": "M-001",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "已更新",
+                  "version": 2
+                },
+                {
+                  "id": "M-002",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "待核对",
+                  "version": 2
+                },
+                {
+                  "id": "M-003",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "已更新",
+                  "version": 2
+                }
+              ],
+              "content": "待编辑内容",
+              "server_content": "重新加载的最新内容",
+              "outcome": "success"
+            },
+            "source_ref": "authoring-sources/analysis.scenarios.json",
+            "source_digest": "sha256:5591cea8fb9adc4986b8f19bc5102d6fb83e5076f329a31802ccded616c2dccd"
+          },
+          "combined-query": {
+            "id": "failure",
+            "label": "失败恢复",
+            "state_ref": ".agents/skills/yss-prototype-stage/references/search-date-patterns.md",
+            "initial_data": {
+              "fixture": "维护教学示例，非产品 Spec",
+              "referenceDate": "2024-02-15",
+              "name": "",
+              "ownerId": "U-001",
+              "range": {
+                "start": "",
+                "end": ""
+              },
+              "optionState": "failure",
+              "options": [
+                {
+                  "id": "U-001",
+                  "name": "张明"
+                },
+                {
+                  "id": "U-002",
+                  "name": "张明"
+                },
+                {
+                  "id": "U-003",
+                  "name": "李华（跨部门业务协作与异常恢复负责人长名称示例）"
+                },
+                {
+                  "id": "U-004",
+                  "name": "停用负责人",
+                  "disabled": true
+                }
+              ],
+              "rows": [
+                {
+                  "id": "M-001",
+                  "name": "季度资料",
+                  "ownerId": "U-001",
+                  "date": "2024-02-29"
+                },
+                {
+                  "id": "M-002",
+                  "name": "跨部门协作说明",
+                  "ownerId": "U-002",
+                  "date": "2024-03-01"
+                },
+                {
+                  "id": "M-003",
+                  "name": "归档清单",
+                  "ownerId": "U-001",
+                  "date": "2024-12-31"
+                }
+              ]
+            },
+            "source_ref": "authoring-sources/combined-query.scenarios.json",
+            "source_digest": "sha256:d904d41797d47208ad909e8db682204a5ccea70d8974dbfd350523f42a3fd22b"
+          },
+          "owner-validity": {
+            "id": "failure",
+            "label": "失败恢复",
+            "state_ref": ".agents/skills/yss-prototype-stage/references/search-date-patterns.md",
+            "initial_data": {
+              "fixture": "维护教学示例，非产品 Spec",
+              "referenceDate": "2024-02-15",
+              "name": "",
+              "ownerId": "U-001",
+              "range": {
+                "start": "",
+                "end": ""
+              },
+              "optionState": "failure",
+              "options": [
+                {
+                  "id": "U-001",
+                  "name": "张明"
+                },
+                {
+                  "id": "U-002",
+                  "name": "张明"
+                },
+                {
+                  "id": "U-003",
+                  "name": "李华（跨部门业务协作与异常恢复负责人长名称示例）"
+                },
+                {
+                  "id": "U-004",
+                  "name": "停用负责人",
+                  "disabled": true
+                }
+              ],
+              "rows": [
+                {
+                  "id": "M-001",
+                  "name": "季度资料",
+                  "ownerId": "U-001",
+                  "date": "2024-02-29"
+                },
+                {
+                  "id": "M-002",
+                  "name": "跨部门协作说明",
+                  "ownerId": "U-002",
+                  "date": "2024-03-01"
+                },
+                {
+                  "id": "M-003",
+                  "name": "归档清单",
+                  "ownerId": "U-001",
+                  "date": "2024-12-31"
+                }
+              ]
+            },
+            "source_ref": "authoring-sources/owner-validity.scenarios.json",
+            "source_digest": "sha256:d904d41797d47208ad909e8db682204a5ccea70d8974dbfd350523f42a3fd22b"
+          }
+        }
+      }
+    },
+    {
+      "id": "no-permission",
+      "label": "只读与权限",
+      "state_ref": ".agents/skills/yss-prototype-stage/references/enterprise-workspace.md",
+      "initial_data": {
+        "pages": {
+          "list-detail": {
+            "id": "no-permission",
+            "label": "无编辑权限",
+            "state_ref": ".agents/skills/yss-prototype-stage/references/business-patterns.md",
+            "initial_data": {
+              "rows": [
+                {
+                  "id": "M-001",
+                  "name": "季度经营分析资料",
+                  "owner": "张明",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-002",
+                  "name": "跨部门业务协作与异常处理说明（长名称示例）",
+                  "owner": "李华",
+                  "status": "待核对",
+                  "version": 1
+                },
+                {
+                  "id": "M-003",
+                  "name": "归档清单",
+                  "owner": "王宁",
+                  "status": "已更新",
+                  "version": 1
+                }
+              ],
+              "server_rows": [
+                {
+                  "id": "M-001",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "已更新",
+                  "version": 2
+                },
+                {
+                  "id": "M-002",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "待核对",
+                  "version": 2
+                },
+                {
+                  "id": "M-003",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "已更新",
+                  "version": 2
+                }
+              ],
+              "content": "待编辑内容",
+              "server_content": "重新加载的最新内容",
+              "outcome": "no-permission"
+            },
+            "source_ref": "authoring-sources/list-detail.scenarios.json",
+            "source_digest": "sha256:5da5ae1309028b479a0251892f7d0168d482be18811fac8e215f10aa39aee31b"
+          },
+          "multi-step": {
+            "id": "no-permission",
+            "label": "无编辑权限",
+            "state_ref": ".agents/skills/yss-prototype-stage/references/business-patterns.md",
+            "initial_data": {
+              "rows": [
+                {
+                  "id": "M-001",
+                  "name": "季度经营分析资料",
+                  "owner": "张明",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-002",
+                  "name": "跨部门业务协作与异常处理说明（长名称示例）",
+                  "owner": "李华",
+                  "status": "待核对",
+                  "version": 1
+                },
+                {
+                  "id": "M-003",
+                  "name": "归档清单",
+                  "owner": "王宁",
+                  "status": "已更新",
+                  "version": 1
+                }
+              ],
+              "server_rows": [
+                {
+                  "id": "M-001",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "已更新",
+                  "version": 2
+                },
+                {
+                  "id": "M-002",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "待核对",
+                  "version": 2
+                },
+                {
+                  "id": "M-003",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "已更新",
+                  "version": 2
+                }
+              ],
+              "content": "待编辑内容",
+              "server_content": "重新加载的最新内容",
+              "outcome": "no-permission",
+              "form": {
+                "name": "",
+                "owner": "",
+                "note": ""
+              }
+            },
+            "source_ref": "authoring-sources/multi-step.scenarios.json",
+            "source_digest": "sha256:3f837285023a7b092564d5c97c536e7dcd9a6dac375e34e86a949029ce9c3630"
+          },
+          "approval": {
+            "id": "no-permission",
+            "label": "无编辑权限",
+            "state_ref": ".agents/skills/yss-prototype-stage/references/business-patterns.md",
+            "initial_data": {
+              "rows": [
+                {
+                  "id": "M-001",
+                  "name": "季度经营分析资料",
+                  "owner": "张明",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-002",
+                  "name": "跨部门业务协作与异常处理说明（长名称示例）",
+                  "owner": "李华",
+                  "status": "待核对",
+                  "version": 1
+                },
+                {
+                  "id": "M-003",
+                  "name": "归档清单",
+                  "owner": "王宁",
+                  "status": "已更新",
+                  "version": 1
+                }
+              ],
+              "server_rows": [
+                {
+                  "id": "M-001",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "已更新",
+                  "version": 2
+                },
+                {
+                  "id": "M-002",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "待核对",
+                  "version": 2
+                },
+                {
+                  "id": "M-003",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "已更新",
+                  "version": 2
+                }
+              ],
+              "content": "待编辑内容",
+              "server_content": "重新加载的最新内容",
+              "outcome": "no-permission"
+            },
+            "source_ref": "authoring-sources/approval.scenarios.json",
+            "source_digest": "sha256:f61e6b1db04bfc5743082019f125c3d627224c31eb003edcdd3948325ee11c0a"
+          },
+          "conflict": {
+            "id": "no-permission",
+            "label": "无编辑权限",
+            "state_ref": ".agents/skills/yss-prototype-stage/references/business-patterns.md",
+            "initial_data": {
+              "rows": [
+                {
+                  "id": "M-001",
+                  "name": "季度经营分析资料",
+                  "owner": "张明",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-002",
+                  "name": "跨部门业务协作与异常处理说明（长名称示例）",
+                  "owner": "李华",
+                  "status": "待核对",
+                  "version": 1
+                },
+                {
+                  "id": "M-003",
+                  "name": "归档清单",
+                  "owner": "王宁",
+                  "status": "已更新",
+                  "version": 1
+                }
+              ],
+              "server_rows": [
+                {
+                  "id": "M-001",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "已更新",
+                  "version": 2
+                },
+                {
+                  "id": "M-002",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "待核对",
+                  "version": 2
+                },
+                {
+                  "id": "M-003",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "已更新",
+                  "version": 2
+                }
+              ],
+              "content": "待编辑内容",
+              "server_content": "重新加载的最新内容",
+              "outcome": "no-permission"
+            },
+            "source_ref": "authoring-sources/conflict.scenarios.json",
+            "source_digest": "sha256:b5981bd621fcbc68cf2ee246485a3c67dd3858478ad478d55fc9aa563bbf1828"
+          },
+          "analysis": {
+            "id": "primary",
+            "label": "正常",
+            "state_ref": ".agents/skills/yss-prototype-stage/references/business-patterns.md",
+            "initial_data": {
+              "rows": [
+                {
+                  "id": "M-001",
+                  "name": "第1期 · 季度经营分析资料",
+                  "owner": "张明",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-002",
+                  "name": "第2期 · 跨部门业务协作与异常处理说明（长名称示例）",
+                  "owner": "李华",
+                  "status": "待核对",
+                  "version": 1
+                },
+                {
+                  "id": "M-003",
+                  "name": "第3期 · 归档清单",
+                  "owner": "王宁",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-004",
+                  "name": "第4期 · 季度经营分析资料",
+                  "owner": "张明",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-005",
+                  "name": "第5期 · 跨部门业务协作与异常处理说明（长名称示例）",
+                  "owner": "李华",
+                  "status": "待核对",
+                  "version": 1
+                },
+                {
+                  "id": "M-006",
+                  "name": "第6期 · 归档清单",
+                  "owner": "王宁",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-007",
+                  "name": "第7期 · 季度经营分析资料",
+                  "owner": "张明",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-008",
+                  "name": "第8期 · 跨部门业务协作与异常处理说明（长名称示例）",
+                  "owner": "李华",
+                  "status": "待核对",
+                  "version": 1
+                },
+                {
+                  "id": "M-009",
+                  "name": "第9期 · 归档清单",
+                  "owner": "王宁",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-010",
+                  "name": "第10期 · 季度经营分析资料",
+                  "owner": "张明",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-011",
+                  "name": "第11期 · 跨部门业务协作与异常处理说明（长名称示例）",
+                  "owner": "李华",
+                  "status": "待核对",
+                  "version": 1
+                },
+                {
+                  "id": "M-012",
+                  "name": "第12期 · 归档清单",
+                  "owner": "王宁",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-013",
+                  "name": "第13期 · 季度经营分析资料",
+                  "owner": "张明",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-014",
+                  "name": "第14期 · 跨部门业务协作与异常处理说明（长名称示例）",
+                  "owner": "李华",
+                  "status": "待核对",
+                  "version": 1
+                },
+                {
+                  "id": "M-015",
+                  "name": "第15期 · 归档清单",
+                  "owner": "王宁",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-016",
+                  "name": "第16期 · 季度经营分析资料",
+                  "owner": "张明",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-017",
+                  "name": "第17期 · 跨部门业务协作与异常处理说明（长名称示例）",
+                  "owner": "李华",
+                  "status": "待核对",
+                  "version": 1
+                },
+                {
+                  "id": "M-018",
+                  "name": "第18期 · 归档清单",
+                  "owner": "王宁",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-019",
+                  "name": "第19期 · 季度经营分析资料",
+                  "owner": "张明",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-020",
+                  "name": "第20期 · 跨部门业务协作与异常处理说明（长名称示例）",
+                  "owner": "李华",
+                  "status": "待核对",
+                  "version": 1
+                },
+                {
+                  "id": "M-021",
+                  "name": "第21期 · 归档清单",
+                  "owner": "王宁",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-022",
+                  "name": "第22期 · 季度经营分析资料",
+                  "owner": "张明",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-023",
+                  "name": "第23期 · 跨部门业务协作与异常处理说明（长名称示例）",
+                  "owner": "李华",
+                  "status": "待核对",
+                  "version": 1
+                },
+                {
+                  "id": "M-024",
+                  "name": "第24期 · 归档清单",
+                  "owner": "王宁",
+                  "status": "已更新",
+                  "version": 1
+                }
+              ],
+              "server_rows": [
+                {
+                  "id": "M-001",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "已更新",
+                  "version": 2
+                },
+                {
+                  "id": "M-002",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "待核对",
+                  "version": 2
+                },
+                {
+                  "id": "M-003",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "已更新",
+                  "version": 2
+                }
+              ],
+              "content": "待编辑内容",
+              "server_content": "重新加载的最新内容",
+              "outcome": "success"
+            },
+            "source_ref": "authoring-sources/analysis.scenarios.json",
+            "source_digest": "sha256:5591cea8fb9adc4986b8f19bc5102d6fb83e5076f329a31802ccded616c2dccd"
+          },
+          "combined-query": {
+            "id": "no-permission",
+            "label": "无编辑权限",
+            "state_ref": ".agents/skills/yss-prototype-stage/references/search-date-patterns.md",
+            "initial_data": {
+              "fixture": "维护教学示例，非产品 Spec",
+              "referenceDate": "2024-02-15",
+              "name": "",
+              "ownerId": "",
+              "range": {
+                "start": "",
+                "end": ""
+              },
+              "optionState": "ready",
+              "options": [
+                {
+                  "id": "U-001",
+                  "name": "张明"
+                },
+                {
+                  "id": "U-002",
+                  "name": "张明"
+                },
+                {
+                  "id": "U-003",
+                  "name": "李华（跨部门业务协作与异常恢复负责人长名称示例）"
+                },
+                {
+                  "id": "U-004",
+                  "name": "停用负责人",
+                  "disabled": true
+                }
+              ],
+              "rows": [
+                {
+                  "id": "M-001",
+                  "name": "季度资料",
+                  "ownerId": "U-001",
+                  "date": "2024-02-29"
+                },
+                {
+                  "id": "M-002",
+                  "name": "跨部门协作说明",
+                  "ownerId": "U-002",
+                  "date": "2024-03-01"
+                },
+                {
+                  "id": "M-003",
+                  "name": "归档清单",
+                  "ownerId": "U-001",
+                  "date": "2024-12-31"
+                }
+              ]
+            },
+            "source_ref": "authoring-sources/combined-query.scenarios.json",
+            "source_digest": "sha256:d904d41797d47208ad909e8db682204a5ccea70d8974dbfd350523f42a3fd22b"
+          },
+          "owner-validity": {
+            "id": "no-permission",
+            "label": "无编辑权限",
+            "state_ref": ".agents/skills/yss-prototype-stage/references/search-date-patterns.md",
+            "initial_data": {
+              "fixture": "维护教学示例，非产品 Spec",
+              "referenceDate": "2024-02-15",
+              "name": "",
+              "ownerId": "",
+              "range": {
+                "start": "",
+                "end": ""
+              },
+              "optionState": "ready",
+              "options": [
+                {
+                  "id": "U-001",
+                  "name": "张明"
+                },
+                {
+                  "id": "U-002",
+                  "name": "张明"
+                },
+                {
+                  "id": "U-003",
+                  "name": "李华（跨部门业务协作与异常恢复负责人长名称示例）"
+                },
+                {
+                  "id": "U-004",
+                  "name": "停用负责人",
+                  "disabled": true
+                }
+              ],
+              "rows": [
+                {
+                  "id": "M-001",
+                  "name": "季度资料",
+                  "ownerId": "U-001",
+                  "date": "2024-02-29"
+                },
+                {
+                  "id": "M-002",
+                  "name": "跨部门协作说明",
+                  "ownerId": "U-002",
+                  "date": "2024-03-01"
+                },
+                {
+                  "id": "M-003",
+                  "name": "归档清单",
+                  "ownerId": "U-001",
+                  "date": "2024-12-31"
+                }
+              ]
+            },
+            "source_ref": "authoring-sources/owner-validity.scenarios.json",
+            "source_digest": "sha256:d904d41797d47208ad909e8db682204a5ccea70d8974dbfd350523f42a3fd22b"
+          }
+        }
+      }
+    },
+    {
+      "id": "empty",
+      "label": "空结果",
+      "state_ref": ".agents/skills/yss-prototype-stage/references/enterprise-workspace.md",
+      "initial_data": {
+        "pages": {
+          "list-detail": {
+            "id": "empty",
+            "label": "空数据",
+            "state_ref": ".agents/skills/yss-prototype-stage/references/business-patterns.md",
+            "initial_data": {
+              "rows": [],
+              "server_rows": [
+                {
+                  "id": "M-001",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "已更新",
+                  "version": 2
+                },
+                {
+                  "id": "M-002",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "待核对",
+                  "version": 2
+                },
+                {
+                  "id": "M-003",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "已更新",
+                  "version": 2
+                }
+              ],
+              "content": "待编辑内容",
+              "server_content": "重新加载的最新内容",
+              "outcome": "empty"
+            },
+            "source_ref": "authoring-sources/list-detail.scenarios.json",
+            "source_digest": "sha256:5da5ae1309028b479a0251892f7d0168d482be18811fac8e215f10aa39aee31b"
+          },
+          "multi-step": {
+            "id": "primary",
+            "label": "正常",
+            "state_ref": ".agents/skills/yss-prototype-stage/references/business-patterns.md",
+            "initial_data": {
+              "rows": [
+                {
+                  "id": "M-001",
+                  "name": "季度经营分析资料",
+                  "owner": "张明",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-002",
+                  "name": "跨部门业务协作与异常处理说明（长名称示例）",
+                  "owner": "李华",
+                  "status": "待核对",
+                  "version": 1
+                },
+                {
+                  "id": "M-003",
+                  "name": "归档清单",
+                  "owner": "王宁",
+                  "status": "已更新",
+                  "version": 1
+                }
+              ],
+              "server_rows": [
+                {
+                  "id": "M-001",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "已更新",
+                  "version": 2
+                },
+                {
+                  "id": "M-002",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "待核对",
+                  "version": 2
+                },
+                {
+                  "id": "M-003",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "已更新",
+                  "version": 2
+                }
+              ],
+              "content": "待编辑内容",
+              "server_content": "重新加载的最新内容",
+              "outcome": "success",
+              "form": {
+                "name": "",
+                "owner": "",
+                "note": ""
+              }
+            },
+            "source_ref": "authoring-sources/multi-step.scenarios.json",
+            "source_digest": "sha256:3f837285023a7b092564d5c97c536e7dcd9a6dac375e34e86a949029ce9c3630"
+          },
+          "approval": {
+            "id": "empty",
+            "label": "空数据",
+            "state_ref": ".agents/skills/yss-prototype-stage/references/business-patterns.md",
+            "initial_data": {
+              "rows": [],
+              "server_rows": [
+                {
+                  "id": "M-001",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "已更新",
+                  "version": 2
+                },
+                {
+                  "id": "M-002",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "待核对",
+                  "version": 2
+                },
+                {
+                  "id": "M-003",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "已更新",
+                  "version": 2
+                }
+              ],
+              "content": "待编辑内容",
+              "server_content": "重新加载的最新内容",
+              "outcome": "empty"
+            },
+            "source_ref": "authoring-sources/approval.scenarios.json",
+            "source_digest": "sha256:f61e6b1db04bfc5743082019f125c3d627224c31eb003edcdd3948325ee11c0a"
+          },
+          "conflict": {
+            "id": "primary",
+            "label": "正常",
+            "state_ref": ".agents/skills/yss-prototype-stage/references/business-patterns.md",
+            "initial_data": {
+              "rows": [
+                {
+                  "id": "M-001",
+                  "name": "季度经营分析资料",
+                  "owner": "张明",
+                  "status": "已更新",
+                  "version": 1
+                },
+                {
+                  "id": "M-002",
+                  "name": "跨部门业务协作与异常处理说明（长名称示例）",
+                  "owner": "李华",
+                  "status": "待核对",
+                  "version": 1
+                },
+                {
+                  "id": "M-003",
+                  "name": "归档清单",
+                  "owner": "王宁",
+                  "status": "已更新",
+                  "version": 1
+                }
+              ],
+              "server_rows": [
+                {
+                  "id": "M-001",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "已更新",
+                  "version": 2
+                },
+                {
+                  "id": "M-002",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "待核对",
+                  "version": 2
+                },
+                {
+                  "id": "M-003",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "已更新",
+                  "version": 2
+                }
+              ],
+              "content": "待编辑内容",
+              "server_content": "重新加载的最新内容",
+              "outcome": "success"
+            },
+            "source_ref": "authoring-sources/conflict.scenarios.json",
+            "source_digest": "sha256:b5981bd621fcbc68cf2ee246485a3c67dd3858478ad478d55fc9aa563bbf1828"
+          },
+          "analysis": {
+            "id": "empty",
+            "label": "空数据",
+            "state_ref": ".agents/skills/yss-prototype-stage/references/business-patterns.md",
+            "initial_data": {
+              "rows": [],
+              "server_rows": [
+                {
+                  "id": "M-001",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "已更新",
+                  "version": 2
+                },
+                {
+                  "id": "M-002",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "待核对",
+                  "version": 2
+                },
+                {
+                  "id": "M-003",
+                  "name": "服务端最新资料名称",
+                  "owner": "最新负责人",
+                  "status": "已更新",
+                  "version": 2
+                }
+              ],
+              "content": "待编辑内容",
+              "server_content": "重新加载的最新内容",
+              "outcome": "empty"
+            },
+            "source_ref": "authoring-sources/analysis.scenarios.json",
+            "source_digest": "sha256:5591cea8fb9adc4986b8f19bc5102d6fb83e5076f329a31802ccded616c2dccd"
+          },
+          "combined-query": {
+            "id": "empty",
+            "label": "空结果",
+            "state_ref": ".agents/skills/yss-prototype-stage/references/search-date-patterns.md",
+            "initial_data": {
+              "fixture": "维护教学示例，非产品 Spec",
+              "referenceDate": "2024-02-15",
+              "name": "",
+              "ownerId": "",
+              "range": {
+                "start": "",
+                "end": ""
+              },
+              "optionState": "ready",
+              "options": [],
+              "rows": []
+            },
+            "source_ref": "authoring-sources/combined-query.scenarios.json",
+            "source_digest": "sha256:d904d41797d47208ad909e8db682204a5ccea70d8974dbfd350523f42a3fd22b"
+          },
+          "owner-validity": {
+            "id": "primary",
+            "label": "正常",
+            "state_ref": ".agents/skills/yss-prototype-stage/references/search-date-patterns.md",
+            "initial_data": {
+              "fixture": "维护教学示例，非产品 Spec",
+              "referenceDate": "2024-02-15",
+              "name": "",
+              "ownerId": "",
+              "range": {
+                "start": "",
+                "end": ""
+              },
+              "optionState": "ready",
+              "options": [
+                {
+                  "id": "U-001",
+                  "name": "张明"
+                },
+                {
+                  "id": "U-002",
+                  "name": "张明"
+                },
+                {
+                  "id": "U-003",
+                  "name": "李华（跨部门业务协作与异常恢复负责人长名称示例）"
+                },
+                {
+                  "id": "U-004",
+                  "name": "停用负责人",
+                  "disabled": true
+                }
+              ],
+              "rows": [
+                {
+                  "id": "M-001",
+                  "name": "季度资料",
+                  "ownerId": "U-001",
+                  "date": "2024-02-29"
+                },
+                {
+                  "id": "M-002",
+                  "name": "跨部门协作说明",
+                  "ownerId": "U-002",
+                  "date": "2024-03-01"
+                },
+                {
+                  "id": "M-003",
+                  "name": "归档清单",
+                  "ownerId": "U-001",
+                  "date": "2024-12-31"
+                }
+              ]
+            },
+            "source_ref": "authoring-sources/owner-validity.scenarios.json",
+            "source_digest": "sha256:d904d41797d47208ad909e8db682204a5ccea70d8974dbfd350523f42a3fd22b"
+          }
+        }
+      }
+    }
+  ]
+}

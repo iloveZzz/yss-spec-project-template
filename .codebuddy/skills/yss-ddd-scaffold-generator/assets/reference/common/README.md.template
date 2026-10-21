@@ -1,0 +1,21 @@
+# 参考条目示例
+
+这是独立参考工程，业务根 POM 不聚合它。平台：Spring Boot {{spring_boot_version}} / Java {{java_version}}。
+
+```bash
+./mvnw validate
+./mvnw test
+./mvnw package
+java -jar {{run_module}}/target/{{run_module}}-{{project_version}}.jar
+```
+
+服务只监听 127.0.0.1，使用 H2 内存库，重启后数据消失；无生产数据库或认证配置，不应部署为业务服务。
+
+```bash
+curl -H 'Content-Type: application/json' -d '{"name":"参考条目"}' http://127.0.0.1:8080/reference-entries
+curl http://127.0.0.1:8080/reference-entries/<id>
+curl -X PUT -H 'Content-Type: application/json' -d '{"name":"新名称"}' http://127.0.0.1:8080/reference-entries/<id>/name
+```
+
+请求、响应与错误见 `openapi.yaml`。测试覆盖真实 HTTP、Spring MapStruct Bean、持久化、事务回滚和脱敏错误。
+复制思路到业务工程前仍需确认自己的业务/API/数据合同；示例不代表业务批准。无需示例时生成前传 `--without-example`。生成后可整体移走本目录，但会使原生成清单完整性验证失败；不要手工篡改清单伪造原始生成证据。

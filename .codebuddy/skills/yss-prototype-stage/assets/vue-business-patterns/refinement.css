@@ -1,0 +1,129 @@
+/* Review-only material study. Existing dimensions, colors and radii remain Token based.
+   Opacity/blur/elevation parameters below are proposed treatments, not approved design tokens. */
+:root {
+ --study-shadow-floating: 0 var(--brand-size-xxs) var(--brand-size-lg) color-mix(in srgb,var(--brand-color-text) 12%,transparent);
+ --study-shadow-bar: 0 1px var(--brand-size-xs) color-mix(in srgb,var(--brand-color-text) 5%,transparent);
+ --study-glass-fill: color-mix(in srgb,var(--brand-color-bg-elevated) 86%,transparent);
+ --study-glass-blur: var(--brand-size);
+}
+body {background:var(--brand-color-bg-layout)}
+main {max-width:1280px;padding:var(--brand-size-lg) var(--brand-size)}
+.workspace-bar {position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:var(--brand-size);padding:var(--brand-size-sm) var(--brand-size-lg);border-bottom:1px solid var(--brand-color-border-secondary);background:var(--brand-color-bg-elevated);box-shadow:var(--study-shadow-bar)}
+.workspace-brand {display:flex;align-items:center;gap:var(--brand-size-sm);min-width:0}
+.brand-mark {display:grid;place-items:center;width:var(--brand-size-xl);height:var(--brand-size-xl);border-radius:var(--brand-border-radius);background:var(--yss-colors-primary-bg);color:var(--yss-color-primary-control)}
+.brand-mark svg {width:var(--brand-size-md);height:var(--brand-size-md)}
+.workspace-divider {height:var(--brand-size);border-left:1px solid var(--brand-color-border)}
+.workspace-context,.environment {color:var(--brand-color-text-secondary)}
+.environment {display:flex;align-items:center;gap:var(--brand-size-xs);white-space:nowrap}
+.environment svg {width:var(--brand-size);height:var(--brand-size)}
+.heading {padding-block:var(--brand-size-lg);margin-bottom:var(--brand-size-xs)}
+.heading .page-eyebrow {margin:0 0 var(--brand-size-xs);color:var(--brand-color-text-secondary);font-size:var(--brand-font-size-sm)}
+.heading h1 {margin-bottom:var(--brand-size-xs)}
+.page-symbol {padding:var(--brand-size-sm);color:var(--yss-color-primary-control);background:var(--yss-colors-primary-bg);border-radius:var(--brand-border-radius-lg)}
+.page-symbol svg {width:var(--brand-size-lg);height:var(--brand-size-lg)}
+.surface {border-color:var(--brand-color-border-secondary);margin-block:0 var(--brand-size)}
+.section-heading {display:flex;align-items:center;flex-wrap:wrap;gap:var(--brand-size-xs);margin-bottom:var(--brand-size)}
+.section-heading .muted {margin-left:auto}
+.query-filters {grid-template-columns:minmax(240px,2fr) minmax(180px,1fr) auto;max-width:960px;gap:var(--brand-size)}
+.query-filters label {font-weight:400;color:var(--brand-color-text-secondary);margin-bottom:var(--brand-size-xs)}
+.results-toolbar {padding-bottom:var(--brand-size-xs);margin-bottom:0}
+.result-context {padding-bottom:var(--brand-size);font-size:var(--brand-font-size-sm)}
+.selection-count {color:var(--brand-color-text-secondary);padding:var(--brand-size-xxs) var(--brand-size-xs);background:var(--yss-colors-surface-subtle);border-radius:var(--brand-border-radius-sm);font-size:var(--brand-font-size-sm)}
+.selection-count.has-selection {color:var(--yss-color-primary-control);background:var(--yss-colors-primary-bg)}
+.results-surface [data-slot="table-container"] {border:0;border-top:1px solid var(--brand-color-border-secondary);border-radius:0}
+.responsive-list th {font-weight:400;color:var(--brand-color-text-secondary)}
+.responsive-list td[data-label="资料名称"] {font-weight:var(--brand-font-weight-strong);white-space:normal;min-width:200px}
+.responsive-list td[data-label="编号"] {color:var(--brand-color-text-secondary);font-variant-numeric:tabular-nums;white-space:nowrap}
+.responsive-list td:last-child {width:190px}
+.responsive-list th:first-child,.responsive-list td:first-child {width:var(--brand-size-xxl)}
+.responsive-list tr:last-child td {border-bottom:0}
+.status-dot {width:6px;height:6px;display:inline-block;flex-shrink:0;border-radius:var(--brand-border-radius-lg);background:currentColor}
+[data-slot="badge"].status-current {background:var(--yss-colors-success-bg);color:var(--brand-color-text);border-color:var(--brand-color-success-border)}
+[data-slot="badge"].status-pending {background:var(--yss-colors-warning-bg);color:var(--brand-color-text);border-color:var(--brand-color-warning-border)}
+.detail-action[data-slot="button"] {border-color:transparent;color:var(--yss-color-primary-control);background:transparent}
+[data-slot="pagination"] {justify-content:flex-end;border-top:1px solid var(--brand-color-border-secondary);padding-top:var(--brand-size-sm);margin-top:var(--brand-size-sm)}
+[data-slot="pagination-content"] {gap:var(--brand-size-sm)}
+[data-slot="select-content"],[data-slot="dropdown-menu-content"],[data-slot="tooltip-content"],[data-slot="dialog-content"] {box-shadow:var(--study-shadow-floating)}
+[data-slot="sheet-content"] {box-shadow:var(--study-shadow-floating);padding:0}
+[data-slot="sheet-header"] {padding:var(--brand-size-lg) var(--brand-size);border-bottom:1px solid var(--brand-color-border-secondary)}
+[data-slot="sheet-content"] dl {padding:var(--brand-size);display:grid;grid-template-columns:96px minmax(0,1fr);align-content:start;gap:var(--brand-size) var(--brand-size-sm)}
+[data-slot="sheet-content"] dt,[data-slot="sheet-content"] dd {margin:0}
+.sheet-actions {padding:var(--brand-size);border-top:1px solid var(--brand-color-border-secondary);background:var(--brand-color-bg-elevated)}
+.form-layout {display:grid;grid-template-columns:240px minmax(0,1fr);gap:var(--brand-size-lg);align-items:start;max-width:1080px;margin:auto}
+.step-aside {padding:var(--brand-size) 0}
+.step-list {list-style:none;padding:0;margin:0}
+.step-list li {display:flex;align-items:flex-start;gap:var(--brand-size-sm);padding:0 0 var(--brand-size-lg);color:var(--brand-color-text-secondary)}
+.step-number {display:grid;place-items:center;width:var(--brand-size-xl);height:var(--brand-size-xl);flex:none;border:1px solid var(--brand-color-border);border-radius:var(--brand-border-radius);background:var(--brand-color-bg-container)}
+.step-list strong {display:block;margin-top:var(--brand-size-xxs)}
+.step-list p {font-size:var(--brand-font-size-sm);margin-top:var(--brand-size-xxs)}
+.step-list .current {color:var(--brand-color-text)}
+.step-list .current .step-number {background:var(--yss-color-primary-control);color:var(--yss-color-on-primary);border-color:var(--yss-color-primary-control)}
+.step-list .completed .step-number {color:var(--yss-color-primary-control);border-color:var(--yss-color-primary-control);background:var(--yss-colors-primary-bg)}
+.step-help {border-top:1px solid var(--brand-color-border);padding-top:var(--brand-size);color:var(--brand-color-text-secondary)}
+.step-help p {margin-top:var(--brand-size-xs);font-size:var(--brand-font-size-sm)}
+.form-surface {padding:0!important;overflow:clip}
+.form-surface>h2 {padding:var(--brand-size);border-bottom:1px solid var(--brand-color-border-secondary);margin:0}
+.form-body {padding:var(--brand-size) var(--brand-size-lg) var(--brand-size-lg)}
+.form-body fieldset {border:0;padding:0;margin:0;gap:var(--brand-size)}
+.form-body legend {padding:0;font-size:var(--yss-typography-body-font-size);font-weight:var(--brand-font-weight-strong);margin-bottom:var(--brand-size)}
+.form-body [data-slot="field-group"] {gap:var(--brand-size-lg)}
+.form-body [data-slot="field"] {gap:var(--brand-size-xs)}
+.form-body [data-slot="field-label"] {margin:0}
+.form-body textarea {min-height:calc(var(--prototype-control-height) * 4)}
+.form-actions {position:sticky;bottom:0;z-index:10;background:var(--brand-color-bg-elevated);border-top:1px solid var(--brand-color-border-secondary);margin:0;padding:var(--brand-size);justify-content:flex-end;box-shadow:var(--study-shadow-bar)}
+.action-context {margin-right:auto;color:var(--brand-color-text-secondary);font-size:var(--brand-font-size-sm)}
+.workspace-footer {display:flex;justify-content:space-between;gap:var(--brand-size);margin-top:var(--brand-size-lg);color:var(--brand-color-text-secondary);font-size:var(--brand-font-size-sm)}
+.review-controls {background:var(--yss-colors-surface-subtle);border:1px dashed var(--brand-color-border);border-radius:var(--brand-border-radius);margin-top:var(--brand-size-xl);font-size:var(--brand-font-size-sm)}
+.review-options {display:flex;flex-wrap:wrap;gap:var(--brand-size-sm);align-items:center;margin-top:var(--brand-size-sm)}
+.review-options label {margin:0;font-weight:400}
+.transparency-option {display:flex!important;align-items:center;gap:var(--brand-size-xs);min-height:var(--prototype-control-height)}
+.transparency-option input {width:var(--brand-size);height:var(--brand-size);min-height:0;accent-color:var(--yss-color-primary-control)}
+.skip-link {position:fixed;top:0;left:var(--brand-size);transform:translateY(-150%);z-index:100;background:var(--brand-color-bg-container);color:var(--yss-color-primary-control);padding:var(--brand-size-xs)}
+.skip-link:focus {transform:translateY(0)}
+/* Only a control layer becomes translucent; dense content remains opaque. */
+@supports ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))) {
+ :root[data-appearance="glass"] .material-surface,:root[data-appearance="glass"] [data-slot="dropdown-menu-content"],:root[data-appearance="glass"] [data-slot="select-content"] {background:var(--study-glass-fill);backdrop-filter:blur(var(--study-glass-blur));-webkit-backdrop-filter:blur(var(--study-glass-blur));box-shadow:var(--study-shadow-floating),inset 0 1px 0 var(--brand-color-bg-container)}
+}
+:root[data-transparency="reduced"] .material-surface,:root[data-transparency="reduced"] [data-slot="dropdown-menu-content"],:root[data-transparency="reduced"] [data-slot="select-content"] {background:var(--brand-color-bg-elevated);backdrop-filter:none;-webkit-backdrop-filter:none}
+@media(prefers-reduced-transparency:reduce),(forced-colors:active) {
+ :root[data-appearance="glass"] .material-surface,:root[data-appearance="glass"] [data-slot="dropdown-menu-content"],:root[data-appearance="glass"] [data-slot="select-content"] {background:var(--brand-color-bg-elevated);backdrop-filter:none;-webkit-backdrop-filter:none}
+}
+@media(max-width:768px) {.form-layout {grid-template-columns:minmax(0,1fr);gap:var(--brand-size-sm)}.step-aside {padding:0}.step-list {display:flex;gap:var(--brand-size)}.step-list li {flex:1;padding-bottom:var(--brand-size-xs)}.step-help {display:none}}
+@media(max-width:576px) {
+ main {padding:var(--brand-size-sm)}
+ .workspace-bar {padding:var(--brand-size-sm);gap:var(--brand-size-xs)}
+ .workspace-brand {gap:var(--brand-size-xs)}
+ .workspace-context,.workspace-divider,.environment svg {display:none}
+ .environment {font-size:var(--brand-font-size-sm)}
+ .heading {padding-block:var(--brand-size);margin-bottom:var(--brand-size-xxs)}
+ .page-symbol {display:none}
+ .section-heading {margin-bottom:var(--brand-size-sm)}
+ .section-heading .muted {margin-left:0;font-size:var(--brand-font-size-sm)}
+ .query-filters {grid-template-columns:minmax(0,1fr);gap:var(--brand-size-sm)}
+ .results-toolbar {gap:var(--brand-size-xs)}
+ .results-toolbar h2 {flex-basis:100%}
+ .results-toolbar .selection-count {margin-left:auto}
+ .responsive-list th:first-child,.responsive-list td:first-child,.responsive-list td:last-child {width:auto}
+ .responsive-list td[data-label="资料名称"] {min-width:0;padding-bottom:var(--brand-size-xs)}
+ .responsive-list td[data-label="资料名称"]::before {display:none}
+ .row-actions {margin-top:var(--brand-size-xs)}
+ [data-slot="pagination"] {justify-content:center}
+ [data-slot="pagination-content"] {gap:var(--brand-size-xs);flex-wrap:wrap;justify-content:center}
+ .form-body {padding:var(--brand-size-sm)}
+ .form-surface>h2 {padding:var(--brand-size-sm)}
+ .form-actions {padding:var(--brand-size-sm)}
+ .action-context {flex-basis:100%}
+ .workspace-footer {flex-wrap:wrap;gap:var(--brand-size-xxs)}
+ .review-options {align-items:start;flex-direction:column}
+ .step-number {width:var(--brand-size-lg);height:var(--brand-size-lg)}
+ .step-list strong {margin-top:0}
+}
+@media(prefers-reduced-motion:reduce) {*,*::before,*::after {animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* Use the registered Select with one project focus ring and an anchored popup. */
+[data-slot="select-trigger"] {font-weight:400;box-shadow:none;outline-offset:2px}
+[data-slot="select-trigger"]:focus-visible {outline:2px solid var(--yss-color-primary-control);border-color:var(--yss-color-primary-control);box-shadow:none}
+[data-slot="select-trigger"]:focus:not(:focus-visible) {outline:none}
+[data-slot="select-content"] {min-width:var(--reka-select-trigger-width);max-width:calc(100vw - var(--brand-size-lg));border-radius:var(--brand-border-radius);font-size:var(--yss-typography-body-font-size);transform:none}
+[data-slot="select-content"] [role="option"] {border-radius:var(--brand-border-radius-sm);padding-inline:var(--brand-size-xs) var(--brand-size-xl);color:var(--brand-color-text)}
+[data-slot="select-content"] [role="option"][data-highlighted] {background:var(--yss-colors-primary-bg)}

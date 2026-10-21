@@ -1,0 +1,5 @@
+version: 1
+interface:
+  display_name: "YSS DDD Scaffold"
+  short_description: "直接生成 YSS DDD 后端脚手架，无需需求合同或设计审批"
+  default_prompt: "Use $yss-ddd-scaffold-generator to directly generate a YSS DDD backend skeleton with domain, application, infrastructure, adapter, and bootstrap modules. Collect project inputs and generate without requiring a requirements contract, prototype, design approval, or lifecycle setup. Use the governed path when a scaffold contract is explicitly supplied."

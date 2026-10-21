@@ -6,23 +6,26 @@ import os from "node:os";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
-// 专职 Profile 暂未登记投影根；根（spec）的投影行为见下一条用例。
-for (const sourceRoot of ["profiles/backend"]) test(`FR-006：${sourceRoot} Skill 同步不创建任何投影目录，检查也通过`, async () => {
+// Backend 仅新增 WorkBuddy 普通文件投影，根保留 Claude 兼容行为。
+for (const sourceRoot of ["profiles/backend"]) test(`FR-006：${sourceRoot} Skill 同步创建 WorkBuddy 普通投影，检查也通过`, async () => {
   const root = mkdtempSync(path.join(os.tmpdir(), "yss-skill-sync-"));
   try {
     mkdirSync(path.join(root, "scripts/lib"), { recursive: true });
     cpSync(path.resolve(sourceRoot, "scripts/lib/skill-supply-chain.mjs"), path.join(root, "scripts/lib/skill-supply-chain.mjs"));
+    cpSync(path.resolve("scripts/lib/workbuddy-projection.mjs"), path.join(root, "scripts/lib/workbuddy-projection.mjs"));
     const source = path.join(root, ".agents/skills/probe");
     mkdirSync(source, { recursive: true });
     writeFileSync(path.join(source, "SKILL.md"), "---\nname: probe\n---\n");
     writeFileSync(path.join(root, "skills-lock.json"), JSON.stringify({ version: 3, skills: { shared: { probe: {} }, platform: {} } }));
     assert.equal(spawnSync("git", ["init", "-q", root]).status, 0);
     const { syncSkills, PROJECTION_ROOTS } = await import(pathToFileURL(path.join(root, "scripts/lib/skill-supply-chain.mjs")).href);
-    assert.deepEqual(PROJECTION_ROOTS, []);
+    assert.deepEqual(PROJECTION_ROOTS, [".codebuddy/skills"]);
     assert.match(syncSkills(), /synchronized 1 shared skills/);
     assert.equal(syncSkills({ check: true }), "skill projections are synchronized");
     for (const hidden of [".claude", ".codex", ".cursor", ".pi"]) assert.equal(existsSync(path.join(root, hidden)), false, `${hidden} 不应被创建`);
     assert.deepEqual(readdirSync(root).filter((name) => name.endsWith("skills")), []);
+    assert.equal(lstatSync(path.join(root, ".codebuddy/skills/probe")).isSymbolicLink(), false);
+    assert.equal(readFileSync(path.join(root, ".codebuddy/skills/probe/SKILL.md"), "utf8"), readFileSync(path.join(source, "SKILL.md"), "utf8"));
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
@@ -33,19 +36,21 @@ test("根 Skill 同步：相同投影不重写，结构、换行或权限漂移�
   try {
     mkdirSync(path.join(root, "scripts/lib"), { recursive: true });
     cpSync(path.resolve("scripts/lib/skill-supply-chain.mjs"), path.join(root, "scripts/lib/skill-supply-chain.mjs"));
+    cpSync(path.resolve("scripts/lib/workbuddy-projection.mjs"), path.join(root, "scripts/lib/workbuddy-projection.mjs"));
     const source = path.join(root, ".agents/skills/probe");
     mkdirSync(source, { recursive: true });
     writeFileSync(path.join(source, "SKILL.md"), "---\r\nname: probe\r\n---\r\n");
     writeFileSync(path.join(source, "payload.txt"), "payload\n");
     symlinkSync("payload.txt", path.join(source, "linked.txt"));
+    writeFileSync(path.join(root, "yss-project.yaml"), "schema_version: 1\nrepository_mode: project-instance\n");
     const target = path.join(root, ".claude/skills/probe");
     mkdirSync(path.dirname(target), { recursive: true });
     cpSync(source, target, { recursive: true, verbatimSymlinks: true });
-    writeFileSync(path.join(root, "skills-lock.json"), JSON.stringify({ version: 3, skills: { shared: { probe: {} }, platform: {} } }));
+    writeFileSync(path.join(root, "skills-lock.json"), JSON.stringify({ version: 3, projectionRoots: [".claude/skills"], skills: { shared: { probe: {} }, platform: {} } }));
     assert.equal(spawnSync("git", ["init", "-q", root]).status, 0);
     assert.equal(spawnSync("git", ["-C", root, "add", ".claude/skills"]).status, 0);
     const { syncSkills, PROJECTION_ROOTS } = await import(pathToFileURL(path.join(root, "scripts/lib/skill-supply-chain.mjs")).href);
-    assert.deepEqual(PROJECTION_ROOTS, [".claude/skills"]);
+    assert.deepEqual(PROJECTION_ROOTS, [".claude/skills", ".codebuddy/skills"]);
     const skillFile = path.join(target, "SKILL.md");
     const before = statSync(skillFile).mtimeMs;
     assert.match(syncSkills(), /synchronized 1 shared skills/);

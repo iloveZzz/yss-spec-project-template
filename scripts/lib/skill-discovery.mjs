@@ -129,6 +129,7 @@ export async function codexCatalog(binary, cwd, timeout = 30000) {
 
 export async function observeRuntime({ runtime, binary, cwd, piLoader, piAgentDir }) {
   cwd = path.resolve(cwd);
+  if (runtime === 'workbuddy') return { runtime, version: null, cwd, observed_at: new Date().toISOString(), entries: [], status: 'unknown', selection: 'unknown', truncation: 'unknown', configuration: 'not-inspected', reason: 'workbuddy-desktop-catalog-unavailable' };
   const result = spawnSync(binary, ['--version'], { encoding: 'utf8', timeout: 10000, maxBuffer: 1024 * 1024 });
   const version = result.status === 0 ? result.stdout.trim() : null;
   const base = { runtime, version, cwd, observed_at: new Date().toISOString(), entries: [], status: 'unknown', selection: 'unknown', truncation: 'unknown', configuration: 'not-inspected' };

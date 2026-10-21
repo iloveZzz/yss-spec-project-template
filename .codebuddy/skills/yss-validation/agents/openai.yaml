@@ -1,0 +1,4 @@
+interface:
+  display_name: "yss-validation"
+  short_description: "YSS component skill for yss-validation"
+  default_prompt: "Use yss-validation for this YSS backend component task."

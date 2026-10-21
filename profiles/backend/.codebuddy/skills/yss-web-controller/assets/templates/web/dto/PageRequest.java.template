@@ -1,0 +1,21 @@
+package ${base_package}.rest.dto.request;
+
+import ${query_dto_type};
+import lombok.Getter;
+import lombok.Setter;
+import ${validation_namespace}.validation.constraints.Pattern;
+import java.util.Date;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.LocalDate;
+
+/**
+ * ${domain_desc}分页请求。仅暴露已冻结的 HTTP 查询字段。
+ */
+@Getter
+@Setter
+public class ${domain_class}PageRequest extends ${query_dto_simple_name} {
+${pagination_field_declarations}
+
+${field_declarations}
+}

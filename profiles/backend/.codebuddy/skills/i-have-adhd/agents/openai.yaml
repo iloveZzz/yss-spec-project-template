@@ -1,0 +1,6 @@
+interface:
+  display_name: "i-have-adhd · YSS 文档配套"
+  short_description: "按当前研发文档任务应用中文写作规范，保持规则与证据完整"
+  default_prompt: "使用 i-have-adhd 配套技能改善当前研发文档表达，保留所有业务规则、证据、未决项和原批准状态。"
+policy:
+  allow_implicit_invocation: true

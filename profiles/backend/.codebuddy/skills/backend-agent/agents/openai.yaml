@@ -1,0 +1,5 @@
+version: 1
+interface:
+  display_name: "Backend Agent"
+  short_description: "实现 YSS DDD 后端垂直切片"
+  default_prompt: "使用 $backend-agent 消费批准的 Tactical Design Contract、API 和数据边界，实现后端垂直切片并用项目根 ./mvnw 返回验证证据。"

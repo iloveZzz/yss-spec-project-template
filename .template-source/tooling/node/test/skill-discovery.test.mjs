@@ -3,7 +3,7 @@ import { mkdtempSync, mkdirSync, writeFileSync, symlinkSync, rmSync } from 'node
 import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
-import { resourceIdentity, inspectSkill, assessDiscovery, codexCatalog } from '../../../../scripts/lib/skill-discovery.mjs';
+import { resourceIdentity, inspectSkill, assessDiscovery, codexCatalog, observeRuntime } from '../../../../scripts/lib/skill-discovery.mjs';
 
 function fixture(fn) {
   const root = mkdtempSync(path.join(os.tmpdir(), 'yss-discovery-'));
@@ -69,4 +69,17 @@ test('malformed catalog and hung host fail closed within the observation deadlin
   await assert.rejects(codexCatalog(host, root, 1000), /JSON|Unexpected/);
   writeFileSync(host, '#!/usr/bin/env node\nprocess.stdin.resume();\n', { mode: 0o755 });
   await assert.rejects(codexCatalog(host, root, 50), /timed out/);
+});
+
+test('WorkBuddy desktop observation stays unknown and never borrows a CLI version', async () => {
+  for (const binary of [undefined, process.execPath, '/missing-codebuddy']) {
+    const result = await observeRuntime({ runtime: 'workbuddy', binary, cwd: process.cwd() });
+    assert.equal(result.runtime, 'workbuddy');
+    assert.equal(result.version, null);
+    assert.equal(result.status, 'unknown');
+    assert.deepEqual(result.entries, []);
+    assert.equal(result.reason, 'workbuddy-desktop-catalog-unavailable');
+    const binding = { runtime: 'workbuddy', version: null, cwd: process.cwd() };
+    assert.equal(assessDiscovery({registered: [{name:'demo'}],observation:result,expected:binding,required:['demo']}).status,'blocked');
+  }
 });

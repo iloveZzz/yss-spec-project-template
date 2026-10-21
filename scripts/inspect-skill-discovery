@@ -11,7 +11,7 @@ try {
     if (!['--runtime', '--binary', '--cwd', '--pi-loader', '--pi-agent-dir', '--selections', '--required'].includes(key) || !value || value.startsWith('--')) throw new Error(`invalid argument: ${key}`);
     args[key.slice(2)] = value;
   }
-  if (!['codex', 'pi', 'cursor'].includes(args.runtime) || !args.binary) throw new Error('--runtime codex|pi|cursor and --binary are required');
+  if (!['codex', 'pi', 'cursor', 'workbuddy'].includes(args.runtime) || (args.runtime !== 'workbuddy' && !args.binary)) throw new Error('--runtime codex|pi|cursor|workbuddy is required; --binary is required except for WorkBuddy desktop');
   const cwd = path.resolve(args.cwd ?? '.');
   const document = parseDocument(readFileSync(path.join(cwd, '.template-spec/agents/yss-skill-registry.yaml'), 'utf8'), { uniqueKeys: true, maxAliasCount: 0 });
   if (document.errors.length) throw new Error('invalid registry');

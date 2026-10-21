@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>__FEATURE__</title>
+  <link rel="stylesheet" href="./tokens.css">
+  <link rel="stylesheet" href="./styles.css">
+  <script defer src="./scenarios.js"></script>
+  <script defer src="./app.js"></script>
+</head>
+<body>
+  <main>
+    <h1>__FEATURE__</h1>
+    <p>请依据已评审的交互说明替换此示例。</p>
+    <section class="surface" aria-labelledby="editor-title">
+      <h2 id="editor-title">内容编辑</h2>
+      <form id="editor">
+        <label for="content">内容</label>
+        <input id="content" name="content" required aria-describedby="status">
+        <div class="actions">
+          <button id="save" type="submit">保存</button>
+          <button id="retry" type="button" hidden>重试</button>
+          <button id="reload" type="button" hidden>重新加载</button>
+        </div>
+        <p id="status" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+    <details class="review-controls">
+      <summary>评审场景</summary>
+      <label for="scenario">场景</label>
+      <select id="scenario" aria-label="评审场景"></select>
+      <button id="reset" type="button">重置场景</button>
+      <p>此区域供评审使用；场景数据为模拟数据。</p>
+    </details>
+  </main>
+</body>
+</html>

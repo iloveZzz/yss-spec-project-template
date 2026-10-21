@@ -1,0 +1,5 @@
+version: 1
+interface:
+  display_name: "Harness Orchestrator"
+  short_description: "编排四角色 Agent 从 技术设计到垂直切片交付"
+  default_prompt: "使用 $harness-orchestrator 校验上游输入、编译 Slice Implementation Contract、派发四角色任务包并汇合 Fresh Verification；不得写业务代码或跳过门禁。"

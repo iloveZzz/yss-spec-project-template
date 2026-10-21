@@ -1,0 +1,41 @@
+package {{base_package}}.application.service;
+
+import {{base_package}}.domain.ReferenceEntryException;
+import {{base_package}}.domain.entity.ReferenceEntryEntity;
+import {{base_package}}.domain.gateway.ReferenceEntryGateway;
+import {{base_package}}.application.command.ReferenceEntryCommand;
+import {{base_package}}.application.result.ReferenceEntryResult;
+import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@RequiredArgsConstructor
+public class ReferenceEntryService {
+    private final ReferenceEntryGateway gateway;
+
+    @Transactional(rollbackFor = Exception.class)
+    public ReferenceEntryResult create(ReferenceEntryCommand command) {
+        ReferenceEntryEntity entry = ReferenceEntryEntity.restore(UUID.randomUUID().toString(), command.getName());
+        gateway.save(entry);
+        return new ReferenceEntryResult(entry.getId(), entry.getName());
+    }
+
+    public ReferenceEntryResult find(String id) {
+        ReferenceEntryEntity entry = load(id);
+        return new ReferenceEntryResult(entry.getId(), entry.getName());
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public ReferenceEntryResult rename(String id, ReferenceEntryCommand command) {
+        ReferenceEntryEntity entry = load(id);
+        entry.rename(command.getName());
+        gateway.save(entry);
+        return new ReferenceEntryResult(entry.getId(), entry.getName());
+    }
+
+    private ReferenceEntryEntity load(String id) {
+        return gateway.find(id).orElseThrow(() -> new ReferenceEntryException("REFERENCE_NOT_FOUND", "参考条目不存在"));
+    }
+}

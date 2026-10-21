@@ -1,0 +1,32 @@
+package {{base_package}}.infrastructure.repository;
+
+import {{base_package}}.domain.entity.ReferenceEntryEntity;
+import {{base_package}}.domain.gateway.ReferenceEntryGateway;
+import {{base_package}}.infrastructure.mapper.ReferenceEntryMapper;
+import {{base_package}}.infrastructure.convertor.ReferenceEntryPersistenceConvertor;
+import {{base_package}}.infrastructure.po.ReferenceEntryPO;
+import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
+
+@Repository
+@RequiredArgsConstructor
+public class ReferenceEntryRepository implements ReferenceEntryGateway {
+    private final ReferenceEntryMapper mapper;
+    private final ReferenceEntryPersistenceConvertor convertor;
+
+    @Override
+    public Optional<ReferenceEntryEntity> find(String id) {
+        return Optional.ofNullable(convertor.toEntity(mapper.selectById(id)));
+    }
+
+    @Override
+    public void save(ReferenceEntryEntity entry) {
+        ReferenceEntryPO po = convertor.toPO(entry);
+        if (mapper.selectById(entry.getId()) == null) {
+            mapper.insert(po);
+        } else {
+            mapper.updateById(po);
+        }
+    }
+}
