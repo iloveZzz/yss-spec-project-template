@@ -69,7 +69,7 @@ Profile 职责:
 生命周期导航:
   正式：入口分诊 → Plan（战略规划） → Spec / 功能架构 → 产品设计与业务 Ticket 正式化 → 系统 / 数据架构与工程契约 → 实现切片拆分与合同准入 → 垂直切片实现 → 验证 / 发布 / 复盘
   固定模板：d947b648aa5feac74bd17ddb407a666a28cf5dd2；来源摘要：39a8e314412faa8e3ffe82d6f834dbe81d512105df9ae2c49f17b70f21fb892c
-  日常：需求与验收 → 技术技能 → 实现 → 测试 → 独立审查 → verify-daily（当前 Spec 政策）
+  日常：需求与验收 → 技术技能 → 实现 → 测试 → 适用复核 → verify-daily（当前 Spec 政策）
   教程：yss help tutorial governed | yss help tutorial daily
   先 Spec、再设计、再交付：yss help tutorial spec
   目标设置与续推：yss lifecycle target --help | yss help examples lifecycle target

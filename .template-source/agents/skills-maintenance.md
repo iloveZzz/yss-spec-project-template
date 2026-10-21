@@ -91,7 +91,7 @@ scripts/update-skill-lock --check
 scripts/verify-upstream-skill-source --source=mattpocock/skills --source-root <matt-skills-checkout>
 ```
 
-前者检查所有共享投影是否指向或匹配权威内容，后者检查 `skills-lock.json` 是否与当前完整目录树一致。过时技能不会保留兼容别名；旧 skill 名称和入口按 [`.template-spec/agents/skill-migrations.md`](./skill-migrations.md) 一次性迁移，项目文件升级由 `create-yss-spec attach` / `sync` 处理。
+前者检查所有共享投影是否指向或匹配权威内容，后者检查 `skills-lock.json` 是否与当前完整目录树一致。过时技能不会保留兼容别名；旧 skill 名称和入口按 [`.template-spec/agents/skill-migrations.md`](../../.template-spec/agents/skill-migrations.md) 一次性迁移，项目文件接管与同步由原生 `yss attach` / `yss sync` 的保存计划与显式应用入口处理。
 
 ## skills.sh 公开发布
 
@@ -104,7 +104,7 @@ YSS 技能的公开发布仓库为 `iloveZzz/yss-spec-dev-skills`，它是本模
 - 发布顺序为：同步 canonical projections → 更新 lock → `scripts/verify-template` → 导出并检查 → 独立审查 → 在 `yss-spec-dev-skills` 提交人工 PR。不得从目标仓库反向覆盖 `.agents/skills`。
 - skills.sh 通过 `npx skills add iloveZzz/yss-spec-dev-skills` 的安装遥测自动发现技能，不需要手工注册；遥测可用 `DISABLE_TELEMETRY=1` 或 `DO_NOT_TRACK` 关闭。
 
-已退休、personal 或由 YSS 有意排除的条目不再进入 `.agents/skills`、注册表 `projection_roots` 登记的投影根（[`yss-skill-registry.yaml`](../../.template-spec/agents/yss-skill-registry.yaml)）或 `skills-lock.json`。退役 ID、日期和替代路径只在 [`skill-migrations.md`](./skill-migrations.md) 持久化，其他活跃文档不得重复维护清单或创建兼容目录。其中 `wizard` 是最新上游仍存在但 YSS 当前有意排除的人工步骤技能，不应描述为上游已退休。
+已退休、personal 或由 YSS 有意排除的条目不再进入 `.agents/skills`、注册表 `projection_roots` 登记的投影根（[`yss-skill-registry.yaml`](../../.template-spec/agents/yss-skill-registry.yaml)）或 `skills-lock.json`。退役 ID、日期和替代路径只在 [`skill-migrations.md`](../../.template-spec/agents/skill-migrations.md) 持久化，其他活跃文档不得重复维护清单或创建兼容目录。其中 `wizard` 是最新上游仍存在但 YSS 当前有意排除的人工步骤技能，不应描述为上游已退休。
 
 ## 外部工作流工具
 

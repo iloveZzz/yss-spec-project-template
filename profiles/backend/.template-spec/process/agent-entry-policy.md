@@ -4,7 +4,7 @@
 
 ## 1. 仓库身份
 
-仅请求新建 MVC/DDD 后端开发脚手架时，按对应技能的[直接生成说明](.agents/skills/yss-ddd-scaffold-generator/references/standalone-generation.md) 执行，无需需求合同、原型确认、设计审批或先初始化治理实例。未传合同参数时默认直接生成；显式正式合同调用继续原有校验。以下产品阶段前提用于业务与治理任务。
+仅请求新建 MVC/DDD 后端开发脚手架时，按对应技能的[直接生成说明](../../.agents/skills/yss-ddd-scaffold-generator/references/standalone-generation.md) 执行，无需需求合同、原型确认、设计审批或先初始化治理实例。未传合同参数时默认直接生成；显式正式合同调用继续原有校验。以下产品阶段前提用于业务与治理任务。
 
 路径相对当前治理仓根；本地身份、Profile 和工具由本入口解释。进入独立实现仓后消费其入口；共同授权、用户工作保护与允许写范围继续有效。每个任务先读取当前仓库根的 `yss-project.yaml`：
 
@@ -119,7 +119,7 @@ README、用户指南和 `CLAUDE.md` 只解释或指向上述事实，不定义�
 - 命中会签时按 `.template-spec/agents/digital-human-roles.yaml`，运行 `scripts/verify-approval-record --require-approved --checkpoint <current checkpoint>`；期望上下文来自当前 checkpoint / 任务。高风险架构、OpenAPI Freeze、合并命中本仓生物人政策时先核验当前有效的原始真实回复与批准，只有缺失、失效或实质变化时展示资产后询问。商务承诺和运行时外部副作用仍须生物人。
 - 专业审查等待由主控按角色表自主派发并等待，无依赖的已授权工作继续；非阻断建议进入待办，必要证据和真实缺陷仍阻断，仅缺真实决定或无法自主取得的必要输入时询问用户。
 - 在暂停、handoff、进入实现和验证边界同步范围、证据、风险、会签点、Ticket 状态和下一步。
-- 决定和授权消费 [.agents/skills/harness-orchestrator/references/user-decisions.md](.agents/skills/harness-orchestrator/references/user-decisions.md)，复用有效范围授权；提交、推送、发布分别消费用户授权。
+- 决定和授权消费 [.agents/skills/harness-orchestrator/references/user-decisions.md](../../.agents/skills/harness-orchestrator/references/user-decisions.md)，复用有效范围授权；提交、推送、发布分别消费用户授权。
 - Git checkpoint 只含本轮范围；获得用户授权后才提交或推送。返工或 IMPORTANT / CRITICAL finding 触发简体中文复盘并修订权威资产。
 
 ## 11. Subagent 协同

@@ -37,4 +37,4 @@ API 先 OAS 3.1 YAML Draft、锁定工具校验、内容复核（默认真实自
 - 实现优先 YSS 技能；前端 `pnpm`，后端根 `./mvnw`；行为测试用 `tdd`。原型用 `yss-prototype-stage`，技术研究用 `yss-research`，竞品用 `competitive-intelligence`。
 - 协作读 `.template-spec/process/subagent-collaboration.md`；新实例按编排政策选择 Skills、检查及复核方式，默认一名 Agent，无岗位或数字人注册要求。需要独立复核时核验独立上下文与只读证据；写范围不重叠。旧角色表仅用于原政策历史核验。主控裁决状态与完成。
 - 验证保留实际命令、退出码、范围与未覆盖项；字节、规则、参数或仓库变化使受影响证据失效。局部完成不等于可合并/可发布。
-- 决定/授权消费 [.agents/skills/yss-product-lifecycle/references/user-decisions.md](.agents/skills/yss-product-lifecycle/references/user-decisions.md)。复用有效范围授权；新决定、外部强制审批和外部动作按实际边界处理。提交、推送、发布须用户授权。
+- 决定/授权消费 [.agents/skills/yss-product-lifecycle/references/user-decisions.md](../../.agents/skills/yss-product-lifecycle/references/user-decisions.md)。复用有效范围授权；新决定、外部强制审批和外部动作按实际边界处理。提交、推送、发布须用户授权。

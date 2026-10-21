@@ -12,7 +12,7 @@ const budget = Number(process.env.YSS_TOOLING_CONCURRENCY || 2);
 const timeoutMs = Number(process.env.YSS_TOOLING_TIMEOUT_MS || 600000);
 if (!['legacy', 'optimized'].includes(mode) || !Number.isInteger(budget) || budget < 1 || budget > 4
     || !Number.isSafeInteger(timeoutMs) || timeoutMs <= 0 || timeoutMs > 600000) throw new Error('invalid-tooling-options');
-const parallelFiles = new Set(['plugin-design-consumption.test.mjs', 'plugin-entry-migration.test.mjs', 'plugin-project.test.mjs', 'product-design-plugin.test.mjs']);
+const parallelFiles = new Set(['plugin-design-consumption.test.mjs', 'plugin-entry-migration.test.mjs', 'plugin-project.test.mjs']);
 const reuseFiles = new Set(['plugin-design-consumption.test.mjs', 'plugin-entry-migration.test.mjs', 'plugin-project.test.mjs']);
 const testRef = file => path.relative(path.join(root, '.template-source/tooling/node/test'), file);
 const externalReport = process.env.YSS_TOOLING_REPORT_DIR;

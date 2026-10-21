@@ -6,7 +6,7 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'nod
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { parseDocument } from '../../scripts/vendor/yaml.mjs';
+import { loadOrchestrationContract } from '../../scripts/lib/orchestration-contract.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const output = process.argv[2];
@@ -17,7 +17,7 @@ const cli = execFileSync('codex', ['--version'], { encoding: 'utf8' }).trim();
 const refs = [
   '.agents/skills/yss-product-lifecycle/SKILL.md',
   '.agents/skills/yss-product-lifecycle/references/request-triage.md',
-  '.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml',
+  '.template-spec/process/orchestration-contract.yaml',
 ];
 const sha = bytes => `sha256:${createHash('sha256').update(bytes).digest('hex')}`;
 const casesRef = '.agents/skills/yss-product-lifecycle/references/request-triage-scenarios.yaml';
@@ -26,6 +26,21 @@ const temp = mkdtempSync(path.join(os.tmpdir(), 'yss-triage-replay-'));
 mkdirSync(output, { recursive: false });
 const metadata = { schema_version: 1, baseline_commit: baseline, model, cli, cases_ref: casesRef, cases_digest: sha(readFileSync(path.join(root, casesRef))), variants: {} };
 try {
+  // Freeze both complete read sets before spending a model call on either one.
+  const snapshots = Object.fromEntries(['baseline', 'candidate'].map(variant => {
+    const sources = {};
+    const read = ref => {
+      const bytes = variant === 'baseline'
+        ? execFileSync('git', ['show', `${baseline}:${ref}`], { cwd: root })
+        : readFileSync(path.join(root, ref));
+      sources[ref] = { text: String(bytes), digest: sha(bytes) };
+      return bytes;
+    };
+    const contract = loadOrchestrationContract(read, refs[2]).value;
+    for (const ref of refs.slice(0, 2)) read(ref);
+    sources[refs[2]].text = JSON.stringify({ request_triage: contract.request_triage, modes: contract.modes }, null, 2);
+    return [variant, sources];
+  }));
   const schema = {
     type: 'object', additionalProperties: false, required: ['cases'], properties: {
       cases: { type: 'array', items: { type: 'object', additionalProperties: false,
@@ -38,16 +53,8 @@ try {
   const schemaFile = path.join(temp, 'output-schema.json');
   writeFileSync(schemaFile, `${JSON.stringify(schema)}\n`);
   for (const variant of ['baseline', 'candidate']) {
-    const sources = Object.fromEntries(refs.map(ref => {
-      const bytes = variant === 'baseline'
-        ? execFileSync('git', ['show', `${baseline}:${ref}`], { cwd: root })
-        : readFileSync(path.join(root, ref));
-      return [ref, { text: String(bytes), digest: sha(bytes) }];
-    }));
-    const contractRef = refs[2];
-    const contract = parseDocument(sources[contractRef].text).toJS();
-    sources[contractRef].text = JSON.stringify({ request_triage: contract.request_triage, modes: contract.modes }, null, 2);
-    metadata.variants[variant] = Object.fromEntries(refs.map(ref => [ref, sources[ref].digest]));
+    const sources = snapshots[variant];
+    metadata.variants[variant] = Object.fromEntries(Object.entries(sources).map(([ref, source]) => [ref, source.digest]));
     const prompt = [
       '你是隔离的 YSS 研发请求分诊执行者。仅依据下列固定 Skill 快照，对每个 case 的 input 和 context 判断首个动作。',
       '逐案独立处理；只返回 JSON；不要读取文件、调用工具、修改状态或假装已执行动作。answer 写原本会给用户的简短中文答复；tool_calls 记本次真实调用，未调用用空数组。',
