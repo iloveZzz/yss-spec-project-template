@@ -309,7 +309,7 @@
     },
     {
       "repository": ".",
-      "file": ".codebuddy/skills/yss-prototype-stage/tests/reliability.test.mjs",
+      "file": ".workbuddy/skills/yss-prototype-stage/tests/reliability.test.mjs",
       "kind": "content",
       "text": " for(const workRoot of ['.work','docs/custom-work','docs/.scratch']){",
       "count": 1,

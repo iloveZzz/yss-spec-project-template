@@ -358,7 +358,7 @@ export function validateSkillRegistry(registry, { lock, compilerContract, lifecy
   const roots = registry.agent_runtime_roots;
   if (!roots || typeof roots !== "object" || Array.isArray(roots)) fail("缺少 agent_runtime_roots");
   // 期望的运行时根由本树的投影根推出：根为 claude/workbuddy，Backend 仅 workbuddy。
-  const RUNTIME_OF_ROOT = { ".claude/skills": "claude", ".codex/skills": "codex", ".cursor/skills": "cursor", ".pi/skills": "pi", ".codebuddy/skills": "workbuddy" };
+  const RUNTIME_OF_ROOT = { ".claude/skills": "claude", ".codex/skills": "codex", ".cursor/skills": "cursor", ".pi/skills": "pi", ".workbuddy/skills": "workbuddy" };
   const expected = Object.fromEntries(PROJECTION_ROOTS.map((root) => [RUNTIME_OF_ROOT[root], root]));
   for (const [agent, root] of Object.entries(expected)) {
     if (roots[agent] !== root) fail(`agent_runtime_roots.${agent} 必须为 ${root}`);

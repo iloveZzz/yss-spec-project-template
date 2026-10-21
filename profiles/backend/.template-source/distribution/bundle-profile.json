@@ -2,7 +2,7 @@
   "manifest": {
     "allowFiles": [
       ".template-spec/adr/README.md",
-      ".codebuddy/skills"
+      ".workbuddy/skills"
     ],
     "allowRootEntries": [
       ".agents",
@@ -121,6 +121,7 @@
       ".git",
       ".codegraph",
       ".codebuddy",
+      ".workbuddy",
       ".idea",
       ".uploads",
       "node_modules",

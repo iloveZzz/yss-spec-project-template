@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { syncWorkBuddyProjection, removeWorkBuddyProjection } from "./workbuddy-projection.mjs";
+import { syncWorkBuddyProjections, removeWorkBuddyProjection } from "./workbuddy-projection.mjs";
 import { cpSync, existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, readlinkSync, realpathSync, rmSync, symlinkSync, unlinkSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import path from "node:path";
@@ -9,13 +9,13 @@ const SOURCE_ROOT = path.join(ROOT, ".agents/skills");
 const LOCK_PATH = path.join(ROOT, "skills-lock.json");
 
 // 仅保留需要平台项目目录的投影；WorkBuddy 副本由普通文件生成器维护。
-export const PROJECTION_ROOTS = [".claude/skills", ".codebuddy/skills"];
+export const PROJECTION_ROOTS = [".claude/skills", ".workbuddy/skills"];
 function projectionRootsFor(lock) {
   const identityPath = path.join(ROOT, "yss-project.yaml");
   const isInstance = existsSync(identityPath) && /^repository_mode:\s*project-instance\s*$/m.test(readFileSync(identityPath, "utf8"));
   if (!isInstance) return PROJECTION_ROOTS;
   const roots = lock?.projectionRoots;
-  if (!Array.isArray(roots) || new Set(roots).size !== roots.length || roots.some(root => ![".codex/skills", ".claude/skills", ".cursor/skills", ".pi/skills", ".codebuddy/skills"].includes(root))) throw new TypeError("project-instance skills-lock.json 缺少有效 projectionRoots");
+  if (!Array.isArray(roots) || new Set(roots).size !== roots.length || roots.some(root => ![".codex/skills", ".claude/skills", ".cursor/skills", ".pi/skills", ".workbuddy/skills"].includes(root))) throw new TypeError("project-instance skills-lock.json 缺少有效 projectionRoots");
   return [...new Set(roots)];
 }
 
@@ -120,7 +120,7 @@ export function unlockedCanonicalEntries(names, allowedNames, hasSkillMd = () =>
   const allowed = new Set(allowedNames);
   return names.filter((name) => !allowed.has(name) && !OBSOLETE.has(name) && hasSkillMd(name)).sort();
 }
-export function syncSkills({ check = false, hashCache = new Map() } = {}) {
+export function syncSkills({ check = false, hashCache = new Map(), workbuddyRepositoryRoot = ROOT, templateSourceRoot = ROOT } = {}) {
   let trackedSet;
   const tracked = ref => (trackedSet ??= trackedPaths()).has(ref);
   const sourceHash = source => {
@@ -131,29 +131,36 @@ export function syncSkills({ check = false, hashCache = new Map() } = {}) {
   const shared = sharedFromLock(lock);
   const projectionRoots = projectionRootsFor(lock);
   const identityPath = path.join(ROOT, "yss-project.yaml");
-  if (!check && projectionRoots.includes(".codebuddy/skills") && existsSync(identityPath) && /^repository_mode:\s*project-instance\s*$/m.test(readFileSync(identityPath, "utf8"))) throw new TypeError("WorkBuddy 实例写入须使用 yss skills ensure / sync 事务；此入口只允许 --check");
+  const isInstance = existsSync(identityPath) && /^repository_mode:\s*project-instance\s*$/m.test(readFileSync(identityPath, "utf8"));
+  const sourceIdentityPath = path.join(templateSourceRoot, "yss-project.yaml");
+  const retireLegacy = !isInstance && existsSync(sourceIdentityPath) && /^repository_mode:\s*template-source\s*$/m.test(readFileSync(sourceIdentityPath, "utf8"));
+  if (!check && projectionRoots.includes(".workbuddy/skills") && isInstance) throw new TypeError("WorkBuddy 实例写入须使用 yss skills ensure / sync 事务；此入口只允许 --check");
   const absent = shared.filter((name) => !lstatSafe(path.join(SOURCE_ROOT, name))?.isDirectory());
   if (absent.length) throw new TypeError(`锁文件声明的共享 skills 缺少权威内容: ${absent.join(", ")}`);
   const obsolete = [...new Set([...shared.filter((name) => OBSOLETE.has(name)), ...obsoleteCanonicalResidues(skillNames(SOURCE_ROOT))])];
   if (obsolete.length) throw new TypeError(`obsolete skills remain in canonical root: ${obsolete.join(", ")}`);
   const drift = [];
   for (const root of projectionRoots) {
-    const projection = path.join(ROOT, root);
-    ensureSafeProjection(projection);
-    if (!check && root !== ".codebuddy/skills") mkdirSync(projection, { recursive: true });
+    const isWorkBuddy = root === ".workbuddy/skills";
+    const projection = path.join(isWorkBuddy ? workbuddyRepositoryRoot : ROOT, root);
+    if (!isWorkBuddy) ensureSafeProjection(projection);
+    if (!check && !isWorkBuddy) mkdirSync(projection, { recursive: true });
     const allowed = [...shared, ...Object.keys(lock.skills?.platform?.[root] ?? {})];
     for (const entry of unlockedProjectionEntries(entries(projection), allowed, (name) => tracked(relative(path.join(projection, name)))).filter((entry) => !OBSOLETE.has(entry.name))) {
       const target = path.join(projection, entry.name);
-      if (root === ".codebuddy/skills") { drift.push(`unlocked projection: ${relative(target)}`); continue; }
+      if (isWorkBuddy) { drift.push(`unlocked projection: ${relative(target)}`); continue; }
       if (!check && entry.isSymbolicLink() && !existsSync(target)) rmSync(target, { force: true });
       else drift.push(`unlocked projection: ${relative(target)}`);
+    }
+    if (isWorkBuddy) {
+      if (drift.length) throw new TypeError(drift.join("\n"));
+      syncWorkBuddyProjections({ repositoryRoot: workbuddyRepositoryRoot, sourceRoot: SOURCE_ROOT, names: shared, check, retireLegacy });
     }
     for (const name of shared) {
       const source = path.join(SOURCE_ROOT, name);
       const target = path.join(projection, name);
       const info = lstatSafe(target);
-      if (root === ".codebuddy/skills") {
-        syncWorkBuddyProjection({ repositoryRoot: ROOT, source, target, check });
+      if (isWorkBuddy) {
         continue;
       }
       if (check) {
@@ -173,8 +180,8 @@ export function syncSkills({ check = false, hashCache = new Map() } = {}) {
     }
     for (const name of OBSOLETE) {
       const target = path.join(projection, name);
-      if (root === ".codebuddy/skills") {
-        removeWorkBuddyProjection({ repositoryRoot: ROOT, target, check });
+      if (isWorkBuddy) {
+        removeWorkBuddyProjection({ repositoryRoot: workbuddyRepositoryRoot, target, check });
         continue;
       }
       if (check) { if (existsSync(target) || lstatSafe(target)?.isSymbolicLink()) drift.push(`obsolete projection: ${relative(target)}`); }
@@ -210,7 +217,7 @@ function sourceRevisionMap(oldLock, arguments_) {
 function metadata(name, skillPath, directory, previous, canonical = false, sources = {}, upstreamRoot = null, hashCache = new Map()) {
   const old = previous[name] ?? {};
   let recordedPath = old.skillPath ?? skillPath;
-  if (canonical && /^\.(codex|cursor|pi|claude|codebuddy)\/skills\//.test(recordedPath)) recordedPath = skillPath;
+  if (canonical && /^\.(codex|cursor|pi|claude|workbuddy)\/skills\//.test(recordedPath)) recordedPath = skillPath;
   if (!hashCache.has(directory)) hashCache.set(directory, treeHash(directory));
   // 本地技能的树哈希不再提交进锁（architecture-iteration-v1 FR-005）：这里只用它判断相对上游是否有改动；
   // 实例锁里的 effectiveHash 由打包器按分发的技能树重算。

@@ -4,7 +4,7 @@
   "canonicalRoot": ".agents/skills",
   "projectionRoots": [
     ".claude/skills",
-    ".codebuddy/skills"
+    ".workbuddy/skills"
   ],
   "sources": {
     "mattpocock/skills": {
@@ -26,7 +26,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "archify": {
@@ -39,7 +39,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "code-review": {
@@ -52,7 +52,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "codebase-design": {
@@ -65,7 +65,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "competitive-intelligence": {
@@ -75,7 +75,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "cross-repo-implementation-routing": {
@@ -85,7 +85,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "diagnosing-bugs": {
@@ -98,7 +98,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "domain-modeling": {
@@ -111,7 +111,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "git-commit-core": {
@@ -121,7 +121,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "grilling": {
@@ -134,7 +134,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "handoff": {
@@ -147,7 +147,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "i-have-adhd": {
@@ -160,7 +160,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "implement": {
@@ -173,7 +173,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "implementation-repo-onboarding": {
@@ -183,7 +183,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "java-backend-commit": {
@@ -193,7 +193,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "llm-wiki": {
@@ -203,7 +203,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "lombok": {
@@ -214,7 +214,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "maintaining-skills": {
@@ -224,7 +224,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "mapstruct": {
@@ -235,7 +235,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "prototype": {
@@ -248,7 +248,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "prototype-review": {
@@ -258,7 +258,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "publish-skills-sh": {
@@ -268,7 +268,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "release-yss-cli": {
@@ -278,7 +278,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "resolving-merge-conflicts": {
@@ -291,7 +291,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "setup-matt-pocock-skills": {
@@ -304,7 +304,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "setup-yss-harness": {
@@ -314,7 +314,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "tdd": {
@@ -327,7 +327,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "to-spec": {
@@ -340,7 +340,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "to-tickets": {
@@ -353,7 +353,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "triage": {
@@ -366,7 +366,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "using-git-worktrees": {
@@ -376,7 +376,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "wayfinder": {
@@ -389,7 +389,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "writing-for-agents": {
@@ -402,7 +402,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "yss-application": {
@@ -412,7 +412,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "yss-audit-log": {
@@ -422,7 +422,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "yss-backend-spec-review": {
@@ -432,7 +432,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "yss-cache": {
@@ -442,7 +442,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "yss-ddd-scaffold-generator": {
@@ -452,7 +452,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "yss-design-system": {
@@ -462,7 +462,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "yss-distributed-id": {
@@ -472,7 +472,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "yss-domain": {
@@ -482,7 +482,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "yss-dto": {
@@ -492,7 +492,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "yss-excel-mvc": {
@@ -502,7 +502,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "yss-exception": {
@@ -512,7 +512,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "yss-implementation-contract-compiler": {
@@ -522,7 +522,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "yss-layered-mvc-scaffold-generator": {
@@ -532,7 +532,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "yss-mybatis": {
@@ -542,7 +542,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "yss-openapi-draft-review": {
@@ -552,7 +552,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "yss-openapi-governance": {
@@ -562,7 +562,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "yss-product-lifecycle": {
@@ -572,7 +572,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "yss-prototype-stage": {
@@ -582,7 +582,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "yss-repository": {
@@ -592,7 +592,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "yss-research": {
@@ -605,7 +605,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "yss-resilience4j": {
@@ -615,7 +615,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "yss-security-algorithm": {
@@ -625,7 +625,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "yss-skill-source-index-refresh": {
@@ -635,7 +635,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "yss-stage-decision": {
@@ -645,7 +645,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "yss-tactical-design": {
@@ -655,7 +655,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "yss-technical-design": {
@@ -665,7 +665,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "yss-up-springboot3": {
@@ -675,7 +675,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "yss-userinfo": {
@@ -685,7 +685,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "yss-validation": {
@@ -695,7 +695,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       },
       "yss-web-controller": {
@@ -705,7 +705,7 @@
         "targets": [
           ".agents/skills",
           ".claude/skills",
-          ".codebuddy/skills"
+          ".workbuddy/skills"
         ]
       }
     },

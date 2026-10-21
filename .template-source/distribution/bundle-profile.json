@@ -26,12 +26,13 @@
       "yss-public-skills.json"
     ],
     "allowFiles": [
-      ".codebuddy/skills"
+      ".workbuddy/skills"
     ],
     "excludeRootEntries": [
       ".git",
       ".codegraph",
       ".codebuddy",
+      ".workbuddy",
       ".idea",
       ".uploads",
       "node_modules",
@@ -143,8 +144,8 @@
       ".claude/skills/yss-design-system/SKILL.md",
       ".claude/skills/yss-design-system/references/data-quality-theme.md",
       "yss-project.yaml",
-      ".codebuddy/skills/yss-design-system/SKILL.md",
-      ".codebuddy/skills/yss-design-system/references/data-quality-theme.md"
+      ".workbuddy/skills/yss-design-system/SKILL.md",
+      ".workbuddy/skills/yss-design-system/references/data-quality-theme.md"
     ],
     "exampleDocPaths": [],
     "initExcludeRootEntries": [],

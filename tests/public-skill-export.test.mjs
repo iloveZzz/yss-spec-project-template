@@ -95,3 +95,40 @@ test("输出目录中的禁止项目文件阻断导出", (t) => {
   fs.writeFileSync(path.join(out, "AGENTS.md"), "forbidden");
   assert.throws(() => exportSkills(["--output", out], { root }), /forbidden project file in public export/);
 });
+
+test(".workbuddy 技能引用公开导出时转换为可移植路径", (t) => {
+    const runtimeRoot = ".workbuddy";
+    const root = fixtureRoot(t, { body: frontmatter("Fixture Skill") + `\nSource: ${runtimeRoot}/skills\n[Skill](${runtimeRoot}/skills/yss-fixture-skill/SKILL.md)\n` });
+    const out = output(t, "yss-export-runtime-root-");
+    exportSkills(["--output", out], { root });
+    const text = fs.readFileSync(path.join(out, "skills/yss-fixture-skill/SKILL.md"), "utf8");
+    assert.ok(!text.includes(runtimeRoot), text);
+    assert.match(text, /Source: the canonical public skill source/);
+    assert.match(text, /\[Skill\]\(\.\.\/yss-fixture-skill\/SKILL\.md\)/);
+    assert.match(exportSkills(["--output", out, "--check"], { root }), /up to date/);
+});
+
+test("旧 .codebuddy 技能引用不能作为受支持路径导出", (t) => {
+  const root = fixtureRoot(t, { body: frontmatter("Fixture Skill") + "\n.codebuddy/skills/yss-fixture-skill\n" });
+  assert.throws(() => exportSkills(["--output", output(t, "yss-export-retired-root-")], { root }), /Agent root path in public export/);
+});
+
+for (const runtimeRoot of [".workbuddy", ".codebuddy"]) {
+  test(`${runtimeRoot} 私有目录阻断公开导出且保留用户文件`, (t) => {
+    const root = fixtureRoot(t), out = output(t, "yss-export-runtime-private-");
+    const privateFile = path.join(out, runtimeRoot, "settings.json");
+    write(privateFile, "private user settings\n");
+    for (const flags of [[], ["--check"]]) {
+      assert.throws(() => exportSkills(["--output", out, ...flags], { root }), /forbidden project file in public export/);
+      assert.equal(fs.readFileSync(privateFile, "utf8"), "private user settings\n");
+      assert.equal(fs.existsSync(path.join(out, "skills")), false);
+    }
+  });
+
+  test(`${runtimeRoot} 运行时路径残留由公开导出检查明确拒绝`, (t) => {
+    const root = fixtureRoot(t), out = output(t, "yss-export-runtime-leak-");
+    exportSkills(["--output", out], { root });
+    fs.appendFileSync(path.join(out, "skills/yss-fixture-skill/SKILL.md"), `\n${runtimeRoot}/skills/yss-fixture-skill\n`);
+    assert.throws(() => exportSkills(["--output", out, "--check"], { root }), /Agent root path in public export/);
+  });
+}

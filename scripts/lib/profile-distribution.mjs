@@ -114,8 +114,8 @@ export function evaluateProfile({ root, profile, rootManifest }) {
     if (!exists) findings.push({ kind: 'stale-exclude-path', path: entry });
   }
   for (const file of tracked) {
-    if (/^\.(claude|codex|cursor|pi|codebuddy)\/skills(?:\/|$)/.test(file) && shipped(file, manifest)) {
-      if (file.startsWith('.codebuddy/skills/') && list(manifest, 'allowFiles').includes('.codebuddy/skills')) continue;
+    if (/^\.(claude|codex|cursor|pi|codebuddy|workbuddy)\/skills(?:\/|$)/.test(file) && shipped(file, manifest)) {
+      if (file.startsWith('.workbuddy/skills/') && list(manifest, 'allowFiles').includes('.workbuddy/skills')) continue;
       findings.push({ kind: 'skill-projection-shipped', path: file });
     }
   }

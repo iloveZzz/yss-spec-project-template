@@ -1,8 +1,25 @@
 #!/usr/bin/env node
-import { syncSkills } from "./lib/skill-supply-chain.mjs";
+import path from "node:path";
+import { readRepositoryMode } from "./lib/repository-mode.mjs";
+import { assertWorkBuddyProfilePaths } from "./lib/workbuddy-projection.mjs";
+import { pathToFileURL } from "node:url";
+import { syncSkills, ROOT } from "./lib/skill-supply-chain.mjs";
 
 try {
-  process.stdout.write(`${syncSkills({ check: process.argv.includes("--check") })}\n`);
+  const args = process.argv.slice(2), check = args.includes("--check"), profileIndex = args.indexOf("--profile");
+  if (profileIndex < 0) {
+    if (args.some(arg => arg !== "--check")) throw new TypeError("仅支持 --check 或 --profile backend");
+    process.stdout.write(`${syncSkills({ check })}\n`);
+  } else {
+    if (args[profileIndex + 1] !== "backend" || args.some((arg, index) => index !== profileIndex && index !== profileIndex + 1 && arg !== "--check")) throw new TypeError("仅支持 --profile backend");
+    if (readRepositoryMode(ROOT) !== "template-source") throw new TypeError("Profile 生成仅适用于 template-source");
+    const overlay = assertWorkBuddyProfilePaths(ROOT);
+    const { composeProfileTree } = await import("./lib/profile-tree.mjs");
+    const tree = composeProfileTree("backend");
+    const supply = await import(pathToFileURL(path.join(tree, "scripts/lib/skill-supply-chain.mjs")));
+    assertWorkBuddyProfilePaths(ROOT);
+    process.stdout.write(`${supply.syncSkills({ check, workbuddyRepositoryRoot: overlay, templateSourceRoot: ROOT })}\n`);
+  }
 } catch (error) {
   process.stderr.write(`${error.message}\n`);
   process.exitCode = 1;

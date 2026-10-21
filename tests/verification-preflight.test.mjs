@@ -12,13 +12,19 @@ test('日常 Node 检查无需 Python 或无关子模块环境',()=>{
  assert.equal(result.status,'passed',JSON.stringify(result.errors));
  assert.deepEqual(result.observations.map(row=>row.name),['node']);
 });
-test('仅检查投影脚本语法不要求执行脚本所需的 Vue 工具链',async()=>{
+test('仅检查 WorkBuddy 投影脚本语法不要求执行脚本所需的 Vue 工具链',async t=>{
  const {addVerificationExecutionTasks}=await import('../.template-source/scripts/lib/verification-execution-plan.mjs');
- const file='.codebuddy/skills/yss-prototype-stage/scripts/build-shadcn-vue-prototype.mjs';
- const compiled=addVerificationExecutionTasks({strategy:'daily-necessary',source_requirement:'current',requested_profile:'fast',effective_profile:'fast',commands:[],changed_files:[file],syntax_files:[]},{root:process.cwd()});
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'workbuddy-syntax-preflight-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ const file='.workbuddy/skills/yss-prototype-stage/scripts/build-shadcn-vue-prototype.mjs';
+ fs.mkdirSync(path.dirname(path.join(root,file)),{recursive:true});
+ fs.copyFileSync('.agents/skills/yss-prototype-stage/scripts/build-shadcn-vue-prototype.mjs',path.join(root,file));
+ const preflightFile='.template-source/scripts/lib/verification-preflight.mjs';
+ fs.mkdirSync(path.dirname(path.join(root,preflightFile)),{recursive:true});
+ fs.copyFileSync(preflightFile,path.join(root,preflightFile));
+ const compiled=addVerificationExecutionTasks({strategy:'daily-necessary',source_requirement:'current',requested_profile:'fast',effective_profile:'fast',commands:[],changed_files:[file],syntax_files:[]},{root});
  assert.ok(compiled.commands.some(task=>task.kind==='syntax'&&task.command.endsWith(`'${file}'`)));
  const preflight=compiled.commands.find(task=>task.kind==='preflight');
- const child=spawnSync('/bin/sh',['-c',preflight.command],{cwd:process.cwd(),env:{},encoding:'utf8'});
+ const child=spawnSync('/bin/sh',['-c',preflight.command],{cwd:root,env:{},encoding:'utf8'});
  assert.equal(child.status,0,child.stderr||child.stdout);
  const result=JSON.parse(child.stdout);
  assert.equal(result.status,'passed',JSON.stringify(result.errors));

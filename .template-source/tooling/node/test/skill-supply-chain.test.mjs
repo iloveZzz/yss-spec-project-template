@@ -70,7 +70,7 @@ test("physical canonical skills must be present in the lock", () => {
 });
 
 test("WorkBuddy：根声明 Claude 与 WorkBuddy 两个必要投影根", () => {
-  assert.deepEqual(PROJECTION_ROOTS, [".claude/skills", ".codebuddy/skills"]);
+  assert.deepEqual(PROJECTION_ROOTS, [".claude/skills", ".workbuddy/skills"]);
 });
 
 test("nested SKILL.md files cannot bypass external skill registration", () => {

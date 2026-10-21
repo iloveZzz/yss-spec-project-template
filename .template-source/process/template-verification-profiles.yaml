@@ -983,6 +983,8 @@ profiles:
         inputs_complete: true
         input_patterns:
           - ".gitattributes"
+          - "scripts/sync-skills"
+          - "scripts/update-skill-lock"
           - "scripts/lib/workbuddy-projection.mjs"
           - ".template-source/tooling/node/test/workbuddy-projection.test.mjs"
           - "scripts/lib/skill-discovery.mjs"
@@ -990,9 +992,12 @@ profiles:
           - ".template-source/tooling/node/test/skill-discovery.test.mjs"
           - "tests/workbuddy-entry.test.mjs"
           - "tests/skill-sync-efficiency.test.mjs"
+          - ".workbuddy/skills/**"
           - ".codebuddy/skills/**"
+          - ".workbuddy/skills/*/**"
           - ".codebuddy/skills/*/**"
           - "skills-lock.json"
+          - "profiles/backend/.workbuddy/skills/**"
           - "profiles/backend/.codebuddy/skills/**"
           - "profiles/backend/skills-lock.json"
           - "profiles/backend/scripts/lib/skill-supply-chain.mjs"
@@ -1578,6 +1583,7 @@ profiles:
           - ".cursor/skills/**"
           - ".pi/skills/**"
           - ".claude/skills/**"
+          - ".workbuddy/skills/**"
           - ".codebuddy/skills/**"
           - "skills-lock.json"
           - "scripts/sync-skills"
@@ -1594,6 +1600,7 @@ profiles:
           - ".cursor/skills/**"
           - ".pi/skills/**"
           - ".claude/skills/**"
+          - ".workbuddy/skills/**"
           - ".codebuddy/skills/**"
           - "skills-lock.json"
           - "scripts/sync-skills"
@@ -1664,6 +1671,7 @@ profiles:
           - ".cursor/skills/**"
           - ".pi/skills/**"
           - ".claude/skills/**"
+          - ".workbuddy/skills/**"
           - ".codebuddy/skills/**"
           - "scripts/verify-skill-governance"
           - "scripts/lib/skill-governance.mjs"
@@ -1695,6 +1703,8 @@ profiles:
       - id: "check.c80aaecf300ddc1f"
         inputs_complete: true
         input_patterns:
+          - "scripts/sync-skills"
+          - "scripts/update-skill-lock"
           - "scripts/lib/skill-supply-chain.mjs"
           - "scripts/lib/workbuddy-projection.mjs"
           - "tests/skill-sync-efficiency.test.mjs"
@@ -2689,7 +2699,7 @@ syntax_files:
   - tests/verification-selection.test.mjs
   - tests/verification-delivery-run.test.mjs
 routing:
-  - patterns: [".gitattributes", ".codebuddy/skills/**", "tests/workbuddy-entry.test.mjs", ".template-source/tooling/node/test/workbuddy-projection.test.mjs"]
+  - patterns: [".gitattributes", ".codebuddy/skills/**", ".workbuddy/skills/**", "tests/workbuddy-entry.test.mjs", ".template-source/tooling/node/test/workbuddy-projection.test.mjs"]
     groups: [skills]
   - patterns:
       - .template-source/scripts/replay-lifecycle-triage

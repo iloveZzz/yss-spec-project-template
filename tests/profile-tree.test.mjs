@@ -37,7 +37,7 @@ test("FR-006：现役 Profile 保留 canonical 与 WorkBuddy 技能，不恢复�
   for (const profile of PROFILE_NAMES) {
     const tree = composeProfileTree(profile);
     assert.ok(fs.existsSync(path.join(tree, ".agents/skills")));
-    assert.ok(fs.existsSync(path.join(tree, ".codebuddy/skills")));
+    assert.ok(fs.existsSync(path.join(tree, ".workbuddy/skills")));
     for (const agent of [".claude", ".codex", ".cursor", ".pi"]) {
       assert.equal(fs.existsSync(path.join(tree, agent, "skills")), false, `${profile}: ${agent}/skills 不应存在`);
     }
@@ -79,10 +79,10 @@ test("FR-006：现役专用 Profile 的锁与注册表声明 WorkBuddy 投影并
   for (const profile of ACTIVE_PROFILES) {
     const tree = composeProfileTree(profile);
     const lock = JSON.parse(fs.readFileSync(path.join(tree, "skills-lock.json"), "utf8"));
-    assert.deepEqual(lock.projectionRoots, [".codebuddy/skills"]);
+    assert.deepEqual(lock.projectionRoots, [".workbuddy/skills"]);
     assert.deepEqual(lock.skills.platform, {});
     for (const entry of Object.values(lock.skills.shared)) {
-      assert.deepEqual(entry.targets, [".agents/skills", ".codebuddy/skills"]);
+      assert.deepEqual(entry.targets, [".agents/skills", ".workbuddy/skills"]);
       assert.match(entry.effectiveHash, /^[0-9a-f]{64}$/);
     }
     for (const script of ["verify-skill-registry", "update-skill-lock"]) {

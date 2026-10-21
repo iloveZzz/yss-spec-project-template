@@ -11,7 +11,7 @@ function fixture(t) {
   const repositoryRoot = mkdtempSync(path.join(os.tmpdir(), 'workbuddy-projection-'));
   t.after(() => rmSync(repositoryRoot, { recursive: true, force: true }));
   const source = path.join(repositoryRoot, '.agents/skills/probe');
-  const target = path.join(repositoryRoot, '.codebuddy/skills/probe');
+  const target = path.join(repositoryRoot, '.workbuddy/skills/probe');
   mkdirSync(path.join(source, 'scripts'), { recursive: true });
   writeFileSync(path.join(source, 'SKILL.md'), '---\nname: probe\n---\n');
   writeFileSync(path.join(source, 'scripts/run.sh'), '#!/bin/sh\nprintf probe\n', { mode: 0o755 });
@@ -26,7 +26,7 @@ function fixture(t) {
   const tracked = () => {
     mkdirSync(path.dirname(target), { recursive: true });
     cpSync(source, target, { recursive: true });
-    git('add', '.codebuddy/skills');
+    git('add', '.workbuddy/skills');
     git('commit', '-qm', 'projection baseline');
   };
   return { repositoryRoot, source, target, sync, tracked, git };
@@ -55,17 +55,17 @@ test('WorkBuddy projection updates only an unchanged committed baseline', t => {
 test('WorkBuddy projection preserves staged edits even when the worktree was restored to HEAD', t => {
   const f = fixture(t); f.tracked();
   const file = path.join(f.target, 'SKILL.md');
-  writeFileSync(file, 'staged user change\n'); f.git('add', '.codebuddy/skills');
-  writeFileSync(file, f.git('show', 'HEAD:.codebuddy/skills/probe/SKILL.md'));
+  writeFileSync(file, 'staged user change\n'); f.git('add', '.workbuddy/skills');
+  writeFileSync(file, f.git('show', 'HEAD:.workbuddy/skills/probe/SKILL.md'));
   writeFileSync(path.join(f.source, 'SKILL.md'), 'new canonical\n');
   assert.throws(() => f.sync(), /WORKBUDDY_PROJECTION_CONFLICT/);
-  assert.equal(f.git('show', ':.codebuddy/skills/probe/SKILL.md').toString(), 'staged user change\n');
+  assert.equal(f.git('show', ':.workbuddy/skills/probe/SKILL.md').toString(), 'staged user change\n');
   assert.notEqual(readFileSync(file, 'utf8'), 'new canonical\n');
 });
 
 for (const staged of [false, true]) test(`WorkBuddy preserves ${staged ? 'staged' : 'unstaged'} projection deletion`, t => {
   const f = fixture(t); f.tracked();
-  if (staged) f.git('rm', '-qr', '.codebuddy/skills/probe');
+  if (staged) f.git('rm', '-qr', '.workbuddy/skills/probe');
   else rmSync(f.target, { recursive: true });
   assert.throws(() => f.sync(), /WORKBUDDY_PROJECTION_CONFLICT/);
   assert.equal(lstatSync(f.target, { throwIfNoEntry: false }), undefined);
@@ -80,7 +80,7 @@ for (const profile of ['spec', 'backend']) test(`WorkBuddy ${profile} sync prese
   writeFileSync(path.join(f.repositoryRoot, 'skills-lock.json'), JSON.stringify({version:3,skills:{shared:{},platform:{}}}));
   mkdirSync(path.dirname(f.target), { recursive: true });
   const link = path.join(path.dirname(f.target), 'personal');
-  symlinkSync('user-missing-location', link); f.git('add', '.codebuddy/skills/personal');
+  symlinkSync('user-missing-location', link); f.git('add', '.workbuddy/skills/personal');
   const {syncSkills} = await import(pathToFileURL(path.join(f.repositoryRoot, 'scripts/lib/skill-supply-chain.mjs')).href);
   assert.throws(() => syncSkills(), /unlocked projection|WORKBUDDY_PROJECTION_CONFLICT/);
   assert.equal(readlinkSync(link), 'user-missing-location');
@@ -92,7 +92,7 @@ for (const kind of ['untracked', 'unstaged', 'staged', 'extra-file', 'mode', 'cr
   else { mkdirSync(f.target, { recursive: true }); writeFileSync(path.join(f.target, 'SKILL.md'), 'local owner\n'); }
   const file = path.join(f.target, 'SKILL.md');
   if (['unstaged', 'staged'].includes(kind)) writeFileSync(file, 'local edit\n');
-  if (kind === 'staged') f.git('add', '.codebuddy/skills');
+  if (kind === 'staged') f.git('add', '.workbuddy/skills');
   if (kind === 'extra-file') writeFileSync(path.join(f.target, 'personal.txt'), 'keep me');
   if (kind === 'mode') chmodSync(file, 0o600);
   if (kind === 'crlf') writeFileSync(file, readFileSync(file, 'utf8').replaceAll('\n', '\r\n'));
@@ -114,7 +114,7 @@ test('WorkBuddy check is read-only and rejects a missing or outdated target', t 
 
 for (const kind of ['target-link', 'dangling-link', 'parent-link', 'source-link', 'escape']) test(`WorkBuddy rejects ${kind} without changing its destination`, t => {
   const f = fixture(t);
-  if (kind === 'parent-link') symlinkSync(f.source, path.join(f.repositoryRoot, '.codebuddy'));
+  if (kind === 'parent-link') symlinkSync(f.source, path.join(f.repositoryRoot, '.workbuddy'));
   else if (kind === 'source-link') symlinkSync('SKILL.md', path.join(f.source, 'linked.md'));
   else if (kind !== 'escape') {
     mkdirSync(path.dirname(f.target), { recursive: true });
@@ -133,8 +133,74 @@ test('WorkBuddy obsolete projection removal preserves edited and untracked trees
   writeFileSync(path.join(f.target, 'SKILL.md'), 'edited\n');
   assert.throws(() => remove({}), /WORKBUDDY_PROJECTION_CONFLICT/);
   assert.equal(readFileSync(path.join(f.target, 'SKILL.md'), 'utf8'), 'edited\n');
-  f.git('restore', '--worktree', '.codebuddy/skills');
+  f.git('restore', '--worktree', '.workbuddy/skills');
   chmodSync(path.join(f.target, 'SKILL.md'), 0o644);
   assert.equal(remove({}).status, 'removed');
+  assert.equal(lstatSync(f.target, { throwIfNoEntry: false }), undefined);
+});
+
+
+test('WorkBuddy migrates committed legacy resources from canonical and preserves private files', t => {
+  const f = fixture(t);
+  const legacy = path.join(f.repositoryRoot, '.codebuddy/skills/probe');
+  mkdirSync(path.dirname(legacy), { recursive: true }); cpSync(f.source, legacy, { recursive: true });
+  f.git('add', '.codebuddy/skills'); f.git('commit', '-qm', 'legacy baseline');
+  writeFileSync(path.join(f.repositoryRoot, '.codebuddy/settings.json'), 'private');
+  writeFileSync(path.join(f.source, 'SKILL.md'), 'new canonical\n');
+  assert.equal(typeof implementation.syncWorkBuddyProjections, 'function');
+  const sync = options => implementation.syncWorkBuddyProjections({ repositoryRoot: f.repositoryRoot, names: ['probe'], retireLegacy: true, ...options });
+  assert.throws(() => sync({ check: true }), /WORKBUDDY_PROJECTION_CONFLICT/);
+  assert.equal(lstatSync(f.target, { throwIfNoEntry: false }), undefined);
+  sync({});
+  assert.equal(readFileSync(path.join(f.target, 'SKILL.md'), 'utf8'), 'new canonical\n');
+  assert.equal(lstatSync(legacy, { throwIfNoEntry: false }), undefined);
+  assert.equal(readFileSync(path.join(f.repositoryRoot, '.codebuddy/settings.json'), 'utf8'), 'private');
+  const before = statSync(path.join(f.target, 'SKILL.md')).mtimeMs;
+  sync({}); assert.equal(statSync(path.join(f.target, 'SKILL.md')).mtimeMs, before);
+});
+
+
+for (const kind of ['edited', 'staged', 'extra-file', 'missing', 'occupied', 'link']) test(`WorkBuddy migration preflights every Skill and preserves ${kind} conflicts`, t => {
+  const f = fixture(t);
+  const second = path.join(f.repositoryRoot, '.agents/skills/second');
+  cpSync(f.source, second, { recursive: true });
+  for (const name of ['probe', 'second']) {
+    const legacy = path.join(f.repositoryRoot, '.codebuddy/skills', name);
+    mkdirSync(path.dirname(legacy), { recursive: true }); cpSync(path.join(f.repositoryRoot, '.agents/skills', name), legacy, { recursive: true });
+  }
+  f.git('add', '.codebuddy/skills'); f.git('commit', '-qm', 'legacy baseline');
+  const legacy = path.join(f.repositoryRoot, '.codebuddy/skills/second');
+  if (['edited','staged'].includes(kind)) writeFileSync(path.join(legacy, 'SKILL.md'), 'user edit');
+  if (kind === 'staged') { f.git('add', '.codebuddy/skills'); writeFileSync(path.join(legacy, 'SKILL.md'), f.git('show', 'HEAD:.codebuddy/skills/second/SKILL.md')); }
+  if (kind === 'extra-file') writeFileSync(path.join(legacy, 'personal'), 'user');
+  if (kind === 'missing') rmSync(legacy, { recursive: true });
+  if (kind === 'occupied') { mkdirSync(path.dirname(f.target), { recursive: true }); cpSync(f.source, path.join(path.dirname(f.target), 'second'), { recursive: true }); }
+  if (kind === 'link') { rmSync(legacy, { recursive: true }); symlinkSync(second, legacy); }
+  const status = f.git('status', '--porcelain=v1').toString();
+  assert.throws(() => implementation.syncWorkBuddyProjections({ repositoryRoot: f.repositoryRoot, names: ['probe','second'], retireLegacy: true }), /WORKBUDDY_PROJECTION_CONFLICT/);
+  assert.equal(lstatSync(f.target, { throwIfNoEntry: false }), undefined);
+  assert.equal(f.git('status', '--porcelain=v1').toString(), status);
+});
+
+test('WorkBuddy Profile migration uses the top-level Git baseline and composed canonical source', t => {
+  const f = fixture(t), overlay = path.join(f.repositoryRoot, 'profiles/backend');
+  const legacy = path.join(overlay, '.codebuddy/skills/probe');
+  mkdirSync(path.dirname(legacy), { recursive: true }); cpSync(f.source, legacy, { recursive: true });
+  f.git('add', 'profiles/backend'); f.git('commit', '-qm', 'profile legacy baseline');
+  writeFileSync(path.join(f.source, 'SKILL.md'), 'composed profile canonical');
+  implementation.syncWorkBuddyProjections({ repositoryRoot: overlay, sourceRoot: path.dirname(f.source), names: ['probe'], retireLegacy: true });
+  assert.equal(readFileSync(path.join(overlay, '.workbuddy/skills/probe/SKILL.md'), 'utf8'), 'composed profile canonical');
+  assert.equal(lstatSync(legacy, { throwIfNoEntry: false }), undefined);
+});
+
+test('WorkBuddy ordinary projection API rejects the retired root', t => {
+  const f = fixture(t);
+  assert.throws(() => f.sync({ target: path.join(f.repositoryRoot, '.codebuddy/skills/probe') }), /invalid projection path/);
+});
+
+test('WorkBuddy batch generation rejects a linked composed canonical root', t => {
+  const f = fixture(t), linked = path.join(f.repositoryRoot, 'linked');
+  symlinkSync(f.repositoryRoot, linked);
+  assert.throws(() => implementation.syncWorkBuddyProjections({ repositoryRoot: f.repositoryRoot, sourceRoot: path.join(linked, '.agents/skills'), names: ['probe'] }), /WORKBUDDY_PROJECTION_CONFLICT/);
   assert.equal(lstatSync(f.target, { throwIfNoEntry: false }), undefined);
 });

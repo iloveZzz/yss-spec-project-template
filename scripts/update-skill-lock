@@ -1,8 +1,34 @@
 #!/usr/bin/env node
-import { updateSkillLock } from "./lib/skill-supply-chain.mjs";
+import { lstatSync, readFileSync, writeFileSync } from "node:fs";
+import path from "node:path";
+import { readRepositoryMode } from "./lib/repository-mode.mjs";
+import { assertWorkBuddyProfilePaths } from "./lib/workbuddy-projection.mjs";
+import { pathToFileURL } from "node:url";
+import { updateSkillLock, ROOT } from "./lib/skill-supply-chain.mjs";
 
 try {
-  process.stdout.write(`${updateSkillLock()}\n`);
+  const args = process.argv.slice(2), profileIndex = args.indexOf("--profile");
+  if (profileIndex < 0) process.stdout.write(`${updateSkillLock(args)}\n`);
+  else {
+    if (args[profileIndex + 1] !== "backend") throw new TypeError("仅支持 --profile backend");
+    if (readRepositoryMode(ROOT) !== "template-source") throw new TypeError("Profile 生成仅适用于 template-source");
+    const overlay = assertWorkBuddyProfilePaths(ROOT);
+    const target = path.join(overlay, "skills-lock.json");
+    if (!lstatSync(target).isFile()) throw new TypeError("Profile 锁必须为普通文件");
+    const before = readFileSync(target);
+    const { composeProfileTree } = await import("./lib/profile-tree.mjs");
+    const tree = composeProfileTree("backend");
+    const supply = await import(pathToFileURL(path.join(tree, "scripts/lib/skill-supply-chain.mjs")));
+    const options = args.filter((_, index) => index !== profileIndex && index !== profileIndex + 1);
+    const result = supply.updateSkillLock(options);
+    if (!options.includes("--check")) {
+      const wanted = readFileSync(path.join(tree, "skills-lock.json"));
+      assertWorkBuddyProfilePaths(ROOT);
+      if (!lstatSync(target).isFile() || !readFileSync(target).equals(before)) throw new TypeError("Profile 锁在生成时发生变化");
+      if (!before.equals(wanted)) writeFileSync(target, wanted);
+    }
+    process.stdout.write(`${result}\n`);
+  }
 } catch (error) {
   process.stderr.write(`${error.message}\n`);
   process.exitCode = 1;
