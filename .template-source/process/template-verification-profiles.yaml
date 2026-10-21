@@ -1791,7 +1791,7 @@ profiles:
         depends_on: []
         failure_mode: "Plan/Spec 必需业务内容或模板边界错误"
       - id: "check.daily-checkpoint"
-        resources: [ "python-jsonschema" ]
+        resources: [ "python-jsonschema", "native-cli" ]
         run: "node --test tests/checkpoint-boundary.test.mjs"
         group: "lifecycle"
         inputs_complete: true
