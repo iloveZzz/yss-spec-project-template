@@ -37,4 +37,4 @@ When the shape of that interface is itself in question — how deep the module i
 
 - **Red before green.** Write the failing test first, then only enough code to pass it. Don't anticipate future tests or add speculative features.
 - **One slice at a time.** One seam, one test, one minimal implementation per cycle.
-- **Refactoring follows evidence.** The implementer performs necessary in-scope refactoring with green behavior tests. The independent Reviewer reads and reports findings; it does not edit the implementation or review its own changes. The implementer fixes findings, then returns the changed candidate for fresh review.
+- **Refactoring follows evidence.** The implementer performs necessary in-scope refactoring with green behavior tests. Use `/code-review` in the current lifecycle's review mode; independent review is conditional, not an extra requirement of TDD. When required, the independent Reviewer stays read-only against the frozen candidate. The implementer fixes findings, then revalidates affected conclusions and dependencies against the changed candidate. Historical records retain their original review requirements.

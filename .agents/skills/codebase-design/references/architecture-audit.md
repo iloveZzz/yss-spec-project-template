@@ -4,7 +4,7 @@ Surface architectural friction and propose **deepening opportunities** — refac
 
 This command is _informed_ by the project's domain model and built on a shared design vocabulary:
 
-- Run the `/codebase-design` skill for the architecture vocabulary (**module**, **interface**, **depth**, **seam**, **adapter**, **leverage**, **locality**) and its principles (the deletion test, "the interface is the test surface", "one adapter = hypothetical seam, two = real"). Use this analysis vocabulary without overriding CONTEXT or the project's component/service/API terminology.
+- Run the `/codebase-design` skill for the architecture vocabulary (**module**, **interface**, **depth**, **seam**, **adapter**, **leverage**, **locality**) and its principles (the deletion test, "the interface is the test surface", evidence for a seam). Judge seam placement by those principles, not by a mandatory adapter count. Use this analysis vocabulary without overriding CONTEXT or the project's component/service/API terminology.
 - The domain language in `CONTEXT.md` gives names to good seams; ADRs in `docs/adr/` record decisions this command should not re-litigate.
 
 ## Process
