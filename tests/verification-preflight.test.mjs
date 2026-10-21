@@ -109,6 +109,26 @@ test('实例漂移的 CI 计划要求原生工具',async()=>{
  }
 });
 
+test('仅实施编排文档变化也准备 checkpoint 的原生依赖',async t=>{
+ const {verificationToolRequirements}=await import('../.template-source/scripts/lib/verification-preflight.mjs');
+ const {planTemplateVerification}=await import('../scripts/lib/template-verification.mjs');
+ const plan=planTemplateVerification({changedFiles:['.template-spec/process/subagent-collaboration.md','.agents/skills/yss-product-lifecycle/references/orchestration.md'],ciGuards:true});
+ assert.equal(plan.commands.filter(row=>row.id==='check.daily-checkpoint').length,1);
+ assert.deepEqual(plan.commands.filter(row=>row.id!=='check.daily-checkpoint'&&row.resources?.includes('native-cli')),[],'不得由其他原生消费者掩盖 checkpoint 的缺失声明');
+ await t.test('CI 工具准备选择原生 CLI',()=>{
+  assert.deepEqual(verificationToolRequirements(plan,{reportValidation:true}),{schema_version:1,python:'jsonschema',go:false,native_cli:true,tooling:false,vue:false});
+ });
+ await t.test('未配置原生 CLI 时预检拒绝',()=>{
+  const result=verificationPreflight({root:path.resolve(import.meta.dirname,'..'),plan,nodeVersion:'v24.21.0',environment:{},probe:file=>{
+   assert.equal(file,'python3');
+   return {status:0,stdout:JSON.stringify({version:[3,12],jsonschema:'4.23.0',executable:'/fixture/python'})};
+  }});
+  assert.equal(result.status,'failed');
+  assert.deepEqual(result.errors.map(row=>row.name),['native-cli']);
+  assert.match(result.errors[0].error,/YSS_NATIVE_BINARY/);
+ });
+});
+
 test('准备后的原生执行 tuple 消费显式环境而非父进程环境',async t=>{
  const {compileTaskExecution}=await import('../.template-source/scripts/lib/verification-execution-plan.mjs');
  const temp=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'ci-compiled-environment-')));t.after(()=>fs.rmSync(temp,{recursive:true,force:true}));
