@@ -33,6 +33,8 @@ function fixture(t) {
   assert.equal(lock.status, 0, lock.stderr || lock.stdout);
   fs.writeFileSync(path.join(root, 'yss-project.yaml'), 'schema_version: 1\nrepository_mode: project-instance\n');
   fs.writeFileSync(path.join(root, 'managed.txt'), original, { mode: 0o644 });
+  // Native installation records explicit template modes, independent of umask.
+  for(const ref of ['managed.txt','skills-lock.json'])fs.chmodSync(path.join(root,ref),0o644);
   const managedFiles = { 'managed.txt': {
     baseline: { type: 'file', digest: sha(original), mode: 0o644 },
     lastApplied: { type: 'file', digest: sha(original), mode: 0o644 }, ownership: 'managed',
@@ -123,12 +125,14 @@ function platformFixture(t) {
   const registrySource = fs.readFileSync(registry, 'utf8');
   assert.ok(registrySource.includes('platform_skills: []'));
   fs.writeFileSync(registry, registrySource.replace('platform_skills: []', 'platform_skills:\n  - { id: product-design, root: .codex/skills, layer: process, instance_default_discoverable: false, aliases: ["product-design:index"] }'));
+  fs.chmodSync(registry,0o644);
   for (const [ref, bytes] of [
     [`${prefix}/.codex-plugin/plugin.json`, JSON.stringify({ skills: './skills/' })],
     [`${prefix}/skills/index/SKILL.md`, '# Historical platform alias fixture\n'],
   ]) {
     fs.mkdirSync(path.dirname(path.join(f.root, ref)), { recursive: true });
     fs.writeFileSync(path.join(f.root, ref), bytes);
+    fs.chmodSync(path.join(f.root,ref),0o644);
   }
   function record(ref) {
     const info = fs.lstatSync(path.join(f.root, ref));
@@ -169,6 +173,7 @@ test('合法锁内用户平台扩展与未受管辅助文件保持现行语义�
   fs.writeFileSync(path.join(f.root, aux), 'user auxiliary asset\n');
   fs.mkdirSync(path.dirname(path.join(f.root, ignored)), { recursive: true });
   fs.writeFileSync(path.join(f.root, ignored), 'ignored tool state\n');
+  for(const ref of [aux,ignored])fs.chmodSync(path.join(f.root,ref),0o644);
   fs.mkdirSync(path.join(f.root, '.codex/skills/local-user-group'), { recursive: true });
   fs.writeFileSync(path.join(f.root, '.codex/skills/local-user-group/SKILL.md'), 'local user skill\n');
   const lock = run(f.root, 'scripts/update-skill-lock', ['--add-platform=.codex/skills:local-user-group']);
@@ -214,6 +219,7 @@ test('公开实例漂移 JSON 的小型与大型成功和拒绝报告都必须�
     for (let index = 0; index < size; index++) {
       const ref = `z-managed-${String(index).padStart(5, '0')}.txt`;
       fs.writeFileSync(path.join(f.root, ref), original, { mode: 0o644 });
+      fs.chmodSync(path.join(f.root,ref),0o644);
       f.metadata.managedFiles[ref] = { baseline: { type: 'file', digest: sha(original), mode: 0o644 },
         lastApplied: { type: 'file', digest: sha(original), mode: 0o644 }, ownership: 'managed' };
     }
@@ -257,6 +263,7 @@ test('受管文件父目录被符号链接替换时不能读取链接外的相�
   const f = fixture(t);
   fs.mkdirSync(path.join(f.root, 'real'));
   fs.writeFileSync(path.join(f.root, 'real/asset.txt'), original, { mode: 0o644 });
+  fs.chmodSync(path.join(f.root,'real/asset.txt'),0o644);
   fs.symlinkSync('real', path.join(f.root, 'managed-dir'), 'dir');
   f.metadata.managedFiles = { 'managed-dir/asset.txt': f.metadata.managedFiles['managed.txt'], 'skills-lock.json': f.metadata.managedFiles['skills-lock.json'] };
   saveManaged(f);
