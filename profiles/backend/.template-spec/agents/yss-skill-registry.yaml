@@ -792,7 +792,7 @@ invocation_contract:
     yss-openapi-draft-review:
       invocation_mode: user
 agent_runtime_roots:
-  workbuddy: .codebuddy/skills
+  workbuddy: .workbuddy/skills
 skills:
   - id: git-commit-core
     layer: maintainer-only

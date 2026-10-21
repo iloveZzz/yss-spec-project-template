@@ -2,6 +2,7 @@
 import { updateSkillLock } from "./lib/skill-supply-chain.mjs";
 
 try {
+  if (process.argv.slice(2).some(arg => arg === "--profile" || arg.startsWith("--profile="))) throw new TypeError("此入口不支持 --profile");
   process.stdout.write(`${updateSkillLock()}\n`);
 } catch (error) {
   process.stderr.write(`${error.message}\n`);

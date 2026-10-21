@@ -5,11 +5,11 @@
 ## 权威内容与投影
 
 - `.agents/skills` 是跨 Agent 共享技能的唯一权威内容。
-- 模板源只生成 `.claude/skills` 投影（Claude Code 唯一发现入口）；`.codex/skills`、`.cursor/skills`、`.pi/skills` 不是模板源投影，这些运行时直接读取 `.agents/skills`。
-- 实例若启用平台投影，由实例 `skills-lock.json` 的 `projectionRoots` 声明，最多四个；不得把实例投影根与模板源 canonical 内容解释为两个来源。
+- 模板源生成 `.claude/skills` 链接投影（Claude Code 唯一发现入口）与 `.workbuddy/skills` 普通文件完整投影；`.codex/skills`、`.cursor/skills`、`.pi/skills` 不是模板源投影，这些运行时直接读取 `.agents/skills`。
+- 实例若启用平台投影，由实例 `skills-lock.json` 的 `projectionRoots` 声明；不得把实例投影根与模板源 canonical 内容解释为两个来源。
 - 分层、别名和默认可发现性以 `.template-spec/agents/yss-skill-registry.yaml` 为准；当前 registry 为 `active`，实现合同编译器、生命周期编排器和实例发现面必须消费通过校验的 canonical 技能及其 alias 解析结果。
 - 只属于某个平台的 skill 继续保留在对应 root，并由 `skills-lock.json` 的 `platform` 分组记录。
-- 共享技能投影可以是指向权威目录的符号链接，也可以是完整同步副本；`scripts/sync-skills --check` 检查模板源 `.claude/skills` 的链接目标或完整目录哈希，实例投影根由实例锁声明并按实例入口校验。
+- 共享技能投影可以是指向权威目录的符号链接，也可以是完整同步副本；`scripts/sync-skills --check` 检查模板源 `.claude/skills` 的链接目标或完整目录哈希，以及 `.workbuddy/skills` 的普通文件内容与权限。实例投影根由实例锁声明并按实例入口校验，实例写入使用 CLI 保存计划与显式应用。
 
 ## 来源与锁定
 
@@ -45,6 +45,13 @@
    scripts/update-skill-lock
    ```
 
+   Backend 投影与锁从模板仓根使用专用模板源入口生成；入口内部组合完整 canonical 技能源并安全回写覆盖层，不手工复制临时组合树：
+
+   ```bash
+   node .template-source/scripts/manage-profile-skills.mjs sync --profile backend
+   node .template-source/scripts/manage-profile-skills.mjs lock --profile backend
+   ```
+
    若来源来自可访问的上游 checkout，还应显式校验锁定 revision 与每个上游目录哈希：
 
    ```bash
@@ -73,7 +80,7 @@ Backend 是唯一专职覆盖层，通过 `.template-source/process/profile-stat
 
 - 改内核文件，所有 Profile 的下一版 Bundle 同时带上；只想让某个 Profile 不同，就在它的覆盖层里放同一路径的文件。
 - 需要「整棵 Profile 目录」的测试和夹具用 `scripts/lib/profile-tree.mjs` 的 `composeProfileTree(profile)`，规则与 yss-cli 一致。
-- 覆盖层只保留 canonical 技能，不新增投影或同步机制。覆盖层目录里不要带会忽略覆盖层自己内容的 `.gitignore`。
+- 覆盖层保留 Profile 专有 canonical 技能与由现有技能供应链生成的 `.workbuddy/skills` 普通文件投影；生成和锁校验使用完整组合树，不手改投影或另建 Profile 同步机制。覆盖层目录里不要带会忽略覆盖层自己内容的 `.gitignore`。
 - `scripts/verify-profile-distribution` 检查每个 Profile 是否排除了仅模板源脚本、已删除的同步机制是否复活。
 
 ## 真实 Agent 行为评测
@@ -87,11 +94,13 @@ fixture 只允许隔离目录中的本地操作，Git、网络和包管理器使
 ```bash
 scripts/sync-skills --check
 scripts/update-skill-lock --check
+node .template-source/scripts/manage-profile-skills.mjs sync --profile backend --check
+node .template-source/scripts/manage-profile-skills.mjs lock --profile backend --check
 # 可选：对照锁文件中的 source revision 与上游目录哈希
 scripts/verify-upstream-skill-source --source=mattpocock/skills --source-root <matt-skills-checkout>
 ```
 
-前者检查所有共享投影是否指向或匹配权威内容，后者检查 `skills-lock.json` 是否与当前完整目录树一致。过时技能不会保留兼容别名；旧 skill 名称和入口按 [`.template-spec/agents/skill-migrations.md`](../../.template-spec/agents/skill-migrations.md) 一次性迁移，项目文件接管与同步由原生 `yss attach` / `yss sync` 的保存计划与显式应用入口处理。
+同步检查核对所有共享投影是否指向或匹配权威内容，锁检查核对 `skills-lock.json` 是否与当前完整目录树一致。过时技能不会保留兼容别名；旧 skill 名称和入口按 [`.template-spec/agents/skill-migrations.md`](../../.template-spec/agents/skill-migrations.md) 一次性迁移，项目文件接管与同步由原生 `yss attach` / `yss sync` 的保存计划与显式应用入口处理。
 
 ## skills.sh 公开发布
 

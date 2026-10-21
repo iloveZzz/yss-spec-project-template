@@ -57,7 +57,7 @@ yss init --profile spec --root /absolute/path/project --apply --plan-file /absol
 
 ## 模板配置取舍
 
-`.agents/skills` 是共享技能的权威内容；模板源只生成 `.claude/skills` 链接供 Claude Code 发现，Codex、Cursor、Pi 直接读取 `.agents/skills`；实例平台投影由实例锁声明。共享技能只能在权威目录修改，随后运行：
+`.agents/skills` 是共享技能的权威内容；模板源生成 `.claude/skills` 链接供 Claude Code 发现，以及 `.workbuddy/skills` 普通文件投影供 WorkBuddy 使用；Codex、Cursor、Pi 直接读取 `.agents/skills`；实例平台投影由实例锁声明。共享技能只能在权威目录修改，随后运行：
 
 ```bash
 scripts/sync-skills
@@ -121,4 +121,4 @@ PR 执行 `scripts/verify-template-fast --base <完整 SHA>`；显式 main 集�
 
 ## WorkBuddy 接入
 
-WorkBuddy 项目级技能适配使用 `.codebuddy/skills` 普通文件投影，由 `.agents/skills` 统一生成。Spec 只为已安装技能及依赖分发投影；Backend 保持全量 Profile 语义。已有实例通过支持该适配的 CLI 显式 `sync`，查询不会自动迁移或补装平台。首次会话显式要求读取根 `AGENTS.md` 和 `CONTEXT.md`；调用前用 `yss skills resolve <id> --agent-runtime workbuddy --root <项目根> --json` 核验文件。桌面入口、发现与刷新行为尚需实机验证，不能因文件 ready 声明已验收。
+WorkBuddy 项目级技能适配使用 `.workbuddy/skills` 普通文件投影，由 `.agents/skills` 统一生成。Spec 只为已安装技能及依赖分发投影；Backend 保持全量 Profile 语义。已有实例通过支持该适配的 CLI 显式 `sync`，查询不会自动迁移或补装平台。首次会话显式要求读取根 `AGENTS.md` 和 `CONTEXT.md`；调用前用 `yss skills resolve <id> --agent-runtime workbuddy --root <项目根> --json` 核验文件。桌面入口、发现与刷新行为尚需实机验证，不能因文件 ready 声明已验收。

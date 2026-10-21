@@ -23,7 +23,14 @@ yss init --profile backend --root /absolute/path/to/project --apply --plan-file 
 
 ## 维护与验收
 
-本 Profile 由根仓内核与 `profiles/_specialist`、`profiles/backend` 覆盖层组合。共享技能在根仓 `.agents/skills` 维护，专有内容在覆盖层维护；在组合后的完整目录运行 `scripts/update-skill-lock`，按影响面执行定向检查。实例携带 `.agents/skills` 和受管的 `.codebuddy/skills` 普通文件投影；投影与锁由模板供应链生成，实例更新使用 CLI 保存计划与事务，不运行源码准备或直接生成投影。锁保留有效哈希校验。
+本 Profile 由根仓内核与 `profiles/_specialist`、`profiles/backend` 覆盖层组合。共享技能在根仓 `.agents/skills` 维护，专有内容在覆盖层维护；在模板仓根运行以下仅供模板源使用的命令，入口会组合完整 canonical 技能源并安全回写覆盖层投影与锁，随后按影响面执行定向检查：
+
+```bash
+node .template-source/scripts/manage-profile-skills.mjs sync --profile backend
+node .template-source/scripts/manage-profile-skills.mjs lock --profile backend
+```
+
+实例携带 `.agents/skills` 和受管的 `.workbuddy/skills` 普通文件投影；投影与锁由模板供应链生成，实例更新使用 CLI 保存计划与事务，不运行源码准备或直接生成投影。锁保留有效哈希校验。
 
 同一业务切片须由统一管理方汇总战略、接口、部署及前端版本的端到端证据；本端完成不能替代整体业务验收。
 
@@ -45,4 +52,4 @@ CLI 创建、接入、诊断、同步及恢复见 [CLI 使用说明](.template-s
 
 ## WorkBuddy 接入
 
-WorkBuddy 代码适配使用项目级 `.codebuddy/skills`，与 canonical 技能源保持一致。首次会话显式要求读取根 `AGENTS.md` 和 `CONTEXT.md`；自动入口、技能发现及刷新行为仍需按实际桌面版本验证。调用前运行 `yss skills resolve <id> --agent-runtime workbuddy --root <项目根> --json`，文件 `ready` 不代表桌面发现已验证。已有实例先核对并应用显式 `sync` 计划，保留冲突与用户修改。
+WorkBuddy 代码适配使用项目级 `.workbuddy/skills`，与 canonical 技能源保持一致。首次会话显式要求读取根 `AGENTS.md` 和 `CONTEXT.md`；自动入口、技能发现及刷新行为仍需按实际桌面版本验证。调用前运行 `yss skills resolve <id> --agent-runtime workbuddy --root <项目根> --json`，文件 `ready` 不代表桌面发现已验证。已有实例先核对并应用显式 `sync` 计划，保留冲突与用户修改。
