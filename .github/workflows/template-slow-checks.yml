@@ -13,7 +13,7 @@ jobs:
   template-slow-checks:
     name: template-slow-checks
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 32
     steps:
       - uses: actions/checkout@v4
         with:
@@ -23,7 +23,7 @@ jobs:
         with:
           runtime-only: 'true'
       - name: scripts/ci-gate --mode slow
-        # 公共 gate 独立限制验证执行 5 分钟；准备沿用 job 的总预算。
+        # 公共 gate 独立限制验证执行 1000 秒；job 为准备和报告上传保留至少原有 15 分钟余量。
         shell: bash
         run: scripts/ci-gate --mode slow --report-dir /tmp/ci-gate-slow --prepare-tools
       - uses: actions/upload-artifact@v4

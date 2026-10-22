@@ -47,11 +47,11 @@ Linux runner 上的两个测试曾因对 macOS 行为的隐性假设而失败，
 
 报告与日志写在仓外的 `/tmp/ci-gate`，两个平台都作为构建产物保留；两份报告的步骤名单、各步命令与退出码应一致。除上述准备阶段的合法安装产物外，检查期间任何输入变化都会使本轮失败；同一已有脏文件再次变化也会被发现。fast 退出后，外层独立重算期望并核验 v2 报告、实际退出、任务、日志摘要及输入；`limited` 始终不是发布证据。
 
-### 慢检查与 5 分钟上限
+### 慢检查与 1000 秒上限
 
 `template-slow-checks.yml` 仅以只读权限调用公共 slow gate，不承担 Release 上传。固定 v4.7.1 恢复器和载荷已从活动树退役；其原件保留于 [#111 的固定历史](https://github.com/iloveZzz/yss-spec-project-template/tree/a9f24bfff07fef9201ae6c4c4bf6029fb6ea8142/.release-recovery)，对应 [v4.7.1 Release](https://github.com/iloveZzz/yss-spec-project-template/releases/tag/v4.7.1)。退役前已按维护留存策略完成逐文件打包、摘要/权限回读核验，并核对正式附件摘要；历史材料不作为当前检查通过证据。未来恢复操作使用独立范围的方案，不能替换持续检查入口。
 
-普通检查默认 300 秒超时（release 默认 1800 秒）；固定工具准备与多文件 tooling 等任务可显式登记 `timeout_ms`，0 表示不超时；超时以 124 失败并保留日志。实测超过 60 秒的日常检查在 `template-verification-profiles.yaml` 的 fast 清单里标为 `tier: slow`：fast 命中时不执行，计入报告 `plan.selection.omitted`（`reason: deferred-slow-check`），运行结束打印“已延后”清单，不代表通过。慢检查由 `template-slow-checks` 工作流每日定时或手动运行（`scripts/ci-gate --mode slow`，公共 gate 对验证执行单独限制 5 分钟，准备沿用工作流原总预算）；本地用 `YSS_VERIFY_SLOW=1`（fast 中一并执行命中的慢检查）或 `YSS_VERIFY_SLOW=only`（只执行全部慢检查）。release profile 不受影响。
+普通单项检查默认 300 秒超时（release 默认 1800 秒）；固定工具准备与多文件 tooling 等任务可显式登记 `timeout_ms`，0 表示不超时；超时以 124 失败并保留日志。实测超过 60 秒的日常检查在 `template-verification-profiles.yaml` 的 fast 清单里标为 `tier: slow`：fast 命中时不执行，计入报告 `plan.selection.omitted`（`reason: deferred-slow-check`），运行结束打印“已延后”清单，不代表通过。慢检查由 `template-slow-checks` 工作流每日定时或手动运行（`scripts/ci-gate --mode slow`，公共 gate 对整个验证步骤单独限制 1000 秒，工具准备不占用这份预算；工作流 job 总预算为 32 分钟，保留至少原有 15 分钟余量供检出、准备与报告上传）；本地用 `YSS_VERIFY_SLOW=1`（fast 中一并执行命中的慢检查）或 `YSS_VERIFY_SLOW=only`（只执行全部慢检查）。release profile 不受影响；扩大超时不代表完整 slow 已通过。
 
 ## 轻量模板发布（默认）
 
