@@ -1368,13 +1368,28 @@ profiles:
         input_patterns:
           - "scripts/harness-metrics"
           - "scripts/lib/harness-metrics.mjs"
+          - "scripts/lib/skill-registry.mjs"
+          - "scripts/lib/skill-supply-chain.mjs"
+          - "scripts/lib/validation-phase.mjs"
+          - "scripts/lib/source-context-snapshot.mjs"
+          - "scripts/lib/orchestration-contract.mjs"
+          - "scripts/lib/repository-mode.mjs"
+          - "scripts/lib/workbuddy-projection.mjs"
+          - "scripts/vendor/yaml.mjs"
+          - ".template-spec/agents/yss-skill-registry.yaml"
+          - "profiles/backend/.template-spec/agents/yss-skill-registry.yaml"
+          - ".template-spec/process/harness-profile.yaml"
+          - "profiles/backend/.template-spec/process/harness-profile.yaml"
+          - ".claude/skills/**"
+          - ".workbuddy/skills/**"
+          - "profiles/backend/.workbuddy/skills/**"
           - "tests/harness-metrics.test.mjs"
           - ".template-source/process/context-budget.json"
           - "AGENTS.md"
           - "CONTEXT.md"
         depends_on: []
         failure_mode: "度量口径（管道提交占比、daily 起步必读、隐式技能 description
-          字符数、常驻上下文）计算错误，阶段基线与复测不可比，或上下文超出 context-budget.json 预算"
+          字符数、常驻上下文）计算错误，阶段基线与复测不可比，当前注册投影漏计或将未知当零，或上下文超出 context-budget.json 预算"
       - id: check.release-template
         run: "node --test tests/release-template.test.mjs"
         group: feature-assets

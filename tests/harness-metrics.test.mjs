@@ -4,7 +4,8 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { collectMetrics, dailyStartStats, isPipelinePath, parseSkillFrontmatter, pipelineCommitStats, PIPELINE_STRUCTURAL_BASELINE } from '../scripts/lib/harness-metrics.mjs';
+import { createHash } from 'node:crypto';
+import { collectMetrics, dailyStartStats, isPipelinePath, parseSkillFrontmatter, pipelineCommitStats, projectionCoverageV2, PIPELINE_STRUCTURAL_BASELINE } from '../scripts/lib/harness-metrics.mjs';
 
 function project(t) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'yss-harness-metrics-'));
@@ -21,6 +22,228 @@ function skill(root, name, frontmatter, extra = {}) {
     fs.writeFileSync(path.join(dir, 'agents/openai.yaml'), extra.openai);
   }
 }
+
+function registry(root, value, profile = 'harness.spec-template') {
+  const file = path.join(root, '.template-spec/agents/yss-skill-registry.yaml');
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  const source = `${JSON.stringify({ schema_version: 3, ...value })}\n`;
+  fs.writeFileSync(file, source);
+  const profileFile = path.join(root, '.template-spec/process/harness-profile.yaml');
+  fs.mkdirSync(path.dirname(profileFile), { recursive: true });
+  fs.writeFileSync(profileFile, `schema_version: 3\nprofile_id: ${profile}\n`);
+  return createHash('sha256').update(source).digest('hex');
+}
+
+test('当前投影视图从两处声明去重读取 WorkBuddy，私有及旧平台目录不进入分母', t => {
+  const root = project(t);
+  skill(root, 'a', 'description: x');
+  const sha256 = registry(root, {
+    instance_distribution: { projection_roots: { workbuddy: '.workbuddy/skills' } },
+    agent_runtime_roots: { workbuddy: '.workbuddy/skills', same: '.workbuddy/skills' },
+  });
+  fs.mkdirSync(path.join(root, '.workbuddy/skills'), { recursive: true });
+  fs.symlinkSync('../../.agents/skills/a', path.join(root, '.workbuddy/skills/a'));
+  fs.mkdirSync(path.join(root, '.workbuddy/skills/copy'));
+  fs.writeFileSync(path.join(root, '.workbuddy/skills/README.md'), 'local entry');
+  fs.mkdirSync(path.join(root, '.private/skills'), { recursive: true });
+  fs.mkdirSync(path.join(root, '.codex/skills'), { recursive: true });
+  const metrics = collectMetrics(root);
+  const view = metrics.projection_coverage_v2;
+  assert.ok(view, '新增当前注册视图');
+  assert.equal(view.schema_version, 2);
+  assert.equal(view.basis, 'current-registered-roots');
+  assert.equal(view.profiles.length, 1);
+  const [spec] = view.profiles;
+  assert.equal(spec.profile, 'harness.spec-template');
+  assert.equal(spec.root, '.');
+  assert.deepEqual(spec.registry, { path: '.template-spec/agents/yss-skill-registry.yaml', sha256 });
+  assert.deepEqual(spec.summary, { declared_roots: 1, present_roots: 1, missing_roots: 0, unavailable_roots: 0, coverage_ratio: 1 });
+  assert.equal(spec.roots[0].root, '.workbuddy/skills');
+  assert.deepEqual(spec.roots[0].declared_by, ['instance_distribution.projection_roots', 'agent_runtime_roots']);
+  assert.deepEqual(spec.roots[0].runtimes, ['same', 'workbuddy']);
+  assert.equal(spec.roots[0].status, 'present');
+  assert.equal(spec.roots[0].entries, 3);
+  assert.equal(spec.roots[0].symlinks, 1);
+  assert.equal(spec.roots[0].directories, 1);
+  assert.equal(spec.roots[0].regular_files, 1);
+  assert.equal(spec.roots[0].other, 0);
+  assert.equal(Object.hasOwn(spec.roots[0], 'runtime_only'), false, '不从覆盖层推断运行时独有技能');
+  assert.deepEqual(metrics.projection_roots, [{ root: '.codex/skills', entries: 0, symlinks: 0, full_copies: 0, runtime_only: 0 }]);
+  assert.equal(isPipelinePath('.workbuddy/skills/a/SKILL.md'), false, '历史路径口径不扩展');
+});
+
+test('注册声明不可用时保持 unknown，显式空声明才是已知零根', t => {
+  const cases = [
+    [{}, 'registry-missing-roots'],
+    [{ schema_version: 99, agent_runtime_roots: {} }, 'registry-unsupported-schema'],
+    [{ agent_runtime_roots: null }, 'registry-invalid-roots'],
+    [{ agent_runtime_roots: [] }, 'registry-invalid-roots'],
+    [{ agent_runtime_roots: 'workbuddy' }, 'registry-invalid-roots'],
+    [{ instance_distribution: null, agent_runtime_roots: {} }, 'registry-invalid-roots'],
+    [{ instance_distribution: { projection_roots: { workbuddy: '.workbuddy/skills' } }, agent_runtime_roots: { workbuddy: '.other/skills' } }, 'registry-conflicting-roots'],
+    ...['../outside', '/tmp/outside', 'C:/outside', '.workbuddy\\skills', '.workbuddy//skills', './.workbuddy/skills', '.workbuddy/../skills', '', 'a\nsecret'].map(ref => [{ agent_runtime_roots: { runtime: ref } }, 'registry-invalid-root']),
+  ];
+  for (const [value, reason] of cases) {
+    const root = project(t);
+    registry(root, value);
+    const [view] = collectMetrics(root).projection_coverage_v2.profiles;
+    assert.equal(view.status, 'unavailable', JSON.stringify(value));
+    assert.equal(view.reason, reason, JSON.stringify(value));
+    assert.equal(view.summary.declared_roots, null, '未知声明不能被记成零根');
+    assert.equal(view.summary.coverage_ratio, null);
+  }
+  const empty = project(t);
+  registry(empty, { agent_runtime_roots: {} });
+  const [view] = collectMetrics(empty).projection_coverage_v2.profiles;
+  assert.equal(view.status, 'available');
+  assert.equal(view.summary.declared_roots, 0);
+  assert.equal(view.summary.coverage_ratio, null, '没有分母，不声称 100%');
+});
+
+test('已声明根的不可读、非目录和逃逸链接均不可统计，不能当作 missing 或空目录', t => {
+  const cases = [
+    ['permission-denied', (root, directory) => { fs.mkdirSync(directory, { recursive: true }); fs.chmodSync(directory, 0); }, 'EACCES'],
+    ['not-directory', (root, directory) => { fs.mkdirSync(path.dirname(directory), { recursive: true }); fs.writeFileSync(directory, 'not a directory'); }, 'root-not-directory'],
+    ['outside-root', (root, directory) => { fs.mkdirSync(path.dirname(directory), { recursive: true }); fs.symlinkSync(project(t), directory); }, 'root-outside-project'],
+    ['dangling-link', (root, directory) => { fs.mkdirSync(path.dirname(directory), { recursive: true }); fs.symlinkSync('missing', directory); }, 'root-dangling-link'],
+  ];
+  for (const [name, setup, reason] of cases) {
+    if (name === 'permission-denied' && (process.getuid?.() === 0 || process.platform === 'win32')) {
+      t.diagnostic('当前身份/平台不能复现 POSIX EACCES，未执行该子场景');
+      continue;
+    }
+    const root = project(t);
+    registry(root, { agent_runtime_roots: { workbuddy: '.workbuddy/skills' } });
+    const directory = path.join(root, '.workbuddy/skills');
+    setup(root, directory);
+    let view;
+    try { [view] = collectMetrics(root).projection_coverage_v2.profiles; }
+    finally { if (name === 'permission-denied') fs.chmodSync(directory, 0o755); }
+    assert.equal(view.roots[0].status, 'unavailable', name);
+    assert.equal(view.roots[0].exists, true, name);
+    assert.equal(view.roots[0].reason, reason, name);
+    assert.equal(view.roots[0].entries, null, name);
+    assert.equal(view.summary.unavailable_roots, 1, name);
+    assert.equal(view.summary.coverage_ratio, null, name);
+    assert.equal(view.reason, 'root-unavailable', name);
+  }
+});
+
+test('Spec 与 Backend 各用自己的声明，missing 根与已存在空目录分别报告', t => {
+  const root = project(t);
+  registry(root, { instance_distribution: { projection_roots: { claude: '.claude/skills', workbuddy: '.workbuddy/skills' } } });
+  fs.mkdirSync(path.join(root, '.workbuddy/skills'), { recursive: true });
+  const backend = path.join(root, 'profiles/backend');
+  registry(backend, { agent_runtime_roots: { workbuddy: '.workbuddy/skills' } }, 'harness.backend-delivery');
+  fs.mkdirSync(path.join(backend, '.workbuddy/skills/only-backend'), { recursive: true });
+  const [spec, backendView] = collectMetrics(root).projection_coverage_v2.profiles;
+  assert.deepEqual(spec.summary, { declared_roots: 2, present_roots: 1, missing_roots: 1, unavailable_roots: 0, coverage_ratio: 0.5 });
+  const missing = spec.roots.find(row => row.root === '.claude/skills');
+  assert.equal(missing.status, 'missing');
+  assert.equal(missing.exists, false);
+  assert.equal(missing.entries, null);
+  const empty = spec.roots.find(row => row.root === '.workbuddy/skills');
+  assert.equal(empty.status, 'present');
+  assert.equal(empty.entries, 0);
+  assert.equal(backendView.profile, 'harness.backend-delivery');
+  assert.equal(backendView.root, 'profiles/backend');
+  assert.equal(backendView.registry.path, 'profiles/backend/.template-spec/agents/yss-skill-registry.yaml');
+  assert.equal(backendView.roots.length, 1);
+  assert.equal(backendView.roots[0].entries, 1);
+  assert.equal(backendView.roots[0].directories, 1);
+  assert.equal(backendView.summary.coverage_ratio, 1);
+  assert.equal(collectMetrics(backend).projection_coverage_v2.profiles[0].profile, 'harness.backend-delivery', '--root 可直接观察 Backend');
+});
+
+test('覆盖层自身越界、悬空或不可观察时保留 unavailable，不能重新建立安全边界', async t => {
+  for (const variant of ['outside', 'outside-parent', 'dangling', 'permission', 'not-directory']) {
+    await t.test(variant, t => {
+      if (variant === 'permission' && (process.getuid?.() === 0 || process.platform === 'win32')) { t.skip('当前身份/平台不能复现 POSIX EACCES'); return; }
+      const root = project(t);
+      registry(root, { agent_runtime_roots: {} });
+      const external = project(t);
+      const externalBackend = variant === 'outside-parent' ? path.join(external, 'backend') : external;
+      registry(externalBackend, { agent_runtime_roots: { workbuddy: '.workbuddy/skills' } }, 'harness.backend-delivery');
+      fs.mkdirSync(path.join(externalBackend, '.workbuddy/skills'), { recursive: true });
+      const parent = path.join(root, 'profiles');
+      if (variant === 'outside-parent') fs.symlinkSync(external, parent);
+      else {
+        fs.mkdirSync(parent);
+        const backend = path.join(parent, 'backend');
+        if (variant === 'outside') fs.symlinkSync(external, backend);
+        if (variant === 'dangling') fs.symlinkSync('missing', backend);
+        if (variant === 'not-directory') fs.writeFileSync(backend, 'not a directory');
+        if (variant === 'permission') { fs.mkdirSync(backend); fs.chmodSync(parent, 0); }
+      }
+      let view;
+      try { view = projectionCoverageV2(root).profiles.find(item => item.root === 'profiles/backend'); }
+      finally { if (variant === 'permission') fs.chmodSync(parent, 0o755); }
+      assert.ok(view, '保留不可观察的覆盖层记录');
+      assert.equal(view.status, 'unavailable');
+      assert.equal(view.reason, variant.startsWith('outside') ? 'profile-outside-project' : variant === 'dangling' ? 'profile-dangling-link' : variant === 'not-directory' ? 'profile-not-directory' : 'profile-unavailable');
+      assert.equal(view.profile, null, '不从仓外或不可观察目录猜测 Profile');
+      assert.equal(view.registry.sha256, null, '不读取仓外注册表');
+      assert.equal(view.summary.declared_roots, null);
+      assert.equal(view.summary.coverage_ratio, null);
+      assert.deepEqual(view.roots, []);
+    });
+  }
+});
+
+test('覆盖层可使用原查询根内的链接，普通缺席子目录不误报为悬空链接', t => {
+  const root = project(t);
+  registry(root, { agent_runtime_roots: {} });
+  const inside = path.join(root, 'inside');
+  const backend = path.join(inside, 'backend');
+  registry(backend, { agent_runtime_roots: { workbuddy: '.workbuddy/skills' } }, 'harness.backend-delivery');
+  fs.mkdirSync(path.join(root, 'shared/skills'), { recursive: true });
+  fs.writeFileSync(path.join(root, 'shared/skills/entry'), 'observed');
+  fs.mkdirSync(path.join(backend, '.workbuddy'));
+  fs.symlinkSync(path.join(root, 'shared/skills'), path.join(backend, '.workbuddy/skills'));
+  fs.symlinkSync(inside, path.join(root, 'profiles'));
+  const view = projectionCoverageV2(root).profiles.find(item => item.root === 'profiles/backend');
+  assert.equal(view.status, 'available');
+  assert.equal(view.roots[0].entries, 1, '根仍在原查询工程内，不以 Backend 路径重新建锚');
+  fs.rmSync(backend, { recursive: true });
+  assert.equal(projectionCoverageV2(root).profiles.length, 1, '内部有效父链接下普通缺席的覆盖层可省略');
+});
+
+test('缺少、损坏及不可读注册表均保留 unknown 和原因，不能回退平台列表', t => {
+  for (const variant of ['missing', 'malformed', 'duplicate', 'permission']) {
+    if (variant === 'permission' && (process.getuid?.() === 0 || process.platform === 'win32')) continue;
+    const root = project(t);
+    registry(root, { agent_runtime_roots: { workbuddy: '.workbuddy/skills' } });
+    const file = path.join(root, '.template-spec/agents/yss-skill-registry.yaml');
+    if (variant === 'missing') fs.rmSync(file);
+    if (variant === 'malformed') fs.writeFileSync(file, 'agent_runtime_roots: [');
+    if (variant === 'duplicate') fs.writeFileSync(file, 'schema_version: 3\nagent_runtime_roots: {}\nagent_runtime_roots: {}\n');
+    if (variant === 'permission') fs.chmodSync(file, 0);
+    let view;
+    try { [view] = collectMetrics(root).projection_coverage_v2.profiles; }
+    finally { if (variant === 'permission') fs.chmodSync(file, 0o644); }
+    assert.equal(view.status, 'unavailable', variant);
+    assert.equal(view.reason, variant === 'missing' ? 'registry-missing' : 'registry-unavailable', variant);
+    assert.equal(view.summary.declared_roots, null, variant);
+    assert.equal(view.summary.coverage_ratio, null, variant);
+    assert.deepEqual(view.roots, [], variant);
+  }
+});
+
+test('CLI 解释 v2 与历史字段的区别，默认查询不写入测量目录', t => {
+  const root = project(t);
+  registry(root, { agent_runtime_roots: { workbuddy: '.workbuddy/skills' } });
+  fs.mkdirSync(path.join(root, '.workbuddy/skills'), { recursive: true });
+  const cli = path.resolve(import.meta.dirname, '../scripts/harness-metrics');
+  const help = execFileSync(process.execPath, [cli, '--help'], { encoding: 'utf8' });
+  assert.match(help, /projection_coverage_v2/);
+  assert.match(help, /projection_roots/);
+  assert.match(help, /发现.*调用/);
+  const snapshot = directory => fs.readdirSync(directory, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name)).map(entry => [entry.name, entry.isDirectory() ? snapshot(path.join(directory, entry.name)) : fs.readFileSync(path.join(directory, entry.name), 'utf8')]);
+  const before = snapshot(root);
+  const output = JSON.parse(execFileSync(process.execPath, [cli, '--root', root], { encoding: 'utf8' }));
+  assert.equal(output.projection_coverage_v2.profiles[0].summary.present_roots, 1);
+  assert.deepEqual(snapshot(root), before);
+});
 
 test('description 支持行内、引号和折叠块，且不把引号计入长度', () => {
   assert.equal(parseSkillFrontmatter('---\ndescription: 四个字符\n---\n').description, '四个字符');

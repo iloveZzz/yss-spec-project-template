@@ -2,6 +2,8 @@ import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
 import { existsSync, lstatSync, readFileSync, readdirSync, realpathSync } from "node:fs";
 import path from "node:path";
+import { parseDocument } from "../vendor/yaml.mjs";
+import { loadSkillRegistry } from "./skill-registry.mjs";
 
 export const SCHEMA_VERSION = 1;
 export const RESIDENT_FILES = ["AGENTS.md", "CONTEXT.md", ".agents/skills/yss-product-lifecycle/SKILL.md"];
@@ -124,6 +126,141 @@ export function projectionStats(root, canonicalNames) {
   });
 }
 
+const REGISTRY_REF = ".template-spec/agents/yss-skill-registry.yaml";
+const PROFILE_REF = ".template-spec/process/harness-profile.yaml";
+const UNKNOWN_COVERAGE = { declared_roots: null, present_roots: null, missing_roots: null, unavailable_roots: null, coverage_ratio: null };
+const NO_ENTRY_COUNTS = { entries: null, symlinks: null, directories: null, regular_files: null, other: null };
+
+function registeredProjectionProfile(root, relativeRoot) {
+  const profileRoot = path.join(root, relativeRoot);
+  const result = { profile: null, root: relativeRoot, registry: { path: path.posix.join(relativeRoot, REGISTRY_REF), sha256: null }, status: "unavailable", reason: null, roots: [], summary: { ...UNKNOWN_COVERAGE } };
+  let boundary;
+  let symbolic = false;
+  try {
+    boundary = realpathSync(root);
+    let directory = root;
+    for (const part of relativeRoot === "." ? [""] : relativeRoot.split("/")) {
+      directory = path.join(directory, part);
+      symbolic = false;
+      const stat = lstatSync(directory);
+      symbolic = stat.isSymbolicLink();
+      if (!stat.isDirectory() && !symbolic) throw Object.assign(new TypeError("Profile 不是目录"), { code: "profile-not-directory" });
+      const relative = path.relative(boundary, realpathSync(directory));
+      if (relative === ".." || relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative)) throw Object.assign(new TypeError("Profile 超出查询工程目录"), { code: "profile-outside-project" });
+    }
+  } catch (error) {
+    result.reason = error.code === "ENOENT" ? symbolic ? "profile-dangling-link" : "profile-directory-missing" : error.code?.startsWith("profile-") ? error.code : "profile-unavailable";
+    return result;
+  }
+  try {
+    const profileDoc = parseDocument(readFileSync(path.join(profileRoot, PROFILE_REF), "utf8"), { uniqueKeys: true, maxAliasCount: 0 });
+    if (profileDoc.errors.length) throw new TypeError("profile-invalid");
+    const profile = profileDoc.toJS({ maxAliasCount: 0 });
+    if (!["harness.spec-template", "harness.backend-delivery"].includes(profile?.profile_id)) throw new TypeError("profile-invalid");
+    result.profile = profile.profile_id;
+  } catch (error) {
+    result.reason = error.code === "ENOENT" ? "profile-missing" : "profile-unavailable";
+    return result;
+  }
+  let registry;
+  try {
+    const file = path.join(profileRoot, REGISTRY_REF);
+    const source = readFileSync(file);
+    result.registry.sha256 = digest(source);
+    registry = loadSkillRegistry(file);
+    if (!source.equals(readFileSync(file))) throw new TypeError("registry-changed");
+  } catch (error) {
+    result.reason = error.code === "ENOENT" ? "registry-missing" : "registry-unavailable";
+    return result;
+  }
+  if (registry.schema_version !== 3) {
+    result.reason = "registry-unsupported-schema";
+    return result;
+  }
+  const object = value => value !== null && typeof value === "object" && !Array.isArray(value);
+  if (registry.instance_distribution !== undefined && !object(registry.instance_distribution)) {
+    result.reason = "registry-invalid-roots";
+    return result;
+  }
+  const declarations = [
+    ["instance_distribution.projection_roots", registry.instance_distribution?.projection_roots],
+    ["agent_runtime_roots", registry.agent_runtime_roots],
+  ];
+  if (declarations.every(([, roots]) => roots === undefined)) {
+    result.reason = "registry-missing-roots";
+    return result;
+  }
+  const declared = new Map();
+  const runtimeRoots = new Map();
+  for (const [source, roots] of declarations) {
+    if (roots === undefined) continue;
+    if (!object(roots)) {
+      result.reason = "registry-invalid-roots";
+      return result;
+    }
+    for (const [runtime, ref] of Object.entries(roots)) {
+      if (!runtime.trim() || typeof ref !== "string" || ref.trim() !== ref || /[\\:\x00-\x1f\x7f]/.test(ref) || path.posix.isAbsolute(ref) || ref.split("/").some(part => !part || part === "." || part === "..")) {
+        result.reason = "registry-invalid-root";
+        return result;
+      }
+      if (runtimeRoots.has(runtime) && runtimeRoots.get(runtime) !== ref) {
+        result.reason = "registry-conflicting-roots";
+        return result;
+      }
+      runtimeRoots.set(runtime, ref);
+      if (!declared.has(ref)) declared.set(ref, { root: ref, runtimes: [], declared_by: [] });
+      const row = declared.get(ref);
+      if (!row.runtimes.includes(runtime)) row.runtimes.push(runtime);
+      if (!row.declared_by.includes(source)) row.declared_by.push(source);
+    }
+  }
+  result.roots = [...declared.values()].sort((a, b) => a.root.localeCompare(b.root)).map(row => {
+    row.runtimes.sort();
+    let exists = null;
+    let symbolic = false;
+    try {
+      const directory = path.join(profileRoot, row.root);
+      const stat = lstatSync(directory);
+      exists = true;
+      symbolic = stat.isSymbolicLink();
+      if (!stat.isDirectory() && !symbolic) throw Object.assign(new TypeError("投影根不是目录"), { code: "root-not-directory" });
+      const relative = path.relative(boundary, realpathSync(directory));
+      if (relative === ".." || relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative)) throw Object.assign(new TypeError("投影根超出工程目录"), { code: "root-outside-project" });
+      const entries = readdirSync(directory, { withFileTypes: true }).filter(entry => !entry.name.startsWith("."));
+      const counts = { entries: entries.length, symlinks: 0, directories: 0, regular_files: 0, other: 0 };
+      for (const entry of entries) {
+        if (entry.isSymbolicLink()) counts.symlinks += 1;
+        else if (entry.isDirectory()) counts.directories += 1;
+        else if (entry.isFile()) counts.regular_files += 1;
+        else counts.other += 1;
+      }
+      return { ...row, status: "present", exists: true, ...counts, reason: null };
+    } catch (error) {
+      const missing = error.code === "ENOENT" && exists !== true;
+      return { ...row, status: missing ? "missing" : "unavailable", exists: missing ? false : exists, ...NO_ENTRY_COUNTS, reason: missing ? "root-missing" : symbolic && error.code === "ENOENT" ? "root-dangling-link" : error.code ?? "root-unavailable" };
+    }
+  });
+  result.summary = {
+    declared_roots: result.roots.length,
+    present_roots: result.roots.filter(row => row.status === "present").length,
+    missing_roots: result.roots.filter(row => row.status === "missing").length,
+    unavailable_roots: result.roots.filter(row => row.status === "unavailable").length,
+    coverage_ratio: null,
+  };
+  if (result.summary.declared_roots && !result.summary.unavailable_roots) result.summary.coverage_ratio = result.summary.present_roots / result.summary.declared_roots;
+  result.status = result.summary.unavailable_roots ? "unavailable" : "available";
+  result.reason = result.summary.unavailable_roots ? "root-unavailable" : null;
+  return result;
+}
+
+/** 当前注册根的只读观察；与保留历史口径的 projection_roots 分开版本。 */
+export function projectionCoverageV2(root) {
+  return { schema_version: 2, basis: "current-registered-roots", entry_count_basis: "non-hidden-top-level-entries", profiles: [
+    registeredProjectionProfile(root, "."),
+    ...PROFILE_OVERLAYS.map(short => registeredProjectionProfile(root, `profiles/${short}`)).filter(profile => profile.reason !== "profile-directory-missing"),
+  ] };
+}
+
 function countFiles(directory) {
   if (!existsSync(directory)) return 0;
   let total = 0;
@@ -237,6 +374,7 @@ export function collectMetrics(root = process.cwd(), options = {}) {
     pipeline_commits_since_structural_baseline: pipelineCommitStats(root, { rev: options.rev, since: PIPELINE_STRUCTURAL_BASELINE, until: options.until }),
     skills: { canonical: { ...canonical, root: ".agents/skills" }, profiles },
     projection_roots: projectionStats(root, canonicalNames),
+    projection_coverage_v2: projectionCoverageV2(root),
     process_files: processStats.files,
     process_docs: processStats.docs,
     process_shards: processStats.shards,
