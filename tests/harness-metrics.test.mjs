@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { collectMetrics, dailyStartStats, isPipelinePath, parseSkillFrontmatter, pipelineCommitStats, PIPELINE_STRUCTURAL_BASELINE } from '../scripts/lib/harness-metrics.mjs';
+import { collectMetrics, dailyStartStats, isPipelinePath, parseSkillFrontmatter, pipelineCommitStats, projectionCoverageV2, PIPELINE_STRUCTURAL_BASELINE } from '../scripts/lib/harness-metrics.mjs';
 
 function project(t) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'yss-harness-metrics-'));
@@ -153,6 +153,59 @@ test('Spec 与 Backend 各用自己的声明，missing 根与已存在空目录�
   assert.equal(backendView.roots[0].directories, 1);
   assert.equal(backendView.summary.coverage_ratio, 1);
   assert.equal(collectMetrics(backend).projection_coverage_v2.profiles[0].profile, 'harness.backend-delivery', '--root 可直接观察 Backend');
+});
+
+test('覆盖层自身越界、悬空或不可观察时保留 unavailable，不能重新建立安全边界', async t => {
+  for (const variant of ['outside', 'outside-parent', 'dangling', 'permission', 'not-directory']) {
+    await t.test(variant, t => {
+      if (variant === 'permission' && (process.getuid?.() === 0 || process.platform === 'win32')) { t.skip('当前身份/平台不能复现 POSIX EACCES'); return; }
+      const root = project(t);
+      registry(root, { agent_runtime_roots: {} });
+      const external = project(t);
+      const externalBackend = variant === 'outside-parent' ? path.join(external, 'backend') : external;
+      registry(externalBackend, { agent_runtime_roots: { workbuddy: '.workbuddy/skills' } }, 'harness.backend-delivery');
+      fs.mkdirSync(path.join(externalBackend, '.workbuddy/skills'), { recursive: true });
+      const parent = path.join(root, 'profiles');
+      if (variant === 'outside-parent') fs.symlinkSync(external, parent);
+      else {
+        fs.mkdirSync(parent);
+        const backend = path.join(parent, 'backend');
+        if (variant === 'outside') fs.symlinkSync(external, backend);
+        if (variant === 'dangling') fs.symlinkSync('missing', backend);
+        if (variant === 'not-directory') fs.writeFileSync(backend, 'not a directory');
+        if (variant === 'permission') { fs.mkdirSync(backend); fs.chmodSync(parent, 0); }
+      }
+      let view;
+      try { view = projectionCoverageV2(root).profiles.find(item => item.root === 'profiles/backend'); }
+      finally { if (variant === 'permission') fs.chmodSync(parent, 0o755); }
+      assert.ok(view, '保留不可观察的覆盖层记录');
+      assert.equal(view.status, 'unavailable');
+      assert.equal(view.reason, variant.startsWith('outside') ? 'profile-outside-project' : variant === 'dangling' ? 'profile-dangling-link' : variant === 'not-directory' ? 'profile-not-directory' : 'profile-unavailable');
+      assert.equal(view.profile, null, '不从仓外或不可观察目录猜测 Profile');
+      assert.equal(view.registry.sha256, null, '不读取仓外注册表');
+      assert.equal(view.summary.declared_roots, null);
+      assert.equal(view.summary.coverage_ratio, null);
+      assert.deepEqual(view.roots, []);
+    });
+  }
+});
+
+test('覆盖层可使用原查询根内的链接，普通缺席子目录不误报为悬空链接', t => {
+  const root = project(t);
+  registry(root, { agent_runtime_roots: {} });
+  const inside = path.join(root, 'inside');
+  const backend = path.join(inside, 'backend');
+  registry(backend, { agent_runtime_roots: { workbuddy: '.workbuddy/skills' } }, 'harness.backend-delivery');
+  fs.mkdirSync(path.join(root, 'shared/skills'), { recursive: true });
+  fs.writeFileSync(path.join(root, 'shared/skills/entry'), 'observed');
+  fs.mkdirSync(path.join(backend, '.workbuddy'));
+  fs.symlinkSync(path.join(root, 'shared/skills'), path.join(backend, '.workbuddy/skills'));
+  fs.symlinkSync(inside, path.join(root, 'profiles'));
+  const view = projectionCoverageV2(root).profiles.find(item => item.root === 'profiles/backend');
+  assert.equal(view.status, 'available');
+  assert.equal(view.roots[0].entries, 1, '根仍在原查询工程内，不以 Backend 路径重新建锚');
+  fs.rmSync(backend, { recursive: true });
+  assert.equal(projectionCoverageV2(root).profiles.length, 1, '内部有效父链接下普通缺席的覆盖层可省略');
 });
 
 test('缺少、损坏及不可读注册表均保留 unknown 和原因，不能回退平台列表', t => {
