@@ -1,7 +1,7 @@
 ---
 design_id: matt-method-optimization
 version: 0.1.0
-status: proposed
+status: accepted
 repository_mode: template-source
 updated_at: 2026-10-22
 template_base: a9f24bfff07fef9201ae6c4c4bf6029fb6ea8142
@@ -10,7 +10,7 @@ cli_base: 75ef66aff6c38481f06b233fdefc8958b37f83f4
 
 # Matt 方法适配后的第二轮能力优化设计
 
-本文是用户要求构建的**方案 PR**，状态为待审阅；本 PR 增加设计、执行计划、索引及其既有文档检查的输入登记，不表示下述修复已实施或新能力已验证。日期按 Asia/Shanghai。实施步骤见[执行计划](2026-10-22-matt-method-optimization-plan.md)。CLI 侧设计见[关联方案](https://github.com/iloveZzz/yss-cli/pull/56)。
+用户已在本会话批准本设计与执行计划，当前按工作包实施、独立审阅、修复与复验。本文保留设计基线；实际完成、失败和未覆盖范围记录在关联实现 PR，不把待验证能力记为已完成。日期按 Asia/Shanghai。实施步骤见[执行计划](2026-10-22-matt-method-optimization-plan.md)。CLI 侧设计见[关联方案](https://github.com/iloveZzz/yss-cli/pull/56)。
 
 ## 1. 目标和已有能力
 
