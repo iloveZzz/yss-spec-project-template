@@ -105,7 +105,17 @@ async function runPrepared(input) {
     assertVerificationSources(plan,root);
     const runtimeMode=values['runtime-store']||'off';if(!['off','sqlite'].includes(runtimeMode))throw new TypeError('runtime-store 必须为 sqlite 或 off');
     session=beginRuntimeRun({root,kind:'template-verification',mode:runtimeMode,input:{input_sha256:before,plan},reportDir});
-    const onResult=row=>{row.log_digests=Object.fromEntries(['stdoutFile','stderrFile'].filter(key=>row[key]&&fs.existsSync(row[key])).map(key=>[key,hash(fs.readFileSync(row[key]))]));report.results.push(row);if(row.storageError)errors.push(row.storageError);if(reportDir)saveVerificationReport(reportDir,report);};
+    const onResult=row=>{
+      if(row.skipped===true&&['cancelled','dependency-failed'].includes(row.termination)){
+        // No process ran: preserve that state and record its empty output.
+        // The global plan index stays unique across separate scheduler phases.
+        for(const [key,suffix]of [['stdoutFile','stdout'],['stderrFile','stderr']])if(row[key]===undefined){
+          const file=path.join(logRoot,`unexecuted-${row.index}.${suffix}`);
+          fs.writeFileSync(file,'',{flag:'wx'});row[key]=file;
+        }
+      }
+      row.log_digests=Object.fromEntries(['stdoutFile','stderrFile'].filter(key=>row[key]&&fs.existsSync(row[key])).map(key=>[key,hash(fs.readFileSync(row[key]))]));report.results.push(row);if(row.storageError)errors.push(row.storageError);if(reportDir)saveVerificationReport(reportDir,report);
+    };
     const executeFor=phase=>async(command,options)=>{
       // Tooling owns a per-file timeout. Never apply the 600s file budget to
       // its full multi-file preparation/test driver. Phase prefixes keep
