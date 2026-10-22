@@ -2,6 +2,8 @@
 
 状态：accepted；用户已批准[设计](2026-10-22-matt-method-optimization-design.md)与本执行计划。下列清单保留批准时的实施目标，实际进度与证据由本方案 PR 的执行表及关联实现 PR 记录；预期命令不代表已执行。CLI 任务详见[关联计划](https://github.com/iloveZzz/yss-cli/pull/56)。
 
+用户追加指令（2026-10-22）：模板本地与远端公共 slow 验证硬上限由 300 秒调整为 1000 秒，工作流 job 总上限由 20 分钟调整为 30 分钟。下列 T1 预算约束据此更新；原 300 秒预算下的真实失败、取消及未执行记录继续保留，不改判为通过。
+
 **目标：**恢复持续验证与通用发布，清理规则冲突，补齐当前平台观测，以真实任务证据驱动下一轮自动化。
 
 **实现方式：**各工作包独立 PR、独立写域；T1/C1 可并行。每个实现 PR 按“设计范围 → 实施 → 验证 → 独立 review → 修复 → 受影响复验”循环，关闭阻断项后再依赖它推进。此处独立 review 来自用户对本次升级循环的要求，不更改项目默认自检政策。实现时使用可用的 Superpowers 执行计划与审查能力；已有具体授权有效时不重复索取。
@@ -21,17 +23,18 @@
 
 ## T1 / 实现 PR 1A：恢复模板慢检查
 
-**文件：** `.github/workflows/template-slow-checks.yml`；必要时 `.template-source/process/github-workflows.md`、`tests/ci-adapters.test.mjs`；退役材料仅限已核验的 `.release-recovery/` 跟踪文件。
+**文件：** `.github/workflows/template-slow-checks.yml`、`scripts/lib/ci-gate.mjs`、`.template-source/process/github-workflows.md`、`tests/ci-gate.test.mjs`、`tests/ci-adapters.test.mjs`；退役材料仅限已核验的 `.release-recovery/` 跟踪文件。
 
 - [ ] 读取 `a435d0693b374e58f803b61817c9d8f9402c72e9` 的正常工作流，对照当前 pin 和公共 gate；用现有 adapter 用例确认当前失败。
 - [ ] 恢复 schedule/manual、只读权限、runtime-only 准备、slow 调用和 always 报告上传；不复制检查逻辑进 workflow。
+- [ ] 按追加指令将公共 `ci-gate --mode slow` 验证上限设为 1000 秒、workflow job 总上限设为 30 分钟；准备不计入验证预算，同步说明与计时边界断言。普通单项 300 秒、发布 prepare 1000 秒和 Go 全量测试 5 分钟上限分别保持。
 - [ ] 核对固定恢复材料的历史来源与摘要，再退役现役树中的临时入口/载荷；记录可追溯位置，不修改历史 tag/Release。
-- [ ] 运行 `node --test tests/ci-adapters.test.mjs` 和本 PR 影响计划选出的必要检查。
+- [ ] 运行 `node --test tests/ci-gate.test.mjs tests/ci-adapters.test.mjs` 和本 PR 影响计划选出的必要检查。
 - [ ] 在隔离报告目录实际执行 `scripts/ci-gate --mode slow --report-dir <全新目录> --prepare-tools`，或在该 PR head 上手动运行等价工作流；保存真实结果。
-- [ ] 区分入口已恢复、检查实际通过、超时/缺环境及 schedule 已触发。任何失败先调查，不延长现行 300 秒验证上限来获得通过。
+- [ ] 区分入口已恢复、检查实际通过、超时/缺环境及 schedule 已触发。按新 1000 秒公共验证上限重新取得真实证据；原 300 秒预算下的失败保持原结论，其他失败先调查，不继续放宽独立超时来获得通过。
 - [ ] 独立 review、修复、复验；合入后观察一次真实 schedule 运行，并把未完成观察明确留待记录。
 
-**验收：**正常入口不会上传 Release；存在 schedule/manual；slow 和工具准备实际命中；失败仍保留报告。上传器替换、丢失 schedule、缺准备和写权限提升不得被视为合格。已有 20 分钟 job 上限与发布准备 1000 秒预算分别保留。
+**验收：**正常入口不会上传 Release；存在 schedule/manual；slow 和工具准备实际命中；失败仍保留报告。上传器替换、丢失 schedule、缺准备和写权限提升不得被视为合格。公共 slow 验证上限为 1000 秒，job 总上限为 30 分钟，为准备和报告保留 800 秒余量；发布准备 1000 秒预算独立保留。
 
 **回滚：**独立 revert 受影响修改，但保留正常验证职责；不以重启旧上传器作为恢复 slow 的方法。若实际 slow 失败，保持失败记录，先区分现有测试债和新接线错误。
 
