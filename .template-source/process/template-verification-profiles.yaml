@@ -102,6 +102,8 @@ profiles:
           - ".template-source/contracts/spec-backend-direct-consumption-design.\
             md"
           - ".template-source/contracts/README.md"
+          - ".template-source/contracts/2026-10-22-matt-method-optimization-design.md"
+          - ".template-source/contracts/2026-10-22-matt-method-optimization-plan.md"
         depends_on: []
         failure_mode: "说明文档复述门禁数、阶段数、投影根数量或硬编码与 lock 不一致的上游 revision"
       - id: check.daily-input-preparation

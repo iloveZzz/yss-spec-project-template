@@ -4,6 +4,8 @@
     "AGENTS.md",
     "docs/process/*.md",
     ".template-source/agents/*.md",
+    ".template-source/contracts/2026-10-22-matt-method-optimization-design.md",
+    ".template-source/contracts/2026-10-22-matt-method-optimization-plan.md",
     ".template-spec/agents/*.md",
     ".template-spec/process/*.md",
     "profiles/backend/.template-spec/process/*.md",
