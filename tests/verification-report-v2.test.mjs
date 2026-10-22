@@ -162,18 +162,43 @@ test('真实轻量 worker 的依赖失败、中断及 SIGKILL 终态保存登记
  fs.mkdirSync(path.join(root,'.template-source/scripts/lib'),{recursive:true});fs.copyFileSync(new URL('../.template-source/scripts/lib/verification-preflight.mjs',import.meta.url),path.join(root,'.template-source/scripts/lib/verification-preflight.mjs'));
  for(const args of [['init','-q'],['add','.'],['-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit','-qm','fixture']]){const row=spawnSync('git',args,{cwd:root,encoding:'utf8'});assert.equal(row.status,0,row.stderr);}
  const quote=value=>`'${String(value).replaceAll("'","'\\''")}'`,node=source=>`${quote(process.execPath)} -e ${quote(source)}`,gateId='check.verification-final-integrity';
- const plan=commands=>({strategy:'release',requested_profile:'diagnostic',effective_profile:'diagnostic',source_requirement:'current',required_files:[],syntax_files:[],groups:['checks'],selection:{effective:'legacy',omitted:[]},gates:[{id:gateId,selected:true,check_ids:[]}],commands:commands.map(task=>({...task,group:'checks',gate_ids:[gateId]}))});
+ const plan=commands=>({strategy:'release',requested_profile:'diagnostic',effective_profile:'diagnostic',source_requirement:'current',required_files:[],syntax_files:[],groups:['artifact-preparation','checks'],selection:{effective:'legacy',omitted:[]},gates:[{id:gateId,selected:true,check_ids:[]}],commands:commands.map(task=>({...task,group:task.group||'checks',gate_ids:[gateId]}))});
+ const schema=JSON.parse(fs.readFileSync(new URL('../.template-source/process/schemas/template-verification-report.schema.json',import.meta.url)));
+ const resultRowsSchema=path.join(directory,'result-rows.schema.json');
+ fs.writeFileSync(resultRowsSchema,JSON.stringify({$schema:schema.$schema,$defs:schema.$defs,...schema.properties.results}));
+ const assertSkippedLogs=(outcome,taskIds)=>{
+  const report=JSON.parse(fs.readFileSync(outcome.reportFile));
+  assert.equal(report.purpose,'diagnostic');
+  // Validate real diagnostic results against the unchanged production row contract.
+  validateJsonSchema(report.results,resultRowsSchema);
+  const skipped=report.results.filter(row=>row.skipped===true);
+  assert.deepEqual(skipped.map(row=>row.task_id).sort(),[...taskIds].sort());
+  const paths=report.results.flatMap(row=>[row.stdoutFile,row.stderrFile]);
+  assert.equal(new Set(paths).size,paths.length,'phase-local sequences must not overwrite logs');
+  for(const row of skipped){
+   assert.notEqual(row.code,0);assert.equal(row.actual_exit_code,null);assert.equal(row.actual_exit_signal,null);assert.equal(row.actual_exit_code_observed,false);assert.equal(row.duration_ms,0);assert.equal(row.reused,false);assert.equal(row.actual_execution,undefined);
+   assert.equal(report.unexecuted.find(task=>task.task_id===row.task_id)?.reason,row.termination);
+   for(const key of ['stdoutFile','stderrFile']){
+    assert.ok(fs.statSync(row[key]).isFile());assert.equal(fs.readFileSync(row[key],'utf8'),'');
+    assert.equal(row.log_digests[key],createHash('sha256').update(fs.readFileSync(row[key])).digest('hex'));
+   }
+  }
+ };
+ const unstartedMarker=path.join(directory,'must-not-start'),unstarted=node(`require('node:fs').writeFileSync(${JSON.stringify(unstartedMarker)},'started');process.exit(99);`);
  const failed=await executeVerificationPlan({root,plan:plan([
+  {id:'check.prepare-failure',task_id:'prepare-failure',kind:'artifact-prepare',group:'artifact-preparation',command:node('process.exit(7)')},
+  {id:'check.prepare-dependent',task_id:'prepare-dependent',kind:'artifact-prepare',group:'artifact-preparation',command:unstarted,depends_on:['prepare-failure']},
   {id:'check.failure',task_id:'failure',command:node('process.exit(7)')},
-  {id:'check.dependent',task_id:'dependent',command:node('process.exit(99)'),depends_on:['failure']},
+  {id:'check.dependent',task_id:'dependent',command:unstarted,depends_on:['failure']},
   {id:'check.independent',task_id:'independent',command:node('console.log("independent")')},
  ]),reportDir:path.join(directory,'failed-report'),purpose:'diagnostic'});
- assert.equal(failed.code,1);assert.deepEqual(failed.report.unexecuted.map(({task_id,reason})=>({task_id,reason})),[{task_id:'dependent',reason:'dependency-failed'}]);
+ assert.equal(failed.code,1);assert.deepEqual(failed.report.unexecuted.map(({task_id,reason})=>({task_id,reason})),['prepare-dependent','dependent'].map(task_id=>({task_id,reason:'dependency-failed'})));
  assert.equal(failed.report.results.find(row=>row.task_id==='failure').actual_exit_code,7);assert.equal(failed.report.results.find(row=>row.task_id==='independent').actual_exit_code,0);assert.equal(failed.report.gate_results.find(row=>row.id===gateId).status,'failed');
+ assert.equal(fs.existsSync(unstartedMarker),false);assertSkippedLogs(failed,['prepare-dependent','dependent']);
  const marker=path.join(directory,'started'),controller=new AbortController();t.after(()=>controller.abort());
  const execution=executeVerificationPlan({root,plan:plan([
   {id:'check.wait',task_id:'wait',command:node(`require('node:fs').writeFileSync(${JSON.stringify(marker)},String(process.pid));setInterval(()=>{},1000);`)},
-  {id:'check.pending',task_id:'pending',command:node('process.exit(99)'),depends_on:['wait']},
+  {id:'check.pending',task_id:'pending',command:unstarted,depends_on:['wait']},
  ]),reportDir:path.join(directory,'interrupted-report'),purpose:'diagnostic',signal:controller.signal});
  const deadline=Date.now()+10000;while(!fs.existsSync(marker)&&Date.now()<deadline)await new Promise(resolve=>setTimeout(resolve,10));
  assert.ok(fs.existsSync(marker),'真实 wait 任务必须先启动');controller.abort();const interrupted=await execution;
@@ -181,6 +206,7 @@ test('真实轻量 worker 的依赖失败、中断及 SIGKILL 终态保存登记
  assert.deepEqual(interrupted.report.unexecuted.map(({task_id,reason})=>({task_id,reason})),['pending','post.git-diff-check'].map(task_id=>({task_id,reason:'cancelled'})));
  const started=interrupted.report.results.find(row=>row.task_id==='wait');assert.notEqual(started.skipped,true);assert.equal(started.termination,'cancelled');assert.equal(started.actual_exit_code_observed,false);assert.ok(started.actual_exit_signal);
  assert.equal(interrupted.report.gate_results.find(row=>row.id===gateId).status,'failed');
+ assert.equal(fs.existsSync(unstartedMarker),false);assertSkippedLogs(interrupted,['pending','post.git-diff-check']);
  const killedMarker=path.join(directory,'killed-task-pid'),forcedController=new AbortController();t.after(()=>forcedController.abort());
  const forcedExecution=executeVerificationPlan({root,plan:plan([
   {id:'check.completed',task_id:'completed',command:node('console.log("completed before kill")')},
@@ -195,6 +221,7 @@ test('真实轻量 worker 的依赖失败、中断及 SIGKILL 终态保存登记
  assert.equal(forced.report.results.find(row=>row.task_id==='completed').actual_exit_code,0);
  assert.deepEqual(forced.report.unexecuted.map(({task_id,reason})=>({task_id,reason})),['kill-wait','kill-pending','post.git-diff-check'].map(task_id=>({task_id,reason:'failure-or-interruption'})));
  assert.equal(forced.report.gate_results.find(row=>row.id===gateId).status,'failed');assert.deepEqual(JSON.parse(fs.readFileSync(forced.reportFile)).unexecuted,forced.report.unexecuted);
+ assertSkippedLogs(forced,[]);
 });
 
 test('v2 schema 与 fresh consumer 拒绝实际退出、Gate、日志、invocation 和漂移缺陷',t=>{
