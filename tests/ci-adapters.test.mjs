@@ -72,12 +72,11 @@ test("GitLab 镜像主版本与 scripts/ci-setup 的目标 Node 一致", () => {
   assert.equal(image[1], versions().node);
 });
 
-test("慢检查工作流保留准备和报告预算，验证 1000 秒由公共 gate 独立计时", () => {
+test("慢检查工作流为公共 gate 的1000秒验证及准备保留总预算", () => {
   const text = code(SLOW_WORKFLOW);
   assert.match(text, /^on:\n  schedule:\n    - cron: '[^']+'\n  workflow_dispatch:$/m);
   assert.doesNotMatch(text, /pull_request|push:/);
-  assert.match(text, /timeout-minutes: 32/);
-  assert.doesNotMatch(text,/timeout-minutes: 5/);
+  assert.match(text, /timeout-minutes: 30/);
   assert.match(text,/run: scripts\/ci-gate --mode slow .*--prepare-tools/);
 });
 
