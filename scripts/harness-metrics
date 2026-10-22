@@ -8,7 +8,7 @@ import { resolveMaintenanceOutput } from "./lib/maintenance-storage.mjs";
 const SCRIPT_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 function usage() {
-  return "用法: scripts/harness-metrics [--root <目录>] [--out maintenance:<类别/运行ID/文件>] [--rev <提交>] [--since <时间>] [--until <时间>] [--agent-output <真实 agent JSON 文件>] [--check-budget]\n只读；--check-budget 按 .template-source/process/context-budget.json 核对上下文预算，超限退出 1；默认向 stdout 输出 JSON。--out 写入仓外维护命名空间并输出 sha256。\n--rev、--since、--until 只影响 pipeline_commits：默认窗口是 rev（默认 HEAD）的提交时间往前 30 天，可用它们复现历史口径。";
+  return "用法: scripts/harness-metrics [--root <目录>] [--out maintenance:<类别/运行ID/文件>] [--rev <提交>] [--since <时间>] [--until <时间>] [--agent-output <真实 agent JSON 文件>] [--check-budget]\n只读；--check-budget 按 .template-source/process/context-budget.json 核对上下文预算，超限退出 1；默认向 stdout 输出 JSON。--out 写入仓外维护命名空间并输出 sha256。\n--rev、--since、--until 只影响 pipeline_commits：默认窗口是 rev（默认 HEAD）的提交时间往前 30 天，可用它们复现历史口径。\nprojection_roots 保留 v1 历史候选根口径；projection_coverage_v2 只读各 Profile 当前注册表的去重声明根，绑定来源 SHA-256，不受 --rev 影响。Spec 与 Backend 覆盖层分别观察实际目录，不合成或写入实例。\nv2 的 missing 表示已声明但缺少，unavailable 及 reason 表示无法统计；未知计数和无分母/不可统计的 coverage_ratio 为 null。比例只表示实际存在根/已声明根；entries 等只计非点顶层目录项，符号链接只计数，不代表客户端发现或调用。";
 }
 
 try {
