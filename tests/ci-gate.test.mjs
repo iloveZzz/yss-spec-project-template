@@ -531,16 +531,17 @@ test('符号链接 root 接受同一真实成功报告',async t=>{
  assert.equal(run.status,0,run.stderr);const report=JSON.parse(fs.readFileSync(path.join(f.reportDir,'report.json')));assert.equal(report.steps.find(x=>x.id==='verify-template').child_exit_code,0);
 });
 
-test('slow 准备不消耗验证本身五分钟预算，超时保留实际退出', {timeout:10000},async t=>{
+test('slow 准备不消耗验证本身1000秒预算，超时保留实际退出', {timeout:10000},async t=>{
  const f=fixture(t),release=path.join(f.directory,'release-setup'),pidFile=path.join(f.directory,'fast-pid');
+ const realSetTimeout=setTimeout;
  t.mock.timers.enable({apis:['setTimeout']});let finished=false,pid;
  t.after(()=>{if(pid)try{process.kill(pid,'SIGTERM');}catch(error){if(error.code!=='ESRCH')throw error;}});
  const run=runGate({verification,root:f.root,mode:'slow',reportDir:f.reportDir,prepareTools:true,env:{...process.env,STUB_LOG:f.stubLog,SETUP_WAIT_RELEASE:release,STUB_WAIT_FAST:'1',STUB_FAST_PID:pidFile},stdout:sink(),stderr:sink()}).then(value=>{finished=true;return value;});
  const waitFor=async predicate=>{const end=Date.now()+2000;while(!predicate()&&Date.now()<end)await new Promise(setImmediate);assert.equal(predicate(),true);};
  await waitFor(()=>fs.existsSync(f.stubLog)&&fs.readFileSync(f.stubLog,'utf8').includes('ci-setup '));
- t.mock.timers.tick(300000);await new Promise(setImmediate);assert.equal(finished,false,'准备阶段不使用测试计时器');
+ t.mock.timers.tick(1000000);await new Promise(setImmediate);assert.equal(finished,false,'准备阶段不使用测试计时器');
  fs.writeFileSync(release,'release');await waitFor(()=>fs.existsSync(pidFile));pid=Number(fs.readFileSync(pidFile,'utf8'));
- t.mock.timers.tick(299999);await new Promise(setImmediate);assert.equal(finished,false,'测试有自己的完整五分钟');
+ t.mock.timers.tick(999999);await new Promise(resolve=>realSetTimeout(resolve,50));assert.equal(finished,false,'验证在1000秒前不会超时，包括原300秒边界');
  t.mock.timers.tick(1);await waitFor(()=>finished);
  const result=await run,step=result.report.steps.find(x=>x.id==='verify-slow');
  assert.equal(result.exitCode,1);assert.equal(step.exit_code,124);assert.equal(step.child_exit.termination,'timeout');assert.ok(step.child_exit.signal||Number.isInteger(step.child_exit.code));
