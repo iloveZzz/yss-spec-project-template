@@ -1,6 +1,6 @@
 # Matt 方法适配第二轮优化执行计划（提案）
 
-状态：proposed；与[设计](2026-10-22-matt-method-optimization-design.md)一同评审。以下全为后续执行任务，未勾选不表示已执行。当前方案 PR 的文档核验单独记录在 PR 描述中。CLI 任务详见[关联计划](https://github.com/iloveZzz/yss-cli/blob/docs/matt131-optimization-proposal-20261022/docs/superpowers/plans/2026-10-22-matt-method-optimization.md)。
+状态：proposed；与[设计](2026-10-22-matt-method-optimization-design.md)一同评审。以下全为后续执行任务，未勾选不表示已执行。当前方案 PR 的文档核验单独记录在 PR 描述中。CLI 任务详见[关联计划](https://github.com/iloveZzz/yss-cli/pull/56)。
 
 **目标：**恢复持续验证与通用发布，清理规则冲突，补齐当前平台观测，以真实任务证据驱动下一轮自动化。
 
