@@ -115,6 +115,27 @@ test('实例漂移的 CI 计划要求原生工具',async()=>{
  }
 });
 
+test('报告 v2 的 CI 路由声明冻结计划编译所需原生 CLI',async t=>{
+ const {verificationToolRequirements}=await import('../.template-source/scripts/lib/verification-preflight.mjs');
+ const {planTemplateVerification}=await import('../scripts/lib/template-verification.mjs');
+ const root=path.resolve(import.meta.dirname,'..'),directory=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'report-v2-tools-')));t.after(()=>fs.rmSync(directory,{recursive:true,force:true}));
+ for(const ref of ['tests/verification-report-v2.test.mjs','.template-source/scripts/lib/template-verification-worker.mjs']){
+  const selected=planTemplateVerification({changedFiles:[ref],ciGuards:true});
+  const commands=selected.commands.filter(row=>row.id==='check.verification-report-v2');assert.equal(commands.length,1,ref);
+  // Isolate this consumer so another selected native check cannot hide its dependency.
+  const plan={...selected,commands},needs=verificationToolRequirements(plan,{reportValidation:true});
+  assert.deepEqual(needs,{schema_version:1,python:'jsonschema',go:true,native_cli:true,tooling:false,vue:false},ref);
+  const missing=verificationPreflight({root,plan,nodeVersion:'v24.21.0',environment:{},probe:file=>{
+   if(file==='python3')return {status:0,stdout:JSON.stringify({version:[3,12],jsonschema:'4.23.0',executable:'/fixture/python'})};
+   assert.equal(file,'go');return {status:0,stdout:'go version go1.27.1 linux/amd64'};
+  }});
+  assert.equal(missing.status,'failed');assert.deepEqual(missing.errors.map(row=>row.name),['native-cli']);
+  const requirements=path.join(directory,'requirements.json');fs.writeFileSync(requirements,JSON.stringify(needs));
+  const setup=spawnSync(path.join(root,'scripts/ci-setup'),['--dry-run','--requirements-file',requirements],{cwd:root,env:{...process.env,CI:''},encoding:'utf8'});
+  assert.equal(setup.status,0,setup.stderr);assert.match(setup.stdout,/构建 yss/);assert.match(setup.stdout,/Go：/);assert.doesNotMatch(setup.stdout,/pnpm --dir \.template-source\/tooling\/node install/);
+ }
+});
+
 test('仅实施编排文档变化也准备 checkpoint 的原生依赖',async t=>{
  const {verificationToolRequirements}=await import('../.template-source/scripts/lib/verification-preflight.mjs');
  const {planTemplateVerification}=await import('../scripts/lib/template-verification.mjs');

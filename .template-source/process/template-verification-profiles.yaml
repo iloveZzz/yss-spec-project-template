@@ -1920,7 +1920,7 @@ profiles:
         depends_on: []
         failure_mode: "局部报告被当作正式报告或退出、漂移证据错误"
       - id: "check.verification-report-v2"
-        resources: [ "python-jsonschema", "go" ]
+        resources: [ "python-jsonschema", "go", "native-cli" ]
         run: "node --test tests/verification-report-v2.test.mjs"
         group: "candidate-integrity"
         inputs_complete: true
