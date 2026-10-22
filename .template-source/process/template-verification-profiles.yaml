@@ -1176,6 +1176,7 @@ profiles:
         input_patterns:
           - ".github/workflows/template-gate.yml"
           - ".github/workflows/template-slow-checks.yml"
+          - ".release-recovery/**"
           - ".github/actions/setup-template/action.yml"
           - ".gitlab-ci.yml"
           - "scripts/ci-setup"
@@ -3099,6 +3100,7 @@ routing:
       - tooling
   - patterns:
       - .github/**
+      - .release-recovery/** # 删除一次性恢复材料时仍由 CI 入口合同检查承接
     groups:
       - candidate-integrity
   - patterns:

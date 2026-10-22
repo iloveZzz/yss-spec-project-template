@@ -9,7 +9,7 @@ import {verificationToolRequirements} from '../../.template-source/scripts/lib/v
 import { resolveMaintenanceOutput } from "./maintenance-storage.mjs";
 
 const MODES = ["pr", "push", "slow"];
-const SLOW_VERIFICATION_TIMEOUT_MS = 5 * 60 * 1000;
+const SLOW_VERIFICATION_TIMEOUT_MS = 1000 * 1000;
 const FULL_SHA = /^[0-9a-f]{40}$/;
 /** 重步骤在任一前置步骤失败时跳过：先把便宜的失败原因交给作者，不在已知失败的候选上空耗数分钟。 */
 const SKIPPED_AFTER_FAILURE = "前置步骤失败，已跳过";
