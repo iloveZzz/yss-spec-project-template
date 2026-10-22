@@ -81,6 +81,14 @@ test("慢检查工作流保留总预算，验证五分钟由公共 gate 独立�
   assert.match(text,/run: scripts\/ci-gate --mode slow .*--prepare-tools/);
 });
 
+test("慢检查只有只读权限，固定发布恢复器已退出活动树", () => {
+  const workflow = parsed(SLOW_WORKFLOW);
+  assert.deepEqual(workflow.permissions, { contents: "read" });
+  assert.equal(workflow.name, "template-slow-checks");
+  assert.doesNotMatch(code(SLOW_WORKFLOW), /\.release-recovery|gh release|GH_TOKEN/);
+  assert.equal(fs.existsSync(path.join(ROOT, ".release-recovery")), false);
+});
+
 test(".nvmrc 主版本与 scripts/ci-setup 的目标 Node 一致，本地与 CI 使用同一主版本", () => {
   assert.equal(read(".nvmrc").trim().split(".")[0], versions().node);
 });
