@@ -132,9 +132,28 @@ const UNKNOWN_COVERAGE = { declared_roots: null, present_roots: null, missing_ro
 const NO_ENTRY_COUNTS = { entries: null, symlinks: null, directories: null, regular_files: null, other: null };
 
 function registeredProjectionProfile(root, relativeRoot) {
+  const profileRoot = path.join(root, relativeRoot);
   const result = { profile: null, root: relativeRoot, registry: { path: path.posix.join(relativeRoot, REGISTRY_REF), sha256: null }, status: "unavailable", reason: null, roots: [], summary: { ...UNKNOWN_COVERAGE } };
+  let boundary;
+  let symbolic = false;
   try {
-    const profileDoc = parseDocument(readFileSync(path.join(root, PROFILE_REF), "utf8"), { uniqueKeys: true, maxAliasCount: 0 });
+    boundary = realpathSync(root);
+    let directory = root;
+    for (const part of relativeRoot === "." ? [""] : relativeRoot.split("/")) {
+      directory = path.join(directory, part);
+      symbolic = false;
+      const stat = lstatSync(directory);
+      symbolic = stat.isSymbolicLink();
+      if (!stat.isDirectory() && !symbolic) throw Object.assign(new TypeError("Profile 不是目录"), { code: "profile-not-directory" });
+      const relative = path.relative(boundary, realpathSync(directory));
+      if (relative === ".." || relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative)) throw Object.assign(new TypeError("Profile 超出查询工程目录"), { code: "profile-outside-project" });
+    }
+  } catch (error) {
+    result.reason = error.code === "ENOENT" ? symbolic ? "profile-dangling-link" : "profile-directory-missing" : error.code?.startsWith("profile-") ? error.code : "profile-unavailable";
+    return result;
+  }
+  try {
+    const profileDoc = parseDocument(readFileSync(path.join(profileRoot, PROFILE_REF), "utf8"), { uniqueKeys: true, maxAliasCount: 0 });
     if (profileDoc.errors.length) throw new TypeError("profile-invalid");
     const profile = profileDoc.toJS({ maxAliasCount: 0 });
     if (!["harness.spec-template", "harness.backend-delivery"].includes(profile?.profile_id)) throw new TypeError("profile-invalid");
@@ -145,7 +164,7 @@ function registeredProjectionProfile(root, relativeRoot) {
   }
   let registry;
   try {
-    const file = path.join(root, REGISTRY_REF);
+    const file = path.join(profileRoot, REGISTRY_REF);
     const source = readFileSync(file);
     result.registry.sha256 = digest(source);
     registry = loadSkillRegistry(file);
@@ -200,12 +219,12 @@ function registeredProjectionProfile(root, relativeRoot) {
     let exists = null;
     let symbolic = false;
     try {
-      const directory = path.join(root, row.root);
+      const directory = path.join(profileRoot, row.root);
       const stat = lstatSync(directory);
       exists = true;
       symbolic = stat.isSymbolicLink();
       if (!stat.isDirectory() && !symbolic) throw Object.assign(new TypeError("投影根不是目录"), { code: "root-not-directory" });
-      const relative = path.relative(realpathSync(root), realpathSync(directory));
+      const relative = path.relative(boundary, realpathSync(directory));
       if (relative === ".." || relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative)) throw Object.assign(new TypeError("投影根超出工程目录"), { code: "root-outside-project" });
       const entries = readdirSync(directory, { withFileTypes: true }).filter(entry => !entry.name.startsWith("."));
       const counts = { entries: entries.length, symlinks: 0, directories: 0, regular_files: 0, other: 0 };
@@ -238,7 +257,7 @@ function registeredProjectionProfile(root, relativeRoot) {
 export function projectionCoverageV2(root) {
   return { schema_version: 2, basis: "current-registered-roots", entry_count_basis: "non-hidden-top-level-entries", profiles: [
     registeredProjectionProfile(root, "."),
-    ...PROFILE_OVERLAYS.filter(short => existsSync(path.join(root, "profiles", short))).map(short => registeredProjectionProfile(path.join(root, "profiles", short), `profiles/${short}`)),
+    ...PROFILE_OVERLAYS.map(short => registeredProjectionProfile(root, `profiles/${short}`)).filter(profile => profile.reason !== "profile-directory-missing"),
   ] };
 }
 
