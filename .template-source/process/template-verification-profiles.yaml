@@ -83,6 +83,9 @@ profiles:
         group: feature-assets
         inputs_complete: true
         input_patterns:
+          - ".template-source/contracts/2026-10-23-skill-first-optimization-design.md"
+          - ".template-source/contracts/skill-first-task-cases.md"
+          - ".template-source/distribution/entries/**"
           - "scripts/verify-doc-facts"
           - "scripts/lib/doc-facts.mjs"
           - "scripts/lib/doc-facts-patterns.json"
