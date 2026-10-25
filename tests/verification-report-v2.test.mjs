@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { createVerificationReport, finalizeVerificationReport,saveVerificationReport,verificationInputDigest } from '../scripts/lib/verification-report.mjs';
 import {collectReleaseSources} from '../.template-source/scripts/lib/verification-artifacts.mjs';
-import { validateVerificationReport,compileExpectedVerificationPlan } from '../.template-source/scripts/lib/verification-report-validator.mjs';
+import { validateVerificationReport,compileExpectedVerificationPlan,assertNativeMigrationCommands } from '../.template-source/scripts/lib/verification-report-validator.mjs';
 import {compileLegacyPlan,loadLegacyManifest} from '../.template-source/scripts/lib/legacy-verification.mjs';
 import {addVerificationExecutionTasks,compileTaskExecution} from '../.template-source/scripts/lib/verification-execution-plan.mjs';
 import {validateJsonSchema} from '../scripts/lib/json-schema.mjs';
@@ -32,6 +32,18 @@ function fixture(t) {
   const options = {expectedSourcesManifest:sources, root: directory, reportDirectory: directory, expectedPlan: plan, expectedInvocation: invocation, currentInputDigest: report.input_sha256, observedExitCode: 0};
   return {directory, plan, report, options};
 }
+
+test('原生发行集成消费现役 sync 升级与回滚轨迹，缺任何实际阶段均拒绝',()=>{
+ const calls=[
+  {args:['sync','--plan']},{args:['sync','--apply']},
+  {args:['sync','--plan']},{args:['sync','--apply']},
+  {args:['sync','--plan']},{args:['rollback','--apply']},
+ ];
+ assert.doesNotThrow(()=>assertNativeMigrationCommands(calls));
+ for(let index=0;index<calls.length;index++)assert.throws(()=>assertNativeMigrationCommands(calls.filter((_,i)=>i!==index)),/原生迁移/);
+ assert.throws(()=>assertNativeMigrationCommands([...calls.slice(0,-1),{args:['rollback','--plan']}]),/原生迁移/);
+ assert.throws(()=>assertNativeMigrationCommands([{args:['migrate','plan']},{args:['migrate','plan']},{args:['migrate','apply']},{args:['migrate','rollback']}]),/原生迁移/);
+});
 
 test('完整 v2 报告按独立期望台账核验', t => {
   const f = fixture(t);
