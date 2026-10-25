@@ -1,0 +1,86 @@
+# Explicit governed workflow
+
+Only consume this reference when the caller explicitly supplies a formal workflow or an existing formal task. It does not apply to standalone skill use.
+
+功能包根只从 `.template-spec/agents/issue-tracker.md` 的 `tracker.root` 读取；本文 `.work/` 路径是新项目示例，已有项目沿用已配置的根。
+
+Review a pinned candidate: all applicable axes initially, then affected conclusions and dependencies:
+
+- **Standards** — does the code conform to this repo's documented coding standards **and**, for YSS slices, the specialist check inputs compiled in [yss-review-standards.md](yss-review-standards.md)?
+- **Spec** — does the code faithfully implement the originating issue / spec?
+- **UI fidelity** (only when the change has UI impact) — does the candidate match the daily task's confirmed acceptance/current visual baseline, or the governed prototype, and `yss-design-system`? Type-check or claiming "already aligned" is not a pass. Invoke those skills' verification notes; do not collapse this axis into Standards or Spec. YSS page-module conventions stay on Standards.
+
+普通功能默认由当前执行者诚实自检完成 Standards、Spec 和适用的 UI fidelity 检查，分别报告结论。只有专业能力缺口、结论冲突、明确外部制度或用户指定时，才拆成多个审查者；多个无依赖审查可以并行。检查轴不等于审查人数，不能要求用户为每个轴重复确认。
+
+当前编排合同按工作单元与影响选择技术检查及 Skills；新任务使用 task3，实际来源写 provenance，不要求角色/运行时注册。明确独立或外部复核要求按真实来源执行；同账号不同真实上下文可独立，同会话改标签不算。
+
+以上正式任务接线用于 `governed`。已合格且政策启用的 Spec、Backend `daily` 由 `request_triage.delivery_path` 政策及支持 `route` / `verify-daily` 的固定 CLI 取得资格；缺政策或能力的 Profile / 旧 CLI 明确不支持。本技能不凭标签降级正式工作包。普通审查消费同一 Ticket / PR 的验收、真实单仓路径、当前 diff、适用 YSS 技能和实际测试，默认执行者自检；需要独立复核时核验独立上下文，冻结候选的复核期间保持只读；缺测试、失败、未关闭阻断项或候选过期时返回 `blocked`。结论和身份可回填同一 Ticket 的审查段，由工具绑定当前候选，不强制新 review 文件、正式 review manifest、checkpoint 或 Slice，不写 `approved` / `ready-for-agent`。
+
+For governed work, if `.template-spec/agents/issue-tracker.md` is missing, tell the user to run `/setup-matt-pocock-skills`; do not invoke another user-invoked skill yourself. A qualified daily review uses its existing task record and does not require a tracker setup stage.
+
+## 文档写作
+
+撰写审查报告时，按 `lifecycle-document-output` 条件调用 `i-have-adhd`，读取 `.template-spec/process/document-writing.md` 的共用写法及审查指引；保留各审查轴的 findings、严重性、定位、证据及原裁决，不因压缩表达合并或降级。作用域仅限当前产物，派发时传递条件及引用。
+
+## Process
+
+### 1. 固定候选
+
+普通任务复用 `route` / `verify-daily` 绑定的完整基线 SHA、当前真实 diff、范围内新增文件和 `candidate_digest`；正式候选按 [候选捕获合同](candidate-capture.md) 选择 committed/worktree 模式。保持只读；候选变化使相关审查失效，不用自填摘要证明当前性。
+
+### 2. Identify the spec source
+
+Look for the originating spec, in this order:
+
+1. The daily Ticket / PR goal and acceptance examples, or a spec/Ticket/contract reference supplied by the user or an upstream governed review input. A daily task with readable acceptance does not require a new calibrated Spec.
+2. Issue references in the commit messages (`#123`, `Closes #45`, GitLab `!67`, etc.) — fetch via the workflow in `.template-spec/agents/issue-tracker.md`.
+3. A spec file under `docs/`, `specs/`, or `.work/` matching the branch name or feature.
+4. If nothing is found, ask the user where the spec is. If they say there isn't one, the Spec axis will report "no spec available".
+
+### 3. Identify the standards sources
+
+Compile sources **before** review. For YSS implementation candidates follow [yss-review-standards.md](yss-review-standards.md): run machine checks that exist in the implementation repo; then collect repo docs (`CODING_STANDARDS.md` / `CONTRIBUTING.md` if present) and impact-conditioned specialist inputs (`alibaba-java-code-style`, `yss-design-system`, `yss-domain`, …). Daily work uses the skills and engineering baseline bound by its task; governed slices also consume every Slice `required_skills` file and the formal review template. Missing applicable coverage is `missing_evidence`, not a pass.
+
+Resolve daily backend roots from its verified single implementation root and allowed scope, and governed roots from the registered project and Slice scope; exclude frontend, vendor, unrelated submodules and unregistered roots. Assess both `yss-repository` and `yss-mybatis` for every backend candidate, including impact, selected Profile and current component source index per the standards reference. Without persistence impact, record concrete `not-applicable` reasons for both.
+
+Repo coding documents remain sources alongside mandatory YSS / Alibaba inputs.
+
+Standards 检查代码 diff 时读取 [Fowler smell baseline](smell-baseline.md)。仓库明确标准优先；smell 只作 judgement call，不升级为硬违规，机器已覆盖项不重复判断。
+
+### 4. Complete each applicable review axis
+
+当前执行者按轴完成下列检查提纲；需要独立复核时由满足实际独立要求的上下文执行。只在真实能力缺口或明确要求下协作，不按检查轴固定 Agent 数量。下列 prompts 是检查清单。
+
+执行 Standards / Spec 轴时读取 [逐轴检查提纲](review-axis-checklists.md)；单 Reviewer 同样使用它。实际派发时传入相同候选、证据和完整 smell baseline；Spec 缺失按提纲明确报告。
+
+首轮完整覆盖；修复后依差异、受影响结论 / 行为及依赖定向复验并绑定当前候选，未受影响项有依据地复用。摘要、UI 或 `new_impacts` 不触发全轴兜底，未知先调查。历史两轮同样适用；细则见 [finding 闭环](yss-review-standards.md)。
+
+### 5. Aggregate
+
+仅任务包携带 `review_round`、明确采用历史冻结候选协议时，读取 [两轮收敛合同](legacy-convergence.md)。普通审查不因此新增候选冻结或额外审查者。
+
+#### 报告与阻断
+
+按 `## Standards`、`## Spec` 分别呈现原报告或等义整理后的结论；UI 影响另列 `## UI fidelity`。普通审查在同一任务记录保留适用规则、实际测试、候选摘要、实际来源、复核方式和 findings；正式专项表填写在 `.template-spec/templates/review-report-template.md` 的 Standards 证据中。两条路径均不增加第四轴，也不合并或跨轴重排 findings。适用规则覆盖缺失、遗漏 governed `required_skills` 或 mandatory violation 未关闭时，结果为 `blocked`；普通结论只有当前证据齐备时才记录 `passed`。
+
+#### 修复后复审
+
+Reviewer 保持只读，将 `violation`、机器检查失败和适用覆盖缺失交回原任务 / 合同路径的实施者。修复后比较差异、重新绑定当前候选，复审受影响结论与依赖，并明确重新绑定未受影响的证据；不在审查会话中写实现来关闭 finding。
+
+#### 合同失效与延期
+
+普通任务的候选或输入变化使受影响审查过期，补事实后重验；新风险超出 daily 政策时停止受影响动作、保留证据并交回生命周期升级，不能创建一个自批 Slice 继续。`governed` 的 `drift`、`new_impacts` 或 `required_skills` 不匹配将合同标为 `stale` 并回到实现合同编译器；停止使用旧合同实现，不默认全轴重审。`not-applicable` 只用于未触发影响。mandatory 门禁不能豁免；按原合同修复，或在原流程允许延期时提供完整 `seam-deferred` 记录。
+
+For Worktree mode, recapture the candidate digest after all applicable checks finish. If it differs from `candidate_digest`, mark the affected reports as reviewing a **stale candidate** and return `blocked`; the caller may start a new review against a new capture, but this invocation must not aggregate findings from different bytes. Recheck the same digest again at the completion/checkpoint boundary.
+
+State the reviewed `review_mode`, fixed point, candidate digest and coverage before the two reports. End with a one-line summary: total findings per axis, and the worst issue _within each axis_ (if any). Don't pick a single winner across axes — that's the reranking the separation exists to prevent.
+
+## Why separate axes
+
+A change can pass one axis and fail the other:
+
+- Code that follows every standard but implements the wrong thing → **Standards pass, Spec fail.**
+- Code that does exactly what the issue asked but breaks the project's conventions → **Spec pass, Standards fail.**
+- Code that implements the spec but diverges from the confirmed prototype or design system → **Spec pass, UI fidelity fail.**
+
+Reporting them separately stops one axis from masking the other.

@@ -36,7 +36,7 @@ function sh(cwd, ...args) {
 }
 
 /** 带桩脚本的最小仓库：每个 STEPS 命令都是只记录参数的 bash 桩，真实检查由各自的测试覆盖。 */
-function fixture(t, { engines = ">=22", nvmrc = "22", write, commits = 2, tooling = false, trackedOutput = false, gitlink = false } = {}) {
+function fixture(t, { engines = ">=22", nvmrc = "22", write, commits = 2, tooling = false, trackedOutput = false, gitlink = false, scopedGuards = false } = {}) {
   const directory = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), "yss-ci-gate-")));
   t.after(() => fs.rmSync(directory, { recursive: true, force: true }));
   const root = path.join(directory, "repo");
@@ -64,6 +64,10 @@ if [ -n "\${SETUP_ENV:-}" ]; then printf '%s\\n' "$SETUP_ENV" > "$YSS_CI_ENV_FIL
   // while shell guards stand in for unrelated repository-wide guard contents.
   const original=loadVerificationProfiles(),ids=['check.skill-projection-identity','check.skill-lock-current','check.9f66238a57e457bf','check.022dccdddca70b70'];
   const checks=ids.map(id=>({...Object.values(original.groups).flatMap(g=>g.commands).find(x=>x.id===id),...original.profiles.fast.checks.find(x=>x.id===id),input_patterns:['README.md','docs/**'],resources:[],group:'guards'}));
+  if(scopedGuards){
+    for(const check of checks)check.input_patterns=['.agents/skills/**'];
+    checks.push({...checks[0],id:'check.fixture-docs',run:'node -e "process.exit(0)"',input_patterns:['README.md','docs/**']});
+  }
   const config={schema_version:1,groups:{guards:{commands:checks}},profiles:{fast:{checks},release:{}},routing:[{patterns:['README.md','docs/**'],groups:['guards']}],gates:[],syntax_files:[],required_files:[]};
   const fixtureEnv={};
   if(tooling){
@@ -223,7 +227,7 @@ test("AC-004：推送模式全部通过，报告在仓外，仓内没有新增�
   assert.equal(run.report.head, sh(run.root, "rev-parse", "HEAD"));
   const parent = sh(run.root, "rev-parse", "HEAD^");
   assert.equal(run.report.scope_base, parent);
-  assert.ok(run.calls.some((line) => line.startsWith("verify-template-fast ") && line.includes(`--ci-guards --base ${parent} --report-dir ${path.join(run.reportDir, "verification")}`)));
+  assert.ok(run.calls.some((line) => line.startsWith("verify-template-fast ") && line.includes(`--base ${parent} --report-dir ${path.join(run.reportDir, "verification")}`)));
   assert.ok(!run.calls.some((line) => line.startsWith("verify-template-candidate")));
 });
 
@@ -242,7 +246,7 @@ test("PR 模式只执行 fast 阻断验证并传递完整 base SHA", async (t) =
   assert.equal(run.report.scope_base, run.base);
   const fast = run.calls.filter((line) => line.startsWith("verify-template-fast "));
   assert.equal(fast.length, 1);
-  assert.match(fast[0], new RegExp(`--ci-guards --base ${run.base} --report-dir ${path.join(run.reportDir, "verification").replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`));
+  assert.match(fast[0], new RegExp(`--base ${run.base} --report-dir ${path.join(run.reportDir, "verification").replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`));
   const candidate = run.calls.filter((line) => line.startsWith("verify-template-candidate "));
   assert.equal(candidate.length, 0);
   assert.ok(!run.report.steps.some((step) => step.id === "verify-candidate"));
@@ -547,3 +551,10 @@ test('slow 准备不消耗验证本身1000秒预算，超时保留实际退出',
  assert.equal(result.exitCode,1);assert.equal(step.exit_code,124);assert.equal(step.child_exit.termination,'timeout');assert.ok(step.child_exit.signal||Number.isInteger(step.child_exit.code));
  assert.equal(result.report.tool_requirements.python,'jsonschema','外层报告消费始终需要 schema');
 });
+
+ test('普通 CI 按变更选择，不强制无关注册表和技能锁检查',async t=>{
+ const run=await gate(t,{mode:'pr',fixture:{scopedGuards:true}});
+ assert.equal(run.exitCode,0,run.err);
+ for(const name of ['sync-skills','update-skill-lock','verify-lifecycle-registry','verify-skill-registry'])assert.equal(run.calls.filter(x=>x.split(' ')[0]===name).length,0,name);
+ assert.deepEqual(run.report.verification.guard_task_ids,[]);
+ });

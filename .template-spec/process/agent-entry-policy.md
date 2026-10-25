@@ -26,7 +26,7 @@ API 先 OAS 3.1 YAML Draft、锁定工具校验、内容复核（默认真实自
 按裁剪文档和 `.template-source/process/maintenance-intensity.yaml` 分 L1/L2。先看 `scripts/verify-template-fast --plan`，日常按检查选择变化行为及直接/传递消费者；每项指出命中文件、受影响行为和能发现的具体错误，适用的强制检查注明合同依据。已有检查覆盖时不新增测试或启动环境；必要检查通过即结束，只有相关修改、失败或具体遗漏才追加验证。未知路径、缺输入映射或非法依赖先修正计划，不自动跑全量。日常报告记录 `limited` 范围、实际结果与未覆盖边界，交付 `implementation-ready`，无需逐项填写跳过理由。候选/main集成/发布仍遵守 `.template-source/process/template-verification-profiles.yaml` 的当前资格与完整覆盖合同。
 
 
-唯一自动 Git 例外由 `advance-maintenance-iteration` 的本地 checkpoint 引用合同规定，仅适用于模板源维护。
+普通模板维护复用当前任务或 PR 的范围、实际验证及未覆盖说明，不要求维护 checkpoint、候选冻结或回执套件。`advance-maintenance-iteration` 仅在明确请求本地快照时使用，其引用合法性与拒绝覆盖检查保留；不在普通验证入口自动创建 Git checkpoint。
 <!-- YSS_TEMPLATE_SOURCE_ONLY_END -->
 
 ## 条件入口与边界

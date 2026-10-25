@@ -659,5 +659,21 @@
         "sourcePath": ".template-spec/process/schemas/strategic-design-handoff-v3.schema.json"
       }
     ]
+  },
+  "installations": {
+    "skills": {
+      "entries": {
+        "AGENTS.md": ".template-source/distribution/entries/spec-skills-AGENTS.md",
+        "CLAUDE.md": ".template-source/distribution/entries/skills-CLAUDE.md"
+      },
+      "skills": [
+        "implement",
+        "code-review"
+      ],
+      "files": [
+        ".gitignore"
+      ]
+    },
+    "governed": {}
   }
 }
