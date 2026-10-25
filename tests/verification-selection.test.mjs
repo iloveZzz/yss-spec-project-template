@@ -9,6 +9,22 @@ import {spawnSync} from 'node:child_process';
 import {compileTaskExecution,addVerificationExecutionTasks} from '../.template-source/scripts/lib/verification-execution-plan.mjs';
 const pilot='.agents/skills/yss-research/SKILL.md';
 const pilotConfig=()=>loadVerificationProfiles();
+test('后端终点场景拆分后 slow 和 release 保留两组完整检查及原单项预算',()=>{
+ const files=['tests/backend-delivery-terminal.test.mjs','tests/backend-delivery-business-terminal.test.mjs'];
+ const ids=['check.backend-delivery-terminal','check.backend-delivery-business-terminal'];
+ for(const changed of [...files,'scripts/fixtures/backend-delivery/local-terminal-fixture.mjs','scripts/lib/backend-delivery-terminal.mjs','scripts/lib/backend-delivery.mjs']) {
+  for(const options of [{includeSlow:true},{includeSlow:'only'},{profile:'release'}]) {
+   const plan=planTemplateVerification({changedFiles:[changed],...options});
+   const tasks=plan.commands.filter(row=>ids.includes(row.id));
+   assert.deepEqual(tasks.map(row=>row.id).sort(),[...ids].sort(),`${changed}: ${JSON.stringify(options)}`);
+   for(const [index,id] of ids.entries()) {
+    const task=tasks.find(row=>row.id===id);
+    assert.ok(task.command.includes(files[index]),task.command);
+    assert.equal(task.timeout_ms,options.profile==='release'?1800000:300000);
+   }
+  }
+ }
+});
 test('删除的 Design 插件测试选择现役插件边界检查',()=>{
  const plan=planTemplateVerification({changedFiles:[
   '.template-source/tooling/node/test/product-design-plugin.test.mjs',

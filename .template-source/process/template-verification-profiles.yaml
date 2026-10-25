@@ -83,6 +83,9 @@ profiles:
         group: feature-assets
         inputs_complete: true
         input_patterns:
+          - ".template-source/contracts/2026-10-23-skill-first-optimization-design.md"
+          - ".template-source/contracts/skill-first-task-cases.md"
+          - ".template-source/distribution/entries/**"
           - "scripts/verify-doc-facts"
           - "scripts/lib/doc-facts.mjs"
           - "scripts/lib/doc-facts-patterns.json"
@@ -102,6 +105,8 @@ profiles:
           - ".template-source/contracts/spec-backend-direct-consumption-design.\
             md"
           - ".template-source/contracts/README.md"
+          - ".template-source/contracts/2026-10-22-matt-method-optimization-design.md"
+          - ".template-source/contracts/2026-10-22-matt-method-optimization-plan.md"
         depends_on: []
         failure_mode: "说明文档复述门禁数、阶段数、投影根数量或硬编码与 lock 不一致的上游 revision"
       - id: check.daily-input-preparation
@@ -816,7 +821,8 @@ profiles:
         depends_on: []
         failure_mode: "已移除的前端 Profile、前端移交验证入口、前端生命周期稳定 ID 或 frontend-accepted 推进目标重新出现"
       - id: check.backend-delivery-terminal
-        tier: slow # cbe04769 发布差异检查实测 151s；fast 延后，release 保留。
+        tier: slow # 基础终点场景与业务目标场景分别计时，保留单项 300s 上限。
+        resources: [ native-cli, python-jsonschema ]
         run: "node --test --test-concurrency=1 tests/backend-delivery-terminal.test.mjs"
         group: feature-assets
         inputs_complete: true
@@ -827,11 +833,31 @@ profiles:
             .backend-delivery.yaml"
           - "scripts/lib/backend-delivery.mjs"
           - "tests/backend-delivery-terminal.test.mjs"
+          - "tests/backend-delivery-business-terminal.test.mjs"
           - "scripts/fixtures/backend-delivery/local-terminal-fixture.mjs"
           - "scripts/lib/slice-contract.mjs"
           - "scripts/lib/backend-delivery-terminal.mjs"
         depends_on: []
         failure_mode: "本地后端终点复用批准 Slice 的证据被错放行或误拒，或 Slice 合同仍接受前端子合同"
+      - id: check.backend-delivery-business-terminal
+        tier: slow # 基础终点场景与业务目标场景分别计时，保留单项 300s 上限。
+        resources: [ native-cli, python-jsonschema ]
+        run: "node --test --test-concurrency=1 tests/backend-delivery-business-terminal.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - ".template-spec/process/orchestration/entry/request-triage.yaml"
+          - ".template-spec/process/orchestration/domain/progression.yaml"
+          - ".template-spec/process/orchestration/workflow/work-units/work-unit\
+            .backend-delivery.yaml"
+          - "scripts/lib/backend-delivery.mjs"
+          - "tests/backend-delivery-terminal.test.mjs"
+          - "tests/backend-delivery-business-terminal.test.mjs"
+          - "scripts/fixtures/backend-delivery/local-terminal-fixture.mjs"
+          - "scripts/lib/slice-contract.mjs"
+          - "scripts/lib/backend-delivery-terminal.mjs"
+        depends_on: []
+        failure_mode: "默认与显式 business 目标未消费当前后端 Slice 证据，或改变目标后错误扩大批准"
       - id: check.existing-ui-baseline-scenarios
         resources: [ native-cli, "repo-root-evidence" ]
         run: "node tests/scenarios/verify-existing-ui-baseline-scenarios.mjs"
@@ -2881,6 +2907,7 @@ routing:
       - scripts/fixtures/backend-delivery/**
       - tests/implementation-candidate-current.test.mjs
       - tests/backend-delivery-terminal.test.mjs
+      - tests/backend-delivery-business-terminal.test.mjs
       - tests/slice-task-package-frontend-boundary.test.mjs
       - .template-spec/process/frontend-backend-delivery.md
       - .template-spec/process/schemas/backend-delivery*
@@ -2970,6 +2997,7 @@ routing:
       - tests/ar12b-retirement.test.mjs
       - tests/frontend-removed.test.mjs
       - tests/backend-delivery-terminal.test.mjs
+      - tests/backend-delivery-business-terminal.test.mjs
       - scripts/fixtures/backend-delivery/local-terminal-fixture.mjs
       - tests/scenarios/verify-existing-ui-baseline-scenarios.mjs
       - scripts/verify-existing-ui-baseline-scenarios
@@ -3453,6 +3481,11 @@ groups:
       - run: node --test tests/backend-delivery-terminal.test.mjs
         when: template-source
         id: check.backend-delivery-terminal
+        resources: [ native-cli, python-jsonschema ]
+      - run: node --test tests/backend-delivery-business-terminal.test.mjs
+        when: template-source
+        id: check.backend-delivery-business-terminal
+        resources: [ native-cli, python-jsonschema ]
       - run: node .template-source/scripts/verify-delivery-harness-distribution.mjs
         when: template-source
         lane: generated-distribution
@@ -4088,6 +4121,7 @@ gates:
       - check.contract-review-preparation
       - check.implementation-candidate-current
       - check.backend-delivery-terminal
+      - check.backend-delivery-business-terminal
       - check.scaffold-decisions-scenarios
       - check.backend-scaffold-direct-generation
       - check.backend-platform-mechanisms

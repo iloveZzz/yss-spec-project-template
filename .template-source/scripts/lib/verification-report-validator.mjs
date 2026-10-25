@@ -205,6 +205,12 @@ export function validateBaselineReport({root,base,reportFile,expectedDigest,expe
   } catch(error) {return {valid:false,reasons:[error.message],bindings:null};}
 }
 
+export function assertNativeMigrationCommands(calls){
+ // Native delivery performs the initial sync, a nonempty managed upgrade,
+ // an idempotent replan, and an applied rollback; it has no migrate command.
+ ensure(calls.filter(row=>row.args[0]==='sync'&&row.args.includes('--plan')).length>=3&&calls.filter(row=>row.args[0]==='sync'&&row.args.includes('--apply')).length>=2&&calls.some(row=>row.args[0]==='rollback'&&row.args.includes('--apply')),'integration 缺少原生迁移重规划或整体回滚真实命令');
+}
+
 export function validateReleaseIntegration({root,reportFile,expectedDigest,expectedCommit}={}){
  try{
   ensure(typeof reportFile==='string'&&path.isAbsolute(reportFile)&&/^(?:sha256:)?[a-f0-9]{64}$/.test(expectedDigest),'integration 报告路径或摘要缺失');
@@ -230,7 +236,7 @@ export function validateReleaseIntegration({root,reportFile,expectedDigest,expec
    if(source.package_name==='yss'){
     const calls=commands.filter(row=>Array.isArray(row.args)&&(row.command||row.file)===artifacts[0].binary);
     ensure(calls.some(row=>row.args[0]==='init'&&row.args.includes('--plan'))&&calls.some(row=>row.args[0]==='init'&&row.args.includes('--apply'))&&['doctor','diff','sync'].every(value=>calls.some(row=>row.args[0]===value)),'integration 缺少实际原生安装入口验收');
-    ensure(calls.filter(row=>row.args[0]==='migrate'&&row.args[1]==='plan').length>=2&&calls.some(row=>row.args[0]==='migrate'&&row.args[1]==='apply')&&calls.some(row=>row.args[0]==='migrate'&&row.args[1]==='rollback'),'integration 缺少原生迁移重规划或整体回滚真实命令');
+    assertNativeMigrationCommands(calls);
     ensure(calls.filter(row=>row.args[0]==='bundle'&&row.args[1]==='export').length===1,'integration 同精确来源必须恰好一次公开 Bundle export');
    }else{
     const entry=path.join(artifacts[0].installed_root,'bin',`${source.package_name}.js`);

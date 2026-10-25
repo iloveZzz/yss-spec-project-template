@@ -132,3 +132,21 @@ for (const runtimeRoot of [".workbuddy", ".codebuddy"]) {
     assert.throws(() => exportSkills(["--output", out, "--check"], { root }), /Agent root path in public export/);
   });
 }
+
+test("单个普通技能可独立导出且只携带所需资源", (t) => {
+  const root = fixtureRoot(t);
+  write(path.join(root, ".agents/skills/implement/SKILL.md"), frontmatter("implement") + "\n[guide](references/guide.md)\n");
+  write(path.join(root, ".agents/skills/implement/references/guide.md"), "# Implementation guide\n");
+  write(path.join(root, ".agents/skills/unrelated/SKILL.md"), "broken frontmatter\n");
+  const out = output(t, "yss-export-independent-");
+  exportSkills(["--skill", "implement", "--output", out], { root });
+  assert.equal(fs.existsSync(path.join(out, "skills/implement/references/guide.md")), true);
+  assert.deepEqual(fs.readdirSync(path.join(out, "skills")), ["implement"]);
+  assert.equal(fs.existsSync(path.join(out, ".template-spec")), false);
+  assert.match(exportSkills(["--skill", "implement", "--output", out, "--check"], { root }), /up to date/);
+});
+
+test("独立导出仍拒绝非法技能路径", (t) => {
+  const root = fixtureRoot(t);
+  assert.throws(() => exportSkills(["--skill", "../escape", "--output", output(t, "yss-export-selection-")], { root }), /skill/);
+});

@@ -316,5 +316,21 @@
       }
     ],
     "schemaVersion": 1
+  },
+  "installations": {
+    "skills": {
+      "entries": {
+        "AGENTS.md": ".template-source/distribution/entries/backend-skills-AGENTS.md",
+        "CLAUDE.md": ".template-source/distribution/entries/skills-CLAUDE.md"
+      },
+      "skills": [
+        "implement",
+        "code-review"
+      ],
+      "files": [
+        ".gitignore"
+      ]
+    },
+    "governed": {}
   }
 }

@@ -178,7 +178,12 @@ export function exportSkills(argv = process.argv.slice(2), options = {}) {
   const selection = argv.indexOf("--skill");
   if (selection >= 0) {
     const name = argv[selection + 1];
-    if (!data.skills.includes(name)) fail("--skill requires a listed public skill: " + (name ?? ""));
+    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(name ?? "")) fail("--skill requires a canonical skill name");
+    if (!data.skills.includes(name)) {
+      const source = path.join(sourceRoot, name, "SKILL.md");
+      if (!existsSync(source)) fail("--skill requires an installed canonical skill: " + name);
+      data.groupings = [{ title: "Selected skill", description: "Explicitly selected canonical skill", skills: [name] }];
+    }
     data.skills = [name];
     data.groupings = data.groupings.map(group => ({ ...group, skills: group.skills.filter(skill => skill === name) })).filter(group => group.skills.length);
   }

@@ -82,7 +82,7 @@ export const STEPS = [
     id: "verify-template",
     title: "模板验证（fast，按变更范围）",
     heavy: true,
-    command: (context) => ["scripts/verify-template-fast", "--ci-guards", ...(context.scopeBase ? ["--base", context.scopeBase] : []), "--report-dir", path.join(context.reportDir, "verification")],
+    command: (context) => ["scripts/verify-template-fast", ...(context.scopeBase ? ["--base", context.scopeBase] : []), "--report-dir", path.join(context.reportDir, "verification")],
     fix: "查看该步骤日志与 verification 报告中第一个失败的检查；本地用同一命令复现",
   },
   {
@@ -390,7 +390,7 @@ export async function runGate({ root, mode, base, reportDir, steps: allSteps = S
             const reportFile=path.join(reportDirectory,'report.json');
             const verificationReport=JSON.parse(readFileSync(reportFile,'utf8'));
             validateVerificationReport(verificationReport,{root,expectedPlan,reportDirectory,expectedInvocation:{command:path.join(root,'scripts/run-template-verification'),args},currentInputDigest:verificationInputDigest(root),observedExitCode:entry.exit_code,requireRelease:false});
-            report.verification={report_file:reportFile,guard_task_ids:mode==='slow'?[]:ciVerificationCheckIds()};
+            report.verification={report_file:reportFile,guard_task_ids:mode==='slow'?[]:ciVerificationCheckIds().filter(id=>expectedPlan.commands.some(item=>item.id===id))};
           }
         }
       } catch(error){
