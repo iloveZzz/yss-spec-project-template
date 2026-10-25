@@ -136,6 +136,21 @@ test('报告 v2 的 CI 路由声明冻结计划编译所需原生 CLI',async t=>
  }
 });
 
+test('后端终点 slow 检查单独准备原生 CLI 和 Python schema 校验器',async()=>{
+ const {verificationToolRequirements}=await import('../.template-source/scripts/lib/verification-preflight.mjs');
+ const {planTemplateVerification}=await import('../scripts/lib/template-verification.mjs');
+ const selected=planTemplateVerification({changedFiles:['tests/backend-delivery-terminal.test.mjs'],includeSlow:true});
+ for(const id of ['check.backend-delivery-terminal','check.backend-delivery-business-terminal']) {
+  const commands=selected.commands.filter(row=>row.id===id);
+  assert.equal(commands.length,1);
+  const plan={...selected,commands};
+  assert.deepEqual(verificationToolRequirements(plan),{schema_version:1,python:'jsonschema',go:false,native_cli:true,tooling:false,vue:false});
+  const result=verificationPreflight({root:path.resolve(import.meta.dirname,'..'),plan,environment:{},probe:()=>({status:1,stderr:'missing Python'})});
+  assert.equal(result.status,'failed');
+  assert.deepEqual(result.errors.map(row=>row.name),['python-jsonschema','native-cli']);
+ }
+});
+
 test('仅实施编排文档变化也准备 checkpoint 的原生依赖',async t=>{
  const {verificationToolRequirements}=await import('../.template-source/scripts/lib/verification-preflight.mjs');
  const {planTemplateVerification}=await import('../scripts/lib/template-verification.mjs');
