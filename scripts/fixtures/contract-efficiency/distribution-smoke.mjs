@@ -26,7 +26,9 @@ const execute=(command,args,cwd,env=environment)=>{
 const options={environment,run:execute};
 const node=(args,cwd)=>{const result=execute(process.execPath,args,cwd);assert.equal(result.status,0,result.stderr||result.stdout);assert.equal(result.error,undefined);return result.stdout;};
 const writingRef='.template-spec/process/document-writing.md',exampleRef='.template-spec/templates/examples/lifecycle-writing-examples.md',retroRef='.template-spec/templates/retro-report-template.md';
-function asset(target,ref){const actual=fs.readFileSync(path.join(target,ref));assert.deepEqual(actual,fs.readFileSync(path.join(root,ref)),ref);return hash(actual);}
+// The fixed CLI may embed an older committed template. Its verified export,
+// rather than this test checkout, is the installation's byte/skill baseline.
+function asset(target,source,ref){const actual=fs.readFileSync(path.join(target,ref));assert.deepEqual(actual,fs.readFileSync(path.join(source,ref)),ref);return hash(actual);}
 function skill(target,source,name){
  const lock=JSON.parse(fs.readFileSync(path.join(target,'skills-lock.json'))),expected=treeHash(path.join(source,'.agents/skills',name));
  assert.equal(lock.skills.shared[name]?.effectiveHash,expected,`Skill lock differs: ${name}`);
@@ -50,19 +52,19 @@ function conflictTdd(){
   runNative(['skills','ensure','tdd','--root',conflict,'--apply','--plan-file',plan],{...options,expectedCode:'CONFLICT'});assert.deepEqual(state(conflict),before,'Apply refusal changed user bytes/modes/timestamps');
  }
 }
-function ensureSpec(target,inspection){
+function ensureSpec(target,inspection,source){
  // The initial writing Skill requires this example even in a stage-selective instance.
  assert.ok(inspection.distribution.installedSkills.includes('i-have-adhd'));assert.ok(inspection.skillRequirements['i-have-adhd'].paths.includes(exampleRef));
- const exampleHash=asset(target,exampleRef);assert.equal(exampleHash,inspection.files[exampleRef].digest);
+ const exampleHash=asset(target,source,exampleRef);assert.equal(exampleHash,inspection.files[exampleRef].digest);
  assert.equal(fs.existsSync(path.join(target,retroRef)),false);assert.equal(fs.existsSync(path.join(target,'.agents/skills/tdd')),false);
  conflictTdd();
  let before=state(target),plan=path.join(scratch,'tdd.json'),preview=runNative(['skills','ensure','tdd','--root',target,'--plan','--out',plan],options).result;
  assert.ok(preview.changes.some(row=>row.path==='.agents/skills/tdd/SKILL.md'));assert.deepEqual(state(target),before);
- runNative(['skills','ensure','tdd','--root',target,'--apply','--plan-file',plan],options);const tddHash=skill(target,root,'tdd');
+ runNative(['skills','ensure','tdd','--root',target,'--apply','--plan-file',plan],options);const tddHash=skill(target,source,'tdd');
  before=state(target);applyNative('skills','spec',target,path.join(scratch,'tdd-replay.json'),['ensure','tdd'],options);assert.deepEqual(state(target),before,'Satisfied TDD replay wrote files');
  const stage='stage.verification-release-retrospective';before=state(target);plan=path.join(scratch,'stage.json');
  preview=runNative(['assets','ensure',stage,'--root',target,'--plan','--out',plan],options).result;assert.ok(preview.changes.some(row=>row.path===retroRef));assert.deepEqual(state(target),before);
- runNative(['assets','ensure',stage,'--root',target,'--apply','--plan-file',plan],options);const retroHash=asset(target,retroRef);
+ runNative(['assets','ensure',stage,'--root',target,'--apply','--plan-file',plan],options);const retroHash=asset(target,source,retroRef);
  before=state(target);applyNative('assets','spec',target,path.join(scratch,'stage-replay.json'),['ensure',stage],options);assert.deepEqual(state(target),before,'Satisfied stage replay wrote files');
  return {initial_example:'initial-skill-dependency',lifecycle_writing_examples_sha256:exampleHash,retro_stage_ensure:'passed',retro_sha256:retroHash,tdd_plan_apply_replay:'passed',tdd_conflict_preservation:'passed',tdd_hash:tddHash};
 }
@@ -75,12 +77,12 @@ try{
   for(const row of exported.files){const file=path.join(out,row.path);assert.equal(hash(fs.readFileSync(file)),row.digest);assert.equal(fs.statSync(file).mode&0o777,row.mode);}
   report.bundle_exports.push({profile,template_commit:inspection.templateCommit,bundle_sha256:inspection.bundleHash,manifest_sha256:inspection.manifestHash,files:exported.files.length,status:'passed'});
   const target=path.join(scratch,`${profile}-instance`);initializeNative(profile,target,options);
-  const writing={document_writing_sha256:asset(target,writingRef)},skills={'i-have-adhd':skill(target,root,'i-have-adhd')};
-  if(profile==='spec')Object.assign(writing,ensureSpec(target,inspection));
+  const writing={document_writing_sha256:asset(target,out,writingRef)},skills={'i-have-adhd':skill(target,out,'i-have-adhd')};
+  if(profile==='spec')Object.assign(writing,ensureSpec(target,inspection,out));
   else{
-   writing.lifecycle_writing_examples_sha256=asset(target,exampleRef);
-   for(const name of ['diagnosing-bugs','grilling'])skills[name]=skill(target,root,name);
-   writing.retro_sha256=asset(target,retroRef);for(const name of ['implement','tdd'])skills[name]=skill(target,root,name);
+   writing.lifecycle_writing_examples_sha256=asset(target,out,exampleRef);
+   for(const name of ['diagnosing-bugs','grilling'])skills[name]=skill(target,out,name);
+   writing.retro_sha256=asset(target,out,retroRef);for(const name of ['implement','tdd'])skills[name]=skill(target,out,name);
   }
   fs.writeFileSync(path.join(target,'contract-smoke.md'),'# 合同阅读验收\n\n目标：保留约束。\n');
   const view=JSON.parse(node([path.join(target,'scripts/contract'),'view','contract-smoke.md','--kind','spec','--json'],target));assert.equal(view.execution_allowed,false);assert.ok(view.markdown.includes('保留约束'));
