@@ -67,8 +67,9 @@ test("NFR-003：AGENTS.md、CONTEXT.md 与 yss-product-lifecycle/SKILL.md 合计
   assert.ok(total <= RESIDENT_BUDGET, `常驻读取 ${total} B 超过预算 ${RESIDENT_BUDGET} B：${files.map((item) => `${item.path} ${item.bytes}`).join("，")}`);
 });
 
-test("架构迭代流程资产数量不超过 131", () => {
-  // 基线 125 项 + 四阶段新增的阶段政策、说明、stage-result/checkpoint2/内容4两类 schema，共 6 项。
-  const budget = 131;
-  assert.ok(collectMetrics(ROOT).process_files <= budget, "流程资产不得超出架构迭代预算");
+test("架构迭代流程资产数量不超过 132", () => {
+  // 基线 125 项 + 四阶段新增 6 项 + 技能独立使用的 installation-migration.md 迁移说明 1 项。
+  const budget = 132;
+  const actual = collectMetrics(ROOT).process_files;
+  assert.ok(actual <= budget, `流程资产 ${actual} 项不得超出架构迭代预算 ${budget} 项`);
 });
