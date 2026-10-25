@@ -32,7 +32,7 @@
 
 ## 交付路径与只读边界
 
-进入正式工作单元前先判交付路径。已合格 `daily` 以一张普通 Ticket / PR 承接范围、验收、路径、技能、实际测试和适用复核；不创建阶段 checkpoint、正式 Slice 合同、多级批准或 `ready-for-agent`，也不调用正式实现准入器来豁免缺项。当前任务已绑定正式阶段、checkpoint 或 Slice 时恢复 `governed`；无关功能资产不阻断新普通任务。缺事实先调查，发现新风险时停止受影响动作、保留已有证据并从最近可信资产升级。
+进入正式工作单元前先判交付路径。已合格 `daily / standard` 以一张普通 Ticket / PR 承接范围、验收、路径、技能、实际测试和适用复核；不创建阶段 checkpoint、正式 Slice 合同、多级批准或 `ready-for-agent`，也不调用正式实现准入器来豁免缺项。当前任务已绑定正式阶段、checkpoint 或 Slice 时恢复 `governed`；无关功能资产不阻断新普通任务。缺事实先调查，发现新风险时停止受影响动作、保留已有证据并从最近可信资产升级。
 
 只读咨询、状态和定位不创建 Ticket、checkpoint 或审批，不运行实现回归。行动从当前可信阶段选择缺失工作，复用当前批准资产、登记及工作单元；主链是导航，未来阶段产物不计作当前缺项。按影响面完成当前工作及直接 / 传递依赖的适用验证；Fresh Verification、证据复用和边界重验按裁剪合同执行。
 
@@ -73,7 +73,7 @@ Spec 是综合研发主控；Spec 文档批准只是一个里程碑。正式功�
 
 ## 结果记录与下游交接
 
-`governed` 按 `workflow_execution_result` 与 `state-model.md` 记录状态、证据新鲜度、阻塞、动作、路由、Ticket / Git checkpoint。`daily` 在原任务记录补齐实际测试和适用复核，由 `verify-daily` 核验当前边界；通过只表示本普通任务证据闭合，不表示正式批准、合并或发布。
+`governed` 按 `workflow_execution_result` 与 `state-model.md` 记录状态、证据新鲜度、阻塞、动作、路由、Ticket / Git checkpoint。`daily / standard` 在原任务记录补齐实际测试和适用复核，由 `verify-daily` 核验当前边界；通过只表示本普通任务证据闭合，不表示正式批准、合并或发布。
 
 当前 Profile 职责完成、状态查询或恢复时，用 `yss lifecycle status` 核验显式登记的同功能 checkpoint、当前输入和接收证据。Spec 在本地完成必要设计；用户明确要求正式打包 / 离线交付时才导出冻结包；导入另需目标写入授权。独立 Backend 消费者存在不自动触发包流程，普通材料读取不登记正式跨 Profile 接收 / 汇总。handoff 仅用户手动调用，默认临时续接说明与引用。Backend 终点为 `backend-deliverable`，不等于业务验收或发布。正式 Handoff 的来源批准继续按冻结的 Spec 或 Backend 源政策核验。
 
@@ -83,7 +83,7 @@ Spec 是综合研发主控；Spec 文档批准只是一个里程碑。正式功�
 
 YSS CLI 安装与升级、治理工程新建与接管、实例模板同步、旧身份迁移、资源补装及事务恢复回退用 `setup-yss-harness`，遵循 `.template-spec/process/harness-upgrade.md`；默认查询 GitHub 最新正式 Release 后固定来源，不推进产品阶段或重写历史批准。
 
-专职 Backend/Frontend 同样可从原始需求完成本地业务分析与本端交付。按唯一 `request_triage.delivery_path` 选择日常/正式路径；普通材料按上述材料分析进入本端，本地 Plan/Spec 复用现有门禁；用户显式选择的正式上游复用批准且当前的来源，规则冲突回交权威方。角色分析权限不扩大另一端实现范围，本端完成不等于跨端业务验收。独立机械脚手架按 [直接生成说明](../../yss-ddd-scaffold-generator/references/standalone-generation.md) 直接生成，不生成批准或业务资格。
+专职 Backend/Frontend 同样可从原始需求完成本地业务分析与本端交付。按唯一 `request_triage.delivery_path` 选择 daily / standard / governed / needs-info；普通材料按上述材料分析进入本端，本地 Plan/Spec 复用现有门禁；用户显式选择的正式上游复用批准且当前的来源，规则冲突回交权威方。角色分析权限不扩大另一端实现范围，本端完成不等于跨端业务验收。独立机械脚手架按 [直接生成说明](../../yss-ddd-scaffold-generator/references/standalone-generation.md) 直接生成，不生成批准或业务资格。
 
 ### 直接生成脚手架
 

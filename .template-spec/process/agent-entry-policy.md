@@ -12,7 +12,7 @@ Spec 同时声明 `stage-gates-v1` 时，按 [四阶段门禁](stage-gates.md) �
 
 Spec / Backend 按 `request_triage.material_intake` 读取用户提供的需求、说明、技术文档或 Spec 材料；来源无需模板格式、源工程身份或源批准。提取目标、规则、约束、验收和未决项，复用当前 Ticket / PR 或本端原生资产，只补缺项；见[材料分析](../../.agents/skills/yss-product-lifecycle/references/conditional-guidance.md#材料分析与按需读取)。普通材料不自动成为正式上游绑定，按需获取，不强制变化检测、同步或恢复。提取不授予批准或实施权限；本端当前合同和显式正式上游继续原义核验。
 
-`daily` 的步骤与记录字段见[同一记录交付说明](../../.agents/skills/yss-product-lifecycle/references/daily-delivery.md)；跨会话更新同一记录，无需阶段 checkpoint、正式 Slice 合同或多级批准。用 `yss lifecycle verify-daily` 核验当前差异与证据；失败、缺适用复核或阻断问题未关闭不得宣布完成。无关正式资产不阻断日常任务；发现新风险时保留修改与证据，从最近可信阶段恢复 `governed`。
+`daily / standard` 的步骤与记录字段见[同一记录交付说明](../../.agents/skills/yss-product-lifecycle/references/daily-delivery.md)；跨会话更新同一记录，无需阶段 checkpoint、正式 Slice 合同或多级批准。standard 还须一页 Spec-lite 与绑定当前原字节摘要的真实用户决定；更新决定依据后按现行规则重新核验。用 `yss lifecycle verify-daily` 核验当前差异与证据；失败、缺适用复核或阻断问题未关闭不得宣布完成。无关正式资产不阻断日常任务；发现新风险时保留修改与证据，从最近可信阶段恢复 `governed`。
 
 `governed`：按 `.template-spec/process/harness-process-tailoring.md` 判影响，再用 `yss-product-lifecycle` 执行当前工作单元及依赖。阶段、门禁、稳定 ID 只由 `.template-spec/process/lifecycle-registry.yaml` 定义；只验证当前资产、触发合同与依赖，不提前生成未来资产。正式切片必须消费批准且当前的 Slice Implementation Contract；编译器不批准、不授予 `ready-for-agent`。正式批准/流转核验 Context、工程接入与门禁。
 

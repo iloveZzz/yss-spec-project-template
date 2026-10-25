@@ -2,7 +2,7 @@
 
 适用条件、排除项及能力要求只由 `.template-spec/process/orchestration-contract.yaml.request_triage.delivery_path` 定义。本文说明执行，不定义第二套路由。Spec、Backend 的项目本地已启用政策及支持 `route` / `verify-daily` 的固定 `yss` CLI 可用；缺政策的 Profile、旧 CLI 或无法核验能力时返回 `daily unsupported`，保留原正式路径，不以文字豁免其前置条件。
 
-固定入口是 `yss lifecycle route|verify-daily --root <治理项目> --task <项目内Markdown> --implementation-root <真实Git根> --base <完整SHA> [--profile spec] [--json]`。`route` 不执行测试、不宣布完成；只有返回 `delivery_path: daily` 才取得普通路径资格，`needs-info` 先补事实，`governed` 保留正式路径。不支持的工具返回明确 `UNPORTED`，不能当作普通路径通过。
+固定入口是 `yss lifecycle route|verify-daily --root <治理项目> --task <项目内Markdown> --implementation-root <真实Git根> --base <完整SHA> [--profile spec] [--json]`。`route` 不执行测试、不宣布完成；返回 `delivery_path: daily / standard` 后按对应要求取得普通路径资格，`needs-info` 先补事实，`governed` 保留正式路径。不支持的工具返回明确 `UNPORTED`，不能当作普通路径通过。
 
 普通任务正文末尾只保留一个 `<!-- yss-task-evidence -->` 和紧随其后的 fenced JSON。字段消费当前 CLI；这是一张 Ticket 的证据段，不是另建配置文件。实现仓绝对 Git 根、完整 baseline SHA、仓内允许路径和真实差异必须一致；基线、风险、技能、输入、日志及审查引用按工具要求绑定可读字节。`candidate_digest` 由工具绑定正文、输入、范围和当前 Git 差异，不把自填摘要当作实际候选。
 
@@ -19,6 +19,29 @@
 按需协作仍复用这张记录，明确实际 tool/task/execution 引用、输入、目标、互不重叠的写范围、禁止事项和汇合；不要求岗位、runtime 或数字人注册。身份可得时如实记录，不可得时写 identity.status: unavailable 及原因。不得把普通记录当正式合同或把同一上下文改名为独立复核。
 
 发现破坏性 API、跨仓、迁移、架构/平台变化、关键权限行为或其他政策排除项时，停止受影响后续动作并保留已有修改、日志和审查；调查实际影响后从最近可信阶段进入 `governed`。不得删除绑定、改路径标签或给正式准入器加豁免旗标来继续。无依赖且仍符合授权的工作可以继续。
+
+## 简短 SDD 与渐进任务
+
+先检查已有需求、代码、工程基线和当前授权，集中列出仍缺的关键业务决定；已能调查的事实先查明。新功能需确认时，一次展示简短 SDD、全部已确认验收及任务总览，复用有效确认；standard 使用下述真实决定，已授权修复直接推进。不能用普通确认替代正式门禁。
+
+同一任务正文用“验收—实施任务—验证办法—当前结果”对应全部已确认 AC。先给完整任务总览，只展开当前实施项的行为、允许范围、必要依赖和验证办法；后续细化保留全部承诺，不另建任务 schema、编号注册或状态库。任务进度单列，避免写进已批准的 Spec-lite；Spec-lite 原字节改变仍使原决定失效，新增或改变 AC 须回到当前路线所需的真实决定。
+
+实现中执行必要行为测试，末端再按当前差异、验收和实际结果质检。范围内的质量问题直接修复并复验受影响项；有进展就继续，不设机械重试次数。同类失败重复出现时先用 diagnosing-bugs 查原因。缺必要决定、权限或环境等真实阻塞时，回交具体缺口、已尝试动作和解除条件，独立且已授权的工作继续。
+
+## 最小接续
+
+恢复先读原任务、当前差异、实际命令状态与已有结果，复用仍有效的授权和证据。运行中的命令继续观察；已结束但未登记的结果从可读原始日志补记；结果未知时先调查，不重放可能有副作用的命令，不把未知写成通过。需要重跑可逆测试时先绑定当前候选。接续只更新原记录的事实与进度，不另建 checkpoint 或恢复系统。
+
+## 无 API 任务的真实测试收证
+
+仅在当前治理项目已安装 `scripts/lib/daily-test-evidence.mjs` 且记录为 record2/policy2、daily 或 standard、`api.mode: none`、没有本任务正式绑定时，宿主可从实际治理根加载此模块。独立 implement 不要求安装或调用它。它只提供两个纯函数，不执行命令、不写文件、不生成实施 provenance、用户决定或审查结论：
+
+- `formatObservedTest({argv, cwd, executed_at, candidate_digest, result}, {command_index, log_ref})`：接收宿主实际执行的参数、实现仓绝对根、调用前捕获的 RFC3339 时间、route 候选及既有 command-runner 的实际结果；返回 `log_bytes` 与原协议 tests 行。`log_ref` 首版仅用同 Ticket 的唯一 `#标题`。真实非零登记为失败；取消、超时、信号、未知退出和存储失败拒绝整理，保留原始结果，不从框架 status 推断成功。
+- `prepareTaskTestEdit({expected_task_digest, current_markdown, current_candidate_digest, log_bytes, test})`：核对当前 Ticket 原字节 SHA-256、候选、登记命令与实现根，返回从旧 footer 到文件尾的 `expected_old_text` / `replacement_text`。只追加一级标题日志并更新对应 tests 行；原正文前缀、旧日志、Spec-lite、standard 决定、implementation 和 review 保持原义。围栏正文全部字节（含围栏及末尾 LF）参与日志摘要，不能只哈希内部 JSON。新 JSON 转义 `<` 以保护唯一证据标记，解析后的输出原义不变；日志标题不得含该保留标记。
+
+实际顺序：route 绑定当前候选 → 宿主真实执行并保存原始结果 → 再 route 确认候选未漂移 → 整理 → 重读整张 Ticket 核对摘要 → 精确应用旧 footer 文段编辑（JavaScript String.replace 使用返回替换文本的回调，保留 `$&` 等字面量）→ 再读并 route → 对最终当前内容作实际复核 → verify-daily。写前读到用户修改则停本次写回，重新读取合并；普通读写检查不提供操作系统级 CAS。追加到日志之后的任务或复核段同样使用一级标题，避免成为旧日志正文。候选变化时保留旧结果与旧摘要，重新执行受影响验证，不改旧日志来续期。
+
+standard 沿用原准备及真实决定，不使用 `--prepare-inputs`，不改成 daily；任务细化和收证不重新生成决定。测试中的 `buildDecisionFixture` 仅造测试输入，真实使用不得据此生成用户批准。模块拒绝不等于改变路线；API、正式绑定和旧记录继续现行入口。
 
 ## 输入摘要准备
 

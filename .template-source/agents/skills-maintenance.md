@@ -52,6 +52,8 @@
    node .template-source/scripts/manage-profile-skills.mjs lock --profile backend
    ```
 
+   Backend 入口在组合树前从 `.agents/skills/yss-product-lifecycle/references/daily-delivery.md` 生成 `profiles/backend/.agents/skills/harness-orchestrator/references/daily-delivery.md`，加含源字节 SHA-256 的生成注释；唯一正文所有者仍是前者。不得手改目标；`sync --check` 与 `lock` 只校验，过期时先执行 `sync`。无生成标记、正文与声明摘要不符或符号链接路径均拒绝覆盖。
+
    若来源来自可访问的上游 checkout，还应显式校验锁定 revision 与每个上游目录哈希：
 
    ```bash

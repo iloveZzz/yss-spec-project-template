@@ -23,7 +23,9 @@
       "profiles/backend/.template-spec/process/agent-entry-policy.md",
       "README.md",
       "README.en.md",
-      ".template-spec/user-guide/用户手册索引.md"
+      ".template-spec/user-guide/用户手册索引.md",
+      ".template-source/contracts/2026-10-25-lightweight-iteration-design.md",
+      ".template-source/contracts/2026-10-26-lightweight-iteration-plan.md"
     ],
     "allow": [
       {

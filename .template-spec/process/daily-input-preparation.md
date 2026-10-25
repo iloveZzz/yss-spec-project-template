@@ -10,3 +10,7 @@ yss lifecycle route --root __GOVERNANCE_ROOT__ --task __TASK_RELATIVE_PATH__ --i
 
 准备不执行测试，不生成批准，不刷新 tests / review、日志、时间、provenance、标准变更决定或 API Freeze。输入变化使旧候选证据陈旧时，重新执行受影响的实际验证与复核，再登记真实结果并 verify-daily；不能仅回填新摘要续期。standard、API、正式上游和已绑定正式任务继续各自当前流程；不支持、不可读或输入漂移时保留修改与诊断，不转用 Node 校验或自动降级。新参数不能与 `--view agent` 同用；默认 route 输出保持原义。
 
+
+## 与测试收证的边界
+
+输入摘要准备与真实测试收证分别处理输入和结果。已安装的 `scripts/lib/daily-test-evidence.mjs` 仅供宿主整理无 API 的 record2/policy2 daily / standard 实测结果，操作顺序见当前编排技能的 `references/daily-delivery.md`。它不调用本页命令，不补造时间、批准、实施 provenance 或审查。standard 保持原输入与真实决定，不能传 `--prepare-inputs` 或临时改成 daily 来登记测试。

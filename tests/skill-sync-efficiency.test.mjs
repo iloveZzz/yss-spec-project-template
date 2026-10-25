@@ -1,4 +1,5 @@
 import test from "node:test";
+import { createHash } from "node:crypto";
 import assert from "node:assert/strict";
 import { chmodSync, cpSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, symlinkSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
@@ -221,7 +222,17 @@ test('Source Profile entry sync and lock accept quoted identity and generate the
     writeFileSync(path.join(canonical, 'SKILL.md'), '---\nname: probe\n---\nold canonical\n');
     chmodSync(path.join(canonical, 'SKILL.md'), 0o644);
     cpSync(canonical, legacy, { recursive: true });
-    const originalLock = JSON.stringify({ version: 3, projectionRoots: ['.codebuddy/skills'], skills: { shared: { probe: { effectiveHash: 'previous' } }, platform: {} } });
+    const sourceFile = path.join(root, '.agents/skills/yss-product-lifecycle/references/daily-delivery.md');
+    const targetFile = path.join(backend, '.agents/skills/harness-orchestrator/references/daily-delivery.md');
+    const lockFile = path.join(backend, 'skills-lock.json');
+    mkdirSync(path.dirname(sourceFile), { recursive: true });
+    mkdirSync(path.dirname(targetFile), { recursive: true });
+    writeFileSync(path.join(path.dirname(path.dirname(sourceFile)), 'SKILL.md'), '---\nname: yss-product-lifecycle\n---\n');
+    writeFileSync(path.join(path.dirname(path.dirname(targetFile)), 'SKILL.md'), '---\nname: harness-orchestrator\n---\n');
+    writeFileSync(sourceFile, '# 普通交付\r\n原文与 user-decisions.md 引用\r\n');
+    const generated = () => Buffer.concat([Buffer.from(`<!-- Generated from .agents/skills/yss-product-lifecycle/references/daily-delivery.md; source-sha256=${createHash('sha256').update(readFileSync(sourceFile)).digest('hex')}. Do not edit. -->\n`), readFileSync(sourceFile)]);
+    const originalLock = JSON.stringify({ version: 3, projectionRoots: ['.codebuddy/skills'], skills: { shared: { probe: { effectiveHash: 'previous' }, 'harness-orchestrator': {}, 'yss-product-lifecycle': {} }, platform: {} } });
+    const originalLockBytes = Buffer.from(originalLock);
     writeFileSync(path.join(backend, 'skills-lock.json'), originalLock);
     const git = args => { const result = spawnSync('git', ['-c', 'user.name=Probe', '-c', 'user.email=probe@example.invalid', ...args], { cwd: root, encoding: 'utf8' }); assert.equal(result.status, 0, result.stderr); };
     git(['init', '-q']); git(['add', 'profiles/backend/.codebuddy']); git(['commit', '-qm', 'committed legacy projection']);
@@ -230,7 +241,13 @@ test('Source Profile entry sync and lock accept quoted identity and generate the
     for (const action of ['sync', 'lock']) assert.equal(run(action, true).status, 1, `${action} must report stale generated content`);
     assert.equal(existsSync(path.join(backend, '.workbuddy')), false);
     assert.equal(readFileSync(path.join(backend, 'skills-lock.json'), 'utf8'), originalLock);
+    assert.equal(run('lock').status, 1, 'lock must not create a missing reference');
+    assert.equal(existsSync(targetFile), false);
+    assert.deepEqual(readFileSync(lockFile), originalLockBytes);
     for (const action of ['sync', 'lock']) { const result = run(action); assert.equal(result.status, 0, result.stderr); }
+    const expectedGeneratedBytes = generated();
+    assert.deepEqual(readFileSync(targetFile), expectedGeneratedBytes);
+    assert.deepEqual(readFileSync(path.join(backend, '.workbuddy/skills/harness-orchestrator/references/daily-delivery.md')), expectedGeneratedBytes);
     assert.equal(existsSync(path.join(backend, '.codebuddy')), false);
     assert.equal(readFileSync(path.join(backend, '.workbuddy/skills/probe/SKILL.md'), 'utf8'), readFileSync(path.join(canonical, 'SKILL.md'), 'utf8'));
     const lock = JSON.parse(readFileSync(path.join(backend, 'skills-lock.json'), 'utf8'));
@@ -238,5 +255,36 @@ test('Source Profile entry sync and lock accept quoted identity and generate the
     assert.deepEqual(lock.skills.shared.probe.targets, ['.agents/skills', '.workbuddy/skills']);
     assert.match(lock.skills.shared.probe.effectiveHash, /^[a-f0-9]{64}$/);
     for (const action of ['sync', 'lock']) { const result = run(action, true); assert.equal(result.status, 0, result.stderr); }
+    git(['add', 'profiles/backend']); git(['commit', '-qm', 'first generated projection']);
+    writeFileSync(sourceFile, '# 变更后的原文\n');
+    const updatedLockBytes = readFileSync(lockFile);
+    for (const [action, check] of [['sync', true], ['lock', true], ['lock', false]]) {
+      assert.equal(run(action, check).status, 1);
+      assert.deepEqual(readFileSync(targetFile), expectedGeneratedBytes);
+      assert.deepEqual(readFileSync(lockFile), updatedLockBytes);
+    }
+    const synced = run('sync'); assert.equal(synced.status, 0, synced.stderr);
+    assert.deepEqual(readFileSync(targetFile), generated());
+    assert.deepEqual(readFileSync(path.join(backend, '.workbuddy/skills/harness-orchestrator/references/daily-delivery.md')), generated());
+    const validBytes = readFileSync(targetFile);
+    for (const userEditedBytes of [Buffer.from('用户原文件\n'), Buffer.concat([validBytes, Buffer.from('用户补充\n')])]) {
+      writeFileSync(targetFile, userEditedBytes);
+      assert.equal(run('sync').status, 1);
+      assert.deepEqual(readFileSync(targetFile), userEditedBytes);
+      assert.deepEqual(readFileSync(lockFile), updatedLockBytes);
+    }
+    writeFileSync(targetFile, validBytes);
+    rmSync(sourceFile);
+    assert.equal(run('sync').status, 1, 'missing source must be rejected');
+    assert.deepEqual(readFileSync(targetFile), validBytes);
+    writeFileSync(sourceFile, '# 变更后的原文\n');
+    rmSync(targetFile);
+    symlinkSync(sourceFile, targetFile);
+    assert.equal(run('sync').status, 1, 'symlink target must be rejected');
+    assert.equal(lstatSync(targetFile).isSymbolicLink(), true);
+    rmSync(path.dirname(targetFile), { recursive: true });
+    symlinkSync(path.dirname(sourceFile), path.dirname(targetFile));
+    assert.equal(run('sync').status, 1, 'symlink parent must be rejected');
+    assert.equal(readFileSync(sourceFile, 'utf8'), '# 变更后的原文\n');
   } finally { rmSync(root, { recursive: true, force: true }); }
 });

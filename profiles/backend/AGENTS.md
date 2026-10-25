@@ -4,7 +4,7 @@
 
 ## 当前任务
 
-项目实例先消费 `.template-spec/process/orchestration-contract.yaml` 的当前 Profile 政策。已有任务复用原记录、有效授权与证据；新风险停止受影响工作，保留用户修改。日常路由使用支持该能力的 `yss lifecycle route --root <治理仓> --task <Ticket> --implementation-root <实现仓> --base <完整SHA> --view agent --json`；未知事实先调查。旧 CLI、政策缺失、未启用 Profile 或已有正式任务不得自行转入日常路径。仅支持 Spec、Backend；产品设计在 Spec 内完成。
+项目实例先消费 `.template-spec/process/orchestration-contract.yaml` 的当前 Profile 政策。已有任务复用原记录、有效授权与证据；新风险停止受影响工作，保留用户修改。普通任务按 daily / standard 路由；standard 绑定当前 Spec-lite 与真实用户决定。路由使用支持该能力的 `yss lifecycle route --root <治理仓> --task <Ticket> --implementation-root <实现仓> --base <完整SHA> --view agent --json`；未知事实先调查。旧 CLI、政策缺失、未启用 Profile 或已有正式任务不得自行转入日常路径。仅支持 Spec、Backend；产品设计在 Spec 内完成。
 
 日常任务只维护同一 Ticket/PR，记录范围、验收、工程基线、Skills、实际验证、适用复核及回滚；正式任务按当前工作单元加载下述详细政策。任何实际执行遵循用户当前限制；未执行项如实报告，不声明通过。
 

@@ -1,6 +1,6 @@
 # Spec-lite：<一句话标题>
 
-> standard 路线专用，一页以内。写清楚后交给一位生物人决定（`standard-change-approved`），决定须绑定本文件当前原字节摘要；之后改动本文件需重新决定。
+> standard 路线专用，一页以内。写清楚后交给一位生物人决定（`standard-change-approved`），决定须绑定本文件当前原字节摘要；之后改动本文件需重新决定。实施任务总览、当前项细化和进度写在同一 Ticket 的独立章节，不写入本文件。
 > 触及数据迁移、权限、部署、发布、破坏性或未知 API、跨仓等排除影响时，改走正式治理，不用本模板。
 
 ## 目标
@@ -28,4 +28,4 @@
 
 ## 决定
 
-由任务记录的 `standard_decision` 登记：决定人（生物人）、`spec_lite_digest`、原始回复的 `response_ref` 与 `response_digest`。决定人不能是实现者或审查者。
+由任务记录的 `standard_decision` 登记：决定人（生物人）、`spec_lite_digest`、原始回复的 `response_ref` 与 `response_digest`。决定须来自原提问者或指定生物人的真实原始回复，按当前 `user_decision_policy` 核验。

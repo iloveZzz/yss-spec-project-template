@@ -84,6 +84,8 @@ profiles:
         inputs_complete: true
         input_patterns:
           - ".template-source/contracts/2026-10-23-skill-first-optimization-design.md"
+          - ".template-source/contracts/2026-10-25-lightweight-iteration-design.md"
+          - ".template-source/contracts/2026-10-26-lightweight-iteration-plan.md"
           - ".template-source/contracts/skill-first-task-cases.md"
           - ".template-source/distribution/entries/**"
           - "scripts/verify-doc-facts"
@@ -109,6 +111,35 @@ profiles:
           - ".template-source/contracts/2026-10-22-matt-method-optimization-plan.md"
         depends_on: []
         failure_mode: "说明文档复述门禁数、阶段数、投影根数量或硬编码与 lock 不一致的上游 revision"
+      - id: check.daily-test-evidence
+        run: "node --test tests/daily-test-evidence.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - "scripts/lib/daily-test-evidence.mjs"
+          - "tests/daily-test-evidence.test.mjs"
+          - "scripts/lib/structured-assets.mjs"
+          - "scripts/lib/command-runner.mjs"
+          - "scripts/vendor/yaml.mjs"
+        depends_on: []
+        failure_mode: "异常退出被登记为通过，或任务编辑覆盖原正文、日志和 standard 决定"
+      - id: check.daily-test-evidence-native
+        run: "node scripts/fixtures/role-independent-draft/daily.test.mjs"
+        resources: [ native-cli ]
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - "scripts/lib/daily-test-evidence.mjs"
+          - "scripts/fixtures/role-independent-draft/daily.test.mjs"
+          - "scripts/lib/structured-assets.mjs"
+          - "scripts/lib/command-runner.mjs"
+          - "scripts/vendor/yaml.mjs"
+          - "scripts/lib/testing/user-decision-fixture.mjs"
+          - ".agents/skills/yss-product-lifecycle/references/daily-delivery.md"
+          - "profiles/backend/.agents/skills/harness-orchestrator/references/daily-delivery.md"
+          - ".template-spec/process/daily-input-preparation.md"
+        depends_on: []
+        failure_mode: "Spec/Backend 原生消费者不接受日志围栏摘要，或失败重跑、standard 接续与写后候选漂移漏检"
       - id: check.daily-input-preparation
         run: "node --test tests/daily-input-preparation.test.mjs"
         resources: [ native-cli ]
@@ -2750,6 +2781,8 @@ syntax_files:
   - tests/verification-selection.test.mjs
   - tests/verification-delivery-run.test.mjs
 routing:
+  - patterns: ["scripts/lib/daily-test-evidence.mjs", "tests/daily-test-evidence.test.mjs", "scripts/fixtures/role-independent-draft/daily.test.mjs"]
+    groups: [feature-assets]
   - patterns: [".template-source/scripts/manage-profile-skills.mjs"]
     groups: [skills]
   - patterns: [".gitattributes", ".codebuddy/skills/**", ".workbuddy/skills/**", "tests/workbuddy-entry.test.mjs", ".template-source/tooling/node/test/workbuddy-projection.test.mjs"]
@@ -3424,6 +3457,11 @@ groups:
         id: check.schema-runtime
   feature-assets:
     commands:
+      - run: node --test tests/daily-test-evidence.test.mjs
+        id: check.daily-test-evidence
+      - run: node scripts/fixtures/role-independent-draft/daily.test.mjs
+        id: check.daily-test-evidence-native
+        resources: [ native-cli ]
       - run: node --test tests/daily-input-preparation.test.mjs
         resources: [ native-cli ]
         when: template-source
@@ -4165,6 +4203,8 @@ gates:
     check_ids:
       - check.native-consumer-routing
       - check.daily-input-preparation
+      - check.daily-test-evidence
+      - check.daily-test-evidence-native
       - check.517fe9954d913f53
       - check.517fe9954d913f53-install
       - check.517fe9954d913f53-sync

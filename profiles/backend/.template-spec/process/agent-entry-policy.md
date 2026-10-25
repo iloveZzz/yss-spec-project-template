@@ -57,9 +57,9 @@ README、用户指南和 `CLAUDE.md` 只解释或指向上述事实，不定义�
 
 先消费 `.template-spec/process/orchestration-contract.yaml` 的 `request_triage.delivery_path`，用支持该能力的 `yss lifecycle route --view agent --json` 核验任务、实现仓和完整基线 SHA。政策、能力或资格未证明时，不自行启用日常路径。
 
-### 日常交付（daily）
+### 普通交付（daily / standard）
 
-需求与验收 → 适用 YSS 技术技能 → 本端实现 → 实际测试 → 按当前 `review_modes` 使用 `code-review` 内容复核。默认同一 Agent 诚实自检；明确用户或已知适用外部要求命中时，才使用可核验的独立上下文或指定真人。只维护同一 Ticket/PR，记录范围、验收、工程/基线、Skills、实际测试、适用复核和回滚；跨会话更新同一记录。无需阶段 checkpoint、正式 Slice 合同或多级批准。用 `yss lifecycle verify-daily` 核验当前差异与证据；失败、缺适用复核或阻断未关闭不得宣布完成。
+需求与验收 → 适用 YSS 技术技能 → 本端实现 → 实际测试 → 按当前 `review_modes` 使用 `code-review` 内容复核。默认同一 Agent 诚实自检；明确用户或已知适用外部要求命中时，才使用可核验的独立上下文或指定真人。只维护同一 Ticket/PR，记录范围、验收、工程/基线、Skills、实际测试、适用复核和回滚；跨会话更新同一记录。无需阶段 checkpoint、正式 Slice 合同或多级批准。standard 还须一页 Spec-lite 与绑定当前原字节摘要的真实用户决定；更新决定依据后按现行规则重新核验。用 `yss lifecycle verify-daily` 核验当前差异与证据；失败、缺适用复核或阻断未关闭不得宣布完成。
 
 已有正式绑定任务不得降级；无关正式资产不阻断日常任务。新风险命中排除条件时保留修改和证据，停止受影响工作，从最近可信阶段恢复 governed。API 兼容范围按同一政策与 `yss-openapi-governance` 核验，其余 API 变化进入正式 Draft、审查和 Freeze。
 
