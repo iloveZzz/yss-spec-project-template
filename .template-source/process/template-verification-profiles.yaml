@@ -2284,8 +2284,10 @@ profiles:
         depends_on: []
         failure_mode: "默认工作包样例在阶段决策或战术设计中产生失效引用"
       - id: check.public-skill-export
-        run: "node --test tests/public-skill-export.test.mjs"
+        run: "node --test tests/public-skill-export.test.mjs
+          .template-source/tooling/node/test/runtime-contract.test.mjs"
         group: skills
+        resources: [ python-jsonschema ]
         inputs_complete: true
         input_patterns:
           - ".agents/skills/**"
@@ -2297,6 +2299,7 @@ profiles:
           - "scripts/export-yss-skills"
           - "scripts/lib/export-skills.mjs"
           - "tests/public-skill-export.test.mjs"
+          - ".template-source/tooling/node/test/runtime-contract.test.mjs"
         depends_on: []
         failure_mode: "公开技能包携带越界或失效链接、符号链接、凭据或不可移植路径，或 Backend 覆盖层重新分发过期共享维护技能"
       - id: check.retired-skill-ids
