@@ -1,6 +1,6 @@
 import { composeProfileTree } from '../../../../scripts/lib/profile-tree.mjs';
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import test from "node:test";
 
@@ -12,6 +12,64 @@ function registry(overrides = {}) {
   const base = loadSkillRegistry();
   return { ...base, ...overrides, runtime_policy: { ...base.runtime_policy, ...overrides.runtime_policy } };
 }
+
+test('Spec governed initial roots preserve the independent installation', () => {
+  const data = registry();
+  const policy = JSON.parse(readFileSync(path.join(ROOT, '.template-source/distribution/bundle-profile.json')));
+  const lock = JSON.parse(readFileSync(path.join(ROOT, 'skills-lock.json')));
+  const roots = ['yss-product-lifecycle', 'setup-yss-harness', 'yss-research',
+    'grilling', 'domain-modeling', 'yss-stage-decision', 'i-have-adhd', 'code-review'];
+  assert.deepEqual([...data.instance_distribution.initial_skills].sort(), [...roots].sort());
+  assert.equal(new Set(data.instance_distribution.initial_skills).size, 8);
+  assert.deepEqual(policy.installations.skills.skills, ['implement', 'code-review']);
+  for (const id of roots) {
+    assert.ok(data.skills.some(s => s.id === id), id);
+    assert.ok(lock.skills.shared[id], id);
+    assert.ok(existsSync(path.join(ROOT, '.agents/skills', id, 'SKILL.md')), id);
+  }
+  assert.equal(data.skills.find(s => s.id === 'yss-stage-decision').maturity, 'draft');
+  assert.equal(data.invocation_contract.overrides['yss-stage-decision'].invocation_mode, 'user');
+});
+
+test('Spec initial roots reject invalid declarations', () => {
+  for (const [roots, error] of [[['missing-skill'], /initial_skills.*未登记/],
+    [['code-review', 'code-review'], /initial_skills.*重复/], [[], /initial_skills.*不能为空/],
+    [null, /initial_skills.*不能为空/]]) {
+    const data = registry();
+    data.instance_distribution = { ...data.instance_distribution, initial_skills: roots };
+    assert.throws(() => validateSkillRegistry(data), error);
+  }
+  const deprecated = registry();
+  deprecated.skills = deprecated.skills.map(s => s.id === 'yss-stage-decision' ? { ...s, maturity: 'deprecated' } : s);
+  deprecated.instance_distribution = { ...deprecated.instance_distribution, initial_skills: ['yss-stage-decision'] };
+  assert.throws(() => validateSkillRegistry(deprecated), /initial_skills.*deprecated/);
+  const legacy = registry();
+  delete legacy.instance_distribution;
+  assert.doesNotThrow(() => validateSkillRegistry(legacy));
+});
+
+test('Spec stage skill roots keep task conditions separate', () => {
+  const data = registry();
+  const policy = JSON.parse(readFileSync(path.join(ROOT, '.template-source/distribution/bundle-profile.json')));
+  const expected = {
+    'stage.product-design': ['yss-prototype-stage', 'prototype-review', 'yss-design-system'],
+    'stage.system-data-engineering': ['yss-technical-design', 'yss-implementation-contract-compiler'],
+    'stage.ticket-formalization': ['yss-implementation-contract-compiler'],
+  };
+  for (const [stage, roots] of Object.entries(expected)) {
+    assert.deepEqual([...policy.stages[stage].skills].sort(), [...roots].sort());
+    for (const id of roots) assert.ok(data.skills.some(s => s.id === id), id);
+  }
+  const edge = (from, to) => data.skill_dependencies[from].find(d => d.skill === to);
+  assert.equal(edge('yss-prototype-stage', 'prototype-review').type, 'review-only');
+  assert.equal(edge('yss-technical-design', 'yss-tactical-design').type, 'coordination-only');
+  assert.equal(edge('yss-technical-design', 'yss-tactical-design').when, 'domain-driven');
+  for (const from of ['yss-technical-design', 'yss-tactical-design']) {
+    assert.equal(edge(from, 'yss-openapi-draft-review').type, 'review-only');
+    assert.equal(edge(from, 'yss-openapi-draft-review').when, 'api-impact');
+    assert.equal(data.skills.find(s => s.id === from).maturity, 'draft');
+  }
+});
 
 function compilerContract() {
   const source = readFileSync(path.join(ROOT, ".agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml"), "utf8");

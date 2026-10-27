@@ -381,6 +381,17 @@ export function validateSkillRegistry(registry, { lock, compilerContract, lifecy
     if (ids.has(skill.id)) fail(`重复 skill id: ${skill.id}`);
     ids.add(skill.id);
   }
+  if (registry.instance_distribution !== undefined) {
+    const initial = registry.instance_distribution?.initial_skills;
+    if (!Array.isArray(initial) || initial.length === 0) fail("instance_distribution.initial_skills 不能为空数组");
+    const seen = new Set();
+    for (const id of initial) {
+      if (seen.has(id)) fail(`initial_skills 重复: ${id}`);
+      seen.add(id);
+      if (!ids.has(id)) fail(`initial_skills 引用了未登记技能: ${id}`);
+      if (skills.find(skill => skill.id === id).maturity === 'deprecated') fail(`initial_skills 不得使用 deprecated 技能: ${id}`);
+    }
+  }
   for (const [index, skill] of skills.entries()) {
     const prefix = `skills[${index}]`;
     if (!LAYERS.has(skill.layer)) fail(`${skill.id} 未知 layer: ${skill.layer}`);

@@ -24,6 +24,8 @@
 
 ## 工作单元技能预检与补装
 
+先消费当前 `route` 给出的 primary、supporting 与 review 技能集合，再核对阶段资产和命中的任务条件。阶段根以 Bundle 政策 `stages` 为准，治理初始根以技能注册表为准；只遍历 `context-required` 不能证明审查与协作资源完整。阶段缺项用既有 `assets ensure` 保存计划，条件技能缺项用 `skills ensure` 保存计划，在已有授权范围内应用后重新 `resolve` 和工作单元预检。安装 user-invoked 或 draft 技能不改变调用、成熟度或真实批准要求。
+
 准备调用原生工作单元的专项技能前，运行：
 
 ```bash
