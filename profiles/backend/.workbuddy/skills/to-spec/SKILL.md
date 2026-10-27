@@ -1,20 +1,16 @@
 ---
 name: to-spec
-description: 显式将已确认讨论综合为 Spec 草稿；经主控预检后按配置持久化并回交验收。
+description: 显式将 Backend 已确认材料综合为本端 Spec 草稿；按后端正式合同预检并回交验收。
 disable-model-invocation: true
 ---
 
-用户显式调用的兼容入口；不授予批准或实现资格，其他技能不能自动调用本入口。
+Backend 保留显式正式兼容入口，由当前后端主控核验本端合同与授权；普通产品 Spec 草稿使用 Spec Profile 的入口。文档表达先读 [中文共用规范](../i-have-adhd/references/document-writing.md)，阶段与批准仍消费本端正式政策。
 
-## 普通草稿
+This explicit compatibility entry synthesizes confirmed context into a Spec draft. Before formal writes, the active lifecycle orchestrator checks repository identity, Plan → Spec entry evidence, allowed paths and current decisions. Template-source maintenance creates no product Spec. Reuse confirmed inputs and seams; ask only for a material missing decision. Return the draft to the orchestrator for validation and acceptance without approving it.
 
-先按 life 的[分支判定](../yss-product-lifecycle/SKILL.md#先判定工作分支)核验工程。未启用治理且无身份文件的普通工程，或合法 metadata5 的 skills 安装，直接复用[普通规格起草](../yss-product-lifecycle/references/standalone-spec.md)。无需 Plan、Tracker 或治理模板；只消费已确认输入并保存授权草稿。
+If the issue tracker or triage label vocabulary is missing, tell the user to run `/setup-matt-pocock-skills`; do not invoke another user-invoked skill yourself.
 
-## 正式调用
-
-正式项目、正式任务或用户要求正式资产时，主控先核验仓库身份、Plan → Spec 准入、允许路径与当前决定。template-source 不创建产品 Spec。缺失、非法或不支持身份及治理输入时停止受影响写入，不回退到普通路径。只有正式流程缺 tracker/triage 配置时提示用户显式 setup，不自动调用另一个 user-invoked 技能。
-
-## 正式起草过程
+## 起草过程
 
 1. 消费根 `CONTEXT.md`、已确认 Plan、当前决定和相关 ADR；复用已确认测试 seam，只对新增或实质变化的决定补充澄清。
 2. 使用仓库权威 `.template-spec/templates/spec-template.md`，与常规生命周期入口共享结构；按 `.template-spec/process/document-writing.md` 写作。故事数量由范围决定。FR/NFR/AC、来源、验收和未决项采用 `.template-spec/process/plan-spec-quality.md` 的表达约定。

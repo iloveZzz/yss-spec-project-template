@@ -162,3 +162,16 @@ test("中文写作技能导出包含可读取的共用规范", (t) => {
   assert.equal(manifest.generated_files_sha256[ref.slice("skills/".length)], createHash("sha256").update(fs.readFileSync(path.join(out, ref))).digest("hex"));
   assert.match(exportSkills(["--skill", "i-have-adhd", "--output", out, "--check"]), /up to date/);
 });
+
+test("Backend 显式规格入口的技能内引用闭包可读取", () => {
+  const tree=composeProfileTree("backend");
+  const entry=path.join(tree,".agents/skills/to-spec/SKILL.md");
+  const text=fs.readFileSync(entry,"utf8");
+  const links=[...text.matchAll(/\]\(([^)]+)\)/g)].map(match=>match[1].split("#")[0]).filter(link=>link&&!link.includes("://"));
+  assert.ok(links.length>0,"entry has readable skill references");
+  for(const link of links) {
+    const target=path.resolve(path.dirname(entry),link);
+    assert.ok(target.startsWith(path.join(tree,".agents/skills")+path.sep));
+    assert.ok(fs.statSync(target).isFile(),link);
+  }
+});

@@ -554,6 +554,8 @@ recipes:
       - governance.backend-spec-conformance
       - quality.java-code-style
 skill_dependencies:
+  to-spec:
+    - { skill: i-have-adhd, type: context-required }
   java-backend-commit:
     - { skill: git-commit-core, type: context-required }
   test-agent:

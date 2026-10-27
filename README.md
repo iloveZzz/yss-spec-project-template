@@ -48,7 +48,7 @@ YSS skills 的公开发布投影维护在 [iloveZzz/yss-spec-dev-skills](https:/
 
 新建默认安装独立技能（`skills`），不要求先建立生命周期记录；完整治理需显式选择 `--installation governed`。以下治理安装入口先保存计划，再应用同一计划；独立技能安装可省略该选项或选择 `skills`。已有项目 `sync` 保持安装方式，显式转换见[安装方式与迁移](.template-spec/process/installation-migration.md)。
 
-`--profile` 选择 Spec / Backend，`--installation` 选择独立技能 / 治理工程，`--full` 仅扩大所选方式的资源集合。Spec 默认独立安装 `yss-product-lifecycle`（life）、`grilling`、`yss-research`、`domain-modeling`、`to-spec`、`i-have-adhd`、`code-review`、`implement`，支持普通需求澄清、事实研究、词汇、规格草稿与审查；Backend 默认仍为 `implement`、`code-review`。life 直接起草普通需求，`to-spec`、`implement` 保持用户显式调用。普通任务不要求 Context、Tracker 或治理 CLI；正式任务与治理输入异常仍按原合同处理。已有独立项目通过显式 `sync --plan` 审阅后采纳新默认能力，仅升级 CLI 不修改项目。
+`--profile` 选择 Spec / Backend，`--installation` 选择独立技能 / 治理工程，`--full` 仅扩大所选方式的资源集合。Spec 默认独立安装 `yss-product-lifecycle`（life）、`grilling`、`yss-research`、`domain-modeling`、`to-spec`、`i-have-adhd`、`code-review`、`implement`，支持普通需求澄清、事实研究、词汇、规格草稿与审查；Backend 默认仍为 `implement`、`code-review`；其显式 `to-spec` 保留后端正式合同入口，使用本端中文规范依赖。life 直接起草普通需求，`to-spec`、`implement` 保持用户显式调用。普通任务不要求 Context、Tracker 或治理 CLI；正式任务与治理输入异常仍按原合同处理。已有独立项目通过显式 `sync --plan` 审阅后采纳新默认能力，仅升级 CLI 不修改项目。
 
 Spec 治理初始根为 `yss-product-lifecycle`、`setup-yss-harness`、`yss-research`、`grilling`、`domain-modeling`、`yss-stage-decision`、`i-have-adhd`、`code-review`；实际分发可随既有依赖闭包增加。专业技能按阶段和当前任务条件补齐。`yss-stage-decision` 等 draft 技能保持原调用与批准边界；文件完整、技能就绪和实际工作流验收分别核验，初始化成功不证明完整 Spec 流程或宿主发现已验证。
 

@@ -11,3 +11,5 @@ Matt Pocock Engineering Skills 提供轻量的澄清、实现、TDD、诊断和�
 - `code-review` 的 YSS 适配：默认一个 Agent 按 Standards、Spec 与适用 UI 检查轴完成真实自检；明确用户要求或已知外部规则需要独立复核时才使用实际不同上下文。保留检查轴和证据，身份缺失不得编造，也不将上游并行 Agent 形式转成固定多人会签。
 - Matt 的 `research` 已适配为 canonical `yss-research`，旧名只作为 deprecated alias。YSS 版本提供 `technical-evidence` / `strategy-evidence` profile、`quick` / `evidence-audited` 模式、证据合同和确定性校验，同时保留上游 revision 与原始 hash 以便追溯。
 - Agent 完成工作单元后返回可核验的 evidence refs、变更资产、验证命令、残余风险和下一路由。
+
+Backend 的 `to-spec` 使用本 Profile canonical 适配，保留本端正式合同入口；中文规则依赖随技能选择补齐。普通产品 Spec 起草由 Spec Profile 的共享方法提供。
