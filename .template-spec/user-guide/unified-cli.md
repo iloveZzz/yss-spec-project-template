@@ -49,8 +49,10 @@
 
 ## 入口导航
 
+程序版本和来源用 `yss version --json` 查询，并与所选正式 Release 核对；模板源的 `.template-source/distribution/yss-cli-pin.json` 只固定模板验证工具，不代表已安装 CLI 的发行版本。以下为人工维护的导航摘要，具体参数以所用固定版本帮助为准；安装方式和迁移限制见[安装分册](cli/install-and-verify.md)。
+
 ```text
-yss — Spec / Backend 统一入口（版本以 .template-source/distribution/yss-cli-pin.json 为准）
+yss — Spec / Backend 统一入口（程序版本及来源用 yss version --json 查询）
 ──────────────────────
 
 用法: yss [选项] <命令> [参数]
@@ -60,15 +62,15 @@ Profile 职责:
   产品与业务设计在 spec 内完成；backend 承担技术设计与专职交付。
   本次目标、本端职责与整体业务分别核验；旧实例先核对能力并显式同步。
 
-快速上手（选择一个 Profile，在独立新目录运行）:
-  yss init --profile spec --root ./demo-spec --project-name 演示项目
-  yss init --profile backend --root ./demo-backend --project-name 演示项目
+快速上手（以下选择完整治理；独立技能安装使用默认 skills）:
+  yss init --profile spec --installation governed --root ./demo-spec --project-name 演示项目
+  yss init --profile backend --installation governed --root ./demo-backend --project-name 演示项目
   yss doctor --root ./demo-spec --human
   yss context verify --root ./demo-spec --json
 
 生命周期导航:
   正式：入口分诊 → Plan（战略规划） → Spec / 功能架构 → 产品设计与业务 Ticket 正式化 → 系统 / 数据架构与工程契约 → 实现切片拆分与合同准入 → 垂直切片实现 → 验证 / 发布 / 复盘
-  固定模板：d947b648aa5feac74bd17ddb407a666a28cf5dd2；来源摘要：39a8e314412faa8e3ffe82d6f834dbe81d512105df9ae2c49f17b70f21fb892c
+  固定模板与摘要：yss bundle inspect --profile spec --json（读取所用二进制的内嵌来源）
   日常：需求与验收 → 技术技能 → 实现 → 测试 → 适用复核 → verify-daily（当前 Spec 政策）
   教程：yss help tutorial governed | yss help tutorial daily
   先 Spec、再设计、再交付：yss help tutorial spec
@@ -113,8 +115,6 @@ Profile 职责:
     runtime          管理独立运行记录与保护标记。
     archive          安全打包、读取或核验 ZIP 资产。
     xml              读取 Maven project XML。
-    compat           显式旧命令兼容适配。
-    compat-api       供现役 JavaScript 消费者使用的原生传输接口。
   help [命令/子命令]  显示对应帮助；help tutorial 查看完整离线教程
 
 项目常用参数（程序升级不接受这些参数）:
@@ -133,7 +133,7 @@ Profile 职责:
 按主题阅读: yss help tutorial quickstart|daily|governed|spec|backend|maintenance
 示例索引: yss help examples [命令/子命令]
 错误索引: yss help errors [错误码]
-入口区别: upgrade 升级程序；sync 同步模板；migrate 迁移旧实例；recover 恢复未完成事务；rollback 回退最近成功事务。
+入口区别: upgrade 升级程序；sync 同步模板并保持安装方式；migrate 显式迁移受支持旧实例或转换安装方式；recover 恢复未完成事务；rollback 回退最近成功事务。
 能力与限制: yss capabilities --json；未迁移行为返回 UNPORTED。
 帮助不读取项目、不访问网络、不创建资产。
 

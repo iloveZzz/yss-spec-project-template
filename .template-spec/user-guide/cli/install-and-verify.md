@@ -40,8 +40,10 @@ yss upgrade --to <固定版本> --tool-root /absolute/path/tools/yss --json
 
 ## 新建、接管和补装
 
+新建默认安装独立技能（`skills`），无需先建立 Ticket、checkpoint 或治理批准；完整生命周期使用 `--installation governed`。以下示例选择完整治理安装，后续才能补装阶段资产；只需独立技能时，首条命令省略 `--installation` 或改为 `skills`，并跳过阶段资产补装。
+
 ```bash
-yss init --profile spec --root /absolute/path/project --project-name Example --plan --out /absolute/path/init-plan.json --json
+yss init --profile spec --installation governed --root /absolute/path/project --project-name Example --plan --out /absolute/path/init-plan.json --json
 yss init --profile spec --root /absolute/path/project --apply --plan-file /absolute/path/init-plan.json --json
 yss doctor --root /absolute/path/project --json
 yss diff --root /absolute/path/project --json
@@ -51,11 +53,15 @@ yss skills ensure setup-yss-harness --root /absolute/path/project --plan --out /
 yss skills ensure setup-yss-harness --root /absolute/path/project --apply --plan-file /absolute/path/skill-plan.json --json
 ```
 
-`init` 不带 `--plan` 时直接初始化；上例显式保存预演计划，供审阅后应用。对已存在普通工程使用 `attach`，默认预演，保存计划后再显式应用。先查看 `assets list` / `skills list`，按 Profile 支持的闭包补装。新建和升级保护唯一根 `CONTEXT.md`、业务目录、用户 `.github`、Git index、文件类型和权限。冲突或不支持能力阻断写入，不能用 `--force` 继续。
+`init` 不带 `--plan` 时直接初始化；上例显式保存预演计划，供审阅后应用，应用时不再另加安装方式。对已存在普通工程使用 `attach`，默认预演，同样选择安装方式并保存计划后再显式应用。先查看 `assets list` / `skills list`，按实际安装方式与 Profile 支持的闭包补装；`--full` 不会将独立技能安装变为完整治理。新建和升级保护唯一根 `CONTEXT.md`、业务目录、用户 `.github`、Git index、文件类型和权限。冲突或不支持能力阻断写入，不能用 `--force` 继续。
 
 ## 升级与回退
 
-当前 metadata4 / identity2 Spec、Backend 使用 `sync --plan --out <计划>`；旧统一 metadata3 / identity1 / policy1 必须显式 `migrate --plan --out <计划>`，再 `migrate --apply --plan-file <计划>`。旧原生实例直接 sync 返回 `GOVERNANCE_MIGRATION_REQUIRED`，仅旧 npm 家族、Design、Frontend 或旧 dev 不提供当前迁移。项目保存计划 v3、metadata4、Bundle4、identity2、Profile3、governance2；输出和运行协议仍为 v1。程序、项目与 Tracker 计划分别识别，跨代际不沿用旧计划。原政策、身份和记录封存，历史批准不授予当前资格；政策变化仅在已有授权覆盖时执行。项目状态通过不带 `--apply` 的 recover/rollback 查询；旧未完成事务按匹配的固定旧执行器处理，不能删状态目录。
+当前 metadata4/5 的 Spec、Backend 使用 `sync --plan --out <计划>`，同步保持已有安装方式；显式转换使用 `migrate --installation skills|governed`，活动或无法核验的正式绑定拒绝转换，见[安装方式与迁移](../../process/installation-migration.md)。旧统一 metadata3 / identity1 / policy1 必须先显式 `migrate --plan --out <计划>`，再 `migrate --apply --plan-file <计划>`；不能靠新建默认值转换旧实例。旧原生实例直接 sync 返回 `GOVERNANCE_MIGRATION_REQUIRED`，仅旧 npm 家族、Design、Frontend 或旧 dev 不提供当前迁移。
+
+当前固定 Bundle5 新建使用 metadata5、项目保存计划 v4；历史 Bundle4 / metadata4 / 项目计划 v3 按其原语义读取。治理安装继续采用 identity2、Profile3、governance2；输出和运行协议仍为 v1。程序、项目与 Tracker 计划分别识别，跨代际不沿用旧计划。原政策、身份和记录封存，历史批准不授予当前资格；政策变化仅在已有授权覆盖时执行。项目状态通过不带 `--apply` 的 recover/rollback 查询；旧未完成事务按匹配的固定旧执行器处理，不能删状态目录。
+
+CLI 2.7.3 部分离线帮助仍包含默认初始化后直接进入治理、旧 Design 转 Spec 或仅描述 metadata3 迁移的提示。新建按实际安装方式选择；当前 CLI 拒绝 Design 输入，不提供转为 Spec 的迁移。旧提示不能扩大当前固定版本能力，应用前以本页说明、实际身份与保存计划核对。
 
 资产协议版本升级见[资产 Schema 显式迁移](../../process/asset-schema-migration.md)。该迁移另行生成草稿，不改写历史资产或继承原批准。
 

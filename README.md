@@ -8,9 +8,9 @@ English overview: [README.en.md](README.en.md).
 
 当前候选定位：面向采用 AI Agent 的中文企业后端团队，通过按风险裁剪流程，关联规格、API 合同、实现与交付证据。团队适配性仍待真实任务验证；[隔离工程机制样例](.template-spec/user-guide/cases/contract-governance-validation.md)给出本轮正常、拒绝、恢复及操作成本的实际记录，不承诺业务提效比例。
 
-本模板默认作为 Harness / 研发管理仓库，保留流程文档、契约模板、Agent skills 和协作约定。后端源码默认位于明确登记的实现仓库；前端实现由独立规格与 CLI 维护，不在本模板。
+完整治理安装将本模板用作 Harness / 研发管理仓库，保留流程文档、契约模板、Agent skills 和协作约定。后端源码默认位于明确登记的实现仓库；前端实现由独立规格与 CLI 维护，不在本模板。
 
-默认一名 Agent 在 Spec 内连续完成需求、必要产品设计及适用后端工作，按显式目标推进；新建使用 Spec、Backend Profile，定义见 [Profile 注册](scripts/lib/profile-tree.mjs)。产品设计职责由 Spec 承担。Spec 文档批准、产品设计完成、后端可交付和业务验收是可选的本次终点；终点改变保留当前批准和后续路线。专职 Profile 继续按自身职责结束，主控通过显式同功能 checkpoint 与当前接收证据汇总。见[本次推进目标与专职协作](.template-spec/process/lifecycle-progression.md)。
+治理安装默认一名 Agent 在 Spec 内连续完成需求、必要产品设计及适用后端工作，按显式目标推进；新建使用 Spec、Backend Profile，定义见 [Profile 注册](scripts/lib/profile-tree.mjs)。产品设计职责由 Spec 承担。Spec 文档批准、产品设计完成、后端可交付和业务验收是可选的本次终点；终点改变保留当前批准和后续路线。专职 Profile 继续按自身职责结束，主控通过显式同功能 checkpoint 与当前接收证据汇总。见[本次推进目标与专职协作](.template-spec/process/lifecycle-progression.md)。
 
 ## 项目结构
 
@@ -46,10 +46,10 @@ YSS skills 的公开发布投影维护在 [iloveZzz/yss-spec-dev-skills](https:/
 - [YSS 用户手册：CLI 能力与写入方式](./.template-spec/user-guide/用户手册.md#cli-能力与写入方式)
 - [YSS 用户手册：接管、同步与恢复](./.template-spec/user-guide/用户手册.md#接管同步与恢复)
 
-推荐入口：
+新建默认安装独立技能（`skills`），不要求先建立生命周期记录；完整治理需显式选择 `--installation governed`。以下治理安装入口先保存计划，再应用同一计划；独立技能安装可省略该选项或选择 `skills`。已有项目 `sync` 保持安装方式，显式转换见[安装方式与迁移](.template-spec/process/installation-migration.md)。
 
 ```bash
-yss init --profile spec --root /absolute/path/project --plan --out /absolute/path/init-plan.json --json
+yss init --profile spec --installation governed --root /absolute/path/project --plan --out /absolute/path/init-plan.json --json
 yss init --profile spec --root /absolute/path/project --apply --plan-file /absolute/path/init-plan.json --json
 ```
 
@@ -117,7 +117,7 @@ PR 执行 `scripts/verify-template-fast --base <完整 SHA>`；显式 main 集�
 
 ## 按职责使用与升级
 
-[现行家族用户手册](.template-spec/user-guide/用户手册.md)提供选型、初始化及升级；[设备借用贯穿案例](.template-spec/user-guide/设备借用贯穿案例.md)演示战略、后端、前端与统一验收。[全部手册](.template-spec/user-guide/用户手册索引.md)给出本体和子项目入口。GitHub 当前能力、npm 发布版本与实例模板快照分别核对。
+[现行家族用户手册](.template-spec/user-guide/用户手册.md)提供选型、初始化及升级；[设备借用贯穿案例](.template-spec/user-guide/设备借用贯穿案例.md)演示战略、后端、前端与统一验收。[全部手册](.template-spec/user-guide/用户手册索引.md)给出本体和子项目入口。GitHub 当前源码能力、原生 CLI 正式 Release 与实例模板快照分别核对。
 
 ## WorkBuddy 接入
 
