@@ -1,5 +1,14 @@
 # 普通任务路由
 
+## 分支判定
+
+先读当前工程 `AGENTS.md`，检查 `yss-project.yaml` 与 `.yss.json` 是否存在。未启用治理且没有身份文件的普通工程可以直接工作；合法 metadata5 明确 `distribution.installation=skills` 时也走[普通任务路由](references/standalone-routing.md)。普通分支只读该参考及本次需要的技能/材料，不再继续加载下文治理前提。
+
+存在 `yss-project.yaml` 时严格解析：当前只支持 schema_version:1，repository_mode 仅 `project-instance` 或 `template-source`。非法、不可读、不支持版本或相互冲突的身份停止受影响写入，不能因缺治理目录改走普通分支。metadata 非法/旧身份、出现治理资产但身份不明，也先报告缺口，不猜安装方式。
+
+`project-instance`、`installation=governed`、已有正式任务或用户明确要求正式工作/批准时，执行下文治理分支；缺正式输入须受阻，不能降级生成替代草稿。`template-source` 仅做模板维护。检查多个工程时逐工程判定，不能套用当前目录的普通资格。
+
+
 适用于未启用治理的工程、合法 `installation=skills` 项目以及普通讨论。先复用当前请求、已确认规则、可读材料和真实授权；只读请求不保存文件。普通任务不需要生命周期 CLI、注册表、Tracker、checkpoint 或阶段状态。
 
 | 当前需要 | 动作 |

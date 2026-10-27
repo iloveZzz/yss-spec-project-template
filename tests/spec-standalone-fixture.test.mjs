@@ -62,3 +62,23 @@ test('standalone fixture refuses linked resources and keeps source unchanged',t=
   assert.equal(fs.existsSync(out),false);
   assert.equal(fs.readFileSync(outside,'utf8'),'private outside data');
 });
+
+test('actual Spec starter resources resolve shared references inside the frozen source',t=>{
+  const directory=fs.mkdtempSync(path.join(os.tmpdir(),'yss-standalone-actual-'));
+  t.after(()=>fs.rmSync(directory,{recursive:true,force:true}));
+  const sourceRoot=path.resolve(path.dirname(new URL(import.meta.url).pathname),'..');
+  const policy=JSON.parse(fs.readFileSync(path.join(sourceRoot,'.template-source/distribution/bundle-profile.json')));
+  const {root,manifestPath}=prepareStandaloneSource({sourceRoot,out:path.join(directory,'source'),skills:policy.installations.skills.skills});
+  const skill=path.join(root,'.agents/skills/to-spec/SKILL.md');
+  const target=path.resolve(path.dirname(skill),'../yss-product-lifecycle/references/standalone-spec.md');
+  assert.ok(target.startsWith(root+path.sep));
+  assert.ok(fs.statSync(target).isFile());
+  const text=fs.readFileSync(skill,'utf8');
+  const link=text.match(/\]\(([^)]+standalone-spec\.md)\)/)[1];
+  assert.equal(path.resolve(path.dirname(skill),link),target);
+  const writing=path.join(root,'.agents/skills/i-have-adhd/references/document-writing.md');
+  assert.ok(fs.statSync(writing).isFile());
+  const manifest=JSON.parse(fs.readFileSync(manifestPath,'utf8'));
+  for(const [ref,entry] of Object.entries(manifest.files))
+    assert.equal(entry.sha256,createHash('sha256').update(fs.readFileSync(path.join(root,ref))).digest('hex'),ref);
+});
