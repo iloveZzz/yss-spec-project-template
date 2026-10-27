@@ -40,6 +40,8 @@ yss upgrade --to <固定版本> --tool-root /absolute/path/tools/yss --json
 
 ## 新建、接管和补装
 
+Profile 选择职责，installation 选择安装方式，`--full` 只扩大当前安装方式的资源集合。独立安装默认保留 `implement`、`code-review`；Spec 治理初始根为 `yss-product-lifecycle`、`setup-yss-harness`、`yss-research`、`grilling`、`domain-modeling`、`yss-stage-decision`、`i-have-adhd`、`code-review`，实际文件可因必要依赖闭包增加。阶段资源和当前任务命中的条件技能仍须补装，不承诺新建后能自动完成所有阶段。
+
 新建默认安装独立技能（`skills`），无需先建立 Ticket、checkpoint 或治理批准；完整生命周期使用 `--installation governed`。以下示例选择完整治理安装，后续才能补装阶段资产；只需独立技能时，首条命令省略 `--installation` 或改为 `skills`，并跳过阶段资产补装。
 
 ```bash
@@ -54,6 +56,8 @@ yss skills ensure setup-yss-harness --root /absolute/path/project --apply --plan
 ```
 
 `init` 不带 `--plan` 时直接初始化；上例显式保存预演计划，供审阅后应用，应用时不再另加安装方式。对已存在普通工程使用 `attach`，默认预演，同样选择安装方式并保存计划后再显式应用。先查看 `assets list` / `skills list`，按实际安装方式与 Profile 支持的闭包补装；`--full` 不会将独立技能安装变为完整治理。新建和升级保护唯一根 `CONTEXT.md`、业务目录、用户 `.github`、Git index、文件类型和权限。冲突或不支持能力阻断写入，不能用 `--force` 继续。
+
+旧治理实例按固定来源同步后，还须查询根技能和任务所需资源，缺项用 `skills ensure` / `assets ensure` 保存计划并在授权范围应用，不能只凭同步成功认定技能就绪。skills 实例需要治理时使用下述显式迁移。`doctor` 的文件与已安装技能检查不授予工作流批准；draft 技能仍保留原 maturity 和显式调用规则，宿主发现及真实任务能力另行验证。
 
 ## 升级与回退
 

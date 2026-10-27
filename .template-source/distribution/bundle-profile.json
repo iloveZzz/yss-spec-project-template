@@ -435,7 +435,9 @@
         "scripts/verify-business-tickets"
       ],
       "skills": [
-        "yss-prototype-stage"
+        "yss-prototype-stage",
+        "prototype-review",
+        "yss-design-system"
       ]
     },
     "stage.system-data-engineering": {
@@ -456,6 +458,7 @@
         "scripts/verify-scaffold-architecture-decisions"
       ],
       "skills": [
+        "yss-technical-design",
         "yss-implementation-contract-compiler"
       ]
     },
@@ -468,7 +471,9 @@
         "scripts/dispatch-slice-task",
         "scripts/slice-contract"
       ],
-      "skills": []
+      "skills": [
+        "yss-implementation-contract-compiler"
+      ]
     },
     "stage.vertical-slice-implementation": {
       "files": [
