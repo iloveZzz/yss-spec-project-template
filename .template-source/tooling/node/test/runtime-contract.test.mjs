@@ -188,7 +188,7 @@ test("standalone setup export closes local references and rejects unknown select
         await fs.access(target);
       }
     }
-    assert.throws(() => execFileSync("scripts/export-yss-skills", ["--skill", "yss-harness-upgrade", "--output", output], { cwd: repositoryRoot, stdio: "pipe" }), /listed public skill/);
+    assert.throws(() => execFileSync("scripts/export-yss-skills", ["--skill", "yss-harness-upgrade", "--output", output], { cwd: repositoryRoot, stdio: "pipe" }), /requires an installed canonical skill: yss-harness-upgrade/);
     assert.equal(await fs.readFile(path.join(output, ".yss-export-manifest.json"), "utf8"), manifest);
   } finally {
     await rm(output, { recursive: true, force: true });
