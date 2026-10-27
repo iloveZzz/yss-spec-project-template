@@ -187,6 +187,8 @@ recipes:
   - { id: backend.mvc-scaffold, capabilities: [scaffold.layered-mvc, quality.java-code-style] }
   - { id: backend.springboot3-migration, capabilities: [migration.springboot3, quality.java-code-style] }
 skill_dependencies:
+  to-spec:
+    - { skill: yss-product-lifecycle, type: context-required }
   java-backend-commit:
     - { skill: git-commit-core, type: context-required }
   yss-backend-spec-review:

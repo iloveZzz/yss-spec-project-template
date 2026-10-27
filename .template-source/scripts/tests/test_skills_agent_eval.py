@@ -16,6 +16,33 @@ spec.loader.exec_module(evaluation)
 
 
 class SharedBudgetChecks(unittest.TestCase):
+    def test_model_metadata_advisory_does_not_fail_a_completed_successful_turn(self):
+        warning = {'type': 'item.completed', 'item': {'type': 'error', 'message': 'Model metadata for `gpt-6.1-sol` not found. Defaulting to fallback metadata; this can degrade performance and cause issues.'}}
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            workspace = root / 'workspace'; workspace.mkdir()
+            script = 'import json; print(json.dumps(' + repr(warning) + ')); print(json.dumps({"type":"turn.completed"}))'
+            row = evaluation.execute_step([sys.executable, '-c', script], os.environ.copy(), root / 'step', workspace,
+                                          {'id': 'test', 'prompt': 'fixture', 'allowed_writes': [], 'assertions': []}, root / 'commands', 5)
+            self.assertEqual(row['automatic_result'], 'passed')
+            self.assertEqual(row['runtime_errors'], [])
+            self.assertEqual(row['runtime_warnings'], [warning])
+
+    def test_metadata_advisory_cannot_hide_failed_or_incomplete_turns(self):
+        warning = {'type': 'item.completed', 'item': {'type': 'error', 'message': 'Model metadata for `gpt-6.1-sol` not found. Defaulting to fallback metadata; this can degrade performance and cause issues.'}}
+        fatal = {'type': 'error', 'message': 'provider rejected request'}
+        for events, exit_code in [([warning], 0), ([warning, {'type': 'turn.completed'}], 1),
+                                  ([warning, fatal, {'type': 'turn.completed'}], 0),
+                                  ([{'type': 'item.completed', 'item': {'type': 'error', 'message': None}}, {'type': 'turn.completed'}], 0),
+                                  ([{'type': 'item.completed', 'item': {'type': 'error', 'message': 'Model metadata failed: fatal provider error'}}, {'type': 'turn.completed'}], 0)]:
+            with self.subTest(events=events, exit_code=exit_code), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory); workspace = root / 'workspace'; workspace.mkdir()
+                script = 'import json,sys\nfor e in ' + repr(events) + ': print(json.dumps(e))\nsys.exit(' + str(exit_code) + ')'
+                row = evaluation.execute_step([sys.executable, '-c', script], os.environ.copy(), root / 'step', workspace,
+                                              {'id': 'test', 'prompt': 'fixture', 'allowed_writes': [], 'assertions': []}, root / 'commands', 5)
+                self.assertEqual(row['automatic_result'], 'failed')
+                self.assertTrue(row['runtime_errors'] or exit_code)
+
     def test_attempts_and_seconds_accumulate_across_process_instances(self):
         with tempfile.TemporaryDirectory() as directory:
             ledger = Path(directory) / 'budget.json'

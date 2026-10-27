@@ -336,6 +336,24 @@ def normalize_events(raw, runtime):
     return events
 
 
+def runtime_event_findings(events, exit_code, timed_out):
+    """Keep nonfatal catalog advice distinct from provider/turn failures."""
+    errors, warnings = [], []
+    completed = any(event.get('type') == 'turn.completed' for event in events)
+    advice = re.compile(r'Model metadata for `[A-Za-z0-9_.-]+` not found\. Defaulting to fallback metadata; this can degrade performance and cause issues\.')
+    for event in events:
+        if event.get('type') != 'error' and event.get('item', {}).get('type') != 'error':
+            continue
+        message = event.get('item', {}).get('message', '')
+        if exit_code == 0 and completed and not timed_out and event.get('type') == 'item.completed' and isinstance(message, str) and advice.fullmatch(message):
+            warnings.append(event)
+        else:
+            errors.append(event)
+    if not timed_out and not completed:
+        errors.append({'type': 'error', 'message': 'runtime exited without a completed turn; inspect stderr.log'})
+    return errors, warnings
+
+
 def execute_step(command, env, destination, workspace, step, commands, timeout, budget=None, runtime_kind='codex'):
     destination.mkdir(exist_ok=True)
     write_fixture_files(workspace, step.get("files", {}))
@@ -384,11 +402,10 @@ def execute_step(command, env, destination, workspace, step, commands, timeout, 
         failures = [{'error_type': type(error).__name__, 'message': str(error), 'phase': 'scoring'}]
         writes = {'status': 'not-checked', 'allowed_writes': refs, 'violations': [], 'reason': 'scoring failed'}
         git_audit = {'status': 'failed', 'reason': str(error)}
-    errors += [e for e in events if e.get("type") == "error" or e.get("item", {}).get("type") == "error"]
-    if not timed_out and not any(e.get("type") == "turn.completed" for e in events):
-        errors.append({"type": "error", "message": "runtime exited without a completed turn; inspect stderr.log"})
+    event_errors, warnings = runtime_event_findings(events, exit_code, timed_out)
+    errors += event_errors
     calls = [e["item"] for e in events if e.get("type") == "item.completed" and e.get("item", {}).get("type") in ["command_execution", "mcp_tool_call", "file_change"]]
-    row = {"step": step["id"], "started_at": started_at, "elapsed_seconds": round(time.monotonic()-tick, 2), "exit_code": exit_code, "timeout": timed_out, "assertion_failures": failures, "runtime_errors": errors, "tool_calls": len(calls), "usage": [e["usage"] for e in events if "usage" in e], "automatic_result": "passed" if exit_code == 0 and not failures and not errors else "failed", "semantic_review": "pending", "trace": str(destination / "trace.jsonl")}
+    row = {"step": step["id"], "started_at": started_at, "elapsed_seconds": round(time.monotonic()-tick, 2), "exit_code": exit_code, "timeout": timed_out, "assertion_failures": failures, "runtime_errors": errors, "runtime_warnings": warnings, "tool_calls": len(calls), "usage": [e["usage"] for e in events if "usage" in e], "automatic_result": "passed" if exit_code == 0 and not failures and not errors else "failed", "semantic_review": "pending", "trace": str(destination / "trace.jsonl")}
     row['write_scope'] = writes
     row['git_audit'] = git_audit
     row['skill_reads'] = skill_reads(events)
