@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import { createHash } from "node:crypto";
 import os from "node:os";
 import path from "node:path";
 import { exportSkills } from "../scripts/lib/export-skills.mjs";
@@ -149,4 +150,15 @@ test("单个普通技能可独立导出且只携带所需资源", (t) => {
 test("独立导出仍拒绝非法技能路径", (t) => {
   const root = fixtureRoot(t);
   assert.throws(() => exportSkills(["--skill", "../escape", "--output", output(t, "yss-export-selection-")], { root }), /skill/);
+});
+
+test("中文写作技能导出包含可读取的共用规范", (t) => {
+  const out = output(t, "yss-export-writing-");
+  exportSkills(["--skill", "i-have-adhd", "--output", out]);
+  const ref = "skills/i-have-adhd/references/document-writing.md";
+  assert.ok(fs.statSync(path.join(out, ref)).isFile());
+  assert.equal(fs.existsSync(path.join(out, ".template-spec")), false);
+  const manifest = JSON.parse(fs.readFileSync(path.join(out, ".yss-export-manifest.json"), "utf8"));
+  assert.equal(manifest.generated_files_sha256[ref.slice("skills/".length)], createHash("sha256").update(fs.readFileSync(path.join(out, ref))).digest("hex"));
+  assert.match(exportSkills(["--skill", "i-have-adhd", "--output", out, "--check"]), /up to date/);
 });

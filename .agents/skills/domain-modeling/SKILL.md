@@ -21,7 +21,7 @@ YSS repositories use exactly one root context file:
 └── src/
 ```
 
-不要创建嵌套 `CONTEXT.md` 或 `CONTEXT-MAP.md`。多个业务责任区统一记录在根词汇表的 `适用业务责任区` 列中；内部仍使用稳定 `ContextId`。第一次确有必要记录 ADR 时再创建 `docs/adr/`。YSS 仓库缺少根 `CONTEXT.md` 属于合同错误，必须先修复再继续生命周期工作。
+不要创建嵌套 `CONTEXT.md` 或 `CONTEXT-MAP.md`。多个业务责任区统一记录在根词汇表的 `适用业务责任区` 列中；内部仍使用稳定 `ContextId`。第一次确有必要记录 ADR 时再创建 `docs/adr/`。未启用治理的工程缺少根 `CONTEXT.md` 时，可在当前讨论或授权草稿中整理事实、候选词、规则和未决项；不因此阻断普通需求，也不自动建 Context。正式治理要求该文件时，缺失仍是合同错误，停止受影响生命周期工作；已有非法身份或不支持 Context 版本不能回退普通路径。
 
 ## During the session
 
@@ -43,7 +43,7 @@ When the user states how something works, check whether the code agrees. If you 
 
 ### Update CONTEXT.md inline
 
-When a term is resolved, update `CONTEXT.md` right there. Don't batch these up — capture them as they happen. Use the format in [CONTEXT-FORMAT.md](./CONTEXT-FORMAT.md).
+当前任务允许维护词汇表、词义和适用责任区已确认时，及时更新现有根 `CONTEXT.md`，格式见 [CONTEXT-FORMAT.md](./CONTEXT-FORMAT.md)。普通草稿任务只更新指定草稿；只有用户要求归档稳定业务词汇且必要身份均有依据时才新建根 Context。不得猜 ContextId、将未决同义词写成确认，也不能默认填 Global；缺身份时保留在草稿并报告需要的决定。
 
 `CONTEXT.md` 不得包含实现细节。不要把它当作 Spec、草稿区或实现决策仓库；它只是一份稳定业务词汇表。
 
