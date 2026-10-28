@@ -1,5 +1,5 @@
 import {installLegacySpecPolicy} from '../../lib/testing/legacy-spec-policy.mjs';
-import {installedFixture} from './installed-fixture.mjs';
+import {inspectNative} from '../../../.template-source/scripts/lib/native-yss.mjs';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -14,12 +14,16 @@ assert.ok(bin&&path.isAbsolute(bin),'YSS_NATIVE_BINARY must name the current dev
 const hash=b=>createHash('sha256').update(b).digest('hex');
 const canon=x=>Array.isArray(x)?x.map(canon):x&&typeof x==='object'?Object.fromEntries(Object.keys(x).sort().map(k=>[k,canon(x[k])])):x;
 const digest=x=>hash(JSON.stringify(canon(x)));
-const installed=process.env.YSS_REVIEW_PUBLISH_ONLY?installedFixture('spec'):null;
-const root=installed?.root||fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'task3b-native-'))),results=installed?.calls||[];
+const root=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'task3b-native-'))),results=[];
 const write=(ref,value)=>{fs.mkdirSync(path.dirname(path.join(root,ref)),{recursive:true});fs.writeFileSync(path.join(root,ref),typeof value==='string'?value:JSON.stringify(value));};
 const run=(label,args,expected='OK')=>{const argv=[...args,'--root',root,...(args[1]==='view'?['--profile','spec']:[]),'--json'],r=spawnSync(bin,argv,{encoding:'utf8'});results.push({label,argv:[bin,...argv],exit:r.status,stdout:r.stdout,stderr:r.stderr});const parsed=JSON.parse(r.stdout);assert.equal(parsed.code,expected,`${label}: ${parsed.code}: ${JSON.stringify(parsed.result.diagnostics||parsed.result.message)}`);return parsed;};
 scenarios:try{
- if(!installed) {
+ if(process.env.YSS_REVIEW_PUBLISH_ONLY) {
+  const inspection=inspectNative('spec');
+  assert.ok([4,5].includes(inspection.schemaVersion),'known current Bundle4/5 required');
+  run('actual-spec-install',['init','--profile','spec',...(inspection.schemaVersion===5?['--installation','governed']:[])]);
+ }
+ else {
  fs.cpSync(path.join(source,'.template-spec/process'),path.join(root,'.template-spec/process'),{recursive:true});
  write('yss-project.yaml',{schema_version:2,repository_mode:'project-instance'});
  write('.template-spec/process/harness-profile.yaml',{schema_version:3,profile_id:'harness.spec-template',status:'active',required_capabilities:['role-independent-governance-v1'],lifecycle:{},execution:{}});
@@ -144,4 +148,4 @@ scenarios:try{
   run('backend-mapping-'+unit,['contract','verify','--kind','task-selection','--file','selection.json']);
  }
  console.log('Slice4 native draft/views, malformed checks/scope, legacy3 view, activation guard passed');
-}finally{if(process.env.YSS_DRAFT_RECEIPT)fs.writeFileSync(process.env.YSS_DRAFT_RECEIPT,JSON.stringify({binary:bin,digest:hash(fs.readFileSync(bin)),pinned:false,root,results},null,2));if(installed)installed.cleanup();else fs.rmSync(root,{recursive:true,force:true});}
+}finally{if(process.env.YSS_DRAFT_RECEIPT)fs.writeFileSync(process.env.YSS_DRAFT_RECEIPT,JSON.stringify({binary:bin,digest:hash(fs.readFileSync(bin)),pinned:false,root,results},null,2));fs.rmSync(root,{recursive:true,force:true});}

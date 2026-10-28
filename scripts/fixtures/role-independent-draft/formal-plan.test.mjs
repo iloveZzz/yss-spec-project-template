@@ -1,6 +1,8 @@
-import {installedFixture} from './installed-fixture.mjs';
+import {installLegacySpecPolicy} from '../../lib/testing/legacy-spec-policy.mjs';
+import {inspectNative} from '../../../.template-source/scripts/lib/native-yss.mjs';
 // Synthetic decision sources verify the protocol; they are not real product approval.
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import assert from 'node:assert/strict';
 import {spawnSync} from 'node:child_process';
@@ -16,8 +18,23 @@ assert.ok(binary&&path.isAbsolute(binary),'current native candidate required');
 const hash=b=>createHash('sha256').update(b).digest('hex');
 const canon=x=>Array.isArray(x)?x.map(canon):x&&typeof x==='object'?Object.fromEntries(Object.keys(x).sort().map(k=>[k,canon(x[k])])):x;
 test('installed Spec prepares Plan once, uses actual self-check and current human source without an empty review task',()=>{
- const f=installedFixture('spec',{legacySpec:true}),{root,calls,write,asset,run,commit}=f;
+ const scratch=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'formal-plan4-'))),root=path.join(scratch,'spec'),calls=[];
+ const write=(ref,value)=>{fs.mkdirSync(path.dirname(path.join(root,ref)),{recursive:true});fs.writeFileSync(path.join(root,ref),typeof value==='string'?value:JSON.stringify(value));};
+ const asset=ref=>({ref,digest:hash(fs.readFileSync(path.join(root,ref)))});
+ const run=(label,args,expected='OK')=>{
+  const argv=[...args,'--root',root,'--json'],r=spawnSync(binary,argv,{encoding:'utf8',maxBuffer:64*1024*1024});
+  calls.push({label,argv:[binary,...argv],exit_code:r.status,stdout:r.stdout,stderr:r.stderr});
+  const d=JSON.parse(r.stdout);assert.equal(d.code,expected,`${label}: ${JSON.stringify(d.result.diagnostics||d.result.message)}`);assert.equal(r.status===0,expected==='OK');return d.result;
+ };
  try {
+  const inspection=inspectNative('spec');
+  assert.ok([4,5].includes(inspection.schemaVersion),'known current Bundle4/5 required');
+  run('actual-install',['init','--profile','spec',...(inspection.schemaVersion===5?['--installation','governed']:[])]);
+  installLegacySpecPolicy(root);
+  assert.equal(JSON.parse(fs.readFileSync(path.join(root,'.yss.json'))).schemaVersion,inspection.schemaVersion);
+  assert.equal(fs.existsSync(path.join(root,'.template-spec/agents/digital-human-roles.yaml')),false);
+  for(const argv of [['init','-q'],['-c','user.name=test','-c','user.email=test@example.invalid','commit','--allow-empty','-qm','base']])assert.equal(spawnSync('git',argv,{cwd:root}).status,0);
+  const commit=spawnSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).stdout.trim();
   write('plan.md','# 当前方案\n只调整已确认输出的文字；验收为原行为及接口保持。\n');
   const context=parseContextContract({root});
   write('reconciliation.json',{schema_version:1,repository_mode:'project-instance',stage:'stage.plan',work_unit:'work-unit.plan-requirements',status:'reconciled',context_snapshot:{context_ref:context.context_ref,context_schema_version:context.context_schema_version,document_digest:context.document_digest,referenced_terms_digest:resolveContextTermRefs(context,[]).referenced_terms_digest,term_refs:[]},changes:{added:[],updated:[],deprecated:[]},unresolved_terms:[],evidence_refs:['CONTEXT.md']});
@@ -60,6 +77,6 @@ test('installed Spec prepares Plan once, uses actual self-check and current huma
   run('missing-human-source',['contract','verify','--kind','plan-entry','--file','checkpoint.json'],'user-decision-missing');
  }finally{
   if(process.env.YSS_FORMAL_PLAN_RECEIPT)fs.writeFileSync(process.env.YSS_FORMAL_PLAN_RECEIPT,JSON.stringify({binary,sha256:hash(fs.readFileSync(binary)),pinned:false,calls},null,2));
-  f.cleanup();
+  fs.rmSync(scratch,{recursive:true,force:true});
  }
 });
