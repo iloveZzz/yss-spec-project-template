@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, realpathSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, realpathSync, chmodSync, statSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import os from 'node:os';
 import path from 'node:path';
@@ -12,7 +12,7 @@ import {validateBaselineReport} from '../lib/verification-report-validator.mjs';
 import {createHash} from 'node:crypto';
 import {collectReleaseSources} from '../lib/verification-artifacts.mjs';
 import {PIN_FILE,platformKey} from '../lib/yss-cli-pin.mjs';
-import {produceCliArtifact,verifyInstalledCliMigration} from '../lib/verification-artifacts.mjs';
+import {produceCliArtifact,verifyInstalledCliMigration,validateArtifact,installedTreeDigest} from '../lib/verification-artifacts.mjs';
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 
 const root = path.resolve(import.meta.dirname, '../../..');
@@ -34,7 +34,7 @@ function commit(cwd) {
   git(cwd, '-c', 'user.name=CI fixture', '-c', 'user.email=fixture@example.invalid', 'commit', '-qm', 'fixture');
   return git(cwd, 'rev-parse', 'HEAD');
 }
-function fixture(t) {
+function fixture(t,{bundleSchemaVersion=2}={}) {
   if(!fixtureEnvironments.has(t)) {
     const keys=['YSS_NATIVE_BINARY','YSS_NATIVE_BINARY_SHA256','YSS_NATIVE_SOURCE_ROOT',...releaseSourceKeys],previous=Object.fromEntries(keys.map(key=>[key,process.env[key]]));
     fixtureEnvironments.add(t);
@@ -46,7 +46,7 @@ function fixture(t) {
   const cli=path.join(base,'native-source'),repo=path.join(base,'template');mkdirSync(cli);mkdirSync(repo);
   git(cli,'init','-q');git(repo,'init','-q');
   put(repo,'README.md','fixed prior release fixture\n');const releaseBase=commit(repo),fixtureRoot=realpathSync(repo);fixtureBases.set(fixtureRoot,releaseBase);t.after(()=>fixtureBases.delete(fixtureRoot));
-  put(cli,'go.mod','module github.com/iloveZzz/yss-cli\n\ngo 1.27.1\n');put(cli,'main.go',readFileSync(path.join(root,'.template-source/scripts/tests/fixtures/native-release.go'),'utf8'));const cliCommit=commit(cli);
+  put(cli,'go.mod','module github.com/iloveZzz/yss-cli\n\ngo 1.27.1\n');put(cli,'main.go',readFileSync(path.join(root,'.template-source/scripts/tests/fixtures/native-release.go'),'utf8').replace('"schemaVersion":2,',`"schemaVersion":${bundleSchemaVersion},`));const cliCommit=commit(cli);
   put(repo,'yss-project.yaml','schema_version: 1\nrepository_mode: template-source\n');put(repo,'scripts/repository-mode','#!/bin/sh\necho template-source\n',0o755);
   put(repo,'.template-source/scripts/lib/verification-preflight.mjs','process.stdout.write(JSON.stringify({status:"passed",errors:[]}));');
   put(repo,'.template-source/scripts/lib/verification-delivery-run.mjs',`import {parseArgs} from 'node:util';import {runDeliveryTask} from ${JSON.stringify(pathToFileURL(path.join(root,'.template-source/scripts/lib/verification-delivery-run.mjs')).href)};const {values}=parseArgs({options:{root:{type:'string'},directory:{type:'string'},action:{type:'string'},family:{type:'string'}}});runDeliveryTask(values);`);
@@ -165,6 +165,31 @@ test('发布保护登记失败保留实际命令结果且数据库不能先记�
   const store=new RuntimeStore({root:f.repo,readOnly:true,existingOnly:true});
   try {assert.equal(store.db.prepare('SELECT status FROM runs').get().status,'running');}
   finally {store.close();if(previous===undefined)delete process.env.YSS_RUNTIME_HOME;else process.env.YSS_RUNTIME_HOME=previous;}
+});
+
+test('schema 5 固定来源和安装产物可发布，未来 schema 与 Bundle 来源漂移仍拒绝',t=>{
+ const f=fixture(t,{bundleSchemaVersion:5}),sources=collectReleaseSources({root:f.repo,commit:f.sha});
+ assert.deepEqual(sources.entries.map(source=>source.family),['spec','backend']);
+ const run=(file,args,cwd,env)=>spawnSync(file,args,{cwd,env,encoding:'utf8'});
+ const source=sources.entries[0],artifact=produceCliArtifact({root:f.repo,source,directory:path.join(f.base,'schema-5-artifact'),run});
+ assert.equal(JSON.parse(readFileSync(artifact.bundle_manifest)).schemaVersion,5);
+ assert.equal(validateArtifact(artifact,source),artifact);
+ const original=readFileSync(artifact.bundle_manifest),treeDigest=artifact.installed_tree_sha256;
+ for(const mutation of [{schemaVersion:6},{bundleHash:'0'.repeat(64)},{templateCommit:'f'.repeat(40)}]){
+  writeFileSync(artifact.bundle_manifest,JSON.stringify({...JSON.parse(original),...mutation}));
+  artifact.installed_tree_sha256=installedTreeDigest(artifact.installed_root);
+  assert.throws(()=>validateArtifact(artifact,source),/安装后 Bundle 来源漂移/);
+ }
+ writeFileSync(artifact.bundle_manifest,original);artifact.installed_tree_sha256=treeDigest;
+ const binaryMode=statSync(artifact.binary).mode&0o777;chmodSync(artifact.binary,binaryMode^0o100);
+ assert.throws(()=>validateArtifact(artifact,source),/安装树字节、类型或权限漂移/);chmodSync(artifact.binary,binaryMode);
+ writeFileSync(artifact.binary,'tampered executable');
+ assert.throws(()=>validateArtifact(artifact,source),/安装树字节、类型或权限漂移/);
+});
+
+test('未来 Bundle schema 不能作为固定发布来源',t=>{
+ const f=fixture(t,{bundleSchemaVersion:6});
+ assert.throws(()=>collectReleaseSources({root:f.repo,commit:f.sha}),/Bundle 必须来自已提交的模板来源/);
 });
 
 test('固定发行拒绝缺失、脏树、错误身份或实际提交错配的显式 CLI 源目录', t => {

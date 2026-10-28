@@ -43,7 +43,9 @@ export function inspectNative(profile, options = {}) {
 
 export function initializeNative(profile, target, options = {}) {
   const plan = path.join(path.dirname(target), `${path.basename(target)}.init-plan.json`);
-  runNative(['init','--profile',profile,'--root',target,'--project-name',`Verification ${profile}`,'--business-domain','模板生态验证','--team-size','3',...(options.full?['--full']:[]),'--plan','--out',plan], options);
+  // Bundle v5 默认只安装独立技能；治理验证显式选择 governed，旧 CLI 保留原有参数。
+  const installation = inspectNative(profile, options).schemaVersion === 5 ? ['--installation','governed'] : [];
+  runNative(['init','--profile',profile,'--root',target,...installation,'--project-name',`Verification ${profile}`,'--business-domain','模板生态验证','--team-size','3',...(options.full?['--full']:[]),'--plan','--out',plan], options);
   return runNative(['init','--profile',profile,'--root',target,'--apply','--plan-file',plan], options).result;
 }
 

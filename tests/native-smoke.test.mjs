@@ -5,6 +5,33 @@ import os from 'node:os';
 import path from 'node:path';
 import { runNative, initializeNative } from '../.template-source/scripts/lib/native-yss.mjs';
 
+test('治理验证初始化按 Bundle 代际选择安装方式，兼容旧 CLI', t => {
+  const base = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'yss-native-init-contract-')));
+  t.after(() => fs.rmSync(base, { recursive: true, force: true }));
+  const binary = path.join(base, 'transport-fixture');
+  fs.writeFileSync(binary, 'native transport fixture');
+  for (const schemaVersion of [2, 3, 4, 5]) {
+    for (const full of [false, true]) {
+      const calls = [];
+      const run = (_binary, args) => {
+        calls.push(args);
+        return { status: 0, stdout: JSON.stringify({ outputVersion: 1, protocolVersion: 1, command: args[0], status: 'ok', code: 'OK', result: { schemaVersion } }) };
+      };
+      initializeNative('spec', path.join(base, `spec-${schemaVersion}-${full}`), { environment: { YSS_NATIVE_BINARY: binary }, run, full });
+      const initializations = calls.filter(args => args[0] === 'init');
+      assert.equal(initializations.length, 2);
+      const plan = initializations.find(args => args.includes('--plan'));
+      assert.equal(plan.includes('--full'), full);
+      if (schemaVersion === 5) {
+        assert.equal(plan[plan.indexOf('--installation') + 1], 'governed', '新版 CLI 必须显式初始化治理实例');
+      } else {
+        assert.equal(plan.includes('--installation'), false, '旧 CLI 不得收到新参数');
+      }
+      assert.equal(initializations.find(args => args.includes('--apply')).includes('--installation'), false, '应用阶段复用已保存计划');
+    }
+  }
+});
+
 // 固定二进制在当前平台上的端到端冒烟：初始化 → 只读查询 → 回退 → 重复回退幂等。
 // CI 在 ubuntu 上按 yss-cli-pin.json 原生构建二进制，因此这条测试同时给出 Linux 原生运行证据。
 test('原生 yss：初始化 spec 实例、只读查询、整体回退且重复回退幂等', t => {
