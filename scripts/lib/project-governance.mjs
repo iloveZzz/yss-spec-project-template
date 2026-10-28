@@ -1,5 +1,6 @@
 import {checkNativeContext, contextBinary} from './native-context.mjs';
 import { readWorkLayout } from './work-layout.mjs';
+import { readRepositoryMode } from './repository-mode.mjs';
 import {findApprovalCheckpoint} from './user-decision-core.mjs';
 import fs from 'node:fs';
 import { spawnSync } from 'node:child_process';
@@ -17,8 +18,8 @@ export function parseGovernance(bytes, ref) {
   return doc.toJS({maxAliasCount:0});
 }
 export function governanceScope(root) {
-  const identity=readDocument(root,'yss-project.yaml');
-  if(identity?.schema_version!==1||identity.repository_mode!=='project-instance')throw new Error('project-ci 仅适用于 project-instance');
+  safeFile(root,'yss-project.yaml');
+  if(readRepositoryMode(root)!=='project-instance')throw new Error('project-ci 仅适用于 project-instance');
   const layout=readWorkLayout(root);
   const config=fileBinding(root,CI_CONFIG)?readDocument(root,CI_CONFIG):{schema_version:1,provider:'github',branch:'main',additional_paths:[]};
   if(config.schema_version!==1||config.provider!=='github'||!Array.isArray(config.additional_paths)||config.additional_paths.some(x=>typeof x!=='string'))throw new Error('project-ci 配置无效');

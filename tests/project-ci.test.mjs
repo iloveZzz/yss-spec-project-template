@@ -7,9 +7,10 @@ import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import { parse } from '../scripts/vendor/yaml.mjs';
 import {initializeNative} from '../.template-source/scripts/lib/native-yss.mjs';
+import {makeRoot} from './helpers/yss-instance.mjs';
 
 const source=process.cwd();
-let nativeMetadata, nativeProfile;
+let nativeMetadata, nativeProfile, nativeIdentity;
 function fixture(t) {
   const root=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'project-ci-test-')));
   if(!nativeMetadata) {
@@ -17,13 +18,14 @@ function fixture(t) {
     initializeNative('spec',seed);
     nativeMetadata=fs.readFileSync(path.join(seed,'.yss.json'));
     nativeProfile=fs.readFileSync(path.join(seed,'.template-spec/process/harness-profile.yaml'));
+    nativeIdentity=fs.readFileSync(path.join(seed,'yss-project.yaml'));
     fs.rmSync(seed,{recursive:true});
   }
   fs.writeFileSync(path.join(root,'.yss.json'),nativeMetadata);
   t.after(()=>fs.rmSync(root,{recursive:true,force:true,maxRetries:5,retryDelay:100}));
   const write=(ref,bytes)=>{const file=path.join(root,ref);fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,bytes);};
   write('.template-spec/process/harness-profile.yaml',nativeProfile);
-  write('yss-project.yaml','schema_version: 1\nrepository_mode: project-instance\n');
+  write('yss-project.yaml',nativeIdentity);
   for(const ref of ['CONTEXT.md','.template-spec/agents/issue-tracker.md'])write(ref,fs.readFileSync(ref));
   write('business.md','用户业务原文');write('.github/workflows/user.yml','name: user-owned\n');
   const run=(...args)=>spawnSync(process.execPath,[path.join(source,'scripts/project-ci'),...args,'--root',root],{encoding:'utf8',maxBuffer:16*1024*1024});
@@ -40,6 +42,26 @@ test('CI 显式接入只管理自身文件，重复应用幂等，人工修改�
   f.write('.github/workflows/yss-governance.yml',workflow+'# 人工修改\n');
   assert.notEqual(f.run('apply','--plan',path.join(f.root,'plan.json')).status,0);
   assert.match(fs.readFileSync(path.join(f.root,'.github/workflows/yss-governance.yml'),'utf8'),/人工修改/);
+});
+test('当前治理身份可接入，缺失、未知、非法、模板源或链接身份拒绝且只读',t=>{
+  const f=fixture(t),identity=path.join(f.root,'yss-project.yaml');
+  assert.equal(parse(fs.readFileSync(identity,'utf8')).schema_version,2);
+  assert.equal(JSON.parse(fs.readFileSync(path.join(f.root,'.yss.json'))).distribution.installation,'governed');
+  const plan=f.run('plan');assert.equal(plan.status,0,plan.stderr);f.write('plan.json',plan.stdout);
+  const tree=()=>fs.readdirSync(f.root,{recursive:true}).sort().map(ref=>{
+    const file=path.join(f.root,ref),stat=fs.lstatSync(file);
+    return [ref,stat.mode&0o777,stat.isSymbolicLink()?fs.readlinkSync(file):stat.isFile()?createHash('sha256').update(fs.readFileSync(file)).digest('hex'):null];
+  });
+  const invalid=[null,{schema_version:3,repository_mode:'project-instance'},{schema_version:'2',repository_mode:'project-instance'},{schema_version:2,repository_mode:'unknown'},{schema_version:1,repository_mode:'project-instance',extra:true},{schema_version:1,repository_mode:'template-source'},{schema_version:2,repository_mode:'template-source'},'linked'];
+  for(const value of invalid){
+    fs.rmSync(identity,{force:true});
+    if(value==='linked'){f.write('identity-source.yaml',nativeIdentity);fs.symlinkSync(path.join(f.root,'identity-source.yaml'),identity);}
+    else if(value!==null)f.write('yss-project.yaml',JSON.stringify(value));
+    const before=tree();
+    for(const args of [['plan'],['apply','--plan',path.join(f.root,'plan.json')],['apply','--recover'],['check','--json']]){
+      const result=f.run(...args);assert.notEqual(result.status,0,`${JSON.stringify(value)}: ${args.join(' ')}`);assert.deepEqual(tree(),before);
+    }
+  }
 });
 test('同名未托管文件、过期计划和篡改计划不写入',t=>{
   const f=fixture(t);f.write('.github/workflows/yss-governance.yml','manual');
@@ -119,8 +141,11 @@ test('摘要漂移、未知批准和非法流转不能作为通过；运行中�
   const task=spawnSync(process.execPath,[path.join(f.root,'scripts/lifecycle-status'),'--root',f.root,'--task','.work/a/task.json','--preflight'],{encoding:'utf8'});
   const report=JSON.parse(task.stdout);assert.notEqual(task.status,0);assert.equal(report.recovery.dispatch,false);assert.ok(report.diagnostics.some(x=>x.code==='task-not-resolved'));
 });
-test('有效当前会签可通过，删除批准记录和间接依据对照基线失败',t=>{
-  const f=fixture(t);tools(f);
+test('冻结历史岗位会签可读，删除批准记录和间接依据对照基线失败',t=>{
+  // 只验证原 CLI 2.4.0 的冻结身份/Profile/政策/岗位协议，不代表当前治理批准。
+  const f=fixture(t),historical=makeRoot('project-ci-history-','spec');
+  fs.cpSync(historical,f.root,{recursive:true});fs.rmSync(historical,{recursive:true,force:true});
+  f.write('.template-spec/agents/issue-tracker.md','---\ntracker: {platform: local-markdown, root: .work}\n---\n');
   const bound=ref=>({ref,digest:createHash('sha256').update(fs.readFileSync(path.join(f.root,ref))).digest('hex')});
   const boundary='check.design-reviewed',subject_ref='.work/a/subject.json',approval_ref='.work/a/approval.json';
   const current={subject_ref,approval_scope:['fixture'],basis:[bound('business.md')],drafter_principal_ref:'instance:test-drafter'};
@@ -129,7 +154,7 @@ test('有效当前会签可通过，删除批准记录和间接依据对照基�
   const approval={schema_version:1,gate_id:boundary,decision:'approved',actor_kind:'digital-human',role_id:'role.test-engineer',runtime_id:'runtime.generic',principal_ref:'instance:test-reviewer',...current,evidence_refs:[subject_ref],biological_veto:false};
   f.write('.work/a/approval.json',JSON.stringify(approval));
   const unowned=f.run('check');assert.equal(unowned.status,1,unowned.stdout);assert.ok(JSON.parse(unowned.stdout).diagnostics.some(x=>x.code==='approval-context-required'));
-  const checkpoint=parse(fs.readFileSync('.template-spec/process/templates/lifecycle-checkpoint-template.yaml','utf8'));
+  const checkpoint=parse(fs.readFileSync(path.join(f.root,'.template-spec/process/templates/lifecycle-checkpoint-template.yaml'),'utf8'));
   checkpoint.checks={[boundary]:{status:'approved',applicable:true,reason:'Synthetic current independent design review; not a delivery or release approval.',...current,approval_ref,basis:[...current.basis,bound(subject_ref),bound(approval_ref)],evidence_refs:[subject_ref],evidence:{'evidence.design-review-result':[subject_ref]}}};
   f.write('.work/a/checkpoint.json',JSON.stringify(checkpoint));
   const valid=f.run('check');assert.equal(valid.status,0,valid.stdout);assert.ok(JSON.parse(valid.stdout).checks.some(x=>x.id==='approval'&&x.exit_code===0));
