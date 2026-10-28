@@ -6,6 +6,21 @@ profiles:
     always_groups:
       - hygiene
     checks:
+      - id: check.design-md-instance-identity
+        run: "node --test .template-source/tooling/node/test/design-md.test.mjs"
+        group: design-system
+        inputs_complete: true
+        input_patterns:
+          - ".template-source/tooling/node/test/design-md.test.mjs"
+          - ".agents/skills/yss-design-system/scripts/design-md.mjs"
+          - ".workbuddy/skills/yss-design-system/scripts/design-md.mjs"
+          - ".template-source/design/**"
+          - ".template-spec/design/**"
+          - "scripts/vendor/yaml.mjs"
+          - "DESIGN.md"
+          - "yss-project.yaml"
+        depends_on: []
+        failure_mode: "独立技能实例被误判为模板源，设计摘要读取错误或治理身份无效时错误放行"
       - id: check.lifecycle-triage-replay
         run: "node --test tests/lifecycle-triage-replay.test.mjs"
         group: lifecycle
@@ -1342,13 +1357,24 @@ profiles:
           CONTEXT.md、术语表违反英文标识或重复规则、入口链接断开、运行时平台细节混入流程术语，常驻读取超过预算，或角色说明 /
           术语表与数字人角色注册表漂移"
       - id: check.initialization-reference-boundaries
-        run: "node --test tests/spec-initial-entry.test.mjs tests/backend-decision-distribution.test.mjs tests/backend-handoff-reference.test.mjs"
+        run: "node --test tests/spec-initial-entry.test.mjs tests/backend-decision-distribution.test.mjs tests/backend-handoff-reference.test.mjs tests/skills-reference-imports.test.mjs"
         group: feature-assets
         inputs_complete: true
         input_patterns:
           - "tests/spec-initial-entry.test.mjs"
           - "tests/backend-decision-distribution.test.mjs"
           - "tests/backend-handoff-reference.test.mjs"
+          - "tests/skills-reference-imports.test.mjs"
+          - ".agents/skills/**/*.mjs"
+          - ".agents/skills/**/*.js"
+          - ".template-source/design/**"
+          - ".template-source/process/**"
+          - ".template-spec/**"
+          - "profiles/backend/.agents/skills/**/*.mjs"
+          - "profiles/backend/.agents/skills/**/*.js"
+          - "profiles/backend/.template-source/process/**"
+          - "profiles/backend/.template-spec/**"
+          - "scripts/**"
           - "AGENTS.md"
           - ".template-source/distribution/bundle-profile.json"
           - ".template-spec/process/agent-entry-policy.md"
@@ -1371,7 +1397,7 @@ profiles:
           - "scripts/lib/profile-distribution.mjs"
           - "scripts/vendor/yaml.mjs"
         depends_on: []
-        failure_mode: "初始化入口、Backend 决定政策、跨端和 Plan 迁移引用指向未分发或不适用的资产"
+        failure_mode: "初始化入口、技能引用及其脚本依赖、Backend 决定政策、跨端和 Plan 迁移引用指向未分发或不适用的资产"
       - id: check.spec-role-free-guidance
         run: "node --test tests/spec-role-free-guidance.test.mjs"
         group: feature-assets
@@ -2861,7 +2887,7 @@ routing:
   - patterns: ["tests/stage-gates-contract.test.mjs", "tests/stage-result-native.test.mjs"]
     groups: [lifecycle]
 
-  - patterns: [ "tests/spec-initial-entry.test.mjs", "tests/backend-decision-distribution.test.mjs", "tests/backend-handoff-reference.test.mjs" ]
+  - patterns: [ "tests/spec-initial-entry.test.mjs", "tests/backend-decision-distribution.test.mjs", "tests/backend-handoff-reference.test.mjs", "tests/skills-reference-imports.test.mjs" ]
     groups: [ feature-assets ]
   - patterns: [ "scripts/fixtures/initialization-reference-closure/verify-candidate.mjs" ]
     groups: [ candidate-integrity ]
@@ -3057,6 +3083,9 @@ routing:
       - DESIGN.md
       - .template-spec/design/**
       - .template-source/tooling/node/scripts/design-md.mjs
+      - .template-source/tooling/node/test/design-md.test.mjs
+      - .agents/skills/yss-design-system/scripts/design-md.mjs
+      - .workbuddy/skills/yss-design-system/scripts/design-md.mjs
     groups:
       - design-system
   - patterns:
@@ -3528,7 +3557,7 @@ groups:
         id: check.schema-runtime
   feature-assets:
     commands:
-      - run: node --test tests/spec-initial-entry.test.mjs tests/backend-decision-distribution.test.mjs tests/backend-handoff-reference.test.mjs
+      - run: node --test tests/spec-initial-entry.test.mjs tests/backend-decision-distribution.test.mjs tests/backend-handoff-reference.test.mjs tests/skills-reference-imports.test.mjs
         id: check.initialization-reference-boundaries
       - run: node --test tests/daily-test-evidence.test.mjs
         id: check.daily-test-evidence
@@ -3617,6 +3646,8 @@ groups:
         resources: [ native-cli ]
   design-system:
     commands:
+      - run: node --test .template-source/tooling/node/test/design-md.test.mjs
+        id: check.design-md-instance-identity
       - run: node .template-source/tooling/node/scripts/design-md.mjs lint DESIGN.md
         when: template-source
         id: check.5178854477253978
@@ -4189,6 +4220,7 @@ gates:
       - check.feature-assets
       - check.5178854477253978
       - check.a27805ecf41a23e5
+      - check.design-md-instance-identity
       - check.a7f4f092f5b64b8d
       - check.3851a250b368d3ae
       - check.842384deeb868cce

@@ -20,6 +20,35 @@ function sha256(value) { return createHash("sha256").update(value).digest("hex")
 function fail(message) { throw new Error(message); }
 function escapeRegExp(value) { return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
 
+function checkTemplateSync() {
+  const identityPath = path.join(repositoryRoot, "yss-project.yaml");
+  if (existsSync(identityPath)) {
+    const document = parseDocument(readFileSync(identityPath, "utf8"), { uniqueKeys: true, maxAliasCount: 0 });
+    if (document.errors.length) fail(`无法解析 yss-project.yaml: ${document.errors[0].message}`);
+    const identity = document.toJS({ maxAliasCount: 0 });
+    if (!identity || typeof identity !== "object" || Array.isArray(identity) ||
+        JSON.stringify(Object.keys(identity).sort()) !== JSON.stringify(["repository_mode", "schema_version"]) ||
+        ![1, 2].includes(identity.schema_version) ||
+        !["template-source", "project-instance"].includes(identity.repository_mode) ||
+        identity.schema_version === 2 && identity.repository_mode !== "project-instance") {
+      fail("yss-project.yaml 必须声明受支持的 schema_version 和合法 repository_mode");
+    }
+    return identity.repository_mode === "template-source";
+  }
+  const nativePath = path.join(repositoryRoot, ".yss.json");
+  if (existsSync(nativePath)) {
+    let native;
+    try { native = JSON.parse(readFileSync(nativePath, "utf8")); }
+    catch { fail(".yss.json 无法解析，不能判断独立技能实例"); }
+    const profileId = { spec: "harness.spec-template", backend: "harness.backend-delivery" }[native?.profile];
+    if (![4, 5].includes(native?.schemaVersion) || !profileId || native.profileId !== profileId ||
+        native.distribution?.installation !== "skills") fail(".yss.json 不是有效的独立技能实例");
+    return false;
+  }
+  // 旧的独立使用没有身份文件：保留原有校验，不依据目录猜测实例身份。
+  return true;
+}
+
 function resolveValue(value, frontmatter) {
   const match = typeof value === "string" ? value.match(/^\{(colors|typography|rounded|spacing)\.([\w-]+)\}$/) : null;
   return match ? frontmatter[match[1]]?.[match[2]] : value;
@@ -101,7 +130,7 @@ function readDesign(file = designPath) {
     const [, group, token] = reference.match(/^\{([^}]+)\.([^}]+)\}$/);
     if (frontmatter[group]?.[token] === undefined) fail(`悬空 token 引用: ${reference}`);
   }
-  if (file === designPath && existsSync(syncMetadataPath)) {
+  if (file === designPath && existsSync(syncMetadataPath) && checkTemplateSync()) {
     const syncDocument = parseDocument(readFileSync(syncMetadataPath, "utf8"), { uniqueKeys: true, maxAliasCount: 0 });
     if (syncDocument.errors.length) fail(syncDocument.errors[0].message);
     const sync = syncDocument.toJS({ maxAliasCount: 0 })?.design_system_sync;

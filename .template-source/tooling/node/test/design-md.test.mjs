@@ -63,6 +63,37 @@ function state(root){
 }
 function run(data,args,options={}){const r=spawnSync(process.execPath,[data.file,...args],{cwd:data.root,encoding:'utf8',...options});assert.equal(r.error,undefined);return r;}
 
+test('项目实例自定义 DESIGN 不受模板源同步摘要约束', t => {
+  for (const mode of ['governed', 'skills', 'backend-skills']) {
+    const data=isolated(t);
+    if (mode==='governed') writeFileSync(path.join(data.root,'yss-project.yaml'),'schema_version: 2\nrepository_mode: project-instance\n');
+    else writeFileSync(path.join(data.root,'.yss.json'),JSON.stringify({schemaVersion:5,profile:mode==='skills'?'spec':'backend',profileId:mode==='skills'?'harness.spec-template':'harness.backend-delivery',distribution:{installation:'skills',mode:'skills'}}));
+    const design=path.join(data.root,'DESIGN.md');
+    writeFileSync(design,readFileSync(design,'utf8')+'\n<!-- project customization -->\n');
+    const before=state(data.root),result=run(data,['export','dtcg']);
+    assert.equal(result.status,0,`${mode}: ${result.stderr}`);
+    assert.ok(result.stdout.trim());
+    assert.deepEqual(state(data.root),before,'只读导出不得改写项目文件');
+  }
+});
+
+test('模板源仍校验同步摘要且不从非法身份推断实例', t => {
+  for (const manifest of ['schema_version: 1\nrepository_mode: template-source\n', 'schema_version: 999\nrepository_mode: project-instance\n']) {
+    const data=isolated(t);
+    writeFileSync(path.join(data.root,'yss-project.yaml'),manifest);
+    const sync=path.join(data.root,'.template-source/design/design-system-sync.yaml');
+    writeFileSync(sync,readFileSync(sync,'utf8').replace(/baseline_sha256: [a-f0-9]+/,'baseline_sha256: '+'0'.repeat(64)));
+    const result=run(data,['export','dtcg']);
+    assert.equal(result.status,1);
+    assert.match(result.stderr, manifest.includes('999') ? /yss-project.yaml/ : /baseline_sha256/);
+  }
+  const native=isolated(t);
+  writeFileSync(path.join(native.root,'.yss.json'),'{"schemaVersion":5,"profile":"spec","distribution":{"installation":"skills"}}');
+  const result=run(native,['export','dtcg']);
+  assert.equal(result.status,1);
+  assert.match(result.stderr,/\.yss\.json/);
+});
+
 test('canonical导入无副作用，空格路径下lint/diff/export/drift保持只读',t=>{
   const data=isolated(t),before=state(data.root);
   for(const extra of [[],['not-a-file'],['DESIGN.md'],[data.file]]) {

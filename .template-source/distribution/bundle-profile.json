@@ -26,7 +26,14 @@
       "yss-public-skills.json"
     ],
     "allowFiles": [
-      ".workbuddy/skills"
+      ".workbuddy/skills",
+      ".template-source/design/design-system-sync.yaml",
+      ".template-source/design/preview-dark.html",
+      ".template-source/design/preview.css",
+      ".template-source/design/preview.html",
+      ".template-source/design/preview.js",
+      ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+      ".template-source/process/maintenance-intensity.yaml"
     ],
     "excludeRootEntries": [
       ".git",
@@ -162,6 +169,34 @@
           "ownership": "protected"
         },
         {
+          "pattern": ".template-source/design/design-system-sync.yaml",
+          "ownership": "managed"
+        },
+        {
+          "pattern": ".template-source/design/preview-dark.html",
+          "ownership": "managed"
+        },
+        {
+          "pattern": ".template-source/design/preview.css",
+          "ownership": "managed"
+        },
+        {
+          "pattern": ".template-source/design/preview.html",
+          "ownership": "managed"
+        },
+        {
+          "pattern": ".template-source/design/preview.js",
+          "ownership": "managed"
+        },
+        {
+          "pattern": ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+          "ownership": "managed"
+        },
+        {
+          "pattern": ".template-source/process/maintenance-intensity.yaml",
+          "ownership": "managed"
+        },
+        {
           "pattern": ".template-source/**",
           "ownership": "protected"
         },
@@ -291,6 +326,7 @@
     "files": [
       ".template-spec/agents/yss-skill-registry.yaml",
       ".template-spec/agents/issue-tracker.md",
+      ".template-spec/agents/gitlab-workflow-skills.md",
       ".template-spec/agents/triage-labels.md",
       ".template-spec/process/lifecycle-registry.yaml",
       ".template-spec/process/schemas/lifecycle-registry.schema.json",
@@ -685,7 +721,752 @@
       ],
       "files": [
         ".gitignore"
-      ]
+      ],
+      "skillReferences": {
+        "cross-repo-implementation-routing": [
+          ".template-spec/templates/cross-repo-slice-template.md"
+        ],
+        "git-commit-core": [
+          ".template-spec/process/git-workflow.md"
+        ],
+        "implementation-repo-onboarding": [
+          ".template-spec/templates/implementation-repo-registry-template.md"
+        ],
+        "prototype-review": [
+          ".template-spec/design/templates/prototype-review-checklist.md",
+          ".template-spec/design/templates/state-matrix-template.md"
+        ],
+        "to-tickets": [
+          ".template-spec/templates/business-ticket-template.md",
+          ".template-spec/templates/vertical-slice-ticket-template.md"
+        ],
+        "yss-ddd-scaffold-generator": [
+          "scripts/lib/first-slice-artifacts.mjs",
+          "scripts/lib/first-slice-tests.mjs"
+        ],
+        "yss-design-system": [
+          ".template-source/design/design-system-sync.yaml",
+          ".template-spec/design/README.md",
+          ".template-spec/design/tokens/tokens.compact.json",
+          ".template-spec/design/tokens/tokens.dark.json"
+        ],
+        "yss-implementation-contract-compiler": [
+          ".template-spec/architecture/templates/system-overview-design-template.md",
+          ".template-spec/process/existing-backend-architecture.md",
+          ".template-spec/templates/verification-record-template.md"
+        ],
+        "yss-openapi-draft-review": [
+          ".template-spec/api/templates/openapi-draft-review-checklist.md",
+          "scripts/verify-openapi-draft-validation-record",
+          "scripts/verify-yss-dto-openapi-profile"
+        ],
+        "yss-openapi-governance": [
+          ".template-spec/api/templates/openapi-draft-validation-record-template.yaml",
+          ".template-spec/api/templates/openapi-json-export-record-template.md"
+        ],
+        "yss-product-lifecycle": [
+          ".template-source/process/maintenance-intensity.yaml",
+          ".template-spec/plan/README.md",
+          ".template-spec/process/daily-input-preparation.md",
+          ".template-spec/process/lifecycle-progression.md",
+          ".template-spec/process/orchestration-policy-consumers.md",
+          ".template-spec/process/templates/user-decision-template.yaml",
+          ".template-spec/templates/clarification-log-template.md",
+          "scripts/lib/daily-test-evidence.mjs"
+        ],
+        "yss-prototype-stage": [
+          ".template-spec/design/schemas/visual-baseline.schema.json",
+          ".template-spec/design/templates/visual-baseline-template.yaml",
+          ".template-spec/process/existing-ui-baseline.md"
+        ],
+        "yss-research": [
+          ".template-spec/process/research-completion.md"
+        ]
+      },
+      "referenceGroups": {
+        "shared-0e18575dd9": [
+          ".template-spec/agents/backend-architecture-profiles.md"
+        ],
+        "shared-179f5e18c6": [
+          ".template-spec/engineering/backend-platforms.json",
+          ".template-spec/engineering/evidence/aliyun-artifact-resolution.json",
+          ".template-spec/engineering/evidence/scaffold-3.2.0/ddd/contract.dto-wire.json",
+          ".template-spec/engineering/evidence/scaffold-3.2.0/ddd/contract.error-mapping.json",
+          ".template-spec/engineering/evidence/scaffold-3.2.0/ddd/contract.request-validation.json",
+          ".template-spec/engineering/evidence/scaffold-3.2.0/ddd/framework.mybatis.json",
+          ".template-spec/engineering/evidence/scaffold-3.2.0/ddd/qualification.json",
+          ".template-spec/engineering/evidence/scaffold-3.2.0/mvc/contract.dto-wire.json",
+          ".template-spec/engineering/evidence/scaffold-3.2.0/mvc/contract.error-mapping.json",
+          ".template-spec/engineering/evidence/scaffold-3.2.0/mvc/contract.request-validation.json",
+          ".template-spec/engineering/evidence/scaffold-3.2.0/mvc/framework.mybatis.json",
+          ".template-spec/engineering/evidence/scaffold-3.2.0/mvc/qualification.json",
+          ".template-spec/engineering/evidence/scaffold-3.2.0/resolution.json"
+        ],
+        "shared-1ecd7d9d6d": [
+          "scripts/lib/strategic-handoff-consumption.mjs"
+        ],
+        "shared-28f557729f": [
+          ".template-spec/templates/spec-template.md"
+        ],
+        "shared-311b8e8ea4": [
+          ".template-spec/process/harness-upgrade.md"
+        ],
+        "shared-3a067166ae": [
+          ".template-source/design/preview-dark.html",
+          ".template-source/design/preview.css",
+          ".template-source/design/preview.html",
+          ".template-source/design/preview.js",
+          ".template-spec/design/tokens/variables.css",
+          ".template-spec/design/tokens/variables.dark.css"
+        ],
+        "shared-3dcde92723": [
+          ".template-spec/process/schemas/strategic-consumer-feedback.schema.json",
+          ".template-spec/process/schemas/strategic-feedback-adjudication.schema.json",
+          ".template-spec/process/strategic-handoff-package.md",
+          "scripts/lib/strategic-feedback.mjs",
+          "scripts/strategic-consumer-entry",
+          "scripts/strategic-feedback",
+          "scripts/verify-strategic-handoff-consumption"
+        ],
+        "shared-3e81d1eb79": [
+          ".template-spec/agents/triage-labels.md"
+        ],
+        "shared-3f3ab1b5d8": [
+          ".template-spec/plan/templates/competitive-analysis-template.md",
+          ".template-spec/plan/templates/competitive-matrix-template.md"
+        ],
+        "shared-5a9539eea2": [
+          "scripts/lib/backend-platform-verification.mjs",
+          "scripts/lib/backend-scaffold-prerequisites.mjs",
+          "scripts/lib/repository-scope-policy.mjs",
+          "scripts/lib/scaffold-local-database.mjs",
+          "scripts/lib/standalone-backend-scaffold.mjs",
+          "scripts/vendor/xml.mjs"
+        ],
+        "shared-5efaf28cbd": [
+          ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md"
+        ],
+        "shared-6228adc270": [
+          ".template-spec/agents/skill-migrations.md",
+          ".template-spec/agents/yss-skill-registry.yaml",
+          ".template-spec/process/orchestration/workflow/work-units/work-unit.code-review.yaml",
+          "scripts/lib/repository-mode.mjs",
+          "scripts/lib/skill-supply-chain.mjs",
+          "scripts/lib/workbuddy-projection.mjs"
+        ],
+        "shared-6bad868043": [
+          ".template-spec/process/harness-process-tailoring.md"
+        ],
+        "shared-6e2e6196b3": [
+          ".template-spec/engineering/backend-platforms.md",
+          "scripts/backend-platforms",
+          "scripts/verify-backend-platform-matrix"
+        ],
+        "shared-7d4a5c7396": [
+          ".template-spec/process/business-tickets.md",
+          "scripts/verify-business-tickets"
+        ],
+        "shared-7f74ed3ead": [
+          ".template-spec/process/structured-assets.md",
+          "scripts/check-plan-stage-coverage"
+        ],
+        "shared-841cabab01": [
+          "scripts/lib/strategic-handoff-design-targets.mjs"
+        ],
+        "shared-933ab8965d": [
+          "scripts/lib/backend-platform-provenance.mjs",
+          "scripts/lib/backend-platform.mjs",
+          "scripts/lib/scaffold-reference-example.mjs",
+          "scripts/lib/source-context-snapshot.mjs",
+          "scripts/lib/validation-phase.mjs"
+        ],
+        "shared-9bf23608a2": [
+          ".template-spec/process/runtime-storage.md",
+          ".template-spec/process/subagent-collaboration.md",
+          "scripts/runtime-store"
+        ],
+        "shared-a9ef973309": [
+          ".template-spec/design/design.md",
+          ".template-spec/design/tokens/theme.json",
+          ".template-spec/design/tokens/tokens.default.json"
+        ],
+        "shared-b3140b6e52": [
+          "scripts/vendor/NOTICES.md",
+          "scripts/vendor/yaml.mjs"
+        ],
+        "shared-b5dde4f20b": [
+          ".template-spec/process/feature-assets.md",
+          "scripts/feature-assets",
+          "scripts/lib/feature-assets.mjs"
+        ],
+        "shared-b840935e15": [
+          ".template-spec/agents/gitlab-workflow-skills.md"
+        ],
+        "shared-c23351fcc6": [
+          ".template-spec/process/plan-spec-quality.md",
+          "scripts/inspect-plan-spec"
+        ],
+        "shared-c2f65a04ab": [
+          ".template-spec/design/templates/prototype-evidence-template.yaml"
+        ],
+        "shared-d0d5caa296": [
+          ".template-spec/process/implementation-repo-integration.md"
+        ],
+        "shared-dd1f0cf33e": [
+          ".template-spec/templates/review-report-template.md"
+        ],
+        "shared-f0a8def348": [
+          ".template-spec/agents/issue-tracker.md",
+          ".template-spec/plan/entry-review.md",
+          ".template-spec/plan/templates/plan-template.md",
+          ".template-spec/process/checkpoint-boundary.yaml",
+          ".template-spec/process/contract-reading.md",
+          ".template-spec/process/delivery-preflight.md",
+          ".template-spec/process/document-writing.md",
+          ".template-spec/process/harness-profile.yaml",
+          ".template-spec/process/lifecycle-registry-baseline-v1.json",
+          ".template-spec/process/lifecycle-registry-baseline.json",
+          ".template-spec/process/lifecycle-registry.yaml",
+          ".template-spec/process/orchestration-contract.yaml",
+          ".template-spec/process/orchestration/core/identity.yaml",
+          ".template-spec/process/orchestration/core/results.yaml",
+          ".template-spec/process/orchestration/core/state.yaml",
+          ".template-spec/process/orchestration/domain/implementation.yaml",
+          ".template-spec/process/orchestration/domain/planning.yaml",
+          ".template-spec/process/orchestration/domain/progression.yaml",
+          ".template-spec/process/orchestration/domain/review.yaml",
+          ".template-spec/process/orchestration/domain/stage-gates.yaml",
+          ".template-spec/process/orchestration/entry/execution.yaml",
+          ".template-spec/process/orchestration/entry/profile-policy.yaml",
+          ".template-spec/process/orchestration/entry/request-triage.yaml",
+          ".template-spec/process/orchestration/workflow/transitions.yaml",
+          ".template-spec/process/orchestration/workflow/work-units/work-unit.backend-delivery.yaml",
+          ".template-spec/process/orchestration/workflow/work-units/work-unit.business-ticket-formalization.yaml",
+          ".template-spec/process/orchestration/workflow/work-units/work-unit.domain-strategy-design.yaml",
+          ".template-spec/process/orchestration/workflow/work-units/work-unit.implementation-repository-preparation.yaml",
+          ".template-spec/process/orchestration/workflow/work-units/work-unit.maintenance-research.yaml",
+          ".template-spec/process/orchestration/workflow/work-units/work-unit.plan-opportunity.yaml",
+          ".template-spec/process/orchestration/workflow/work-units/work-unit.plan-requirements.yaml",
+          ".template-spec/process/orchestration/workflow/work-units/work-unit.prototype-design-v2.yaml",
+          ".template-spec/process/orchestration/workflow/work-units/work-unit.release-and-retrospective.yaml",
+          ".template-spec/process/orchestration/workflow/work-units/work-unit.slice-implementation.yaml",
+          ".template-spec/process/orchestration/workflow/work-units/work-unit.spec-synthesis.yaml",
+          ".template-spec/process/orchestration/workflow/work-units/work-unit.stage-decision.yaml",
+          ".template-spec/process/orchestration/workflow/work-units/work-unit.strategic-design-handoff.yaml",
+          ".template-spec/process/orchestration/workflow/work-units/work-unit.technical-analysis.yaml",
+          ".template-spec/process/orchestration/workflow/work-units/work-unit.ticket-decomposition.yaml",
+          ".template-spec/process/plan-migration.md",
+          ".template-spec/process/reading-policy.yaml",
+          ".template-spec/process/schemas/api-contract-decision-v2.schema.json",
+          ".template-spec/process/schemas/api-contract-decision.schema.json",
+          ".template-spec/process/schemas/approval-context.schema.json",
+          ".template-spec/process/schemas/approval-record.schema.json",
+          ".template-spec/process/schemas/approved-scope-continuation.schema.json",
+          ".template-spec/process/schemas/backend-architecture-identity.schema.json",
+          ".template-spec/process/schemas/backend-delivery-verification.schema.json",
+          ".template-spec/process/schemas/backend-delivery.schema.json",
+          ".template-spec/process/schemas/context-reconciliation.schema.json",
+          ".template-spec/process/schemas/data-architecture-decision.schema.json",
+          ".template-spec/process/schemas/delivery-preflight-input.schema.json",
+          ".template-spec/process/schemas/digital-human-task-package.schema.json",
+          ".template-spec/process/schemas/domain-strategy-reading.schema.json",
+          ".template-spec/process/schemas/existing-ui-baseline.schema.json",
+          ".template-spec/process/schemas/governance-evidence.schema.json",
+          ".template-spec/process/schemas/implementation-repository-preparation-result.schema.json",
+          ".template-spec/process/schemas/lifecycle-checkpoint.schema.json",
+          ".template-spec/process/schemas/plan-review-control.schema.json",
+          ".template-spec/process/schemas/progression-target.schema.json",
+          ".template-spec/process/schemas/project-scaffold-contract.schema.json",
+          ".template-spec/process/schemas/reading-policy.schema.json",
+          ".template-spec/process/schemas/review-bundle.schema.json",
+          ".template-spec/process/schemas/scaffold-architecture-decisions.schema.json",
+          ".template-spec/process/schemas/slice-implementation-contract-v3.schema.json",
+          ".template-spec/process/schemas/slice-implementation-contract-v4.schema.json",
+          ".template-spec/process/schemas/stage-decision-package-reading.schema.json",
+          ".template-spec/process/schemas/stage-result.schema.json",
+          ".template-spec/process/schemas/stage-tracking.schema.json",
+          ".template-spec/process/schemas/strategic-design-handoff-v4.schema.json",
+          ".template-spec/process/schemas/strategic-design-handoff-v5.schema.json",
+          ".template-spec/process/schemas/strategic-handoff-delivery-verification.schema.json",
+          ".template-spec/process/schemas/strategic-handoff-delivery.schema.json",
+          ".template-spec/process/schemas/strategic-handoff-import-receipt-v3.schema.json",
+          ".template-spec/process/schemas/strategic-handoff-import-receipt.schema.json",
+          ".template-spec/process/schemas/subagent-task-package.schema.json",
+          ".template-spec/process/schemas/user-decision.schema.json",
+          ".template-spec/process/script-execution.md",
+          ".template-spec/process/stage-gates.md",
+          ".template-spec/process/stage-tracking.md",
+          ".template-spec/process/templates/lifecycle-checkpoint-template.json",
+          ".template-spec/process/templates/lifecycle-checkpoint-template.yaml",
+          ".template-spec/process/work-layout.md",
+          ".template-spec/templates/examples/lifecycle-writing-examples.md",
+          ".template-spec/templates/spec-lite-template.md",
+          "scripts/analyze-artifacts",
+          "scripts/api-contract-decision",
+          "scripts/backend-delivery",
+          "scripts/complete-backend-delivery",
+          "scripts/contract",
+          "scripts/gitworks",
+          "scripts/lib/api-contract-decision.mjs",
+          "scripts/lib/approved-execution-context.mjs",
+          "scripts/lib/artifact-analysis.mjs",
+          "scripts/lib/asset-command.mjs",
+          "scripts/lib/asset-migration.mjs",
+          "scripts/lib/asset-transactions.mjs",
+          "scripts/lib/backend-architecture.mjs",
+          "scripts/lib/backend-delivery-terminal.mjs",
+          "scripts/lib/backend-delivery.mjs",
+          "scripts/lib/backend-review.mjs",
+          "scripts/lib/backend-standards-coverage.mjs",
+          "scripts/lib/business-ticket-lifecycle.mjs",
+          "scripts/lib/business-tickets.mjs",
+          "scripts/lib/checkpoint-boundary.mjs",
+          "scripts/lib/command-runner.mjs",
+          "scripts/lib/content-identity.mjs",
+          "scripts/lib/context-contract.mjs",
+          "scripts/lib/context-reconciliation.mjs",
+          "scripts/lib/contract-review-preparation.mjs",
+          "scripts/lib/contract-source.mjs",
+          "scripts/lib/contract-views.mjs",
+          "scripts/lib/delivery-preflight.mjs",
+          "scripts/lib/digital-human-roles.mjs",
+          "scripts/lib/drift-report.mjs",
+          "scripts/lib/execution-evidence.mjs",
+          "scripts/lib/existing-backend-architecture.mjs",
+          "scripts/lib/existing-ui-baseline.mjs",
+          "scripts/lib/governance-io.mjs",
+          "scripts/lib/harness-execution-scope.mjs",
+          "scripts/lib/harness-skill-scope.mjs",
+          "scripts/lib/implementation-candidate-current.mjs",
+          "scripts/lib/implementation-contract-compiler.mjs",
+          "scripts/lib/implementation-path-policy.mjs",
+          "scripts/lib/instance-metadata.mjs",
+          "scripts/lib/json-schema.mjs",
+          "scripts/lib/lifecycle-context-query-core.mjs",
+          "scripts/lib/lifecycle-context-query.mjs",
+          "scripts/lib/lifecycle-controls.mjs",
+          "scripts/lib/lifecycle-execution-scope.mjs",
+          "scripts/lib/lifecycle-presentation.mjs",
+          "scripts/lib/lifecycle-progression.mjs",
+          "scripts/lib/lifecycle-readiness.mjs",
+          "scripts/lib/lifecycle-registry.mjs",
+          "scripts/lib/lifecycle-status.mjs",
+          "scripts/lib/lifecycle-transition.mjs",
+          "scripts/lib/maintenance-candidate.mjs",
+          "scripts/lib/maintenance-research.mjs",
+          "scripts/lib/maintenance-storage.mjs",
+          "scripts/lib/native-approval.mjs",
+          "scripts/lib/native-context.mjs",
+          "scripts/lib/native-evidence.mjs",
+          "scripts/lib/native-user-decision.mjs",
+          "scripts/lib/openapi-draft-validation.mjs",
+          "scripts/lib/orchestration-contract.mjs",
+          "scripts/lib/plan-review-control.mjs",
+          "scripts/lib/plan-spec-entry-view.mjs",
+          "scripts/lib/plan-spec-entry.mjs",
+          "scripts/lib/plan-spec-markdown.mjs",
+          "scripts/lib/plan-spec-quality.mjs",
+          "scripts/lib/plan-stage-coverage.mjs",
+          "scripts/lib/project-governance.mjs",
+          "scripts/lib/read-only-intake.mjs",
+          "scripts/lib/reading-view-adapters.mjs",
+          "scripts/lib/reading-view-bundle.mjs",
+          "scripts/lib/reading-view-diff.mjs",
+          "scripts/lib/reading-view-markdown.mjs",
+          "scripts/lib/reading-view-model.mjs",
+          "scripts/lib/reading-view-policy.mjs",
+          "scripts/lib/review-capabilities.mjs",
+          "scripts/lib/review-package.mjs",
+          "scripts/lib/runtime-store.mjs",
+          "scripts/lib/skill-registry.mjs",
+          "scripts/lib/slice-applicability.mjs",
+          "scripts/lib/slice-contract-preparation.mjs",
+          "scripts/lib/slice-contract-views.mjs",
+          "scripts/lib/slice-contract.mjs",
+          "scripts/lib/slice-execution-preflight.mjs",
+          "scripts/lib/slice-repositories.mjs",
+          "scripts/lib/slice-task-package.mjs",
+          "scripts/lib/stage-result.mjs",
+          "scripts/lib/stage-tracking-migration.mjs",
+          "scripts/lib/stage-tracking.mjs",
+          "scripts/lib/strategic-handoff-io.mjs",
+          "scripts/lib/strategic-handoff-routing.mjs",
+          "scripts/lib/strategic-handoff-rules.mjs",
+          "scripts/lib/strategic-handoff.mjs",
+          "scripts/lib/structured-assets.mjs",
+          "scripts/lib/task-package-schema.mjs",
+          "scripts/lib/task-package.mjs",
+          "scripts/lib/technical-design-boundary.mjs",
+          "scripts/lib/ui-baseline.mjs",
+          "scripts/lib/user-decision-core.mjs",
+          "scripts/lib/work-layout.mjs",
+          "scripts/lifecycle-status",
+          "scripts/plan-spec-entry",
+          "scripts/preflight-delivery",
+          "scripts/prepare-review-package",
+          "scripts/query-lifecycle-context",
+          "scripts/slice-contract",
+          "scripts/stage-tracking",
+          "scripts/strategic-handoff",
+          "scripts/sync-skills",
+          "scripts/update-skill-lock",
+          "scripts/vendor/markdown.mjs",
+          "scripts/verify-approval-record",
+          "scripts/verify-context-reconciliation",
+          "scripts/verify-digital-human-task-package",
+          "scripts/verify-lifecycle-checkpoint",
+          "scripts/verify-maintenance-research",
+          "scripts/verify-plan-spec-entry",
+          "scripts/verify-user-decision",
+          "scripts/verify-work-layout"
+        ]
+      },
+      "skillReferenceGroups": {
+        "alibaba-java-code-style": [
+          "shared-0e18575dd9"
+        ],
+        "code-review": [
+          "shared-179f5e18c6",
+          "shared-5efaf28cbd",
+          "shared-6228adc270",
+          "shared-6bad868043",
+          "shared-933ab8965d",
+          "shared-b3140b6e52",
+          "shared-b840935e15",
+          "shared-dd1f0cf33e",
+          "shared-f0a8def348"
+        ],
+        "competitive-intelligence": [
+          "shared-179f5e18c6",
+          "shared-3f3ab1b5d8",
+          "shared-6228adc270",
+          "shared-6bad868043",
+          "shared-933ab8965d",
+          "shared-b3140b6e52",
+          "shared-dd1f0cf33e",
+          "shared-f0a8def348"
+        ],
+        "cross-repo-implementation-routing": [
+          "shared-179f5e18c6",
+          "shared-6228adc270",
+          "shared-6bad868043",
+          "shared-933ab8965d",
+          "shared-b3140b6e52",
+          "shared-d0d5caa296",
+          "shared-dd1f0cf33e",
+          "shared-f0a8def348"
+        ],
+        "diagnosing-bugs": [
+          "shared-179f5e18c6",
+          "shared-5efaf28cbd",
+          "shared-6228adc270",
+          "shared-6bad868043",
+          "shared-933ab8965d",
+          "shared-b3140b6e52",
+          "shared-dd1f0cf33e",
+          "shared-f0a8def348"
+        ],
+        "domain-modeling": [
+          "shared-5efaf28cbd"
+        ],
+        "grilling": [
+          "shared-5efaf28cbd"
+        ],
+        "handoff": [
+          "shared-179f5e18c6",
+          "shared-1ecd7d9d6d",
+          "shared-3dcde92723",
+          "shared-5efaf28cbd",
+          "shared-6228adc270",
+          "shared-6bad868043",
+          "shared-933ab8965d",
+          "shared-b3140b6e52",
+          "shared-dd1f0cf33e",
+          "shared-f0a8def348"
+        ],
+        "i-have-adhd": [
+          "shared-179f5e18c6",
+          "shared-6228adc270",
+          "shared-6bad868043",
+          "shared-933ab8965d",
+          "shared-b3140b6e52",
+          "shared-dd1f0cf33e",
+          "shared-f0a8def348"
+        ],
+        "implement": [
+          "shared-5efaf28cbd"
+        ],
+        "implementation-repo-onboarding": [
+          "shared-179f5e18c6",
+          "shared-6228adc270",
+          "shared-6bad868043",
+          "shared-933ab8965d",
+          "shared-b3140b6e52",
+          "shared-d0d5caa296",
+          "shared-dd1f0cf33e",
+          "shared-f0a8def348"
+        ],
+        "maintaining-skills": [
+          "shared-6bad868043"
+        ],
+        "prototype-review": [
+          "shared-179f5e18c6",
+          "shared-6228adc270",
+          "shared-6bad868043",
+          "shared-933ab8965d",
+          "shared-a9ef973309",
+          "shared-b3140b6e52",
+          "shared-b840935e15",
+          "shared-c2f65a04ab",
+          "shared-dd1f0cf33e",
+          "shared-f0a8def348"
+        ],
+        "setup-matt-pocock-skills": [
+          "shared-179f5e18c6",
+          "shared-3e81d1eb79",
+          "shared-5efaf28cbd",
+          "shared-6228adc270",
+          "shared-6bad868043",
+          "shared-933ab8965d",
+          "shared-b3140b6e52",
+          "shared-b840935e15",
+          "shared-dd1f0cf33e",
+          "shared-f0a8def348"
+        ],
+        "setup-yss-harness": [
+          "shared-311b8e8ea4"
+        ],
+        "to-spec": [
+          "shared-179f5e18c6",
+          "shared-28f557729f",
+          "shared-5efaf28cbd",
+          "shared-6228adc270",
+          "shared-6bad868043",
+          "shared-7d4a5c7396",
+          "shared-933ab8965d",
+          "shared-b3140b6e52",
+          "shared-c23351fcc6",
+          "shared-dd1f0cf33e",
+          "shared-f0a8def348"
+        ],
+        "to-tickets": [
+          "shared-179f5e18c6",
+          "shared-5efaf28cbd",
+          "shared-6228adc270",
+          "shared-6bad868043",
+          "shared-7d4a5c7396",
+          "shared-933ab8965d",
+          "shared-b3140b6e52",
+          "shared-b840935e15",
+          "shared-dd1f0cf33e",
+          "shared-f0a8def348"
+        ],
+        "triage": [
+          "shared-3e81d1eb79",
+          "shared-5efaf28cbd"
+        ],
+        "yss-application": [
+          "shared-0e18575dd9"
+        ],
+        "yss-backend-spec-review": [
+          "shared-179f5e18c6",
+          "shared-dd1f0cf33e"
+        ],
+        "yss-ddd-scaffold-generator": [
+          "shared-0e18575dd9",
+          "shared-179f5e18c6",
+          "shared-1ecd7d9d6d",
+          "shared-5a9539eea2",
+          "shared-6228adc270",
+          "shared-6bad868043",
+          "shared-6e2e6196b3",
+          "shared-841cabab01",
+          "shared-933ab8965d",
+          "shared-b3140b6e52",
+          "shared-b840935e15",
+          "shared-dd1f0cf33e",
+          "shared-f0a8def348"
+        ],
+        "yss-design-system": [
+          "shared-3a067166ae",
+          "shared-a9ef973309",
+          "shared-b3140b6e52"
+        ],
+        "yss-domain": [
+          "shared-0e18575dd9"
+        ],
+        "yss-dto": [
+          "shared-0e18575dd9"
+        ],
+        "yss-exception": [
+          "shared-0e18575dd9"
+        ],
+        "yss-implementation-contract-compiler": [
+          "shared-179f5e18c6",
+          "shared-1ecd7d9d6d",
+          "shared-3dcde92723",
+          "shared-6228adc270",
+          "shared-6bad868043",
+          "shared-6e2e6196b3",
+          "shared-7d4a5c7396",
+          "shared-933ab8965d",
+          "shared-b3140b6e52",
+          "shared-dd1f0cf33e",
+          "shared-f0a8def348"
+        ],
+        "yss-layered-mvc-scaffold-generator": [
+          "shared-0e18575dd9",
+          "shared-179f5e18c6",
+          "shared-1ecd7d9d6d",
+          "shared-5a9539eea2",
+          "shared-6228adc270",
+          "shared-6bad868043",
+          "shared-6e2e6196b3",
+          "shared-841cabab01",
+          "shared-933ab8965d",
+          "shared-b3140b6e52",
+          "shared-dd1f0cf33e",
+          "shared-f0a8def348"
+        ],
+        "yss-openapi-draft-review": [
+          "shared-179f5e18c6",
+          "shared-6228adc270",
+          "shared-6bad868043",
+          "shared-933ab8965d",
+          "shared-b3140b6e52",
+          "shared-b840935e15",
+          "shared-dd1f0cf33e",
+          "shared-f0a8def348"
+        ],
+        "yss-openapi-governance": [
+          "shared-179f5e18c6",
+          "shared-6228adc270",
+          "shared-6bad868043",
+          "shared-933ab8965d",
+          "shared-b3140b6e52",
+          "shared-b840935e15",
+          "shared-dd1f0cf33e",
+          "shared-f0a8def348"
+        ],
+        "yss-product-lifecycle": [
+          "shared-179f5e18c6",
+          "shared-1ecd7d9d6d",
+          "shared-28f557729f",
+          "shared-311b8e8ea4",
+          "shared-3dcde92723",
+          "shared-3e81d1eb79",
+          "shared-6228adc270",
+          "shared-6bad868043",
+          "shared-6e2e6196b3",
+          "shared-7d4a5c7396",
+          "shared-7f74ed3ead",
+          "shared-933ab8965d",
+          "shared-9bf23608a2",
+          "shared-b3140b6e52",
+          "shared-b5dde4f20b",
+          "shared-b840935e15",
+          "shared-c23351fcc6",
+          "shared-dd1f0cf33e",
+          "shared-f0a8def348"
+        ],
+        "yss-prototype-stage": [
+          "shared-179f5e18c6",
+          "shared-3a067166ae",
+          "shared-6228adc270",
+          "shared-6bad868043",
+          "shared-7d4a5c7396",
+          "shared-933ab8965d",
+          "shared-a9ef973309",
+          "shared-b3140b6e52",
+          "shared-b5dde4f20b",
+          "shared-b840935e15",
+          "shared-c2f65a04ab",
+          "shared-dd1f0cf33e",
+          "shared-f0a8def348"
+        ],
+        "yss-repository": [
+          "shared-0e18575dd9",
+          "shared-179f5e18c6",
+          "shared-6228adc270",
+          "shared-6e2e6196b3",
+          "shared-933ab8965d",
+          "shared-b3140b6e52",
+          "shared-dd1f0cf33e"
+        ],
+        "yss-research": [
+          "shared-179f5e18c6",
+          "shared-3f3ab1b5d8",
+          "shared-5efaf28cbd",
+          "shared-6228adc270",
+          "shared-6bad868043",
+          "shared-933ab8965d",
+          "shared-9bf23608a2",
+          "shared-b3140b6e52",
+          "shared-dd1f0cf33e",
+          "shared-f0a8def348"
+        ],
+        "yss-skill-source-index-refresh": [
+          "shared-179f5e18c6",
+          "shared-6e2e6196b3",
+          "shared-933ab8965d",
+          "shared-b3140b6e52"
+        ],
+        "yss-stage-decision": [
+          "shared-179f5e18c6",
+          "shared-1ecd7d9d6d",
+          "shared-3dcde92723",
+          "shared-6228adc270",
+          "shared-6bad868043",
+          "shared-7f74ed3ead",
+          "shared-933ab8965d",
+          "shared-b3140b6e52",
+          "shared-c23351fcc6",
+          "shared-dd1f0cf33e",
+          "shared-f0a8def348"
+        ],
+        "yss-tactical-design": [
+          "shared-0e18575dd9",
+          "shared-179f5e18c6",
+          "shared-1ecd7d9d6d",
+          "shared-3dcde92723",
+          "shared-6228adc270",
+          "shared-6bad868043",
+          "shared-6e2e6196b3",
+          "shared-933ab8965d",
+          "shared-b3140b6e52",
+          "shared-dd1f0cf33e",
+          "shared-f0a8def348"
+        ],
+        "yss-technical-design": [
+          "shared-0e18575dd9",
+          "shared-179f5e18c6",
+          "shared-1ecd7d9d6d",
+          "shared-3dcde92723",
+          "shared-6228adc270",
+          "shared-6bad868043",
+          "shared-6e2e6196b3",
+          "shared-7d4a5c7396",
+          "shared-841cabab01",
+          "shared-933ab8965d",
+          "shared-b3140b6e52",
+          "shared-dd1f0cf33e",
+          "shared-f0a8def348"
+        ],
+        "yss-up-springboot3": [
+          "shared-179f5e18c6"
+        ],
+        "yss-web-controller": [
+          "shared-0e18575dd9",
+          "shared-179f5e18c6",
+          "shared-6228adc270",
+          "shared-6bad868043",
+          "shared-6e2e6196b3",
+          "shared-933ab8965d",
+          "shared-b3140b6e52",
+          "shared-dd1f0cf33e",
+          "shared-f0a8def348"
+        ]
+      }
     },
     "governed": {}
   }
