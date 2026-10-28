@@ -336,6 +336,24 @@ def normalize_events(raw, runtime):
     return events
 
 
+def runtime_event_findings(events, exit_code, timed_out):
+    """Keep nonfatal catalog advice distinct from provider/turn failures."""
+    errors, warnings = [], []
+    completed = any(event.get('type') == 'turn.completed' for event in events)
+    advice = re.compile(r'Model metadata for `[A-Za-z0-9_.-]+` not found\. Defaulting to fallback metadata; this can degrade performance and cause issues\.')
+    for event in events:
+        if event.get('type') != 'error' and event.get('item', {}).get('type') != 'error':
+            continue
+        message = event.get('item', {}).get('message', '')
+        if exit_code == 0 and completed and not timed_out and event.get('type') == 'item.completed' and isinstance(message, str) and advice.fullmatch(message):
+            warnings.append(event)
+        else:
+            errors.append(event)
+    if not timed_out and not completed:
+        errors.append({'type': 'error', 'message': 'runtime exited without a completed turn; inspect stderr.log'})
+    return errors, warnings
+
+
 def execute_step(command, env, destination, workspace, step, commands, timeout, budget=None, runtime_kind='codex'):
     destination.mkdir(exist_ok=True)
     write_fixture_files(workspace, step.get("files", {}))
@@ -384,11 +402,10 @@ def execute_step(command, env, destination, workspace, step, commands, timeout, 
         failures = [{'error_type': type(error).__name__, 'message': str(error), 'phase': 'scoring'}]
         writes = {'status': 'not-checked', 'allowed_writes': refs, 'violations': [], 'reason': 'scoring failed'}
         git_audit = {'status': 'failed', 'reason': str(error)}
-    errors += [e for e in events if e.get("type") == "error" or e.get("item", {}).get("type") == "error"]
-    if not timed_out and not any(e.get("type") == "turn.completed" for e in events):
-        errors.append({"type": "error", "message": "runtime exited without a completed turn; inspect stderr.log"})
+    event_errors, warnings = runtime_event_findings(events, exit_code, timed_out)
+    errors += event_errors
     calls = [e["item"] for e in events if e.get("type") == "item.completed" and e.get("item", {}).get("type") in ["command_execution", "mcp_tool_call", "file_change"]]
-    row = {"step": step["id"], "started_at": started_at, "elapsed_seconds": round(time.monotonic()-tick, 2), "exit_code": exit_code, "timeout": timed_out, "assertion_failures": failures, "runtime_errors": errors, "tool_calls": len(calls), "usage": [e["usage"] for e in events if "usage" in e], "automatic_result": "passed" if exit_code == 0 and not failures and not errors else "failed", "semantic_review": "pending", "trace": str(destination / "trace.jsonl")}
+    row = {"step": step["id"], "started_at": started_at, "elapsed_seconds": round(time.monotonic()-tick, 2), "exit_code": exit_code, "timeout": timed_out, "assertion_failures": failures, "runtime_errors": errors, "runtime_warnings": warnings, "tool_calls": len(calls), "usage": [e["usage"] for e in events if "usage" in e], "automatic_result": "passed" if exit_code == 0 and not failures and not errors else "failed", "semantic_review": "pending", "trace": str(destination / "trace.jsonl")}
     row['write_scope'] = writes
     row['git_audit'] = git_audit
     row['skill_reads'] = skill_reads(events)
@@ -483,7 +500,7 @@ def runtime_command(args, runtime, workspace, private, env):
     kind = getattr(args, 'runtime', 'codex')
     if kind == 'codex':
         flags, _ = codex_provider_flags(getattr(args, 'codex_config_source', None))
-        return [str(runtime), 'exec', *(['--approve-for-me'] if env.get('YSS_EVAL_REAL_GIT') == '1' else ['--sandbox', 'workspace-write']), '--ignore-user-config', '--ephemeral', '--json', '--skip-git-repo-check', '-c', 'shell_environment_policy.inherit="all"', '-c', 'shell_environment_policy.ignore_default_excludes=true', '-c', f'model_reasoning_effort="{args.reasoning_effort}"', '--model', args.model, '-C', str(workspace)] + flags
+        return [str(runtime), 'exec', '--disable', 'plugins', '--disable', 'remote_plugin', '--disable', 'apps', *(['--approve-for-me'] if env.get('YSS_EVAL_REAL_GIT') == '1' else ['--sandbox', 'workspace-write']), '--ignore-user-config', '--ephemeral', '--json', '--skip-git-repo-check', '-c', 'shell_environment_policy.inherit="all"', '-c', 'shell_environment_policy.ignore_default_excludes=true', '-c', f'model_reasoning_effort="{args.reasoning_effort}"', '--model', args.model, '-C', str(workspace)] + flags
     if kind == 'pi':
         provider = getattr(args, 'pi_provider', None)
         config = getattr(args, 'pi_models_source', None)
@@ -580,6 +597,14 @@ else:print('fixture command passed')
             home = private / "home"; home.mkdir()
             env = os.environ.copy()
             env.update(HOME=str(home), CODEX_HOME=str(private), PATH=str(bin_dir) + os.pathsep + env["PATH"], YSS_EVAL_COMMAND_LOG=str(commands), YSS_EVAL_GIT_STATUS=case.get("git_status", ""), TMPDIR=str(temporary))
+            for key in ['CODEX_APP_RUNTIME_CLI_PATH', 'CODEX_APP_TOOLS_PIPE_PATH', 'CODEX_THREAD_ID', 'CODEX_SESSION_ID', 'CODEX_INTERNAL_ORIGINATOR_OVERRIDE']:
+                env.pop(key, None)
+            env['ZDOTDIR'] = str(home)
+            # Login shells may reorder PATH after the runtime receives its environment.
+            profile = 'export PATH=' + shlex.quote(env['PATH']) + '\n'
+            for name in ['.zprofile', '.bash_profile']:
+                (home / name).write_text(profile)
+
             capabilities = case.get('runtime_capabilities', 'readonly')
             if capabilities not in ['readonly', 'fixture-write']: raise ValueError('unknown runtime_capabilities')
             if case.get('real_pnpm_commands'):

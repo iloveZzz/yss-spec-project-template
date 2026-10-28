@@ -1,6 +1,6 @@
 # Matt / YSS 工作流适配
 
-本文件的工作单元预检、正式结果和阶段入口适用于 `governed` 或模板维护；显式兼容入口仍按其正式合同执行。普通任务先由当前 Spec 政策与支持的 CLI 判定，合格时按 [普通任务交付](daily-delivery.md) 使用 YSS 技术规则、测试和适用复核，不先建立正式阶段资产。旧 CLI 或其他 Profile 明确不支持，不以 Matt 通用指令越过原边界。
+本文件的工作单元预检、正式结果和阶段入口适用于 `governed` 或模板维护；显式兼容入口的正式调用仍按其正式合同执行；普通 Spec 草稿与未启用治理工程先按 [普通路由](standalone-routing.md) 处理，显式 to-spec 复用 [普通规格起草](standalone-spec.md)，不要求 Tracker/Plan 初始化。普通任务先由当前 Spec 政策与支持的 CLI 判定，合格时按 [普通任务交付](daily-delivery.md) 使用 YSS 技术规则、测试和适用复核，不先建立正式阶段资产。旧 CLI 或其他 Profile 明确不支持，不以 Matt 通用指令越过原边界。
 
 上游来源是 [mattpocock/skills](https://github.com/mattpocock/skills)。固定提交、原始哈希和实际生效的 YSS 适配哈希以根 `skills-lock.json` 为准；补装使用模板快照中的适配版，不直接覆盖为上游最新版本。
 
@@ -48,7 +48,7 @@ Matt skills 决定如何工作；YSS 生命周期决定是否允许推进；YSS 
 
 ## 入口与仓库身份裁决
 
-- 所有入口先读取 `yss-project.yaml`。缺失、解析失败、schema 不支持或 `repository_mode` 非法时，停止路由并进入 migration-check。
+- 先按 life 的分支判定区分普通和正式。正式分支先读取 `yss-project.yaml`；缺失、解析失败、schema 不支持或 `repository_mode` 非法时停止受影响工作，不回退普通路径。
 - **直接调用生命周期管理的 Matt user-invoked skill**（`setup-matt-pocock-skills`、`to-spec`、`to-tickets`、`implement`）时，用户仍是正式资产的创建者；生命周期先校验前置条件，再接受结果并重新计算阶段、门禁和状态。其他 user-invoked skill 同样不得由生命周期自动调用；只有在其专属适配合同存在时才进入 YSS 流程。
 - **直接调用 `yss-product-lifecycle`** 时，不机械嵌套调用任何 Matt user-invoked skill；编排器直接使用原生工作单元和允许的 model-invoked 原语。Matt user-invoked skill 保持显式兼容入口，生命周期负责准备、校验并验收其结果。
 - `template-source` 只允许进入模板维护流程。命中 `to-spec`、`to-tickets`、`implement`、Release 或 Retrospective 时返回 `blocked`，原因是 `template-source-product-artifact-forbidden`；`setup-matt-pocock-skills` 不得为具体产品生成 Spec、prototype、OpenAPI 或垂直切片 Ticket。

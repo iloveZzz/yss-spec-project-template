@@ -6,9 +6,9 @@ import path from 'node:path';
 import { tmpdir } from 'node:os';
 import { spawnSync } from 'node:child_process';
 import { fixture } from '../../../../scripts/fixtures/strategic-handoff/fixture.mjs';
-import { finalizeDelivery } from '../../../../scripts/lib/strategic-handoff.mjs';
+import { assertImportReceipt, exportBundle, finalizeDelivery, importBundle, openBundle } from '../../../../scripts/lib/strategic-handoff.mjs';
 import { consumerEntry } from '../../../../scripts/lib/strategic-handoff-routing.mjs';
-import { materializeTestPlugin } from '../scripts/tooling-fixture.mjs';
+import { materializeTestPlugin, treeInventory } from '../scripts/tooling-fixture.mjs';
 
 const ROOT = path.resolve(import.meta.dirname, '../../../..');
 test('consumer mapping preserves dedicated backend identity and rejects unknown wire IDs or out-of-profile targets', t => {
@@ -31,7 +31,7 @@ test('backend plugin receives Handoff v5 without bypassing engineering or implem
   t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
   const plugin = path.join(dir, 'plugin/yss-backend-delivery'), target = path.join(dir, 'backend-governance');
   const run = (file, args) => spawnSync(process.execPath, [file, ...args], { encoding: 'utf8', timeout: 120000, maxBuffer: 32 * 1024 * 1024 });
-  const ok = r => { assert.equal(r.status, 0, r.stderr); return JSON.parse(r.stdout); };
+  const ok = r => { assert.equal(r.status, 0, r.stderr || r.stdout || r.error?.message || `signal=${r.signal}`); return JSON.parse(r.stdout); };
   materializeTestPlugin({ sourceRoot: ROOT, output: plugin, build: () => ok(run(path.join(ROOT, '.template-source/plugins/yss-backend-delivery/build.mjs'), ['--output', plugin])) });
   const call = (command, args = []) => run(path.join(plugin, 'scripts/plugin.mjs'), [command, ...args]);
   const put = (ref, data) => { const file = path.join(dir, ref); fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, typeof data === 'string' ? data : JSON.stringify(data)); return file; };
@@ -39,7 +39,7 @@ test('backend plugin receives Handoff v5 without bypassing engineering or implem
   ok(call('project-apply', ['--plan', put('plan.json', plan)]));
   const source = path.join(dir, 'synthetic-source'); fs.mkdirSync(source);
   await fixture(source, { handoffVersion: 5 });
-  const delivery = await finalizeDelivery({ sourceRoot: source, handoffRef: 'handoff.yaml', zip: true });
+  const delivery = await finalizeDelivery({ sourceRoot: source, handoffRef: 'handoff.yaml', zip: true, evidenceRoot: source });
   let receipt;
   await t.test('formal directory import selects only backend responsibility and maps wire entry', () => {
     const result = ok(call('project-import-design', ['--target-dir', target, '--bundle', delivery.delivery]));
@@ -63,17 +63,42 @@ test('backend plugin receives Handoff v5 without bypassing engineering or implem
     ok(call('project-import-design', ['--target-dir', target, '--bundle', delivery.delivery]));
     assert.deepEqual(fs.readFileSync(path.join(target, receipt)), first);
   });
-  await t.test('transport ZIP imports into another governance root with the existing v2 receipt contract', () => {
-    const zipTarget = path.join(dir, 'ZIP 接收端');
+  const zipTarget = path.join(dir, 'ZIP 接收端');
+  await t.test('bare Handoff v5 ZIP is rejected without changing the receiving project', () => {
     const zipPlan = ok(call('project-plan', ['--target-dir', zipTarget, '--project-name', 'ZIP 验证', '--business-domain', '测试', '--team-size', '1', '--issue-tracker', 'github']));
     ok(call('project-apply', ['--plan', put('zip-plan.json', zipPlan)]));
-    const imported = ok(call('project-import-design', ['--target-dir', zipTarget, '--bundle', path.join(delivery.delivery, 'package.zip')]));
-    const saved = JSON.parse(fs.readFileSync(path.join(zipTarget, imported.import_receipt_ref)));
+    const before = treeInventory(zipTarget);
+    const result = call('project-import-design', ['--target-dir', zipTarget, '--bundle', path.join(delivery.delivery, 'package.zip')]);
+    assert.equal(result.status, 1, result.stderr || result.stdout);
+    assert.match(result.stderr, /Handoff v5 接入必须消费正式 delivery wrapper 与 Receipt v3/);
+    assert.deepEqual(treeInventory(zipTarget), before);
+  });
+  let legacy;
+  await t.test('plugin design entry rejects valid historical Handoff v4 ZIP without changing the receiving project', async () => {
+    const legacySource = path.join(dir, 'synthetic-v4-source'); fs.mkdirSync(legacySource);
+    await fixture(legacySource, { handoffVersion: 4 });
+    // Verify the package with the full receiver's local policy and historical wire schemas.
+    legacy = await exportBundle({ sourceRoot: legacySource, handoffRef: 'handoff.yaml', output: path.join(dir, 'legacy-v4-package'), zip: true, evidenceRoot: zipTarget });
+    assert.equal(JSON.parse(fs.readFileSync(path.join(legacy.output, 'handoff.yaml'))).schema_version, 4);
+    const before = treeInventory(zipTarget);
+    const result = call('project-import-design', ['--target-dir', zipTarget, '--bundle', legacy.zip]);
+    assert.equal(result.status, 1, result.stderr || result.stdout);
+    assert.match(result.stderr, /design-entry-requires-handoff-v5/);
+    assert.deepEqual(treeInventory(zipTarget), before);
+  });
+  await t.test('low-level historical Handoff v4 ZIP import retains Receipt v2 and read-only receipt queries', async () => {
+    const imported = await importBundle({ bundle: legacy.zip, targetRoot: zipTarget, evidenceRoot: zipTarget });
+    assert.equal(imported.result, 'imported-pending-reconciliation');
+    const receiptPath = path.join(zipTarget, imported.receipt_ref), bytes = fs.readFileSync(receiptPath), saved = JSON.parse(bytes);
     assert.equal(saved.schema_version, 2);
-    assert.equal(imported.next_work_unit, 'work-unit.technical-analysis');
-    assert.equal(imported.ready_for_agent, false);
-    const resumed = ok(call('project-entry', ['--target-dir', zipTarget, '--mode', 'reuse', '--input', put('zip-reuse.json', { import_receipt_ref: imported.import_receipt_ref })]));
-    assert.equal(resumed.design.bundle_digest, imported.bundle_digest);
+    assert.equal(saved.status, 'pending-context-reconciliation');
+    assert.deepEqual(saved.selected_consumer_capabilities, ['backend-technical-design']);
+    const before = treeInventory(zipTarget);
+    await openBundle(path.join(zipTarget, saved.package_ref), bundle => assertImportReceipt(zipTarget, saved, bundle), { evidenceRoot: zipTarget });
+    assert.deepEqual(treeInventory(zipTarget), before);
+    assert.equal((await importBundle({ bundle: legacy.zip, targetRoot: zipTarget, evidenceRoot: zipTarget })).result, 'already-imported');
+    assert.deepEqual(fs.readFileSync(receiptPath), bytes);
+    assert.equal(ok(call('project-check', ['--target-dir', zipTarget])).ready_for_agent, false);
   });
   await t.test('tampered receipt and package cannot be resumed', () => {
     const ref = path.join(target, receipt), original = fs.readFileSync(ref), saved = JSON.parse(original);
@@ -88,7 +113,7 @@ test('backend plugin receives Handoff v5 without bypassing engineering or implem
   await t.test('UI-only package is rejected before any import write', async () => {
     const ui = path.join(dir, 'ui-only'); fs.mkdirSync(ui);
     await fixture(ui, { handoffVersion: 5, impacts: { ui: true, frontend: true, api: false, data: false, backend: false, cross_repo: false, high_risk: false } });
-    const packaged = await finalizeDelivery({ sourceRoot: ui, handoffRef: 'handoff.yaml' });
+    const packaged = await finalizeDelivery({ sourceRoot: ui, handoffRef: 'handoff.yaml', evidenceRoot: ui });
     const result = call('project-import-design', ['--target-dir', target, '--bundle', packaged.delivery]);
     assert.equal(result.status, 1); assert.match(result.stderr, /backend-consumer-route-not-active/);
   });

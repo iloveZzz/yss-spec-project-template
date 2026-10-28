@@ -1,8 +1,10 @@
 ---
 name: to-spec
-description: 显式将已确认讨论综合为 Spec 草稿；经主控预检后按配置持久化并回交验收。
+description: 显式将 Backend 已确认材料综合为本端 Spec 草稿；按后端正式合同预检并回交验收。
 disable-model-invocation: true
 ---
+
+Backend 保留显式正式兼容入口，由当前后端主控核验本端合同与授权；普通产品 Spec 草稿使用 Spec Profile 的入口。文档表达先读 [中文共用规范](../i-have-adhd/references/document-writing.md)，阶段与批准仍消费本端正式政策。
 
 This explicit compatibility entry synthesizes confirmed context into a Spec draft. Before formal writes, the active lifecycle orchestrator checks repository identity, Plan → Spec entry evidence, allowed paths and current decisions. Template-source maintenance creates no product Spec. Reuse confirmed inputs and seams; ask only for a material missing decision. Return the draft to the orchestrator for validation and acceptance without approving it.
 

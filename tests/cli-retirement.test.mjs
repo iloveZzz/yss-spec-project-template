@@ -46,10 +46,11 @@ test('二进制固定输入拒绝链接及摘要漂移',t=>{
 
 for(const profile of NATIVE_PROFILES)test(`${profile}: 内容来源、预演、幂等同步与用户资产保护`,t=>{
   nativeBinary();const base=scratch(t),target=path.join(base,profile);
-  const first=runNative(['init','--profile',profile,'--root',target,'--plan','--out',path.join(base,'init.json')]).result;
+  const inspection=inspectNative(profile),installation=inspection.schemaVersion===5?['--installation','governed']:[];
+  const first=runNative(['init','--profile',profile,'--root',target,...installation,'--plan','--out',path.join(base,'init.json')]).result;
   assert.equal(fs.existsSync(target),false,'保存计划不能初始化项目');assert.ok(first.stats.changed>10);
   runNative(['init','--profile',profile,'--root',target,'--apply','--plan-file',path.join(base,'init.json')]);
-  const metadata=JSON.parse(fs.readFileSync(path.join(target,'.yss.json'))),inspection=inspectNative(profile);
+  const metadata=JSON.parse(fs.readFileSync(path.join(target,'.yss.json')));
   assert.equal(metadata.profile,profile);assert.equal(metadata.protocolVersion,1);assert.equal(metadata.templateCommit,inspection.templateCommit);assert.equal(metadata.snapshotHash,inspection.sourceSnapshotHash);
   assert.match(fs.readFileSync(path.join(target,'yss-project.yaml'),'utf8'),/repository_mode:\s*project-instance/);
   for(const ref of ['.template-source','submodules','.github'])assert.equal(fs.existsSync(path.join(target,ref)),false);
@@ -63,7 +64,7 @@ for(const profile of NATIVE_PROFILES)test(`${profile}: 内容来源、预演、�
   assert.deepEqual(fs.readFileSync(path.join(target,'CONTEXT.md')),context);assert.equal(fs.readFileSync(path.join(target,'src/business.txt'),'utf8'),'dirty business');assert.equal(fs.readFileSync(path.join(target,'.git/index'),'utf8'),'staged index');assert.equal(fs.readFileSync(path.join(target,'.github/workflows/user.yml'),'utf8'),'name: User\n');
   assert.deepEqual(['src/business.txt','.git/index'].map(ref=>fs.statSync(path.join(target,ref)).mode&0o777),protectedModes);
   const repeated=runNative(['sync','--root',target]).result;assert.equal(repeated.stats.changed,0);assert.equal(repeated.stats.conflicts,0);
-  const initialized=tree(target);runNative(['init','--profile',profile,'--root',target],{expectedCode:'CONFLICT'});assert.deepEqual(tree(target),initialized);
+  const initialized=tree(target);runNative(['init','--profile',profile,'--root',target,...installation],{expectedCode:'CONFLICT'});assert.deepEqual(tree(target),initialized);
   runNative(['sync','--root',target,'--force'],{expectedCode:'ARGUMENT'});assert.deepEqual(tree(target),initialized);
 });
 
@@ -141,7 +142,7 @@ test('公开 Bundle 导出保持完整文件 bytes、mode 和 manifest，拒绝�
   nativeBinary();const base=scratch(t),out=path.join(base,'export');
   const result=runNative(['bundle','export','--profile','spec','--out',out]).result;
   assert.equal(result.directory,out);const inspection=result.inspection;
-  assert.ok([2,3,4].includes(inspection.schemaVersion),'公开导出使用受支持的固定 Bundle schema');assert.ok(result.files.length>10);
+  assert.ok([2,3,4,5].includes(inspection.schemaVersion),'公开导出使用受支持的固定 Bundle schema');assert.ok(result.files.length>10);
   for(const entry of result.files){const file=path.join(out,entry.path);assert.equal(nativeDigest(fs.readFileSync(file)),entry.digest,entry.path);assert.equal(fs.statSync(file).mode&0o777,entry.mode,entry.path);}
   const before=tree(out);
   runNative(['bundle','export','--profile','spec','--out',out],{expectedCode:'EXISTS'});assert.deepEqual(tree(out),before);

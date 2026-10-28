@@ -1,4 +1,5 @@
 import {installLegacySpecPolicy} from '../../lib/testing/legacy-spec-policy.mjs';
+import {inspectNative} from '../../../.template-source/scripts/lib/native-yss.mjs';
 // Synthetic decision sources verify the protocol; they are not real product approval.
 import fs from 'node:fs';
 import os from 'node:os';
@@ -26,9 +27,11 @@ test('installed Spec prepares Plan once, uses actual self-check and current huma
   const d=JSON.parse(r.stdout);assert.equal(d.code,expected,`${label}: ${JSON.stringify(d.result.diagnostics||d.result.message)}`);assert.equal(r.status===0,expected==='OK');return d.result;
  };
  try {
-  run('actual-install',['init','--profile','spec']);
+  const inspection=inspectNative('spec');
+  assert.ok([4,5].includes(inspection.schemaVersion),'known current Bundle4/5 required');
+  run('actual-install',['init','--profile','spec',...(inspection.schemaVersion===5?['--installation','governed']:[])]);
   installLegacySpecPolicy(root);
-  assert.equal(JSON.parse(fs.readFileSync(path.join(root,'.yss.json'))).schemaVersion,4);
+  assert.equal(JSON.parse(fs.readFileSync(path.join(root,'.yss.json'))).schemaVersion,inspection.schemaVersion);
   assert.equal(fs.existsSync(path.join(root,'.template-spec/agents/digital-human-roles.yaml')),false);
   for(const argv of [['init','-q'],['-c','user.name=test','-c','user.email=test@example.invalid','commit','--allow-empty','-qm','base']])assert.equal(spawnSync('git',argv,{cwd:root}).status,0);
   const commit=spawnSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).stdout.trim();

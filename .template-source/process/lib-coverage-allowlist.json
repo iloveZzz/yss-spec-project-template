@@ -108,11 +108,6 @@
       "reason": "当前未发现 tests 直接引用，纳入待补测台账"
     },
     {
-      "path": "scripts/lib/project-governance.mjs",
-      "category": "to-backfill",
-      "reason": "当前未发现 tests 直接引用，纳入待补测台账"
-    },
-    {
       "path": "scripts/lib/reading-view-adapters.mjs",
       "category": "to-backfill",
       "reason": "当前未发现 tests 直接引用，纳入待补测台账"

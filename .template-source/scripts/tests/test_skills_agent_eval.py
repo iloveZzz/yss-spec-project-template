@@ -16,6 +16,33 @@ spec.loader.exec_module(evaluation)
 
 
 class SharedBudgetChecks(unittest.TestCase):
+    def test_model_metadata_advisory_does_not_fail_a_completed_successful_turn(self):
+        warning = {'type': 'item.completed', 'item': {'type': 'error', 'message': 'Model metadata for `gpt-6.1-sol` not found. Defaulting to fallback metadata; this can degrade performance and cause issues.'}}
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            workspace = root / 'workspace'; workspace.mkdir()
+            script = 'import json; print(json.dumps(' + repr(warning) + ')); print(json.dumps({"type":"turn.completed"}))'
+            row = evaluation.execute_step([sys.executable, '-c', script], os.environ.copy(), root / 'step', workspace,
+                                          {'id': 'test', 'prompt': 'fixture', 'allowed_writes': [], 'assertions': []}, root / 'commands', 5)
+            self.assertEqual(row['automatic_result'], 'passed')
+            self.assertEqual(row['runtime_errors'], [])
+            self.assertEqual(row['runtime_warnings'], [warning])
+
+    def test_metadata_advisory_cannot_hide_failed_or_incomplete_turns(self):
+        warning = {'type': 'item.completed', 'item': {'type': 'error', 'message': 'Model metadata for `gpt-6.1-sol` not found. Defaulting to fallback metadata; this can degrade performance and cause issues.'}}
+        fatal = {'type': 'error', 'message': 'provider rejected request'}
+        for events, exit_code in [([warning], 0), ([warning, {'type': 'turn.completed'}], 1),
+                                  ([warning, fatal, {'type': 'turn.completed'}], 0),
+                                  ([{'type': 'item.completed', 'item': {'type': 'error', 'message': None}}, {'type': 'turn.completed'}], 0),
+                                  ([{'type': 'item.completed', 'item': {'type': 'error', 'message': 'Model metadata failed: fatal provider error'}}, {'type': 'turn.completed'}], 0)]:
+            with self.subTest(events=events, exit_code=exit_code), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory); workspace = root / 'workspace'; workspace.mkdir()
+                script = 'import json,sys\nfor e in ' + repr(events) + ': print(json.dumps(e))\nsys.exit(' + str(exit_code) + ')'
+                row = evaluation.execute_step([sys.executable, '-c', script], os.environ.copy(), root / 'step', workspace,
+                                              {'id': 'test', 'prompt': 'fixture', 'allowed_writes': [], 'assertions': []}, root / 'commands', 5)
+                self.assertEqual(row['automatic_result'], 'failed')
+                self.assertTrue(row['runtime_errors'] or exit_code)
+
     def test_attempts_and_seconds_accumulate_across_process_instances(self):
         with tempfile.TemporaryDirectory() as directory:
             ledger = Path(directory) / 'budget.json'
@@ -36,6 +63,16 @@ class SharedBudgetChecks(unittest.TestCase):
             evaluation.RunBudget(24, 10, ledger).reserve(10)
             with self.assertRaises(evaluation.BudgetExhausted): evaluation.RunBudget(24, 10, ledger).reserve(1)
             with self.assertRaisesRegex(ValueError, 'cannot change'): evaluation.RunBudget(25, 20, ledger).reserve(1)
+
+    def test_codex_fixture_disables_external_integrations(self):
+        args=SimpleNamespace(runtime='codex',model='fixture-model',reasoning_effort='high')
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory)
+            command=evaluation.runtime_command(args,root/'codex',root,root,{})
+        disabled=[command[index+1] for index,value in enumerate(command[:-1]) if value=='--disable']
+        self.assertIn('plugins',disabled)
+        self.assertIn('remote_plugin',disabled)
+        self.assertIn('apps',disabled)
 
     def test_provider_configuration_preserves_routing_and_rejects_unknown_settings(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -361,8 +398,16 @@ class BatchChecks(unittest.TestCase):
         source = root / 'source'; source.mkdir(); (source / 'AGENTS.md').write_text('fixture rules')
         (source / 'required.txt').write_text('source evidence')
         runtime = root / 'fake-codex'
-        runtime.write_text('#!' + sys.executable + '\n' + '''import json,pathlib,sys,time
+        runtime.write_text('#!' + sys.executable + '\n' + '''import json,pathlib,sys,time,os,subprocess
 root=pathlib.Path(sys.argv[sys.argv.index('-C')+1]); prompt=sys.argv[-1]
+if prompt=='shell-status':
+ result=subprocess.run([os.environ['YSS_TEST_SHELL'],'-lc','git status --short'],capture_output=True,text=True)
+ (root/'out.json').write_text(json.dumps({'returncode':result.returncode}))
+ print(json.dumps({'type':'turn.completed'}));sys.exit(0)
+if prompt=='host-context':
+ keys=['CODEX_APP_RUNTIME_CLI_PATH','CODEX_APP_TOOLS_PIPE_PATH','CODEX_THREAD_ID','CODEX_SESSION_ID','CODEX_INTERNAL_ORIGINATOR_OVERRIDE']
+ (root/'out.json').write_text(json.dumps({'host_context_keys':[k for k in keys if k in os.environ], 'provider_auth_preserved':os.environ.get('YSS_TEST_PROVIDER_KEY')=='test-only'}))
+ print(json.dumps({'type':'turn.completed'}));sys.exit(0)
 if prompt=='slow': time.sleep(10)
 if prompt=='missing-completed': print('{}'); sys.exit(0)
 (root/'out.json').write_text('[]' if prompt=='invalid-json' else '{"ready":false}')
@@ -380,6 +425,28 @@ print(json.dumps({'type':'turn.completed','usage':{'input_tokens':7,'output_toke
 
     def case(self, identity='one', prompt='pass'):
         return {'id': identity, 'repo': '.', 'prompt': prompt, 'source_paths': ['AGENTS.md', 'required.txt'], 'required_paths': ['AGENTS.md', 'required.txt'], 'allowed_writes': ['out.json'], 'assertions': [{'kind': 'json_equal', 'path': 'out.json', 'key': 'ready', 'value': False}]}
+
+    def test_login_shell_keeps_fixture_command_wrappers_first(self):
+        shells=[shell for shell in ['/bin/bash','/bin/zsh'] if Path(shell).is_file()]
+        self.assertTrue(shells)
+        for shell in shells:
+            with self.subTest(shell=shell), tempfile.TemporaryDirectory() as directory:
+                case=self.case('shell','shell-status')
+                case['assertions']=[{'kind':'json_equal','path':'out.json','key':'returncode','value':0},
+                                    {'kind':'command_contains','value':'"tool": "git"'}]
+                with mock.patch.dict(os.environ, {'YSS_TEST_SHELL':shell}):
+                    code,summary=self.run_batch(Path(directory),[case])
+                self.assertEqual(code,0,summary)
+
+    def test_host_app_context_is_not_forwarded_but_provider_auth_is(self):
+        with tempfile.TemporaryDirectory() as directory:
+            case=self.case('context','host-context')
+            case['assertions']=[{'kind':'json_equal','path':'out.json','key':'host_context_keys','value':[]},
+                                {'kind':'json_equal','path':'out.json','key':'provider_auth_preserved','value':True}]
+            parent={key:'fixture-host-value' for key in ['CODEX_APP_RUNTIME_CLI_PATH','CODEX_APP_TOOLS_PIPE_PATH','CODEX_THREAD_ID','CODEX_SESSION_ID','CODEX_INTERNAL_ORIGINATOR_OVERRIDE']}
+            parent['YSS_TEST_PROVIDER_KEY']='test-only'
+            with mock.patch.dict(os.environ,parent):code,summary=self.run_batch(Path(directory),[case])
+            self.assertEqual(code,0,summary)
 
     def test_strict_pass_fail_and_report_only_exit_policies(self):
         for prompt, policy, expected, status in [('pass', 'strict', 0, 'passed'), ('invalid-json', 'strict', 1, 'failed'), ('invalid-json', 'report-only', 0, 'failed'), ('extra-write', 'strict', 1, 'failed')]:

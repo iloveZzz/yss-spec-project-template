@@ -2283,8 +2283,18 @@ profiles:
           - ".agents/skills/yss-tactical-design/tests/**"
         depends_on: []
         failure_mode: "默认工作包样例在阶段决策或战术设计中产生失效引用"
+      - id: check.skills-agent-eval
+        run: "python3 -m unittest discover -s .template-source/scripts/tests -p test_skills_agent_eval.py"
+        group: skills
+        inputs_complete: true
+        input_patterns:
+          - ".template-source/scripts/skills-agent-eval.py"
+          - ".template-source/scripts/skills-agent-eval.md"
+          - ".template-source/scripts/tests/test_skills_agent_eval.py"
+        depends_on: []
+        failure_mode: "Agent 轨迹的非致命警告与失败判定混用，或预算、写入审计与未完成执行被误报通过"
       - id: check.public-skill-export
-        run: "node --test tests/public-skill-export.test.mjs
+        run: "node --test tests/public-skill-export.test.mjs tests/spec-standalone-fixture.test.mjs
           .template-source/tooling/node/test/runtime-contract.test.mjs"
         group: skills
         resources: [ python-jsonschema ]
@@ -2293,12 +2303,15 @@ profiles:
           - ".agents/skills/**"
           - "profiles/_specialist/.agents/skills/setup-yss-harness/**"
           - "profiles/backend/.agents/skills/setup-yss-harness/**"
+          - "profiles/backend/.agents/skills/to-spec/**"
           - "profiles/backend/.template-source/distribution/bundle-profile.json"
           - "scripts/lib/profile-tree.mjs"
           - "yss-public-skills.json"
           - "scripts/export-yss-skills"
           - "scripts/lib/export-skills.mjs"
           - "tests/public-skill-export.test.mjs"
+          - "tests/spec-standalone-fixture.test.mjs"
+          - "tests/fixtures/spec-standalone/**"
           - ".template-source/tooling/node/test/runtime-contract.test.mjs"
         depends_on: []
         failure_mode: "公开技能包携带越界或失效链接、符号链接、凭据或不可移植路径，或 Backend 覆盖层重新分发过期共享维护技能"
@@ -2375,6 +2388,8 @@ profiles:
       - id: check.plugin-supported-scope
         run: node --test --test-skip-pattern='当前主机真实公开打包'
           .template-source/plugins/yss-backend-delivery/tests/permissions.test.mjs
+          .template-source/tooling/node/test/plugin-native-schema.test.mjs
+        resources: [native-cli]
         group: feature-assets
         inputs_complete: true
         input_patterns:
@@ -2382,6 +2397,7 @@ profiles:
           - scripts/fixtures/contract-efficiency/plugin-smoke.mjs
           - .template-source/tooling/node/scripts/test-with-plugin-clis.mjs
           - .template-source/tooling/node/test/product-design-plugin.test.mjs
+          - .template-source/tooling/node/test/plugin-native-schema.test.mjs
         depends_on: []
         failure_mode: 已移除插件 Profile 仍被接受，或权限与固定可执行路径的支持边界回退
       - id: check.spec-stage-gates
@@ -3396,7 +3412,7 @@ routing:
       - tests/verification-delivery-run.test.mjs
     groups:
       - candidate-integrity
-  - patterns: [ "tests/public-skill-export.test.mjs", "tests/retired-skill-ids.test.mjs" ]
+  - patterns: [ "tests/public-skill-export.test.mjs", "tests/retired-skill-ids.test.mjs", "tests/spec-standalone-fixture.test.mjs", "tests/fixtures/spec-standalone/**" ]
     groups: [ "skills" ]
   # 已移除的 Superpowers 输出与退役维护文档测试只保留删除 diff 的路由墓碑，不恢复内容检查
   - patterns:
@@ -3896,6 +3912,7 @@ gates:
       - check.harness-skill-scope
       - check.skill-lock-readers
       - check.public-skill-export
+      - check.skills-agent-eval
       - check.retired-skill-ids
       - check.profile-consistency
     audit_status: conservative-complete

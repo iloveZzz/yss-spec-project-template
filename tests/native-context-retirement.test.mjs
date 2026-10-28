@@ -6,12 +6,12 @@ import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {checkNativeContext, contextExecution, decodeContext} from '../scripts/lib/native-context.mjs';
 import {parseContextContract,resolveContextTermRefs} from '../scripts/lib/context-contract.mjs';
+import {initializeNative} from '../.template-source/scripts/lib/native-yss.mjs';
 
 test('原生 Context 返回可消费的空术语快照，旧参数转为明确原生参数',t=>{
   const base=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'context-native-'))),root=path.join(base,'instance');
   t.after(()=>fs.rmSync(base,{recursive:true,force:true}));
-  const init=spawnSync(process.env.YSS_NATIVE_BINARY,['init','--profile','spec','--root',root],{encoding:'utf8'});
-  assert.equal(init.status,0,init.stderr||init.stdout);
+  initializeNative('spec',root);
   const result=checkNativeContext({root});
   assert.deepEqual(result.context_snapshot.term_refs,[]);
   assert.equal(result.context_snapshot.referenced_terms_digest,'sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945');

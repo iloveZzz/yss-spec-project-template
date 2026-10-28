@@ -24,7 +24,7 @@ function validateBindings(root,native){
   const binding=read(root,ref);
   if(!binding)continue;
   ensure(native,'插件 binding 缺少匹配原生身份: '+ref);
-  ensure([2,3].includes(native.schemaVersion)&&native.profile===profile&&binding.schema_version===2&&binding.plugin===plugin&&binding.profile===profile&&binding.template_commit===native.templateCommit&&binding.bundle_hash===native.bundleHash&&hex(binding.binary_sha256),'插件 binding 与原生身份或来源不一致: '+ref);
+  ensure([2,3,4,5].includes(native.schemaVersion)&&(native.schemaVersion!==5||native.distribution.installation==='governed')&&native.profile===profile&&binding.schema_version===2&&binding.plugin===plugin&&binding.profile===profile&&binding.template_commit===native.templateCommit&&binding.bundle_hash===native.bundleHash&&hex(binding.binary_sha256),'插件 binding 与原生身份或来源不一致: '+ref);
  }
 }
 /** Native identity wins only after validation; preserved legacy bytes are lineage. */
@@ -32,15 +32,17 @@ export function readInstanceMetadata(root){
  root=path.resolve(root);for(const ref of ['.yss-harness-design.json','.yss-product-design-plugin.json'])ensure(!lstatSync(path.join(root,ref),{throwIfNoEntry:false}),'Design Profile 已移除: '+ref);const native=read(root,'.yss.json');ensure(native?.profile!=='design'&&native?.profileId!=='harness.business-ddd-strategy-handoff','Design Profile 已移除');const legacy=[];for(const [profile,p] of Object.entries(profiles)){const value=read(root,p.legacy);if(value)legacy.push({profile,metadataRef:p.legacy,metadata:value,kind:'legacy'});}
  ensure(legacy.length<=1,'检测到多个旧家族 metadata');
  if(!native){validateBindings(root,null);return legacy[0]??null;}
- ensure([1,2,3,4].includes(native.schemaVersion)&&native.protocolVersion===1,'未知 native metadata 或协议');const p=profiles[native.profile];ensure(p&&native.profileId===p.id&&(!legacy.length||legacy[0].profile===native.profile),'native 与家族身份矛盾');
+ ensure([1,2,3,4,5].includes(native.schemaVersion)&&native.protocolVersion===1,'未知 native metadata 或协议');const p=profiles[native.profile];ensure(p&&native.profileId===p.id&&(!legacy.length||legacy[0].profile===native.profile),'native 与家族身份矛盾');
  ensure((native.templateSourceState==='committed'||native.schemaVersion>=3&&native.templateSourceState==='working-tree'&&native.cliSourceState==='working-tree'&&/^worktree:[a-f0-9]{40}$/.test(native.templateVersion))&&/^[a-f0-9]{40}$/.test(native.templateCommit)&&hex(native.snapshotHash)&&hex(native.manifestHash),'native 来源缺失或不合法');
  if(native.schemaVersion>=2)ensure((native.bundleSchemaVersion===native.schemaVersion)&&hex(native.bundleHash)&&['committed','working-tree','unknown'].includes(native.cliSourceState)&&(!native.cliCommit||/^[a-f0-9]{40}$/.test(native.cliCommit))&&(native.cliSourceState!=='committed'||native.cliCommit),'native v2来源不合法');
- if(native.schemaVersion===4)ensure(['spec','backend'].includes(native.profile)&&legacy.length===0,'metadata4 不接受家族 metadata');
+ if(native.schemaVersion===5)ensure(['skills','governed'].includes(native.distribution?.installation),'metadata5 requires installation');
+ if(native.schemaVersion<5)ensure(native.distribution?.installation==null||native.distribution.installation==='governed','legacy metadata cannot select skills installation');
+ if(native.schemaVersion>=4)ensure(['spec','backend'].includes(native.profile)&&legacy.length===0,'metadata4 不接受家族 metadata');
  ensure(native.variables&&native.distribution&&hex(native.baselineDigest)&&managedDigest(native.managedFiles,native.schemaVersion)===native.baselineDigest,'native 受管基线摘要不一致');
  if(native.schemaVersion>=3)for(const [ref,item]of Object.entries(native.managedFiles)){ensure(item.baselineSource,'缺少模板基线来源: '+ref);if(item.disposition)ensure(JSON.stringify(descriptor(item.disposition.target))===JSON.stringify(descriptor(item.baseline))&&JSON.stringify(descriptor(item.disposition.applied,true))===JSON.stringify(descriptor(item.lastApplied,true)),'保留决定与基线矛盾: '+ref);}
  if(native.governanceHistory){
   const history=native.governanceHistory;
-  ensure(native.schemaVersion===4&&hex(history.digest)&&history.ref===`.template-spec/compatibility/governance-history/${history.digest}/manifest.json`,'历史来源绑定未知或路径不合法');
+  ensure(native.schemaVersion>=4&&hex(history.digest)&&history.ref===`.template-spec/compatibility/governance-history/${history.digest}/manifest.json`,'历史来源绑定未知或路径不合法');
   const source=read(root,history.ref);ensure(source,'历史来源不存在');
   ensure(createHash('sha256').update(readFileSync(path.join(root,history.ref))).digest('hex')===history.digest,'历史来源摘要已漂移');
   ensure(source.schema_version===1&&source.kind==='governance-original-source'&&Object.hasOwn(profiles,source.source_profile),'不支持的历史来源 Profile');

@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
+import { readFileSync, rmSync } from "node:fs";
+import { makeRoot } from "../../../../tests/helpers/yss-instance.mjs";
 
 const toolingRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const repositoryRoot = path.resolve(toolingRoot, "../../..");
@@ -11,6 +13,7 @@ function depsFrom(lifecycle, skills, skillIdsFromRegistry) {
     skillIds: skillIdsFromRegistry(skills),
     stageIds: new Set(lifecycle.stages.map((item) => item.id)),
     gateIds: new Set(lifecycle.gates.map((item) => item.id)),
+    checkIds: new Set(lifecycle.checks.map((item) => item.id)),
     artifactIds: new Set(lifecycle.artifacts.map((item) => item.id)),
     evidenceIds: new Set(lifecycle.evidence.map((item) => item.id)),
     workUnitIds: new Set(lifecycle.work_units.map((item) => item.id)),
@@ -18,22 +21,20 @@ function depsFrom(lifecycle, skills, skillIdsFromRegistry) {
   };
 }
 
-test("digital human roles are runtime-agnostic and grok is only an adapter", async () => {
+test("historical digital human roles are runtime-agnostic and grok is only an adapter", async () => {
   const {
     loadDigitalHumanRoles,
     validateDigitalHumanRoles,
     skillIdsFromRegistry,
-    validateDefaultDigitalHumanRoles,
     taskPackageDefaults
   } = await import(path.join(repositoryRoot, "scripts/lib/digital-human-roles.mjs"));
-  const { loadRegistry } = await import(path.join(repositoryRoot, "scripts/lib/lifecycle-registry.mjs"));
   const { loadSkillRegistry } = await import(path.join(repositoryRoot, "scripts/lib/skill-registry.mjs"));
-  const result = validateDefaultDigitalHumanRoles();
-  assert.equal(result.role_count, 6);
-  assert.equal(result.runtime_count, 3);
-  const lifecycle = loadRegistry();
+  const lifecycle = JSON.parse(readFileSync(path.join(repositoryRoot, "scripts/fixtures/role-independent-draft/legacy-spec-policy.json"))).registry;
   const skills = loadSkillRegistry();
   const deps = depsFrom(lifecycle, skills, skillIdsFromRegistry);
+  const result = validateDigitalHumanRoles(loadDigitalHumanRoles(), deps);
+  assert.equal(result.role_count, 6);
+  assert.equal(result.runtime_count, 3);
   const legacy = structuredClone(loadDigitalHumanRoles());
   assert.equal(legacy.stage_groups, undefined, "stage_groups 已退役，注册表不再声明");
   legacy.stage_groups = [{ id: "group.plan", members: ["role.requirements-manager"] }];
@@ -61,10 +62,10 @@ test("digital human roles are runtime-agnostic and grok is only an adapter", asy
   assert.ok(backend.core_skills.includes("mapstruct"));
 });
 
-test("approval records reject the wrong signer and approved countersign gates need approval_ref", async () => {
-  const { loadDigitalHumanRoles } = await import(path.join(repositoryRoot, "scripts/lib/digital-human-roles.mjs"));
+test("historical approval records reject the wrong signer and approved countersign gates need approval_ref", async (t) => {
   const { validateApprovalRecord, assertCheckpointApprovals } = await import(path.join(repositoryRoot, "scripts/lib/native-approval.mjs"));
-  const rolesDoc = loadDigitalHumanRoles();
+  const root = makeRoot("historical-digital-human-roles-");
+  t.after(() => rmSync(root, { recursive: true, force: true }));
   assert.throws(() => validateApprovalRecord({
     schema_version: 1,
     gate_id: "gate.spec-baseline-approved",
@@ -73,7 +74,7 @@ test("approval records reject the wrong signer and approved countersign gates ne
     role_id: "role.frontend-engineer",
     runtime_id: "runtime.generic",
     principal_ref: "instance:fe"
-  }, { rolesDoc }), /APPROVAL_CURRENT_INVALID: 会签角色未获当前门禁政策授权/);
+  }, { root }), /APPROVAL_CURRENT_INVALID: 会签角色未获当前门禁政策授权/);
   assert.throws(() => validateApprovalRecord({
     schema_version: 1,
     gate_id: "gate.product-design-approved",
@@ -82,8 +83,8 @@ test("approval records reject the wrong signer and approved countersign gates ne
     role_id: "role.test-engineer",
     runtime_id: "runtime.generic",
     principal_ref: "instance:qa"
-  }, { rolesDoc }), /必须由生物人会签/);
-  assert.doesNotThrow(() => assertCheckpointApprovals({ gates: {} }, repositoryRoot));
+  }, { root }), /必须由生物人会签/);
+  assert.doesNotThrow(() => assertCheckpointApprovals({ gates: {} }, undefined, { root }));
   assert.throws(() => assertCheckpointApprovals({
     gates: {
       "gate.spec-baseline-approved": {
@@ -92,5 +93,22 @@ test("approval records reject the wrong signer and approved countersign gates ne
         evidence_refs: []
       }
     }
-  }, repositoryRoot), /EVIDENCE_REQUIRED: 缺少当前依据/);
+  }, undefined, { root }), /EVIDENCE_REQUIRED: 缺少当前依据/);
+});
+
+test("current Spec keeps four stage gates and rejects retired countersign gates", async () => {
+  const { loadRegistry } = await import(path.join(repositoryRoot, "scripts/lib/lifecycle-registry.mjs"));
+  const { validateApprovalRecord } = await import(path.join(repositoryRoot, "scripts/lib/native-approval.mjs"));
+  assert.deepEqual(loadRegistry().gates.map((gate) => gate.id).sort(), [
+    "gate.plan-approved", "gate.spec-baseline-approved", "gate.implementation-admitted", "gate.delivery-accepted"
+  ].sort());
+  assert.throws(() => validateApprovalRecord({
+    schema_version: 1,
+    gate_id: "gate.product-design-approved",
+    decision: "approved",
+    actor_kind: "digital-human",
+    role_id: "role.test-engineer",
+    runtime_id: "runtime.generic",
+    principal_ref: "instance:qa"
+  }, { root: repositoryRoot }), /APPROVAL_CURRENT_INVALID: 未知或已退役门禁: gate.product-design-approved/);
 });

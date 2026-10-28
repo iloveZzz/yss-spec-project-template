@@ -74,7 +74,11 @@ function binding(ctx, legacy = null, backend = null) {
 function check(root, target, ctx, requireBinding = false) {
   const envelope = invoke(ctx.binary, ['doctor', '--root', target, '--profile', ctx.pin.profile]);
   const metadata = read(target, '.yss.json');
-  if (![1, 2, 3].includes(metadata.schemaVersion) || metadata.profile !== ctx.pin.profile || metadata.templateCommit !== ctx.snapshot.templateCommit
+  const knownMetadata = [4, 5].includes(ctx.snapshot.schemaVersion)
+    ? metadata.schemaVersion === ctx.snapshot.schemaVersion
+    : [2, 3].includes(ctx.snapshot.schemaVersion) && [1, 2, 3].includes(metadata.schemaVersion);
+  if (!knownMetadata || metadata.schemaVersion === 5 && metadata.distribution?.installation !== 'governed'
+      || metadata.profile !== ctx.pin.profile || metadata.templateCommit !== ctx.snapshot.templateCommit
       || metadata.snapshotHash !== ctx.snapshot.sourceSnapshotHash || metadata.manifestHash !== ctx.snapshot.manifestHash
       || metadata.templateSourceState !== 'committed') throw new Error('native-project-version-mismatch: use project-migration-plan');
   const statusPlan = envelope.result.plan || envelope.result;
@@ -149,6 +153,7 @@ function plan(root, values, kind) {
       const tracker = values['issue-tracker'];
       if (!['github', 'gitlab'].includes(tracker)) throw new Error('explicit-issue-tracker-required');
       args.push('--full', '--project-name', values['project-name'], '--business-domain', values['business-domain'], '--team-size', values['team-size'] || '1', '--issue-tracker', tracker);
+      if (ctx.capabilities?.native?.includes('installation-v1')) args.push('--installation', 'governed');
     }
     const preview = invoke(ctx.binary, args), saved = readFileSync(nativeFile);
     const result = { schema_version: 2, kind, target, profile: ctx.pin.profile, command,

@@ -1,4 +1,5 @@
 import {installLegacySpecPolicy} from '../../lib/testing/legacy-spec-policy.mjs';
+import {inspectNative} from '../../../.template-source/scripts/lib/native-yss.mjs';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -17,7 +18,11 @@ const root=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'task3b-native-'
 const write=(ref,value)=>{fs.mkdirSync(path.dirname(path.join(root,ref)),{recursive:true});fs.writeFileSync(path.join(root,ref),typeof value==='string'?value:JSON.stringify(value));};
 const run=(label,args,expected='OK')=>{const argv=[...args,'--root',root,...(args[1]==='view'?['--profile','spec']:[]),'--json'],r=spawnSync(bin,argv,{encoding:'utf8'});results.push({label,argv:[bin,...argv],exit:r.status,stdout:r.stdout,stderr:r.stderr});const parsed=JSON.parse(r.stdout);assert.equal(parsed.code,expected,`${label}: ${parsed.code}: ${JSON.stringify(parsed.result.diagnostics||parsed.result.message)}`);return parsed;};
 scenarios:try{
- if(process.env.YSS_REVIEW_PUBLISH_ONLY) run('actual-spec-install',['init','--profile','spec']);
+ if(process.env.YSS_REVIEW_PUBLISH_ONLY) {
+  const inspection=inspectNative('spec');
+  assert.ok([4,5].includes(inspection.schemaVersion),'known current Bundle4/5 required');
+  run('actual-spec-install',['init','--profile','spec',...(inspection.schemaVersion===5?['--installation','governed']:[])]);
+ }
  else {
  fs.cpSync(path.join(source,'.template-spec/process'),path.join(root,'.template-spec/process'),{recursive:true});
  write('yss-project.yaml',{schema_version:2,repository_mode:'project-instance'});

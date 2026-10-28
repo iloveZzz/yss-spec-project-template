@@ -1,0 +1,306 @@
+{
+  "scenarios": [
+    {
+      "repo": ".",
+      "source_paths": [
+        ".agents",
+        "AGENTS.md",
+        ".yss.json",
+        "skills-lock.json"
+      ],
+      "required_paths": [
+        "AGENTS.md",
+        ".agents/skills/yss-product-lifecycle/SKILL.md"
+      ],
+      "id": "idea-clarify",
+      "allowed_writes": [],
+      "behavior_review": {
+        "expected": [
+          "先提出关键业务问题，不编造决定",
+          "第二步直接整理给定四条规则，不重问已确认内容",
+          "无正式批准/Tracker/生命周期初始化；产物为普通草稿"
+        ]
+      },
+      "steps": [
+        {
+          "id": "clarify",
+          "prompt": "请作为 yss-product-lifecycle 入口，帮我梳理员工请假需求，规则还没定。先以普通文本提出需要我决定的关键问题，本轮不保存文件，等我下一轮答复。",
+          "allowed_writes": [],
+          "assertions": [
+            {
+              "kind": "absent",
+              "path": ".template-spec"
+            },
+            {
+              "kind": "absent",
+              "path": "yss-project.yaml"
+            },
+            {
+              "kind": "absent",
+              "path": "CONTEXT.md"
+            },
+            {
+              "kind": "absent",
+              "path": "issues"
+            },
+            {
+              "kind": "absent",
+              "path": "business-tickets"
+            }
+          ]
+        },
+        {
+          "id": "draft",
+          "prompt": "业务决定已经确认：员工提交请假申请；直属主管审批；批准前可撤回；本期只做单级审批。请使用 life 入口将这些内容整理为需求和可测试验收标准，保存到 drafts/leave.md，其他缺口标为待确认。",
+          "allowed_writes": [
+            "drafts/leave.md"
+          ],
+          "assertions": [
+            {
+              "kind": "exists",
+              "path": "drafts/leave.md"
+            },
+            {
+              "kind": "absent",
+              "path": ".template-spec"
+            },
+            {
+              "kind": "absent",
+              "path": "yss-project.yaml"
+            },
+            {
+              "kind": "absent",
+              "path": "CONTEXT.md"
+            },
+            {
+              "kind": "absent",
+              "path": "issues"
+            },
+            {
+              "kind": "absent",
+              "path": "business-tickets"
+            },
+            {
+              "kind": "skill_not_read",
+              "value": "to-spec"
+            },
+            {
+              "kind": "skill_not_read",
+              "value": "implement"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "repo": ".",
+      "source_paths": [
+        ".agents",
+        "AGENTS.md",
+        ".yss.json",
+        "skills-lock.json"
+      ],
+      "required_paths": [
+        "AGENTS.md",
+        ".agents/skills/yss-product-lifecycle/SKILL.md"
+      ],
+      "id": "confirmed-spec",
+      "prompt": "请作为 yss-product-lifecycle 入口处理已确认需求：员工提交请假申请；直属主管审批；批准前可撤回；本期只做单级审批。请直接整理需求与验收标准并保存 drafts/leave.md，未确认内容标明待确认。",
+      "allowed_writes": [
+        "drafts/leave.md"
+      ],
+      "assertions": [
+        {
+          "kind": "exists",
+          "path": "drafts/leave.md"
+        },
+        {
+          "kind": "absent",
+          "path": ".template-spec"
+        },
+        {
+          "kind": "absent",
+          "path": "yss-project.yaml"
+        },
+        {
+          "kind": "absent",
+          "path": "CONTEXT.md"
+        },
+        {
+          "kind": "absent",
+          "path": "issues"
+        },
+        {
+          "kind": "absent",
+          "path": "business-tickets"
+        },
+        {
+          "kind": "skill_not_read",
+          "value": "to-spec"
+        },
+        {
+          "kind": "skill_not_read",
+          "value": "implement"
+        }
+      ],
+      "behavior_review": {
+        "expected": [
+          "四条规则完整且有可测试验收",
+          "直接整理，不重复问四条决定",
+          "不调用 user-only 入口、不把普通草稿写成已批准正式资产"
+        ]
+      }
+    },
+    {
+      "repo": ".",
+      "source_paths": [
+        ".agents",
+        "AGENTS.md",
+        ".yss.json",
+        "skills-lock.json"
+      ],
+      "required_paths": [
+        "AGENTS.md",
+        ".agents/skills/yss-product-lifecycle/SKILL.md"
+      ],
+      "id": "explicit-to-spec",
+      "prompt": "请使用 $to-spec，按已确认内容“员工提交请假申请；直属主管审批；批准前可撤回；本期只做单级审批。”整理需求与验收标准，保存到 drafts/leave.md。其余缺口保持待确认。",
+      "allowed_writes": [
+        "drafts/leave.md"
+      ],
+      "assertions": [
+        {
+          "kind": "exists",
+          "path": "drafts/leave.md"
+        },
+        {
+          "kind": "absent",
+          "path": ".template-spec"
+        },
+        {
+          "kind": "absent",
+          "path": "yss-project.yaml"
+        },
+        {
+          "kind": "absent",
+          "path": "CONTEXT.md"
+        },
+        {
+          "kind": "absent",
+          "path": "issues"
+        },
+        {
+          "kind": "absent",
+          "path": "business-tickets"
+        }
+      ],
+      "behavior_review": {
+        "expected": [
+          "显式调用 to-spec，复用共享起草方法",
+          "无需 Plan/Tracker 初始化",
+          "不创建正式 Ticket 或批准"
+        ]
+      }
+    },
+    {
+      "repo": ".",
+      "source_paths": [
+        ".agents",
+        "AGENTS.md",
+        ".yss.json",
+        "skills-lock.json"
+      ],
+      "required_paths": [
+        "AGENTS.md",
+        ".agents/skills/yss-product-lifecycle/SKILL.md"
+      ],
+      "id": "portable-writing",
+      "prompt": "请使用领域建模和中文写作指导，审阅 input/requirements.md，整理事实、词汇、规则及待确认项，写到 drafts/review.md。仅完善当前需求草稿。",
+      "allowed_writes": [
+        "drafts/review.md"
+      ],
+      "assertions": [
+        {
+          "kind": "exists",
+          "path": "drafts/review.md"
+        },
+        {
+          "kind": "absent",
+          "path": ".template-spec"
+        },
+        {
+          "kind": "absent",
+          "path": "yss-project.yaml"
+        },
+        {
+          "kind": "absent",
+          "path": "CONTEXT.md"
+        },
+        {
+          "kind": "absent",
+          "path": "issues"
+        },
+        {
+          "kind": "absent",
+          "path": "business-tickets"
+        },
+        {
+          "kind": "unchanged",
+          "path": "input/requirements.md",
+          "value": "员工提交请假，直属主管审批。最长请假天数尚未确定。员工与申请人是否同义尚待业务确认。\n"
+        }
+      ],
+      "behavior_review": {
+        "expected": [
+          "共用中文规则实际可读",
+          "保留最长天数、术语同义两个未决项",
+          "无 Context 也可工作，不猜 ContextId，不创建 Context"
+        ]
+      },
+      "files": {
+        "input/requirements.md": "员工提交请假，直属主管审批。最长请假天数尚未确定。员工与申请人是否同义尚待业务确认。\n"
+      }
+    },
+    {
+      "repo": ".",
+      "source_paths": [
+        ".agents",
+        "AGENTS.md",
+        ".yss.json",
+        "skills-lock.json"
+      ],
+      "required_paths": [
+        "AGENTS.md",
+        ".agents/skills/yss-product-lifecycle/SKILL.md"
+      ],
+      "id": "formal-boundary",
+      "prompt": "请使用 life 入口，只读判断 cases/invalid 与 cases/governed 两个工程是否可以继续正式 Spec 工作和批准；不能创建替代草稿或修改任何文件。",
+      "allowed_writes": [],
+      "assertions": [
+        {
+          "kind": "absent",
+          "path": "drafts"
+        },
+        {
+          "kind": "absent",
+          "path": "issues"
+        },
+        {
+          "kind": "absent",
+          "path": "business-tickets"
+        }
+      ],
+      "behavior_review": {
+        "expected": [
+          "指出 schema999 不受支持",
+          "合法 project-instance 缺正式治理输入不能放行",
+          "两者均不回退为普通路径、无写入"
+        ]
+      },
+      "files": {
+        "cases/invalid/yss-project.yaml": "schema_version: 999\nrepository_mode: project-instance\n",
+        "cases/governed/yss-project.yaml": "schema_version: 1\nrepository_mode: project-instance\n"
+      }
+    }
+  ]
+}

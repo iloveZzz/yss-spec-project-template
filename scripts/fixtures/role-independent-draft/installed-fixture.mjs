@@ -15,14 +15,25 @@ export function installedFixture(profile='spec',{existingRoot,legacySpec=false}=
  const asset=ref=>({ref,digest:hash(read(ref))});
  const run=(label,args,expected='OK')=>{
   if(process.env.YSS_CHAIN_PROGRESS)process.stderr.write('[fixture] '+label+'\n');
-  const argv=[...args,'--root',root,'--json'],r=spawnSync(binary,argv,{encoding:'utf8',maxBuffer:64*1024*1024});
+  const argv=[...args,...(['capabilities','bundle'].includes(args[0])?[]:['--root',root]),'--json'],r=spawnSync(binary,argv,{encoding:'utf8',maxBuffer:64*1024*1024});
   calls.push({label,argv:[binary,...argv],exit_code:r.status,stdout:r.stdout,stderr:r.stderr});
   const d=JSON.parse(r.stdout);assert.equal(d.code,expected,`${label}: ${JSON.stringify(d.result.diagnostics||d.result.message)}`);assert.equal(r.status===0,expected==='OK');return d.result;
  };
  const git=(...args)=>{const r=spawnSync('git',args,{cwd:root,encoding:'utf8'});assert.equal(r.status,0,r.stderr);return r.stdout.trim();};
- if(!existingRoot)run('actual-install',['init','--profile',profile]);
+ const snapshot=run('actual-bundle',['bundle','inspect','--profile',profile]);
+ assert.ok([4,5].includes(snapshot.schemaVersion),'known current Bundle4/5 required');
+ if(!existingRoot){
+  const capabilities=run('actual-capabilities',['capabilities']);
+  run('actual-install',['init','--profile',profile,...(capabilities.native.includes('installation-v1')?['--installation','governed']:[])]);
+ }
+ const metadata=JSON.parse(read('.yss.json'));
+ assert.equal(metadata.schemaVersion,snapshot.schemaVersion);
+ assert.equal(metadata.bundleSchemaVersion,snapshot.schemaVersion);
+ assert.equal(metadata.profile,profile);
+ assert.equal(metadata.templateCommit,snapshot.templateCommit);
+ assert.equal(metadata.bundleHash,snapshot.bundleHash);
+ if(snapshot.schemaVersion===5)assert.equal(metadata.distribution.installation,'governed');
  if(legacySpec&&profile==='spec'&&!existingRoot)installLegacySpecPolicy(root);
- assert.equal(JSON.parse(read('.yss.json')).schemaVersion,4);
  assert.equal(fs.existsSync(path.join(root,'.template-spec/agents/digital-human-roles.yaml')),false);
  if(!existingRoot){git('init','-q');git('-c','user.name=test','-c','user.email=test@example.invalid','commit','--allow-empty','-qm','base');}
  const commit=git('rev-parse','HEAD');

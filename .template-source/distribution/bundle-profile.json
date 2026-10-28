@@ -672,8 +672,14 @@
         "CLAUDE.md": ".template-source/distribution/entries/skills-CLAUDE.md"
       },
       "skills": [
-        "implement",
-        "code-review"
+        "yss-product-lifecycle",
+        "grilling",
+        "yss-research",
+        "domain-modeling",
+        "to-spec",
+        "i-have-adhd",
+        "code-review",
+        "implement"
       ],
       "files": [
         ".gitignore"

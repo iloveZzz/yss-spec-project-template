@@ -1,15 +1,21 @@
 ---
 name: yss-product-lifecycle
-description: 编排 YSS 研发全生命周期；当阶段、产物、门禁或 Skill 路由不清晰时使用。
+description: 路由普通需求澄清、规格草稿、研究和审查；启用治理后编排 YSS 生命周期。
 ---
 
 # YSS Product Lifecycle
+
+## 先判定工作分支
+
+先读 [分支判定](references/standalone-routing.md#分支判定)。普通分支按该参考执行，不加载下文治理前提；正式和模板维护保留当前合同。
+
+## 治理分支
 
 Spec `stage-gates-v1` 先读 `.template-spec/process/stage-gates.md`，覆盖旧批准、角色、会签与审查预算。
 
 仅生成 DDD/MVC 脚手架时读[直接生成](references/conditional-guidance.md#直接生成脚手架)。
 
-有需求、说明、技术文档或 Spec 材料时，先按 `request_triage.material_intake` 与[材料分析](references/conditional-guidance.md#材料分析与按需读取)提取并复用本端记录；来源格式、源工程身份及源批准不作为分析前提。普通材料按需读取，不强制变化检测、同步或恢复，提取不授予批准或实施权限。
+已有材料按 [材料分析](references/conditional-guidance.md#材料分析与按需读取) 按需提取并复用，提取不授予批准或实施权限。
 
 按 `request_triage.delivery_path` 选择路径；`daily / standard` 操作见 [普通任务交付](references/daily-delivery.md)。路径不代表阶段、Ticket 状态或批准。
 
