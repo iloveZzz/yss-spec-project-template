@@ -87,10 +87,9 @@ test('仓库里的固定文件合法，且每个登记的平台都有摘要', ()
   assert.ok(pin);
   assert.ok(Object.keys(pin.binaries).length >= 1);
 });
-test('当前候选接受2.8.0发行二进制，拒绝已退役的2.7.6二进制',()=>{
+test('当前候选接受2.8.1发行二进制，拒绝旧2.8.0与2.7.6二进制',()=>{
  const pin=readYssCliPin(ROOT);
- const current='702158ea51987754e55823185b0e929e043f3efd7f922ead68fd5aea0001a551';
- const retired='1f7c7a036563e904c80eee0294e65976f783bd95b810028846b0ecd034650cc7';
- assert.throws(()=>verifyPinnedBinary({digest:retired,pin,platform:'darwin-arm64',environment:{}}),/与固定版本不符/);
- assert.deepEqual(verifyPinnedBinary({digest:current,pin,platform:'darwin-arm64',environment:{}}),{pinned:true,version:'2.8.0',commit:'591dfa0e5151b038ffef5ba58d1f5074d8655b90',platform:'darwin-arm64'});
+ const current='8ce4662faf64b3cc96aaf5de140fa0aff179eb9f321c9ef8b1422c52e3b0d449';
+ for(const retired of ['702158ea51987754e55823185b0e929e043f3efd7f922ead68fd5aea0001a551','1f7c7a036563e904c80eee0294e65976f783bd95b810028846b0ecd034650cc7'])assert.throws(()=>verifyPinnedBinary({digest:retired,pin,platform:'darwin-arm64',environment:{}}),/与固定版本不符/);
+ assert.deepEqual(verifyPinnedBinary({digest:current,pin,platform:'darwin-arm64',environment:{}}),{pinned:true,version:'2.8.1',commit:'2b9ede56990061e9dcc212b039fcd6ecd648af39',platform:'darwin-arm64'});
 });
