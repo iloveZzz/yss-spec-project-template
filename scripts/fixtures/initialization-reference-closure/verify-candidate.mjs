@@ -73,11 +73,28 @@ function initialise(profile, installation, inspection) {
   assert.equal(m.templateCommit, commit);
   assert.equal(m.bundleHash, inspection.bundleHash);
   assert.equal(m.snapshotHash, inspection.sourceSnapshotHash);
-  absent(root, '.template-source');
   if (installation === 'skills') {
-    for (const ref of ['.template-spec', 'yss-project.yaml', 'CONTEXT.md']) absent(root, ref);
+    for (const ref of ['yss-project.yaml', 'CONTEXT.md']) absent(root, ref);
     present(root, '.agents/skills/code-review/SKILL.md');
+    // Reference assets are available without granting project governance.
+    for (const ref of [
+      '.template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md',
+      '.template-spec/process/orchestration-contract.yaml',
+      '.template-spec/agents/issue-tracker.md',
+      '.template-spec/templates/review-report-template.md',
+    ]) present(root, ref);
+    const contract = fs.readFileSync(file(root, '.template-spec/process/orchestration-contract.yaml'), 'utf8');
+    const partRefs = [...contract.matchAll(/^\s+-\s+(orchestration\/[^\s]+\.yaml)\s*$/gm)].map(match => `.template-spec/process/${match[1]}`);
+    assert.ok(partRefs.length > 0, `${profile}: orchestration contract must declare parts`);
+    for (const ref of partRefs) present(root, ref);
+    present(root, '.template-spec/agents/gitlab-workflow-skills.md');
+    const matt = '.template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md';
+    const mattText = fs.readFileSync(file(root, matt), 'utf8');
+    for (const [, target] of mattText.matchAll(/\]\((\.\.\/[^)#]+)(?:#[^)]*)?\)/g)) {
+      assert.ok(fs.existsSync(path.resolve(path.dirname(file(root, matt)), target)), `${profile}: missing adaptation reference ${target}`);
+    }
   } else {
+    absent(root, '.template-source');
     present(root, 'yss-project.yaml');
     present(root, '.template-spec/process/agent-entry-policy.md');
   }
@@ -144,6 +161,22 @@ test('working-tree candidate closes initialization, research and preservation co
   fs.writeFileSync(file(backend, 'synthetic-decision/no-reply.json'), JSON.stringify(noReply, null, 2));
   cli([...decisionArgs, 'synthetic-decision/no-reply.json', '--from-record'], 'user-decision-response-required');
   const spec = roots['spec-governed'];
+  const skillsSpec = roots['spec-skills'];
+  const skillModule = file(skillsSpec, '.agents/skills/yss-research/scripts/lib/competitive-analysis.mjs');
+  const imported = spawnSync(process.execPath, ['--input-type=module', '-e', 'import(process.argv[1])', skillModule], {cwd: skillsSpec, encoding: 'utf8'});
+  assert.equal(imported.status, 0, `default research dependency import failed: ${imported.stderr}`);
+  const lifecycle = spawnSync(process.execPath, [file(skillsSpec, 'scripts/lifecycle-status'), '--root', skillsSpec, '--checkpoint', '.work/checkpoint.json'], {cwd: skillsSpec, encoding: 'utf8'});
+  assert.notEqual(lifecycle.status, 0, 'reference files must not grant governance to a skills installation');
+  assert.match(lifecycle.stderr + lifecycle.stdout, /yss-project\.yaml/, 'status command must fail on missing identity rather than missing modules');
+  planAndApply('skills', 'spec', skillsSpec, ['ensure', 'yss-prototype-stage'], 'spec-skills-prototype');
+  for (const ref of ['.template-spec/design/design.md', '.template-source/design/preview.html', '.template-source/design/preview-dark.html', '.template-source/design/preview.css', '.template-source/design/preview.js', '.template-spec/design/tokens/variables.css', '.template-spec/design/tokens/variables.dark.css']) present(skillsSpec, ref);
+  planAndApply('skills', 'spec', skillsSpec, ['ensure', 'yss-design-system'], 'spec-skills-design');
+  fs.copyFileSync(file(process.cwd(), 'DESIGN.md'), file(skillsSpec, 'DESIGN.md'));
+  fs.appendFileSync(file(skillsSpec, 'DESIGN.md'), '\n<!-- project customization -->\n');
+  command(file(skillsSpec, '.agents/skills/yss-design-system/scripts/design-md.mjs'), ['lint', 'DESIGN.md'], skillsSpec, 0);
+  present(spec, '.template-spec/agents/gitlab-workflow-skills.md');
+  present(spec, 'scripts/gitworks');
+  assert.match(fs.readFileSync(file(spec, '.template-spec/agents/issue-tracker.md'), 'utf8'), /gitlab-workflow-skills\.md/);
   planAndApply('assets', 'spec', spec, ['ensure', 'stage.spec-architecture'], 'spec-stage');
   present(spec, '.template-spec/templates/spec-template.md');
   planAndApply('skills', 'spec', spec, ['ensure', 'yss-research'], 'spec-research');

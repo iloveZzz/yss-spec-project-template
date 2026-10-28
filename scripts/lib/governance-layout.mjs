@@ -2,6 +2,52 @@ import { existsSync, lstatSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import {parseAsset} from "./structured-assets.mjs";
 import { spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
+import { readInstanceMetadata } from "./instance-metadata.mjs";
+
+// Only passive, Bundle-owned references retained by an explicit skills migration.
+// The distribution-policy test keeps this list aligned with skillReferences.
+export const retainedTemplateSourceReferences = {
+  spec: [
+    ".template-source/design/design-system-sync.yaml",
+    ".template-source/design/preview-dark.html",
+    ".template-source/design/preview.css",
+    ".template-source/design/preview.html",
+    ".template-source/design/preview.js",
+    ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+    ".template-source/process/maintenance-intensity.yaml",
+  ],
+  backend: [".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md"],
+};
+
+function verifyRetainedReferences(root) {
+  const fail = () => { throw new TypeError("项目实例的 .template-source 只能保留完整且未修改的受管参考"); };
+  const instance = readInstanceMetadata(root);
+  if (instance?.kind !== "native") fail();
+  const metadata = instance.metadata;
+  const refs = metadata?.distribution?.retainedTemplateSourceReferences;
+  const allowed = retainedTemplateSourceReferences[metadata?.profile];
+  if (metadata?.schemaVersion !== 5 || metadata?.distribution?.installation !== "governed" || !Array.isArray(refs) || !allowed || refs.some(ref => typeof ref !== "string" || !allowed.includes(ref)) || new Set(refs).size !== refs.length || refs.some((ref, i) => i && refs[i - 1] >= ref)) fail();
+  const seen = [];
+  function walk(ref) {
+    const entry = lstatSync(path.join(root, ref));
+    if (entry.isSymbolicLink()) fail();
+    if (entry.isDirectory()) {
+      if (!refs.some(item => item.startsWith(`${ref}/`))) fail();
+      for (const name of readdirSync(path.join(root, ref)).sort()) walk(`${ref}/${name}`);
+      return;
+    }
+    if (!entry.isFile() || !refs.includes(ref)) fail();
+    const item = metadata.managedFiles?.[ref];
+    const expected = item?.lastApplied;
+    const source = item?.baselineSource;
+    if (item?.ownership !== "managed" || item?.disposition || source?.kind !== "bundle" || source.path !== ref || !/^[a-f0-9]{40}$/.test(metadata.templateCommit || "") || !/^[a-f0-9]{64}$/.test(metadata.snapshotHash || "") || !/^[a-f0-9]{64}$/.test(metadata.bundleHash || "") || source.templateCommit !== metadata.templateCommit || source.snapshotHash !== metadata.snapshotHash || source.bundleHash !== metadata.bundleHash || !expected || expected.type !== "file" || JSON.stringify(item.baseline) !== JSON.stringify(expected) || !/^[a-f0-9]{64}$/.test(expected.digest || "") || source.templateDigest !== expected.digest || expected.mode !== (entry.mode & 0o777)) fail();
+    if (createHash("sha256").update(readFileSync(path.join(root, ref))).digest("hex") !== expected.digest) fail();
+    seen.push(ref);
+  }
+  walk(".template-source");
+  if (JSON.stringify(seen.sort()) !== JSON.stringify(refs)) fail();
+}
 
 const requiredShared = [
   ".template-spec/agents/yss-skill-registry.yaml",
@@ -74,9 +120,10 @@ export function verifyGovernanceLayout(root, mode) {
       ...oldStaticDirs.flatMap((ref) => filesBelow(root, ref)),
       ...[...oldStaticFiles].filter((ref) => existsSync(path.join(root, ref))),
     ])];
-    if (existsSync(path.join(root, ".template-source"))) {
-      throw new TypeError("项目实例不得包含 .template-source");
-    }
+    let hasSource = true;
+    try { lstatSync(path.join(root, ".template-source")); }
+    catch (error) { if (error?.code !== "ENOENT") throw error; hasSource = false; }
+    if (hasSource) verifyRetainedReferences(root);
   }
   if (oldFiles.length) {
     throw new TypeError(`旧治理文件仍位于 docs/，需显式迁移: ${oldFiles.sort().join(", ")}`);

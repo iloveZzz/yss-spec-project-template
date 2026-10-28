@@ -22,7 +22,7 @@ export function applyDailyVerificationSelection(plan,{selection='allowlist',conf
   // The retired root remains an impact input for deleting its generated projection.
   const matches=(file,pattern)=>patternMatches(file,pattern)||patternMatches(file.replace(/^\.(codex|cursor|pi|codebuddy|workbuddy)\/skills\//,'.agents/skills/'),pattern);
   const skillTree=/^\.(agents|codex|cursor|pi|codebuddy|workbuddy)\/skills\//;
-  const structuralSkillPattern=/^\.(agents|codex|cursor|pi|codebuddy|workbuddy)\/skills\/\*\*$/;
+  const structuralSkillPattern=/^\.(agents|codex|cursor|pi|codebuddy|workbuddy)\/skills\/\*\*(?:\/\*\.(?:mjs|js))?$/;
   // A tree identity check cannot declare executable or structured Skill behavior covered.
   const unknown=plan.changed_files.filter(file=>!syntaxPackage(file)&&![...checks.values()].some(item=>item.input_patterns.some(pattern=>matches(file,pattern)&&(!skillTree.test(file)||file.endsWith('.md')||!structuralSkillPattern.test(pattern)))));
   if(unknown.length&&selection==='allowlist')throw new TypeError(`INCOMPLETE_VERIFICATION_INPUTS: 先登记本次行为和消费者: ${unknown.join(', ')}`);

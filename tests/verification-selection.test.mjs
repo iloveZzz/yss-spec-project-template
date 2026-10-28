@@ -14,6 +14,7 @@ test('初始化入口、Backend 策略和跨端引用变更运行同一个完整
   'tests/spec-initial-entry.test.mjs',
   'tests/backend-decision-distribution.test.mjs',
   'tests/backend-handoff-reference.test.mjs',
+  'tests/skills-reference-imports.test.mjs',
   '.template-source/distribution/bundle-profile.json',
   'profiles/backend/.template-source/distribution/bundle-profile.json',
   'profiles/backend/.template-spec/process/plan-migration.md',
@@ -22,9 +23,18 @@ test('初始化入口、Backend 策略和跨端引用变更运行同一个完整
  for(const file of impacted){
   const checks=planTemplateVerification({changedFiles:[file]}).commands.filter(item=>item.id==='check.initialization-reference-boundaries');
   assert.equal(checks.length,1,file);
-  for(const testFile of impacted.slice(0,3))assert.ok(checks[0].command.includes(testFile),`${file}: ${testFile}`);
+  for(const testFile of impacted.slice(0,4))assert.ok(checks[0].command.includes(testFile),`${file}: ${testFile}`);
  }
  assert.equal(planTemplateVerification({changedFiles:['README.md']}).commands.some(item=>item.id==='check.initialization-reference-boundaries'),false);
+});
+test('设计工具和身份回归测试变更均选择真实设计工具检查',()=>{
+ for(const file of ['.agents/skills/yss-design-system/scripts/design-md.mjs','.workbuddy/skills/yss-design-system/scripts/design-md.mjs','.template-source/tooling/node/test/design-md.test.mjs']){
+  const checks=planTemplateVerification({changedFiles:[file]}).commands.filter(item=>item.id==='check.design-md-instance-identity');
+  assert.equal(checks.length,1,file);
+  assert.ok(checks[0].command.includes('.template-source/tooling/node/test/design-md.test.mjs'),file);
+ }
+ const research = planTemplateVerification({changedFiles:['.agents/skills/yss-research/scripts/lib/competitive-analysis.mjs']});
+ assert.ok(research.commands.some(item=>item.id==='check.initialization-reference-boundaries'), '已登记技能脚本变化需检查引用闭包');
 });
 test('竞品证据测试和维护收尾依赖各自选中实际场景',()=>{
  for(const [file,id] of [
