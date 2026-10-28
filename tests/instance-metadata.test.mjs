@@ -76,15 +76,17 @@ function nativeFixture(t, version=2, profile='spec') {
  const root=fs.mkdtempSync(path.join(os.tmpdir(),'yss-native-meta-'));
  t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
  const metadata={schemaVersion:version,protocolVersion:1,profile,
-  profileId:profile==='spec'?'harness.spec-template':'harness.business-ddd-strategy-handoff',
+  profileId:{spec:'harness.spec-template',backend:'harness.backend-delivery',design:'harness.business-ddd-strategy-handoff'}[profile],
   templateSourceState:'committed',templateCommit:'a'.repeat(40),snapshotHash:'b'.repeat(64),manifestHash:'c'.repeat(64),
   variables:{},distribution:{mode:'selected'},managedFiles:{},baselineDigest:sha('{}')};
  if(version>=2)Object.assign(metadata,{bundleSchemaVersion:version,bundleHash:'d'.repeat(64),cliSourceState:'committed',cliCommit:'e'.repeat(40)});
+ if(version===5)metadata.distribution.installation='governed';
  const save=()=>fs.writeFileSync(path.join(root,'.yss.json'),JSON.stringify(metadata));save();
  return {root,metadata,save};
 }
-test('metadata v3 绑定模板基线与保留决定，并保留本地0600权限', t => {
- const f=nativeFixture(t,3);
+test('metadata v3/4/5 绑定模板基线与保留决定，并保留本地0600权限', async t => {
+ for(const version of [3,4,5])await t.test(`Schema ${version}`,t=>{
+ const f=nativeFixture(t,version);
  const baseline={type:'file',digest:'a'.repeat(64),mode:420};
  const applied={type:'file',digest:'b'.repeat(64),mode:384};
  const item={baseline,lastApplied:applied,ownership:'managed-customizable',baselineSource:{kind:'bundle',templateCommit:f.metadata.templateCommit,snapshotHash:f.metadata.snapshotHash,bundleHash:f.metadata.bundleHash,path:'AGENTS.md',variant:'initial',templateDigest:'c'.repeat(64)},disposition:{choice:'keep-local',target:baseline,applied}};
@@ -92,16 +94,18 @@ test('metadata v3 绑定模板基线与保留决定，并保留本地0600权限'
  assert.equal(readInstanceMetadata(f.root).metadata.managedFiles['AGENTS.md'].lastApplied.mode,384);
  item.disposition.applied={...applied,digest:'0'.repeat(64)};f.metadata.baselineDigest=sha(JSON.stringify(f.metadata.managedFiles));f.save();
  assert.throws(()=>readInstanceMetadata(f.root),/保留决定与基线矛盾/);
+ });
 });
 test('后端插件 binding 必须匹配原生家族和来源，保留旧 metadata 不改变身份', async t => {
- for(const profile of ['spec'])await t.test(profile, async t=>{
-  const f=nativeFixture(t,2,profile);
+ const profile='spec';
+ for(const version of [2,3,4,5])await t.test(`Schema ${version}`, async t=>{
+  const f=nativeFixture(t,version,profile);
   const ref=profile==='spec'?'.yss-backend-plugin.json':'.yss-product-design-plugin.json';
   const legacy=profile==='spec'?'.yss-template.json':'.yss-harness-design.json';
   const binding={schema_version:2,plugin:profile==='spec'?'yss-backend-delivery':'yss-product-design',profile,
    template_commit:f.metadata.templateCommit,bundle_hash:f.metadata.bundleHash,binary_sha256:'f'.repeat(64)};
   const put=value=>fs.writeFileSync(path.join(f.root,ref),JSON.stringify(value));
-  fs.writeFileSync(path.join(f.root,legacy),'{"managedFiles":{}}');
+  if(version<4)fs.writeFileSync(path.join(f.root,legacy),'{"managedFiles":{}}');
   put(binding);assert.equal(readInstanceMetadata(f.root).kind,'native');
   for(const [key,value] of [['schema_version',99],['plugin','unknown-plugin'],['profile','frontend'],['template_commit','0'.repeat(40)],['bundle_hash','0'.repeat(64)],['binary_sha256','broken-digest']]) {
    put({...binding,[key]:value});assert.throws(()=>readInstanceMetadata(f.root),/binding 与原生身份或来源不一致/,key);
@@ -109,6 +113,48 @@ test('后端插件 binding 必须匹配原生家族和来源，保留旧 metadat
   put(binding);
   fs.writeFileSync(path.join(f.root,ref),'{"schema_version":2,"schema_version":99}');
   assert.throws(()=>readInstanceMetadata(f.root),/ASSET_PARSE|Map keys must be unique/);
+ });
+});
+
+test('metadata5 明确区分技能与治理安装，身份查询不创建治理资格或资产', async t => {
+ for(const profile of ['spec','backend'])for(const installation of ['skills','governed'])await t.test(`${profile}/${installation}`,t=>{
+  const f=nativeFixture(t,5,profile);f.metadata.distribution.installation=installation;f.save();
+  const before=fs.readFileSync(path.join(f.root,'.yss.json'));
+  const result=readInstanceMetadata(f.root);
+  assert.equal(result.kind,'native');assert.equal(result.profile,profile);
+  assert.equal(result.metadata.distribution.installation,installation);
+  assert.deepEqual(fs.readFileSync(path.join(f.root,'.yss.json')),before);
+  assert.deepEqual(fs.readdirSync(f.root),['.yss.json']);
+ });
+});
+
+test('未知安装方式、旧身份选择技能安装及技能实例绑定治理插件均拒绝', async t => {
+ for(const installation of [undefined,'unknown'])await t.test(`metadata5/${installation}`,t=>{
+  const f=nativeFixture(t,5);f.metadata.distribution.installation=installation;f.save();
+  assert.throws(()=>readInstanceMetadata(f.root),/installation/);
+ });
+ for(const version of [3,4])await t.test(`legacy metadata${version}/skills`,t=>{
+  const f=nativeFixture(t,version);f.metadata.distribution.installation='skills';f.save();
+  assert.throws(()=>readInstanceMetadata(f.root),/installation/);
+ });
+ await t.test('metadata5/skills/plugin-binding',t=>{
+  const f=nativeFixture(t,5);f.metadata.distribution.installation='skills';f.save();
+  fs.writeFileSync(path.join(f.root,'.yss-backend-plugin.json'),JSON.stringify({schema_version:2,plugin:'yss-backend-delivery',profile:'spec',template_commit:f.metadata.templateCommit,bundle_hash:f.metadata.bundleHash,binary_sha256:'f'.repeat(64)}));
+  assert.throws(()=>readInstanceMetadata(f.root),/binding 与原生身份或来源不一致/);
+ });
+});
+
+test('metadata4/5 不接受并存的旧家族身份或未知 schema，查询不追随身份链接', async t => {
+ for(const version of [4,5])await t.test(`Schema ${version}`,t=>{
+  const f=nativeFixture(t,version);
+  fs.writeFileSync(path.join(f.root,'.yss-template.json'),'{}');
+  assert.throws(()=>readInstanceMetadata(f.root),/不接受家族 metadata/);
+  fs.rmSync(path.join(f.root,'.yss-template.json'));
+  f.metadata.schemaVersion=6;f.save();assert.throws(()=>readInstanceMetadata(f.root),/未知 native/);
+  f.metadata.schemaVersion=version;f.save();
+  const file=path.join(f.root,'.yss.json'), saved=path.join(f.root,'saved.json');
+  fs.renameSync(file,saved);fs.symlinkSync(saved,file);
+  assert.throws(()=>readInstanceMetadata(f.root),/身份路径必须为普通文件/);
  });
 });
 test('Schema 1/2 的同家族旧 metadata 只作 lineage，未知家族仍拒绝', async t => {
@@ -154,13 +200,20 @@ test('本地工作树模板必须绑定不可变 tree 且由工作树 CLI 执行
  f.metadata.templateVersion='worktree:'+'f'.repeat(40);f.metadata.cliSourceState='committed';f.save();assert.throws(()=>readInstanceMetadata(f.root),/来源/);
 });
 
-test('Spec 身份不能重新启用 Design 原政策，支持的来源仍可读取',t=>{
- const f=nativeFixture(t,4);
+test('metadata4/5 的 Spec 身份只读取绑定历史来源，不启用 Design 原政策',async t=>{
+ for(const version of [4,5])await t.test(`Schema ${version}`,t=>{
+ const f=nativeFixture(t,version);
  for(const source_profile of ['spec','backend','design']) {
   const bytes=JSON.stringify({schema_version:1,kind:'governance-original-source',source_profile,files:{}}),digest=sha(bytes),ref=`.template-spec/compatibility/governance-history/${digest}/manifest.json`;
   fs.mkdirSync(path.dirname(path.join(f.root,ref)),{recursive:true});fs.writeFileSync(path.join(f.root,ref),bytes,{mode:0o600});f.metadata.governanceHistory={ref,digest};f.save();
   if(source_profile==='design')assert.throws(()=>readInstanceMetadata(f.root),/历史来源 Profile/);
   else assert.equal(readInstanceMetadata(f.root).profile,'spec');
   assert.equal(fs.readFileSync(path.join(f.root,ref),'utf8'),bytes);
+  assert.equal(fs.statSync(path.join(f.root,ref)).mode&0o777,0o600);
  }
+ const history=f.metadata.governanceHistory;
+ f.metadata.governanceHistory={...history,ref:'../manifest.json'};f.save();assert.throws(()=>readInstanceMetadata(f.root),/历史来源绑定/);
+ f.metadata.governanceHistory=history;f.save();
+ fs.appendFileSync(path.join(f.root,history.ref),'\n');assert.throws(()=>readInstanceMetadata(f.root),/历史来源摘要/);
+ });
 });

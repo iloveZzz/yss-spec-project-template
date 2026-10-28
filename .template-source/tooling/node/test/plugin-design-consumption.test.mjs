@@ -31,7 +31,7 @@ test('backend plugin receives Handoff v5 without bypassing engineering or implem
   t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
   const plugin = path.join(dir, 'plugin/yss-backend-delivery'), target = path.join(dir, 'backend-governance');
   const run = (file, args) => spawnSync(process.execPath, [file, ...args], { encoding: 'utf8', timeout: 120000, maxBuffer: 32 * 1024 * 1024 });
-  const ok = r => { assert.equal(r.status, 0, r.stderr); return JSON.parse(r.stdout); };
+  const ok = r => { assert.equal(r.status, 0, r.stderr || r.stdout || r.error?.message || `signal=${r.signal}`); return JSON.parse(r.stdout); };
   materializeTestPlugin({ sourceRoot: ROOT, output: plugin, build: () => ok(run(path.join(ROOT, '.template-source/plugins/yss-backend-delivery/build.mjs'), ['--output', plugin])) });
   const call = (command, args = []) => run(path.join(plugin, 'scripts/plugin.mjs'), [command, ...args]);
   const put = (ref, data) => { const file = path.join(dir, ref); fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, typeof data === 'string' ? data : JSON.stringify(data)); return file; };
