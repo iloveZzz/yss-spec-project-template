@@ -500,7 +500,7 @@ def runtime_command(args, runtime, workspace, private, env):
     kind = getattr(args, 'runtime', 'codex')
     if kind == 'codex':
         flags, _ = codex_provider_flags(getattr(args, 'codex_config_source', None))
-        return [str(runtime), 'exec', '--disable', 'plugins', '--disable', 'remote_plugin', *(['--approve-for-me'] if env.get('YSS_EVAL_REAL_GIT') == '1' else ['--sandbox', 'workspace-write']), '--ignore-user-config', '--ephemeral', '--json', '--skip-git-repo-check', '-c', 'shell_environment_policy.inherit="all"', '-c', 'shell_environment_policy.ignore_default_excludes=true', '-c', f'model_reasoning_effort="{args.reasoning_effort}"', '--model', args.model, '-C', str(workspace)] + flags
+        return [str(runtime), 'exec', '--disable', 'plugins', '--disable', 'remote_plugin', '--disable', 'apps', *(['--approve-for-me'] if env.get('YSS_EVAL_REAL_GIT') == '1' else ['--sandbox', 'workspace-write']), '--ignore-user-config', '--ephemeral', '--json', '--skip-git-repo-check', '-c', 'shell_environment_policy.inherit="all"', '-c', 'shell_environment_policy.ignore_default_excludes=true', '-c', f'model_reasoning_effort="{args.reasoning_effort}"', '--model', args.model, '-C', str(workspace)] + flags
     if kind == 'pi':
         provider = getattr(args, 'pi_provider', None)
         config = getattr(args, 'pi_models_source', None)

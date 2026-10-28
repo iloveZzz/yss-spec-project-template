@@ -2388,6 +2388,8 @@ profiles:
       - id: check.plugin-supported-scope
         run: node --test --test-skip-pattern='当前主机真实公开打包'
           .template-source/plugins/yss-backend-delivery/tests/permissions.test.mjs
+          .template-source/tooling/node/test/plugin-native-schema.test.mjs
+        resources: [native-cli]
         group: feature-assets
         inputs_complete: true
         input_patterns:
@@ -2395,6 +2397,7 @@ profiles:
           - scripts/fixtures/contract-efficiency/plugin-smoke.mjs
           - .template-source/tooling/node/scripts/test-with-plugin-clis.mjs
           - .template-source/tooling/node/test/product-design-plugin.test.mjs
+          - .template-source/tooling/node/test/plugin-native-schema.test.mjs
         depends_on: []
         failure_mode: 已移除插件 Profile 仍被接受，或权限与固定可执行路径的支持边界回退
       - id: check.spec-stage-gates

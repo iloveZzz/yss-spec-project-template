@@ -64,7 +64,7 @@ class SharedBudgetChecks(unittest.TestCase):
             with self.assertRaises(evaluation.BudgetExhausted): evaluation.RunBudget(24, 10, ledger).reserve(1)
             with self.assertRaisesRegex(ValueError, 'cannot change'): evaluation.RunBudget(25, 20, ledger).reserve(1)
 
-    def test_codex_fixture_disables_external_plugin_integrations(self):
+    def test_codex_fixture_disables_external_integrations(self):
         args=SimpleNamespace(runtime='codex',model='fixture-model',reasoning_effort='high')
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory)
@@ -72,6 +72,7 @@ class SharedBudgetChecks(unittest.TestCase):
         disabled=[command[index+1] for index,value in enumerate(command[:-1]) if value=='--disable']
         self.assertIn('plugins',disabled)
         self.assertIn('remote_plugin',disabled)
+        self.assertIn('apps',disabled)
 
     def test_provider_configuration_preserves_routing_and_rejects_unknown_settings(self):
         with tempfile.TemporaryDirectory() as directory:
