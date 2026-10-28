@@ -500,7 +500,7 @@ def runtime_command(args, runtime, workspace, private, env):
     kind = getattr(args, 'runtime', 'codex')
     if kind == 'codex':
         flags, _ = codex_provider_flags(getattr(args, 'codex_config_source', None))
-        return [str(runtime), 'exec', *(['--approve-for-me'] if env.get('YSS_EVAL_REAL_GIT') == '1' else ['--sandbox', 'workspace-write']), '--ignore-user-config', '--ephemeral', '--json', '--skip-git-repo-check', '-c', 'shell_environment_policy.inherit="all"', '-c', 'shell_environment_policy.ignore_default_excludes=true', '-c', f'model_reasoning_effort="{args.reasoning_effort}"', '--model', args.model, '-C', str(workspace)] + flags
+        return [str(runtime), 'exec', '--disable', 'plugins', '--disable', 'remote_plugin', *(['--approve-for-me'] if env.get('YSS_EVAL_REAL_GIT') == '1' else ['--sandbox', 'workspace-write']), '--ignore-user-config', '--ephemeral', '--json', '--skip-git-repo-check', '-c', 'shell_environment_policy.inherit="all"', '-c', 'shell_environment_policy.ignore_default_excludes=true', '-c', f'model_reasoning_effort="{args.reasoning_effort}"', '--model', args.model, '-C', str(workspace)] + flags
     if kind == 'pi':
         provider = getattr(args, 'pi_provider', None)
         config = getattr(args, 'pi_models_source', None)
@@ -597,6 +597,14 @@ else:print('fixture command passed')
             home = private / "home"; home.mkdir()
             env = os.environ.copy()
             env.update(HOME=str(home), CODEX_HOME=str(private), PATH=str(bin_dir) + os.pathsep + env["PATH"], YSS_EVAL_COMMAND_LOG=str(commands), YSS_EVAL_GIT_STATUS=case.get("git_status", ""), TMPDIR=str(temporary))
+            for key in ['CODEX_APP_RUNTIME_CLI_PATH', 'CODEX_APP_TOOLS_PIPE_PATH', 'CODEX_THREAD_ID', 'CODEX_SESSION_ID', 'CODEX_INTERNAL_ORIGINATOR_OVERRIDE']:
+                env.pop(key, None)
+            env['ZDOTDIR'] = str(home)
+            # Login shells may reorder PATH after the runtime receives its environment.
+            profile = 'export PATH=' + shlex.quote(env['PATH']) + '\n'
+            for name in ['.zprofile', '.bash_profile']:
+                (home / name).write_text(profile)
+
             capabilities = case.get('runtime_capabilities', 'readonly')
             if capabilities not in ['readonly', 'fixture-write']: raise ValueError('unknown runtime_capabilities')
             if case.get('real_pnpm_commands'):

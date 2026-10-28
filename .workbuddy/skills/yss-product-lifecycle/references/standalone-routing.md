@@ -2,7 +2,7 @@
 
 ## 分支判定
 
-先读当前工程 `AGENTS.md`，检查 `yss-project.yaml` 与 `.yss.json` 是否存在。未启用治理且没有身份文件的普通工程可以直接工作；合法 metadata5 明确 `distribution.installation=skills` 时也走本页下方的普通路由表。普通分支只读本页及本次需要的技能/材料。
+先读当前工程 `AGENTS.md`，检查 `yss-project.yaml` 与 `.yss.json` 是否存在。现有 `.yss.json` 使用 JSON 字段 `schemaVersion`、`profile`、`profileId` 和 `distribution.installation`；metadata5 指 `schemaVersion: 5`。读取这些身份字段及本次需要的输入后判定分支。未启用治理且没有身份文件的普通工程可以直接工作；合法 metadata5 明确 `distribution.installation=skills` 时也走本页下方的普通路由表。普通分支只读本页及本次需要的技能/材料。
 
 存在 `yss-project.yaml` 时严格解析：当前只支持 schema_version:1，repository_mode 仅 `project-instance` 或 `template-source`。非法、不可读、不支持版本或相互冲突的身份停止受影响写入，不能因缺治理目录改走普通分支。metadata 非法/旧身份、出现治理资产但身份不明，也先报告缺口，不猜安装方式。
 

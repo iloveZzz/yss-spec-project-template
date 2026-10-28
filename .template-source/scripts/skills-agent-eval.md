@@ -16,6 +16,8 @@ python3 .template-source/scripts/skills-agent-eval.py \
 
 候选换用 `--source`、`--output` 与 `--variant candidate`，其他配置保持一致。示例预算只作参数演示，实际值依据已测样本登记；默认每个进程分别计数；跨版本、宿主与重试共用预算时，所有进程必须使用同一个仓库外 `--budget-ledger` 及相同的 `--max-turns` / `--max-seconds`。账本用文件锁和原子替换累计启动尝试与 Agent 实际执行秒数；启动前预占本次超时时间，异常退出留下的预占不自动退还。不得换账本或提高限额绕过批准的上限。修复后仅复跑受影响场景时使用 `--scenario <id>` 和新的输出目录；保留此前失败，不覆盖或删除不满意的样本。源目录通过 `source_paths` 声明复制闭包，并以 `required_paths` 声明必须存在的来源。默认包括 `.agents`、平台技能包、`.template-spec`、`.template-source/process` / `distribution` / `agents`、docs、根 package.json / README、scripts、CONTEXT 和仓库身份。自定义 `source_paths` 会替代默认闭包，必须检查场景实际消费的导航目标；裁剪 fixture 中的缺失文件不能当作源仓缺陷。必需来源在源目录、复制后测试目录、注入后及各步启动前分别检查；注入文件不能冒充遗漏的源文件，setup 删除必需文件同样阻止启动。原始 AGENTS.md 保留，仅追加标记明确且两侧相同的 fixture 隔离约束；保存原始与有效规则摘要。凭据由运行时单独使用，不复制进产物目录。
 
+Codex fixture 启动会移除父桌面应用的 IPC、会话与 originator 环境，继续沿用本次显式模型/供应商配置及已有认证输入；禁用无关本地及远端插件加载。临时 HOME 的 Bash/Zsh 登录配置只恢复 fixture PATH，防止系统登录配置将真实 Git 或网络工具排到替身前。这些设置不提供网络沙箱；模型服务连接继续由所选运行时管理，写范围仍须结合实际命令日志和原始轨迹核验。
+
 场景 JSON 为 `{"scenarios": [...]}`；每项含 `id`、`repo`（来源目录中的相对仓库路径）、`prompt`、可选 `files`（fixture 文件内容）及 `assertions`。断言支持存在/不存在、文本、JSON 字段、原文件不变、命令、最终答复、DOCX ZIP 内容及 Node 行为检查。所有产物路径必须留在 fixture 中。修正判定器应记录前后摘要、原因，证明提示和 fixture 未变，再对两侧统一重评分；不因此重跑模型挑样本。
 
 `json_equal` 要求顶层为对象、字段存在且值与类型一致，`0` 不能充当 `false`。错误 JSON、非对象、不可读内容及 Node 断言超时记为失败；判分错误不丢弃已取得的运行轨迹、用量和步骤结果。

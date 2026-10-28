@@ -2289,6 +2289,7 @@ profiles:
         inputs_complete: true
         input_patterns:
           - ".template-source/scripts/skills-agent-eval.py"
+          - ".template-source/scripts/skills-agent-eval.md"
           - ".template-source/scripts/tests/test_skills_agent_eval.py"
         depends_on: []
         failure_mode: "Agent 轨迹的非致命警告与失败判定混用，或预算、写入审计与未完成执行被误报通过"
