@@ -6,9 +6,9 @@ import path from 'node:path';
 import { tmpdir } from 'node:os';
 import { spawnSync } from 'node:child_process';
 import { fixture } from '../../../../scripts/fixtures/strategic-handoff/fixture.mjs';
-import { finalizeDelivery } from '../../../../scripts/lib/strategic-handoff.mjs';
+import { exportBundle, finalizeDelivery } from '../../../../scripts/lib/strategic-handoff.mjs';
 import { consumerEntry } from '../../../../scripts/lib/strategic-handoff-routing.mjs';
-import { materializeTestPlugin } from '../scripts/tooling-fixture.mjs';
+import { materializeTestPlugin, treeInventory } from '../scripts/tooling-fixture.mjs';
 
 const ROOT = path.resolve(import.meta.dirname, '../../../..');
 test('consumer mapping preserves dedicated backend identity and rejects unknown wire IDs or out-of-profile targets', t => {
@@ -39,7 +39,7 @@ test('backend plugin receives Handoff v5 without bypassing engineering or implem
   ok(call('project-apply', ['--plan', put('plan.json', plan)]));
   const source = path.join(dir, 'synthetic-source'); fs.mkdirSync(source);
   await fixture(source, { handoffVersion: 5 });
-  const delivery = await finalizeDelivery({ sourceRoot: source, handoffRef: 'handoff.yaml', zip: true });
+  const delivery = await finalizeDelivery({ sourceRoot: source, handoffRef: 'handoff.yaml', zip: true, evidenceRoot: source });
   let receipt;
   await t.test('formal directory import selects only backend responsibility and maps wire entry', () => {
     const result = ok(call('project-import-design', ['--target-dir', target, '--bundle', delivery.delivery]));
@@ -63,11 +63,22 @@ test('backend plugin receives Handoff v5 without bypassing engineering or implem
     ok(call('project-import-design', ['--target-dir', target, '--bundle', delivery.delivery]));
     assert.deepEqual(fs.readFileSync(path.join(target, receipt)), first);
   });
-  await t.test('transport ZIP imports into another governance root with the existing v2 receipt contract', () => {
-    const zipTarget = path.join(dir, 'ZIP 接收端');
+  const zipTarget = path.join(dir, 'ZIP 接收端');
+  await t.test('bare Handoff v5 ZIP is rejected without changing the receiving project', () => {
     const zipPlan = ok(call('project-plan', ['--target-dir', zipTarget, '--project-name', 'ZIP 验证', '--business-domain', '测试', '--team-size', '1', '--issue-tracker', 'github']));
     ok(call('project-apply', ['--plan', put('zip-plan.json', zipPlan)]));
-    const imported = ok(call('project-import-design', ['--target-dir', zipTarget, '--bundle', path.join(delivery.delivery, 'package.zip')]));
+    const before = treeInventory(zipTarget);
+    const result = call('project-import-design', ['--target-dir', zipTarget, '--bundle', path.join(delivery.delivery, 'package.zip')]);
+    assert.equal(result.status, 1, result.stderr || result.stdout);
+    assert.match(result.stderr, /Handoff v5 接入必须消费正式 delivery wrapper 与 Receipt v3/);
+    assert.deepEqual(treeInventory(zipTarget), before);
+  });
+  await t.test('historical Handoff v4 ZIP imports with Receipt v2 and preserves its reuse contract', async () => {
+    const legacySource = path.join(dir, 'synthetic-v4-source'); fs.mkdirSync(legacySource);
+    await fixture(legacySource, { handoffVersion: 4 });
+    const legacy = await exportBundle({ sourceRoot: legacySource, handoffRef: 'handoff.yaml', output: path.join(dir, 'legacy-v4-package'), zip: true, evidenceRoot: legacySource });
+    assert.equal(JSON.parse(fs.readFileSync(path.join(legacy.output, 'handoff.yaml'))).schema_version, 4);
+    const imported = ok(call('project-import-design', ['--target-dir', zipTarget, '--bundle', legacy.zip]));
     const saved = JSON.parse(fs.readFileSync(path.join(zipTarget, imported.import_receipt_ref)));
     assert.equal(saved.schema_version, 2);
     assert.equal(imported.next_work_unit, 'work-unit.technical-analysis');
@@ -88,7 +99,7 @@ test('backend plugin receives Handoff v5 without bypassing engineering or implem
   await t.test('UI-only package is rejected before any import write', async () => {
     const ui = path.join(dir, 'ui-only'); fs.mkdirSync(ui);
     await fixture(ui, { handoffVersion: 5, impacts: { ui: true, frontend: true, api: false, data: false, backend: false, cross_repo: false, high_risk: false } });
-    const packaged = await finalizeDelivery({ sourceRoot: ui, handoffRef: 'handoff.yaml' });
+    const packaged = await finalizeDelivery({ sourceRoot: ui, handoffRef: 'handoff.yaml', evidenceRoot: ui });
     const result = call('project-import-design', ['--target-dir', target, '--bundle', packaged.delivery]);
     assert.equal(result.status, 1); assert.match(result.stderr, /backend-consumer-route-not-active/);
   });
