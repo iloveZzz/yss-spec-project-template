@@ -804,6 +804,8 @@ profiles:
         input_patterns:
           - .template-source/scripts/lib/verification-qualification.mjs
           - .template-source/scripts/lib/verification-delivery-run.mjs
+          # 保留本次删除路径的检查归属；合入后可移除。
+          - .template-source/scripts/verify-cli-upgrade.mjs
           - .template-source/process/template-verification-profiles.yaml
           - tests/verification-qualification.test.mjs
           - tests/verification-delivery-run.test.mjs
@@ -831,6 +833,7 @@ profiles:
         inputs_complete: true
         input_patterns:
           - "tests/frontend-removed.test.mjs"
+          - "scripts/fixtures/backend-delivery/revision-server.mjs"
           - "profiles/frontend/**"
           - ".agents/skills/.yss-skills-manifest.json"
           - ".agents/rules/yss-ai-skills.md"
@@ -1191,10 +1194,6 @@ profiles:
           - ".template-source/scripts/lib/yss-cli-pin.mjs"
           - ".template-source/scripts/lib/verification-preflight.mjs"
           - "tests/yss-cli-pin.test.mjs"
-          # AR-02 删除了 N7 的手动落后检查。删除也算变更路径，删除提交里必须仍有登记；合入之后这三行可以移除。
-          - "scripts/verify-source-lock-lag"
-          - "scripts/lib/source-lock-lag.mjs"
-          - "tests/source-lock-lag.test.mjs"
         depends_on: []
         failure_mode: "yss-cli 固定文件缺项、坏摘要或未知平台被放行，二进制摘要与固定版本不符时没有失败，或 CI 里接受了本地覆盖"
       - id: check.template-release-sources
@@ -1207,8 +1206,6 @@ profiles:
           - ".template-source/scripts/lib/verification-artifacts.mjs"
           - ".template-source/scripts/tests/template-ci.test.mjs"
           - ".gitmodules"
-          # AR-02 已移除的 yss-cli gitlink：删除也算变更路径，删除提交里仍需登记；合入之后可以移除。
-          - "submodules/yss-cli"
         depends_on: []
         failure_mode: "发布检出把未初始化的 yss-cli 当作允许项，发行验证接受了与固定文件不符的二进制或源码提交，或本地覆盖通过了发行验证"
       - id: check.verification-artifacts
@@ -1248,7 +1245,6 @@ profiles:
         input_patterns:
           - ".github/workflows/template-gate.yml"
           - ".github/workflows/template-slow-checks.yml"
-          - ".release-recovery/**"
           - ".github/actions/setup-template/action.yml"
           - ".gitlab-ci.yml"
           - "scripts/ci-setup"
@@ -1567,7 +1563,11 @@ profiles:
           - "scripts/lib/runtime-store.mjs"
           - ".template-source/cli-core/runtime-store.mjs"
           - ".template-source/scripts/measure-runtime-store.mjs"
+          - ".template-source/scripts/verify-runtime-distribution.mjs"
           - "tests/runtime-store*.test.mjs"
+          - ".agents/skills/yss-research/SKILL.md"
+          - ".agents/skills/yss-research/references/governed-research.md"
+          - ".agents/skills/yss-product-lifecycle/references/orchestration.md"
         depends_on: []
         failure_mode: "运行记录保留、仓外落盘或实际测量入口的分发与输出错误"
       - id: check.maintenance-counterexample
@@ -1672,6 +1672,7 @@ profiles:
           - "scripts/verify-scaffold-architecture-decisions"
           - ".template-spec/engineering/backend-platforms*"
           - ".template-spec/engineering/evidence/scaffold-3.2.0/**"
+          - ".template-source/engineering/evidence/aliyun-artifact-resolution.json"
         depends_on: [ check.backend-scaffold-direct-generation ]
         failure_mode: "精确平台绑定、运行证据或退役架构决策接受错误；真实平台证据另按选定两个组合执行"
       - id: check.scaffold-contract-consumers
@@ -1990,6 +1991,7 @@ profiles:
           - ".template-source/process/template-verification-profiles.yaml"
           - "tests/verification-selection.test.mjs"
           - "scripts/fixtures/initialization-reference-closure/verify-candidate.mjs"
+          - "scripts/fixtures/contract-efficiency/measure-selection.mjs"
         depends_on: []
         failure_mode: "检查选择遗漏、错误扩大或依赖闭包错误"
       - id: "check.daily-execution"
@@ -2213,7 +2215,6 @@ profiles:
           - "scripts/verify-frontend-implementation-evidence"
           - "scripts/verify-work-layout"
           - "skills-lock.json"
-          - "submodules/yss-cli"
           - "submodules/yss-harness-backend-agent"
           - "submodules/yss-harness-design-agent"
           - "submodules/yss-harness-frontend-agent"
@@ -3276,7 +3277,6 @@ routing:
       - tooling
   - patterns:
       - .github/**
-      - .release-recovery/** # 删除一次性恢复材料时仍由 CI 入口合同检查承接
     groups:
       - candidate-integrity
   - patterns:
@@ -3360,10 +3360,6 @@ routing:
       - .template-source/distribution/yss-cli-pin.json
       - .template-source/scripts/lib/yss-cli-pin.mjs
       - tests/yss-cli-pin.test.mjs
-      # AR-02 已删除的 N7 手动落后检查：删除提交里的变更路径仍需登记，合入之后可以移除。
-      - scripts/verify-source-lock-lag
-      - scripts/lib/source-lock-lag.mjs
-      - tests/source-lock-lag.test.mjs
     groups:
       - feature-assets
   - patterns:

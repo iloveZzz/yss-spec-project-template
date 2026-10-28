@@ -80,8 +80,10 @@ test('spec initial stage installs runtime manager and portable policy through pu
 
 test('runtime policy references preserve existing skill preflight and authority', () => {
   const research = read('.agents/skills/yss-research/SKILL.md').toString();
+  assert.match(research, /\]\(references\/governed-research\.md\)/);
+  const governedResearch = read('.agents/skills/yss-research/references/governed-research.md').toString();
   const orchestration = read('.agents/skills/yss-product-lifecycle/references/orchestration.md').toString();
-  assert.match(research, /scripts\/runtime-store inspect/);
+  assert.match(governedResearch, /scripts\/runtime-store inspect/);
   assert.match(orchestration, /scripts\/runtime-store inspect/);
   assert.match(orchestration, /--check-skills/);
   assert.match(orchestration, /Matt/);
