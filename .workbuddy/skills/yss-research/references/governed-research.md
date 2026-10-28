@@ -2,6 +2,8 @@
 
 Only consume this reference when the caller explicitly supplies a formal workflow or an existing formal task. It does not apply to standalone skill use.
 
+本合同和审计式竞品工具在已核验的治理仓执行。独立 `skills` 安装不带治理模板或共享脚本；缺少治理仓时，先接入已有治理仓或显式迁移安装方式，不能假定项目根中的引用已经存在。Spec 治理仓先用 `yss skills ensure yss-research --root <治理仓> --plan --out <新计划文件>` 核对资源，随后用 `yss skills --root <治理仓> --apply --plan-file <计划文件>` 应用并重验；已安装技能仍须核验其条件资源。Backend 按当前 Profile 实际分发及身份核验适用资源。普通研究不执行此补装或研究包合同。
+
 # YSS Research
 
 调查 YSS 决定所依赖的事实，输出可追溯证据和有边界的结论；不作出或批准下游产品、领域、架构或发布决定。

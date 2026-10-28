@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { copyFileSync, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -88,7 +88,7 @@ for (const selection of ['matrix', 'report', 'both']) test(`${selection} 输出�
   execute(renderer, [f.evidence], 0, /outputs rendered/);
   execute(validator, [f.brief, f.evidence], 0, /research package valid/);
   const files = competitiveVerificationFiles(f.evidence);
-  assert.equal(files.length, (selection === 'both' ? 2 : 1) + 7);
+  assert.equal(files.length, (selection === 'both' ? 2 : 1) + 8);
   assert.ok(files.every(path.isAbsolute));
   if (selection !== 'matrix') {
     const content = readFileSync(path.join(f.directory, 'sample-competitive-analysis.md'), 'utf8');
@@ -267,4 +267,46 @@ test('验证依赖可绑定指定 repo 根，缺依赖不能跳过', t => {
   assert.ok(existsSync(schema));
   rmSync(schema);
   assert.throws(() => competitiveVerificationFiles(f.evidence, { root: fixtureRoot }), /ENOENT/);
+});
+
+test('验证绑定必须包含校验模块的传递导入，缺失时拒绝复用', t => {
+  const f = fixture(t, payload('matrix'));
+  execute(renderer, [f.evidence]);
+  const files = competitiveVerificationFiles(f.evidence);
+  const dependency = path.join(repoRoot, 'scripts/lib/source-context-snapshot.mjs');
+  assert.ok(files.includes(dependency), '传递导入必须计入验证输入');
+  const fixtureRoot = path.join(f.directory, 'isolated-root');
+  for (const file of files.slice(1)) {
+    const target = path.join(fixtureRoot, path.relative(repoRoot, file));
+    mkdirSync(path.dirname(target), { recursive: true });
+    copyFileSync(file, target);
+  }
+  assert.doesNotThrow(() => competitiveVerificationFiles(f.evidence, { root: fixtureRoot }));
+  rmSync(path.join(fixtureRoot, 'scripts/lib/source-context-snapshot.mjs'));
+  assert.throws(() => competitiveVerificationFiles(f.evidence, { root: fixtureRoot }), /source-context-snapshot\.mjs/);
+});
+
+test('竞品渲染缺少模板或传递模块时拒绝且不产生部分输出', t => {
+  for (const missing of ['.template-spec/plan/templates/competitive-analysis-template.md', 'scripts/lib/source-context-snapshot.mjs']) {
+    const f = fixture(t);
+    const root = path.join(f.directory, 'isolated-root');
+    const targetSkill = path.join(root, '.agents/skills/yss-research');
+    mkdirSync(path.dirname(targetSkill), { recursive: true });
+    cpSync(skillRoot, targetSkill, { recursive: true });
+    for (const ref of [
+      '.template-spec/plan/templates/competitive-matrix-template.md',
+      '.template-spec/plan/templates/competitive-analysis-template.md',
+      'scripts/lib/json-schema.mjs', 'scripts/lib/validation-phase.mjs', 'scripts/lib/source-context-snapshot.mjs'
+    ]) {
+      const target = path.join(root, ref);
+      mkdirSync(path.dirname(target), { recursive: true });
+      copyFileSync(path.join(repoRoot, ref), target);
+    }
+    rmSync(path.join(root, missing));
+    const result = spawnSync(process.execPath, [path.join(targetSkill, 'scripts/render-competitive-outputs.mjs'), f.evidence], { encoding: 'utf8' });
+    assert.notEqual(result.status, 0, result.stdout + result.stderr);
+    assert.ok(result.stderr.includes(path.basename(missing)), result.stderr);
+    for (const output of ['sample-competitive-matrix.md', 'sample-competitive-analysis.md'])
+      assert.equal(existsSync(path.join(f.directory, output)), false, output);
+  }
 });

@@ -64,7 +64,7 @@ handoff 仅由用户手动触发，默认轻量续接说明；用户明确要求
 
 ## 后端专职 profile
 
-先消费 `.template-spec/process/harness-profile.yaml` 的职责与输入条件，再依 `.template-spec/process/frontend-backend-delivery.md` 接力。不得派发另一端实现任务；跨端输入评审必须只读。终点只关闭本端验证，整体业务验收由登记的统一管理方汇总。
+先消费 `.template-spec/process/harness-profile.yaml` 的职责与输入条件；显式上游战略交接按 `.template-spec/process/strategic-handoff-package.md` 核验来源和接收记录，导出与接收预检见 `.template-spec/process/delivery-preflight.md`。不得派发另一端实现任务；跨端输入评审必须只读。终点只关闭本端验证，整体业务验收由登记的统一管理方汇总。
 
 正式路径的新 DDD/MVC 脚手架合同必须绑定 `platform_configuration` v2。仅清单中真实验证过的 YSS 组合可生成；缺兼容组件或证据时阻断，不替代为官方组件。已有当前批准展示摘要后复用；依赖配方变化重编合同，单纯补充同配置证据只重验。同一 Maven Reactor 平台一致，候选维护产物不可进入业务切片。详见 `.template-spec/engineering/backend-platforms.md`。
 

@@ -7,7 +7,7 @@ description: 路由普通需求澄清、规格草稿、研究和审查；启用�
 
 ## 先判定工作分支
 
-先读 [分支判定](references/standalone-routing.md#分支判定)。普通分支按该参考执行，不加载下文治理前提；正式和模板维护保留当前合同。
+先读 [分支判定](references/standalone-routing.md#分支判定)。普通分支按此执行，不加载治理前提；正式和模板维护保留当前合同。
 
 ## 治理分支
 
@@ -29,7 +29,9 @@ Spec `stage-gates-v1` 先读 `.template-spec/process/stage-gates.md`，覆盖旧
 | 执行、流转和授权合同 | `.template-spec/process/orchestration-contract.yaml` |
 | Skill 身份、能力、依赖和路由 | `.template-spec/agents/yss-skill-registry.yaml` |
 | 技术检查、复核方式、真实用户决定和外部要求 | 编排合同中的 `technical_checks`、`gate_policy`、`review_modes`、`user_decision_policy`、`external_rules_policy` |
-| 影响面、裁剪与维护强度 | `.template-spec/process/harness-process-tailoring.md`、`.template-source/process/maintenance-intensity.yaml` |
+| 影响面与裁剪 | `.template-spec/process/harness-process-tailoring.md` |
+
+仅模板源读 `.template-source/process/maintenance-intensity.yaml`；实例不读。
 
 ```bash
 scripts/query-lifecycle-context --work-unit work-unit.plan-requirements --check-skills

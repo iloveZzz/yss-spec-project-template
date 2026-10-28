@@ -8,7 +8,7 @@
 
 `yss-implementation-contract-compiler` 生成草案；`yss-product-lifecycle` 核验、批准并持久化。合同缺少必填字段时状态为 `blocked`。schema v1 已停止支持，必须重新编译为 v2，不提供自动升级。
 
-采用上游交接或显式 `frontend_delivery` 绑定时，`frontend.delivery` 绑定 `{acceptance_ref, digest}`，来自 `scripts/verify-frontend-delivery` 的当前结果；也可由 `resolution.frontend_delivery` 承载，两处并存时必须一致。本地已批准资产绑定当前功能 checkpoint 与 Spec，实际核验适用的设计和后端/API 依赖；纯 UI 无相关影响须记录有理由的 not-applicable，不补造外部回执。正式执行从当前批准的持久化合同重验输入；无效的显式绑定不得回退本地路径。细则见 `.template-spec/process/frontend-backend-delivery.md`。
+历史 v2 的 `frontend.delivery` 或 `resolution.frontend_delivery` 绑定保留原始引用与摘要，并按原合同和固定历史工具只读核验；当前模板不提供 `scripts/verify-frontend-delivery`，不得补造结果或将无效显式绑定回退为本地来源。当前战略交接按 `.template-spec/process/strategic-handoff-package.md` 验证接收记录；修改旧合同须显式迁移为新草案并重新核验当前批准，不继承旧批准。
 
 ```yaml
 slice_contract:

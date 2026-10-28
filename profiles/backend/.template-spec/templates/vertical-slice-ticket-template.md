@@ -9,7 +9,7 @@ requirement_version: v1
 
 # 垂直切片 Ticket：<标题>
 
-冻结时状态见 frontmatter；当前执行状态、勾选结果和会签进度从主 tracker / 任务包读取。冻结后不得回写本文件，需求修改另存新版本并重新编译、审查与绑定批准。见 [Slice v3 冻结需求协议](../../.agents/skills/yss-implementation-contract-compiler/references/slice-implementation-contract.md#第二轮增量规则)。
+冻结时状态见 frontmatter；当前执行状态、勾选结果和批准进度从主 tracker / 任务包读取。冻结后不得回写本文件，需求修改另存新版本并重新编译、审查与绑定批准。见 [Slice v3 冻结需求协议](../../.agents/skills/yss-implementation-contract-compiler/references/slice-implementation-contract.md#第二轮增量规则)。
 
 ## 父级
 
@@ -58,7 +58,7 @@ requirement_version: v1
 | contract_ref |  |
 | 实现合同编译器 状态 | draft / blocked / ready-for-lifecycle-review |
 | 生命周期批准状态 | pending / approved / rejected |
-| suggested_owner_role_id | `role.frontend-agent` / `role.backend-agent` / `role.test-agent`（实现合同编译器 建议，Harness Orchestrator 派活） |
+| 编译与批准记录 | 在当前 checkpoint / 任务包中维护，按当前合同选择实际技能和执行上下文 |
 | Build Architecture Checklist | <已批准清单资产引用；编写结构见[系统概要设计](../architecture/templates/system-overview-design-template.md#工程基线与准入清单)> |
 
 > 实现合同编译器 不得自行将合同批准或将本 Ticket 推进为 `ready-for-agent`。只有生命周期编排器核验并持久化当前版本合同、清除阻塞边后，才能推进状态。
@@ -113,11 +113,11 @@ requirement_version: v1
 
 出现 `drift`、`violation` 或非空 `new_impacts` 时暂停受影响工作单元，不得先完成代码再补合同；更新合同版本并通过生命周期审查后才能恢复。
 
-## 会签
+## 批准记录
 
-| 门禁 | 记录路径 | 会签角色 | 状态 |
+| 门禁 | 记录路径 | 审查 / 批准依据 | 状态 |
 |---|---|---|---|
-|  | `.work/<feature>/gates/<gate-id>-approval.yaml` | 见 `.template-spec/agents/digital-human-roles.yaml` | pending / approved / blocked / not-applicable |
+|  | `.work/<feature>/gates/<gate-id>-approval.yaml` | 当前 Profile 的门禁政策、适用检查和真实用户决定 | pending / approved / blocked / not-applicable |
 
 ## 状态
 
