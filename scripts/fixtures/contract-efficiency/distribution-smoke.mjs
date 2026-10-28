@@ -25,7 +25,7 @@ const execute=(command,args,cwd,env=environment)=>{
 };
 const options={environment,run:execute};
 const node=(args,cwd)=>{const result=execute(process.execPath,args,cwd);assert.equal(result.status,0,result.stderr||result.stdout);assert.equal(result.error,undefined);return result.stdout;};
-const writingRef='.template-spec/process/document-writing.md',exampleRef='.template-spec/templates/examples/lifecycle-writing-examples.md',retroRef='.template-spec/templates/retro-report-template.md';
+const writingRef='.template-spec/process/document-writing.md',portableWritingRef='.agents/skills/i-have-adhd/references/document-writing.md',exampleRef='.template-spec/templates/examples/lifecycle-writing-examples.md',retroRef='.template-spec/templates/retro-report-template.md';
 // The fixed CLI may embed an older committed template. Its verified export,
 // rather than this test checkout, is the installation's byte/skill baseline.
 function asset(target,source,ref){const actual=fs.readFileSync(path.join(target,ref));assert.deepEqual(actual,fs.readFileSync(path.join(source,ref)),ref);return hash(actual);}
@@ -53,31 +53,37 @@ function conflictTdd(){
  }
 }
 function ensureSpec(target,inspection,source){
- // The initial writing Skill requires this example even in a stage-selective instance.
- assert.ok(inspection.distribution.installedSkills.includes('i-have-adhd'));assert.ok(inspection.skillRequirements['i-have-adhd'].paths.includes(exampleRef));
- const exampleHash=asset(target,source,exampleRef);assert.equal(exampleHash,inspection.files[exampleRef].digest);
+ // 初始治理闭包绑定真实受管记录；portable 写作技能不强制安装治理示例。
+ assert.ok(inspection.distribution.installedSkills.includes('i-have-adhd'));
+ const metadata=JSON.parse(fs.readFileSync(path.join(target,'.yss.json'),'utf8'));
+ const initialExample=Object.hasOwn(metadata.managedFiles,exampleRef);
+ if(inspection.initialPaths.includes(exampleRef))assert.ok(initialExample);
+ assert.equal(fs.existsSync(path.join(target,exampleRef)),initialExample);
+ const exampleHash=initialExample?asset(target,source,exampleRef):null;
+ if(initialExample)assert.equal(exampleHash,inspection.files[exampleRef].digest);
  assert.equal(fs.existsSync(path.join(target,retroRef)),false);assert.equal(fs.existsSync(path.join(target,'.agents/skills/tdd')),false);
  conflictTdd();
  let before=state(target),plan=path.join(scratch,'tdd.json'),preview=runNative(['skills','ensure','tdd','--root',target,'--plan','--out',plan],options).result;
  assert.ok(preview.changes.some(row=>row.path==='.agents/skills/tdd/SKILL.md'));assert.deepEqual(state(target),before);
  runNative(['skills','ensure','tdd','--root',target,'--apply','--plan-file',plan],options);const tddHash=skill(target,source,'tdd');
  before=state(target);applyNative('skills','spec',target,path.join(scratch,'tdd-replay.json'),['ensure','tdd'],options);assert.deepEqual(state(target),before,'Satisfied TDD replay wrote files');
- const stage='stage.verification-release-retrospective';before=state(target);plan=path.join(scratch,'stage.json');
+ const stage='stage.verification-release-retrospective';assert.ok(inspection.stageRequirements[stage].paths.includes(retroRef));before=state(target);plan=path.join(scratch,'stage.json');
  preview=runNative(['assets','ensure',stage,'--root',target,'--plan','--out',plan],options).result;assert.ok(preview.changes.some(row=>row.path===retroRef));assert.deepEqual(state(target),before);
  runNative(['assets','ensure',stage,'--root',target,'--apply','--plan-file',plan],options);const retroHash=asset(target,source,retroRef);
  before=state(target);applyNative('assets','spec',target,path.join(scratch,'stage-replay.json'),['ensure',stage],options);assert.deepEqual(state(target),before,'Satisfied stage replay wrote files');
- return {initial_example:'initial-skill-dependency',lifecycle_writing_examples_sha256:exampleHash,retro_stage_ensure:'passed',retro_sha256:retroHash,tdd_plan_apply_replay:'passed',tdd_conflict_preservation:'passed',tdd_hash:tddHash};
+ return {initial_example:initialExample?'fixed-initialization-asset':'not-installed',lifecycle_writing_examples_sha256:exampleHash,retro_stage_ensure:'passed',retro_sha256:retroHash,tdd_plan_apply_replay:'passed',tdd_conflict_preservation:'passed',tdd_hash:tddHash};
 }
 try{
  assert.equal(hash(fs.readFileSync(binary)),pin.digest);
  const version=runNative(['version'],options).result;report.cli_version=version.version;report.cli_commit=version.cliCommit;report.cli_source_state=version.sourceState;
  for(const profile of NATIVE_PROFILES){
   const out=path.join(scratch,`${profile}-bundle`),exported=runNative(['bundle','export','--profile',profile,'--out',out],options).result,inspection=inspectNative(profile,options);
-  assert.equal(inspection.schemaVersion,4);assert.deepEqual(exported.inspection,inspection);
+  assert.ok([4,5].includes(inspection.schemaVersion),'固定 Bundle 必须使用已知的当前 schema4/5');assert.deepEqual(exported.inspection,inspection);
   for(const row of exported.files){const file=path.join(out,row.path);assert.equal(hash(fs.readFileSync(file)),row.digest);assert.equal(fs.statSync(file).mode&0o777,row.mode);}
   report.bundle_exports.push({profile,template_commit:inspection.templateCommit,bundle_sha256:inspection.bundleHash,manifest_sha256:inspection.manifestHash,files:exported.files.length,status:'passed'});
   const target=path.join(scratch,`${profile}-instance`);initializeNative(profile,target,options);
   const writing={document_writing_sha256:asset(target,out,writingRef)},skills={'i-have-adhd':skill(target,out,'i-have-adhd')};
+  if(inspection.files[portableWritingRef])writing.portable_document_writing_sha256=asset(target,out,portableWritingRef);
   if(profile==='spec')Object.assign(writing,ensureSpec(target,inspection,out));
   else{
    writing.lifecycle_writing_examples_sha256=asset(target,out,exampleRef);
@@ -91,8 +97,13 @@ try{
   const initialized=execute('git',['init','-q',target],scratch);assert.equal(initialized.status,0,initialized.stderr);
   const identity=parseDocument(fs.readFileSync(path.join(target,'yss-project.yaml'),'utf8')).toJS();
   assert.equal(identity.schema_version,2);assert.equal(identity.repository_mode,'project-instance');
-  assert.equal(JSON.parse(fs.readFileSync(path.join(target,'.yss.json'),'utf8')).profile,profile);
-  assert.equal(parseDocument(fs.readFileSync(path.join(target,'.template-spec/process/harness-profile.yaml'),'utf8')).toJS().schema_version,3);
+  const metadata=JSON.parse(fs.readFileSync(path.join(target,'.yss.json'),'utf8'));
+  assert.equal(metadata.profile,profile);assert.equal(metadata.schemaVersion,inspection.schemaVersion);assert.equal(metadata.bundleSchemaVersion,inspection.schemaVersion);
+  assert.equal(metadata.templateCommit,inspection.templateCommit);assert.equal(metadata.snapshotHash,inspection.sourceSnapshotHash);assert.equal(metadata.manifestHash,inspection.manifestHash);assert.equal(metadata.bundleHash,inspection.bundleHash);
+  const profileRef='.template-spec/process/harness-profile.yaml',sourceProfile=parseDocument(fs.readFileSync(path.join(out,profileRef),'utf8')).toJS();
+  const profileBytes=fs.readFileSync(path.join(target,profileRef)),activeProfile=parseDocument(profileBytes.toString()).toJS();
+  assert.equal(sourceProfile.schema_version,3);assert.equal(sourceProfile.profile_id,metadata.profileId);assert.equal(activeProfile.schema_version,sourceProfile.schema_version);assert.equal(activeProfile.profile_id,sourceProfile.profile_id);assert.deepEqual(activeProfile.required_capabilities,sourceProfile.required_capabilities);
+  assert.equal(hash(profileBytes),metadata.managedFiles[profileRef].lastApplied.digest);assert.equal(fs.statSync(path.join(target,profileRef)).mode&0o777,metadata.managedFiles[profileRef].lastApplied.mode);
   // Task2 intake is historical-only; current read-only consultation creates no task.
   const unit=profile==='backend'?'work-unit.harness-entry':'work-unit.entry-triage',before=state(target);
   runNative(['lifecycle','query','--root',target,'--id',unit],options);
