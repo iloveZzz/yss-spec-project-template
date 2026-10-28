@@ -1,6 +1,6 @@
 import { makeRoot } from '../helpers/yss-instance.mjs';
-import { validateDefaultDigitalHumanRoles, validateDigitalHumanRoles, loadDigitalHumanRoles, skillIdsFromRegistry } from "../../scripts/lib/digital-human-roles.mjs";
-import { loadRegistry } from "../../scripts/lib/lifecycle-registry.mjs";
+import { readFileSync } from 'node:fs';
+import { validateDigitalHumanRoles, loadDigitalHumanRoles, skillIdsFromRegistry } from "../../scripts/lib/digital-human-roles.mjs";
 import { loadSkillRegistry } from "../../scripts/lib/skill-registry.mjs";
 import { validateApprovalRecord, validateApprovalRecordFile } from "../../scripts/lib/native-approval.mjs";
 
@@ -9,13 +9,14 @@ function clone() {
 }
 
 function deps() {
-  const lifecycle = loadRegistry();
+  const lifecycle = JSON.parse(readFileSync(new URL("../../scripts/fixtures/role-independent-draft/legacy-spec-policy.json", import.meta.url))).registry;
   const skills = loadSkillRegistry();
   const ids = (records) => new Set(records.map((record) => record.id));
   return {
     skillIds: skillIdsFromRegistry(skills),
     stageIds: ids(lifecycle.stages),
     gateIds: ids(lifecycle.gates),
+    checkIds: ids(lifecycle.checks),
     artifactIds: ids(lifecycle.artifacts),
     evidenceIds: ids(lifecycle.evidence),
     workUnitIds: ids(lifecycle.work_units),
@@ -36,7 +37,7 @@ function mustFail(doc, pattern, label) {
   if (!pattern.test(message)) throw new TypeError(`${label} 失败原因不符合预期: ${message}`);
 }
 
-validateDefaultDigitalHumanRoles();
+validateDigitalHumanRoles(loadDigitalHumanRoles(), deps());
 
 const tester = loadDigitalHumanRoles().roles.find((role) => role.id === "role.test-engineer");
 for (const skill of ["code-review", "alibaba-java-code-style", "yss-design-system", "yss-domain", "yss-application", "yss-web-controller", "yss-dto", "mapstruct", "lombok"]) {
@@ -99,7 +100,6 @@ mustFail(missingGeneric, /缺少运行时绑定: runtime.generic/, "缺少通用
 const root = makeRoot("yss-digital-human-roles-");
 validateApprovalRecordFile(".template-spec/templates/approval-record-template.yaml", {root, history:true});
 
-const rolesDoc = loadDigitalHumanRoles();
 try {
   validateApprovalRecord({
     schema_version: 1,
@@ -109,7 +109,7 @@ try {
     role_id: "role.requirements-manager",
     runtime_id: "runtime.generic",
     principal_ref: "instance:wrong"
-  }, { root, rolesDoc });
+  }, { root });
   throw new TypeError("错误配置未被拒绝: 错误角色会签");
 } catch (error) {
   if (!/APPROVAL_CURRENT_INVALID: 会签角色未获当前门禁政策授权/.test(error.message)) throw new TypeError(`错误角色会签 失败原因不符合预期: ${error.message}`);
@@ -125,7 +125,7 @@ try {
     runtime_id: "runtime.generic",
     principal_ref: "instance:req",
     drafter_role_id: "role.requirements-manager"
-  }, { root, rolesDoc });
+  }, { root });
   throw new TypeError("错误配置未被拒绝: 起草者自签会签记录");
 } catch (error) {
   if (!/APPROVAL_CURRENT_INVALID: 会签角色未获当前门禁政策授权/.test(error.message)) {
@@ -142,10 +142,10 @@ try {
     role_id: "role.product-manager",
     runtime_id: "runtime.generic",
     principal_ref: "instance:pm"
-  }, { root, rolesDoc });
+  }, { root });
   throw new TypeError("错误配置未被拒绝: 非测试角色关闭交付验收");
 } catch (error) {
   if (!/APPROVAL_CURRENT_INVALID: 会签角色未获当前门禁政策授权/.test(error.message)) throw new TypeError(`非测试角色关闭交付验收 失败原因不符合预期: ${error.message}`);
 }
 
-process.stdout.write("数字人角色压力场景验证通过\n");
+process.stdout.write("历史数字人角色压力场景验证通过\n");
