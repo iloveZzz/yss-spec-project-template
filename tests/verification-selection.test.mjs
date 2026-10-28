@@ -436,3 +436,19 @@ test('legacy和shadow仅命中cli-sync组时仍覆盖四组现役CLI身份检查
   for(const suffix of ['','-install','-sync','-rest'])assert.ok(plan.commands.some(task=>task.id===`check.cli-content-identity${suffix}`),`${selection}: ${file} ${suffix}`);
  }
 });
+test('Context与Profile两调用合并，WorkBuddy仅在独立效率检查在场时移除重复文件',t=>{
+ const directory=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'second-dedup-')));t.after(()=>fs.rmSync(directory,{recursive:true,force:true}));
+ const compile=(changedFiles,repositoryMode='template-source')=>addVerificationExecutionTasks(planTemplateVerification({profile:'release',changedFiles}),{root:ROOT,repositoryMode,reportDir:directory});
+ const p=compile(['profiles/backend/AGENTS.md']);
+ for(const command of ['node --test tests/native-context-retirement.test.mjs','node scripts/verify-profile-distribution']){
+  const rows=p.commands.filter(row=>row.command===command);assert.equal(rows.length,1);
+  assert.ok(rows[0].gate_ids.includes('check.verification-lifecycle'));assert.ok(rows[0].gate_ids.includes('check.verification-distribution'));
+ }
+ const overlap=compile(['scripts/sync-skills']);
+ const efficiency=overlap.commands.find(x=>x.id==='check.c80aaecf300ddc1f'),workbuddy=overlap.commands.find(x=>x.id==='check.workbuddy-skills');
+ assert.ok(workbuddy.depends_on.includes(efficiency.task_id));assert.ok(!workbuddy.command.includes('tests/skill-sync-efficiency.test.mjs'));
+ const instance=compile(['scripts/sync-skills'],'project-instance');
+ assert.ok(instance.commands.find(x=>x.id==='check.workbuddy-skills').command.includes('tests/skill-sync-efficiency.test.mjs'));
+ const extra=compile(['tests/workbuddy-entry.test.mjs']);
+ assert.ok(extra.commands.find(x=>x.id==='check.workbuddy-skills').command.includes('tests/skill-sync-efficiency.test.mjs'),'未选独立项仍保留原触发闭包');
+});

@@ -269,7 +269,7 @@ profiles:
       - id: check.profile-consumers-native-context-retirement
         resources: [ native-cli ]
         lane: pc-native-context-retirement
-        run: "node --test --test-skip-pattern='^backend plugin receives'
+        run: "node --test
           tests/native-context-retirement.test.mjs"
         group: feature-assets
         inputs_complete: true
@@ -1104,7 +1104,7 @@ profiles:
         depends_on: []
         failure_mode: "分发判定镜像与 yss-cli 的 includedByManifest 不一致，或守卫放过了未排除的仅模板源脚本与会误伤的后缀规则"
       - id: check.profile-distribution-gate
-        run: "scripts/verify-profile-distribution"
+        run: "node scripts/verify-profile-distribution"
         group: hygiene
         inputs_complete: true
         input_patterns:

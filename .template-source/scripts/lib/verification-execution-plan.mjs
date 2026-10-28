@@ -223,6 +223,13 @@ export function addVerificationExecutionTasks(plan,{root,repositoryMode='templat
   if(reference)plan.gates=[];
   plan.not_applicable??=[];
   plan.commands=plan.commands.filter(task=>{if(task.when&&task.when!==repositoryMode){plan.not_applicable.push({...task,reason:'repository-mode'});return false;}return true;});
+  const workbuddy=plan.commands.find(task=>task.id==='check.workbuddy-skills');
+  const efficiency=plan.commands.find(task=>task.id==='check.c80aaecf300ddc1f');
+  // Preserve the combined suite in modes/inputs where the standalone check is absent.
+  if(workbuddy&&efficiency){
+    workbuddy.command=workbuddy.command.replace(' tests/skill-sync-efficiency.test.mjs','');
+    workbuddy.depends_on=[...new Set([...workbuddy.depends_on,efficiency.task_id||efficiency.id])];
+  }
   const append=item=>{if(!plan.commands.some(task=>task.task_id===item.task_id))plan.commands.push(item);};
   if(daily||plan.effective_profile==='release') {
     const selected=daily?dailyParsingTargets(plan,root):(plan.syntax_files||[]);
