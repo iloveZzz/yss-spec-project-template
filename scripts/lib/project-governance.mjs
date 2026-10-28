@@ -53,13 +53,13 @@ function references(value, found=new Set()) {
   }
   return found;
 }
-function bindings(value, output=[]) {
-  if(Array.isArray(value))for(const item of value)bindings(item,output);
+function bindings(value, output=[], policyBindings=[]) {
+  if(Array.isArray(value))for(const item of value)bindings(item,output,policyBindings);
   else if(value&&typeof value==='object') {
-    if(typeof value.ref==='string'&&(value.digest||value.sha256))output.push([value.ref,value.digest||value.sha256]);
+    if(typeof value.ref==='string'&&(value.digest||value.sha256))output.push([value.ref,value.digest||value.sha256,policyBindings.includes(value)?'orchestration-policy':'file']);
     for(const [key,item] of Object.entries(value)) {
-      if(key.endsWith('_ref')&&typeof item==='string'&&value[key.replace(/_ref$/,'_digest')])output.push([item,value[key.replace(/_ref$/,'_digest')]]);
-      if(item&&typeof item==='object')bindings(item,output);
+      if(key.endsWith('_ref')&&typeof item==='string'&&value[key.replace(/_ref$/,'_digest')])output.push([item,value[key.replace(/_ref$/,'_digest')],key==='policy_ref'&&policyBindings.includes(value)?'orchestration-policy':'file']);
+      if(item&&typeof item==='object')bindings(item,output,policyBindings);
     }
   }
   return output;
@@ -77,8 +77,7 @@ export function checkProjectGovernance({root,base,checkpointRef,taskRef,recovery
   const run=(id,script,args,refs)=>{
     const requirements={
       'scripts/verify-lifecycle-checkpoint':['.template-spec/process/schemas/lifecycle-checkpoint.schema.json'],
-      'scripts/verify-digital-human-task-package':['.template-spec/process/schemas/digital-human-task-package.schema.json','.template-spec/agents/digital-human-roles.yaml'],
-      'scripts/verify-approval-record':['.template-spec/agents/digital-human-roles.yaml']
+      'scripts/verify-digital-human-task-package':['.template-spec/process/schemas/digital-human-task-package.schema.json']
     };
     const missing=[script,...(requirements[script]||[])].filter(ref=>!observe(ref));
     if(missing.length){report.scope.missing_capabilities.push(...missing);report.checks.push({id,command:[process.execPath,script,...args],input_refs:refs,exit_code:null,status:'unavailable',missing});issue('capability-missing',`缺少适用校验能力 ${missing.join(', ')}，先显式安装对应阶段资产`,script,true);return;}
@@ -143,8 +142,9 @@ export function checkProjectGovernance({root,base,checkpointRef,taskRef,recovery
           if(!strictRefs.has(dependency)){strictRefs.add(dependency);seen.delete(dependency);}
           try{read(dependency);if(/\.(?:ya?ml|json|md)$/.test(dependency))queue.push(dependency);}catch(error){issue('reference-unreadable',error.message,ref);}
         }
-        for(const [target,hash] of bindings(value)) {
-          try{const actual=observe(target);if(actual!==String(hash).replace(/^(?!sha256:)/,'sha256:'))issue('evidence-drift',`摘要不一致: ${target}`,ref);}catch(error){issue('evidence-unreadable',error.message,ref);}
+        const policyBindings=value?.schema_version===3&&(isTask||value.gate_id&&value.decision==='approved')?[value.policy,value.skill_source,value.review_context?.policy]:[];
+        for(const [target,hash,kind] of bindings(value,[],policyBindings)) {
+          try{let actual=observe(target);if(kind==='orchestration-policy'){const policy=readOrchestrationContract(root,target);policy.refs.forEach(observe);actual=policy.digest;}if(actual!==String(hash).replace(/^(?!sha256:)/,'sha256:'))issue('evidence-drift',`摘要不一致: ${target}`,ref);}catch(error){issue('evidence-unreadable',error.message,ref);}
         }
       }
     }
