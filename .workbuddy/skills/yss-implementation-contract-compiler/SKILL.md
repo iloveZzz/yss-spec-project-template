@@ -44,7 +44,7 @@ Slice v3 的当前执行结果须按 `references/yss-skill-execution-result.md` 
 
 ## 硬规则
 
-按 `.template-spec/process/frontend-backend-delivery.md` 区分来源：上游战略交接或显式 `frontend_delivery` 绑定须核验联合交付并冻结接收摘要；本地已批准资产须绑定当前功能 checkpoint 与 Spec，实际核验适用的设计和后端/API 依赖，不要求外部接收回执。纯 UI 无后端/API 影响时记录有理由的 not-applicable。无效的显式绑定不得回退本地路径；正式实现、生成和恢复仍须当前批准的 Slice Contract，接口或部署漂移使受影响证据失效。
+显式战略交接按 `.template-spec/process/strategic-handoff-package.md` 核验来源和接收；本地批准资产绑定当前功能 checkpoint 与 Spec，核验适用的设计及后端/API 依赖，不补外部回执。跨端预检见 `.template-spec/process/delivery-preflight.md`；前端实现由独立规格处理。历史 `frontend_delivery` 按原合同核验，不新建或回退本地；无法核验时阻断。正式实现、生成和恢复须当前批准的 Slice Contract；接口或部署漂移使受影响证据失效。
 
 - 编译器不得输出 `approved`、`ready-for-agent` 或 `completed`。
 - Registry 使用其权威 schema v3，编译规则保持 schema v2；新 Slice 使用 v3，旧 Slice v2 按原规则读取和显式迁移。已停止支持的 schema 一律拒绝，不自动升级，不提供未登记的旧技能名兼容。

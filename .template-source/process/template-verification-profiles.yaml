@@ -1341,6 +1341,37 @@ profiles:
         failure_mode: "流程术语回流到根
           CONTEXT.md、术语表违反英文标识或重复规则、入口链接断开、运行时平台细节混入流程术语，常驻读取超过预算，或角色说明 /
           术语表与数字人角色注册表漂移"
+      - id: check.initialization-reference-boundaries
+        run: "node --test tests/spec-initial-entry.test.mjs tests/backend-decision-distribution.test.mjs tests/backend-handoff-reference.test.mjs"
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - "tests/spec-initial-entry.test.mjs"
+          - "tests/backend-decision-distribution.test.mjs"
+          - "tests/backend-handoff-reference.test.mjs"
+          - "AGENTS.md"
+          - ".template-source/distribution/bundle-profile.json"
+          - ".template-spec/process/agent-entry-policy.md"
+          - ".template-spec/process/process-glossary.md"
+          - ".template-spec/process/templates/user-decision-template.yaml"
+          - ".template-spec/process/orchestration/domain/review.yaml"
+          - ".agents/skills/yss-implementation-contract-compiler/SKILL.md"
+          - ".agents/skills/yss-implementation-contract-compiler/references/slice-implementation-contract-v2.md"
+          - "profiles/backend/.template-source/distribution/bundle-profile.json"
+          - "profiles/backend/.template-spec/process/agent-entry-policy.md"
+          - "profiles/backend/.template-spec/process/plan-migration.md"
+          - "profiles/backend/.template-spec/process/orchestration/domain/planning.yaml"
+          - "profiles/backend/.template-spec/user-guide/产品生命周期工作流.md"
+          - "profiles/backend/.template-spec/templates/subagent-task-package-template.md"
+          - "profiles/backend/.template-spec/templates/vertical-slice-ticket-template.md"
+          - "profiles/backend/.agents/skills/harness-orchestrator/SKILL.md"
+          - "profiles/backend/.agents/skills/harness-orchestrator/references/user-decisions.md"
+          - "profiles/backend/.agents/skills/yss-implementation-contract-compiler/SKILL.md"
+          - "scripts/lib/profile-tree.mjs"
+          - "scripts/lib/profile-distribution.mjs"
+          - "scripts/vendor/yaml.mjs"
+        depends_on: []
+        failure_mode: "初始化入口、Backend 决定政策、跨端和 Plan 迁移引用指向未分发或不适用的资产"
       - id: check.spec-role-free-guidance
         run: "node --test tests/spec-role-free-guidance.test.mjs"
         group: feature-assets
@@ -1818,11 +1849,23 @@ profiles:
         inputs_complete: true
         input_patterns:
           - ".agents/skills/yss-research/scripts/**"
+          - ".agents/skills/yss-research/tests/competitive-scenarios.test.mjs"
           - ".agents/skills/yss-research/references/competitive-analysis.md"
           - ".agents/skills/competitive-intelligence/**"
           - ".template-spec/plan/templates/competitive-*"
         depends_on: []
         failure_mode: "竞品证据绑定或输出一致性错误"
+      - id: "check.competitive-completion-scenarios"
+        inputs_complete: true
+        input_patterns:
+          - "scripts/fixtures/lifecycle-core/research-competitive.test.mjs"
+          - "scripts/lib/maintenance-research.mjs"
+          - "scripts/lib/validation-phase.mjs"
+          - "scripts/lib/source-context-snapshot.mjs"
+          - ".agents/skills/yss-research/scripts/lib/competitive-analysis.mjs"
+          - ".template-spec/plan/templates/competitive-*"
+        depends_on: []
+        failure_mode: "竞品研究收尾遗漏依赖或复用失效证据"
       - id: "check.document-writing-integration"
         inputs_complete: true
         input_patterns:
@@ -1920,6 +1963,7 @@ profiles:
           - ".template-source/scripts/lib/verification-execution-plan.mjs"
           - ".template-source/process/template-verification-profiles.yaml"
           - "tests/verification-selection.test.mjs"
+          - "scripts/fixtures/initialization-reference-closure/verify-candidate.mjs"
         depends_on: []
         failure_mode: "检查选择遗漏、错误扩大或依赖闭包错误"
       - id: "check.daily-execution"
@@ -2817,6 +2861,10 @@ routing:
   - patterns: ["tests/stage-gates-contract.test.mjs", "tests/stage-result-native.test.mjs"]
     groups: [lifecycle]
 
+  - patterns: [ "tests/spec-initial-entry.test.mjs", "tests/backend-decision-distribution.test.mjs", "tests/backend-handoff-reference.test.mjs" ]
+    groups: [ feature-assets ]
+  - patterns: [ "scripts/fixtures/initialization-reference-closure/verify-candidate.mjs" ]
+    groups: [ candidate-integrity ]
   - patterns: [ "tests/spec-role-free-guidance.test.mjs" ]
     groups: [ feature-assets ]
   - patterns: [ "tests/daily-input-preparation.test.mjs" ]
@@ -3480,6 +3528,8 @@ groups:
         id: check.schema-runtime
   feature-assets:
     commands:
+      - run: node --test tests/spec-initial-entry.test.mjs tests/backend-decision-distribution.test.mjs tests/backend-handoff-reference.test.mjs
+        id: check.initialization-reference-boundaries
       - run: node --test tests/daily-test-evidence.test.mjs
         id: check.daily-test-evidence
       - run: node scripts/fixtures/role-independent-draft/daily.test.mjs
@@ -3847,6 +3897,8 @@ groups:
       - run: node --test
           .agents/skills/yss-research/tests/competitive-scenarios.test.mjs
         id: check.competitive-evidence-scenarios
+      - run: node --test scripts/fixtures/lifecycle-core/research-competitive.test.mjs
+        id: check.competitive-completion-scenarios
   document-writing:
     commands:
       - id: check.document-writing-integration
@@ -3993,6 +4045,7 @@ gates:
       - check.d87d713b76204ae4
       - check.research-evidence-scenarios
       - check.competitive-evidence-scenarios
+      - check.competitive-completion-scenarios
       - check.document-writing-integration
       - check.292502d15942f4de
       - check.57446ae09b82f3cd
@@ -4280,6 +4333,7 @@ gates:
     impact_dependencies: []
     depends_on: []
     check_ids:
+      - check.initialization-reference-boundaries
       - check.629b3c9ec897593f
       - check.specialist-business-inputs
       - check.profile-consumers-efficiency-distribution

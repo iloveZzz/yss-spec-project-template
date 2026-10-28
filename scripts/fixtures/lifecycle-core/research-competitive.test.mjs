@@ -20,7 +20,7 @@ function fixture(t, {render = true} = {}) {
     fs.writeFileSync(path.join(root, ref), typeof bytes === 'string' ? bytes : JSON.stringify(bytes, null, 2) + '\n');
   };
   fs.cpSync('.agents/skills/yss-research', path.join(root, '.agents/skills/yss-research'), {recursive: true});
-  for (const ref of ['scripts/lib/json-schema.mjs', 'scripts/lib/validation-phase.mjs', '.template-spec/plan/templates/competitive-matrix-template.md', '.template-spec/plan/templates/competitive-analysis-template.md']) put(ref, fs.readFileSync(ref, 'utf8'));
+  for (const ref of ['scripts/lib/json-schema.mjs', 'scripts/lib/validation-phase.mjs', 'scripts/lib/source-context-snapshot.mjs', '.template-spec/plan/templates/competitive-matrix-template.md', '.template-spec/plan/templates/competitive-analysis-template.md']) put(ref, fs.readFileSync(ref, 'utf8'));
   put('yss-project.yaml', 'schema_version: 1\nrepository_mode: template-source\n');
   const evidence = JSON.parse(fs.readFileSync('.agents/skills/yss-research/assets/evidence-template.yaml', 'utf8'));
   evidence.evidence_items[0].source_level = 'primary';

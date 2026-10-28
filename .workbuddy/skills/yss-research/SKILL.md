@@ -13,4 +13,4 @@ Competition and market research may use `competitive-intelligence` if installed 
 
 Return the scope, findings, sources, counterevidence, remaining uncertainty and implications. Do not fabricate inaccessible sources or silently change product decisions or formal statuses. Ordinary gaps narrow the conclusion; missing decisive evidence remains unestablished.
 
-For explicitly requested audited research or an existing formal workflow, consume the [governed research contract](references/governed-research.md) and its evidence resources. Do not impose that protocol on standalone research.
+For explicitly requested audited research or an existing formal workflow, consume the [governed research contract](references/governed-research.md) and its evidence resources in a verified governed repository. A `skills` installation does not provide the required governance resources; use an existing governed repository or explicitly migrate the installation before entering that workflow. Do not impose that protocol on standalone research.

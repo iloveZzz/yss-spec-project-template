@@ -2,7 +2,7 @@
 
 本协议的阶段批准记录与授权延续适用于 `governed` 的既有决定。已合格普通任务使用原请求明确的范围和验收，不为日常实现另建阶段批准包；commit、push、运行时外部副作用及项目强制决定仍核验真实授权。普通路径不生成 `approved` 或把真实回复扩展到未知范围；见 [普通任务交付](daily-delivery.md)。
 
-适用门禁、工作单元和条件事项只由 `.template-spec/agents/digital-human-roles.yaml.user_decision_policy` 定义。本协议解释执行和证据格式，不新增阶段、门禁或 Ticket 状态。专业审查记录与用户决定分别保存；关键决定缺少任一适用条件都不能放行。
+适用门禁、工作单元和条件事项由当前编排合同中的 `.template-spec/process/orchestration/domain/review.yaml#user_decision_policy` 定义。本协议解释执行和证据格式，不新增阶段、门禁或 Ticket 状态。专业审查记录与用户决定分别保存；关键决定缺少任一适用条件都不能放行。
 
 ## 六条执行规则
 
@@ -41,7 +41,7 @@ messages:
 
 `scripts/verify-user-decision --requirements <当前事项.json> <决定记录.yaml>` 校验当前消费者要求的 `boundary/subject_ref/scope`；未给 `--requirements` 时校验请求中全部事项。无回复的草案可以保存，但不能通过批准验证。局部批准只允许已明确批准的事项推进。
 
-会签记录保留 `subject_ref`、`approval_scope` 和适用的 `user_decision_ref`；checkpoint 门禁同时声明 `subject_ref/approval_scope` 并与会签记录一致。新批准及组合审查使用 schema v3；专业记录绑定当前 `review_task_ref/digest`、实际 `check_ids`、`policy`、`review` 和 `basis`，检查与技能来源读取当前编排合同，不在本协议复制。恢复和门禁关闭执行 `scripts/verify-approval-record --require-approved --checkpoint <current checkpoint>`，当前期望来自消费者 checkpoint / 任务，禁止复制待验记录作为期望。缺当前上下文不能放行；只有 `--history` 仅检查历史记录结构，不构成批准。历史记录可读，不自动升级为当前专业审查或用户决定；旧消费者不支持新版本时先升级，不降级绕过。
+批准记录保留 `subject_ref`、`approval_scope` 和适用的 `user_decision_ref`；checkpoint 门禁同时声明 `subject_ref/approval_scope` 并与批准记录一致。新批准及组合审查使用 schema v3；专业记录绑定当前 `review_task_ref/digest`、实际 `check_ids`、`policy`、`review` 和 `basis`，检查与技能来源读取当前编排合同，不在本协议复制。恢复和门禁关闭执行 `scripts/verify-approval-record --require-approved --checkpoint <current checkpoint>`，当前期望来自消费者 checkpoint / 任务，禁止复制待验记录作为期望。缺当前上下文不能放行；只有 `--history` 仅检查历史记录结构，不构成批准。历史记录可读，不自动升级为当前专业审查或用户决定；旧消费者不支持新版本时先升级，不降级绕过。
 
 Workflow Execution Result 使用 `user_decisions` 保存当前要求与证据引用。`user_decision_not_applicable` 仅对未命中的既有技术条件门禁记录 `boundary/reason`，不得跳过已经执行的业务决策。完成结果通过 `validateNextRoute(..., result)` 检查；两参数调用仅检查路由结构，不能证明可以实际流转。
 

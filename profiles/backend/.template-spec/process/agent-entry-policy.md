@@ -13,7 +13,7 @@
 - 文件缺失、schema 不支持或模式非法时停止路由并执行迁移检查；不得根据目录、Git 远程或占位符猜测身份，父目录或兄弟仓的产品身份不能替代本仓身份。
 - 只读问答、状态查询和问题定位：读取根 `CONTEXT.md` 与相关来源后回答或调查；只有写正式资产、申请批准或流转时才进入工作单元。只读诊断不创建 Ticket / checkpoint，不改批准与状态，也不启动回归套件。
 - 行动请求先复用当前资产和登记，再补本轮缺项；按当前任务和实际影响加载下文引用，不逐节执行整份入口。
-- 新实例使用 `yss init --profile backend --root <新目录>`，元数据为 `.yss.json`；来源合同为 Harness Profile 的 `cli_package: yss`、`native_profile: backend` 和 `metadata_file: .yss.json`。历史 `create-yss-harness-backend` / `.yss-harness-backend.json` 只作旧身份识别；旧实例必须通过显式 `yss migrate plan`，未完成旧事务先用匹配的固定旧执行器恢复。
+- 新治理实例使用 `yss init --profile backend --installation governed --root <新目录>`，元数据为 `.yss.json`；默认 `skills` 是独立技能安装，不启用本治理入口。来源合同为 Harness Profile 的 `cli_package: yss`、`native_profile: backend` 和 `metadata_file: .yss.json`。历史 `create-yss-harness-backend` / `.yss-harness-backend.json` 只作旧身份识别；旧实例必须通过显式 `yss migrate --plan --out <计划文件>` 规划迁移，未完成旧事务先用匹配的固定旧执行器恢复。
 
 ## 2. 单一事实来源
 
@@ -24,7 +24,7 @@
 | 生命周期 ID 与条件门禁 | `.template-spec/process/lifecycle-registry.yaml`；`.template-spec/process/lifecycle-artifact-map.md` 仅为派生视图 |
 | 影响面 | `.template-spec/process/harness-process-tailoring.md` |
 | 技能身份与路由 | `.template-spec/agents/yss-skill-registry.yaml`（`status: active`；由 Harness 编排器消费）；来源见 `skills-lock.json` |
-| 数字人角色与会签 | `.template-spec/agents/digital-human-roles.yaml` |
+| 适用审查与真实用户决定 | `.template-spec/process/orchestration-contract.yaml`，用户决定政策见 `.template-spec/process/orchestration/domain/review.yaml#user_decision_policy` |
 | 实现仓登记与边界 | `.template-spec/process/implementation-repo-integration.md` |
 
 README、用户指南和 `CLAUDE.md` 只解释或指向上述事实，不定义第二套规则。
@@ -103,7 +103,7 @@ README、用户指南和 `CLAUDE.md` 只解释或指向上述事实，不定义�
 - 技术事实、标准或第三方行为影响决策时使用 `yss-research`；竞品、市场或用户口碑事实使用 `competitive-intelligence`。
 - 原型原件由战略设计项目维护，生产前端由前端项目实现；本仓只读消费页面与接口需求，不加载前端或产品原型构建技能。`prototype` 仅用于后端逻辑、状态、算法和接口假设试验，不能替代合同及实现门禁。
 - Bug、测试失败或性能回退先用 `diagnosing-bugs` 建立复现，再使用 `tdd`；业务行为默认按 `behavior-tdd` 逐切片实现，不适用时记录理由和可执行验证。
-- 四个专业 Agent 不另起生命周期、不批准自己起草的合同，也不替实现者完成独立验证；协同边界见 `.template-spec/agents/digital-human-roles.yaml`。
+- 专业协作不另起生命周期、不批准自己起草的合同；需要独立复核时核验真实独立上下文及冻结只读证据，协同边界见 `.template-spec/process/subagent-collaboration.md`。
 
 ## 9. 工作区与实现仓边界
 
@@ -116,15 +116,15 @@ README、用户指南和 `CLAUDE.md` 只解释或指向上述事实，不定义�
 - 产品实现与专业检查按当前 `review_modes` 默认诚实自检，代码复核使用 `code-review`；命中明确用户或已知外部独立要求时，由可核验的独立上下文或指定真人复核，Reviewer 只读且不写实现。模板日常维护的 self-check 按第 4 节执行；不固定人员数量，候选角色不要求逐个签字，相邻检查可组合并逐项留结论。历史审查记录继续按来源政策核验。
 - Fresh Verification 指当前任务范围、资产与触发合同的真实验证，不等于全仓 / 全套检查。只执行当前切片及直接 / 传递依赖的适用检查，记录实际命令、退出码与未覆盖项；区分局部任务完成、后端可交接、可合并和整体业务完成。产品实例不运行模板投影、生成器回归或模板发布检查，除非另有明确的模板维护 / 回归任务。
 - 同一边界且资产 / 上游字节、校验器 / schema、命令参数及仓库根均未变时，可复用已执行检查；输入变化只重验受影响依赖。恢复、handoff、进入实现、合并和发布时重验当前边界，当前性不明即重跑适用检查。首轮覆盖适用审查项，修复后按差异和依赖定向复审，复用结论绑定当前候选。
-- 命中会签时按 `.template-spec/agents/digital-human-roles.yaml`，运行 `scripts/verify-approval-record --require-approved --checkpoint <current checkpoint>`；期望上下文来自当前 checkpoint / 任务。高风险架构、OpenAPI Freeze、合并命中本仓生物人政策时先核验当前有效的原始真实回复与批准，只有缺失、失效或实质变化时展示资产后询问。商务承诺和运行时外部副作用仍须生物人。
-- 专业审查等待由主控按角色表自主派发并等待，无依赖的已授权工作继续；非阻断建议进入待办，必要证据和真实缺陷仍阻断，仅缺真实决定或无法自主取得的必要输入时询问用户。
-- 在暂停、handoff、进入实现和验证边界同步范围、证据、风险、会签点、Ticket 状态和下一步。
+- 命中当前 Profile 的批准门禁时，运行 `scripts/verify-approval-record --require-approved --checkpoint <current checkpoint>`；期望上下文来自当前 checkpoint / 任务。按当前用户决定政策核验适用的原始真实回复与批准，只有缺失、失效或实质变化时展示资产后询问。商务承诺和运行时外部副作用仍须生物人。
+- 专业审查按当前合同和实际独立要求派发，无依赖的已授权工作继续；非阻断建议进入待办，必要证据和真实缺陷仍阻断，仅缺真实决定或无法自主取得的必要输入时询问用户。
+- 在暂停、handoff、进入实现和验证边界同步范围、证据、风险、批准依据、Ticket 状态和下一步。
 - 决定和授权消费 [.agents/skills/harness-orchestrator/references/user-decisions.md](../../.agents/skills/harness-orchestrator/references/user-decisions.md)，复用有效范围授权；提交、推送、发布分别消费用户授权。
 - Git checkpoint 只含本轮范围；获得用户授权后才提交或推送。返工或 IMPORTANT / CRITICAL finding 触发简体中文复盘并修订权威资产。
 
 ## 11. Subagent 协同
 
-使用 subagent 前读取 `.template-spec/process/subagent-collaboration.md`，定义任务包、数字人角色、运行时、执行态和不重叠写入范围；共享工作区不是沙箱。实现者不得兼任独立 Reviewer，仓库身份、Ticket 状态、Git checkpoint、Slice 合同批准和完成结论仍由 `harness-orchestrator` 裁决。
+使用 subagent 前读取 `.template-spec/process/subagent-collaboration.md`，定义任务输入、输出、执行态和不重叠写入范围；共享工作区不是沙箱。需要独立 Reviewer 时核验不同真实上下文，仓库身份、Ticket 状态、Git checkpoint、Slice 合同批准和完成结论仍由 `harness-orchestrator` 裁决。
 
 ## 12. 测试质量基线
 

@@ -157,7 +157,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/harness-orchestrator/SKILL.md",
-        "effectiveHash": "4cce685198c72fa975c8564a9ac716535d7b746d3e2fd9fc061be6d6b1aa767e",
+        "effectiveHash": "fc7e42cb94b6fd31ab39764d15e8bd1c5c70213bc89d9dadae8e83c9edeba7e0",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"
@@ -512,7 +512,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-implementation-contract-compiler/SKILL.md",
-        "effectiveHash": "851d1d54c9cc8b7a2329a996e0cd5c224eab3a65e0667933ae7093d94f86f12c",
+        "effectiveHash": "1f2d4e8950160b150a7da65fca56c7feaaa571eacd01c7aabad38efa42d2ca10",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"
@@ -572,7 +572,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-research/SKILL.md",
-        "effectiveHash": "70ca16e823f5a556897219b3f1b0aea80585064481b52c490ed2ea5c1be76df7",
+        "effectiveHash": "8da7e53ded435d3b1ada2f1e9a39f9ab7526cf0f179fdc3de867b7b265243dc2",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"

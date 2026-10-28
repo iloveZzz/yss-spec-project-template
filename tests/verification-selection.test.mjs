@@ -9,6 +9,42 @@ import {spawnSync} from 'node:child_process';
 import {compileTaskExecution,addVerificationExecutionTasks} from '../.template-source/scripts/lib/verification-execution-plan.mjs';
 const pilot='.agents/skills/yss-research/SKILL.md';
 const pilotConfig=()=>loadVerificationProfiles();
+test('初始化入口、Backend 策略和跨端引用变更运行同一个完整分发检查',()=>{
+ const impacted=[
+  'tests/spec-initial-entry.test.mjs',
+  'tests/backend-decision-distribution.test.mjs',
+  'tests/backend-handoff-reference.test.mjs',
+  '.template-source/distribution/bundle-profile.json',
+  'profiles/backend/.template-source/distribution/bundle-profile.json',
+  'profiles/backend/.template-spec/process/plan-migration.md',
+  '.agents/skills/yss-implementation-contract-compiler/SKILL.md'
+ ];
+ for(const file of impacted){
+  const checks=planTemplateVerification({changedFiles:[file]}).commands.filter(item=>item.id==='check.initialization-reference-boundaries');
+  assert.equal(checks.length,1,file);
+  for(const testFile of impacted.slice(0,3))assert.ok(checks[0].command.includes(testFile),`${file}: ${testFile}`);
+ }
+ assert.equal(planTemplateVerification({changedFiles:['README.md']}).commands.some(item=>item.id==='check.initialization-reference-boundaries'),false);
+});
+test('竞品证据测试和维护收尾依赖各自选中实际场景',()=>{
+ for(const [file,id] of [
+  ['.agents/skills/yss-research/tests/competitive-scenarios.test.mjs','check.competitive-evidence-scenarios'],
+  ['scripts/fixtures/lifecycle-core/research-competitive.test.mjs','check.competitive-completion-scenarios'],
+  ['scripts/lib/source-context-snapshot.mjs','check.competitive-completion-scenarios']
+ ])assert.equal(planTemplateVerification({changedFiles:[file]}).commands.filter(item=>item.id===id).length,1,file);
+});
+test('候选专用检查缺少候选时显式失败且日常选择只验证其保护',()=>{
+ const ref='scripts/fixtures/initialization-reference-closure/verify-candidate.mjs';
+ const plan=planTemplateVerification({changedFiles:[ref]});
+ assert.ok(plan.commands.some(item=>item.id==='check.daily-selection'));
+ assert.ok(!plan.commands.some(item=>item.command.includes(ref)), '候选验收不能在未提供候选时自动执行');
+ const environment={...process.env};
+ delete environment.NODE_TEST_CONTEXT;
+ for(const key of ['YSS_NATIVE_BINARY','YSS_NATIVE_BINARY_SHA256','YSS_CANDIDATE_TREE','YSS_CANDIDATE_COMMIT','YSS_CANDIDATE_AUDIT_ROOT'])delete environment[key];
+ const child=spawnSync(process.execPath,['--test',ref],{cwd:ROOT,env:environment,encoding:'utf8'});
+ assert.notEqual(child.status,0);
+ assert.match(`${child.stdout}${child.stderr}`,/candidate acceptance requires YSS_NATIVE_BINARY/);
+});
 test('后端终点场景拆分后 slow 和 release 保留两组完整检查及原单项预算',()=>{
  const files=['tests/backend-delivery-terminal.test.mjs','tests/backend-delivery-business-terminal.test.mjs'];
  const ids=['check.backend-delivery-terminal','check.backend-delivery-business-terminal'];

@@ -178,7 +178,8 @@ export function competitiveVerificationFiles(evidenceFile, { root = repositoryRo
     '.template-spec/plan/templates/competitive-matrix-template.md',
     '.template-spec/plan/templates/competitive-analysis-template.md',
     'scripts/lib/json-schema.mjs',
-    'scripts/lib/validation-phase.mjs'
+    'scripts/lib/validation-phase.mjs',
+    'scripts/lib/source-context-snapshot.mjs'
   ].map(ref => path.resolve(root, ref));
   for (const file of [...artifacts, ...dependencies]) readFileSync(file);
   return [...artifacts, ...dependencies];
