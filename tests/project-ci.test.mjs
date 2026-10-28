@@ -6,6 +6,7 @@ import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import { parse } from '../scripts/vendor/yaml.mjs';
+import {initializeNative} from '../.template-source/scripts/lib/native-yss.mjs';
 
 const source=process.cwd();
 let nativeMetadata, nativeProfile;
@@ -13,8 +14,7 @@ function fixture(t) {
   const root=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'project-ci-test-')));
   if(!nativeMetadata) {
     const seed=path.join(root,'seed');
-    const init=spawnSync(process.env.YSS_NATIVE_BINARY,['init','--profile','spec','--root',seed,'--json'],{encoding:'utf8'});
-    assert.equal(init.status,0,init.stderr||init.stdout);
+    initializeNative('spec',seed);
     nativeMetadata=fs.readFileSync(path.join(seed,'.yss.json'));
     nativeProfile=fs.readFileSync(path.join(seed,'.template-spec/process/harness-profile.yaml'));
     fs.rmSync(seed,{recursive:true});
