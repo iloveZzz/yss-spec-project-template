@@ -6,7 +6,7 @@ import path from 'node:path';
 import { tmpdir } from 'node:os';
 import { spawnSync } from 'node:child_process';
 import { fixture } from '../../../../scripts/fixtures/strategic-handoff/fixture.mjs';
-import { exportBundle, finalizeDelivery } from '../../../../scripts/lib/strategic-handoff.mjs';
+import { assertImportReceipt, exportBundle, finalizeDelivery, importBundle, openBundle } from '../../../../scripts/lib/strategic-handoff.mjs';
 import { consumerEntry } from '../../../../scripts/lib/strategic-handoff-routing.mjs';
 import { materializeTestPlugin, treeInventory } from '../scripts/tooling-fixture.mjs';
 
@@ -73,18 +73,32 @@ test('backend plugin receives Handoff v5 without bypassing engineering or implem
     assert.match(result.stderr, /Handoff v5 接入必须消费正式 delivery wrapper 与 Receipt v3/);
     assert.deepEqual(treeInventory(zipTarget), before);
   });
-  await t.test('historical Handoff v4 ZIP imports with Receipt v2 and preserves its reuse contract', async () => {
+  let legacy;
+  await t.test('plugin design entry rejects valid historical Handoff v4 ZIP without changing the receiving project', async () => {
     const legacySource = path.join(dir, 'synthetic-v4-source'); fs.mkdirSync(legacySource);
     await fixture(legacySource, { handoffVersion: 4 });
-    const legacy = await exportBundle({ sourceRoot: legacySource, handoffRef: 'handoff.yaml', output: path.join(dir, 'legacy-v4-package'), zip: true, evidenceRoot: legacySource });
+    // Verify the package with the full receiver's local policy and historical wire schemas.
+    legacy = await exportBundle({ sourceRoot: legacySource, handoffRef: 'handoff.yaml', output: path.join(dir, 'legacy-v4-package'), zip: true, evidenceRoot: zipTarget });
     assert.equal(JSON.parse(fs.readFileSync(path.join(legacy.output, 'handoff.yaml'))).schema_version, 4);
-    const imported = ok(call('project-import-design', ['--target-dir', zipTarget, '--bundle', legacy.zip]));
-    const saved = JSON.parse(fs.readFileSync(path.join(zipTarget, imported.import_receipt_ref)));
+    const before = treeInventory(zipTarget);
+    const result = call('project-import-design', ['--target-dir', zipTarget, '--bundle', legacy.zip]);
+    assert.equal(result.status, 1, result.stderr || result.stdout);
+    assert.match(result.stderr, /design-entry-requires-handoff-v5/);
+    assert.deepEqual(treeInventory(zipTarget), before);
+  });
+  await t.test('low-level historical Handoff v4 ZIP import retains Receipt v2 and read-only receipt queries', async () => {
+    const imported = await importBundle({ bundle: legacy.zip, targetRoot: zipTarget, evidenceRoot: zipTarget });
+    assert.equal(imported.result, 'imported-pending-reconciliation');
+    const receiptPath = path.join(zipTarget, imported.receipt_ref), bytes = fs.readFileSync(receiptPath), saved = JSON.parse(bytes);
     assert.equal(saved.schema_version, 2);
-    assert.equal(imported.next_work_unit, 'work-unit.technical-analysis');
-    assert.equal(imported.ready_for_agent, false);
-    const resumed = ok(call('project-entry', ['--target-dir', zipTarget, '--mode', 'reuse', '--input', put('zip-reuse.json', { import_receipt_ref: imported.import_receipt_ref })]));
-    assert.equal(resumed.design.bundle_digest, imported.bundle_digest);
+    assert.equal(saved.status, 'pending-context-reconciliation');
+    assert.deepEqual(saved.selected_consumer_capabilities, ['backend-technical-design']);
+    const before = treeInventory(zipTarget);
+    await openBundle(path.join(zipTarget, saved.package_ref), bundle => assertImportReceipt(zipTarget, saved, bundle), { evidenceRoot: zipTarget });
+    assert.deepEqual(treeInventory(zipTarget), before);
+    assert.equal((await importBundle({ bundle: legacy.zip, targetRoot: zipTarget, evidenceRoot: zipTarget })).result, 'already-imported');
+    assert.deepEqual(fs.readFileSync(receiptPath), bytes);
+    assert.equal(ok(call('project-check', ['--target-dir', zipTarget])).ready_for_agent, false);
   });
   await t.test('tampered receipt and package cannot be resumed', () => {
     const ref = path.join(target, receipt), original = fs.readFileSync(ref), saved = JSON.parse(original);

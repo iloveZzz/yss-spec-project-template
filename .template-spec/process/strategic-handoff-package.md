@@ -9,7 +9,7 @@
 
 1. 源仓必须为 `project-instance`。新交付使用 Domain Strategy v3 与 Stage Decision Package v3；规则、场景、决定、假设、约束、成功标准、测试 seam 与 downstream mapping 使用稳定 ID 和证据。v2 仅用于历史 Handoff v3 的只读验证；修改或重发须显式迁移、重新批准。不得用行号、文字 hash 或导出顺序生成业务身份。
 2. 每个场景明确 `critical`、`rule_refs`、`success_results` 和既有 `failure_results`；兼容字段 `rules` 必须与引用规则正文一致。不变量使用 `rule_ref`，并通过 `scenario_refs` 指向确实覆盖该规则的场景。缺身份或关联先回战略方确认、更新并重新批准，导出器不猜测。
-3. 新原型与既有 UI 交接都使用 Handoff v5，分别选择 `prototype` 或 `existing-ui-baseline`。历史 Handoff v4 与既有裸 v5 包继续按冻结 schema 执行 `verify/import`；v3 仅由固定 CLI 迁移资源读取，但 v3/v4 不再创建新 export；修改或重新交付必须迁移到 v5 并重新批准。校验器先读取 `schema_version` 再选择固定 schema，未知版本输出支持列表并 fail closed。`package_export` 的 `approvals` 按 `source` 字段及 `handoff` 绑定批准记录，声明 `record_ref`、`gate_id`、`digest_kind`。当前战略 profile 的领域战略和阶段决策绑定 `gate.plan-approved`；声明 `business-ticket-approval-v1` 的业务 Ticket 集绑定当前 `gate.strategic-design-handoff-approved`（未声明能力的历史包保持原规则），Spec 绑定 `gate.spec-baseline-approved`，原型、视觉或既有 UI 基线绑定 `gate.product-design-approved`，交接自身绑定 `gate.strategic-design-handoff-approved`。历史包仍按包内明确登记的源批准规则验证，但旧门禁只能作为历史证据，不能作为当前输入继续流转。
+3. 新原型与既有 UI 交接都使用 Handoff v5，分别选择 `prototype` 或 `existing-ui-baseline`。历史 Handoff v4 通过底层历史接口按冻结 schema 执行 `verify/import`；既有裸 v5 包仅保留兼容校验，导入与收据复验须使用真实交付记录及 Receipt v3；v3 仅由固定 CLI 迁移资源读取，但 v3/v4 不再创建新 export；修改或重新交付必须迁移到 v5 并重新批准。校验器先读取 `schema_version` 再选择固定 schema，未知版本输出支持列表并 fail closed。`package_export` 的 `approvals` 按 `source` 字段及 `handoff` 绑定批准记录，声明 `record_ref`、`gate_id`、`digest_kind`。当前战略 profile 的领域战略和阶段决策绑定 `gate.plan-approved`；声明 `business-ticket-approval-v1` 的业务 Ticket 集绑定当前 `gate.strategic-design-handoff-approved`（未声明能力的历史包保持原规则），Spec 绑定 `gate.spec-baseline-approved`，原型、视觉或既有 UI 基线绑定 `gate.product-design-approved`，交接自身绑定 `gate.strategic-design-handoff-approved`。历史包仍按包内明确登记的源批准规则验证，但旧门禁只能作为历史证据，不能作为当前输入继续流转。
 4. 批准记录还要在 `artifact_bindings` 中逐项绑定 `{id, version, digest}`。新政策使用 approval3 和显式 `schema_version: 2` 的 `approval_context`，不要求岗位、数字人或起草者身份；实际来源、任务和执行证据仍须可核验。源资产必须是已完成审查的主体或当前依据，不能只追加资产声明扩大批准范围。战略/阶段的内嵌 `approval` 注解使用显式版本 2，引用实际 Plan 聚合记录；原无版本注解只表示历史来源。战略/阶段建议 `canonical-json`；普通文件使用 `sha256-bytes`；视觉基线使用 `visual-baseline`。正文中的 `approved` 和可读取批准路径不能替代当前字节的批准绑定。来源政策要求用户决定记录时，接收端必须支持并核验该策略；旧工具缺少该能力时阻断并要求升级，不能按旧规则放行。
 5. `additional_files` 明确补充依赖；`reference_map` 将 `evidence.*` 稳定证据引用解析为仓内路径。源资产、批准记录、证据引用、Markdown 本地链接和显式目录共同形成依赖闭包。HTTP 引用保留为引用，不在导出时下载网页。
 6. 原型分支的 `prototype` 指定 `profile`、`preview_root`、`entry_ref`、`verification_ref`、`verification_digest`（验证记录的字节摘要）；H2 另须 `source_root`、`lock_ref` 和 `source_digest`（源码目录树摘要，算法同下述预览树）。源码交付目录不含 node_modules / .git；锁文件与源码一同保存。预览目录须资源闭合，可通过本地静态服务离线浏览。源码、锁文件或验证记录变化须更新交接摘要并重新批准。
@@ -71,7 +71,7 @@ Handoff v5 必须声明 `ui_baseline_kind: prototype | existing-ui-baseline`，`
 
 ## 下游接收与逐条追溯
 
-导入落盘到 `docs/handoffs/<handoff-id>/<version>/`。Handoff v3 先显式迁移，不再由常规导入生成 Receipt v1；历史裸 Handoff v4/v5 包继续生成 Import Receipt v2。新的 v5 交付目录生成 Import Receipt v3，保存源 `delivery-record.json` 原始字节及摘要，按目标 profile 的消费者能力登记 route、产物引用和状态，并分别生成后端追踪、Frontend Strategic Preflight / 前端追踪、协调状态索引草案。共同生成 route-aware Context Reconciliation 和 upstream impact 草案，所有入口固定 `ready_for_agent: false`。接收回执由研发仓持有，不反向修改战略仓；协调索引只保存回执引用。目标侧确认增量后更新唯一根 `CONTEXT.md` 并完成正式 reconciliation。
+导入落盘到 `docs/handoffs/<handoff-id>/<version>/`。Handoff v3 先显式迁移，不再由常规导入生成 Receipt v1；底层历史接口为 Handoff v4 包生成 Import Receipt v2；裸 Handoff v5 包不能导入或复用 Receipt v2。新的 v5 交付目录生成 Import Receipt v3，保存源 `delivery-record.json` 原始字节及摘要，按目标 profile 的消费者能力登记 route、产物引用和状态，并分别生成后端追踪、Frontend Strategic Preflight / 前端追踪、协调状态索引草案。共同生成 route-aware Context Reconciliation 和 upstream impact 草案，所有入口固定 `ready_for_agent: false`。接收回执由研发仓持有，不反向修改战略仓；协调索引只保存回执引用。目标侧确认增量后更新唯一根 `CONTEXT.md` 并完成正式 reconciliation。
 
 Technical Design Contract v2（DDD / MVC 共用）的 `strategic_handoff` 绑定 `import_receipt_ref`、`bundle_digest`、`context_reconciliation_ref` 和 `rows`。逐条覆盖全部规则与 `critical: true` 的成功/失败场景；行字段如下：
 
@@ -117,10 +117,10 @@ scripts/strategic-feedback verify-adjudication --root <消费者项目根> <adju
 
 ## 插件接收入口与目标路由
 
-Spec 完成产品与业务设计，按用户明确要求进行 Handoff v5 正式交付，`yss-backend-delivery` 通过 `project-import-design` 调用目标项目的 `scripts/strategic-consumer-entry --root <目标根> --bundle <交付目录或ZIP>`。入口先验证源包与后端路线，再执行既有 import；返回收据和目标工程设计入口，固定 `ready_for_agent: false`。恢复以 `--receipt <项目内收据路径>` 重新验证，查询不导入文件。
+Spec 完成产品与业务设计，按用户明确要求进行 Handoff v5 正式交付，`yss-backend-delivery` 通过 `project-import-design` 调用目标项目的 `scripts/strategic-consumer-entry --root <目标根> --bundle <v5正式交付目录>`。入口先验证源包与后端路线，再执行既有 import；返回收据和目标工程设计入口，固定 `ready_for_agent: false`。恢复以 `--receipt <项目内收据路径>` 重新验证，查询不导入文件。
 
 源 `work-unit.technical-design` 保留不变，目标主控 `consumer_entry_routes` 持有精确映射；`plan-to-backend` 和完整主模板进入 `work-unit.technical-analysis`，专职后端进入自己的 `work-unit.technical-design`。目标工作单元不存在或超出 profile/职责范围时阻断。后端插件的 scope 只选择 backend-technical-design；源包保留完整前端、协调路线，不宣称已接管或完成。
 
-正式交付目录导入生成 Receipt v3；现有运输 package.zip 按已有协议生成 v2 收据，源包、批准、逻辑摘要仍须完整校验，不能补造 source-delivery-record。消费校验、反馈裁决和 Slice Contract 的实现门禁保持不变。
+插件接收入口使用 Handoff v5 正式交付目录并生成 Receipt v3，拒绝裸 package.zip 和旧版包。历史 Handoff v4 运输 ZIP 由底层历史 import/verify 接口处理并保留 Receipt v2；该兼容接口不授予插件接入或复验资格。源包、批准、逻辑摘要仍须完整校验，不能补造 source-delivery-record。消费校验、反馈裁决和 Slice Contract 的实现门禁保持不变。
 
 业务集合、逐票正文和专业审查按 [业务 Ticket 协议](business-tickets.md) 校验并导出依赖闭包。研发承接 rows 同时登记业务 Ticket ID 与原规则/场景；source_digest 为业务票原字节摘要，dependent_slice_refs 按真实依赖登记，未知依赖阻断相关整体范围。

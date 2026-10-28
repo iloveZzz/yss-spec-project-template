@@ -14,7 +14,7 @@ description: 从需求、已有 Spec 或设计继续 YSS 后端交付，或恢�
 3. 普通目录或代码仓不能直接当治理项目。新建时收集治理输出目录、项目名称、业务领域、团队规模和 tracker，运行 `project-plan` 展示写入计划，再依据当前明确的初始化授权运行 `project-apply`。既有后端只登记候选路径，不重建或覆盖源码。
 4. 已有治理项目先运行 `project-check`。旧版身份或插件版本升级走 `project-migration-plan` / `project-upgrade-plan`，展示原生保存计划、具体文件变更和证据影响；按已有迁移范围授权运行匹配的 apply。身份与 `.yss-backend-plugin.json` 在同一 yss 事务写入，旧 metadata 与 `.yss-plugin.json` 保留原字节。不得直接改绑定记录。
 5. 执行 `project-entry --target-dir <治理根> --mode new|reuse|resume --input <输入 JSON>`。new 输入可为 `{}`；reuse 输入为 `{ "artifact_refs": ["项目内相对路径"] }`，有 checkpoint 时同时提供 `checkpoint`；resume 必须提供 `checkpoint`。返回的是核验交接信息，不是阶段完成或实现许可。
-6. 接收正式设计方案时，先运行 `project-import-design --target-dir <治理根> --bundle <交付目录或ZIP>`；再向 reuse/resume 输入传入返回的 `import_receipt_ref`。入口重新核验包、原批准和消费者路线，仅允许继续目标词汇对账、工程设计与逐条消费；不把导入当作实现批准。
+6. 接收 Handoff v5 正式设计方案时，先运行 `project-import-design --target-dir <治理根> --bundle <v5正式交付目录>`；再向 reuse/resume 输入传入返回的 `import_receipt_ref`。入口重新核验包、原批准和消费者路线，仅允许继续目标词汇对账、工程设计与逐条消费；不把导入当作实现批准。
 7. **读取返回的 `effective_orchestrator` 绝对路径并执行其中流程**；先读取同一治理根的 yss-project.yaml、CONTEXT.md 和返回的输入资产。不得调用缓存中的旧版同名包装入口，也不得消费另一个仓库的主控。来源冲突时停止并解释。
 8. 主控重新核验最近可信阶段、批准、门禁和上下文，依据当前授权继续实际工作；不要仅展示命令就声称已启动业务。`stage_verification_required` 为 true 的资产只作为分诊输入，必须由本地主控核验后才可跨阶段。
 
