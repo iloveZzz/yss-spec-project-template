@@ -402,3 +402,37 @@ test('WorkBuddy source-only Profile entrypoint selects behavior and syntax check
  const compiled=addVerificationExecutionTasks(release,{root:ROOT,reference:true,reportDir:path.join(directory,'report')});
  assert.ok(compiled.commands.some(task=>task.kind==='syntax'&&task.command.endsWith(`'${ref}'`)));
 });
+
+
+const mergedReleaseChecks=['doc-facts','ci-adapters','agent-hook','claude-entry','explicit-invocation','process-glossary','instance-metadata','harness-metrics','skill-lock-readers','work-layout-hardcodes'];
+test('条件补充责任在空差异、README及命中普通项时均保留一次执行',t=>{
+ const directory=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'merged-release-')));t.after(()=>fs.rmSync(directory,{recursive:true,force:true}));
+ const config=loadVerificationProfiles();
+ const inputs=mergedReleaseChecks.flatMap(name=>config.profiles.fast.checks.find(x=>x.id===`check.${name}`).input_patterns.filter(ref=>!ref.includes('*')));
+ for(const changedFiles of [[],['README.md'],inputs]){
+  const plan=addVerificationExecutionTasks(planTemplateVerification({profile:'release',changedFiles}),{root:ROOT,reportDir:directory});
+  for(const name of mergedReleaseChecks){
+   const definition={...Object.values(config.groups).flatMap(g=>g.commands).find(x=>x.id===`check.${name}`),...config.profiles.fast.checks.find(x=>x.id===`check.${name}`)};
+   const tasks=plan.commands.filter(row=>row.command===definition.run);
+   assert.equal(tasks.length,1,`${changedFiles}: ${name}`);
+   assert.equal(tasks[0].source_requirement,'committed',name);
+   assert.ok(tasks[0].gate_ids.includes(name==='instance-metadata'?'check.verification-fixed-source':'check.verification-lifecycle'),name);
+  }
+ }
+ const instance=addVerificationExecutionTasks(planTemplateVerification({profile:'release',changedFiles:[]}),{root:ROOT,repositoryMode:'project-instance',reportDir:directory});
+ assert.ok(!instance.commands.some(row=>mergedReleaseChecks.includes(row.id?.replace('check.',''))),'不能扩大 project-instance 空差异必跑集合');
+});
+test('CLI 身份每组仅执行一次并保留 G01 G12 G13',()=>{
+ const plan=planTemplateVerification({profile:'release',changedFiles:['.template-source/distribution/yss-cli-pin.json']});
+ for(const suffix of ['','-install','-sync','-rest']){
+  const task=plan.commands.find(row=>row.id===`check.cli-content-identity${suffix}`);
+  assert.ok(task);assert.equal(plan.commands.filter(row=>row.command===task.command).length,1);
+  assert.deepEqual(task.gate_ids.slice().sort(),['check.verification-fixed-source','check.verification-cli-core','check.verification-spec-cli'].sort());
+ }
+});
+test('legacy和shadow仅命中cli-sync组时仍覆盖四组现役CLI身份检查',()=>{
+ for(const selection of ['legacy','shadow'])for(const file of ['tests/cli-retirement.test.mjs','tests/native-consumer-routing.test.mjs','.template-spec/user-guide/cli/example.md']){
+  const plan=planTemplateVerification({selection,changedFiles:[file]});
+  for(const suffix of ['','-install','-sync','-rest'])assert.ok(plan.commands.some(task=>task.id===`check.cli-content-identity${suffix}`),`${selection}: ${file} ${suffix}`);
+ }
+});

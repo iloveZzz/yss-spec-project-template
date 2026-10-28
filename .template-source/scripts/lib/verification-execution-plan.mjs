@@ -241,7 +241,20 @@ export function addVerificationExecutionTasks(plan,{root,repositoryMode='templat
   }
   if(!reference&&!daily)for(const raw of plan.supplemental_checks||[]){
     const task={...compileVerificationCheck(raw,{group:'postchecks',profile:plan.requested_profile,gateIds:raw.gate_ids||['check.verification-final-integrity'],taskId:raw.task_id||raw.id}),kind:'postcheck',...(raw.source_requirement?{source_requirement:raw.source_requirement}:{})};
-    if(task.when&&task.when!==repositoryMode){if(!plan.not_applicable.some(row=>row.task_id===task.task_id&&row.reason==='repository-mode'))plan.not_applicable.push({...task,reason:'repository-mode'});}else append(task);
+    if(task.when&&task.when!==repositoryMode){if(!plan.not_applicable.some(row=>row.task_id===task.task_id&&row.reason==='repository-mode'))plan.not_applicable.push({...task,reason:'repository-mode'});}else {
+      // Release sources are committed; merge obligations only for the same selected execution.
+      const equivalent=plan.strategy==='release'&&plan.commands.find(existing=>existing.kind!=='postcheck'&&existing.command===task.command
+        &&(existing.source_requirement||plan.source_requirement)===(task.source_requirement||plan.source_requirement)
+        &&existing.timeout_ms===task.timeout_ms
+        &&JSON.stringify((existing.depends_on||[]).filter(id=>id!=='check.verification-environment').sort())===JSON.stringify(task.depends_on.slice().sort())
+        &&JSON.stringify(existing.execution||compileTaskExecution(existing,{root,reportDir,fixedCommit,environment}))===JSON.stringify(compileTaskExecution(task,{root,reportDir,fixedCommit,environment})));
+      if(equivalent){
+        equivalent.source_requirement=task.source_requirement;
+        equivalent.gate_ids=[...new Set([...equivalent.gate_ids,...task.gate_ids])];
+        equivalent.resources=[...new Set([...(equivalent.resources||[]),...(task.resources||[])])];
+        for(const gate of plan.gates||[])if(task.gate_ids.includes(gate.id)){gate.selected=true;gate.selection_reason='supplemental-required';}
+      }else append(task);
+    }
   }
   for(const [kind,files,entry] of [['checkpoint',checkpoints,'scripts/verify-maintenance-checkpoint'],['task-package',taskPackages,'scripts/verify-digital-human-task-package']])for(const file of files){const suffix=hash(file).slice(0,16),id=`check.verification-post-${kind}.${suffix}`;append({id,task_id:`post.${kind}.${suffix}`,kind:'postcheck',group:'postchecks',gate_ids:['check.verification-final-integrity'],depends_on:[],command:`${quote(entry)} ${quote(file)}`,...daily?{selection_reason:`explicit-input:${file} -> ${kind} 合同或证据错误`}:{}});}
   append({id:'check.verification-post-git-diff-check',task_id:'post.git-diff-check',kind:'postcheck',group:'postchecks',gate_ids:['check.verification-final-integrity'],depends_on:[],command:'git diff --check',...daily?{selection_reason:'current-diff -> 差异空白或冲突标记错误；合同：fast 执行终检'}:{}});

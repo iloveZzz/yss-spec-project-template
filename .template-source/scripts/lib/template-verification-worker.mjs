@@ -1,3 +1,4 @@
+import {readRepositoryMode} from '../../../scripts/lib/repository-mode.mjs';
 import {fork,spawnSync} from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -71,7 +72,7 @@ async function prepare(argv,root,options) {
   if(input.help)return input;
   const {values,plan}=input;
   const reportDir=validateVerificationReportDirectory(root,values['report-dir']||path.join(fs.realpathSync(os.tmpdir()),`yss-template-verification-${randomUUID()}`));
-  return {...input,reportDir,plan:addVerificationExecutionTasks(plan,{root,checkpoints:values.checkpoint,taskPackages:values['task-package'],reportDir,environment:options?.environment||process.env})};
+  return {...input,reportDir,plan:addVerificationExecutionTasks(plan,{root,repositoryMode:readRepositoryMode(root),checkpoints:values.checkpoint,taskPackages:values['task-package'],reportDir,environment:options?.environment||process.env})};
 }
 export {prepare as prepareVerificationPlan};
 async function runPrepared(input) {

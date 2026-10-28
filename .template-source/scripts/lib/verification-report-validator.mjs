@@ -1,3 +1,4 @@
+import {readRepositoryMode} from '../../../scripts/lib/repository-mode.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -36,7 +37,7 @@ export function compileExpectedVerificationPlan({root,args=[],fixedCommit,config
  plan.scope={kind:values.profile==='fast'?'limited':'complete-candidate',files:[...files].sort(),explicit_files:values['changed-file']||[],base:values.base||null};
  const reportDir=values['report-dir']?path.resolve(values['report-dir']):reportDirectory?path.resolve(reportDirectory):null;
  if(values['report-dir']&&reportDirectory)ensure(fs.realpathSync(reportDir)===fs.realpathSync(reportDirectory),'实际 report directory 与明确 invocation 不匹配');
- return addVerificationExecutionTasks(plan,{root,reference,fixedCommit,reportDir,purpose:'verification',environment,checkpoints:values.checkpoint||[],taskPackages:values['task-package']||[]});
+ return addVerificationExecutionTasks(plan,{root,...(!fixedCommit?{repositoryMode:readRepositoryMode(root)}:{}),reference,fixedCommit,reportDir,purpose:'verification',environment,checkpoints:values.checkpoint||[],taskPackages:values['task-package']||[]});
 }
 
 export function assertEvidenceFile(file, directory, expectedDigest) {

@@ -463,3 +463,33 @@ test('实现合同包装入口的真实Node子批次始终串行，外层并发�
     const request=JSON.parse(fs.readFileSync(receipt));assert.equal(request.file,process.execPath);assert.ok(request.args.includes('--test-concurrency=1'));assert.equal(request.args.filter(value=>!value.startsWith('--')).length,16);assert.equal(maximum(),1);
   }
 });
+test('补充合并拒绝来源、执行环境和依赖差异，保留普通资源和条件必跑',t=>{
+ const root=process.cwd(),directory=temporary(t),command='node -e "process.exit(7)"';
+ const raw={id:'check.supplement',task_id:'supplemental.s',run:command,when:'template-source',source_requirement:'committed',gate_ids:['second'],depends_on:[],resources:['extra']};
+ const original={id:'check.primary',task_id:'check.primary',command,group:'checks',depends_on:[],gate_ids:['first'],resources:['native-cli'],timeout_ms:1800000};
+ const base={strategy:'release',effective_profile:'release',requested_profile:'release',source_requirement:'committed',commands:[original],supplemental_checks:[raw],gates:[{id:'first',selected:true},{id:'second',selected:false}]};
+ for(const override of [{source_requirement:'current'},{execution:{requested_command:command,file:process.execPath,args:['-e','process.exit(7)'],cwd:root,environment:{MODE:'different'}}},{depends_on:['different']}]){
+  const plan=addVerificationExecutionTasks({...base,commands:[{...original,...override}]},{root,reportDir:directory});
+  assert.equal(plan.commands.filter(task=>task.command===command).length,2);
+ }
+ const plan=addVerificationExecutionTasks(base,{root,reportDir:directory}),task=plan.commands.find(task=>task.id==='check.primary');
+ assert.equal(plan.commands.filter(task=>task.command===command).length,1);
+ assert.deepEqual(task.gate_ids,['first','second']);assert.deepEqual(task.resources,['native-cli','extra']);assert.equal(task.source_requirement,'committed');
+ assert.ok(plan.gates.every(gate=>gate.selected&&gate.task_ids.includes(task.task_id)));
+});
+test('真实prepare首次读取实例模式，两阶段计划保留WorkBuddy效率覆盖且没有悬空依赖',async t=>{
+ const directory=temporary(t),root=path.join(directory,'instance');
+ execFileSync('git',['clone','--shared','--quiet',process.cwd(),root],{stdio:'pipe'});
+ fs.writeFileSync(path.join(root,'yss-project.yaml'),'schema_version: 1\nrepository_mode: project-instance\n');
+ const head=execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim();
+ const prepared=await prepareVerificationPlan(['--profile','release','--base',head,'--changed-file','scripts/sync-skills','--report-dir',path.join(directory,'report')],root);
+ const first=prepared.plan.commands.find(task=>task.id==='check.workbuddy-skills');
+ assert.ok(first.command.includes('tests/skill-sync-efficiency.test.mjs'));
+ const again=addVerificationExecutionTasks(prepared.plan,{root,repositoryMode:'project-instance',reportDir:prepared.reportDir});
+ const task=again.commands.find(task=>task.id==='check.workbuddy-skills');
+ assert.ok(task.command.includes('tests/skill-sync-efficiency.test.mjs'));
+ assert.ok(!task.depends_on.includes('check.c80aaecf300ddc1f'));
+ const {compileExpectedVerificationPlan}=await import('../.template-source/scripts/lib/verification-report-validator.mjs');
+ const expected=compileExpectedVerificationPlan({root,args:['--profile','release','--base',head,'--changed-file','scripts/sync-skills'],reportDirectory:prepared.reportDir});
+ assert.equal(expected.commands.find(task=>task.id==='check.workbuddy-skills').command,task.command);
+});
