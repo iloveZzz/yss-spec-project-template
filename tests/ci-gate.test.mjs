@@ -41,6 +41,7 @@ function fixture(t, { engines = ">=22", nvmrc = "22", write, commits = 2, toolin
   t.after(() => fs.rmSync(directory, { recursive: true, force: true }));
   const root = path.join(directory, "repo");
   fs.mkdirSync(path.join(root, "scripts"), { recursive: true });
+  fs.writeFileSync(path.join(root,"yss-project.yaml"),"schema_version: 1\nrepository_mode: template-source\n");
   fs.writeFileSync(path.join(root, "package.json"), `${JSON.stringify({ name: "fixture", private: true, ...(engines ? { engines: { node: engines } } : {}) })}\n`);
   if (nvmrc !== null) fs.writeFileSync(path.join(root, ".nvmrc"), `${nvmrc}\n`);
   fs.writeFileSync(path.join(root, "scripts/ci-setup"), SETUP_MARKER+`

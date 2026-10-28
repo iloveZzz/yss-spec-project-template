@@ -339,7 +339,7 @@ test('release 拒绝报告自选变化路径、基线和遗漏集合',t=>{
 
 test('干净发行仍从固定基线纳入全部提交差异，显式子集不能隐藏未知输入',t=>{
  const f=fixture(t),root=f.directory,git=(...args)=>{const r=spawnSync('git',args,{cwd:root,encoding:'utf8'});assert.equal(r.status,0,r.stderr);return r.stdout.trim();};
- git('init','-q');fs.writeFileSync(path.join(root,'README.md'),'before');git('add','.');git('-c','user.name=t','-c','user.email=t@example.invalid','commit','-qm','previous release');const base=git('rev-parse','HEAD');
+ git('init','-q');fs.writeFileSync(path.join(root,'yss-project.yaml'),'schema_version: 1\nrepository_mode: template-source\n');fs.writeFileSync(path.join(root,'README.md'),'before');git('add','.');git('-c','user.name=t','-c','user.email=t@example.invalid','commit','-qm','previous release');const base=git('rev-parse','HEAD');
  const check={id:'check.example',run:'node -e "process.exit(0)"',group:'checks',input_patterns:['README.md'],inputs_complete:true,depends_on:[],failure_mode:'content behavior'};
  const config={schema_version:1,groups:{checks:{commands:[check]}},profiles:{fast:{checks:[check]},release:{selection:'impact'}},routing:[{patterns:['README.md','unknown.asset'],groups:['checks']}],gates:[],required_files:[],syntax_files:[]};
  fs.writeFileSync(path.join(root,'unknown.asset'),'actual unregistered source');git('add','.');git('-c','user.name=t','-c','user.email=t@example.invalid','commit','-qm','new source');
@@ -360,4 +360,17 @@ test('limited 仅在独立 fast 期望下显式消费，保留完整失败拒绝
  assert.equal(validateVerificationReport(f.report,options).status,'passed');
  assert.throws(()=>validateVerificationReport(f.report,{...options,requireRelease:true}),/完整候选|release/);
  for(const mutate of [r=>r.plan.commands=[],r=>r.results=[],r=>r.purpose='diagnostic',r=>r.invocation.args=[],r=>r.results[0].stdoutFile=path.join(f.directory,'missing.log'),r=>r.results[0].log_digests.stdoutFile='0'.repeat(64),r=>r.final_exit.observed=false,r=>r.input_drift=true]){const report=structuredClone(f.report);mutate(report);assert.throws(()=>validateVerificationReport(report,options));}
+});
+test('一次失败传播至合并任务的每个 Gate 且保存原始日志',async t=>{
+ const directory=fs.mkdtempSync(path.join(os.tmpdir(),'merged-gates-'));t.after(()=>fs.rmSync(directory,{recursive:true,force:true}));
+ const {runGroups}=await import('../scripts/lib/template-verification-runner.mjs');
+ const command='node -e "console.log(\'raw-evidence\');process.exit(7)"';
+ const input={strategy:'release',effective_profile:'release',requested_profile:'release',source_requirement:'committed',commands:[{id:'check.primary',task_id:'check.primary',command,group:'checks',depends_on:[],gate_ids:['first'],timeout_ms:1800000}],supplemental_checks:[{id:'check.s',task_id:'supplemental.s',run:command,when:'template-source',source_requirement:'committed',gate_ids:['second'],depends_on:[]}],gates:[{id:'first',selected:true},{id:'second',selected:false}]};
+ const compiled=addVerificationExecutionTasks(input,{root:ROOT,reportDir:directory}),task=compiled.commands.find(task=>task.id==='check.primary');
+ const plan={...compiled,commands:[{...task,depends_on:[]}]},report=createVerificationReport(plan,{root:ROOT,inputDigest:'fixed-input',scope:{kind:'complete-candidate'},concurrency:1});
+ const groups=await runGroups(plan,'template-source',1,{cwd:ROOT,environment:process.env,logRoot:directory,onResult:row=>report.results.push(row)});
+ assert.equal(groups.flatMap(group=>group.results).length,1);assert.equal(report.results[0].code,7);
+ finalizeVerificationReport(report,{status:'failed',wallMs:1,repositoryMode:'template-source'});saveVerificationReport(directory,report);
+ assert.deepEqual(report.gate_results.map(row=>row.status),['failed','failed']);
+ assert.match(fs.readFileSync(report.results[0].stdoutFile,'utf8'),/raw-evidence/);assert.equal(report.input_sha256,'fixed-input');
 });

@@ -1,6 +1,7 @@
 #!/usr/bin/env node
+import {formatVerificationSummary} from './lib/verification-report.mjs';
 import {superviseVerificationWorker} from '../.template-source/scripts/lib/template-verification-worker.mjs';
 process.stdout.on('error',error=>{process.stderr.write(`输出失败: ${error.message}\n`);process.exitCode=1;});
 const result=await superviseVerificationWorker({argv:process.argv.slice(2)});
 process.exitCode=result.code;
-if(result.report?.status==='passed'&&result.code===0)process.stdout.write(`模板核验通过（${result.report.plan.requested_profile} → ${result.report.plan.effective_profile}）\n`);
+if(result.report?.status==='passed'&&result.code===0)process.stdout.write(`模板核验通过（${result.report.plan.requested_profile} → ${result.report.plan.effective_profile}）：${formatVerificationSummary(result.report)}；原始证据 ${result.reportFile}\n`);

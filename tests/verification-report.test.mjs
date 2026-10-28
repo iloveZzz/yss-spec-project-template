@@ -38,3 +38,15 @@ test('verification ignores only Git-ignored tool state and still detects source 
   const indexBefore=observer.digest();git('commit','-qm','index change');assert.notEqual(observer.digest(),indexBefore,'HEAD changes invalidate input identity');
  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+test('成功终端分开门禁、语法及其他任务并显示真实 wall time',async()=>{
+ const {formatVerificationSummary}=await import('../scripts/lib/verification-report.mjs');
+ const report={plan:{commands:[{id:'a'},{id:'b',kind:'syntax'},{id:'c',kind:'syntax'},{id:'d',kind:'preflight'}]},gate_results:[{status:'passed'},{status:'passed'}],metrics:{wall_ms:1234}};
+ assert.match(formatVerificationSummary(report),/逻辑检查 1 项（2 个门禁）.*语法检查 2 项.*其他任务 1 项.*1\.23 秒/);
+});
+test('成功日志只留原始文件，失败日志仍回放到终端',async t=>{
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'summary-logs-'));t.after(()=>fs.rmSync(dir,{recursive:true,force:true}));
+ const ok=path.join(dir,'ok'),bad=path.join(dir,'bad');fs.writeFileSync(ok,'SUCCESS-RAW-ONLY');fs.writeFileSync(bad,'FAILURE-VISIBLE');
+ const runner=path.resolve('scripts/lib/template-verification-runner.mjs');
+ const output=execFileSync(process.execPath,['--input-type=module','-e',`import {printResults} from ${JSON.stringify(runner)};await printResults([{group:'checks',results:[{code:0,command:'success',stdoutFile:${JSON.stringify(ok)}},{code:7,command:'failure',stdoutFile:${JSON.stringify(bad)}}]}]);`],{encoding:'utf8'});
+ assert.ok(!output.includes('SUCCESS-RAW-ONLY'));assert.ok(output.includes('FAILURE-VISIBLE'));assert.equal(fs.readFileSync(ok,'utf8'),'SUCCESS-RAW-ONLY');
+});

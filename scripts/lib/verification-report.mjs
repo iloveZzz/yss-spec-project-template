@@ -82,3 +82,8 @@ export function saveVerificationReport(directory,report) {
   fs.mkdirSync(directory,{recursive:true});const file=path.join(directory,'report.json'),temp=file+'.tmp';
   fs.writeFileSync(temp,JSON.stringify(report,null,2)+'\n');fs.renameSync(temp,file);
 }
+
+export function formatVerificationSummary(report) {
+  const tasks=report.plan.commands,syntax=tasks.filter(task=>task.kind==='syntax').length,logical=tasks.filter(task=>!task.kind).length;
+  return `逻辑检查 ${logical} 项（${report.gate_results.length} 个门禁），语法检查 ${syntax} 项，其他任务 ${tasks.length-logical-syntax} 项；实际耗时 ${(report.metrics.wall_ms/1000).toFixed(2)} 秒`;
+}

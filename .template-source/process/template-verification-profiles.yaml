@@ -269,7 +269,7 @@ profiles:
       - id: check.profile-consumers-native-context-retirement
         resources: [ native-cli ]
         lane: pc-native-context-retirement
-        run: "node --test --test-skip-pattern='^backend plugin receives'
+        run: "node --test
           tests/native-context-retirement.test.mjs"
         group: feature-assets
         inputs_complete: true
@@ -1104,7 +1104,7 @@ profiles:
         depends_on: []
         failure_mode: "分发判定镜像与 yss-cli 的 includedByManifest 不一致，或守卫放过了未排除的仅模板源脚本与会误伤的后缀规则"
       - id: check.profile-distribution-gate
-        run: "scripts/verify-profile-distribution"
+        run: "node scripts/verify-profile-distribution"
         group: hygiene
         inputs_complete: true
         input_patterns:
@@ -2024,6 +2024,7 @@ profiles:
         depends_on: [ "check.daily-flow" ]
         failure_mode: "已有性能对照入口的 Python 语法错误；对照仍显式使用原组范围"
       - id: "check.cli-content-identity"
+        group: drift-identity
         tier: slow # cbe04769 发布差异检查实测 81s；fast 延后，release 保留。
         resources: [ "native-cli" ]
         lane: cli-identity-scaffold
@@ -2037,6 +2038,7 @@ profiles:
         depends_on: []
         failure_mode: "固定的 yss 二进制与 yss-cli 固定文件的版本、提交或摘要不符，或原生 CLI 消费入口、兼容或来源身份错误"
       - id: "check.cli-content-identity-install"
+        group: drift-identity
         tier: slow # cbe04769 发布差异检查实测 95s；fast 延后，release 保留。
         resources: [ "native-cli" ]
         lane: cli-identity-install
@@ -2050,6 +2052,7 @@ profiles:
         depends_on: []
         failure_mode: "固定的 yss 二进制与 yss-cli 固定文件的版本、提交或摘要不符，或原生 CLI 消费入口、兼容或来源身份错误"
       - id: "check.cli-content-identity-sync"
+        group: drift-identity
         resources: [ "native-cli" ]
         lane: cli-identity-sync
         inputs_complete: true
@@ -2062,6 +2065,7 @@ profiles:
         depends_on: []
         failure_mode: "固定的 yss 二进制与 yss-cli 固定文件的版本、提交或摘要不符，或原生 CLI 消费入口、兼容或来源身份错误"
       - id: "check.cli-content-identity-rest"
+        group: drift-identity
         tier: slow # cbe04769 发布差异检查实测 62s；fast 延后，release 保留。
         resources: [ "native-cli" ]
         lane: cli-identity-rest
@@ -3508,20 +3512,20 @@ groups:
       - run: "node --test --test-name-pattern='^(按需安装两个后端脚手架|公开 Bundle 导出|已移除前端
           Profile)' tests/cli-retirement.test.mjs"
         when: template-source
-        id: check.517fe9954d913f53
+        id: check.cli-content-identity
       - run: "node --test --test-name-pattern='^(Spec 原生阶段资源|现役 archify)'
           tests/cli-retirement.test.mjs"
         when: template-source
-        id: check.517fe9954d913f53-install
+        id: check.cli-content-identity-install
       - run: "node --test --test-name-pattern='^backend: 内容来源'
           tests/cli-retirement.test.mjs"
         when: template-source
-        id: check.517fe9954d913f53-sync
+        id: check.cli-content-identity-sync
       - run: "node --test --test-skip-pattern='^(按需安装两个后端脚手架|公开 Bundle 导出|已移除前端
           Profile)' --test-skip-pattern='^(Spec 原生阶段资源|现役 archify)'
           --test-skip-pattern='^backend: 内容来源' tests/cli-retirement.test.mjs"
         when: template-source
-        id: check.517fe9954d913f53-rest
+        id: check.cli-content-identity-rest
       - run: scripts/verify-repository-scope-scenarios
         when: template-source
         id: check.2b52a050306077cc
@@ -4200,10 +4204,10 @@ gates:
     impact_dependencies: []
     depends_on: []
     check_ids:
-      - check.517fe9954d913f53
-      - check.517fe9954d913f53-install
-      - check.517fe9954d913f53-sync
-      - check.517fe9954d913f53-rest
+      - check.cli-content-identity
+      - check.cli-content-identity-install
+      - check.cli-content-identity-sync
+      - check.cli-content-identity-rest
       - check.2b52a050306077cc
       - check.371da192d6338e6d
     audit_status: conservative-complete
@@ -4225,10 +4229,10 @@ gates:
       - check.daily-input-preparation
       - check.daily-test-evidence
       - check.daily-test-evidence-native
-      - check.517fe9954d913f53
-      - check.517fe9954d913f53-install
-      - check.517fe9954d913f53-sync
-      - check.517fe9954d913f53-rest
+      - check.cli-content-identity
+      - check.cli-content-identity-install
+      - check.cli-content-identity-sync
+      - check.cli-content-identity-rest
       - check.2b52a050306077cc
     audit_status: conservative-complete
     display_id: G13

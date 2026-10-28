@@ -14,7 +14,7 @@ test('日常 Node 检查无需 Python 或无关子模块环境',()=>{
 });
 test('仅检查 WorkBuddy 投影脚本语法不要求执行脚本所需的 Vue 工具链',async t=>{
  const {addVerificationExecutionTasks}=await import('../.template-source/scripts/lib/verification-execution-plan.mjs');
- const root=fs.mkdtempSync(path.join(os.tmpdir(),'workbuddy-syntax-preflight-'));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ const root=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'workbuddy-syntax-preflight-')));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
  const file='.workbuddy/skills/yss-prototype-stage/scripts/build-shadcn-vue-prototype.mjs';
  fs.mkdirSync(path.dirname(path.join(root,file)),{recursive:true});
  fs.copyFileSync('.agents/skills/yss-prototype-stage/scripts/build-shadcn-vue-prototype.mjs',path.join(root,file));

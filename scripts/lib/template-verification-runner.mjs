@@ -46,7 +46,7 @@ function commandRedaction(command,environment,secrets=[]) {
   return {sensitive,redact,safeCommand};
 }
 
-export function runCommandToFiles(command, { cwd, environment = process.env, execution = null, logRoot, sequence, signal, runtimeSession, secrets = [], deferCommandRegistration = false, timeoutMs = 0, terminateProcess = killTree, onProcess = () => {} }) {
+export function runCommandToFiles(command, { cwd, environment = process.env, execution = null, logRoot, sequence, signal, runtimeSession, secrets = [], deferCommandRegistration = false, timeoutMs = 0, terminateProcess = killTree, onProcess = () => {}, task = null }) {
   assertNodeVersion();
   if (!Number.isSafeInteger(timeoutMs) || timeoutMs < 0) throw new TypeError("timeoutMs 必须为非负整数");
   const {sensitive,redact,safeCommand}=commandRedaction(command,environment,secrets);
@@ -66,7 +66,7 @@ export function runCommandToFiles(command, { cwd, environment = process.env, exe
   const stderrFile = path.join(logRoot, `${sequence}.stderr`);
   return new Promise((resolve) => {
     const started = performance.now();
-    process.stderr.write(`[开始] ${safeCommand}\n`);
+    if(task?.kind!=='syntax')process.stderr.write(`[开始] ${safeCommand}\n`);
     if(execution&&execution.requested_command!==command)throw new TypeError('ACTUAL_EXECUTION_REQUEST_MISMATCH');
     if(execution?.protocol==="context-envelope-v1")contextBinary({...environment,YSS_NATIVE_BINARY:execution.file,YSS_NATIVE_BINARY_SHA256:execution.binary_sha256});
     const child = execution
@@ -93,7 +93,7 @@ export function runCommandToFiles(command, { cwd, environment = process.env, exe
       if(child.pid)onProcess({pid:child.pid,active:false});
       const duration_ms = Math.round(performance.now() - started);
       const exitCode = termination==='cancelled' ? 130 : termination==='timeout' ? 124 : Number.isInteger(code)&&code!==0 ? code : killErrors.length || streamError || spawnError ? 1 : code ?? 1;
-      process.stderr.write(`[${exitCode === 0 && !streamError ? "完成" : "失败"}] ${safeCommand} (${duration_ms}ms, exit=${exitCode})\n`);
+      if(task?.kind!=='syntax'||exitCode!==0)process.stderr.write(`[${exitCode === 0 && !streamError ? "完成" : "失败"}] ${safeCommand} (${duration_ms}ms, exit=${exitCode})\n`);
       const observed=!spawnError&&Number.isInteger(code);
       const result = { command:safeCommand, code:exitCode, duration_ms, stdoutFile, stderrFile, error:redact([spawnError,streamError?.message,...killErrors].filter(Boolean).join("; ")),termination,actual_exit_code:observed?code:null,actual_exit_signal:spawnError?null:exitSignal??null,actual_exit_code_observed:observed };
       if(execution)result.actual_execution=structuredClone(execution);
@@ -279,8 +279,9 @@ async function runDag(plan, repositoryMode, concurrency, options) {
 
 export async function printResults(groups) {
   for (const group of groups) {
-    process.stdout.write(`\n[${group.group}]\n`);
-    for (const result of group.results) {
+    const failures=group.results.filter(result=>result.code!==0||result.skipped||result.storageError||result.error);
+    if(failures.length)process.stdout.write(`\n[${group.group}]\n`);
+    for (const result of failures) {
       process.stdout.write(`$ ${result.command} (${result.duration_ms}ms)\n`);
       if (result.reused) process.stderr.write(`[复用] ${result.command}\n`);
       await replay(result.stdoutFile, process.stdout);
