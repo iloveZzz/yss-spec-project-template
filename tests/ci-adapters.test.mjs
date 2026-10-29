@@ -92,7 +92,7 @@ test(".nvmrc 主版本与 scripts/ci-setup 的目标 Node 一致，本地与 CI 
   assert.equal(read(".nvmrc").trim().split(".")[0], versions().node);
 });
 
-test("setup-template 是薄封装：先供给 Node，再从现有 pin reader 读取 Go 版本", (t) => {
+test("setup-template 是薄封装：先供给 Node，再保留已有 Go 或按 pin 供给启动器", (t) => {
   const text = code(ACTION);
   assert.match(text, /scripts\/ci-setup --print-versions >> "\$GITHUB_OUTPUT"/);
   assert.match(text, /node-version: \$\{\{ steps\.versions\.outputs\.node \}\}/);
@@ -107,9 +107,13 @@ test("setup-template 是薄封装：先供给 Node，再从现有 pin reader 读
   assert.match(printed.node, /^\d+$/);
   assert.match(printed.python, /^\d+\.\d+$/);
   assert.equal(printed.go, undefined);
-  const nodeAt = text.indexOf("uses: actions/setup-node@v4"), readerAt = text.indexOf("id: go_version"), goAt = text.indexOf("uses: actions/setup-go@v5");
+  const steps = parsed(ACTION).runs.steps;
+  const nodeAt = steps.findIndex(step => step.uses === "actions/setup-node@v4"), readerAt = steps.findIndex(step => step.id === "go_version"), goAt = steps.findIndex(step => step.uses === "actions/setup-go@v5");
   assert.ok(nodeAt >= 0 && readerAt > nodeAt && goAt > readerAt, "Go pin reader 必须位于 Node 安装后、Go 安装前");
-  const run = /    - id: go_version\n      shell: bash\n      run: \|\n((?:        .*\n)+)/.exec(text)?.[1].replace(/^        /gm, "");
+  assert.equal(steps[readerAt].shell, "bash");
+  assert.deepEqual(steps[readerAt].env, { INPUT_YSS_COMMIT: "${{ inputs.yss-commit }}", INPUT_RUNTIME_ONLY: "${{ inputs.runtime-only }}" });
+  assert.equal(steps[goAt].if, "steps.go_version.outputs.go != ''");
+  const run = steps[readerAt].run;
   assert.ok(run, "通过 bash 独立步骤读取 Go 版本");
   assert.match(run, /go_version="\$\(node \.template-source\/scripts\/lib\/yss-cli-pin\.mjs go_version\)"\n/);
   assert.match(run, /printf 'go=%s\\n' "\$go_version" >> "\$GITHUB_OUTPUT"/);
@@ -117,12 +121,26 @@ test("setup-template 是薄封装：先供给 Node，再从现有 pin reader 读
   t.after(() => fs.rmSync(directory, { recursive: true, force: true }));
   const output = path.join(directory, "output"), noNode = path.join(directory, "no-node");
   fs.mkdirSync(noNode);
-  const refused = spawnSync("/bin/bash", ["-e", "-c", run], { cwd: ROOT, encoding: "utf8", env: { ...process.env, PATH: noNode, GITHUB_OUTPUT: output } });
+  const environment = { ...process.env, INPUT_YSS_COMMIT: "pin", INPUT_RUNTIME_ONLY: "false" };
+  const refused = spawnSync("/bin/bash", ["-e", "-c", run], { cwd: ROOT, encoding: "utf8", env: { ...environment, PATH: noNode, GITHUB_OUTPUT: output } });
   assert.equal(refused.status, 127, refused.stderr);
   assert.equal(fs.existsSync(output), false, "pin reader 失败不能写出空 go= 或假成功");
-  const passed = spawnSync("/bin/bash", ["-e", "-c", run], { cwd: ROOT, encoding: "utf8", env: { ...process.env, GITHUB_OUTPUT: output } });
+  const passed = spawnSync("/bin/bash", ["-e", "-c", run], { cwd: ROOT, encoding: "utf8", env: { ...environment, GITHUB_OUTPUT: output } });
   assert.equal(passed.status, 0, passed.stderr);
-  assert.equal(fs.readFileSync(output, "utf8"), `go=${JSON.parse(read(".template-source/distribution/yss-cli-pin.json")).go_version}\n`);
+  const pinnedOutput = `go=${JSON.parse(read(".template-source/distribution/yss-cli-pin.json")).go_version}\n`;
+  assert.equal(fs.readFileSync(output, "utf8"), pinnedOutput);
+  const nodeOnly = path.join(directory, "node-only"), existingGo = path.join(directory, "existing-go");
+  fs.mkdirSync(nodeOnly);fs.symlinkSync(process.execPath, path.join(nodeOnly, "node"));
+  fs.mkdirSync(existingGo);fs.writeFileSync(path.join(existingGo, "go"), "#!/bin/bash\nexit 91\n", { mode: 0o755 });
+  for (const [name, inputs] of [["latest", { INPUT_YSS_COMMIT: "latest" }], ["runtime", { INPUT_YSS_COMMIT: "", INPUT_RUNTIME_ONLY: "true" }]]) {
+    const retainedOutput = path.join(directory, `${name}-retained`), bootstrapOutput = path.join(directory, `${name}-bootstrap`);
+    const retained = spawnSync("/bin/bash", ["-e", "-c", run], { cwd: ROOT, encoding: "utf8", env: { ...environment, ...inputs, PATH: existingGo, GITHUB_OUTPUT: retainedOutput } });
+    assert.equal(retained.status, 0, retained.stderr);
+    assert.equal(fs.existsSync(retainedOutput), false, `${name} 已有 Go 时不能读取 pin 或触发 setup-go`);
+    const bootstrap = spawnSync("/bin/bash", ["-e", "-c", run], { cwd: ROOT, encoding: "utf8", env: { ...environment, ...inputs, PATH: nodeOnly, GITHUB_OUTPUT: bootstrapOutput } });
+    assert.equal(bootstrap.status, 0, bootstrap.stderr);
+    assert.equal(fs.readFileSync(bootstrapOutput, "utf8"), pinnedOutput, `${name} 无 Go 时按 pin 供给启动器`);
+  }
 });
 
 test('适配器仅供给基础运行时，按需准备统一交给 gate',()=>{
