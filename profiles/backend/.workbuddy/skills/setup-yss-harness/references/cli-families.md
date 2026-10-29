@@ -12,7 +12,7 @@
 
 当前新实例使用项目计划 v3、Bundle4、metadata4、identity2、Profile3、governance2；JSON envelope 和运行协议仍为 v1。不要把程序安装或 Tracker 的计划版本混为项目计划。旧统一实例直接 sync 会返回 `GOVERNANCE_MIGRATION_REQUIRED`；不支持的迁移保留 `MIGRATION_UNSUPPORTED` 或实际身份错误。历史源码 SHA 和旧 CLI 版本只描述其自身，不充当当前统一 CLI 来源。
 
-原生身份绑定 Profile、协议、模板提交、Bundle/manifest 摘要和受管基线。迁移保存原身份、政策、历史记录及其摘要；历史批准只按原语义读取，不成为当前执行或批准资格。治理变化超出已有授权时先展示影响，不以普通 setup 推定未知决定。
+原生身份绑定 Profile、安装方式、协议、模板提交、Bundle/manifest 摘要和受管基线。新建和接管默认 governed；独立技能显式选择 `--installation skills`，`--full` 不切换方式。sync 保持原安装方式，转换使用显式 `migrate --installation skills|governed` 保存计划。迁移保存原身份、政策、历史记录及其摘要；历史批准只按原语义读取，不成为当前执行或批准资格。治理变化超出已有授权时先展示影响，不以普通 setup 推定未知决定。
 
 `init` 默认直接初始化，本技能使用 `--plan --out` 后 `--apply --plan-file`。`attach/sync/skills ensure/assets ensure` 默认预演，写入使用保存计划。项目状态通过不带 `--apply` 的 `recover/rollback` 查询，写入才加 `--apply`；当前没有迁移状态、恢复、回退子命令。未完成治理迁移用 `recover --apply`；已完成治理迁移不支持降级，保留 `DOWNGRADE_UNSUPPORTED`。程序恢复仍使用独立的 `update` 合同。
 

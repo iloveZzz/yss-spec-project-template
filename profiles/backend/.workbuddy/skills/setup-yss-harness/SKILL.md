@@ -17,8 +17,8 @@ description: 安装或升级 YSS CLI，并初始化、接管、同步或迁移�
 
 | 工程现状 | 路线 |
 |---|---|
-| 不存在或空目录，用户要求新建 | `init` 保存计划后应用 |
-| 普通工程，无 YSS metadata 或身份 | `attach` 保存计划后应用 |
+| 不存在或空目录，用户要求新建 | 默认 `governed`，仅需独立技能时选择 `skills`；`init` 保存计划后应用 |
+| 普通工程，无 YSS metadata 或身份 | 默认 `governed`，仅需独立技能时选择 `skills`；`attach` 保存计划后应用 |
 | 当前 Spec/Backend 原生实例（metadata4 / identity2） | `doctor/diff` 后按需 `sync` |
 | 受支持的旧统一实例（metadata3 / identity1 / policy1） | 显式 `migrate --plan` / `migrate --apply`；不能先 sync |
 | 仅旧 npm 家族 metadata、Design、Frontend、旧 dev 或退役插件 | 当前执行器不提供迁移；保留原件，历史维护按固定旧执行器处理 |
@@ -26,7 +26,7 @@ description: 安装或升级 YSS CLI，并初始化、接管、同步或迁移�
 | 同来源资源缺口 | 当前 Profile 的 `skills/assets list` → `ensure` |
 | 模板源、矛盾身份、既有实例缺必需身份、未知 schema | 项目分支只诊断并保留现场 |
 
-已有合法身份沿用登记 Profile。新建或接管按用途推荐 `spec/backend`，缺用途决定时询问，不能用框架、目录名或前后端标签猜 Profile；后端交付插件绑定的是 `spec`。
+已有合法身份沿用登记 Profile 和安装方式。新建和接管未指定安装方式时采用 `governed`；仅需独立技能时选择 `skills`，命令显式传入选择。`--full` 只扩大所选方式的资源集合，不切换安装方式。skills 工程不要求治理身份、Context、Ticket 或 checkpoint；安装治理能力不授予阶段批准。新建或接管按用途推荐 `spec/backend`，缺用途决定时询问，不能用框架、目录名或前后端标签猜 Profile；后端交付插件绑定的是 `spec`。
 
 ## 操作分流
 

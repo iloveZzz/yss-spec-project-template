@@ -8,7 +8,9 @@
 
 用户指定工程并要求 `setup` 时，`setup-yss-harness` 在有效授权内完成 CLI 就绪与受管模板对齐所选固定版本；用户仅要求程序安装或升级时执行程序分支。程序和项目分别取证、规划、应用及验收，不逐步重复确认已有决定。新建或接管的用途、Profile 或实质取舍缺失时先调查，再补决定。
 
-已有合法身份沿用登记 Profile；没有身份时按用途推荐 `spec/backend`，不能用框架或目录名猜 Profile。metadata4 / identity2 原生实例走 `sync`；仅 Spec/Backend 的 metadata3 / identity1 / policy1 实例可显式 `migrate --plan/--apply`。仅旧 npm 家族 metadata、Design、Frontend、旧 dev 和退役插件不提供当前迁移，原件保留，不承诺未经验证的分段转换。普通工程走 `attach`，空目标走 `init`；模板源、矛盾身份、既有实例缺必需身份或未知 schema 的项目分支只诊断。当前支持的插件 binding 先核验其公开接口对实际代际的支持。仅要求检查或评估时保持只读，不执行应用或恢复写入。
+已有合法身份沿用登记 Profile 和安装方式；没有身份时按用途推荐 `spec/backend`，不能用框架或目录名猜 Profile。metadata4 / identity2 原生实例走 `sync`；仅 Spec/Backend 的 metadata3 / identity1 / policy1 实例可显式 `migrate --plan/--apply`。仅旧 npm 家族 metadata、Design、Frontend、旧 dev 和退役插件不提供当前迁移，原件保留，不承诺未经验证的分段转换。普通工程走 `attach`，空目标走 `init`；模板源、矛盾身份、既有实例缺必需身份或未知 schema 的项目分支只诊断。当前支持的插件 binding 先核验其公开接口对实际代际的支持。仅要求检查或评估时保持只读，不执行应用或恢复写入。
+
+新建和接管默认 governed；仅需独立技能时显式选择 `--installation skills`，不要求治理身份、Context、Ticket 或 checkpoint。`--full` 只扩大所选方式的资源集合，不切换安装方式。sync 保持原选择，安装方式转换须显式 `migrate --installation skills|governed` 保存并应用计划；未指定 installation 的 migrate 继续原治理迁移语义。治理安装不授予阶段批准。
 
 可定制资产的政策允许处置能保留本地定制且不引入新业务决定时，Agent 可形成候选及绑定决议，再重新规划和验证；干净合并也需合法决议。无法证明保留定制、存在实质取舍或新增业务决定时展示差异并询问。固定来源资产、生成锁、身份与 binding 仍遵守下文各自规则。
 

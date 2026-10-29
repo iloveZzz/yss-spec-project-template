@@ -13,16 +13,16 @@
 | 仅旧 npm 家族 metadata、Design、Frontend、旧 dev 或退役插件 | 当前执行器不提供迁移；保留原件，历史维护用匹配的固定旧执行器 |
 | 模板源、多个矛盾身份、既有实例缺必需身份、未知 schema 或来源 | 只诊断；不能重新 init、attach 或删 metadata 绕过 |
 
-新建/接管需明确 Profile、目标与工程范围；信息不足先调查，再补缺失决定。初始化治理资源不授予产品阶段批准或生产脚手架权限；实现工程接入与脚手架仍消费相应生命周期合同。
+新建/接管需明确 Profile、目标与工程范围；信息不足先调查，再补缺失决定。未指定安装方式时采用 governed，仅需独立技能时显式选择 skills；命令显式传入选择。skills 安装包含技能及必要参考资产，不要求治理身份、Context、Ticket 或 checkpoint。`--full` 只扩大所选方式的资源集合，已有实例 sync 保持安装方式，转换须显式 `migrate --installation skills|governed`。初始化治理资源不授予产品阶段批准或生产脚手架权限；实现工程接入与脚手架仍消费相应生命周期合同。
 
 对可读原生实例先 `doctor/diff` 并记录已有失败、dirty/untracked、HEAD/index/gitlink 和受管文件定制。用 `bundle inspect --profile <Profile> --json` 核对固定二进制内来源；真实业务工程先在隔离副本验证。当前项目保存计划 v3、metadata4、Bundle4、identity2、Profile3、governance2；envelope 和运行协议仍为 v1。旧未完成事务按其对应固定执行器处理，不能猜旧日志。仅要求检查时不生成应用或恢复写入。
 
 ## 新建与接管
 
 ```text
-<固定yss> init --profile <Profile> --root <目标根> --project-name <名称> --plan --out <项目外新计划.json> --json
+<固定yss> init --profile <Profile> --installation <skills或governed> --root <目标根> --project-name <名称> --plan --out <项目外新计划.json> --json
 <固定yss> init --profile <Profile> --root <目标根> --apply --plan-file <计划.json> --json
-<固定yss> attach --profile <Profile> --root <普通工程根> --plan --out <项目外新计划.json> --json
+<固定yss> attach --profile <Profile> --installation <skills或governed> --root <普通工程根> --plan --out <项目外新计划.json> --json
 <固定yss> attach --profile <Profile> --root <普通工程根> --apply --plan-file <计划.json> --json
 ```
 
