@@ -5,6 +5,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createHash } from 'node:crypto';
 
 export const PIN_FILE = '.template-source/distribution/yss-cli-pin.json';
 const FIELDS = ['schema_version', 'repository', 'version', 'commit', 'go_version', 'build', 'binaries'];
@@ -45,6 +46,21 @@ export function readYssCliPin(root = defaultRoot()) {
   return validateYssCliPin(pin);
 }
 
+/** A verification batch exports its exact pin; consumers never query latest. */
+export function readNativeYssPin(root = defaultRoot(), environment = process.env) {
+  const file = environment.YSS_NATIVE_PIN_FILE;
+  if (!file) {
+    if (fs.existsSync(path.join(root, PIN_FILE))) fail('缺少本批固定输入；先运行 ensure-native-yss 默认取得最新正式 Release，或显式 --pin/--pin-file 复现历史输入');
+    return null;
+  }
+  if (!path.isAbsolute(file)) fail('YSS_NATIVE_PIN_FILE 必须是绝对普通文件');
+  const stat = fs.lstatSync(file);
+  if (!stat.isFile() || stat.isSymbolicLink() || stat.nlink !== 1 || stat.size > 65536) fail('YSS_NATIVE_PIN_FILE 必须是受限普通文件');
+  const bytes = fs.readFileSync(file);
+  if (createHash('sha256').update(bytes).digest('hex') !== environment.YSS_NATIVE_PIN_SHA256) fail('本批 yss pin 摘要漂移或未固定');
+  return validateYssCliPin(JSON.parse(bytes));
+}
+
 /**
  * 核对二进制摘要与固定文件一致。本地联调自己构建的二进制时，用 YSS_NATIVE_BINARY_OVERRIDE=1 显式覆盖；
  * 结果标记 pinned:false，不能当作固定版本通过。CI 里不接受覆盖。
@@ -59,7 +75,8 @@ export function verifyPinnedBinary({ digest, pin, platform = platformKey(), envi
   }
   if (!expected) fail(`yss-cli 固定文件没有登记 ${platform} 平台的二进制；本地联调自己构建的二进制请设置 YSS_NATIVE_BINARY_OVERRIDE=1`);
   if (expected !== digest) fail(`yss 二进制与固定版本不符：固定 ${pin.version}（yss-cli ${pin.commit.slice(0, 8)}）在 ${platform} 的 sha256 是 ${expected}，实际 ${digest}；本地联调自己构建的二进制请设置 YSS_NATIVE_BINARY_OVERRIDE=1`);
-  return { pinned: true, version: pin.version, commit: pin.commit, platform };
+  return { pinned: true, version: pin.version, commit: pin.commit, platform,
+    ...(pin.build.startsWith('regression-only:') ? {purpose:'regression-only',official_installation:false} : {}) };
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

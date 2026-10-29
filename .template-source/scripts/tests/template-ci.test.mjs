@@ -36,11 +36,11 @@ function commit(cwd) {
 }
 function fixture(t,{bundleSchemaVersion=2}={}) {
   if(!fixtureEnvironments.has(t)) {
-    const keys=['YSS_NATIVE_BINARY','YSS_NATIVE_BINARY_SHA256','YSS_NATIVE_SOURCE_ROOT',...releaseSourceKeys],previous=Object.fromEntries(keys.map(key=>[key,process.env[key]]));
+    const keys=['YSS_NATIVE_BINARY','YSS_NATIVE_BINARY_SHA256','YSS_NATIVE_SOURCE_ROOT','YSS_NATIVE_PIN_FILE','YSS_NATIVE_PIN_SHA256',...releaseSourceKeys],previous=Object.fromEntries(keys.map(key=>[key,process.env[key]]));
     fixtureEnvironments.add(t);
     t.after(()=>{for(const [key,value]of Object.entries(previous)){if(value===undefined)delete process.env[key];else process.env[key]=value;}fixtureEnvironments.delete(t);});
   }
-  for(const key of releaseSourceKeys)delete process.env[key];
+  for(const key of [...releaseSourceKeys,'YSS_NATIVE_PIN_FILE','YSS_NATIVE_PIN_SHA256'])delete process.env[key];
   const base = mkdtempSync(path.join(os.tmpdir(), 'yss-release-test-'));
   t.after(() => rmSync(base, { recursive: true, force: true }));
   const cli=path.join(base,'native-source'),repo=path.join(base,'template');mkdirSync(cli);mkdirSync(repo);
@@ -73,17 +73,18 @@ test('synthetic 固定源 Go 消费者真实编译、复制和公开导出产生
   const f = fixture(t);
   assert.ok(releaseSourceKeys.every(key=>process.env[key]===undefined));
   t.after(()=>assert.deepEqual(Object.fromEntries(releaseSourceKeys.map(key=>[key,process.env[key]])),inherited));
-  // Three-profile publication algorithms are exercised with a synthetic Go
+  // Both current Profile publication algorithms are exercised with a synthetic Go
   // producer. 旧实例恢复矩阵已从发布门禁移除，平台验收由维护者人工记录。
   const sources=collectReleaseSources({root:f.repo,commit:f.sha}),records=[];
+  assert.deepEqual(sources.entries.map(source=>source.family),['spec','backend']);
   const run=(file,args,cwd,env)=>{const observed=spawnSync(file,args,{cwd,env,encoding:'utf8'});records.push({file,args,cwd,exit_code:observed.status});return observed;};
   for(const source of sources.entries){const artifact=produceCliArtifact({root:f.repo,source,directory:path.join(f.base,'algorithm-fixture',source.family),run});assert.equal(verifyInstalledCliMigration({artifact,directory:path.join(f.base,'upgrade-fixture',source.family),run}).status,'passed');}
-  assert.equal(records.filter(row=>row.args[0]==='bundle'&&row.args[1]==='export').length,3);assert.ok(records.every(row=>row.exit_code===0));
+  assert.equal(records.filter(row=>row.args[0]==='bundle'&&row.args[1]==='export').length,2);assert.ok(records.every(row=>row.exit_code===0));
   const result = verifyTemplateRelease({ root: f.repo, commit: f.sha, output: f.output,cliFamily:'spec' });
   assert.equal(result.status, 'passed');
   const receiptFile=path.join(realpathSync(f.output),'full-verification/consumption/receipt.json'),receipt=JSON.parse(readFileSync(receiptFile));
   const receiptOptions={root:f.repo,receiptFile,expectedSourcesManifest:sources,requireLiveConsumers:false};
-  assert.equal(validateReceipt(receipt,receiptOptions).artifacts.length,3);
+  assert.equal(validateReceipt(receipt,receiptOptions).artifacts.length,2);
   for(const mutate of [r=>r.artifacts.pop(),r=>r.artifacts.push(structuredClone(r.artifacts[0])),r=>r.artifacts[1]=structuredClone(r.artifacts[0]),r=>r.sources_manifest.entries[0].template_commit='0'.repeat(40)]){
     const altered=structuredClone(receipt);mutate(altered);assert.throws(()=>validateReceipt(altered,receiptOptions));
   }
@@ -105,7 +106,7 @@ test('真实发布报告兼容 v1 baseline，并拒绝删除 syntax/终检、任
  const verify=()=>validateBaselineReport({root:f.repo,base:f.sha,reportFile:file,expectedDigest:hash(readFileSync(file))});
  const initial=verify();assert.equal(initial.valid,true,initial.reasons.join('; '));
  outer.error='outer integration consumer failure';writeFileSync(file,JSON.stringify(outer));assert.equal(verify().valid,false);delete outer.error;
- const specSources=outer.sources_manifest;outer.cli_families=['spec','design','backend'];outer.sources_manifest=collectReleaseSources({root:f.repo,commit:f.sha});outer.cli_integrations=[{family:'spec',status:'failed'}];writeFileSync(file,JSON.stringify(outer));const missingIntegration=verify();assert.equal(missingIntegration.valid,false);assert.match(missingIntegration.reasons.join('; '),/集成|integration/);
+ const specSources=outer.sources_manifest;outer.cli_families=['spec','backend'];outer.sources_manifest=collectReleaseSources({root:f.repo,commit:f.sha});outer.cli_integrations=[{family:'spec',status:'failed'}];writeFileSync(file,JSON.stringify(outer));const missingIntegration=verify();assert.equal(missingIntegration.valid,false);assert.match(missingIntegration.reasons.join('; '),/集成|integration/);
  outer.cli_families=['spec'];outer.sources_manifest=specSources;delete outer.cli_integrations;writeFileSync(file,JSON.stringify(outer));
  // Model the old runner's separately logged syntax/terminal validators.
  full.schema_version=1;full.plan.commands=full.plan.commands.filter(row=>row.group==='fixture');full.plan.syntax_files=[];
@@ -202,7 +203,7 @@ test('固定发行拒绝缺失、脏树、错误身份或实际提交错配的�
 
 test('发行验证在有 yss-cli 固定文件时只接受固定的二进制与固定的源码提交，本地覆盖不能通过',t=>{
   const f=fixture(t),digest=hash(readFileSync(process.env.YSS_NATIVE_BINARY)),cliCommit=git(f.cli,'rev-parse','HEAD');
-  const writePin=(overrides={})=>put(f.repo,PIN_FILE,JSON.stringify({schema_version:1,repository:'https://example.test/yss-cli.git',version:'1.3.5',commit:cliCommit,go_version:'1.27.1',build:'go build',binaries:{[platformKey()]:{sha256:digest}},...overrides}));
+  const writePin=(overrides={})=>{put(f.repo,PIN_FILE,JSON.stringify({schema_version:1,repository:'https://example.test/yss-cli.git',version:'1.3.5',commit:cliCommit,go_version:'1.27.1',build:'go build',binaries:{[platformKey()]:{sha256:digest}},...overrides}));process.env.YSS_NATIVE_PIN_FILE=path.join(f.repo,PIN_FILE);process.env.YSS_NATIVE_PIN_SHA256=hash(readFileSync(process.env.YSS_NATIVE_PIN_FILE));};
   const previous=process.env.YSS_NATIVE_BINARY_OVERRIDE;t.after(()=>{if(previous===undefined)delete process.env.YSS_NATIVE_BINARY_OVERRIDE;else process.env.YSS_NATIVE_BINARY_OVERRIDE=previous;});
   delete process.env.YSS_NATIVE_BINARY_OVERRIDE;
   writePin();

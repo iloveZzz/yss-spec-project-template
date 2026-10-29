@@ -7,7 +7,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { STEPS, checkNodeEngines, runGate, satisfiesNodeRange, validateOptions } from "../scripts/lib/ci-gate.mjs";
 import {loadVerificationProfiles} from '../scripts/lib/template-verification.mjs';
-import { readYssCliPin } from "../.template-source/scripts/lib/yss-cli-pin.mjs";
+import { readYssCliPin, platformKey } from "../.template-source/scripts/lib/yss-cli-pin.mjs";
+import { createHash } from 'node:crypto';
 
 import {selectVerificationInputs} from '../.template-source/scripts/lib/template-verification-worker.mjs';
 import {compileExpectedVerificationPlan,validateVerificationReport} from '../.template-source/scripts/lib/verification-report-validator.mjs';
@@ -459,6 +460,57 @@ test("ci-setup：固定 Go 构建提交内资产，不在 bootstrap 重生成 Bu
   assert.equal(fs.readFileSync(path.join(result.checkout, "internal/bundle/assets/bundles.json.gz"), "utf8"), "committed bundle bytes\n");
 });
 
+test('ci-setup latest：历史 pin Go A 不限制新源码 Go B，已有 B 不降级且构建子进程使用精确工具链', t => {
+  const f = setupFixture(t), target = '1.28.2', toolchain = path.join(f.directory, 'go-toolchain');
+  assert.notEqual(f.pin.go_version, target);
+  for (const ref of ['.template-source/scripts/ensure-native-yss.mjs', '.template-source/scripts/lib/ensure-native-yss.mjs']) {
+    fs.copyFileSync(path.join(ROOT, ref), path.join(f.root, ref));
+  }
+  fs.mkdirSync(path.join(toolchain, 'bin'), { recursive: true });
+  const bootstrapGo = `#!/usr/bin/env bash
+if [[ "$*" == 'env GOVERSION' ]]; then echo "$TEST_GO_VERSION"; exit 0; fi
+if [[ "$*" == version ]]; then echo "go version $TEST_GO_VERSION darwin/arm64"; exit 0; fi
+if [[ "$*" == 'env GOROOT' && "$GOTOOLCHAIN" == "go$TEST_RELEASE_GO_VERSION" ]]; then echo "$TEST_TOOLCHAIN_ROOT"; exit 0; fi
+exit 43
+`;
+  fs.writeFileSync(path.join(f.bin, 'go'), bootstrapGo, { mode: 0o755 });
+  fs.writeFileSync(path.join(toolchain, 'bin/go'), '#!/usr/bin/env bash\necho "go version go$TEST_RELEASE_GO_VERSION darwin/arm64"\n', { mode: 0o755 });
+  fs.writeFileSync(path.join(f.bin, 'python3'), '#!/usr/bin/env bash\nif [[ "$1" == -c ]]; then echo 3.12; else echo resolve >> "$TEST_RESOLVER_LOG"; printf "%s\\n" "$TEST_RELEASE_JSON"; fi\n', { mode: 0o755 });
+  fs.writeFileSync(path.join(f.cli, 'go.mod'), `module fixture\ngo ${target}\n`);
+  fs.mkdirSync(path.join(f.cli, 'docs'));
+  const lock = JSON.stringify({ schemaVersion: 5 });
+  fs.writeFileSync(path.join(f.cli, 'docs/source-lock.json'), lock);
+  const checkCompiler = `import assert from 'node:assert/strict';import {execFileSync} from 'node:child_process';
+assert.equal(process.env.GOTOOLCHAIN,'local');
+assert.equal(execFileSync('go',['version'],{encoding:'utf8'}).trim(),'go version go'+process.env.TEST_RELEASE_GO_VERSION+' darwin/arm64');
+`;
+  fs.writeFileSync(path.join(f.cli, 'tools/fetch-bundle.mjs'), checkCompiler);
+  fs.writeFileSync(path.join(f.cli, 'tools/build-candidate.mjs'), `${checkCompiler}import fs from 'node:fs';import path from 'node:path';
+const out=process.argv[process.argv.indexOf('--out')+1];fs.mkdirSync(out);fs.writeFileSync(path.join(out,'yss'),'release-binary');
+`);
+  sh(f.cli, 'add', '-A');sh(f.cli, 'commit', '-qm', 'new release needs newer Go');
+  const commit = sh(f.cli, 'rev-parse', 'HEAD'), hash = bytes => createHash('sha256').update(bytes).digest('hex');
+  const release = {status:'ok',result:{version:'9.9.9',commit,sourceLockSha256:hash(lock),binaries:{[platformKey()]:{sha256:hash('release-binary')}}}};
+  const input = path.join(f.directory, 'native.json');
+  fs.writeFileSync(input, JSON.stringify({schema_version:1,python:'none',go:false,native_cli:true,tooling:false,vue:false}));
+  const pinFile = path.join(f.root, '.template-source/distribution/yss-cli-pin.json'), pinBytes = fs.readFileSync(pinFile);
+  for (const current of [f.pin.go_version, target]) {
+    const envFile = path.join(f.directory, `env-${current}`), resolverLog = path.join(f.directory, `resolve-${current}`);
+    const result = f.run(current, { YSS_PIN_CACHE:path.join(f.directory, `cache-${current}`), YSS_CI_ENV_FILE:envFile,
+      TEST_RELEASE_GO_VERSION:target, TEST_TOOLCHAIN_ROOT:toolchain, TEST_RELEASE_JSON:JSON.stringify(release), TEST_RESOLVER_LOG:resolverLog,
+      GIT_CONFIG_COUNT:'1', GIT_CONFIG_KEY_0:`url.file://${f.cli}.insteadOf`, GIT_CONFIG_VALUE_0:'https://github.com/iloveZzz/yss-cli.git',
+    }, ['--requirements-file', input]);
+    assert.equal(result.status, 0, result.stderr);
+    const exported = Object.fromEntries(fs.readFileSync(envFile, 'utf8').trim().split('\n').map(line => [line.slice(0,line.indexOf('=')),line.slice(line.indexOf('=')+1)]));
+    const batch = JSON.parse(fs.readFileSync(exported.YSS_NATIVE_PIN_FILE));
+    assert.equal(batch.go_version, target);assert.equal(batch.commit, commit);
+    assert.equal(exported.YSS_NATIVE_BINARY_SHA256, hash('release-binary'));
+    assert.equal(fs.readFileSync(resolverLog,'utf8'), 'resolve\n', 'latest 只解析一次');
+    assert.deepEqual(fs.readFileSync(pinFile), pinBytes, '历史 pin 不改写');
+    assert.equal(fs.readFileSync(path.join(f.bin,'go'),'utf8'), bootstrapGo, '已有编译器不改写');
+  }
+});
+
 test("ci-setup：本机非 dry-run 拒绝执行，非法参数退出 2", () => {
   const local = spawnSync(CI_SETUP, [], { encoding: "utf8", env: { ...process.env, CI: "", YSS_CI_ALLOW_LOCAL: "" } });
   assert.equal(local.status, 2);
@@ -489,19 +541,25 @@ test('需求文件仅准备所选工具且拒绝非法结构、路径和混用',
  const schema=run({...none,python:'jsonschema'});assert.equal(schema.status,0,schema.stderr);assert.match(schema.stdout,/jsonschema==4\.23\.0/);assert.doesNotMatch(schema.stdout,/构建 yss|pnpm|作者工具链|Go：/);
  const runtime=run({...none,python:'runtime'});assert.equal(runtime.status,0,runtime.stderr);assert.match(runtime.stdout,/Python/);assert.doesNotMatch(runtime.stdout,/pip install.*jsonschema/);
  const vue=run({...none,vue:true});assert.equal(vue.status,0,vue.stderr);assert.match(vue.stdout,/原型作者工具链/);assert.doesNotMatch(vue.stdout,/pnpm --dir \.template-source\/tooling\/node install|Go：/);
- const native=run({...none,native_cli:true});assert.equal(native.status,0,native.stderr);assert.match(native.stdout,/构建 yss/);assert.match(native.stdout,/Go：/);assert.doesNotMatch(native.stdout,/pnpm --dir \.template-source\/tooling\/node install/);
+ const native=run({...none,native_cli:true});assert.equal(native.status,0,native.stderr);assert.match(native.stdout,/最新正式 Release/);assert.match(native.stdout,/ensure-native-yss\.mjs --json/);assert.match(native.stdout,/Go：/);assert.doesNotMatch(native.stdout,/pnpm --dir \.template-source\/tooling\/node install/);
  for(const bad of ['{',{}, {...none,native_cli:'false'},{...none,unknown:'$(touch sentinel)'}])assert.notEqual(run(bad).status,0);
  for(const args of [['--no-python'],['--toolchain'],['--yss-commit','pin']])assert.notEqual(run(none,args).status,0);
  assert.notEqual(spawnSync(CI_SETUP,['--dry-run','--requirements-file','relative.json'],{encoding:'utf8'}).status,0);
  const f=setupFixture(t),input=path.join(f.directory,'native.json');fs.writeFileSync(input,JSON.stringify({...none,native_cli:true}));
- assert.equal(f.run(f.pin.go_version,{},['--requirements-file',input]).status,42);
- assert.match(f.run('0.0.1',{},['--requirements-file',input]).stderr,/需要精确 Go/);
+ fs.writeFileSync(path.join(f.root,'.template-source/scripts/ensure-native-yss.mjs'),'console.error("latest-resolver-reached");process.exit(42);');
+ const selected=f.run(f.pin.go_version,{},['--requirements-file',input]);
+ assert.equal(selected.status,1);assert.match(selected.stderr,/latest-resolver-reached/);
+ assert.match(f.run('0.0.1',{},['--requirements-file',input]).stderr,/latest-resolver-reached/);
 });
 
 test('准备只接受受控导出数据，shell 字符串不执行',async t=>{
  const f=fixture(t),sentinel=path.join(f.root,'sentinel'),vue=path.join(f.directory,'$(touch sentinel) `touch sentinel`');fs.mkdirSync(vue);
  const run=async(value)=>{const reportDir=path.join(f.directory,'export-'+Math.random());return runGate({verification,root:f.root,mode:'push',reportDir,prepareTools:true,env:{...process.env,...f.env,STUB_LOG:f.stubLog,SETUP_ENV:value},stdout:sink(),stderr:sink()});};
  const safe=await run('YSS_VUE_TOOLCHAIN='+vue);assert.equal(safe.exitCode,0,JSON.stringify(safe.report));assert.equal(fs.existsSync(sentinel),false);
+ const pinFile=path.join(f.directory,'batch-pin.json');fs.writeFileSync(pinFile,'fixed pin bytes');
+ const pinHash=createHash('sha256').update(fs.readFileSync(pinFile)).digest('hex');
+ assert.equal((await run(`YSS_NATIVE_PIN_FILE=${pinFile}\nYSS_NATIVE_PIN_SHA256=${pinHash}`)).exitCode,0);
+ assert.equal((await run(`YSS_NATIVE_PIN_FILE=${pinFile}\nYSS_NATIVE_PIN_SHA256=${'0'.repeat(64)}`)).exitCode,1);
  for(const value of ['EVIL=bad','YSS_VUE_TOOLCHAIN=relative','YSS_NATIVE_BINARY_SHA256=bad','YSS_VUE_TOOLCHAIN=/does-not-exist','YSS_VUE_TOOLCHAIN='+vue+'\nYSS_VUE_TOOLCHAIN='+vue]){const result=await run(value);assert.equal(result.exitCode,1,value);assert.equal(result.report.steps.find(x=>x.id==='verify-template').status,'skipped');}
  assert.equal(fs.existsSync(sentinel),false);
 });

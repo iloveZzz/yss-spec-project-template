@@ -256,16 +256,16 @@ function preparationChanges(root,before,after,needs) {
 function readCiSetupEnvironment(file) {
   if(!existsSync(file))return {};
   if(!lstatSync(file).isFile())throw new TypeError('setup 环境必须为普通文件');
-  const allowed=new Set(['YSS_NATIVE_SOURCE_ROOT','YSS_NATIVE_BINARY','YSS_NATIVE_BINARY_SHA256','YSS_VUE_TOOLCHAIN']),values={};
+  const allowed=new Set(['YSS_NATIVE_SOURCE_ROOT','YSS_NATIVE_BINARY','YSS_NATIVE_BINARY_SHA256','YSS_NATIVE_PIN_FILE','YSS_NATIVE_PIN_SHA256','YSS_VUE_TOOLCHAIN']),values={};
   for(const line of readFileSync(file,'utf8').split(/\r?\n/).filter(Boolean)){
     const at=line.indexOf('='),key=line.slice(0,at),value=line.slice(at+1);
     if(at<1||!allowed.has(key)||Object.hasOwn(values,key)||!value||value.includes('\0'))throw new TypeError('setup 环境含未知、重复或非法变量');
-    if(key==='YSS_NATIVE_BINARY_SHA256'){
+    if(key.endsWith('_SHA256')){
       if(!/^[a-f0-9]{64}$/.test(value))throw new TypeError('setup 二进制摘要无效');
     }else{
       if(!path.isAbsolute(value))throw new TypeError('setup 路径必须为绝对路径');
       const stat=lstatSync(value);
-      if(key==='YSS_NATIVE_BINARY'?!stat.isFile():!stat.isDirectory())throw new TypeError('setup 路径类型无效');
+      if(['YSS_NATIVE_BINARY','YSS_NATIVE_PIN_FILE'].includes(key)?!stat.isFile():!stat.isDirectory())throw new TypeError('setup 路径类型无效');
     }
     values[key]=value;
   }
@@ -273,6 +273,9 @@ function readCiSetupEnvironment(file) {
   if(native.some(key=>Object.hasOwn(values,key))){
     if(native.some(key=>!values[key]))throw new TypeError('setup 原生环境缺字段');
     if(createHash('sha256').update(readFileSync(values.YSS_NATIVE_BINARY)).digest('hex')!==values.YSS_NATIVE_BINARY_SHA256)throw new TypeError('setup 二进制摘要不匹配');
+  }
+  if(values.YSS_NATIVE_PIN_FILE||values.YSS_NATIVE_PIN_SHA256){
+    if(!values.YSS_NATIVE_PIN_FILE||!values.YSS_NATIVE_PIN_SHA256||createHash('sha256').update(readFileSync(values.YSS_NATIVE_PIN_FILE)).digest('hex')!==values.YSS_NATIVE_PIN_SHA256)throw new TypeError('setup 本批 pin 缺失或摘要不匹配');
   }
   return values;
 }

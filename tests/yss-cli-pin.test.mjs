@@ -3,12 +3,14 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
-import { PIN_FILE, platformKey, readYssCliPin, validateYssCliPin, verifyPinnedBinary } from '../.template-source/scripts/lib/yss-cli-pin.mjs';
+import { PIN_FILE, platformKey, readYssCliPin, readNativeYssPin, validateYssCliPin, verifyPinnedBinary } from '../.template-source/scripts/lib/yss-cli-pin.mjs';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 const SHA_A = 'a'.repeat(64);
 const SHA_B = 'b'.repeat(64);
+const sha = (bytes) => createHash('sha256').update(bytes).digest('hex');
 const good = () => ({
   schema_version: 1,
   repository: 'https://github.com/iloveZzz/yss-cli.git',
@@ -67,6 +69,50 @@ test('读取固定文件：缺文件返回 null，坏 JSON 与坏结构抛错', 
   assert.throws(() => readYssCliPin(root), /commit/);
   fs.writeFileSync(path.join(root, PIN_FILE), JSON.stringify(good()));
   assert.equal(readYssCliPin(root).version, '1.3.5');
+});
+
+test('本批 pin 按 raw bytes 摘要固定；缺批次不能静默使用仓库旧 pin', t => {
+  const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'yss-batch-pin-')));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  fs.mkdirSync(path.join(root, path.dirname(PIN_FILE)), { recursive: true });
+  fs.writeFileSync(path.join(root, PIN_FILE), JSON.stringify(good()));
+  const file = path.join(root, 'batch.json'), bytes = JSON.stringify({ ...good(), version: '9.9.9' }, null, 2) + '\n';
+  fs.writeFileSync(file, bytes);
+  const environment = { YSS_NATIVE_PIN_FILE: file, YSS_NATIVE_PIN_SHA256: sha(bytes) };
+  assert.equal(readNativeYssPin(root, environment).version, '9.9.9');
+  assert.throws(() => readNativeYssPin(root, {}), /先运行.*ensure-native-yss/);
+  const withoutPin = path.join(root, 'without-pin'); fs.mkdirSync(withoutPin);
+  assert.equal(readNativeYssPin(withoutPin, {}), null, '通用 fixture 没有仓库 pin 时仍返回 null');
+  assert.throws(() => readNativeYssPin(root, { YSS_NATIVE_PIN_FILE: file }), /摘要漂移或未固定/);
+  fs.appendFileSync(file, ' ');
+  assert.throws(() => readNativeYssPin(root, environment), /摘要漂移或未固定/, '语义不变的字节漂移也拒绝，不能回退仓库 pin');
+});
+
+test('本批 pin 拒绝相对路径、目录、符号链接、硬链接与超限文件，并继续执行原 schema 校验', t => {
+  const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'yss-batch-pin-')));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const file = path.join(root, 'pin.json'), bytes = JSON.stringify(good());
+  fs.writeFileSync(file, bytes);
+  const read = (candidate, digest = sha(bytes)) => readNativeYssPin(root, { YSS_NATIVE_PIN_FILE: candidate, YSS_NATIVE_PIN_SHA256: digest });
+  assert.throws(() => read('pin.json'), /绝对普通文件/);
+  assert.throws(() => read(root), /受限普通文件/);
+  const link = path.join(root, 'link.json'); fs.symlinkSync(file, link);
+  assert.throws(() => read(link), /受限普通文件/);
+  fs.unlinkSync(link); fs.linkSync(file, link);
+  assert.throws(() => read(file), /受限普通文件/);
+  fs.unlinkSync(link);
+  const large = bytes + ' '.repeat(65536); fs.writeFileSync(file, large);
+  assert.throws(() => read(file, sha(large)), /受限普通文件/);
+  const invalid = JSON.stringify({ ...good(), commit: 'not-a-commit' }); fs.writeFileSync(file, invalid);
+  assert.throws(() => read(file, sha(invalid)), /commit/);
+});
+
+test('仅回归构建匹配批次摘要仍不声明正式安装资格，摘要不符照常拒绝', () => {
+  const pin = { ...good(), build: 'regression-only:source-lock:' + SHA_B };
+  assert.deepEqual(verifyPinnedBinary({ digest: SHA_A, pin, platform: 'darwin-arm64', environment: {} }), {
+    pinned: true, version: '1.3.5', commit: 'c'.repeat(40), platform: 'darwin-arm64', purpose: 'regression-only', official_installation: false,
+  });
+  assert.throws(() => verifyPinnedBinary({ digest: SHA_B, pin, platform: 'darwin-arm64', environment: {} }), /与固定版本不符/);
 });
 
 test('命令行取值供 shell 脚本使用，字段不存在时失败', () => {

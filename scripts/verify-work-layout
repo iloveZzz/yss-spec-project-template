@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { parseArgs } from 'node:util';
-import { readYssCliPin } from '../.template-source/scripts/lib/yss-cli-pin.mjs';
+import { readNativeYssPin } from '../.template-source/scripts/lib/yss-cli-pin.mjs';
 
 const { values } = parseArgs({ options: {
   root: { type: 'string', default: path.resolve(import.meta.dirname, '..') },
@@ -80,9 +80,9 @@ function scan(repoRoot, repository) {
 }
 scan(root, '.');
 // CI 的 CLI 来源用于准备校验工具；模板布局仅在显式指定时扫描独立 CLI。
-const pin = readYssCliPin(root);
 const cliRoot = values['cli-root'];
 if (cliRoot) {
+  const pin = readNativeYssPin(root);
   if (pin) {
     if (!path.isAbsolute(cliRoot) || fs.lstatSync(cliRoot).isSymbolicLink() || fs.realpathSync(cliRoot) !== path.resolve(cliRoot)) throw Error('CLI 来源必须是固定提交的真实绝对目录');
     const cliCommit = git(cliRoot, ['rev-parse', 'HEAD']).trim();

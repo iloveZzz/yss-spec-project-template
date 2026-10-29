@@ -10,7 +10,7 @@ const fail = message => { throw new TypeError(message); };
 /** The binary is an explicit supply-chain input, never discovered through PATH. */
 export function nativeBinary(environment = process.env) {
   const binary = environment.YSS_NATIVE_BINARY;
-  if (!binary || !path.isAbsolute(binary)) fail('YSS_NATIVE_BINARY 必须指向已固定的 yss 二进制绝对路径；本机可运行 eval "$(node .template-source/scripts/ensure-native-yss.mjs)" 构建并导出');
+  if (!binary || !path.isAbsolute(binary)) fail('YSS_NATIVE_BINARY 必须指向本批固定的 yss 二进制绝对路径；先运行 eval "$(node .template-source/scripts/ensure-native-yss.mjs)" 固定最新正式 Release 并导出');
   const stat = fs.lstatSync(binary);
   if (!stat.isFile() || stat.isSymbolicLink() || stat.nlink !== 1) fail('yss 二进制必须为独立普通文件');
   const digest = nativeDigest(fs.readFileSync(binary));
