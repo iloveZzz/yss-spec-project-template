@@ -71,13 +71,13 @@ test('发行来源收集：固定二进制与源码提交必须与固定文件�
  put(cli,'main.go',fs.readFileSync(new URL('../.template-source/scripts/tests/fixtures/native-release.go',import.meta.url)));
 
  const cliCommit=commit(cli),pinCommit='f'.repeat(40),platform=`${process.platform==='win32'?'windows':process.platform}/${process.arch==='x64'?'amd64':process.arch}`;
- put(root,'.template-source/distribution/yss-cli-pin.json',JSON.stringify({schema_version:1,repository:'https://example.test/yss-cli.git',version:'1.3.5',commit:pinCommit,go_version:'1.27.1',build:'go build',binaries:{[platform.replace('/','-')]:{sha256:'0'.repeat(64)}}}));
+ const pinFile=put(root,'.template-source/distribution/yss-cli-pin.json',JSON.stringify({schema_version:1,repository:'https://example.test/yss-cli.git',version:'1.0.0-fixture.1',commit:pinCommit,go_version:'1.27.1',build:'regression-only:synthetic-fixture',binaries:{[platform.replace('/','-')]:{sha256:'0'.repeat(64)}}}));
  const templateCommit=commit(root),binary=path.join(base,'yss-fixture'),built=spawnSync('go',['build','-trimpath','-ldflags',`-X main.cliCommit=${cliCommit} -X main.templateCommit=${templateCommit} -X main.designCommit=${templateCommit} -X main.backendCommit=${templateCommit}`,'-o',binary,'.'],{cwd:cli,env:{...process.env,CGO_ENABLED:'0'},encoding:'utf8'});assert.equal(built.status,0,built.stderr);
- const environment={...process.env,YSS_NATIVE_BINARY:binary,YSS_NATIVE_BINARY_SHA256:hash(fs.readFileSync(binary)),YSS_NATIVE_SOURCE_ROOT:cli};delete environment.YSS_NATIVE_BINARY_OVERRIDE;
+ const environment={...process.env,YSS_NATIVE_BINARY:binary,YSS_NATIVE_BINARY_SHA256:hash(fs.readFileSync(binary)),YSS_NATIVE_SOURCE_ROOT:cli,YSS_NATIVE_PIN_FILE:pinFile,YSS_NATIVE_PIN_SHA256:hash(fs.readFileSync(pinFile))};delete environment.YSS_NATIVE_BINARY_OVERRIDE;
  for(const key of Object.keys(environment))if(key.startsWith('YSS_RELEASE_'))delete environment[key];
  assert.throws(()=>collectReleaseSources({root,commit:templateCommit,environment}),/与固定版本不符/,'没有装配证据不能越过 P');
- const pinFile=path.join(root,'.template-source/distribution/yss-cli-pin.json'),digest=hash(fs.readFileSync(binary)),key=platform.replace('/','-');
- const writePin=(commitValue,sha)=>fs.writeFileSync(pinFile,JSON.stringify({schema_version:1,repository:'https://example.test/yss-cli.git',version:'1.3.5',commit:commitValue,go_version:'1.27.1',build:'go build',binaries:{[key]:{sha256:sha}}}));
+ const digest=hash(fs.readFileSync(binary)),key=platform.replace('/','-');
+ const writePin=(commitValue,sha)=>{fs.writeFileSync(pinFile,JSON.stringify({schema_version:1,repository:'https://example.test/yss-cli.git',version:'1.0.0-fixture.1',commit:commitValue,go_version:'1.27.1',build:'regression-only:synthetic-fixture',binaries:{[key]:{sha256:sha}}}));environment.YSS_NATIVE_PIN_SHA256=hash(fs.readFileSync(pinFile));};
  writePin(cliCommit,digest);
  const accepted=collectReleaseSources({root,commit:templateCommit,environment});
  assert.equal(accepted.source_authority,undefined,'发布门禁不再产生原生装配来源认证');

@@ -20,7 +20,13 @@ test('native Bundle exports retain platform evidence and reject missing or chang
  t.after(()=>fs.rmSync(scratch,{recursive:true,force:true}));
  for(const profile of NATIVE_PROFILES){
   const target=path.join(scratch,profile);runNative(['bundle','export','--profile',profile,'--out',target]);
-  assert.equal(fs.existsSync(path.join(target,'.template-source')),false);
+  const source=path.join(target,'.template-source');
+  const allowed=inspectNative(profile).manifest.allowFiles.filter(ref=>ref.startsWith('.template-source/')).sort();
+  const exported=fs.existsSync(source)?fs.readdirSync(source,{recursive:true,withFileTypes:true}).filter(entry=>!entry.isDirectory()).map(entry=>{
+   assert.ok(entry.isFile(),`${profile}: source reference must be an ordinary file`);
+   return path.relative(target,path.join(entry.parentPath,entry.name)).split(path.sep).join('/');
+  }).sort():[];
+  assert.deepEqual(exported,allowed,`${profile}: only explicitly allowed source references may be exported`);
   const query=()=>spawnSync(process.execPath,[path.join(target,'scripts/backend-platforms'),'--require-profile','spring-boot-3.5-jdk17'],{cwd:target,encoding:'utf8'});
   const result=query();assert.equal(result.stderr,'',`${profile}: ${result.stderr}`);
   const report=JSON.parse(result.stdout);assert.equal(result.status,report.required_profile.selectable?0:1);

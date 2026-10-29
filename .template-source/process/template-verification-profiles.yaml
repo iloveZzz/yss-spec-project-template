@@ -1198,14 +1198,15 @@ profiles:
         depends_on: []
         failure_mode: "yss-cli 固定文件缺项、坏摘要或未知平台被放行，二进制摘要与固定版本不符时没有失败，或 CI 里接受了本地覆盖"
       - id: check.template-release-sources
-        run: "node --test --test-name-pattern '固定发行拒绝缺失|发行验证在有 yss-cli 固定文件时|浮动版本与脏树'
-          .template-source/scripts/tests/template-ci.test.mjs"
+        run: "node --test .template-source/scripts/tests/template-ci.test.mjs"
         group: feature-assets
+        resources: [ "go" ]
         inputs_complete: true
         input_patterns:
           - ".template-source/scripts/lib/template-release.mjs"
           - ".template-source/scripts/lib/verification-artifacts.mjs"
           - ".template-source/scripts/tests/template-ci.test.mjs"
+          - ".template-source/scripts/tests/fixtures/native-release.go"
           - ".gitmodules"
           # AR-02 已移除的 yss-cli gitlink：删除也算变更路径，删除提交里仍需登记；合入之后可以移除。
           - "submodules/yss-cli"
@@ -1522,6 +1523,8 @@ profiles:
         input_patterns:
           - ".template-source/scripts/ensure-native-yss.mjs"
           - ".template-source/scripts/lib/ensure-native-yss.mjs"
+          - ".template-source/scripts/lib/resolve-yss-release.py"
+          - ".agents/skills/setup-yss-harness/scripts/bootstrap.py"
           - "tests/ensure-native-yss.test.mjs"
         depends_on: []
         failure_mode: "本机构建的固定 yss 与固定文件摘要不符仍被导出、缓存被篡改或源码不干净仍复用，或 Go 版本不符时没有拒绝"
@@ -2357,6 +2360,16 @@ profiles:
           - ".agents/skills/yss-tactical-design/tests/**"
         depends_on: []
         failure_mode: "默认工作包样例在阶段决策或战术设计中产生失效引用"
+      - id: check.setup-yss-bootstrap
+        run: "python3 -B -m unittest discover -s tests -p test_setup_yss_bootstrap.py"
+        group: skills
+        inputs_complete: true
+        input_patterns:
+          - ".agents/skills/setup-yss-harness/scripts/bootstrap.py"
+          - ".template-source/scripts/lib/resolve-yss-release.py"
+          - "tests/test_setup_yss_bootstrap.py"
+        depends_on: []
+        failure_mode: "首次引导执行未核验程序、接受不安全发行材料或覆盖现有目录，或环境诊断泄露网络凭据"
       - id: check.skills-agent-eval
         run: "python3 -m unittest discover -s .template-source/scripts/tests -p test_skills_agent_eval.py"
         group: skills
@@ -2897,6 +2910,8 @@ routing:
     groups: [ feature-assets ]
   - patterns: [ "tests/harness-skill-scope.test.mjs" ]
     groups: [ skills ]
+  - patterns: [ "tests/test_setup_yss_bootstrap.py" ]
+    groups: [ skills ]
   - patterns: [ "tests/yss-backend-skill-governance.test.mjs" ]
     groups: [ implementation ]
   - patterns:
@@ -3395,6 +3410,7 @@ routing:
   - patterns:
       - .template-source/scripts/ensure-native-yss.mjs
       - .template-source/scripts/lib/ensure-native-yss.mjs
+      - .template-source/scripts/lib/resolve-yss-release.py
       - tests/ensure-native-yss.test.mjs
     groups:
       - feature-assets
@@ -3999,6 +4015,7 @@ gates:
       - check.harness-skill-scope
       - check.skill-lock-readers
       - check.public-skill-export
+      - check.setup-yss-bootstrap
       - check.skills-agent-eval
       - check.retired-skill-ids
       - check.profile-consistency

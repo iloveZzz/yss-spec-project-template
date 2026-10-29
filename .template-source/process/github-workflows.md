@@ -15,9 +15,11 @@
 
 日常交付不自动追加 release，不因维护等级、交付措辞 自动升级为正式发布验证。定向选择依据、命令、退出码与未覆盖风险必须可读；未知影响先调查。发布及已采纳 mandatory CI 命中后仍执行其完整适用集合，不能通过删计划项或改报告声明绕过。
 
-模板验证首先要求 `template-source`。日常预检仅要求所选任务使用的工具、子模块或固定 CLI 输入，不准备未选制品或消费者。全量检查使用实际依赖的公开 gitlink 固定子模块，不追踪上游分支；运行前须初始化所需子模块。工具依赖使用固定 pnpm 与 frozen lockfile；Node 24 为验证运行器环境，Python 3.12（验证预检要求恰为该版本）与固定的 jsonschema 4.23.0 提供既有 schema 检查依赖；目标版本以 `scripts/ci-setup --print-versions` 为准。运行器缺少 Python 3.12 或所需 Go 时，`scripts/ci-setup` 只在 CI 的 root 容器内补装：Python 经固定版本的 uv，Go 取自固定 yss-cli 源码 `go.mod` 指定的版本并校验 go.dev 公布的 sha256；其它环境须由镜像自带。vendor 校验在临时目录重建并比较，不先覆盖受版本管理的 vendor。
+模板验证首先要求 `template-source`。日常预检仅要求所选任务使用的工具、子模块或固定 CLI 输入，不准备未选制品或消费者。全量检查使用实际依赖的公开 gitlink 固定子模块，不追踪上游分支；运行前须初始化所需子模块。工具依赖使用固定 pnpm 与 frozen lockfile；Node 24 为验证运行器环境，Python 3.12（验证预检要求恰为该版本）与固定的 jsonschema 4.23.0 提供既有 schema 检查依赖；目标版本以 `scripts/ci-setup --print-versions` 为准。运行器缺少 Python 3.12 或 Go 启动器时，`scripts/ci-setup` 只在 CI 的 root 容器内补装：Python 经固定版本的 uv，Go 启动器按仓内 pin 供给并校验 go.dev 公布的 sha256。latest 保留 runner 已有 Go，再按本批固定源码 `go.mod` 选择精确工具链；版本不符时由 Go 标准工具链缓存下载，只向 Bundle 生成与候选构建子进程设置 PATH/GOROOT，并继续用 `GOTOOLCHAIN=local` 核验精确版本，不改写现有 Go。其它环境须先提供 Go 启动器。vendor 校验在临时目录重建并比较，不先覆盖受版本管理的 vendor。
 
-本机没有固定 yss 时，运行 `eval "$(node .template-source/scripts/ensure-native-yss.mjs)"`：按 `yss-cli-pin.json` 的提交在缓存目录（默认 `~/.yss-harness/pinned-yss`，可用 `YSS_PIN_CACHE` 改）构建一次并导出 `YSS_NATIVE_BINARY`、`YSS_NATIVE_BINARY_SHA256`、`YSS_NATIVE_SOURCE_ROOT`；之后复用，摘要必须等于固定文件登记值，本机 Go 必须等于固定的 `go_version`。
+每批回归先运行 `eval "$(node .template-source/scripts/ensure-native-yss.mjs)"`：默认查询一次官方最新正式 Release，核验发行证明，固定版本、完整源码 SHA 与来源锁，在既有缓存（默认 `~/.yss-harness/pinned-yss`，可用 `YSS_PIN_CACHE` 改）构建或复用。导出 `YSS_NATIVE_BINARY`、`YSS_NATIVE_BINARY_SHA256`、`YSS_NATIVE_SOURCE_ROOT`、`YSS_NATIVE_PIN_FILE` 和 `YSS_NATIVE_PIN_SHA256`；本批预检及用例只消费该 pin，不再查询 latest；缺批次 pin 时提示先运行准备入口，不静默回退仓内历史版本。正式清单登记本机二进制时须匹配该 SHA；未获本机安装资格的平台仅从同一固定源码构建，pin 和预检标记 `regression-only`，不作为官方安装验收。构建 Go 须匹配固定源码 `go.mod`；工具链取得失败、网络、来源锁、摘要或未知合同失败均停止，不静默退回旧版本。
+
+显式 `--version X.Y.Z` 固定正式版本；`--pin` 复用仓内历史 `yss-cli-pin.json`，保留原有缓存未命中时重建及本机精确 Go 要求；`--pin-file <本批绝对pin路径>` 仅复现已固定缓存，完整时不联网，缺失或漂移时拒绝并保留全部现场，不删除输入 pin 或重建目录。保存 pin 文件及其 SHA 与验证报告一起留证；它们不是运行时的自动版本更新配置。`--json` 供 CI 传递固定输入，不能把输出作为未受控 shell 执行。
 
 两档均在执行前及结束时观察输入，失败和中断同样保留最终观测；漂移使本轮失败。fast 可按[运行内摘要复用规则](../../.template-spec/process/subagent-collaboration.md#只读分诊任务包-v2)减少未变化文件的重复字节读取，报告 `input_observation_metrics`；有效 profile 为 release 或显式传入 `--fresh-inputs` 时前后均完整读取字节。摘要、文件覆盖范围和漂移判定不变，普通问答不因此新增全仓验证要求。
 
@@ -39,7 +41,7 @@
 
 两个平台都用完整历史检出，PR / MR 与主分支推送均执行阻断的 `verify-template-fast`。PR / MR 传入完整 base SHA；推送使用 `HEAD^`，仅首个提交没有上一提交时不带 `--base`。独立 fast 在干净检出且不带范围基准时没有行为变化；CI 仍执行必跑守卫。candidate 验证入口已退役；正式发布继续消费完整发布证据。
 
-重依赖由原始选择的计划计算：需要原生 CLI 时才按 `.template-source/distribution/yss-cli-pin.json` 获取固定源码、供给精确 Go、使用提交内的 `tools/build-candidate.mjs` 构建并核对当前平台 SHA-256；CI 不接受 `YSS_NATIVE_BINARY_OVERRIDE`。模板 pnpm frozen 依赖和 Vue 作者工具链分别按所选需求安装。生命周期注册表在 CI 必跑，因此文档场景仍准备 Python / jsonschema。基础运行时供给与上述准备分别计时，不承诺消除运行时供给成本。
+重依赖由原始选择的计划计算：需要原生 CLI 时才通过同一 `ensure-native-yss` 入口固定最新正式 Release，使用提交内的 `tools/build-candidate.mjs` 构建并固定本批 SHA-256；CI 不接受 `YSS_NATIVE_BINARY_OVERRIDE`。模板 pnpm frozen 依赖和 Vue 作者工具链分别按所选需求安装。生命周期注册表在 CI 必跑，因此文档场景仍准备 Python / jsonschema。基础运行时供给与上述准备分别计时，不承诺消除运行时供给成本。
 
 `ci-setup --requirements-file <绝对JSON文件>` 严格校验共用需求，不能混用旧准备参数。导出仅写本轮报告目录的 `setup.env`；gate 按允许字段、绝对路径和摘要读取数据，不执行文件内容。准备前后对照原始计划和完整输入；仅本轮明确请求的、Git 忽略且未跟踪的模板 `node_modules` 安装产物可在准备阶段变化，随后恢复完整观察。源码、锁、模式、Git 状态或无关忽略文件漂移均拒绝。获取、构建或安装失败使 gate 非零退出，保留日志。yss-cli 不再是 submodule。
 
@@ -55,7 +57,7 @@ Linux runner 上的两个测试曾因对 macOS 行为的隐性假设而失败，
 
 ## 轻量模板发布（默认）
 
-Spec 规格模板独立发布，只声明模板自身版本；发行说明和维护者摘要不登记配套 YSS CLI 版本。版本绑定由 YSS CLI 发布负责：发布 CLI 时指定消费的 Spec 模板版本，并固定其完整提交 SHA。模板验证使用的 `yss-cli-pin.json` 仅固定校验工具输入，不表示模板发行依赖某个 CLI 发行版本。
+Spec 规格模板独立发布，只声明模板自身版本；发行说明和维护者摘要不登记配套 YSS CLI 版本。版本绑定由 YSS CLI 发布负责：发布 CLI 时指定消费的 Spec 模板版本，并固定其完整提交 SHA。模板验证默认使用本批动态解析后固定的 pin；仓内 `yss-cli-pin.json` 保留为显式历史复现输入，均不表示模板发行依赖某个 CLI 发行版本。
 
 只发布模板、不同时发布 CLI 时，使用这条路径；它不要求恢复矩阵、原生装配、平台运行证据或 CLI Bundle 绑定本次模板提交。
 
@@ -92,7 +94,7 @@ node .template-source/scripts/release-template.mjs --version X.Y.Z --base <上�
 
 输入 SHA 与实际 HEAD 必须一致；该提交须具备本合同对应的验证脚本。发布证据绑定实际待验证提交，不再依赖 GitHub workflow 或 action 编排。
 
-`node .template-source/scripts/verify-template-release.mjs --commit <40位SHA> --base <上一正式发行完整SHA> --output <仓库外绝对目录> --cli-family all` 要求干净模板、同仓 Spec/Backend 两个 Profile 及固定 CLI 来源一致。显式提供 `YSS_NATIVE_BINARY`、`YSS_NATIVE_BINARY_SHA256` 和固定源码的 `YSS_NATIVE_SOURCE_ROOT`；二进制必须是 `yss-cli-pin.json` 固定的那一份，Spec/Backend Bundle 必须来自已提交的模板来源，但**不要求 Bundle 绑定本次待发布的模板提交**。生产、公开 Bundle 导出、隔离安装副本、初始化、Skill 投影/锁校验及用户 `.github` 保留检查全部通过。当前发布集合始终覆盖 Spec/Backend。`--cli-family spec` 仅用于定向诊断。
+`node .template-source/scripts/verify-template-release.mjs --commit <40位SHA> --base <上一正式发行完整SHA> --output <仓库外绝对目录> --cli-family all` 要求干净模板、同仓 Spec/Backend 两个 Profile 及固定 CLI 来源一致。显式提供 `YSS_NATIVE_BINARY`、`YSS_NATIVE_BINARY_SHA256` 和固定源码的 `YSS_NATIVE_SOURCE_ROOT`；二进制必须与本批 pin（或显式历史 pin）的版本、完整提交和摘要一致，Spec/Backend Bundle 必须来自已提交的模板来源，但**不要求 Bundle 绑定本次待发布的模板提交**。生产、公开 Bundle 导出、隔离安装副本、初始化、Skill 投影/锁校验及用户 `.github` 保留检查全部通过。当前发布集合始终覆盖 Spec/Backend。`--cli-family spec` 仅用于定向诊断。
 
 旧实例恢复矩阵、原生装配 native input 和平台范围声明已从发布门禁移除：这些平台验收由维护者人工处理并自行记录，发行说明写明「平台验收：人工」，门禁不检查、也不替任何平台背书。
 

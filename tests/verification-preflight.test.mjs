@@ -70,7 +70,9 @@ test('原生消费者的二进制必须与固定文件一致，本地联调可�
   const pinned=write('pinned','pinned bytes'),other=write('other','other bytes');
   fs.mkdirSync(path.join(temp,'.template-source/distribution'),{recursive:true});
   fs.writeFileSync(path.join(temp,PIN_FILE),JSON.stringify({schema_version:1,repository:'https://example.test/yss-cli.git',version:'1.3.5',commit:'c'.repeat(40),go_version:'1.27.1',build:'go build',binaries:{[platformKey()]:{sha256:sha('pinned bytes')}}}));
-  const run=(binary,extra={})=>verificationPreflight({root:temp,nodeVersion:'v24.21.0',environment:{YSS_NATIVE_BINARY:binary,...extra},plan:{strategy:'daily-necessary',commands:[{command:'node --test tests/cli-retirement.test.mjs',resources:['native-cli']}]},probe:()=>assert.fail('不应启动无关工具')});
+  const fixedFile=path.join(temp,PIN_FILE),fixedHash=sha(fs.readFileSync(fixedFile));
+  const run=(binary,extra={})=>verificationPreflight({root:temp,nodeVersion:'v24.21.0',environment:{YSS_NATIVE_BINARY:binary,YSS_NATIVE_PIN_FILE:fixedFile,YSS_NATIVE_PIN_SHA256:fixedHash,...extra},plan:{strategy:'daily-necessary',commands:[{command:'node --test tests/cli-retirement.test.mjs',resources:['native-cli']}]},probe:()=>assert.fail('不应启动无关工具')});
+  assert.match(run(pinned,{YSS_NATIVE_PIN_FILE:undefined}).errors[0].error,/先运行 ensure-native-yss/);
   const ok=run(pinned);
   assert.equal(ok.status,'passed',JSON.stringify(ok.errors));assert.equal(ok.observations.find(item=>item.name==='native-cli').observed.pin.pinned,true);
   const bad=run(other);
@@ -79,6 +81,13 @@ test('原生消费者的二进制必须与固定文件一致，本地联调可�
   assert.equal(local.status,'passed');assert.equal(local.observations.find(item=>item.name==='native-cli').observed.pin.pinned,false);
   const ci=run(other,{YSS_NATIVE_BINARY_OVERRIDE:'1',CI:'true'});
   assert.match(ci.errors[0].error,/CI 不接受覆盖/);
+  const batch=JSON.parse(fs.readFileSync(path.join(temp,PIN_FILE)));
+  batch.version='2.8.2';batch.binaries[platformKey()].sha256=sha('other bytes');
+  const batchFile=write('batch-pin.json',JSON.stringify(batch)),batchHash=sha(fs.readFileSync(batchFile));
+  const prepared=run(other,{YSS_NATIVE_PIN_FILE:batchFile,YSS_NATIVE_PIN_SHA256:batchHash});
+  assert.equal(prepared.status,'passed',JSON.stringify(prepared.errors));
+  assert.equal(prepared.observations.find(item=>item.name==='native-cli').observed.pin.version,'2.8.2');
+  assert.match(run(other,{YSS_NATIVE_PIN_FILE:batchFile,YSS_NATIVE_PIN_SHA256:'0'.repeat(64)}).errors[0].error,/pin 摘要漂移/);
 });
 
 test('CI 文档计划保留 schema 前置但不准备无关重工具',async()=>{
