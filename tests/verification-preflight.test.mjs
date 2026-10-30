@@ -246,3 +246,11 @@ test('工作树插件候选不能作为正式发布证据',()=>{
  assert.equal(result.status,'failed');
  assert.ok(result.errors.some(item=>item.name==='plugin-candidate' && /not release evidence/.test(item.error)));
 });
+
+test('正式插件输入必须完成独立重建而非只接受声明',()=>{
+ const result=verificationPreflight({root:path.resolve(import.meta.dirname,'..'),nodeVersion:'v24.21.0',environment:{},
+  plan:{candidate_release:true,commands:[{command:'node candidate-test',resources:['plugin-committed']}]},
+  probe:(file,args)=>file==='python3'?{status:0,stdout:JSON.stringify({version:[3,12],executable:'/fixture/python',jsonschema:'4.0.0'})}:{status:1,stderr:'unexpected'}});
+ assert.equal(result.status,'failed');
+ assert.ok(result.errors.some(item=>item.name==='plugin-committed'));
+});

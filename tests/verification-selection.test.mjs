@@ -860,12 +860,8 @@ test('插件候选来源或执行器变化选择全部真实插件消费者',()=
  }
 });
 
-test('发布预检保留候选资源并明确禁止工作树候选充当发布证据',t=>{
+test('插件发行计划缺少已提交的独立候选输入时拒绝',t=>{
  const directory=fs.mkdtempSync(path.join(os.tmpdir(),'candidate-release-plan-')); t.after(()=>fs.rmSync(directory,{recursive:true,force:true}));
  const plan=planTemplateVerification({profile:'release',changedFiles:['.template-source/scripts/plugin-candidate.mjs']});
- const compiled=addVerificationExecutionTasks(plan,{root:ROOT,reportDir:directory});
- const preflight=compiled.commands.find(item=>item.id==='check.verification-environment');
- assert.ok(preflight);
- assert.match(preflight.command,/"candidate_release":true/);
-  assert.match(preflight.command,/"resources":\["plugin-candidate"\]/);
+ assert.throws(()=>addVerificationExecutionTasks(plan,{root:ROOT,reportDir:directory,environment:{}}),/committed plugin/i);
 });

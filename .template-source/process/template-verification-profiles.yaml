@@ -2189,12 +2189,23 @@ profiles:
           - ".template-source/process/template-verification-profiles.yaml"
           - ".template-source/scripts/lib/verification-preflight.mjs"
           - ".template-source/scripts/lib/verification-execution-plan.mjs"
+          - ".template-source/scripts/lib/committed-plugin-commands.mjs"
+          - ".template-source/scripts/committed-plugin-run.mjs"
           - ".template-source/scripts/lib/template-verification-worker.mjs"
           - "scripts/run-template-verification"
           - "scripts/verify-template-fast"
           - "tests/verification-execution.test.mjs"
         depends_on: []
         failure_mode: "任务编译、实际退出、依赖调度或复用错误"
+      - id: check.committed-plugin-source
+        run: node --test tests/committed-plugin-source.test.mjs
+        group: candidate-integrity
+        inputs_complete: true
+        input_patterns:
+          - .template-source/scripts/lib/committed-plugin-source.mjs
+          - tests/committed-plugin-source.test.mjs
+        depends_on: []
+        failure_mode: 已提交插件回归输入或独立重建证据被替换时未拒绝
       - id: "check.daily-preflight"
         run: "node --test tests/verification-preflight.test.mjs"
         group: "candidate-integrity"
@@ -3047,6 +3058,12 @@ syntax_files:
   - tests/verification-selection.test.mjs
   - tests/verification-delivery-run.test.mjs
 routing:
+  - patterns:
+      - .template-source/scripts/lib/committed-plugin-source.mjs
+      - .template-source/scripts/lib/committed-plugin-commands.mjs
+      - .template-source/scripts/committed-plugin-run.mjs
+      - tests/committed-plugin-source.test.mjs
+    groups: [candidate-integrity]
   - patterns: [".template-source/process/trusted-verification-releases.json"]
     groups: [candidate-integrity]
   - patterns:

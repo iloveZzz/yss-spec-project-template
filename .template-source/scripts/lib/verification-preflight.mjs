@@ -52,6 +52,16 @@ export function verificationPreflight({root,plan,reportDir,environment=process.e
     if(plan.candidate_release)throw new Error('paired plugin candidate is not release evidence');
     return require('./plugin-candidate.mjs').candidateFromEnvironment(root,environment);
   });
+  if(plan.commands.some(item=>item.resources?.includes('plugin-committed')))check('plugin-committed',()=>{
+    if(!plan.candidate_release)throw new Error('committed plugin input only supports release verification');
+    const tooling=environment.YSS_TOOLING_REPORT_DIR;
+    if(!tooling||!path.isAbsolute(tooling))throw new Error('committed plugin evidence directory missing');
+    const {committedPluginOptionsFromEnvironment,verifyCommittedPluginRebuild}=require('./committed-plugin-source.mjs');
+    const directory=path.join(path.dirname(tooling),'committed-plugin-rebuild');
+    const proof=verifyCommittedPluginRebuild(committedPluginOptionsFromEnvironment(root,environment),{evidenceDir:directory});
+    if(hash(JSON.stringify(proof.source))!==plan.plugin_snapshot_sha256)throw new Error('committed plugin snapshot drift');
+    return {directory,proof_sha256:hash(fs.readFileSync(path.join(directory,'proof.json'))),snapshot_sha256:plan.plugin_snapshot_sha256};
+  });
   if(needs.tooling)check('pnpm-and-tooling-lock',()=>{
     const tooling=path.join(root,'.template-source/tooling/node'),pkg=JSON.parse(fs.readFileSync(path.join(tooling,'package.json'))),version=invoke('pnpm',['--version'],tooling);
     if(`pnpm@${version}`!==pkg.packageManager)throw new Error(`pnpm 版本需要 ${pkg.packageManager}，实际 ${version}`);

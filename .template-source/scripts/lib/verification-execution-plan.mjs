@@ -5,6 +5,8 @@ import {createHash} from 'node:crypto';
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {compileDeliveryPreparationTasks} from './verification-delivery-run.mjs';
+import {committedPluginCommands,committedPluginEnvironment} from './committed-plugin-commands.mjs';
+import {committedPluginOptionsFromEnvironment,observeCommittedPluginSource} from './committed-plugin-source.mjs';
 
 const hash=value=>createHash('sha256').update(value).digest('hex');
 export const verificationCheckId = item => item.id || `check.${hash(`${item.when||''}\0${item.command||item.run}`).slice(0,16)}`;
@@ -168,7 +170,14 @@ function historicalSyntaxExtras(root,commit,files){
   }
   return {extras,tree};
 }
-export function compileTaskExecution(task,{root,reportDir,fixedCommit,environment=process.env,nodePath=process.execPath}={}){
+export function compileTaskExecution(task,{root,reportDir,fixedCommit,environment=process.env,nodePath=process.execPath,releasePlugin=false}={}){
+  if(releasePlugin&&(task.resources||[]).includes('plugin-candidate')) {
+    if(committedPluginCommands[task.id]!==task.command)throw new TypeError('committed plugin command mismatch');
+    const bound=committedPluginEnvironment(environment);
+    const observed=observeCommittedPluginSource(committedPluginOptionsFromEnvironment(root,bound));
+    bound.YSS_PLUGIN_COMMITTED_SNAPSHOT_SHA256=hash(JSON.stringify(observed));
+    return {requested_command:task.command,file:nodePath,args:[path.join(root,'.template-source/scripts/committed-plugin-run.mjs'),task.id],cwd:root,environment:bound};
+  }
   if(task.kind==='source-test-consumer')throw new TypeError('RETIRED_SOURCE_CONSUMER: 旧源码消费任务不再授予验证资格');
   const requested=task.command.trim();
   // Bind the frozen occurrence before expanding its removed test glob. The
@@ -256,6 +265,9 @@ function dailyParsingTargets(plan,root) {
 export function addVerificationExecutionTasks(plan,{root,repositoryMode='template-source',reference=false,checkpoints=[],taskPackages=[],purpose='verification',reportDir,fixedCommit,environment=process.env,nodePath=process.execPath}={}) {
   plan=structuredClone(plan);plan.selection??={requested:'legacy',effective:'legacy',omitted:[]};plan.groups??=[...new Set(plan.commands.map(task=>task.group))];
   const daily=plan.strategy==='daily-necessary';
+  const releasePlugin=plan.effective_profile==='release'&&(!fixedCommit||spawnSync('git',['cat-file','-e',`${fixedCommit}:.template-source/scripts/committed-plugin-run.mjs`],{cwd:root,stdio:'ignore'}).status===0);
+  const pluginSnapshot=releasePlugin&&plan.commands.some(task=>(task.resources||[]).includes('plugin-candidate'))
+    ?hash(JSON.stringify(observeCommittedPluginSource(committedPluginOptionsFromEnvironment(root,environment)))):null;
   if(reference)plan.gates=[];
   plan.not_applicable??=[];
   plan.commands=plan.commands.filter(task=>{if(task.when&&task.when!==repositoryMode){plan.not_applicable.push({...task,reason:'repository-mode'});return false;}return true;});
@@ -310,14 +322,17 @@ export function addVerificationExecutionTasks(plan,{root,repositoryMode='templat
   if(!plan.commands.some(task=>task.task_id==='check.verification-environment')) {
     // Node --check parses files without running their application dependencies.
     // Keep the syntax tasks in the plan; Node itself is always checked by preflight.
-    const preflightPlan={source_requirement:plan.source_requirement,...daily?{strategy:plan.strategy}:{},...(plan.effective_profile==='release'?{candidate_release:true}:{}),commands:plan.commands.filter(task=>task.kind!=='syntax').map(task=>({command:task.command,...daily?{resources:task.resources||[]}:(task.resources||[]).includes('plugin-candidate')?{resources:['plugin-candidate']}:{}}))};
-    const command=`${quote(nodePath)} ${quote(path.join(root,'.template-source/scripts/lib/verification-preflight.mjs'))} --root ${quote(root)} --purpose ${quote(purpose)} --plan-json ${quote(JSON.stringify(preflightPlan))}`;
-    plan.commands.unshift({id:'check.verification-environment',task_id:'check.verification-environment',kind:'preflight',group:'preflight',command,gate_ids:['check.verification-environment'],depends_on:[],...daily?{selection_reason:'selected-commands -> 所选命令所需工具缺失或版本错误；合同：fast 执行前置'}:{}});
+    const preflightPlan={source_requirement:plan.source_requirement,...daily?{strategy:plan.strategy}:{},...(plan.effective_profile==='release'?{candidate_release:true}:{}),commands:plan.commands.filter(task=>task.kind!=='syntax').map(task=>({command:task.command,...daily?{resources:task.resources||[]}:(task.resources||[]).includes('plugin-candidate')?{resources:[releasePlugin?'plugin-committed':'plugin-candidate']}:{}}))};
+    if(pluginSnapshot)preflightPlan.plugin_snapshot_sha256=pluginSnapshot;
+    const preflightFile=path.join(root,'.template-source/scripts/lib/verification-preflight.mjs'),preflightArgs=[preflightFile,'--root',root,'--purpose',purpose,'--plan-json',JSON.stringify(preflightPlan)];
+    const command=`${quote(nodePath)} ${quote(preflightFile)} --root ${quote(root)} --purpose ${quote(purpose)} --plan-json ${quote(JSON.stringify(preflightPlan))}`;
+    plan.commands.unshift({id:'check.verification-environment',task_id:'check.verification-environment',kind:'preflight',group:'preflight',command,gate_ids:['check.verification-environment'],depends_on:[],...(pluginSnapshot?{execution:{requested_command:command,file:nodePath,args:preflightArgs,cwd:root,environment:{NODE_OPTIONS:'',NODE_PATH:''}}}:{}),...daily?{selection_reason:'selected-commands -> 所选命令所需工具缺失或版本错误；合同：fast 执行前置'}:{}});
     plan.groups.unshift('preflight');
     for(const task of plan.commands.filter(task=>task.kind!=='preflight'))task.depends_on=[...new Set(['check.verification-environment',...(task.depends_on||[])])];
     const gate=plan.gates?.find(gate=>gate.id==='check.verification-environment');if(gate){gate.selected=true;gate.selection_reason='mandatory-preflight';gate.check_ids=['check.verification-environment'];gate.task_ids=['check.verification-environment'];}
   }
-  for(const task of plan.commands){const execution=compileTaskExecution(task,{root,reportDir,fixedCommit,environment,nodePath});if(execution){
+  for(const task of plan.commands){const execution=compileTaskExecution(task,{root,reportDir,fixedCommit,environment,nodePath,releasePlugin});if(execution){
+    if(execution.environment?.YSS_PLUGIN_COMMITTED_SNAPSHOT_SHA256&&execution.environment.YSS_PLUGIN_COMMITTED_SNAPSHOT_SHA256!==pluginSnapshot)throw new TypeError('committed plugin input drift during plan');
     if(daily&&execution.file===nodePath&&Object.keys(execution).every(key=>['requested_command','file','args','cwd','environment'].includes(key))){
       // Normalize only observed Node aliases; formal request identities stay frozen.
       task.requested_command??=task.command;

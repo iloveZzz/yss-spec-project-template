@@ -96,6 +96,8 @@ node .template-source/scripts/release-template.mjs --version X.Y.Z --base <上�
 
 `node .template-source/scripts/verify-template-release.mjs --commit <40位SHA> --base <上一正式发行完整SHA> --output <仓库外绝对目录> --cli-family all` 要求干净模板、同仓 Spec/Backend 两个 Profile 及固定 CLI 来源一致。显式提供 `YSS_NATIVE_BINARY`、`YSS_NATIVE_BINARY_SHA256` 和固定源码的 `YSS_NATIVE_SOURCE_ROOT`；二进制必须与本批 pin（或显式历史 pin）的版本、完整提交和摘要一致，Spec/Backend Bundle 必须来自已提交的模板来源，但**不要求 Bundle 绑定本次待发布的模板提交**。生产、公开 Bundle 导出、隔离安装副本、初始化、Skill 投影/锁校验及用户 `.github` 保留检查全部通过。当前发布集合始终覆盖 Spec/Backend。`--cli-family spec` 仅用于定向诊断。
 
+当发行差异选中插件回归时，原固定 CLI 输入仍用于上述发行集成；插件检查另行使用干净 committed CLI 回归输入，不授予安装或发布资格。通过 `YSS_PLUGIN_COMMITTED_TEMPLATE_SHA`、`YSS_PLUGIN_COMMITTED_CLI_ROOT`、`YSS_PLUGIN_COMMITTED_CLI_SHA`、`YSS_PLUGIN_COMMITTED_CLI_REMOTE`、`YSS_PLUGIN_COMMITTED_CLI_REF`、`YSS_PLUGIN_COMMITTED_BINARY`、`YSS_PLUGIN_COMMITTED_BINARY_SHA256`、`YSS_PLUGIN_COMMITTED_RECEIPT`、`YSS_PLUGIN_COMMITTED_RECEIPT_SHA256`、`YSS_PLUGIN_COMMITTED_GO`、`YSS_PLUGIN_COMMITTED_GO_SHA256` 显式绑定模板、已推送 CLI 和实际构建输入。预检从隔离检出重新生成并比较 Bundle 与程序，外层在完整验证前后独立重建，逐项保留原始命令、退出和日志；工作树候选仍不能作为正式发布证据。模板尚未正式切换标签时，本地准备标签仅记录为私有来源，不能称为官方已发布标签。实际发布前须独立回读官方标签指向、检查全部输入未变，并完成各平台发行资格。此机制不认证整个 Go 工具链及第三方模块缓存的供应链。
+
 旧实例恢复矩阵、原生装配 native input 和平台范围声明已从发布门禁移除：这些平台验收由维护者人工处理并自行记录，发行说明写明「平台验收：人工」，门禁不检查、也不替任何平台背书。
 
 Go 生产用固定 Spec/Backend 来源提交和 `bundle-profile.json` 声明政策，运行 `go run ./tools/bundle --source-root <模板根> --lock docs/source-lock.json --out internal/bundle/assets`，再以 `CGO_ENABLED=0` 构建。二进制、Bundle、插件摘要收录仓外生态发行清单，避免互相嵌入未来提交形成循环。模板 Node/Python 治理工具和 pnpm frozen 依赖继续保留。不会执行 publish、npm deprecated 或仓库归档。
