@@ -13,8 +13,9 @@ test('Backend 插件事务绑定本地主控并保留历史 Spec 身份', t => {
   const plugin = path.join(dir, 'plugin/yss-backend-delivery'), target = path.join(dir, 'target');
   const run = (file, args) => spawnSync(process.execPath, [file, ...args], { encoding: 'utf8', timeout: 120000, maxBuffer: 32 * 1024 * 1024 });
   const ok = result => { assert.equal(result.status, 0, result.stderr || result.stdout || result.error?.message); return JSON.parse(result.stdout); };
-  assert.ok(process.env.YSS_PLUGIN_TEST_BINARY, 'YSS_PLUGIN_TEST_BINARY is required');
-  materializeTestPlugin({ sourceRoot: root, output: plugin, build: () => ok(run(path.join(root, '.template-source/plugins/yss-backend-delivery/build.mjs'), ['--binary', process.env.YSS_PLUGIN_TEST_BINARY, '--output', plugin])) });
+  const binary = process.env.YSS_PLUGIN_TEST_BINARY || process.env.YSS_NATIVE_BINARY;
+  assert.ok(binary, 'fixed native candidate is required');
+  materializeTestPlugin({ sourceRoot: root, output: plugin, build: () => ok(run(path.join(root, '.template-source/plugins/yss-backend-delivery/build.mjs'), ['--binary', binary, '--output', plugin])) });
   const call = (command, args = []) => run(path.join(plugin, 'scripts/plugin.mjs'), [command, ...args]);
   const plan = ok(call('project-plan', ['--target-dir', target, '--project-name', '接收测试', '--business-domain', '测试', '--issue-tracker', 'github']));
   const planPath = path.join(dir, 'plan.json'); writeFileSync(planPath, JSON.stringify(plan));
