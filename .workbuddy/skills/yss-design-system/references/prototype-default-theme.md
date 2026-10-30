@@ -10,7 +10,7 @@
 
 正文使用 `typography.body`，页面标题和分区标题分别使用 `heading-lg`、`heading-md`，辅助信息才用 `caption`。页面、内容、浮层分别使用对应表面角色；主操作使用 button-primary 系列，不能回退到品牌 seed。筛选、列表、表单和审批优先用边界与分组表达层次。
 
-`variables.css` 中 `--yss-colors-*`、`--yss-typography-*`、`--yss-components-*` 是规范角色投影；既有 `--brand-*` 保留运行时桥接。别名由 design-md 工具生成，不手工维护第二套值。只补视觉角色时可执行 `node "<技能目录>/scripts/design-md.mjs" export dtcg --project-root "<项目根>" --write-css --write-manifest`，改动源值或生产算法时仍执行完整派生。新主题的计算样式须与当前根规范比对，历史缺少角色别名的快照不作为当前规范一致性的证据。
+`variables.css` 中 `--yss-colors-*`、`--yss-typography-*`、`--yss-components-*` 是规范角色投影；既有 `--brand-*` 保留运行时桥接。别名由 design-md 工具生成，不手工维护第二套值。修改 DESIGN 或 Token 后，使用项目实际支持的派生工具核验所有受影响快照；缺工具时保留漂移并说明未更新范围，不刷新摘要或将旧算法结果冒充当前基线。新主题的计算样式须与当前根规范比对，历史缺少角色别名的快照不作为当前规范一致性的证据。
 
 ## 默认页面结构
 

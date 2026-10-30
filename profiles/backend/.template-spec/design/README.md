@@ -7,7 +7,7 @@
 - `.template-spec/design/design.md`：项目设计系统说明。默认亮色覆盖来自项目 Ant Design 5 `:root` / Less 裁定（主色 `#3371ff`、系统字体、6px 圆角），不再只沿用历史 `Product-Design-System` 包；官方 `design.md` 是上游默认，项目 token 是项目覆盖，优先级以该文件为准。
 - `.template-spec/design/tokens/`：随仓库保存的主题、亮色 / 暗色 / 紧凑 token 和 CSS 变量快照，后续实现不得依赖本机 Downloads 目录或原始 Less。
 
-产品原型产出默认以 `product-design:index` 为主入口。该 skill 只负责路由，实际按 Product Design plugin 规则进入 `$get-context`、`$ideate`、`$prototype`、`$image-to-code`、`$url-to-code`、`$share` 或 `$design-qa` 等 focused skill；YSS 生命周期仍负责校验低保真评审、高保真 HTML 原型、AntD CLI 校验证据、用户确认和 Spec / OpenAPI 回填。
+产品原型产出可按当前任务选择可用的设计工具；YSS 生命周期按适用合同校验低保真评审、高保真原型、实际执行的工具证据、用户确认和 Spec / OpenAPI 回填。旧 AntD CLI 字段不代表已执行校验。
 
 进入 Spec 初稿 / 需求基线流程后，必须先沉淀产品总体设计 / 功能架构，再进入页面 / 原型 / 交互设计、Spec 校准、API 影响分析 / 契约草案或实现。产品总体设计文档必须包含低保真原型 / 页面草图，用于验证页面结构、关键操作和主流程。无 UI 的功能也需要产品总体设计 / 功能架构来说明功能域、业务对象、模块边界、API / 数据影响和不适用的页面状态；只有不进入 Spec 生命周期的小改动可在影响面评估中记录不适用原因。
 
@@ -31,11 +31,11 @@
 - `.template-spec/design/templates/state-matrix-template.md`：loading、empty、error、readonly、no-permission、conflict 等状态。
 - `.template-spec/design/templates/prototype-review-checklist.md`：进入 Spec 校准 / API 影响分析 / 契约草案前的原型评审门禁。
 - `.template-spec/design/templates/prototype-confirmation-template.md`：高保真 HTML 原型产出后的用户确认记录。
-- `.template-spec/design/templates/prototype-evidence-template.yaml`：原型阶段的 AntD CLI、浏览器验证、评审和确认的机器可读证据清单。
+- `.template-spec/design/templates/prototype-evidence-template.yaml`：原型阶段的机器可读证据清单；其中历史工具字段仅按实际适用范围填写。
 
 推荐技能：
 
-- `yss-design-system`：项目设计系统与 Ant Design 企业级 UI 风格基线；页面设计、原型评审、UI 实现和主题 token 落地时默认先引用。Codex `$design-qa` 的 token / 字体对照读该技能的 `references/design-qa-theme.md`，以项目覆盖为准，不改上游 `design-qa` 插件。
+- 项目设计基线：页面设计、原型评审与 UI 实现依据 `.template-spec/design/design.md` 及实际消费的 token；可用且适用时使用 `$design-qa` 辅助，未执行的检查须记录。
 - `yss-prototype-stage`：跨 Agent 的原型阶段合同，固定资产、证据、设计优先级与生命周期回流；Codex 的主路由为 `product-design:index`。
 - `product-design:index`：Codex 产品原型产出的主路由；根据输入是否有 URL、截图、Figma、代码目标或视觉方向，进入 `$get-context`、`$ideate`、`$prototype`、`$image-to-code`、`$url-to-code`、`$share` 或 `$design-qa` 等 focused skill。
 - Product Design focused skills：基于 Spec 初稿和产品总体设计 / 功能架构，产出低保真 / 高保真页面、原型、交互设计资产和可分享原型；高保真 HTML 原型默认由该路由链路产出。

@@ -36,7 +36,7 @@ node .agents/skills/yss-prototype-stage/scripts/export-business-patterns.mjs --p
 
 每条关键路径至少记录入口、初始输入、操作、结果和来源中的 actionKey / 状态引用。失败、恢复与再次提交作为连续流程检查，不以按钮出现代替结果正确。该记录并入现有交互说明和六轴 QA。
 
-既有三组视觉正反例位于 yss-design-system/assets/enterprise-craft：查询层级对应查询详情模式，字段分组对应分步表单，阻断及恢复对应审批权限和冲突模式。正反例用于解释设计取舍；上述可运行模式用于任务演练。
+查询详情重点检查查询层级，分步表单检查字段分组，审批场景检查阻断原因和恢复路径；上述可运行模式用于任务演练。
 
 新增组件状态展示从导出入口的 `component-states/index.html` 进入；字段/详情/菜单/分页等配方见 [组件导航](component-recipes.md)。五类模式保持既有确定性场景和业务规则，不因组件选择新增状态来源。
 

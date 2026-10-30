@@ -6,9 +6,9 @@
 
 - `DESIGN.md`：机器可读的视觉 token 与组件变体规范源，按 Google `design.md` alpha 格式维护。
 - `.template-source/design/design-system-sync.yaml`：主模板与可独立分发的战略设计模板之间的共享章节版本与 SHA-256 同步摘要。
-- `.template-spec/design/design.md`：YSS 设计治理、双轨运行时、生命周期和验证说明；不与规范源重复定义 token。
+- `.template-spec/design/design.md`：YSS 设计治理、生命周期和验证说明；不与规范源重复定义 token。
 - `.template-spec/design/tokens/`：随仓库保存的主题、亮色 / 暗色 / 紧凑 token 和 CSS 变量快照，后续实现不得依赖本机 Downloads 目录或原始 Less。
-- 新原型默认浅色 compact，按根 `DESIGN.md` 的命名变体选择桌面、窄屏与 comfortable；生产默认主题及可选 compact 算法与原型密度分别管理。暗色仅保留历史快照入口，未完成当前规范验证。
+- 新原型可按根 `DESIGN.md` 的命名变体选择桌面、窄屏与 comfortable；生产主题由目标项目的设计规范和组件库确定。暗色仅保留历史快照入口，未完成当前规范验证。
 - `.template-source/design/preview.html`：模板维护仓内的主题与组件状态展示（不随产品实例分发），支持密度切换和本地演示；原型技能另提供可运行组件展示及五类页面模式。
 
 Token 或组件视觉变体变更必须先修改 `DESIGN.md`，再更新派生快照；治理说明不得复制具体值。业务状态、API、权限和交互验收继续使用 Spec、交互说明及状态矩阵。
@@ -45,7 +45,7 @@ Token 或组件视觉变体变更必须先修改 `DESIGN.md`，再更新派生�
 
 技能导航：
 
-- `yss-design-system`：需要视觉一致性时读取项目基线；可用且适用时，Codex `$design-qa` 的 token / 字体对照读取 `references/design-qa-theme.md`，以项目覆盖为准。
+- `yss-design-system`：需要视觉一致性时读取项目基线；按 `references/design-review.md` 选择适用评议，可用且适用时用 Codex `$design-qa` 辅助，以项目覆盖为准。
 - `yss-prototype-stage`：新 Spec 按问题选择必要的设计表达与检查；历史合同的原型适配、资产与证据见其 `references/product-design-adapter.md`。
 - `product-design:index` 与其 focused skills：可用且满足当前交付边界时按需使用；历史合同中的 H1/H2、ideation 和检查要求继续按原政策执行。不可用时使用 `yss-prototype-stage` 的适用方法并记录未验证项；关键问题无法验证时明确阻断，历史合同要求的工具或证据缺失时保留缺口。
 - `prototype-review`：按实际产物复核；历史合同要求的原型阶段评审继续适用。

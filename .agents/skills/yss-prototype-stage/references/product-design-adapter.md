@@ -60,6 +60,6 @@ node .agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs sea
 
 ## 候选比较
 
-已有本地候选需要原尺寸切换时使用 [独立比较工具](comparison-tool.md)。比较包属于评审辅助，不属于已批准原型；其 manifest 不取代 Prototype Evidence v4 或 Visual Baseline v1。高保真页面层级与状态表达按 `yss-design-system/references/enterprise-craft.md` 检查，同批查看桌面/窄屏，统一修整后复验。关键 finding 未关闭时保持阻塞。
+已有本地候选需要原尺寸切换时使用 [独立比较工具](comparison-tool.md)。比较包属于评审辅助，不属于已批准原型；其 manifest 不取代 Prototype Evidence v4 或 Visual Baseline v1。按项目设计基线和实际风险检查高保真页面层级与状态表达，同批查看桌面/窄屏，统一修整后复验。关键 finding 未关闭时保持阻塞。
 
 React 作者依赖、组件源码和生成入口已退役，历史批准包仅显式 `--allow-legacy` 只读核验，不重新封存。见 [历史路线](shadcn-integration.md)。

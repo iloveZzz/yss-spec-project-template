@@ -1430,6 +1430,10 @@ profiles:
           - ".agents/skills/yss-design-system/scripts/verify-prototype-source.mjs"
           - ".agents/skills/yss-design-system/assets/prototype/**"
           - ".workbuddy/skills/yss-design-system/assets/prototype/**"
+          - ".agents/skills/yss-design-system/assets/enterprise-craft/**"
+          - ".workbuddy/skills/yss-design-system/assets/enterprise-craft/**"
+          - ".agents/skills/yss-design-system/scripts/export-craft-examples.mjs"
+          - ".workbuddy/skills/yss-design-system/scripts/export-craft-examples.mjs"
           - ".workbuddy/skills/yss-design-system/scripts/verify-prototype-source.mjs"
           - ".agents/skills/**/*.mjs"
           - ".agents/skills/**/*.js"
@@ -3268,6 +3272,10 @@ routing:
       - .workbuddy/skills/yss-design-system/references/shadcn-vue-prototype.md
       - .agents/skills/yss-design-system/assets/prototype/**
       - .workbuddy/skills/yss-design-system/assets/prototype/**
+      - .agents/skills/yss-design-system/assets/enterprise-craft/**
+      - .workbuddy/skills/yss-design-system/assets/enterprise-craft/**
+      - .agents/skills/yss-design-system/scripts/export-craft-examples.mjs
+      - .workbuddy/skills/yss-design-system/scripts/export-craft-examples.mjs
       - .agents/skills/yss-design-system/scripts/verify-prototype-source.mjs
       - .workbuddy/skills/yss-design-system/scripts/verify-prototype-source.mjs
     groups:

@@ -51,7 +51,7 @@ test("实例分发：包含 CLAUDE.md 与 .claude 投影，不包含 Stop hook �
   assert.ok(manifest.allowRootFiles.includes("CLAUDE.md"));
   assert.ok(manifest.excludePaths.includes(".claude/settings.json"), "hook 设置只在模板源启用");
   assert.ok(!manifest.excludePaths.includes(".claude/skills"), ".claude/skills 必须随实例分发");
-  for (const file of ["SKILL.md", "references/data-quality-theme.md"]) {
+  for (const file of ["SKILL.md", "references/high-fidelity-default-theme.md"]) {
     assert.ok(manifest.renderPaths.includes(`.claude/skills/yss-design-system/${file}`), `renderPaths 应与 canonical 一样登记 ${file}`);
   }
 });

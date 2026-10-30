@@ -661,6 +661,16 @@ test('设计原型来源与素材变更选择独立安装和引用检查', () =>
  }
 });
 
+test('退役企业示例素材和导出器的变更选择独立安装及引用检查', () => {
+ for (const root of ['.agents/skills/yss-design-system', '.workbuddy/skills/yss-design-system']) {
+  for (const ref of [`${root}/assets/enterprise-craft/index.html`, `${root}/scripts/export-craft-examples.mjs`]) {
+   const plan = planTemplateVerification({changedFiles:[ref]});
+   assert.deepEqual(plan.unknown_files, [], ref);
+   assert.ok(plan.commands.some(item => item.id === 'check.initialization-reference-boundaries'), ref);
+  }
+ }
+});
+
 test('设计原型动画依赖与指南变化选择动画构建验证', () => {
  const paths = ['tests/design-prototype-animation.test.mjs'];
  for (const root of ['.agents/skills/yss-design-system', '.workbuddy/skills/yss-design-system']) {
