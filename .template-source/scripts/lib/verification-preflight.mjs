@@ -5,6 +5,7 @@ import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import {parseArgs} from 'node:util';
 import {createRequire} from 'node:module';
+import {candidateFromEnvironment} from './plugin-candidate.mjs';
 
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 const require=createRequire(import.meta.url);
@@ -46,6 +47,7 @@ export function verificationPreflight({root,plan,reportDir,environment=process.e
     // 本批显式 pin 优先；预检只核验固定输入，不重新查询 latest。
     return pin?{...binary,pin:pins.verifyPinnedBinary({digest:binary.digest,pin,environment})}:binary;
   });
+  if(plan.commands.some(item=>item.resources?.includes('plugin-candidate')))check('plugin-candidate',()=>candidateFromEnvironment(root,environment));
   if(needs.tooling)check('pnpm-and-tooling-lock',()=>{
     const tooling=path.join(root,'.template-source/tooling/node'),pkg=JSON.parse(fs.readFileSync(path.join(tooling,'package.json'))),version=invoke('pnpm',['--version'],tooling);
     if(`pnpm@${version}`!==pkg.packageManager)throw new Error(`pnpm 版本需要 ${pkg.packageManager}，实际 ${version}`);

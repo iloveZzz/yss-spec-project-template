@@ -1,13 +1,11 @@
 #!/usr/bin/env node
-import { appendFileSync, existsSync, lstatSync, mkdirSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
+import { appendFileSync, existsSync, mkdirSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { candidateLock, sha256, validateCandidate } from './lib/plugin-candidate.mjs';
+import { candidateCliCommit as cliCommit, candidateFromEnvironment, candidateLock, sha256, validateCandidate } from './lib/plugin-candidate.mjs';
 
 const root = realpathSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..'));
-// Fixed, reviewed CLI PR commit; change explicitly when the candidate code changes.
-const cliCommit = 'bc8d2a45b69d88eefa5638b92df436a7b9899770';
 function run(file, args, cwd, env = process.env) {
   const result = spawnSync(file, args, {cwd, env, encoding:'utf8', maxBuffer:128*1024*1024, timeout:600000});
   if (result.error || result.signal || result.status !== 0) throw new Error(`${file} failed: ${result.error?.message || result.stderr || result.stdout}`);
@@ -39,7 +37,7 @@ function prepare(cliRoot, output) {
   run('go', ['build','-trimpath','-buildvcs=false','-overlay',overlay,'-ldflags',`-X github.com/iloveZzz/yss-cli/internal/domain.BuildCommit=${cliCommit} -X github.com/iloveZzz/yss-cli/internal/domain.BuildSourceState=working-tree`,'-o',binary,'./cmd/yss'], cliRoot, env);
   const version = JSON.parse(run(binary, ['version','--json'], root));
   if (version.status !== 'ok' || version.result?.cliCommit !== cliCommit || version.result?.sourceState !== 'working-tree') throw new Error('candidate binary provenance mismatch');
-  const receipt = {schema_version:1, template_commit:template, template_tree:templateTree, cli_commit:cliCommit, cli_tree:cliTree,
+  const receipt = {schema_version:1, template_commit:template, template_tree:templateTree, cli_commit:cliCommit, cli_tree:cliTree, cli_root:cliRoot,
     binary, binary_sha256:sha256(readFileSync(binary)), lock_file:lockFile, lock_sha256:sha256(readFileSync(lockFile)),
     bundle_file:archive, bundle_sha256:sha256(readFileSync(archive)), binary_source_state:'working-tree',
     inspections:Object.fromEntries(['spec','backend'].map(profile => [profile, inspect(binary, profile)]))};
@@ -49,21 +47,11 @@ function prepare(cliRoot, output) {
   console.log(json({result:'prepared', receipt:receiptFile, receipt_sha256:sha256(readFileSync(receiptFile)), template, cli_commit:cliCommit, binary_sha256:receipt.binary_sha256, bundle_sha256:receipt.bundle_sha256, release_evidence:false}));
 }
 function execute(args) {
-  const file = process.env.YSS_PLUGIN_CANDIDATE_RECEIPT;
-  if (!file || !path.isAbsolute(file) || !/^[a-f0-9]{64}$/.test(process.env.YSS_PLUGIN_CANDIDATE_RECEIPT_SHA256 || '')) throw new Error('verified plugin candidate receipt is required');
-  const stat = lstatSync(file), bytes = readFileSync(file);
-  if (!stat.isFile() || stat.isSymbolicLink() || stat.nlink !== 1 || sha256(bytes) !== process.env.YSS_PLUGIN_CANDIDATE_RECEIPT_SHA256) throw new Error('candidate receipt digest mismatch');
-  const receipt = JSON.parse(bytes), template = git(root, 'rev-parse', 'HEAD');
-  if (receipt.template_tree !== git(root, 'rev-parse', 'HEAD^{tree}')) throw new Error('candidate template tree mismatch');
-  for (const [ref, expected] of [[receipt.lock_file, receipt.lock_sha256],[receipt.bundle_file, receipt.bundle_sha256]]) {
-    const item = lstatSync(ref);
-    if (!path.isAbsolute(ref) || !item.isFile() || item.isSymbolicLink() || sha256(readFileSync(ref)) !== expected) throw new Error('candidate material digest mismatch');
-  }
-  const candidate = validateCandidate(receipt, {template, cli:cliCommit, inspect:profile => inspect(receipt.binary, profile)});
+  const candidate = candidateFromEnvironment(root);
   if (args.length === 0) throw new Error('candidate test command required');
   let cwd = root;
   if (args[0] === '--tooling') { cwd = path.join(root, '.template-source/tooling/node'); args = args.slice(1); }
-  console.log(`plugin candidate template=${template} cli=${cliCommit} binary_sha256=${candidate.digest}; not release evidence`);
+  console.log(`plugin candidate template=${candidate.template_commit} cli=${cliCommit} binary_sha256=${candidate.digest}; not release evidence`);
   const result = spawnSync(process.execPath, args, {cwd, env:{...process.env, YSS_NATIVE_BINARY:candidate.binary, YSS_NATIVE_BINARY_SHA256:candidate.digest, YSS_PLUGIN_TEST_BINARY:candidate.binary, YSS_PLUGIN_BINARY:candidate.binary}, stdio:'inherit'});
   if (result.error || result.signal || !Number.isInteger(result.status)) throw new Error('candidate test did not exit normally');
   process.exitCode = result.status;

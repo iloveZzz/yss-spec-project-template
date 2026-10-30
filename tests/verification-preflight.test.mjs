@@ -210,3 +210,11 @@ test('维护审查的实际场景输入声明 Go',async()=>{
  const workflow=planTemplateVerification({changedFiles:['tests/scenarios/verify-maintenance-review-workflow-scenarios.mjs']});
  assert.equal(verificationToolRequirements(workflow).go,true);assert.equal(verificationToolRequirements(workflow).native_cli,false);
 });
+
+test('插件候选作为独立资源登记，缺少来源凭据时预检失败',()=>{
+ const result=verificationPreflight({root:path.resolve(import.meta.dirname,'..'),nodeVersion:'v24.21.0',environment:{},
+  plan:{strategy:'daily-necessary',commands:[{command:'node candidate-test',resources:['plugin-candidate']}]}});
+ assert.equal(result.status,'failed');
+ assert.deepEqual(result.errors.map(item=>item.name),['plugin-candidate']);
+ assert.match(result.errors[0].error,/verified plugin candidate receipt is required/);
+});

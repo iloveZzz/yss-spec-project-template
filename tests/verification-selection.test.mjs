@@ -650,3 +650,14 @@ test('设计原型来源与素材变更选择独立安装和引用检查', () =>
   assert.ok(checks.some(item => item.id === 'check.initialization-reference-boundaries'), ref);
  }
 });
+
+test('插件候选来源或执行器变化选择全部真实插件消费者',()=>{
+ for(const file of ['.template-source/scripts/plugin-candidate.mjs','.template-source/scripts/lib/plugin-candidate.mjs']){
+  const selected=planTemplateVerification({changedFiles:[file]}).commands;
+  for(const id of ['check.plugin-entry-migration','check.plugin-backend-profile','check.plugin-supported-scope']){
+   const check=selected.find(row=>row.id===id);
+   assert.ok(check,`${file}: ${id}`);
+   assert.ok(check.resources.includes('plugin-candidate'),`${id} must identify candidate evidence`);
+  }
+ }
+});
