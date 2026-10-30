@@ -28,7 +28,7 @@ test('初始化入口、Backend 策略和跨端引用变更运行同一个完整
  assert.equal(planTemplateVerification({changedFiles:['README.md']}).commands.some(item=>item.id==='check.initialization-reference-boundaries'),false);
 });
 test('设计工具和身份回归测试变更均选择真实设计工具检查',()=>{
- for(const file of ['.agents/skills/yss-design-system/scripts/design-md.mjs','.workbuddy/skills/yss-design-system/scripts/design-md.mjs','.template-source/tooling/node/test/design-md.test.mjs']){
+ for(const file of ['.agents/skills/yss-design-system/scripts/design-md.mjs','.workbuddy/skills/yss-design-system/scripts/design-md.mjs','.template-source/tooling/node/test/design-md.test.mjs','.agents/skills/yss-design-system/scripts/vendor/yaml.mjs','.workbuddy/skills/yss-design-system/scripts/vendor/yaml.mjs']){
   const checks=planTemplateVerification({changedFiles:[file]}).commands.filter(item=>item.id==='check.design-md-instance-identity');
   assert.equal(checks.length,1,file);
   assert.ok(checks[0].command.includes('.template-source/tooling/node/test/design-md.test.mjs'),file);

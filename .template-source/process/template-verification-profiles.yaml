@@ -14,6 +14,8 @@ profiles:
           - ".template-source/tooling/node/test/design-md.test.mjs"
           - ".agents/skills/yss-design-system/scripts/design-md.mjs"
           - ".workbuddy/skills/yss-design-system/scripts/design-md.mjs"
+          - ".agents/skills/yss-design-system/scripts/vendor/**"
+          - ".workbuddy/skills/yss-design-system/scripts/vendor/**"
           - ".template-source/design/**"
           - ".template-spec/design/**"
           - "scripts/vendor/yaml.mjs"
@@ -3145,6 +3147,8 @@ routing:
       - .template-source/tooling/node/test/design-md.test.mjs
       - .agents/skills/yss-design-system/scripts/design-md.mjs
       - .workbuddy/skills/yss-design-system/scripts/design-md.mjs
+      - .agents/skills/yss-design-system/scripts/vendor/**
+      - .workbuddy/skills/yss-design-system/scripts/vendor/**
     groups:
       - design-system
   - patterns:

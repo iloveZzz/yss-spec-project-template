@@ -13,7 +13,9 @@
 
 Token 或组件视觉变体变更必须先修改 `DESIGN.md`，再更新派生快照；治理说明不得复制具体值。业务状态、API、权限和交互验收继续使用 Spec、交互说明及状态矩阵。
 
-产品原型由 `yss-prototype-stage` 持有阶段合同：先评审低保真/状态矩阵，再选择 H1 视觉或 H2 流程，并按需调用 `product-design:index` focused workflow。YSS 生命周期负责校验档位选择、Prototype Evidence schema v4、Visual Baseline schema v1、统一 Design QA、用户确认和 Spec / OpenAPI 回填。原型阶段不得调用生产组件库；前端实现由独立的前端规格与 CLI 维护。
+已核验 `matt-spec-v1` 的新 Spec 由 `yss-product-lifecycle` 按未解决的问题选择表达，必要时调用 `yss-prototype-stage` 和 `yss-design-system`；不因存在 UI 强制低保真、H1/H2 或完整原型。检查按实际产物和风险裁剪，技术与 API 交给下游。
+
+以下资产、步骤和证据要求适用于采用对应历史产品设计合同的工作；已有合同继续按原政策核验，不作为新 Spec 的通用前提。历史原型由 `yss-prototype-stage` 持有阶段合同：先评审低保真/状态矩阵，再选择 H1 视觉或 H2 流程，并按需调用可用的 `product-design:index` focused workflow。YSS 生命周期负责校验档位选择、Prototype Evidence schema v4、Visual Baseline schema v1、统一 Design QA、用户确认和 Spec / OpenAPI 回填。原型阶段不得调用生产组件库；前端实现由独立的前端规格与 CLI 维护。
 
 进入 Spec 初稿 / 需求基线流程后，先沉淀产品总体设计 / 功能架构，再进入页面 / 原型 / 交互设计、Spec 校准、API 影响分析 / 契约草案或实现。有 UI 影响时，产品总体设计记录早期页面 / 流程草图与待验证问题；正式低保真原型属于产品设计阶段。无 UI 的功能仍需说明功能域、业务对象、模块边界及 API / 数据影响，并记录页面草图不适用的依据；不生成空原型。
 
@@ -41,15 +43,13 @@ Token 或组件视觉变体变更必须先修改 `DESIGN.md`，再更新派生�
 - `.template-spec/design/templates/prototype-evidence-template.yaml`：Prototype Evidence schema v4 原型档位、浏览器、统一 Design QA、Visual Baseline 引用、条件组件事实、评审和确认的机器可读证据清单。
 - `.template-spec/design/templates/visual-baseline-template.yaml`：Visual Baseline schema v1 页面语义、视口、状态、图片、mask、来源和采集环境的可移植清单。
 
-推荐技能：
+技能导航：
 
-- `yss-design-system`：项目设计系统与 Ant Design 企业级 UI 风格基线；页面设计、原型评审、UI 实现和主题 token 落地时默认先引用。Codex `$design-qa` 的 token / 字体对照读该技能的 `references/design-qa-theme.md`，以项目覆盖为准，不改上游 `design-qa` 插件。
-- `yss-prototype-stage`：跨 Agent 的原型阶段主合同，固定资产、证据、设计优先级与生命周期回流；其 `references/product-design-adapter.md` 把 Codex `product-design:index` 通用产出接入 YSS 双轨版本、项目主题和证据合同。
-- `product-design:index`：Codex 产品原型产出的主路由；根据输入是否有 URL、截图、Figma、代码目标或视觉方向，进入 `$get-context`、`$ideate`、`$prototype`、`$image-to-code`、`$url-to-code`、`$share` 或 `$design-qa` 等 focused skill。
-- Product Design focused skills：按 H1/H2 的问题边界产出视觉或流程设计资产；ideation 只在新/不确定视觉方向时强制。
-当前原型使用 `yss-prototype-stage` 的离线 HTML 适配器；历史 Provider 证据保持只读。
-- `prototype-review`：原型阶段评审门禁；未通过则不要进入 Spec 校准 / API 影响分析 / 契约草案。
-- 兼容入口：`product-design-prototype`、`high-fidelity-html-prototype` 只读迁移；新资产统一使用 `artifact.prototype-deliverable`、`yss-prototype-stage`、Prototype Evidence schema v4 与 Visual Baseline schema v1。
+- `yss-design-system`：需要视觉一致性时读取项目基线；可用且适用时，Codex `$design-qa` 的 token / 字体对照读取 `references/design-qa-theme.md`，以项目覆盖为准。
+- `yss-prototype-stage`：新 Spec 按问题选择必要的设计表达与检查；历史合同的原型适配、资产与证据见其 `references/product-design-adapter.md`。
+- `product-design:index` 与其 focused skills：可用且满足当前交付边界时按需使用；历史合同中的 H1/H2、ideation 和检查要求继续按原政策执行。不可用时使用 `yss-prototype-stage` 的适用方法并记录未验证项；关键问题无法验证时明确阻断，历史合同要求的工具或证据缺失时保留缺口。
+- `prototype-review`：按实际产物复核；历史合同要求的原型阶段评审继续适用。
+- 历史兼容入口：`product-design-prototype`、`high-fidelity-html-prototype` 只读迁移；原合同资产使用 `artifact.prototype-deliverable`、Prototype Evidence schema v4 与 Visual Baseline schema v1。历史 Provider 证据保持只读。
 
 推荐目录：
 

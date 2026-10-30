@@ -9,6 +9,52 @@ import { shipped } from '../scripts/lib/profile-distribution.mjs';
 const root = path.resolve(import.meta.dirname, '..');
 const policy = JSON.parse(fs.readFileSync(path.join(root, '.template-source/distribution/bundle-profile.json')));
 
+function copiedDesignSkill(t) {
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'yss standalone design '));
+  t.after(() => fs.rmSync(temp, {recursive:true,force:true}));
+  const skill = path.join(temp,'copied-skill'), project = path.join(temp,'target-project');
+  fs.cpSync(path.join(root,'.agents/skills/yss-design-system'),skill,{recursive:true});
+  fs.mkdirSync(project);
+  return {skill,project,temp};
+}
+
+function exportDesignExamples(f, output) {
+  return spawnSync(process.execPath,[path.join(f.skill,'scripts/export-craft-examples.mjs'),'--project-root',f.project,'--output',output],{cwd:f.project,encoding:'utf8'});
+}
+
+test('仅复制技能时入口可读取且缺项目数据不创建示例', t => {
+  const f=copiedDesignSkill(t), output=path.join(f.project,'examples');
+  assert.equal(fs.existsSync(path.join(f.temp,'.agents')),false);
+  assert.equal(fs.existsSync(path.join(f.temp,'scripts/vendor/yaml.mjs')),false);
+  const entry=fs.readFileSync(path.join(f.skill,'SKILL.md'),'utf8');
+  for (const [,ref] of entry.matchAll(/\]\(([^)]+)\)/g)) {
+    if (!ref.includes('://')) assert.equal(fs.existsSync(path.resolve(f.skill,ref)),true,ref);
+  }
+  const result=exportDesignExamples(f,output);
+  assert.notEqual(result.status,0);
+  assert.match(result.stderr,/variables\.css/);
+  assert.equal(fs.existsSync(output),false);
+});
+
+test('示例导出使用目标项目数据并拒绝覆盖已有输出', t => {
+  const f=copiedDesignSkill(t), output=path.join(f.project,'examples');
+  const tokens=path.join(f.project,'.template-spec/design/tokens');
+  fs.mkdirSync(tokens,{recursive:true});
+  fs.cpSync(path.join(root,'DESIGN.md'),path.join(f.project,'DESIGN.md'));
+  fs.cpSync(path.join(root,'.template-spec/design/tokens/variables.css'),path.join(tokens,'variables.css'));
+  const first=exportDesignExamples(f,output);
+  assert.equal(first.status,0,first.stderr);
+  assert.deepEqual(fs.readFileSync(path.join(output,'tokens.css')),fs.readFileSync(path.join(tokens,'variables.css')));
+  assert.match(fs.readFileSync(path.join(output,'index.html'),'utf8'),/tokens\.css/);
+  const provenance=JSON.parse(fs.readFileSync(path.join(output,'example-provenance.json'),'utf8'));
+  assert.equal(provenance.design_source.ref,'DESIGN.md');
+  fs.writeFileSync(path.join(output,'user-file.txt'),'保留');
+  const second=exportDesignExamples(f,output);
+  assert.notEqual(second.status,0);
+  assert.match(second.stderr,/拒绝覆盖/);
+  assert.equal(fs.readFileSync(path.join(output,'user-file.txt'),'utf8'),'保留');
+});
+
 function governedInstance(t, additionalSkills = []) {
   const instance = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'yss-spec-minimal-entry-')));
   t.after(() => fs.rmSync(instance, { recursive: true, force: true }));
@@ -65,6 +111,15 @@ test('新 Spec governed 初始安装不携带实现阶段，tracker 参考能从
   }
   const config=JSON.parse(fs.readFileSync(path.join(instance,'.template-spec/process/spec-workflow.json')));
   assert.equal(config.specWorkflow,cfg.specWorkflow);
+});
+
+test('新 Spec 仅补装设计系统即可离线检查设计投影漂移', t => {
+  const instance = governedInstance(t, ['yss-design-system']);
+  assert.equal(fs.existsSync(path.join(instance, '.agents/skills/yss-prototype-stage')), false);
+  assert.equal(fs.existsSync(path.join(instance, '.template-source/design/design-system-sync.yaml')), false);
+  const result = spawnSync(process.execPath, ['.agents/skills/yss-design-system/scripts/design-md.mjs', 'drift'], { cwd: instance, encoding: 'utf8' });
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /无漂移/);
 });
 
 test('新 Spec 按需补装原型后可构建并校验 H1/H2，且拒绝覆盖已有原型', t => {
