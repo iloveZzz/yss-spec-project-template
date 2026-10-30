@@ -1,3 +1,4 @@
+import {loadSkillRegistry} from '../../scripts/lib/skill-registry.mjs';
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
@@ -245,6 +246,13 @@ try {
   assert.equal(inspect({ route: { primary_skill: 'unknown-demo' } }).issues[0].code, 'skill-unknown');
   assert.equal(inspect({ route: { primary_skill: 'external-demo' } }).issues[0].code, 'external-skill-required');
   assert.equal(inspect({ route: { supporting_skills: ['product-design:index'] } }).issues[0].code, 'external-skill-required');
+  const frontendRefs = ['yss-ui', 'yss-formily', 'yss-frontend-scaffold-generator'];
+  const v2Registry = {...fixtureRegistry, retirement_contract: {...loadSkillRegistry().retirement_contract, retired_ids: frontendRefs}, external_skills: frontendRefs.map(id => ({id, source:'cross-repo-reference'}))};
+  for (const id of frontendRefs) assert.equal(inspect({registry:v2Registry,route:{primary_skill:id}}).issues[0].code,'external-skill-required');
+  for (const [key,id] of [['skills','main'],['platform_skills','platform-probe'],...frontendRefs.map(id=>['external_skills',id])]) {
+    const invalid=structuredClone(v2Registry);if(key!=='skills')invalid[key]=[{id,source:'cross-repo-reference'}];invalid.skills.push({id:'alias-shadow',aliases:[id]});
+    assert.throws(()=>inspect({registry:invalid,route:{primary_skill:id}}),/alias|别名/);
+  }
   assert.throws(() => inspect({ agentRuntime: 'unknown' }), /未知 Agent/);
   assert.equal(inspect({ agentRuntime: 'cursor' }).status, 'blocked');
 

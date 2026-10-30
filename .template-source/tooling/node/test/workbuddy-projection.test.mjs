@@ -78,7 +78,7 @@ for (const profile of ['spec', 'backend']) test(`WorkBuddy ${profile} sync prese
   cpSync(new URL(origin, import.meta.url), path.join(f.repositoryRoot, 'scripts/lib/skill-supply-chain.mjs'));
   cpSync(new URL('../../../../scripts/lib/workbuddy-projection.mjs', import.meta.url), path.join(f.repositoryRoot, 'scripts/lib/workbuddy-projection.mjs'));
   mkdirSync(path.join(f.repositoryRoot, 'scripts/vendor'), { recursive: true });
-  for (const ref of ['scripts/lib/repository-mode.mjs', 'scripts/vendor/yaml.mjs']) cpSync(new URL(`../../../../${ref}`, import.meta.url), path.join(f.repositoryRoot, ref));
+  for (const ref of ['scripts/lib/repository-mode.mjs', 'scripts/lib/skill-retirement-contract.mjs', 'scripts/lib/skill-retirement-projection.mjs', 'scripts/vendor/yaml.mjs']) cpSync(new URL(`../../../../${ref}`, import.meta.url), path.join(f.repositoryRoot, ref));
   writeFileSync(path.join(f.repositoryRoot, 'skills-lock.json'), JSON.stringify({version:3,skills:{shared:{},platform:{}}}));
   mkdirSync(path.dirname(f.target), { recursive: true });
   const link = path.join(path.dirname(f.target), 'personal');

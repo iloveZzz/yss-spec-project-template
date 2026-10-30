@@ -6,6 +6,8 @@
 
 Run the loop. Watch it go red — the bug appears.
 
+If you deliberately mutate code or a fixture to manufacture a failure, compare the original and changed bytes first: the intended edit must actually land. Then confirm the red result is the target symptom, not an unrelated error. A no-op replacement is not mutation evidence. An existing real failure needs no artificial mutation; use a disposable fixture without resetting or overwriting user work.
+
 Confirm:
 
 - [ ] The loop produces the failure mode the **user** described — not a different failure that happens to be nearby. Wrong bug = wrong fix.

@@ -5,6 +5,8 @@ import { isTemplateSource } from "./repository-mode.mjs";
 import { loadSkillRegistry } from "./skill-registry.mjs";
 import { OBSOLETE } from "./skill-supply-chain.mjs";
 
+import { readRetirementContract } from './skill-retirement-contract.mjs';
+
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
 export const RETIRED_FRONTEND_SKILLS = ["file-export-download", "formily-foundation", "formily-linkage-effects", "formily-mode-slot-detail", "formily-step-flow", "frontend-commit", "theme-token-usage", "yedit-table-usage", "yss-api-integration", "yss-formily", "yss-formily-schema-generator", "yss-frontend-scaffold-generator", "yss-hook", "yss-ui", "yss-ui-business-page-generation", "ytable-usage", "ytree-usage"];
@@ -14,6 +16,8 @@ function fail(message) {
 }
 
 export function validateSkillGovernance({ read = (relative) => readFileSync(path.join(ROOT, relative), "utf8"), exists = (relative) => existsSync(path.join(ROOT, relative)) } = {}) {
+  const registry = loadSkillRegistry();
+  const retired = readRetirementContract(registry, {legacyIds: OBSOLETE});
   const cursorRules = read(".cursorrules");
   for (const marker of ["yss-project.yaml", ".template-spec/agents/yss-skill-registry.yaml", ".agents/skills", ".claude/skills"]) {
     if (!cursorRules.includes(marker)) fail(`Cursor 薄入口缺少路由标记: ${marker}`);
@@ -22,14 +26,13 @@ export function validateSkillGovernance({ read = (relative) => readFileSync(path
 
   // 前端技能整线退役（2026-10-17）：前端由独立规格与 CLI 维护，本模板不得回流前端技能、上游清单或 YSS UI MCP 配置。
   for (const id of RETIRED_FRONTEND_SKILLS) {
-    if (!OBSOLETE.has(id)) fail(`退役前端技能未登记到 OBSOLETE: ${id}`);
+    if (!retired.has(id)) fail(`退役前端技能未登记到 OBSOLETE: ${id}`);
     if (exists(`.agents/skills/${id}`) || exists(`.claude/skills/${id}`)) fail(`退役前端技能不得保留物理目录或投影: ${id}`);
   }
   for (const ref of [".agents/skills/.yss-skills-manifest.json", ".agents/rules/yss-ai-skills.md", ".agents/mcp_config.json", ".cursor/mcp.json", ".vscode/mcp.json", ".template-spec/user-guide/yss-ui-mcp.md"]) {
     if (exists(ref)) fail(`前端技能退役后不得保留: ${ref}`);
   }
 
-  const registry = loadSkillRegistry();
   const canonicalIds = new Set(registry.skills.map((skill) => skill.id));
   const aliases = new Map(registry.skills.flatMap((skill) => skill.aliases.map((alias) => [alias, skill.id])));
   const legacy = new Set();

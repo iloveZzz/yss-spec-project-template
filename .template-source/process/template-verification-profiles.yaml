@@ -71,6 +71,8 @@ profiles:
         inputs_complete: true
         input_patterns:
           - "scripts/lib/skill-registry.mjs"
+          - "scripts/lib/skill-retirement-contract.mjs"
+          - "scripts/lib/skill-retirement-projection.mjs"
           - "scripts/lib/orchestration-contract.mjs"
           - ".template-spec/process/orchestration-contract.yaml"
           - ".template-spec/process/orchestration/**"
@@ -124,6 +126,8 @@ profiles:
           - ".template-source/contracts/README.md"
           - ".template-source/contracts/2026-10-22-matt-method-optimization-design.md"
           - ".template-source/contracts/2026-10-22-matt-method-optimization-plan.md"
+          - ".template-source/contracts/2026-10-29-matt-skills-integration-closure-design.md"
+          - ".template-source/contracts/2026-10-29-matt-skills-integration-closure-plan.md"
         depends_on: []
         failure_mode: "说明文档复述门禁数、阶段数、投影根数量或硬编码与 lock 不一致的上游 revision"
       - id: check.daily-test-evidence
@@ -1330,6 +1334,8 @@ profiles:
           - ".agents/skills/yss-product-lifecycle/references/orchestration-cont\
             ract.yaml"
           - "scripts/lib/skill-registry.mjs"
+          - "scripts/lib/skill-retirement-contract.mjs"
+          - "scripts/lib/skill-retirement-projection.mjs"
           - "tests/explicit-invocation.test.mjs"
         depends_on: []
         failure_mode: "被生命周期编排器路由或合同声明为模型调用的技能被设为显式，或显式集合被无意改动"
@@ -1484,6 +1490,8 @@ profiles:
           - "scripts/harness-metrics"
           - "scripts/lib/harness-metrics.mjs"
           - "scripts/lib/skill-registry.mjs"
+          - "scripts/lib/skill-retirement-contract.mjs"
+          - "scripts/lib/skill-retirement-projection.mjs"
           - "scripts/lib/skill-supply-chain.mjs"
           - "scripts/lib/validation-phase.mjs"
           - "scripts/lib/source-context-snapshot.mjs"
@@ -1833,6 +1841,8 @@ profiles:
           - ".agents/skills/*/agents/openai.yaml"
           - "scripts/verify-skill-registry"
           - "scripts/lib/skill-registry.mjs"
+          - "scripts/lib/skill-retirement-contract.mjs"
+          - "scripts/lib/skill-retirement-projection.mjs"
           - "yss-public-skills.json"
           - "scripts/*"
           - "scripts/lib/*.mjs"
@@ -2370,6 +2380,19 @@ profiles:
           - "tests/test_setup_yss_bootstrap.py"
         depends_on: []
         failure_mode: "首次引导执行未核验程序、接受不安全发行材料或覆盖现有目录，或环境诊断泄露网络凭据"
+      - id: check.matt-integration-fixture
+        run: "node --test tests/matt-integration-fixture.test.mjs"
+        group: skills
+        inputs_complete: true
+        input_patterns:
+          - "tests/matt-integration-fixture.test.mjs"
+          - "tests/fixtures/spec-standalone/prepare-matt-integration.mjs"
+          - "tests/fixtures/spec-standalone/matt-governed-setup.mjs"
+          - "tests/fixtures/spec-standalone/prepare.mjs"
+          - ".template-source/scripts/matt-integration-scenarios.json"
+          - ".template-source/distribution/entries/spec-skills-AGENTS.md"
+        depends_on: []
+        failure_mode: "普通场景携带治理身份、冻结来源缺失或无效变异被误记为目标红灯"
       - id: check.skills-agent-eval
         run: "python3 -m unittest discover -s .template-source/scripts/tests -p test_skills_agent_eval.py"
         group: skills
@@ -2403,16 +2426,21 @@ profiles:
         depends_on: []
         failure_mode: "公开技能包携带越界或失效链接、符号链接、凭据或不可移植路径，或 Backend 覆盖层重新分发过期共享维护技能"
       - id: check.retired-skill-ids
-        run: "node --test tests/retired-skill-ids.test.mjs"
+        run: "node --test tests/retired-skill-ids.test.mjs tests/skill-retirement-contract.test.mjs"
         group: skills
         inputs_complete: true
         input_patterns:
           - ".agents/skills/**"
+          - ".agents/skills/archify/**" # 退役删除路径由既有扫描承接
           - ".template-spec/agents/yss-skill-registry.yaml"
           - "skills-lock.json"
           - "profiles/**"
           - ".template-source/process/retired-skill-scan-policy.json"
           - "scripts/lib/skill-retirement.mjs"
+          - "scripts/lib/skill-retirement-contract.mjs"
+          - "scripts/lib/skill-retirement-projection.mjs"
+          - "tests/skill-retirement-contract.test.mjs"
+          - "tests/fixtures/retired-skill-ids-v1.json"
           - "scripts/lib/skill-supply-chain.mjs"
           - "scripts/lib/workbuddy-projection.mjs"
           - "scripts/verify-retired-skill-ids"
@@ -3509,7 +3537,9 @@ routing:
       - tests/verification-delivery-run.test.mjs
     groups:
       - candidate-integrity
-  - patterns: [ "tests/public-skill-export.test.mjs", "tests/retired-skill-ids.test.mjs", "tests/spec-standalone-fixture.test.mjs", "tests/fixtures/spec-standalone/**" ]
+  - patterns: [ "tests/matt-integration-fixture.test.mjs", ".template-source/scripts/matt-integration-scenarios.json" ]
+    groups: [ "skills" ]
+  - patterns: [ "tests/public-skill-export.test.mjs", "tests/retired-skill-ids.test.mjs", "tests/fixtures/retired-skill-ids-v1.json", "tests/skill-retirement-contract.test.mjs", "tests/spec-standalone-fixture.test.mjs", "tests/fixtures/spec-standalone/**" ]
     groups: [ "skills" ]
   # 已移除的 Superpowers 输出与退役维护文档测试只保留删除 diff 的路由墓碑，不恢复内容检查
   - patterns:
@@ -3543,7 +3573,7 @@ groups:
           Profile)' tests/cli-retirement.test.mjs"
         when: template-source
         id: check.cli-content-identity
-      - run: "node --test --test-name-pattern='^(Spec 原生阶段资源|现役 archify)'
+      - run: "node --test --test-name-pattern='^(Spec 原生阶段资源|现役 yss-research)'
           tests/cli-retirement.test.mjs"
         when: template-source
         id: check.cli-content-identity-install
@@ -3552,7 +3582,7 @@ groups:
         when: template-source
         id: check.cli-content-identity-sync
       - run: "node --test --test-skip-pattern='^(按需安装两个后端脚手架|公开 Bundle 导出|已移除前端
-          Profile)' --test-skip-pattern='^(Spec 原生阶段资源|现役 archify)'
+          Profile)' --test-skip-pattern='^(Spec 原生阶段资源|现役 yss-research)'
           --test-skip-pattern='^backend: 内容来源' tests/cli-retirement.test.mjs"
         when: template-source
         id: check.cli-content-identity-rest
@@ -3608,7 +3638,7 @@ groups:
           Profile)' tests/cli-retirement.test.mjs"
         when: template-source
         id: check.cli-content-identity
-      - run: "node --test --test-name-pattern='^(Spec 原生阶段资源|现役 archify)'
+      - run: "node --test --test-name-pattern='^(Spec 原生阶段资源|现役 yss-research)'
           tests/cli-retirement.test.mjs"
         when: template-source
         id: check.cli-content-identity-install
@@ -3617,7 +3647,7 @@ groups:
         when: template-source
         id: check.cli-content-identity-sync
       - run: "node --test --test-skip-pattern='^(按需安装两个后端脚手架|公开 Bundle 导出|已移除前端
-          Profile)' --test-skip-pattern='^(Spec 原生阶段资源|现役 archify)'
+          Profile)' --test-skip-pattern='^(Spec 原生阶段资源|现役 yss-research)'
           --test-skip-pattern='^backend: 内容来源' tests/cli-retirement.test.mjs"
         when: template-source
         id: check.cli-content-identity-rest
@@ -3874,6 +3904,8 @@ groups:
         id: check.ad648590e5e06103
       - run: scripts/verify-prototype-backend-scaffold-scenarios
         id: check.3851a250b368d3ae
+      - run: node --test tests/matt-integration-fixture.test.mjs
+        id: check.matt-integration-fixture
       - run: scripts/verify-matt-yss-integration-scenarios
         id: check.d32468f5dd6a4654
       - run: scripts/verify-yss-implementation-contract-compiler-scenarios
@@ -4017,6 +4049,7 @@ gates:
       - check.public-skill-export
       - check.setup-yss-bootstrap
       - check.skills-agent-eval
+      - check.matt-integration-fixture
       - check.retired-skill-ids
       - check.profile-consistency
     audit_status: conservative-complete

@@ -13,17 +13,22 @@ When exploring the codebase, read `CONTEXT.md` (if it exists) so test names and 
 
 Tests verify behavior through public interfaces, not implementation details. Code can change entirely; tests shouldn't. A good test reads like a specification — "user can checkout with valid cart" tells you exactly what capability exists — and survives refactors because it doesn't care about internal structure.
 
+For the critical boundaries selected in this change, explain what failure the tests can detect and which important cases they miss in the current task or PR. Separate unexecuted checks, unavailable environments and observed passes; simple assertions do not each need a report.
+
 See [tests.md](tests.md) for examples and [mocking.md](mocking.md) for mocking guidelines.
 
 ## Seams — where tests go
 
 A **seam** is the public boundary you test at: the interface where you observe behavior without reaching inside. Tests live at seams, never against internals.
 
-**Test only at pre-agreed seams.** Use the delivery path already established by the lifecycle owner. A qualified `daily` task takes its public seam from the confirmed Ticket / PR acceptance examples and current engineering baseline; it does not first create an approved Slice or a stage decision. That path requires the local enabled `request_triage.delivery_path` policy and a fixed CLI supporting `route` / `verify-daily`; Profiles not enabled by that policy and old CLIs are explicitly unsupported. Do not invent daily qualification inside this skill.
+Use the task branch already established by the caller; this skill does not route work or grant qualification.
 
-For `governed` YSS implementation, first read the current approved Slice Implementation Contract, its public seam references and the applicable user-decision evidence. Reuse confirmed seams covered by the same valid contract/decision version, scope and basis without asking the user again; follow the existing user-decision protocol selected by root `AGENTS.md` and the lifecycle owner when checking approval continuation.
+- **Standalone:** derive the seam from the user's existing acceptance criteria and the actual public interface. No lifecycle setup, Tracker, checkpoint or Slice is required. A known interface and confirmed acceptance are enough; do not ask the user to approve an internal seam name again.
+- **Daily:** use the same Ticket / PR acceptance examples, engineering baseline and current route result under the repository's enabled policy. Do not invent daily qualification here.
+- **Standard:** use the current Spec-lite, the same task and still-valid user decisions. Check relevant changed inputs or revoked decisions under the existing protocol; do not replace this path with a Slice prerequisite.
+- **Governed implementation:** consume the current approved Slice Implementation Contract, its public seams and applicable decisions. A stale or missing formal contract returns to its owner; it does not turn the task into standalone work.
 
-If a seam or acceptance is missing or materially changed, investigate the missing facts and stop the dependent tests and implementation until it is confirmed. In a daily task update the same task evidence; new policy-excluded impacts stop affected actions and return to the lifecycle owner for governed routing. In governed work, a stale contract or unverifiable confirmation returns to the lifecycle owner to update the contract and obtain any required decision. Independent work may continue. Elapsed time and unrelated file changes do not expire seam confirmation; changed relevant inputs require freshness and scope checks under the same protocol. No test is written at an unconfirmed seam. Agreeing seams directs testing effort to critical paths and complex logic.
+Inspect existing material before asking for a genuinely missing business decision. Reuse a confirmed seam while its scope and relevant basis remain valid. If acceptance is missing or materially changed, stop only the dependent tests and implementation and return the gap to the current owner; independent authorized work continues. Routine technical choices within the agreed behavior are the implementer's responsibility. Unrelated edits and elapsed time alone do not invalidate a decision.
 
 When the shape of that interface is itself in question — how deep the module is, where the seam belongs, what the interface should expose — use the `/codebase-design` skill for the vocabulary. It is the shared source of the module, interface, depth, seam, adapter, leverage and locality terms, and it is a reference to consult, not a session to run.
 

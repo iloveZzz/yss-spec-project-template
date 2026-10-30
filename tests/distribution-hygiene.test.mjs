@@ -29,15 +29,17 @@ function write(root, relative, content) {
 }
 
 test("未允许的宿主路径失败，测试夹具与历史 evidence 不阻断", (t) => {
-  const { root, git } = fixture(t);
+  const config = JSON.parse(fs.readFileSync(path.join(ROOT, HYGIENE_ALLOW_FILE), "utf8"));
+  config.allow.push({ path: ".agents/skills/sample/test/paths.test.mjs", reason: "Windows 路径测试夹具" });
+  const { root, git } = fixture(t, config);
   write(root, ".template-spec/process/sample.md", "本机路径 /Users/someone/work 不应进入实例。\n");
-  write(root, ".agents/skills/archify/test/release-package-gates.test.mjs", "const bin = 'C:\\Program Files\\Git\\bin\\bash.exe';\n");
+  write(root, ".agents/skills/sample/test/paths.test.mjs", "const bin = 'C:\\Program Files\\Git\\bin\\bash.exe';\n");
   write(root, ".template-spec/engineering/evidence/log.txt", "historical /Users/legacy/path\n");
   git("add", "-A");
   const result = scanDistributionHygiene({ root });
   assert.equal(result.violations.length, 1, result.violations.join("\n"));
   assert.match(result.violations[0], /\.template-spec\/process\/sample\.md:1:/);
-  assert.ok(result.allowedReferences.some((entry) => entry.includes("archify/test/release-package-gates.test.mjs")));
+  assert.ok(result.allowedReferences.some((entry) => entry.includes("sample/test/paths.test.mjs")));
   assert.ok(!result.allowedReferences.some((entry) => entry.includes("engineering/evidence")));
 });
 

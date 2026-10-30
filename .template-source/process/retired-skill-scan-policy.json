@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "source": "scripts/lib/skill-supply-chain.mjs#OBSOLETE",
+  "source": ".template-spec/agents/yss-skill-registry.yaml#/retirement_contract/retired_ids",
   "default_mode": "exact",
   "contextual": [
     {
@@ -73,7 +73,7 @@
     },
     {
       "path": "scripts/lib/skill-supply-chain.mjs",
-      "reason": "OBSOLETE 单一来源本身"
+      "reason": "registry v2 派生的旧 reader 兼容清单，由摘要保护生成"
     },
     {
       "path": "scripts/lib/skill-retirement.mjs",

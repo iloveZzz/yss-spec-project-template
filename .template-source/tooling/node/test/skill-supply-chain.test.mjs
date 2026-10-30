@@ -29,7 +29,7 @@ test("FR-006：大型 Git 清单下技能同步不再检查或删除用户保留
     cpSync(new URL("../../../../scripts/lib/skill-supply-chain.mjs", import.meta.url), path.join(root, "scripts/lib/skill-supply-chain.mjs"));
     cpSync(new URL("../../../../scripts/lib/workbuddy-projection.mjs", import.meta.url), path.join(root, "scripts/lib/workbuddy-projection.mjs"));
     mkdirSync(path.join(root, "scripts/vendor"), { recursive: true });
-    for (const ref of ["scripts/lib/repository-mode.mjs", "scripts/vendor/yaml.mjs"]) cpSync(new URL(`../../../../${ref}`, import.meta.url), path.join(root, ref));
+    for (const ref of ["scripts/lib/repository-mode.mjs", "scripts/lib/skill-retirement-contract.mjs", "scripts/lib/skill-retirement-projection.mjs", "scripts/vendor/yaml.mjs"]) cpSync(new URL(`../../../../${ref}`, import.meta.url), path.join(root, ref));
     mkdirSync(path.join(root, ".codex/skills/unlocked"), { recursive: true });
     writeFileSync(path.join(root, ".codex/skills/unlocked/SKILL.md"), "unlocked");
     git(["add", ".codex/skills/unlocked/SKILL.md"]);

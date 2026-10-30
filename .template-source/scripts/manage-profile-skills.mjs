@@ -53,6 +53,8 @@ try {
   if (!lstatSync(target).isFile()) throw new TypeError('Profile 锁必须为普通文件');
   const before = readFileSync(target);
   syncDailyDeliveryReference(root, { check: action !== 'sync' || values.check });
+  const { syncBackendRetirementProjection } = await import('../../scripts/lib/skill-retirement-projection.mjs');
+  syncBackendRetirementProjection({ root, check: values.check });
   const { composeProfileTree } = await import('../../scripts/lib/profile-tree.mjs');
   const tree = composeProfileTree('backend', { root });
   const supply = await import(pathToFileURL(path.join(tree, 'scripts/lib/skill-supply-chain.mjs')));

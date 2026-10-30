@@ -2,11 +2,13 @@ import { spawnSync } from "node:child_process";
 import { existsSync, lstatSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { OBSOLETE, PROJECTION_ROOTS } from "./skill-supply-chain.mjs";
+import { PROJECTION_ROOTS } from "./skill-supply-chain.mjs";
 import { parseDocument } from "../vendor/yaml.mjs";
 
 export const POLICY_FILE = ".template-source/process/retired-skill-scan-policy.json";
-export const POLICY_SOURCE = "scripts/lib/skill-supply-chain.mjs#OBSOLETE";
+import { readRetirementContract, readLegacyRetirementIds, LEGACY_RETIREMENT_SOURCE } from './skill-retirement-contract.mjs';
+
+export const POLICY_SOURCE = ".template-spec/agents/yss-skill-registry.yaml#/retirement_contract/retired_ids";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const MODES = ["exact", "contextual", "not-text-scanned"];
 
@@ -39,9 +41,11 @@ export function loadRetiredScanPolicy({ root = ROOT } = {}) {
   const policy = readJson(file);
   if (!policy || typeof policy !== "object" || Array.isArray(policy)) fail("策略必须是对象");
   if (policy.schema_version !== 1) fail("schema_version 必须为 1");
-  if (policy.source !== POLICY_SOURCE) fail("source 必须为 " + POLICY_SOURCE);
+  const registryFile = path.join(root, ".template-spec/agents/yss-skill-registry.yaml");
+  const v2 = existsSync(registryFile) && readYaml(registryFile)?.retirement_contract?.schema_version === 2;
+  if (policy.source !== POLICY_SOURCE && (v2 || policy.source !== LEGACY_RETIREMENT_SOURCE)) fail("source 必须为 " + POLICY_SOURCE);
   if (policy.default_mode !== "exact") fail("default_mode 必须为 exact");
-  const obsolete = new Set(OBSOLETE);
+  const obsolete = new Set(retiredSkillIds({root}));
   const modes = new Map([...obsolete].map((id) => [id, "exact"]));
   const seen = new Set();
   for (const mode of MODES) {
@@ -71,8 +75,11 @@ export function loadRetiredScanPolicy({ root = ROOT } = {}) {
   return { ...policy, exactIds, contextualIds, notScannedIds, modes };
 }
 
-export function retiredSkillIds() {
-  return [...OBSOLETE];
+export function retiredSkillIds({root = ROOT} = {}) {
+  const file = path.join(root, '.template-spec/agents/yss-skill-registry.yaml');
+  return [...readRetirementContract(existsSync(file) ? readYaml(file) : {}, {
+    get legacyIds() { return readLegacyRetirementIds(readFileSync(path.join(root, "scripts/lib/skill-supply-chain.mjs"), "utf8")); }
+  })];
 }
 
 function allowedReference(policy, relative) {
@@ -97,7 +104,7 @@ function lockNames(file) {
 
 function hardViolations(root) {
   const found = [];
-  const obsolete = new Set(OBSOLETE);
+  const obsolete = new Set(retiredSkillIds({root}));
   for (const base of [".agents/skills", ...PROJECTION_ROOTS]) {
     for (const name of obsolete) if (existsSync(path.join(root, base, name))) found.push("physical:" + base + "/" + name);
   }
@@ -131,7 +138,7 @@ function gitFiles(root) {
 
 export function scanRetiredSkillIds({ root = ROOT } = {}) {
   const policy = loadRetiredScanPolicy({ root });
-  const exact = new RegExp("(?<![a-z0-9-])(?:" + policy.exactIds.map(escapeId).join("|") + ")(?![a-z0-9-])", "u");
+  const exact = policy.exactIds.length ? new RegExp("(?<![a-z0-9-])(?:" + policy.exactIds.map(escapeId).join("|") + ")(?![a-z0-9-])", "u") : null;
   const contextual = policy.contextualIds.length ? new RegExp("(?:" + policy.contextualIds.map(contextualPattern).join("|") + ")", "u") : null;
   const hard = hardViolations(root);
   const violations = [];
@@ -144,12 +151,12 @@ export function scanRetiredSkillIds({ root = ROOT } = {}) {
     const bytes = readFileSync(absolute);
     if (bytes.includes(0)) continue;
     bytes.toString("utf8").split(/\r?\n/).forEach((line, index) => {
-      const hit = exact.test(line) || (contextual && contextual.test(line));
+      const hit = (exact && exact.test(line)) || (contextual && contextual.test(line));
       if (!hit) return;
       const entry = "./" + relative + ":" + (index + 1) + ":" + line;
       if (allowedReference(policy, relative)) allowedReferences.push(entry);
       else violations.push(entry);
     });
   }
-  return { policy, hard, violations, allowedReferences, retiredIds: [...OBSOLETE] };
+  return { policy, hard, violations, allowedReferences, retiredIds: retiredSkillIds({root}) };
 }
