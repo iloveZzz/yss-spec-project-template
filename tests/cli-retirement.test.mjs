@@ -54,6 +54,7 @@ for(const profile of NATIVE_PROFILES)test(`${profile}: 内容来源、预演、�
   assert.equal(metadata.profile,profile);assert.equal(metadata.protocolVersion,1);assert.equal(metadata.templateCommit,inspection.templateCommit);assert.equal(metadata.snapshotHash,inspection.sourceSnapshotHash);
   assert.match(fs.readFileSync(path.join(target,'yss-project.yaml'),'utf8'),/repository_mode:\s*project-instance/);
   for(const ref of ['.template-source','submodules','.github'])assert.equal(fs.existsSync(path.join(target,ref)),false);
+  if(!fs.existsSync(path.join(target,'CONTEXT.md')))put(target,'CONTEXT.md','# 用户业务词汇\n');
   fs.appendFileSync(path.join(target,'CONTEXT.md'),'\n用户自定义备注：保留当前业务词汇。\n');
   const context=fs.readFileSync(path.join(target,'CONTEXT.md'));
   put(target,'src/business.txt','dirty business',0o600);put(target,'.github/workflows/user.yml','name: User\n',0o644);put(target,'.git/index','staged index',0o600);
@@ -90,23 +91,22 @@ test('项目内计划输出与后续输入漂移按各自错误码拒绝并保�
   put(target,'.git/index','original index');const initial=tree(target);
   runNative(['sync','--root',target,'--plan','--out',path.join(target,'.git/index')],{expectedCode:'PROTECTED'});assert.deepEqual(tree(target),initial);
   const plan=path.join(base,'sync.json');runNative(['sync','--root',target,'--plan','--out',plan]);
-  fs.appendFileSync(path.join(target,'CONTEXT.md'),'\n后续用户修改\n');const modified=tree(target);
+  fs.appendFileSync(path.join(target,'.yss.json'),'\n');const modified=tree(target);
   runNative(['sync','--root',target,'--apply','--plan-file',plan],{expectedCode:'INPUT_DRIFT'});assert.deepEqual(tree(target),modified);
 });
 
-test('Spec 日常路线拒绝前端声明与实际前端文件，保留后端路线',t=>{
-  const base=scratch(t),root=path.join(base,'spec');let repo=path.join(base,'implementation');
-  const source=path.resolve(import.meta.dirname,'..');
-  initializeNative('spec',root);
-  const orchestration=loadOrchestrationContract(ref=>fs.readFileSync(path.join(source,ref)),'.template-spec/process/orchestration-contract.yaml');
-  for(const ref of ['CONTEXT.md','AGENTS.md','.template-spec/agents/issue-tracker.md',...orchestration.refs])put(root,ref,fs.readFileSync(path.join(source,ref)));
+test('Backend 3.0 日常路线拒绝前端声明与实际前端文件',t=>{
+  const base=scratch(t),root=path.join(base,'backend');let repo=path.join(base,'implementation');
+  initializeNative('backend',root);
+  const orchestration=loadOrchestrationContract(ref=>fs.readFileSync(path.join(root,ref)),'.template-spec/process/orchestration-contract.yaml');
   put(root,'facts.md','目标、验收、风险、基线与回滚均为本次测试输入。\n');
-  const skill='适用后端技能\n';put(root,'skill.md',skill);
+  const skillRef=path.join('.agents/skills',fs.readdirSync(path.join(root,'.agents/skills'))[0],'SKILL.md');
+  const skill=fs.readFileSync(path.join(root,skillRef));
   put(repo,'src/server.js','export const enabled = false;\n');
   const git=(...args)=>{const r=spawnSync('git',args,{cwd:repo,encoding:'utf8'});assert.equal(r.status,0,r.stderr);return r.stdout.trim();};
   git('init','--quiet');git('add','.');git('-c','user.name=Test','-c','user.email=test@example.invalid','commit','--quiet','-m','baseline');
   const baseline=git('rev-parse','HEAD');
-  const record={schema_version:2,policy_version:2,task_id:'AR12C-DAILY',delivery_path:'daily',formal_bindings:[],goal_ref:'facts.md',acceptance_ref:'facts.md',repository:{root:repo,baseline_sha:baseline,baseline_ref:'facts.md',rollback_ref:'facts.md'},scope:{paths:['src/'],impacts:['backend','no-api'],risk_ref:'facts.md'},skills:[{ref:'skill.md',digest:`sha256:${nativeDigest(skill)}`}],inputs:[],commands:[{argv:['node','--check','src/server.js'],cwd:'.'}],api:{mode:'none',reason:'无 API 变化'}};
+  const record={schema_version:2,policy_version:2,task_id:'AR12C-DAILY',delivery_path:'daily',formal_bindings:[],goal_ref:'facts.md',acceptance_ref:'facts.md',repository:{root:repo,baseline_sha:baseline,baseline_ref:'facts.md',rollback_ref:'facts.md'},scope:{paths:['src/'],impacts:['backend','no-api'],risk_ref:'facts.md'},skills:[{ref:skillRef,digest:`sha256:${nativeDigest(skill)}`}],business_input:{mode:'standalone',side:'backend',ref:'facts.md',digest:`sha256:${nativeDigest(fs.readFileSync(path.join(root,'facts.md')))}`,conflicts:[]},inputs:[],commands:[{argv:['node','--check','src/server.js'],cwd:'.'}],api:{mode:'none',reason:'无 API 变化'}};
   const task=()=>put(root,'task.md',`# 日常任务\n\n<!-- yss-task-evidence -->\n\`\`\`json\n${JSON.stringify(record)}\n\`\`\`\n`);
   const args=action=>['lifecycle',action,'--root',root,'--task','task.md','--implementation-root',repo,'--base',baseline];
   put(repo,'src/server.js','export const enabled = true;\n');task();
@@ -138,6 +138,16 @@ test('Spec 日常路线拒绝前端声明与实际前端文件，保留后端路
   }
 });
 
+test('Spec 3.0 旧生命周期路由明确拒绝且保留项目文件',t=>{
+  const base=scratch(t),root=path.join(base,'spec');
+  initializeNative('spec',root);
+  put(root,'src/business.txt','用户内容',0o600);
+  const before=tree(root);
+  const result=runNative(['lifecycle','status','--root',root],{expectedCode:'SPEC_COMMAND_NOT_APPLICABLE'});
+  assert.match(JSON.stringify(result),/SPEC_COMMAND_NOT_APPLICABLE/);
+  assert.deepEqual(tree(root),before);
+});
+
 test('公开 Bundle 导出保持完整文件 bytes、mode 和 manifest，拒绝覆盖目录',t=>{
   nativeBinary();const base=scratch(t),out=path.join(base,'export');
   const result=runNative(['bundle','export','--profile','spec','--out',out]).result;
@@ -148,23 +158,29 @@ test('公开 Bundle 导出保持完整文件 bytes、mode 和 manifest，拒绝�
   runNative(['bundle','export','--profile','spec','--out',out],{expectedCode:'EXISTS'});assert.deepEqual(tree(out),before);
 });
 
-test('Spec 原生阶段资源与 Skill 补装通过保存计划完整闭包安装且保留用户词汇',t=>{
+test('Spec 3.0 按需补装设计技能并保留项目文件',t=>{
  const base=scratch(t),target=path.join(base,'selected');initializeNative('spec',target);
- const context=fs.readFileSync(path.join(target,'CONTEXT.md')),before=tree(target),plan=path.join(base,'assets.json');
- const assets=runNative(['assets','ensure','stage.system-data-engineering','--profile','spec','--root',target,'--plan','--out',plan]).result;
- assert.deepEqual(tree(target),before);assert.ok(assets.changes.some(row=>row.path==='scripts/backend-delivery'));
- runNative(['assets','ensure','stage.system-data-engineering','--profile','spec','--root',target,'--apply','--plan-file',plan]);
- assert.ok(fs.existsSync(path.join(target,'scripts/backend-delivery')));assert.ok(fs.existsSync(path.join(target,'.agents/skills/yss-implementation-contract-compiler/SKILL.md')));
- applyNative('skills','spec',target,path.join(base,'skill.json'),['ensure','yss-tactical-design']);
- assert.ok(fs.existsSync(path.join(target,'.agents/skills/yss-tactical-design/SKILL.md')));assert.ok(fs.existsSync(path.join(target,'scripts/verify-strategic-handoff-consumption')));
+ put(target,'CONTEXT.md','# 用户业务词汇\n');
+ const context=fs.readFileSync(path.join(target,'CONTEXT.md')),before=tree(target),plan=path.join(base,'skill.json');
+ const inspection=inspectNative('spec'),requirement=inspection.skillRequirements['yss-design-system'];
+ assert.ok(requirement);assert.equal(requirement.unsupportedReason,undefined);assert.ok(requirement.paths.length>0);
+ const preview=runNative(['skills','ensure','yss-design-system','--profile','spec','--root',target,'--plan','--out',plan]).result;
+ assert.deepEqual(tree(target),before,'保存补装计划不能写入实例');
+ assert.ok(preview.changes.length>0 || requirement.paths.every(ref=>fs.existsSync(path.join(target,ref))));
+ runNative(['skills','ensure','yss-design-system','--profile','spec','--root',target,'--apply','--plan-file',plan]);
+ assert.ok(fs.existsSync(path.join(target,'.agents/skills/yss-design-system/SKILL.md')));
+ for(const ref of ['scripts/design-md.mjs','scripts/export-craft-examples.mjs'])assert.ok(fs.existsSync(path.join(target,'.agents/skills/yss-design-system',ref)),ref);
+ assert.equal(fs.existsSync(path.join(target,'.agents/skills/yss-prototype-stage/SKILL.md')),false);
  assert.deepEqual(fs.readFileSync(path.join(target,'CONTEXT.md')),context);
- const metadata=JSON.parse(fs.readFileSync(path.join(target,'.yss.json'))),inspection=inspectNative('spec');
+ const metadata=JSON.parse(fs.readFileSync(path.join(target,'.yss.json')));
  assert.equal(metadata.schemaVersion,inspection.schemaVersion);assert.equal(metadata.bundleSchemaVersion,inspection.schemaVersion);
- const preview=runNative(['sync','--root',target]).result;assert.equal(preview.stats.changed,0);assert.equal(preview.stats.conflicts,0);
+ const again=runNative(['skills','ensure','yss-design-system','--profile','spec','--root',target]).result;
+ assert.equal(again.stats.changed,0);assert.equal(again.stats.conflicts,0);
 });
 
 test('现役 yss-research 补装不能绕过 UNPORTED，安装闭包中的真实入口可执行',t=>{
  const base=scratch(t),target=path.join(base,'research');initializeNative('spec',target);
+ put(target,'CONTEXT.md','# 用户业务词汇\n');
  const context=fs.readFileSync(path.join(target,'CONTEXT.md')),inspection=inspectNative('spec');
  for(const skill of ['yss-research']){
   const requirement=inspection.skillRequirements[skill];assert.ok(requirement,skill);
@@ -186,9 +202,9 @@ test('现役 yss-research 补装不能绕过 UNPORTED，安装闭包中的真实
 
 test('按需安装两个后端脚手架包含平台证据且可显式独立生成参考工程', t => {
   const base = scratch(t), target = path.join(base, 'scaffold');
-  initializeNative('spec', target);
+  initializeNative('backend', target);
   for (const skill of ['yss-ddd-scaffold-generator', 'yss-layered-mvc-scaffold-generator']) {
-    applyNative('skills', 'spec', target, path.join(base, skill + '.json'), ['ensure', skill]);
+    applyNative('skills', 'backend', target, path.join(base, skill + '.json'), ['ensure', skill]);
     const generated = spawnSync(process.execPath, [`.agents/skills/${skill}/scripts/generate_scaffold.mjs`, '--standalone',
       '--project-name', 'reference-probe', '--base-package', 'com.yss.probe', '--output-dir', path.join(base, skill),
       '--platform-profile', 'spring-boot-3.5-jdk17', '--spring-boot-version', '3.5.16', '--java-version', '17',

@@ -1,5 +1,4 @@
-import {installLegacySpecPolicy} from '../../lib/testing/legacy-spec-policy.mjs';
-import {loadOrchestrationContract} from '../../lib/orchestration-contract.mjs';
+import {installedFixture} from '../role-independent-draft/installed-fixture.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, cpSync, symlinkSync, rmSync } from 'node:fs';
@@ -31,16 +30,67 @@ function complete(root, cp, id = 'scope') {
   put(root, `.work/demo/verification/${id}.md`, '规则已逐例验证');
   item.completion = item.acceptance.map(criterion => ({ criterion, evidence_refs: [binding(root, `.work/demo/verification/${id}.md`)] })); item.progress = 'completed';
 }
+test('Backend 3.0 stage tracking accepts the initialized project identity', () => {
+  const f=installedFixture('backend');
+  try {
+    const cp=JSON.parse(f.read('.yss.json'));
+    assert.equal(cp.profile,'backend');
+    assert.match(String(f.read('yss-project.yaml')),/schema_version:\s*2/);
+    const ref='.work/demo/checkpoint.json',base='.work/demo';
+    const checkpoint=parseYaml(String(f.read('.template-spec/process/templates/lifecycle-checkpoint-template.yaml')));
+    checkpoint.feature_id='feature.supplier';checkpoint.stage='stage.plan';checkpoint.next_work_unit='work-unit.plan-requirements';
+    f.write(ref,checkpoint);
+    f.write(`${base}/map.md`,`---\ncheckpoint_ref: ${ref}\n---\n# 登记\n`);
+    f.write(`${base}/plan/input.md`,'当前后端设计范围');
+    const plan=planTracking(f.root,{checkpoint_ref:ref,items:[seed()]});
+    assert.equal(applyTracking(f.root,plan).status,'applied');
+    assert.equal(checkTracking(f.root,ref).status,'valid');
+  } finally { f.cleanup(); }
+});
+test('stage tracking rejects invalid project identities without writing', () => {
+  for(const manifest of [
+    {schema_version:0,repository_mode:'project-instance'},
+    {schema_version:3,repository_mode:'project-instance'},
+    {schema_version:2,repository_mode:'template-source'},
+    {schema_version:1,repository_mode:'project-instance',unexpected:true},
+    {schema_version:2,repository_mode:'project-instance',unexpected:true},
+    'schema_version: 2\nschema_version: 1\nrepository_mode: project-instance\n'
+  ]) {
+    const root=fixture();try {
+      put(root,'yss-project.yaml',manifest);
+      assert.throws(()=>planTracking(root,{checkpoint_ref:checkpointRef,items:[seed()]}),
+        typeof manifest==='string'?/Map keys must be unique/:/stage-tracking-project-instance-required/);
+      assert.equal(existsSync(path.join(root,checkpointRef)),false);
+    } finally {rmSync(root,{recursive:true,force:true});}
+  }
+  const root=fixture();try {
+    rmSync(path.join(root,'yss-project.yaml'));
+    symlinkSync(path.join(root,'CONTEXT.md'),path.join(root,'yss-project.yaml'));
+    assert.throws(()=>planTracking(root,{checkpoint_ref:checkpointRef,items:[seed()]}),/tracking-symlink-forbidden/);
+    assert.equal(existsSync(path.join(root,checkpointRef)),false);
+  } finally {rmSync(root,{recursive:true,force:true});}
+});
+let backendTemplate;
+test.after(()=>backendTemplate?.cleanup());
 function registeredFixture({workRoot='.work'}={}){
- const root=fixture({workRoot}),ref=`${workRoot}/demo/checkpoint.json`,base=`${workRoot}/demo`;
- const owner=repo;put(root,'.template-spec/process/harness-profile.yaml',{schema_version:1,profile_id:'harness.spec-template'});
- const contract='.template-spec/process/orchestration-contract.yaml';
- put(root,contract,JSON.stringify(loadOrchestrationContract(ref=>readFileSync(path.join(owner,ref)),contract).value));
- installLegacySpecPolicy(root);
- const cp=parseYaml(readFileSync(path.join(repo,'scripts/fixtures/role-independent-draft/legacy-checkpoint-template.yaml'),'utf8'));cp.feature_id='feature.supplier';cp.stage='stage.plan';cp.next_work_unit='work-unit.plan-requirements';put(root,ref,cp);
+ backendTemplate??=installedFixture('backend');
+ const root=mkdtempSync(path.join(os.tmpdir(),'yss-backend-stage-tracking-'));
+ cpSync(backendTemplate.root,root,{recursive:true});
+ const ref=`${workRoot}/demo/checkpoint.json`,base=`${workRoot}/demo`;
+ const tracker='.template-spec/agents/issue-tracker.md';
+ if(workRoot!=='.work') {
+  const source=readFileSync(path.join(root,tracker),'utf8');
+  const updated=source.replace(/(^\s+root:\s*)\.work\s*$/m,`$1${workRoot}`);
+  assert.notEqual(updated,source,'installed tracker root must be configurable');
+  put(root,tracker,updated);
+ }
+ const contract='.template-spec/process/orchestration/domain/progression.yaml';
+ const cp=parseYaml(readFileSync(path.join(root,'.template-spec/process/templates/lifecycle-checkpoint-template.yaml'),'utf8'));
+ cp.feature_id='feature.supplier';cp.stage='stage.plan';cp.next_work_unit='work-unit.plan-requirements';put(root,ref,cp);
+ put(root,'.work/demo/plan/input.md','# 已确认的问题');
  put(root,`${base}/map.md`,`---\ncheckpoint_ref: ${ref}\n---\n# 登记\n`);return {root,ref,base,contract};
 }
-test('registered current Spec migration use map directory and preserve original approval fields',()=>{
+test('registered current Backend migration uses map directory and preserves original approval fields',()=>{
  for(const options of [{},{workRoot:'docs/custom-work'}]){
   const f=registeredFixture(options);try{
    const before=parseYaml(readFileSync(path.join(f.root,f.ref),'utf8'));
@@ -155,8 +205,7 @@ test('missing items block migration instead of inventing owner or acceptance', (
   assert.ok(p.gaps.length); assert.throws(() => applyTracking(root, p), /needs-info/);
   assert.equal(existsSync(path.join(root, checkpointRef)), false);
 });
-test('legacy project accepted; enabled missing checkpoint ref rejected at transition', () => {
-  const root = fixture(); assert.equal(assertTrackingTransition('work-unit.plan-requirements', 'work-unit.spec-synthesis', {}, { root }).status, 'not-applicable');
+test('enabled tracking rejects missing checkpoint at transition', () => {
   const enabled = fixture({ enabled: true });
   assert.throws(() => assertTrackingTransition('work-unit.plan-requirements', 'work-unit.spec-synthesis', {}, { root: enabled }), /checkpoint-ref-required/);
   assert.throws(() => assertStageTracking({ stage: 'stage.plan' }, { root: enabled }), /stage-tracking-required/);

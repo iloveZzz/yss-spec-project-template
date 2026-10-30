@@ -23,6 +23,11 @@
       "reason": "当前未发现 tests 直接引用，纳入待补测台账"
     },
     {
+      "path": "scripts/lib/backend-architecture.mjs",
+      "category": "fixture-only",
+      "reason": "由 scripts/fixtures/existing-backend 等测试直接引用，tests 目录内没有直接行为测试"
+    },
+    {
       "path": "scripts/lib/backend-platform-provenance.mjs",
       "category": "to-backfill",
       "reason": "当前未发现 tests 直接引用，纳入待补测台账"
@@ -38,6 +43,11 @@
       "reason": "当前未发现 tests 直接引用，纳入待补测台账"
     },
     {
+      "path": "scripts/lib/backend-standards-coverage.mjs",
+      "category": "fixture-only",
+      "reason": "由 scripts/fixtures/backend-standards 测试直接引用，tests 目录内没有直接行为测试"
+    },
+    {
       "path": "scripts/lib/checkpoint-boundary.mjs",
       "category": "to-backfill",
       "reason": "当前未发现 tests 直接引用，纳入待补测台账"
@@ -51,6 +61,11 @@
       "path": "scripts/lib/execution-evidence.mjs",
       "category": "to-backfill",
       "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/existing-backend-architecture.mjs",
+      "category": "fixture-only",
+      "reason": "由 scripts/fixtures/role-independent-draft/worker-chain.test.mjs 直接引用，tests 目录内没有直接行为测试"
     },
     {
       "path": "scripts/lib/first-slice-artifacts.mjs",
@@ -168,6 +183,11 @@
       "reason": "当前未发现 tests 直接引用，纳入待补测台账"
     },
     {
+      "path": "scripts/lib/source-context-snapshot.mjs",
+      "category": "to-backfill",
+      "reason": "tests 内只有选择器路径引用，尚未发现直接行为测试"
+    },
+    {
       "path": "scripts/lib/stage-tracking.mjs",
       "category": "to-backfill",
       "reason": "当前未发现 tests 直接引用，纳入待补测台账"
@@ -176,6 +196,11 @@
       "path": "scripts/lib/stage-tracking-migration.mjs",
       "category": "to-backfill",
       "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/standalone-backend-scaffold.mjs",
+      "category": "to-backfill",
+      "reason": "tests 内只有选择器路径引用，尚未发现直接行为测试"
     },
     {
       "path": "scripts/lib/strategic-handoff-design-targets.mjs",
