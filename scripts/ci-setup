@@ -35,6 +35,7 @@ EOF
 python=1
 python_schema=1
 go_needed=0
+plugin_candidate_needed=0
 tooling=1
 requirements_file=""
 requirements_mode=0
@@ -70,11 +71,11 @@ try {
   if(!path.isAbsolute(file)||!fs.lstatSync(file).isFile())throw new Error('需求文件必须是绝对普通文件');
   const {validateVerificationToolRequirements}=await import(pathToFileURL(path.join(process.argv[3],'.template-source/scripts/lib/verification-preflight.mjs')));
   const needs=validateVerificationToolRequirements(JSON.parse(fs.readFileSync(file,'utf8')));
-  console.log([needs.python,Number(needs.go),Number(needs.native_cli),Number(needs.tooling),Number(needs.vue)].join(' '));
+  console.log([needs.python,Number(needs.go),Number(needs.native_cli),Number(needs.tooling),Number(needs.vue),Number(needs.plugin_candidate || false)].join(' '));
 }catch(error){console.error(error.message);process.exit(2);}
 JS
 )" || exit 2
-  read -r python_requirement go_needed native_needed tooling toolchain <<< "$requirements"
+  read -r python_requirement go_needed native_needed tooling toolchain plugin_candidate_needed <<< "$requirements"
   if [[ "$python_requirement" == none ]]; then python=0; fi
   if [[ "$python_requirement" != jsonschema ]]; then python_schema=0; fi
   if ((native_needed)); then yss_commit=latest; fi
@@ -252,6 +253,23 @@ elif [[ -n "$yss_commit" ]]; then
       export_var YSS_NATIVE_PIN_FILE "$ROOT_DIR/.template-source/distribution/yss-cli-pin.json"
       export_var YSS_NATIVE_PIN_SHA256 "$(node -e 'process.stdout.write(require("node:crypto").createHash("sha256").update(require("node:fs").readFileSync(process.argv[1])).digest("hex"))' "$ROOT_DIR/.template-source/distribution/yss-cli-pin.json")"
     fi
+  fi
+fi
+
+if ((plugin_candidate_needed)); then
+  step "构建固定 CLI 与当前模板的插件测试候选；不作为发行证据"
+  if ((dry_run)); then
+    echo "+ 固定 CLI 提交并在仓外构建成对插件候选"
+  else
+    [[ -n "${YSS_CI_ENV_FILE:-}" && "$YSS_CI_ENV_FILE" = /* ]] || fail "插件候选需要绝对 YSS_CI_ENV_FILE"
+    saved_yss_commit="$yss_commit"; yss_commit=pin; ensure_go; yss_commit="$saved_yss_commit"
+    candidate_commit="$(node --input-type=module -e 'import {candidateCliCommit} from "./.template-source/scripts/lib/plugin-candidate.mjs"; console.log(candidateCliCommit)')"
+    candidate_source="$(mktemp -d "$(work_dir)/yss-plugin-cli.XXXXXX")"
+    git init -q "$candidate_source"
+    git -C "$candidate_source" remote add origin "$YSS_CLI_REPOSITORY"
+    git -C "$candidate_source" fetch -q --depth 1 origin "$candidate_commit"
+    git -C "$candidate_source" checkout -q --detach FETCH_HEAD
+    node "$ROOT_DIR/.template-source/scripts/plugin-candidate.mjs" prepare "$candidate_source" "$(dirname "$YSS_CI_ENV_FILE")/plugin-candidate"
   fi
 fi
 

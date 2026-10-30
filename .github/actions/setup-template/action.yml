@@ -4,6 +4,9 @@ inputs:
   runtime-only:
     description: 仅供给基础运行时，按需依赖由 ci-gate 准备
     default: 'false'
+  candidate-go:
+    description: 按仓内 pin 准备插件候选构建所需 Go
+    default: 'false'
   python:
     description: 是否安装 schema 验证环境
     default: 'true'
@@ -27,8 +30,9 @@ runs:
       env:
         INPUT_YSS_COMMIT: ${{ inputs.yss-commit }}
         INPUT_RUNTIME_ONLY: ${{ inputs.runtime-only }}
+        INPUT_CANDIDATE_GO: ${{ inputs.candidate-go }}
       run: |
-        if [[ "$INPUT_YSS_COMMIT" == latest || "$INPUT_RUNTIME_ONLY" == true ]] && command -v go >/dev/null; then exit 0; fi
+        if [[ "$INPUT_YSS_COMMIT" == latest || ( "$INPUT_RUNTIME_ONLY" == true && "${INPUT_CANDIDATE_GO:-false}" != true ) ]] && command -v go >/dev/null; then exit 0; fi
         go_version="$(node .template-source/scripts/lib/yss-cli-pin.mjs go_version)"
         printf 'go=%s\n' "$go_version" >> "$GITHUB_OUTPUT"
     - if: inputs.python == 'true'
@@ -39,6 +43,7 @@ runs:
       uses: actions/setup-go@v5
       with:
         go-version: ${{ steps.go_version.outputs.go }}
+        cache: false
     - if: inputs.runtime-only != 'true'
       shell: bash
       env:

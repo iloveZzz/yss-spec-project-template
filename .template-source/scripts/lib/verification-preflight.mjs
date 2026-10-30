@@ -18,15 +18,16 @@ export function validateVerificationReportDirectory(root,directory) {
 }
 export function validateVerificationToolRequirements(value) {
   const keys=['schema_version','python','go','native_cli','tooling','vue'];
-  if(!value||Array.isArray(value)||typeof value!=='object'||Object.keys(value).length!==keys.length||keys.some(key=>!Object.hasOwn(value,key))||value.schema_version!==1||!['none','runtime','jsonschema'].includes(value.python)||keys.slice(2).some(key=>typeof value[key]!=='boolean'))throw new TypeError('VERIFICATION_TOOL_REQUIREMENTS_INVALID');
+  if(!value||Array.isArray(value)||typeof value!=='object'||Object.keys(value).some(key=>!keys.includes(key)&&key!=='plugin_candidate')||keys.some(key=>!Object.hasOwn(value,key))||value.schema_version!==1||!['none','runtime','jsonschema'].includes(value.python)||keys.slice(2).some(key=>typeof value[key]!=='boolean')||(Object.hasOwn(value,'plugin_candidate')&&typeof value.plugin_candidate!=='boolean'))throw new TypeError('VERIFICATION_TOOL_REQUIREMENTS_INVALID');
   return value;
 }
 export function verificationToolRequirements(plan,{reportValidation=false}={}) {
   const daily=plan.strategy==='daily-necessary',commands=plan.commands.map(item=>item.command).join('\n');
   return validateVerificationToolRequirements({schema_version:1,
     python:reportValidation||!daily||plan.commands.some(item=>item.resources?.includes('python-jsonschema'))?'jsonschema':/\bpython3?\s/.test(commands)?'runtime':'none',
-    go:daily&&plan.commands.some(item=>/^go\s/.test(item.command)||item.resources?.includes('go')),
+    go:daily&&plan.commands.some(item=>/^go\s/.test(item.command)||item.resources?.includes('go')||item.resources?.includes('plugin-candidate')),
     native_cli:plan.commands.some(item=>item.resources?.includes('native-cli')),
+    ...(plan.commands.some(item=>item.resources?.includes('plugin-candidate'))?{plugin_candidate:true}:{}),
     tooling:/\bpnpm\b/.test(commands)||!daily&&/\.template-source\/tooling\/node/.test(commands)||plan.commands.some(item=>item.resources?.includes('pnpm-tooling')),
     vue:/verify-yss-prototype-contract-scenarios|build-shadcn-vue|verify-existing-ui-baseline-scenarios/.test(commands),
   });

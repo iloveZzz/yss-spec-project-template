@@ -22,19 +22,7 @@ jobs:
       - uses: ./.github/actions/setup-template
         with:
           runtime-only: 'true'
-      - uses: actions/setup-go@v5
-        with:
-          go-version: '1.27.1'
-          cache: false
-      - name: Prepare fixed paired plugin candidate
-        shell: bash
-        run: |
-          cli="$RUNNER_TEMP/yss-plugin-cli-source"
-          git init -q "$cli"
-          git -C "$cli" remote add origin https://github.com/iloveZzz/yss-cli.git
-          git -C "$cli" fetch -q --depth 1 origin bc8d2a45b69d88eefa5638b92df436a7b9899770
-          git -C "$cli" checkout -q --detach FETCH_HEAD
-          node .template-source/scripts/plugin-candidate.mjs prepare "$cli" "$RUNNER_TEMP/yss-plugin-candidate"
+          candidate-go: 'true'
       - name: scripts/ci-gate
         shell: bash
         env:
@@ -52,14 +40,4 @@ jobs:
         with:
           name: ci-gate-report
           path: /tmp/ci-gate
-          if-no-files-found: warn
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: paired-plugin-candidate-evidence
-          path: |
-            ${{ runner.temp }}/yss-plugin-candidate/receipt.json
-            ${{ runner.temp }}/yss-plugin-candidate/candidate-lock.json
-            ${{ runner.temp }}/yss-plugin-candidate/bundle/bundles.json.gz
-            ${{ runner.temp }}/yss-plugin-candidate/yss
           if-no-files-found: warn

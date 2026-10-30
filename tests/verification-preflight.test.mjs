@@ -213,7 +213,8 @@ test('维护审查的实际场景输入声明 Go',async()=>{
 
 test('插件候选作为独立资源登记，缺少来源凭据时预检失败',()=>{
  const result=verificationPreflight({root:path.resolve(import.meta.dirname,'..'),nodeVersion:'v24.21.0',environment:{},
-  plan:{strategy:'daily-necessary',commands:[{command:'node candidate-test',resources:['plugin-candidate']}]}});
+  plan:{strategy:'daily-necessary',commands:[{command:'node candidate-test',resources:['plugin-candidate']}]},
+  probe:()=>({status:0,stdout:'go version go1.27.1'})});
  assert.equal(result.status,'failed');
  assert.deepEqual(result.errors.map(item=>item.name),['plugin-candidate']);
  assert.match(result.errors[0].error,/verified plugin candidate receipt is required/);

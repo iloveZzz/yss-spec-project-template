@@ -24,6 +24,8 @@ function prepare(cliRoot, output) {
   const template = git(root, 'rev-parse', 'HEAD'), actualCli = git(cliRoot, 'rev-parse', 'HEAD');
   if (actualCli !== cliCommit || git(root, 'status', '--porcelain') || git(cliRoot, 'status', '--porcelain')) throw new Error('candidate source commit or cleanliness mismatch');
   const templateTree = git(root, 'rev-parse', 'HEAD^{tree}'), cliTree = git(cliRoot, 'rev-parse', 'HEAD^{tree}');
+  const requiredGo = readFileSync(path.join(cliRoot, 'go.mod'), 'utf8').match(/^go ([0-9.]+)$/m)?.[1];
+  if (!requiredGo || run('go', ['env','GOVERSION'], cliRoot).trim() !== `go${requiredGo}`) throw new Error('candidate Go version mismatch');
   mkdirSync(output, {recursive:false});
   const original = JSON.parse(readFileSync(path.join(cliRoot, 'docs/source-lock.json')));
   const lock = candidateLock(original, template, cliCommit, ref => sha256(Buffer.from(run('git', ['-C',root,'show',`${template}:${ref}`], root))));
@@ -43,7 +45,8 @@ function prepare(cliRoot, output) {
     inspections:Object.fromEntries(['spec','backend'].map(profile => [profile, inspect(binary, profile)]))};
   validateCandidate(receipt, {template, cli:cliCommit, inspect:profile => receipt.inspections[profile]});
   const receiptFile = path.join(output, 'receipt.json'); writeFileSync(receiptFile, json(receipt), {flag:'wx'});
-  if (process.env.GITHUB_ENV) appendFileSync(process.env.GITHUB_ENV, `YSS_PLUGIN_CANDIDATE_RECEIPT=${receiptFile}\nYSS_PLUGIN_CANDIDATE_RECEIPT_SHA256=${sha256(readFileSync(receiptFile))}\n`);
+  const environmentFile = process.env.YSS_CI_ENV_FILE || process.env.GITHUB_ENV;
+  if (environmentFile) appendFileSync(environmentFile, `YSS_PLUGIN_CANDIDATE_RECEIPT=${receiptFile}\nYSS_PLUGIN_CANDIDATE_RECEIPT_SHA256=${sha256(readFileSync(receiptFile))}\n`);
   console.log(json({result:'prepared', receipt:receiptFile, receipt_sha256:sha256(readFileSync(receiptFile)), template, cli_commit:cliCommit, binary_sha256:receipt.binary_sha256, bundle_sha256:receipt.bundle_sha256, release_evidence:false}));
 }
 function execute(args) {
