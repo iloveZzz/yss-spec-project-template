@@ -11,10 +11,10 @@
 | 历史 `Product-Design-System` 包 | 首次引入 Ant Design 企业级语义、状态矩阵和验收习惯 | 保留原则、组件规则和审查清单 |
 | 项目 Ant Design 5 Less / `:root` 变量 | 默认亮色主题、运行时切换别名、色板与布局 token | **默认主题权威**；冲突时以 `:root` 为准 |
 | `.template-spec/design/tokens/tokens.default.json` | 默认亮色主题派生 token | 作为实现 token 基线 |
-| `.template-spec/design/tokens/tokens.dark.json` | 暗色主题派生 token | 暗色仍走 `darkAlgorithm`；本轮未按新 seed 重派生完整暗色色板 |
+| `.template-spec/design/tokens/tokens.dark.json` | 历史暗色主题快照 | 未按当前规范验证，启用前核验实际颜色与对比度 |
 | `.template-spec/design/tokens/tokens.compact.json` | 紧凑密度主题派生 token | 共享亮色 seed，紧凑高度算法保持现状 |
 | `.template-spec/design/tokens/variables.css` | `--brand-*` 与运行时别名 | 前端实现时优先转换为项目 token |
-| `.template-spec/design/tokens/theme.json` | Ant Design `ConfigProvider` theme 配置 | React + Ant Design 项目可直接参考 |
+| `.template-spec/design/tokens/theme.json` | 历史主题映射快照 | 保留作为项目基线参考，不作为组件库接入指南 |
 
 同份 Less 输入存在两套互相覆盖的默认值。项目裁定如下，并已写入 token 快照：
 
@@ -36,11 +36,11 @@
 
 ## 原型设计依据的优先级
 
-原型使用 Ant Design 时，`https://ant.design/design.md` 与官方 `antd` CLI 提供的是**上游默认**和组件事实；项目的 `.template-spec/design/design.md`、`.template-spec/design/tokens/*` 是经过确认的**项目覆盖**。当前功能只能在这两层之下完成语义组件映射。若上游默认与项目 token 不同，以项目覆盖为准，并在 `prototype-evidence.yaml` 中记录差异；不得把上游默认直接写回项目实现。
+原型选择组件库时，以上游资料核实组件事实；项目的 `.template-spec/design/design.md`、`.template-spec/design/tokens/*` 是经过确认的项目视觉基线。若上游默认与项目 token 不同，以项目覆盖为准，并在 `prototype-evidence.yaml` 中记录差异；不得把上游默认直接写回项目实现。
 
 当前项目覆盖与官方默认的主要差异：主色 `#3371ff` ≠ 官方 `#1677ff`，错误色 `#f5222d` ≠ 官方 `#ff4d4f`，页面背景 `#f0f2f5`，文本使用 Ant Design 透明度阶，默认圆角 `6px`。`blue` 等预设色板仍可保留官方蓝谱；**色板预设 ≠ 品牌主色**。
 
-Codex `$design-qa` 的 Colors/tokens 与 Fonts/typography 对照必须以本文件和 `.template-spec/design/tokens/*` 为 source visual truth，而不是官方默认或历史 `#1677ff` / `Inter` / `8px` 品牌圆角。执行清单见 `.agents/skills/yss-design-system/references/design-qa-theme.md`。
+Codex `$design-qa` 可用且适用时，颜色、字体和排版对照以本文件与实际消费的 `.template-spec/design/tokens/*` 为项目视觉依据；工具不可用时检查可观察的样式及状态，并记录未执行的检查。
 
 ## 设计原则
 
@@ -253,15 +253,7 @@ Codex `$design-qa` 的 Colors/tokens 与 Fonts/typography 对照必须以本文�
 
 ## 前端实现建议
 
-如果前端使用 React + Ant Design：
-
-- 使用 `ConfigProvider` 注入 `.template-spec/design/tokens/theme.json` 中的 theme 配置。
-- 组件样式优先通过 Ant Design token、component token、CSS variables 或主题算法表达。
-- 消息、通知、Modal 静态方法应使用 `App`、hook API 或 context holder，避免主题上下文丢失。
-- 暗色模式使用 `darkAlgorithm` 或 `.template-spec/design/tokens/variables.dark.css`，不要手工反转颜色。本轮只同步了暗色的字体栈和圆角 seed；完整暗色色板仍是历史算法结果，启用暗色前应再派生一次。
-- 紧凑模式使用 `compactAlgorithm` 或 `.template-spec/design/tokens/tokens.compact.json`，不要逐组件压缩高度。
-
-如果前端不是 Ant Design：
+React Ant Design 不再作为当前技术路线。适配目标组件库时：
 
 - 先把 `.template-spec/design/tokens/tokens.default.json` 转为项目设计 token，再映射到目标 UI 库。
 - 保留组件语义和状态语义，不要只复制颜色。
@@ -283,16 +275,15 @@ Codex `$design-qa` 的 Colors/tokens 与 Fonts/typography 对照必须以本文�
 
 ## 后续落地 TODO
 
-- 将 `.template-spec/design/tokens/theme.json` 接入前端工程主题配置。
 - 将 `.template-spec/design/tokens/variables.css` 中的 `--brand-*` 与运行时别名纳入项目 token 管理。
-- 如果项目启用暗色模式，用 `darkAlgorithm` 按新 seed 重派生 `.template-spec/design/tokens/tokens.dark.json`，并补充截图验收。
+- 如果项目启用暗色模式，按目标组件库和当前规范核验实际主题，并补充截图、对比度与交互验收；旧完整派生不可用。
 - 如果项目存在高密度表格 / 审批 / 运营台，补充 `.template-spec/design/tokens/tokens.compact.json` 的适用边界。
 
-## Ant Design v6 原型补充基线
+## 原型补充基线
 
-本节根据 `antdv6-design.md` 的设计说明提炼，用于高保真原型和后续前端实现，不替代项目 token。
+以下设计原则用于高保真原型和后续前端实现，不替代项目 token。
 
-- 先按 `bg-layout`、`bg-container`、`bg-elevated`、文本、边框、状态、圆角和阴影等 semantic token 角色设计，再映射到 `ConfigProvider`、组件 token 或 CSS variables；不得用页面局部色值替代主题层。
-- 默认亮色使用 `theme.defaultAlgorithm`；暗色和紧凑密度通过 theme algorithm 切换，禁止手工反色或逐控件压缩。
+- 先按 `bg-layout`、`bg-container`、`bg-elevated`、文本、边框、状态、圆角和阴影等 semantic token 角色设计，再映射到目标组件库或 CSS variables；不得用页面局部色值替代主题层。
+- 暗色和紧凑密度按目标项目规范核验，不手工反色或逐控件压缩。
 - 每个决策区域只保留一个 single primary action。保存、提交、审批、发布、导出和重试等动作必须提供 interaction feedback；不可逆或高风险动作使用确认弹窗。
 - 对实际字号、图标和背景复核 accessibility contrast。默认 token 不足时，通过种子 token 或组件 token 调整，不引入单页特例色。

@@ -1,6 +1,6 @@
 # 设计系统治理与生命周期适配
 
-> 规范源：仓库根目录 [`DESIGN.md`](../../DESIGN.md)。其中的 YAML frontmatter 和组件变体是视觉令牌的唯一事实来源；本文件只记录 YSS 的中文治理说明、运行时双轨、产品生命周期衔接和验证要求。
+> 规范源：仓库根目录 [`DESIGN.md`](../../DESIGN.md)。其中的 YAML frontmatter 和组件变体是视觉令牌的唯一事实来源；本文件只记录 YSS 的中文治理说明、产品生命周期衔接和验证要求。
 
 已核验 `matt-spec-v1` 的新 Spec 按 `yss-product-lifecycle` 与 `yss-prototype-stage` 根据当前问题和风险选择设计表达与检查。本文件的 H1/H2、六轴 QA、阶段资产及批准要求适用于采用相应历史合同的工作，不作为新 Spec 的通用前提；已有合同仍按原政策核验。
 
@@ -8,7 +8,7 @@
 
 - `DESIGN.md`：机器可读的颜色、排版、圆角、间距和组件视觉变体规范；使用 Google `design.md` alpha 格式。
 - `.template-spec/design/tokens/*`：由规范源投影的运行时快照，禁止直接修改后作为规范依据；使用 `node .agents/skills/yss-design-system/scripts/design-md.mjs` 执行漂移检查。
-- 本文件：解释 YSS UI / Ant Design 双轨、页面设计约束、原型证据和生命周期门禁，不重新定义规范 token 的具体值。
+- 本文件：解释页面设计约束、原型证据和生命周期门禁，不重新定义规范 token 的具体值；具体组件库由项目选定。
 - Spec、交互说明和状态矩阵：继续承载业务状态、API、权限、并发、失败恢复和页面验收，不写入 `DESIGN.md`。
 
 ## 来源与定位
@@ -19,35 +19,34 @@
 
 | 来源 | 作用 | 采用结论 |
 | --- | --- | --- |
-| Ant Design v6 官方主题与迁移文档 | semantic token、CSS variables、theme algorithm 组合与 DOM 兼容边界 | **上游机制权威**；项目覆盖不得改变其算法语义 |
 | 历史 `Product-Design-System` 包 | 首次引入 Ant Design 企业级语义、状态矩阵和验收习惯 | 仅保留原则、组件规则和审查清单 |
-| 项目 Ant Design 5 Less / `:root` 变量 | 品牌主色、运行时切换别名、色板与布局 token 的历史项目覆盖 | 保留经批准的品牌覆盖；不作为 v6 / Antdv Next API 事实 |
+| 项目历史 Less / `:root` 变量 | 品牌主色、运行时切换别名、色板与布局 token 的历史项目覆盖 | 保留经批准的视觉覆盖；不作为新组件库 API 事实 |
 | `yss-meta` 的 `packages/src/styles` | 已落地的紧凑间距、Card 圆角、CSS 变量桥接和客户主题案例 | 只提取稳定语义；utility class、客户覆盖和兼容补丁不进入默认规范 |
 | `.template-spec/design/tokens/tokens.default.json` | 默认亮色主题派生 token | 作为实现 token 基线 |
-| `.template-spec/design/tokens/tokens.dark.json` | 暗色主题派生 token | 暗色仍走 `darkAlgorithm`；本轮未按新 seed 重派生完整暗色色板 |
-| `.template-spec/design/tokens/tokens.compact.json` | 紧凑密度主题派生 token | 共享亮色 seed，紧凑高度算法保持现状 |
+| `.template-spec/design/tokens/tokens.dark.json` | 历史暗色主题快照 | 尚未按当前规范验证；启用前核验实际颜色与对比度 |
+| `.template-spec/design/tokens/tokens.compact.json` | 历史紧凑主题快照 | 不作为新原型密度的默认依据 |
 | `.template-spec/design/tokens/variables.css` | `--brand-*` 与运行时别名 | 前端实现时优先转换为项目 token |
-| `.template-spec/design/tokens/theme.json` | Ant Design `ConfigProvider` theme 配置 | React + Ant Design 项目可直接参考 |
+| `.template-spec/design/tokens/theme.json` | 历史主题映射快照 | 只作为当前基线校验输入，不作为组件库接入指南 |
 
-历史 Less 输入曾存在互相覆盖的默认值；裁定结果已迁入根 `DESIGN.md`。本文件不保留第二份值表。历史值、上游默认或客户覆盖只能作为追溯输入，不能反向覆盖 `DESIGN.md`；需要改变裁定时先改规范源，再重新生成 Token/CSS 投影并更新同步摘要。
+历史 Less 输入曾存在互相覆盖的默认值；裁定结果已迁入根 `DESIGN.md`。本文件不保留第二份值表。历史值、上游默认或客户覆盖只能作为追溯输入，不能反向覆盖 `DESIGN.md`；需要改变规范时先修改规范源，并按项目实际组件库维护投影和同步摘要。旧主题完整派生已退役，不以历史算法伪造新快照。
 
 `.m-1` / `.flex-*` 等 utility class、`::-webkit-scrollbar` 定制和原始 `.less` 文件不纳入规范正文，只可作为可选实现备注。
 
-结论：这不是营销型视觉系统，而是面向中后台、数据密集、表单密集、流程密集产品的 Ant Design 风格企业级设计系统。项目内 UI 默认应以“清晰、确定、低装饰、可扫描、高一致性”为目标。
+项目现有视觉基线面向数据、表单和流程密集的业务界面；项目内 UI 应以“清晰、确定、可扫描和一致性”为目标。其他项目的风格由其自身规范和需求决定。
 
 ## 原型设计依据的优先级
 
 当前原型以项目根 `DESIGN.md` 为视觉规范源，`.template-spec/design/design.md` 解释治理规则，`.template-spec/design/tokens/*` 是派生实现视图。使用 shadcn-vue 或 shadcn/ui 组件辅助评审时，上游资料只提供组件事实，不覆盖项目规范；在 `prototype-evidence.yaml` 中记录根规范与 Token digest，不把上游默认直接写回项目实现。
 
-项目覆盖与官方默认的差异直接读取根 `DESIGN.md` 并用 `design-md diff` 核验；本文件不复制差异值。上游预设色板可以保留其自身颜色谱，但**色板预设 ≠ 品牌 seed**。
+需要比较视觉规范时，读取根 `DESIGN.md` 与项目选择的参考，并可用 `design-md diff <before> <after>` 核验；本文件不复制差异值。上游预设色板不自动成为项目品牌色。
 
-使用可用且适用的 Codex `$design-qa` 时，Colors/tokens 与 Fonts/typography 对照必须以根 `DESIGN.md` 为 source visual truth，并用 `.template-spec/design/tokens/*` 复核实际投影；不得回退到上游默认或历史品牌值。工具不可用时按实际产物核对根规范、相关投影及可观察的样式和状态，记录未运行的检查；适用历史合同的要求不能据此省略。执行清单见 `.agents/skills/yss-design-system/references/design-qa-theme.md`。
+使用可用且适用的 Codex `$design-qa` 时，颜色、字体与排版对照以根 `DESIGN.md` 为视觉事实源，并用实际消费的 Token 复核投影。工具不可用时按实际产物核对根规范、相关投影及可观察的样式和状态，记录未运行的检查；适用历史合同的要求不能据此省略。通用评议见 `.agents/skills/yss-design-system/references/design-review.md`。
 
 高保真 H1/H2 优先使用 `vue-shadcn-prebuilt`，`react-shadcn-prebuilt` 仅历史只读，轻量局部修改可保留 `html-css-js`；二者以本地 Token CSS 保留 YSS 企业后台视觉语言。React AntD 原型生成路线已退役。生产实现只在目标工程按 lockfile 核验组件 API；原型阶段不调用生产组件库。已有项目中冻结的组件库原型及其事实证据保持只读；模板不再预置 Antdv Next fact pack，也不生成新的 Provider 事实包。
 
 ### HTML 与生产主题的映射
 
-HTML 直接使用 DESIGN.md 中已选择的组件变体与主题 CSS，不要求 ConfigProvider 或组件库算法。新高保真原型默认选择已有紧凑变体，窄屏使用普通控件；既有页面保持当前密度。共享主题与核验规则见 `.agents/skills/yss-design-system/references/prototype-default-theme.md`。生产库若使用 `defaultAlgorithm`、`darkAlgorithm`、`compactAlgorithm`，仍按其版本合同执行，避免把 compact 结果当 seed 再压缩。暗色能力只在派生 Token 和浏览器状态均核验后声明。
+HTML 可使用 `DESIGN.md` 中已选择的组件变体与主题 CSS。新高保真原型可选择已有紧凑变体，窄屏使用普通控件；既有页面保持当前密度。共享主题与核验规则见 `.agents/skills/yss-design-system/references/prototype-default-theme.md`。暗色能力只在实际 Token 和浏览器状态均核验后声明。
 
 ## 设计原则
 
@@ -132,7 +131,7 @@ HTML 直接使用 DESIGN.md 中已选择的组件变体与主题 CSS，不要求
 
 ### 原型默认密度与生产主题边界
 
-新高保真原型默认浅色 compact，桌面使用根 `DESIGN.md` 的命名紧凑控件和 Card 变体，窄屏使用普通控件与窄屏间距角色；正文始终使用 body。comfortable 保留普通变体。既有页面局部修改遵守保持项。生产默认主题与可选算法仍按实现合同消费，不由原型密度推导。
+新高保真原型可使用根 `DESIGN.md` 的命名紧凑控件和 Card 变体，窄屏使用普通控件与窄屏间距角色；正文始终使用 body。comfortable 保留普通变体。既有页面局部修改遵守保持项，生产主题按目标项目规范选择，不由原型密度推导。
 
 | 场景 | Padding | Margin / Gap | 说明 |
 | --- | --- | --- | --- |
@@ -143,7 +142,7 @@ HTML 直接使用 DESIGN.md 中已选择的组件变体与主题 CSS，不要求
 | 表格 / 列表 | 容器 `0` 或 `spacing.sm` | 工具栏与表格 `spacing.xs` | 表格内部 cell padding 使用组件紧凑规格，不用页面 CSS 逐列覆盖 |
 | Modal / Drawer | `spacing.md` | 内容区块 `spacing.sm`；操作区 `spacing.xs` | 复杂多步流程不塞入 Modal，改用独立页面或 Drawer 分区 |
 
-原型命名紧凑变体不等于生产 `tokens.compact.json` 的完整算法结果；原型仅使用 `DESIGN.md` 派生的角色变量，不应用生产 compact algorithm。生产显式紧凑主题才消费对应计算快照，且只应用一次算法。页面不照抄上游 utility 尺寸。
+原型命名紧凑变体与历史 `tokens.compact.json` 快照分开使用；页面不照抄上游 utility 尺寸。
 
 Margin 使用规则：组件自身默认不声明外部 margin，兄弟元素之间优先由父级 `gap` 管理；只有文档流语义或无法使用布局容器时才使用 margin，并仍限定在 `spacing.*` 阶梯内。禁止用负 margin 修补布局。
 
@@ -252,18 +251,9 @@ Margin 使用规则：组件自身默认不声明外部 margin，兄弟元素之
 - 表格密集场景应明确移动端替代形态，如卡片列表、关键列优先或详情抽屉。
 - 文字不得溢出按钮、标签、表头、卡片和弹窗。
 
-## 历史来源与适用实现说明
+## 实现说明
 
-以下 React AntD 说明仅用于历史来源或明确采用该运行时的生产实现；该原型生成路线已经退役，不能作为新原型指南。生产 Vue/YSS 继续使用自身实现合同与主题映射。
-
-如果已批准的生产实现使用 React + Ant Design：
-
-- 使用 `ConfigProvider` 注入 `.template-spec/design/tokens/theme.json` 中的 theme 配置。
-- 默认采用 Data Quality 浅色与 32px 控件；仅显式紧凑模式使用 `compactAlgorithm`；暗色工作界面组合 `darkAlgorithm` 与 `compactAlgorithm`。seed 与计算结果分别从 `theme.json`、`tokens.compact.json` 读取。
-- 组件样式优先通过 Ant Design token、component token、CSS variables 或主题算法表达。
-- 消息、通知、Modal 静态方法应使用 `App`、hook API 或 context holder，避免主题上下文丢失。
-- 暗色模式使用 `darkAlgorithm` 或 `.template-spec/design/tokens/variables.dark.css`，不要手工反转颜色。本轮只同步了暗色的字体栈和圆角 seed；完整暗色色板仍是历史算法结果，启用暗色前应再派生一次。
-- 紧凑模式默认使用 `compactAlgorithm` 或 `.template-spec/design/tokens/tokens.compact.json`，不要逐组件压缩高度；这不适用于新原型的命名 compact 变体。
+React Ant Design 不再作为当前技术路线。目标项目选择组件库后，依据其实际版本和设计基线映射主题，不依赖已退役的完整主题派生。
 
 H1/H2 原型使用 HTML/CSS/JavaScript：
 
@@ -271,11 +261,11 @@ H1/H2 原型使用 HTML/CSS/JavaScript：
 - 规范直出按 Token、状态矩阵和页面模式验收；已有批准视觉稿时按相同视口与状态比对。首版截图通过审查与用户确认后冻结，不能自我比较作为质量证明。
 - 提供场景入口和重置，覆盖关键异常恢复、代表性业务内容、长文本与窄屏。复杂控件的生产能力假设进入既有 handoff。
 
-如果前端不是 Ant Design：
+适配目标组件库时：
 
 - 先把 `.template-spec/design/tokens/tokens.default.json` 转为项目设计 token，再映射到目标 UI 库。
 - 保留组件语义和状态语义，不要只复制颜色。
-- 保持 `theme.json` 的基础 seed，并映射 `tokens.compact.json` 的计算结果；排版、间距和表面角色从根 `DESIGN.md` 读取。
+- 排版、间距和表面角色从根 `DESIGN.md` 读取，按目标库能力选择映射；历史紧凑快照不默认用于新项目。
 - 运行时动态换肤使用 `--primary-color` 等短名别名，或直接改 `--brand-*`。
 
 ## 设计审查清单
@@ -296,7 +286,7 @@ H1/H2 原型使用 HTML/CSS/JavaScript：
 - H1/H2 已默认接入根 `DESIGN.md` 派生的本地 CSS、规范及资源摘要；见设计系统技能 `references/prototype-default-theme.md` 与原型技能 `references/shadcn-vue-integration.md`。
 - 构建、来源摘要及浏览器计算样式检查已有工具；页面仍须执行适用六轴 QA，不能用工具存在代替结果。
 - 主题与组件状态展示入口：`.template-source/design/preview.html`；不是可批准的产品原型。组件及页面配方见原型技能 `references/component-recipes.md`。
-- 暗色快照保留历史参考入口，未完成当前规范验证。未来启用需按当前 seed 重派生并补齐截图、对比度与交互验收，本轮不执行。
+- 暗色快照保留历史参考入口，未完成当前规范验证。未来启用需按项目实际主题和当前规范核验，并补齐截图、对比度与交互验收；旧完整派生不可用。
 
 ## HTML 原型补充基线
 

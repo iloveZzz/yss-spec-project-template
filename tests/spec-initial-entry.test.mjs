@@ -18,10 +18,6 @@ function copiedDesignSkill(t) {
   return {skill,project,temp};
 }
 
-function exportDesignExamples(f, output) {
-  return spawnSync(process.execPath,[path.join(f.skill,'scripts/export-craft-examples.mjs'),'--project-root',f.project,'--output',output],{cwd:f.project,encoding:'utf8'});
-}
-
 function assertStandaloneSkillLinks(skill, entry = 'SKILL.md') {
   const root = fs.realpathSync(skill), pending = [path.join(root, entry)], seen = new Set();
   while (pending.length) {
@@ -47,37 +43,33 @@ test('独立复制的设计技能内部引用递归闭合并识别缺失文件',
   assert.throws(() => assertStandaloneSkillLinks(skill), /high-fidelity-default-theme\.md/);
 });
 
-test('仅复制技能时入口可读取且缺项目数据不创建示例', t => {
-  const f=copiedDesignSkill(t), output=path.join(f.project,'examples');
+test('独立复制和公开导出不携带退役企业示例且技能引用闭合', t => {
+  const {skill,temp} = copiedDesignSkill(t);
+  const output = path.join(temp, 'public-export');
+  const exported = spawnSync(process.execPath, [path.join(root,'scripts/export-yss-skills'), '--skill', 'yss-design-system', '--output', output], {cwd: root, encoding:'utf8'});
+  assert.equal(exported.status, 0, exported.stderr);
+  for (const installed of [skill, path.join(output, 'skills/yss-design-system')]) {
+    assertStandaloneSkillLinks(installed);
+    for (const ref of ['assets/enterprise-craft', 'scripts/export-craft-examples.mjs', 'references/enterprise-craft.md']) {
+      assert.equal(fs.existsSync(path.join(installed, ref)), false, ref);
+    }
+    assert.ok(fs.existsSync(path.join(installed, 'references/design-review.md')));
+    assert.ok(fs.existsSync(path.join(installed, 'assets/prototype/package.json')));
+  }
+});
+
+test('仅复制技能时入口可读取且缺项目设计基线不创建文件', t => {
+  const f=copiedDesignSkill(t);
   assert.equal(fs.existsSync(path.join(f.temp,'.agents')),false);
   assert.equal(fs.existsSync(path.join(f.temp,'scripts/vendor/yaml.mjs')),false);
   const entry=fs.readFileSync(path.join(f.skill,'SKILL.md'),'utf8');
   for (const [,ref] of entry.matchAll(/\]\(([^)]+)\)/g)) {
     if (!ref.includes('://')) assert.equal(fs.existsSync(path.resolve(f.skill,ref)),true,ref);
   }
-  const result=exportDesignExamples(f,output);
+  const result=spawnSync(process.execPath,[path.join(f.skill,'scripts/design-md.mjs'),'drift','--project-root',f.project],{cwd:f.project,encoding:'utf8'});
   assert.notEqual(result.status,0);
-  assert.match(result.stderr,/variables\.css/);
-  assert.equal(fs.existsSync(output),false);
-});
-
-test('示例导出使用目标项目数据并拒绝覆盖已有输出', t => {
-  const f=copiedDesignSkill(t), output=path.join(f.project,'examples');
-  const tokens=path.join(f.project,'.template-spec/design/tokens');
-  fs.mkdirSync(tokens,{recursive:true});
-  fs.cpSync(path.join(root,'DESIGN.md'),path.join(f.project,'DESIGN.md'));
-  fs.cpSync(path.join(root,'.template-spec/design/tokens/variables.css'),path.join(tokens,'variables.css'));
-  const first=exportDesignExamples(f,output);
-  assert.equal(first.status,0,first.stderr);
-  assert.deepEqual(fs.readFileSync(path.join(output,'tokens.css')),fs.readFileSync(path.join(tokens,'variables.css')));
-  assert.match(fs.readFileSync(path.join(output,'index.html'),'utf8'),/tokens\.css/);
-  const provenance=JSON.parse(fs.readFileSync(path.join(output,'example-provenance.json'),'utf8'));
-  assert.equal(provenance.design_source.ref,'DESIGN.md');
-  fs.writeFileSync(path.join(output,'user-file.txt'),'保留');
-  const second=exportDesignExamples(f,output);
-  assert.notEqual(second.status,0);
-  assert.match(second.stderr,/拒绝覆盖/);
-  assert.equal(fs.readFileSync(path.join(output,'user-file.txt'),'utf8'),'保留');
+  assert.match(result.stderr,/DESIGN\.md/);
+  assert.deepEqual(fs.readdirSync(f.project),[]);
 });
 
 function governedInstance(t, additionalSkills = []) {

@@ -3,7 +3,6 @@ import { createHash } from "node:crypto";
 import { constants, copyFileSync, existsSync, readFileSync, writeFileSync, realpathSync, statSync, lstatSync, mkdtempSync, renameSync, linkSync, rmSync, unlinkSync, chmodSync } from "node:fs";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
-import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import { parseDocument } from "./vendor/yaml.mjs";
 
@@ -245,96 +244,29 @@ function commitProjections(changes, originals) {
   }
 }
 
-function themeProjection(frontmatter) {
-  const theme = { token: {}, algorithm: "default" };
-  const token = theme.token || (theme.token = {});
-  const colors = frontmatter.colors;
-  const typography = frontmatter.typography;
-  const rounded = frontmatter.rounded;
-  const spacing = frontmatter.spacing;
-  Object.assign(token, {
-    colorPrimary: colors.primary,
-    colorSuccess: colors.success,
-    colorWarning: colors.warning,
-    colorError: colors.error,
-    colorInfo: colors.info ?? colors.primary,
-    colorTextBase: "#000000",
-    colorBgBase: colors.surface ?? "#ffffff",
-    colorBgLayout: colors["canvas-layout"] ?? "#f0f2f5",
-    colorText: colors.text,
-    colorTextSecondary: colors["text-secondary"],
-    colorBorder: colors.border ?? "#d9d9d9",
-    fontFamily: typography.body.fontFamily,
-    fontSize: Number.parseInt(typography.body.fontSize, 10),
-    borderRadius: Number.parseInt(rounded.md, 10),
-    sizeUnit: Number.parseInt(spacing.xxs, 10),
-    sizeStep: Number.parseInt(spacing.xxs, 10),
-    controlHeight: Number.parseInt(frontmatter.components["button-primary"].height, 10),
-    controlHeightSM: Number.parseInt(frontmatter.components["button-small"].height, 10),
-    controlHeightLG: Number.parseInt(frontmatter.components["button-large"].height, 10),
-    fontSizeSM: Number.parseInt(typography.caption.fontSize, 10),
-    borderRadiusSM: Number.parseInt(rounded.sm, 10),
-    borderRadiusLG: Number.parseInt(rounded.lg, 10),
-    padding: Number.parseInt(spacing.md, 10),
-    paddingSM: Number.parseInt(spacing.sm, 10),
-    paddingXS: Number.parseInt(spacing.xs, 10),
-    paddingLG: Number.parseInt(spacing.card, 10)
-  });
-  theme.components = { Card: { borderRadiusLG: token.borderRadiusLG, paddingLG: token.paddingLG } };
-  return theme;
-}
-
-function loadAlgorithmTheme(toolchain) {
-  if (!toolchain) fail("export --write 需要 --antd-toolchain <独立作者工具目录>，固定 antd 6.6.4");
-  const require = createRequire(path.join(path.resolve(toolchain), "package.json"));
-  if (require("antd/package.json").version !== "6.6.4") fail("主题算法需要 antd 6.6.4");
-  const theme = require("antd").theme;
-  if (!theme || ["defaultAlgorithm", "darkAlgorithm", "compactAlgorithm", "getDesignToken"].some(key => typeof theme[key] !== "function")) {
-    fail("antd 6.6.4 主题算法不完整");
+function verifyProjectionManifest(source, readBytes) {
+  let manifest;
+  try { manifest = JSON.parse(readBytes(manifestPath).toString("utf8")); }
+  catch (error) { fail(`投影摘要不可用: ${error.message}`); }
+  const files = projectionFiles();
+  const expected = files.map(file => path.relative(repositoryRoot, file)).sort();
+  if (!manifest || manifest.schema_version !== 1 || manifest.source !== "DESIGN.md" ||
+      !manifest.files || typeof manifest.files !== "object" || Array.isArray(manifest.files) ||
+      JSON.stringify(Object.keys(manifest.files).sort()) !== JSON.stringify(expected)) fail("投影摘要的 schema、来源或文件清单不完整");
+  if (manifest.source_sha256 !== sha256(source)) fail("DESIGN.md 已变化但投影未重新生成（source_sha256 漂移）");
+  for (const file of files) {
+    const relative = path.relative(repositoryRoot, file), digest = manifest.files[relative];
+    if (typeof digest !== "string" || !/^[a-f0-9]{64}$/.test(digest) || sha256(readBytes(file)) !== digest) fail(`派生文件漂移: ${relative}`);
   }
-  return theme;
-}
-
-function algorithmProjections(theme, config, readSnapshot) {
-  const kebab = key => key.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`);
-  const snapshots = {};
-  for (const [mode, algorithm] of Object.entries({ default: theme.defaultAlgorithm, dark: theme.darkAlgorithm, compact: theme.compactAlgorithm })) {
-    const token = { ...config.token };
-    // Let the dark algorithm derive neutral colors instead of pinning light aliases.
-    if (mode === "dark") for (const key of ["colorBgBase", "colorTextBase", "colorBgLayout", "colorText", "colorTextSecondary", "colorBorder"]) delete token[key];
-    snapshots[mode] = theme.getDesignToken({ token, algorithm });
-  }
-  const rewrite = (css, token) => {
-    const values = Object.fromEntries(Object.entries(token).map(([key,value]) => [kebab(key),value]));
-    return css.replace(/(--brand-([\w-]+):\s*)([^;]+);/g, (all, prefix, key, old) => {
-      const value = values[key];
-      if (value === undefined || typeof value === "object") return all;
-      const unit = typeof value === "number" ? old.trim().match(/(?:px|ms|s)$/)?.[0] || "" : "";
-      return `${prefix}${value}${unit};`;
-    });
-  };
-  const cssPath = path.join(projectionDir, "variables.css");
-  const css = readSnapshot(cssPath);
-  const darkStart = css.indexOf('[data-theme="dark"]');
-  const lightCss = darkStart < 0 ? rewrite(css, snapshots.default) : rewrite(css.slice(0, darkStart), snapshots.default) + rewrite(css.slice(darkStart), snapshots.dark);
-  const darkPath = path.join(projectionDir, "variables.dark.css");
-  return new Map([
-    ...Object.entries(snapshots).map(([mode, token]) => [path.join(projectionDir, `tokens.${mode}.json`), JSON.stringify(token, null, 2) + "\n"]),
-    [cssPath, lightCss],
-    [darkPath, rewrite(readSnapshot(darkPath), snapshots.dark)]
-  ]);
 }
 
 function driftCheck() {
   const { source, frontmatter } = readDesign();
   validateCssProjection(frontmatter);
-  if (!existsSync(manifestPath)) fail(`缺少 ${path.relative(repositoryRoot, manifestPath)}，请先执行 export --write-manifest`);
-  const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
-  if (manifest.source_sha256 !== sha256(source)) fail("DESIGN.md 已变化但投影未重新生成（source_sha256 漂移）");
-  for (const [relative, digest] of Object.entries(manifest.files || {})) {
-    const file = path.join(repositoryRoot, relative);
-    if (!existsSync(file) || sha256(readFileSync(file)) !== digest) fail(`派生文件漂移: ${relative}`);
-  }
+  verifyProjectionManifest(source, file => {
+    if (!existsSync(file)) fail(`缺少投影文件: ${path.relative(repositoryRoot, file)}`);
+    return readFileSync(file);
+  });
 }
 
 function runCommand(argv) {
@@ -351,17 +283,18 @@ function runCommand(argv) {
     return;
   }
   if (command === "export") {
+    if (args.includes("--write") || args.some(arg => arg === "--antd-toolchain" || arg.startsWith("--antd-toolchain="))) {
+      fail("旧主题完整派生已退役；未修改项目文件，请根据项目实际组件库维护主题");
+    }
     const format = args[0] || "dtcg";
     const { source, frontmatter } = readDesign();
     const outputs = [
-      ...(args.includes("--write") ? projectionFiles() : []),
       ...(args.includes("--write-css") ? [path.join(projectionDir, "variables.css")] : []),
       ...(args.includes("--write-manifest") ? [manifestPath] : [])
     ];
     const inputs = args.includes("--write-manifest") ? projectionFiles() : [];
     const snapshotPaths = [...new Set([...outputs, ...inputs])];
     assertSafeProjectionOutputs(snapshotPaths);
-    process.stdout.write(runUpstream(["export", "DESIGN.md", "--format", format]));
     const originals = snapshotFiles(snapshotPaths);
     const snapshotBytes = file => {
       const original = originals.get(file);
@@ -369,19 +302,11 @@ function runCommand(argv) {
       return original.bytes;
     };
     const readSnapshot = file => snapshotBytes(file).toString("utf8");
+    if (args.includes("--write-manifest")) verifyProjectionManifest(source, snapshotBytes);
+    process.stdout.write(runUpstream(["export", "DESIGN.md", "--format", format]));
     const changes = new Map();
     const cssPath = path.join(projectionDir, "variables.css");
-    if (args.includes("--write")) {
-      const toolchain = args[args.indexOf("--antd-toolchain") + 1];
-      if (!args.includes("--antd-toolchain") || !toolchain) fail("缺少 --antd-toolchain");
-      const theme = loadAlgorithmTheme(toolchain);
-      const config = themeProjection(frontmatter);
-      changes.set(path.join(projectionDir, "theme.json"), `${JSON.stringify(config, null, 2)}\n`);
-      for (const [file, value] of algorithmProjections(theme, config, readSnapshot)) changes.set(file, value);
-      changes.set(cssPath, renderCssProjection(frontmatter, changes.get(cssPath)));
-    }
-    // Visual role aliases do not require rerunning a production theme algorithm.
-    if (args.includes("--write-css") && !args.includes("--write")) changes.set(cssPath, renderCssProjection(frontmatter, readSnapshot(cssPath)));
+    if (args.includes("--write-css")) changes.set(cssPath, renderCssProjection(frontmatter, readSnapshot(cssPath)));
     if (args.includes("--write-manifest")) {
       const files = Object.fromEntries(projectionFiles().map(file => [path.relative(repositoryRoot, file), sha256(changes.has(file) ? changes.get(file) : snapshotBytes(file))]));
       changes.set(manifestPath, `${JSON.stringify({ schema_version: 1, source: "DESIGN.md", source_sha256: sha256(source), files }, null, 2)}\n`);

@@ -147,12 +147,12 @@
       "scripts/lib/skill-supply-chain.mjs",
       ".template-spec/agents/backend-architecture-profiles.md",
       ".agents/skills/yss-design-system/SKILL.md",
-      ".agents/skills/yss-design-system/references/data-quality-theme.md",
+      ".agents/skills/yss-design-system/references/high-fidelity-default-theme.md",
       ".claude/skills/yss-design-system/SKILL.md",
-      ".claude/skills/yss-design-system/references/data-quality-theme.md",
+      ".claude/skills/yss-design-system/references/high-fidelity-default-theme.md",
       "yss-project.yaml",
       ".workbuddy/skills/yss-design-system/SKILL.md",
-      ".workbuddy/skills/yss-design-system/references/data-quality-theme.md"
+      ".workbuddy/skills/yss-design-system/references/high-fidelity-default-theme.md"
     ],
     "exampleDocPaths": [],
     "initExcludeRootEntries": [],
