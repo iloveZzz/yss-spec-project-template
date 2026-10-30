@@ -22,6 +22,31 @@ function exportDesignExamples(f, output) {
   return spawnSync(process.execPath,[path.join(f.skill,'scripts/export-craft-examples.mjs'),'--project-root',f.project,'--output',output],{cwd:f.project,encoding:'utf8'});
 }
 
+function assertStandaloneSkillLinks(skill, entry = 'SKILL.md') {
+  const root = fs.realpathSync(skill), pending = [path.join(root, entry)], seen = new Set();
+  while (pending.length) {
+    const file = pending.pop();
+    assert.ok(file.startsWith(root + path.sep), `引用超出技能目录: ${file}`);
+    assert.ok(fs.existsSync(file), `缺少技能引用: ${file}`);
+    const real = fs.realpathSync(file);
+    assert.ok(real.startsWith(root + path.sep), `引用超出技能目录: ${file}`);
+    if (seen.has(real) || !file.endsWith('.md')) continue;
+    seen.add(real);
+    for (const [, href] of fs.readFileSync(file, 'utf8').matchAll(/\]\(([^)]+)\)/g)) {
+      if (/^(?:[a-z][a-z0-9+.-]*:|#)/i.test(href)) continue;
+      const relative = href.split('#', 1)[0];
+      if (relative) pending.push(path.resolve(path.dirname(file), relative));
+    }
+  }
+}
+
+test('独立复制的设计技能内部引用递归闭合并识别缺失文件', t => {
+  const { skill } = copiedDesignSkill(t);
+  assertStandaloneSkillLinks(skill);
+  fs.renameSync(path.join(skill, 'references/high-fidelity-default-theme.md'), path.join(skill, 'theme-backup'));
+  assert.throws(() => assertStandaloneSkillLinks(skill), /high-fidelity-default-theme\.md/);
+});
+
 test('仅复制技能时入口可读取且缺项目数据不创建示例', t => {
   const f=copiedDesignSkill(t), output=path.join(f.project,'examples');
   assert.equal(fs.existsSync(path.join(f.temp,'.agents')),false);
@@ -178,4 +203,130 @@ test('新 Spec 仅补装研究技能即可从有效证据导出竞品矩阵和�
   const checked = spawnSync(process.execPath, [`${skill}/scripts/validate-research-package.mjs`, brief, evidence], { cwd: instance, encoding: 'utf8' });
   assert.equal(checked.status, 0, checked.stderr);
   assert.match(checked.stdout, /research package valid/);
+});
+
+test('原型组件来源校验在独立技能中拒绝篡改和非法来源', t => {
+  const f = copiedDesignSkill(t);
+  const file = path.join(f.temp, 'download.vue');
+  const manifestFile = path.join(f.temp, 'manifest.json');
+  const entry = 'ui/button/Button.vue';
+  const bytes = fs.readFileSync(path.join(root,'.agents/skills/yss-prototype-stage/assets/shadcn-vue-authoring',entry));
+  const original=fs.readFileSync(path.join(f.skill,'assets/prototype/registry-manifest.json'));
+  const manifest = () => JSON.parse(original.toString('utf8'));
+  const run = (doc, key=entry, input=file) => {
+    fs.writeFileSync(manifestFile,JSON.stringify(doc));
+    return spawnSync(process.execPath,[path.join(f.skill,'scripts/verify-prototype-source.mjs'),'--manifest',manifestFile,'--entry',key,'--file',input],{encoding:'utf8'});
+  };
+  fs.writeFileSync(file,bytes);
+  const ok=run(manifest());
+  assert.equal(ok.status,0,ok.stderr);
+  fs.writeFileSync(file,'tampered');
+  assert.notEqual(run(manifest()).status,0);
+  assert.equal(fs.readFileSync(file,'utf8'),'tampered');
+  fs.writeFileSync(file,bytes);
+  assert.notEqual(run(manifest(),'../button/Button.vue').status,0);
+  assert.notEqual(run(manifest(),'ui/button/Missing.vue').status,0);
+  assert.notEqual(run(manifest(),entry,path.join(f.temp,'missing')).status,0);
+  const fake=manifest(); fake.components.find(x=>x.path===entry).source_url='https://example.com/Button.vue';
+  assert.notEqual(run(fake).status,0);
+  const changed=manifest(); changed.revision='0'.repeat(40);
+  assert.notEqual(run(changed).status,0);
+  assert.deepEqual(fs.readFileSync(file),bytes);
+});
+
+test('原型独立素材可从单独复制的技能读取并保留固定来源', t => {
+  const f = copiedDesignSkill(t), asset=path.join(f.skill,'assets/prototype');
+  for (const name of ['registry-manifest.json','SHADCN-LICENSE.txt','package.json','pnpm-lock.yaml','vite.config.ts']) assert.equal(fs.existsSync(path.join(asset,name)),true,name);
+  assert.equal(fs.existsSync(path.join(f.skill,'scripts/verify-prototype-source.mjs')),true);
+  assert.equal(fs.existsSync(path.join(f.temp,'.agents/skills/yss-prototype-stage')),false);
+  const manifest=JSON.parse(fs.readFileSync(path.join(asset,'registry-manifest.json'),'utf8'));
+  assert.equal(manifest.revision,'67c9a3926dc0a854507b325c6337ff2210d16379');
+  assert.ok(manifest.components.some(item => item.path==='ui/button/Button.vue'));
+  const pkg=JSON.parse(fs.readFileSync(path.join(asset,'package.json'),'utf8'));
+  assert.equal(pkg.packageManager,'pnpm@10.32.1');
+  assert.equal(pkg.dependencies.vue,'3.5.40');
+  assert.equal(pkg.devDependencies.vite,'8.3.5');
+  assert.equal(fs.existsSync(path.join(asset,'ui')),false);
+});
+
+test('来源校验拒绝替换清单以冒充固定上游内容', async t => {
+  const {createHash} = await import('node:crypto');
+  const f = copiedDesignSkill(t), entry='ui/button/Button.vue';
+  const file=path.join(f.temp,'forged.vue'), override=path.join(f.temp,'forged.json');
+  const doc=JSON.parse(fs.readFileSync(path.join(f.skill,'assets/prototype/registry-manifest.json'),'utf8'));
+  const row=doc.components.find(c=>c.path===entry);
+  fs.writeFileSync(file,'forged');
+  row.digest='sha256:'+createHash('sha256').update('forged').digest('hex');
+  fs.writeFileSync(override,JSON.stringify(doc));
+  const check=spawnSync(process.execPath,[path.join(f.skill,'scripts/verify-prototype-source.mjs'),'--entry',entry,'--file',file,'--manifest',override],{encoding:'utf8'});
+  assert.notEqual(check.status,0);
+  assert.equal(fs.readFileSync(file,'utf8'),'forged');
+});
+
+test('原型构建解析上游跨组件别名', {skip: !process.env.YSS_DESIGN_PROTOTYPE_TOOLCHAIN}, t => {
+  const f=copiedDesignSkill(t), project=f.project;
+  const toolchain=fs.realpathSync(process.env.YSS_DESIGN_PROTOTYPE_TOOLCHAIN);
+  const vite=path.join(toolchain,'node_modules/vite/bin/vite.js');
+  const asset=path.join(f.skill,'assets/prototype/vite.config.ts');
+  fs.writeFileSync(path.join(project,'package.json'),'{"type":"module"}');
+  fs.writeFileSync(path.join(project,'index.html'),'<div id="app"></div><script type="module" src="/src/main.ts"></script>');
+  fs.mkdirSync(path.join(project,'src/components/ui'),{recursive:true});
+  fs.mkdirSync(path.join(project,'src/lib'),{recursive:true});
+  fs.symlinkSync(path.join(toolchain,'node_modules'),path.join(project,'node_modules'),process.platform==='win32'?'junction':'dir');
+  for (const group of ['field','label','separator']) {
+    const source=path.join(root,'.agents/skills/yss-prototype-stage/assets/shadcn-vue-authoring/ui',group);
+    for (const name of fs.readdirSync(source)) {
+      const file=path.join(source,name);
+      const checked=spawnSync(process.execPath,[path.join(f.skill,'scripts/verify-prototype-source.mjs'),'--entry',`ui/${group}/${name}`,'--file',file],{encoding:'utf8'});
+      assert.equal(checked.status,0,checked.stderr);
+    }
+    fs.cpSync(source,path.join(project,'src/components/ui',group),{recursive:true});
+  }
+  fs.copyFileSync(path.join(root,'.agents/skills/yss-prototype-stage/assets/shadcn-vue-authoring/utils.ts'),path.join(project,'src/lib/utils.ts'));
+  fs.writeFileSync(path.join(project,'src/main.ts'),"import { createApp } from 'vue'; import App from './App.vue'; createApp(App).mount('#app');");
+  fs.writeFileSync(path.join(project,'src/App.vue'),'<script setup lang="ts">import { FieldSeparator } from "@/components/ui/field";</script><template><FieldSeparator>或者</FieldSeparator></template>');
+  if (fs.existsSync(asset)) fs.copyFileSync(asset,path.join(project,'vite.config.ts'));
+  else fs.writeFileSync(path.join(project,'vite.config.ts'),"import {defineConfig} from 'vite';import vue from '@vitejs/plugin-vue';import {fileURLToPath,URL} from 'node:url';export default defineConfig({plugins:[vue()],resolve:{alias:{'@':fileURLToPath(new URL('./src',import.meta.url))}}});");
+  const result=spawnSync(process.execPath,[vite,'build',project],{cwd:project,encoding:'utf8'});
+  assert.equal(result.status,0,result.stderr);
+  assert.equal(fs.existsSync(path.join(project,'dist/index.html')),true);
+});
+
+test('原型组件清单提供常用交互控件的固定来源', t => {
+  const {skill}=copiedDesignSkill(t);
+  const m=JSON.parse(fs.readFileSync(path.join(skill,'assets/prototype/registry-manifest.json'),'utf8'));
+  const expected={switch:['Switch.vue','index.ts'],accordion:['Accordion.vue','AccordionContent.vue','AccordionItem.vue','AccordionTrigger.vue','index.ts'],'radio-group':['RadioGroup.vue','RadioGroupItem.vue','index.ts'],slider:['Slider.vue','index.ts'],progress:['Progress.vue','index.ts'],avatar:['Avatar.vue','AvatarFallback.vue','AvatarImage.vue','index.ts'],collapsible:['Collapsible.vue','CollapsibleContent.vue','CollapsibleTrigger.vue','index.ts'],'scroll-area':['ScrollArea.vue','ScrollBar.vue','index.ts']};
+  for (const [group,files] of Object.entries(expected)) {
+    assert.ok(m.component_groups.includes(group),group);
+    for (const name of files) {
+      const entry=m.components.find(c=>c.path===`ui/${group}/${name}`);
+      assert.ok(entry,`${group}/${name}`);
+      assert.match(entry.digest,/^sha256:[a-f0-9]{64}$/);
+      assert.equal(entry.source_url,`https://github.com/unovue/shadcn-vue/blob/${m.revision}/apps/v4/registry/new-york-v4/${entry.path}`);
+    }
+  }
+});
+
+test('新增上游开关和折叠组件固定摘要校验后可构建', {skip: !process.env.YSS_DESIGN_PROTOTYPE_TOOLCHAIN || !process.env.YSS_DESIGN_PROTOTYPE_EXPANDED}, t => {
+  const f=copiedDesignSkill(t), project=f.project;
+  const toolchain=fs.realpathSync(process.env.YSS_DESIGN_PROTOTYPE_TOOLCHAIN);
+  const expanded=fs.realpathSync(process.env.YSS_DESIGN_PROTOTYPE_EXPANDED);
+  fs.writeFileSync(path.join(project,'package.json'),'{"type":"module"}');
+  fs.writeFileSync(path.join(project,'index.html'),'<div id="app"></div><script type="module" src="/src/main.ts"></script>');
+  fs.mkdirSync(path.join(project,'src/components/ui'),{recursive:true});fs.mkdirSync(path.join(project,'src/lib'),{recursive:true});
+  fs.symlinkSync(path.join(toolchain,'node_modules'),path.join(project,'node_modules'),process.platform==='win32'?'junction':'dir');
+  for(const group of ['switch','accordion']) {
+    const dest=path.join(project,'src/components/ui',group);fs.mkdirSync(dest);
+    for(const name of fs.readdirSync(path.join(expanded,group))) {
+      const src=path.join(expanded,group,name);
+      const check=spawnSync(process.execPath,[path.join(f.skill,'scripts/verify-prototype-source.mjs'),'--entry',`ui/${group}/${name}`,'--file',src],{encoding:'utf8'});
+      assert.equal(check.status,0,check.stderr);fs.copyFileSync(src,path.join(dest,name));
+    }
+  }
+  fs.copyFileSync(path.join(root,'.agents/skills/yss-prototype-stage/assets/shadcn-vue-authoring/utils.ts'),path.join(project,'src/lib/utils.ts'));
+  fs.copyFileSync(path.join(f.skill,'assets/prototype/vite.config.ts'),path.join(project,'vite.config.ts'));
+  fs.writeFileSync(path.join(project,'src/main.ts'),"import { createApp } from 'vue'; import App from './App.vue'; createApp(App).mount('#app');");
+  fs.writeFileSync(path.join(project,'src/App.vue'),'<script setup lang="ts">import { Switch } from "@/components/ui/switch"; import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";</script><template><Switch/><Accordion type="single"><AccordionItem value="a"><AccordionTrigger>A</AccordionTrigger><AccordionContent>B</AccordionContent></AccordionItem></Accordion></template>');
+  const result=spawnSync(process.execPath,[path.join(toolchain,'node_modules/vite/bin/vite.js'),'build',project],{cwd:project,encoding:'utf8'});
+  assert.equal(result.status,0,result.stderr);assert.equal(fs.existsSync(path.join(project,'dist/index.html')),true);
 });
