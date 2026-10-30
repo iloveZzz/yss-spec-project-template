@@ -31,23 +31,29 @@ test('Spec governed 初始入口引用的政策可从 common 分发，模板源�
   assert.equal(fs.existsSync(path.join(instance, '.template-source')), false);
 });
 
-test('Spec governed GitLab tracker 的条件工作流文档随初始资产可读', t => {
-  const instance = fs.mkdtempSync(path.join(os.tmpdir(), 'yss-spec-gitlab-entry-'));
+test('新 Spec governed 初始安装不携带实现阶段，tracker 参考能从核心技能解析', t => {
+  const instance = fs.mkdtempSync(path.join(os.tmpdir(), 'yss-spec-minimal-entry-'));
   t.after(() => fs.rmSync(instance, { recursive: true, force: true }));
-  for (const ref of policy.common.files) {
-    const source = path.join(root, ref);
-    if (!shipped(ref, policy.manifest) || !fs.existsSync(source)) continue;
-    const target = path.join(instance, ref);
-    fs.mkdirSync(path.dirname(target), { recursive: true });
-    fs.copyFileSync(source, target);
+  const cfg=policy.installations.governed;
+  for (const ref of cfg.files) {
+    const target=path.join(instance,ref);fs.mkdirSync(path.dirname(target),{recursive:true});
+    fs.copyFileSync(path.join(root,ref),target);
   }
-  const tracker = fs.readFileSync(path.join(instance, '.template-spec/agents/issue-tracker.md'), 'utf8');
-  const gitlab = '.template-spec/agents/gitlab-workflow-skills.md';
-  assert.match(tracker, /当平台为 GitLab 时/);
-  assert.ok(tracker.includes(`\`${gitlab}\``), 'GitLab tracker 应引用实际工作流文档');
-  assert.ok(fs.existsSync(path.join(instance, gitlab)), 'GitLab tracker 依赖的工作流文档必须随初始资产可用');
-  assert.match(fs.readFileSync(path.join(instance, gitlab), 'utf8'), /scripts\/gitworks/);
-  assert.ok(fs.existsSync(path.join(root, 'scripts/gitworks')), 'GitLab 工作流的脚本必须存在于模板中');
-  assert.ok(policy.common.scripts.includes('scripts/gitworks'), 'GitLab 工作流的脚本必须随初始资产可用');
-  assert.ok(shipped('scripts/gitworks', policy.manifest), 'GitLab 工作流的脚本必须可分发');
+  for (const skill of cfg.skills) {
+    const ref=`.agents/skills/${skill}`;
+    fs.mkdirSync(path.dirname(path.join(instance,ref)),{recursive:true});
+    fs.cpSync(path.join(root,ref),path.join(instance,ref),{recursive:true});
+  }
+  for(const [target,source] of Object.entries(cfg.entries)) fs.copyFileSync(path.join(root,source),path.join(instance,target));
+  for(const ref of ['CONTEXT.md','.template-spec/process/lifecycle-registry.yaml','.template-spec/process/orchestration-contract.yaml','.agents/skills/implement','.agents/skills/code-review'])
+    assert.equal(fs.existsSync(path.join(instance,ref)),false,ref);
+  const entry=path.join(instance,'.agents/skills/to-spec/SKILL.md');
+  const links=[...fs.readFileSync(entry,'utf8').matchAll(/\]\(([^)]+)\)/g)].map(x=>x[1]);
+  assert.ok(links.length>0);
+  for(const link of links) {
+    const resolved=path.resolve(path.dirname(entry),link);
+    assert.ok(resolved.startsWith(instance+path.sep));assert.ok(fs.statSync(resolved).isFile());
+  }
+  const config=JSON.parse(fs.readFileSync(path.join(instance,'.template-spec/process/spec-workflow.json')));
+  assert.equal(config.specWorkflow,cfg.specWorkflow);
 });

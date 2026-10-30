@@ -2990,6 +2990,7 @@ routing:
       - .template-spec/process/document-writing.md
       - scripts/inspect-plan-spec
       - scripts/lib/plan-spec-*.mjs
+      - tests/plan-spec-template-contract.test.mjs
     groups:
       - plan-spec-content
   - patterns:

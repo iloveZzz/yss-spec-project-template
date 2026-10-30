@@ -300,7 +300,7 @@ invocation_contract:
       exclusion_conditions: [code-only-work, command-only-work, unrelated-conversation, user-disabled]
       primary_output: document-writing-assistance
     yss-prototype-stage:
-      invocation_mode: user
+      invocation_mode: model
       trigger_conditions: [impact:prototype]
       exclusion_conditions: [no-product-design-impact]
       primary_output: artifact.prototype-deliverable
@@ -358,7 +358,7 @@ invocation_contract:
     yss-backend-spec-review:
       invocation_mode: user
     prototype-review:
-      invocation_mode: user
+      invocation_mode: model
     yss-openapi-draft-review:
       invocation_mode: user
 agent_runtime_roots:

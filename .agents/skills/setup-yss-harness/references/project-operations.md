@@ -1,3 +1,11 @@
+# matt-spec-v1 的项目操作
+
+已核验新 Spec 工作流使用最小 tracker 与技能配置，不继承下文旧 Spec 的 Context、阶段或迁移前置。init/attach 默认 governed，由支持的 Bundle 生成工作流声明和受管政策；sync/补装只用于同一新流程，旧实例留给人工迁移。所有来源、目标、计划、冲突、事务和用户文件保护仍适用。
+
+新 Spec 的 init/attach 指定远程 tracker 时，同次提供目标：GitHub 使用 `--issue-tracker github --tracker-repository <owner/repo>`；GitLab 使用 `--issue-tracker gitlab --tracker-host <HTTPS实例> --tracker-project <完整项目路径>`。这些参数仅写入配置，不创建远程 Issue。计划阶段先校验目标，缺字段不写入工程；已有完整用户配置保护继续有效，不静默换平台。应用仍使用原保存计划。
+
+Backend、独立 skills 及程序操作继续按实际合同；本特例不全局放宽安装规则。只读请求不生成计划或写入。实际命令先核对当前 capabilities 和帮助，不伪造新 flags。
+
 # 项目初始化与维护
 
 仅在新建、接管、同步、迁移、补装或恢复项目时读取；[统一协议](operation-contract.md) 持有保护与事务规则。以下命令可在任意工作目录运行，`<固定yss>`、目标根和计划均使用绝对路径；Profile 选择 `spec/backend`，installation 选择 `skills/governed`，两者不按目录名猜测。

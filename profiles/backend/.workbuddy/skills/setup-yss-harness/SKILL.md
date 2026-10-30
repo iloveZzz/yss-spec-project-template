@@ -11,6 +11,16 @@ description: 安装或升级 YSS CLI，初始化、接管、同步技能或治�
 
 用户仅要求检查或评估时保持只读，不执行准备下载、安装、同步、补装或恢复写入。
 
+## 新 Spec 自动衔接
+
+用户指定工程开展非技术 Spec 工作时，在已有授权内检查并补齐最小配置与当前技能，完成后交回原任务。新建/接管默认 governed，使用支持 matt-spec-v1 的 Bundle/执行器；安装方式不要求旧产品阶段资产。已核验的新流程工程不强制 Context、Plan 或 checkpoint，保留真实身份、来源、路径和事务保护。
+
+旧 Spec 无工作流标识或存在未知/矛盾身份时只诊断，由人工迁移；不自动 sync、migrate 或修改 metadata 开启新流程。Backend 和独立 skills 的操作合同保持各自原义，不应用 Spec 特例。
+
+tracker 复用已明确选择，读取 issue-tracker.md 的 platform/root/repository/host/project 最小配置；缺真实目标决定才询问，不从 remote 强行切换。只读请求不准备下载、安装或写入。
+
+文件、投影、宿主发现、实际平台权限分别报告；技能可用就先完成独立已授权草稿，不能因此称受管初始化或远程发布完成。模型自动设计分支只使用明确允许调用的技能，to-spec 保持用户显式入口。
+
 ## 环境识别
 
 程序入口不明或缺失时，按 [程序参考](references/program-installation.md) 使用随包 `scripts/bootstrap.py inspect` 只读识别平台、PATH 文件和 Python 能力。核对实际 CLI、入口链接、安装回执、manifest、摘要、权限和 `capabilities`；需取得执行器时用 `prepare` 固定并核验发行包，它不安装程序。已符合来源且安装一致时保持无变更。目标工程先用受支持的 `project inspect` 读取身份、安装方式及事务状态，再决定路线：

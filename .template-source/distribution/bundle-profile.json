@@ -394,7 +394,8 @@
       ".template-spec/process/schemas/strategic-handoff-domain-strategy-v4.schema.json",
       ".template-spec/process/schemas/strategic-handoff-stage-decision-package-v4.schema.json",
       ".template-spec/process/stage-gates.md",
-      ".template-spec/process/schemas/slice-implementation-contract-v4.schema.json"
+      ".template-spec/process/schemas/slice-implementation-contract-v4.schema.json",
+      ".template-spec/process/spec-workflow.json"
     ],
     "scripts": [
       "scripts/verify-project-instance",
@@ -1468,6 +1469,44 @@
         ]
       }
     },
-    "governed": {}
+    "governed": {
+      "specWorkflow": "matt-spec-v1",
+      "skills": [
+        "yss-product-lifecycle",
+        "to-spec",
+        "grilling",
+        "domain-modeling",
+        "i-have-adhd"
+      ],
+      "entries": {
+        "AGENTS.md": ".template-source/distribution/entries/spec-governed-AGENTS.md",
+        "CLAUDE.md": ".template-source/distribution/entries/skills-CLAUDE.md"
+      },
+      "files": [
+        ".gitignore",
+        "yss-project.yaml",
+        ".template-spec/process/harness-profile.yaml",
+        ".template-spec/process/spec-workflow.json",
+        ".template-spec/agents/issue-tracker.md",
+        ".template-spec/agents/yss-skill-registry.yaml",
+        ".template-spec/templates/spec-template.md"
+      ],
+      "skillReferences": {
+        "yss-research": [],
+        "yss-prototype-stage": [],
+        "prototype-review": [],
+        "yss-design-system": [
+          "DESIGN.md",
+          ".template-spec/design/tokens/.design-md-projection.json",
+          ".template-spec/design/tokens/theme.json",
+          ".template-spec/design/tokens/tokens.compact.json",
+          ".template-spec/design/tokens/tokens.dark.json",
+          ".template-spec/design/tokens/tokens.default.json",
+          ".template-spec/design/tokens/variables.css",
+          ".template-spec/design/tokens/variables.dark.css"
+        ],
+        "setup-yss-harness": []
+      }
+    }
   }
 }

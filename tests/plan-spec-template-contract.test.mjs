@@ -7,6 +7,7 @@ test('权威 Plan/Spec 模板的正式章节能被内容诊断识别', async () 
     const result=await inspectPlanSpec({command:'check',root:process.cwd(),[kind]:ref});
     assert.equal(result.exitCode,0);
     assert.deepEqual(result.report.findings.filter(x=>['SECTION_UNPARSED','SECTION_MISSING'].includes(x.code)),[]);
-    assert.ok(!result.report.unevaluated.some(x=>x.code==='LEGACY_OR_UNKNOWN_PROFILE'));
+    if (kind === 'plan') assert.ok(!result.report.unevaluated.some(x=>x.code==='LEGACY_OR_UNKNOWN_PROFILE'));
+    else assert.ok(result.report.unevaluated.some(x=>x.code==='LEGACY_OR_UNKNOWN_PROFILE'), '旧结构诊断不能将新的自由规格模板冒充已评估通过');
   }
 });
