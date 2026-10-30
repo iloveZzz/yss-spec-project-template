@@ -7,7 +7,7 @@ import {createHash} from 'node:crypto';
 import {prepareStandaloneSource} from './fixtures/spec-standalone/prepare.mjs';
 
 function fixture(t) {
-  const directory=fs.mkdtempSync(path.join(os.tmpdir(),'yss-standalone-fixture-'));
+  const directory=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'yss-standalone-fixture-')));
   t.after(()=>fs.rmSync(directory,{recursive:true,force:true}));
   const sourceRoot=path.join(directory,'source'),out=path.join(directory,'frozen');
   const put=(ref,content)=>{

@@ -2,4 +2,4 @@ version: 1
 interface:
   display_name: "YSS Design System"
   short_description: "独立或按项目规范开展产品设计"
-  default_prompt: "Use $yss-design-system to design or review this project's interface, respecting its existing style."
+  default_prompt: "Use $yss-design-system to design a new project prototype or review an interface, respecting the requested style."

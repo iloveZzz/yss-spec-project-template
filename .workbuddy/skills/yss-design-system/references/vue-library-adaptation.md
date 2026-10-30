@@ -4,6 +4,8 @@
 
 ## shadcn-vue
 
+新项目高保真浏览器原型按 [Vue 原型准备](shadcn-vue-prototype.md) 使用固定组件来源；官方 Skill 可用时按需协作，不是独立复制的前提。
+
 无其他视觉依据时可参考 shadcn-vue 的简洁层级与语义角色，但无需采用其默认颜色或组件。已有项目读取 components.json、组件源码、Tailwind 版本和实际 CSS；使用项目既有 CSS 变量或非变量方式，不擅自重装组件、覆盖代码或切换主题机制。需要具体 API 时按已安装版本核对 [主题文档](https://www.shadcn-vue.com/docs/theming) 和 [组件文档](https://www.shadcn-vue.com/docs/components)；官方技能可用时可协作，不是前提。
 
 ## Ant Design Vue
