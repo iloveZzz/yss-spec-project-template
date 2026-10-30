@@ -1,0 +1,37 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import { spawnSync } from 'node:child_process';
+import { materializeTestPlugin } from '../scripts/tooling-fixture.mjs';
+
+const root = path.resolve(import.meta.dirname, '../../../..');
+test('Backend 插件事务绑定本地主控并保留历史 Spec 身份', t => {
+  const dir = mkdtempSync(path.join(tmpdir(), 'backend-plugin-profile-'));
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
+  const plugin = path.join(dir, 'plugin/yss-backend-delivery'), target = path.join(dir, 'target');
+  const run = (file, args) => spawnSync(process.execPath, [file, ...args], { encoding: 'utf8', timeout: 120000, maxBuffer: 32 * 1024 * 1024 });
+  const ok = result => { assert.equal(result.status, 0, result.stderr || result.stdout || result.error?.message); return JSON.parse(result.stdout); };
+  assert.ok(process.env.YSS_PLUGIN_TEST_BINARY, 'YSS_PLUGIN_TEST_BINARY is required');
+  materializeTestPlugin({ sourceRoot: root, output: plugin, build: () => ok(run(path.join(root, '.template-source/plugins/yss-backend-delivery/build.mjs'), ['--binary', process.env.YSS_PLUGIN_TEST_BINARY, '--output', plugin])) });
+  const call = (command, args = []) => run(path.join(plugin, 'scripts/plugin.mjs'), [command, ...args]);
+  const plan = ok(call('project-plan', ['--target-dir', target, '--project-name', '接收测试', '--business-domain', '测试', '--issue-tracker', 'github']));
+  const planPath = path.join(dir, 'plan.json'); writeFileSync(planPath, JSON.stringify(plan));
+  const applied = ok(call('project-apply', ['--plan', planPath]));
+  assert.equal(applied.check.profile, 'backend');
+  assert.match(applied.check.effective_orchestrator, /harness-orchestrator\/SKILL\.md$/);
+  const input = path.join(dir, 'input.json');
+  writeFileSync(input, JSON.stringify({ pull_request_ref: { url: 'https://github.com/example/repo/pull/1', head_sha: 'a'.repeat(40), paths: ['spec.md'] } }));
+  const entry = ok(call('project-entry', ['--target-dir', target, '--mode', 'reuse', '--input', input]));
+  assert.equal(entry.next_work_unit, 'work-unit.harness-entry');
+  assert.equal(entry.source_verification_required, true);
+  assert.equal(entry.ready_for_agent, false);
+  assert.equal(ok(call('query-project', ['--target-dir', target])).query.lifecycle.work_unit.id, 'work-unit.harness-entry');
+  const legacy = path.join(target, '.yss-plugin.json'), bytes = '{"profile":"spec"}';
+  writeFileSync(legacy, bytes);
+  const rejected = call('project-upgrade-plan', ['--target-dir', target]);
+  assert.notEqual(rejected.status, 0);
+  assert.match(rejected.stderr, /legacy-profile-migration-unsupported/);
+  assert.equal(readFileSync(legacy, 'utf8'), bytes);
+});

@@ -41,10 +41,12 @@ export function projectEntry(target, values, check, execute) {
   if (!Array.isArray(refs) || (mode === 'reuse' && !refs.length && !input.checkpoint && !pullRequest)) throw new Error('upstream-artifacts-required');
   const artifacts = refs.map(ref => ({ ref, sha256: hash(readFileSync(safe(target, ref))) }));
   if (input.checkpoint) execute(safe(target, 'scripts/verify-lifecycle-checkpoint'), [safe(target, input.checkpoint)], target);
-  const workUnit = mode === 'new' ? 'work-unit.plan-requirements' : 'work-unit.entry-triage';
-  const query = JSON.parse(execute(safe(target, 'scripts/query-lifecycle-context'), ['--mode', 'route', '--work-unit', workUnit], target));
+  const backend = check.profile === 'backend';
+  const workUnit = backend ? 'work-unit.harness-entry' : mode === 'new' ? 'work-unit.plan-requirements' : 'work-unit.entry-triage';
+  const query = backend ? null : JSON.parse(execute(safe(target, 'scripts/query-lifecycle-context'), ['--mode', 'route', '--work-unit', workUnit], target));
+  const orchestrator = backend ? 'harness-orchestrator' : 'yss-product-lifecycle';
   return { ...check, result: 'project-local-handoff', mode, project_root: target,
-    workflow_reference: { source: 'yss-product-lifecycle', skill: 'yss-product-lifecycle', invocation_mode: 'model-invoked' },
+    workflow_reference: { source: orchestrator, skill: orchestrator, invocation_mode: 'model-invoked' },
     next_work_unit: workUnit, design: null, artifacts, checkpoint: input.checkpoint || null, query,
     ...(pullRequest ? { pull_request_ref: pullRequest, source_verification_required: true, ready_for_agent: false } : {}),
     stage_verification_required: true, execution_started: false,

@@ -65,3 +65,27 @@ test('旧战略库写入口拒绝导出、打包和导入', async t => {
     assert.deepEqual(readdirSync(target), []);
   }
 });
+
+test('Spec 的两种初始安装均直接提供手动 handoff', () => {
+  const policy = JSON.parse(readFileSync('.template-source/distribution/bundle-profile.json', 'utf8'));
+  for (const mode of ['skills', 'governed']) {
+    assert.ok(policy.installations[mode].skills.includes('handoff'), mode);
+  }
+  const skill = readFileSync('.agents/skills/handoff/SKILL.md', 'utf8');
+  const metadata = readFileSync('.agents/skills/handoff/agents/openai.yaml', 'utf8');
+  assert.match(skill, /disable-model-invocation: true/);
+  assert.match(metadata, /allow_implicit_invocation: false/);
+});
+
+test('Backend 的独立技能安装提供手动 handoff', () => {
+  const policy = JSON.parse(readFileSync('profiles/backend/.template-source/distribution/bundle-profile.json', 'utf8'));
+  assert.ok(policy.installations.skills.skills.includes('handoff'));
+});
+
+test('手动 handoff 不再携带旧战略交接依赖闭包', () => {
+  for (const ref of ['.template-source/distribution/bundle-profile.json', 'profiles/backend/.template-source/distribution/bundle-profile.json']) {
+    const policy = JSON.parse(readFileSync(ref, 'utf8'));
+    assert.equal(Object.hasOwn(policy.installations.skills.skillReferenceGroups || {}, 'handoff'), false, ref);
+    assert.equal(Object.hasOwn(policy.installations.skills.skillReferences || {}, 'handoff'), false, ref);
+  }
+});

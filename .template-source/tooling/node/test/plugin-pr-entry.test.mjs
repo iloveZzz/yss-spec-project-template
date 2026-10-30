@@ -110,3 +110,17 @@ test('PR URL 不接受可能携带凭据的 query 和 fragment', t => {
     assert.throws(() => projectEntry(target, { mode: 'reuse', input }, { binding: true }, () => '{}'), /invalid-pull-request-ref/);
   }
 });
+
+test('Backend 接收 PR 时直接交给本地后端主控核验', t => {
+  const target = mkdtempSync(path.join(tmpdir(), 'backend-pr-entry-'));
+  t.after(() => rmSync(target, { recursive: true, force: true }));
+  const input = path.join(target, 'input.json');
+  const pull_request_ref = { url: 'https://github.com/example/repo/pull/42', head_sha: 'a'.repeat(40), paths: ['docs/spec.md'] };
+  writeFileSync(input, JSON.stringify({ pull_request_ref }));
+  const result = projectEntry(target, { mode: 'reuse', input }, { binding: true, profile: 'backend' }, () => assert.fail('不得假装完成在线查询'));
+  assert.deepEqual(result.pull_request_ref, pull_request_ref);
+  assert.equal(result.next_work_unit, 'work-unit.harness-entry');
+  assert.equal(result.workflow_reference.skill, 'harness-orchestrator');
+  assert.equal(result.source_verification_required, true);
+  assert.equal(result.ready_for_agent, false);
+});
