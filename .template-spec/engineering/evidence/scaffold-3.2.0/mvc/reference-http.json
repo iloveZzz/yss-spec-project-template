@@ -2,12 +2,12 @@
   "argv": [
     "/Library/Java/JavaVirtualMachines/amazon-corretto-17.jdk/Contents/Home/bin/java",
     "-jar",
-    "/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe/examples/reference/mvc-probe-reference-server/target/mvc-probe-reference-server-1.0.0-SNAPSHOT.jar",
+    "/private/tmp/pr131-requalification/projects/mvc-probe/examples/reference/mvc-probe-reference-server/target/mvc-probe-reference-server-1.0.0-SNAPSHOT.jar",
     "--server.address=127.0.0.1",
-    "--server.port=58748"
+    "--server.port=57665"
   ],
-  "artifact_sha256": "19227d16e9aa14ab3e9b674ad156793a515ef05e712b9971703c45898584929a",
-  "started_at": "2026-10-12T18:42:22.267899+00:00",
+  "artifact_sha256": "sha256:0511a90e1d6e78b72a37f1380ef82a0ac594e76b6a3a97e33c73fdeb5552ebe5",
+  "started_at": "2026-10-30T03:23:33.897Z",
   "http": [
     {
       "method": "POST",
@@ -20,14 +20,14 @@
         "message": "数据返回正常",
         "tips": "信息返回正常",
         "data": {
-          "id": "42bb0aeb-6094-471d-805c-8347619996fe",
+          "id": "fbf6171a-7f7b-4ce4-9c9c-48a8e239aa84",
           "name": "initial"
         }
       }
     },
     {
       "method": "GET",
-      "path": "/reference-entries/42bb0aeb-6094-471d-805c-8347619996fe",
+      "path": "/reference-entries/fbf6171a-7f7b-4ce4-9c9c-48a8e239aa84",
       "status": 200,
       "body": {
         "success": true,
@@ -36,14 +36,14 @@
         "message": "数据返回正常",
         "tips": "信息返回正常",
         "data": {
-          "id": "42bb0aeb-6094-471d-805c-8347619996fe",
+          "id": "fbf6171a-7f7b-4ce4-9c9c-48a8e239aa84",
           "name": "initial"
         }
       }
     },
     {
       "method": "PUT",
-      "path": "/reference-entries/42bb0aeb-6094-471d-805c-8347619996fe/name",
+      "path": "/reference-entries/fbf6171a-7f7b-4ce4-9c9c-48a8e239aa84/name",
       "status": 200,
       "body": {
         "success": true,
@@ -52,14 +52,14 @@
         "message": "数据返回正常",
         "tips": "信息返回正常",
         "data": {
-          "id": "42bb0aeb-6094-471d-805c-8347619996fe",
+          "id": "fbf6171a-7f7b-4ce4-9c9c-48a8e239aa84",
           "name": "renamed"
         }
       }
     },
     {
       "method": "GET",
-      "path": "/reference-entries/42bb0aeb-6094-471d-805c-8347619996fe",
+      "path": "/reference-entries/fbf6171a-7f7b-4ce4-9c9c-48a8e239aa84",
       "status": 200,
       "body": {
         "success": true,
@@ -68,7 +68,7 @@
         "message": "数据返回正常",
         "tips": "信息返回正常",
         "data": {
-          "id": "42bb0aeb-6094-471d-805c-8347619996fe",
+          "id": "fbf6171a-7f7b-4ce4-9c9c-48a8e239aa84",
           "name": "renamed"
         }
       }

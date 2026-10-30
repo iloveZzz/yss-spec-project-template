@@ -20,6 +20,7 @@ function fixture(t) {
   git("init", "-q");
   fs.mkdirSync(path.join(root, ".template-source/process"), { recursive: true });
   fs.copyFileSync(path.join(ROOT, POLICY_FILE), path.join(root, POLICY_FILE));
+  write(root, "scripts/lib/skill-supply-chain.mjs", fs.readFileSync(path.join(ROOT,"scripts/lib/skill-supply-chain.mjs"),"utf8"));
   return { root, git };
 }
 
@@ -80,4 +81,30 @@ test("策略包含未知退役 ID 或未写原因时失败", (t) => {
   assert.throws(() => loadRetiredScanPolicy({ root }), /包含未知退役 ID/);
   write(root, POLICY_FILE, JSON.stringify({ ...base, contextual: [{ id: "teach" }] }) + "\n");
   assert.throws(() => loadRetiredScanPolicy({ root }), /必须写 reason/);
+});
+
+test('empty v2 retirement set does not match unrelated text',t=>{
+ const {root}=fixture(t);
+ const policy=JSON.parse(fs.readFileSync(path.join(ROOT,POLICY_FILE),'utf8'));
+ write(root,POLICY_FILE,JSON.stringify({...policy,contextual:[],not_text_scanned:[]}));
+ write(root,'.template-spec/agents/yss-skill-registry.yaml',JSON.stringify({retirement_contract:{schema_version:2,stages:['deprecated','retired'],deprecated_new_use:'forbidden',cleanup_statuses:['migration-only','remove-ready'],hard_retirement_tombstone:'.template-spec/agents/skill-migrations.md',retired_id_source:policy.source,failure_codes:{deprecated:'skill-deprecated',retired:'skill-retired'},retired_ids:[]}}));
+ write(root,'notes.md','unrelated ordinary text\n');
+ assert.deepEqual(scanRetiredSkillIds({root}).violations,[]);
+});
+
+test('historical v1 scan policy remains readable while v2 requires its data source',t=>{
+ const {root}=fixture(t),policy=JSON.parse(fs.readFileSync(path.join(root,POLICY_FILE),'utf8'));
+ policy.source='scripts/lib/skill-supply-chain.mjs#OBSOLETE';write(root,POLICY_FILE,JSON.stringify(policy));
+ assert.doesNotThrow(()=>loadRetiredScanPolicy({root}));
+ write(root,'.template-spec/agents/yss-skill-registry.yaml',fs.readFileSync(path.join(ROOT,'.template-spec/agents/yss-skill-registry.yaml'),'utf8'));
+ assert.throws(()=>loadRetiredScanPolicy({root}),/source/);
+});
+
+test('historical root retirement comes from that root and never evaluates JavaScript',t=>{
+ for(const name of ['old-first','old-second']){
+  const {root}=fixture(t);write(root,'scripts/lib/skill-supply-chain.mjs',`export const OBSOLETE = new Set(["${name}", "to-" + "prd"]);\nfor (const id of ["loop-old"]) OBSOLETE.add(id);\nOBSOLETE.add("single-old");\nthrow new Error("must not execute");`);
+  assert.deepEqual(retiredSkillIds({root}).sort(),[name,'to-prd','loop-old','single-old'].sort());
+  write(root,'scripts/lib/skill-supply-chain.mjs','export const OBSOLETE = customCall();');assert.throws(()=>retiredSkillIds({root}),/合同|legacy|历史/);
+  fs.unlinkSync(path.join(root,'scripts/lib/skill-supply-chain.mjs'));assert.throws(()=>retiredSkillIds({root}),/ENOENT|合同|legacy|历史/);
+ }
 });

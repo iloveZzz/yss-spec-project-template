@@ -7,7 +7,7 @@
 - `.template-spec/` 持有可供项目实例消费的治理规则；根入口、词汇和视觉规范仍是各自的权威来源。
 - `agents/`、`contracts/`、`process/` 保存当前集成合同、工具边界和维护策略。
 - `cli-core/`、`plugins/`、`scripts/`、`tooling/` 保存实现、测试及固定工具依赖；有效迁移 fixture 随现行兼容能力保留。
-- `engineering/evidence/` 仅保存当前工程声明仍直接消费的必要依据，原日期、摘要和结论不改写为新验证。
+- 工程声明消费的依据保存在 `.template-spec/engineering/evidence/`；原日期、摘要和结论不改写为新验证。
 - `wiki/` 是 `llm-wiki` 在本机按需生成的阅读视图：被 `.gitignore` 排除，不提交，也不成为规则权威；需要时重新生成，旧版本可从 Git 历史找回。
 
 ## 维护运行材料

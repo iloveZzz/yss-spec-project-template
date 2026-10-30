@@ -15,7 +15,7 @@ for (const sourceRoot of ["profiles/backend"]) test(`FR-006：${sourceRoot} Skil
     cpSync(path.resolve(sourceRoot, "scripts/lib/skill-supply-chain.mjs"), path.join(root, "scripts/lib/skill-supply-chain.mjs"));
     cpSync(path.resolve("scripts/lib/workbuddy-projection.mjs"), path.join(root, "scripts/lib/workbuddy-projection.mjs"));
     mkdirSync(path.join(root, "scripts/vendor"), { recursive: true });
-    for (const ref of ["scripts/lib/repository-mode.mjs", "scripts/vendor/yaml.mjs"]) cpSync(path.resolve(ref), path.join(root, ref));
+    for (const ref of ["scripts/lib/repository-mode.mjs", "scripts/lib/skill-retirement-contract.mjs", "scripts/lib/skill-retirement-projection.mjs", "scripts/vendor/yaml.mjs"]) cpSync(path.resolve(ref), path.join(root, ref));
     const source = path.join(root, ".agents/skills/probe");
     mkdirSync(source, { recursive: true });
     writeFileSync(path.join(source, "SKILL.md"), "---\nname: probe\n---\n");
@@ -52,7 +52,7 @@ test("根 Skill 同步：相同投影不重写，结构、换行或权限漂移�
     cpSync(path.resolve("scripts/lib/skill-supply-chain.mjs"), path.join(root, "scripts/lib/skill-supply-chain.mjs"));
     cpSync(path.resolve("scripts/lib/workbuddy-projection.mjs"), path.join(root, "scripts/lib/workbuddy-projection.mjs"));
     mkdirSync(path.join(root, "scripts/vendor"), { recursive: true });
-    for (const ref of ["scripts/lib/repository-mode.mjs", "scripts/vendor/yaml.mjs"]) cpSync(path.resolve(ref), path.join(root, ref));
+    for (const ref of ["scripts/lib/repository-mode.mjs", "scripts/lib/skill-retirement-contract.mjs", "scripts/lib/skill-retirement-projection.mjs", "scripts/vendor/yaml.mjs"]) cpSync(path.resolve(ref), path.join(root, ref));
     const source = path.join(root, ".agents/skills/probe");
     mkdirSync(source, { recursive: true });
     writeFileSync(path.join(source, "SKILL.md"), "---\r\nname: probe\r\n---\r\n");
@@ -104,7 +104,7 @@ for (const command of ['sync', 'lock']) test(`Profile generation entry ${command
     mkdirSync(path.join(root, 'scripts/lib'), { recursive: true });
     mkdirSync(path.join(root, 'scripts/vendor'), { recursive: true });
     mkdirSync(path.join(root, '.template-source/scripts'), { recursive: true });
-    for (const ref of ['.template-source/scripts/manage-profile-skills.mjs', 'scripts/lib/skill-supply-chain.mjs', 'scripts/lib/workbuddy-projection.mjs', 'scripts/lib/repository-mode.mjs', 'scripts/vendor/yaml.mjs']) cpSync(path.resolve(ref), path.join(root, ref));
+    for (const ref of ['.template-source/scripts/manage-profile-skills.mjs', 'scripts/lib/skill-supply-chain.mjs', 'scripts/lib/workbuddy-projection.mjs', 'scripts/lib/repository-mode.mjs', 'scripts/lib/skill-retirement-contract.mjs', 'scripts/lib/skill-retirement-projection.mjs', 'scripts/vendor/yaml.mjs']) cpSync(path.resolve(ref), path.join(root, ref));
     writeFileSync(path.join(root, 'yss-project.yaml'), 'schema_version: 1\nrepository_mode: project-instance\n');
     const before = readdirSync(root).sort();
     const result = spawnSync(process.execPath, [path.join(root, '.template-source/scripts/manage-profile-skills.mjs'), command, '--profile', 'backend'], { cwd: root, encoding: 'utf8' });
@@ -124,7 +124,7 @@ for (const command of ['sync', 'lock']) for (const [kind, identity] of [
     mkdirSync(path.join(root, 'scripts/lib'), { recursive: true });
     mkdirSync(path.join(root, 'scripts/vendor'), { recursive: true });
     mkdirSync(path.join(root, '.template-source/scripts'), { recursive: true });
-    for (const ref of ['.template-source/scripts/manage-profile-skills.mjs', 'scripts/lib/skill-supply-chain.mjs', 'scripts/lib/workbuddy-projection.mjs', 'scripts/lib/repository-mode.mjs', 'scripts/vendor/yaml.mjs']) cpSync(path.resolve(ref), path.join(root, ref));
+    for (const ref of ['.template-source/scripts/manage-profile-skills.mjs', 'scripts/lib/skill-supply-chain.mjs', 'scripts/lib/workbuddy-projection.mjs', 'scripts/lib/repository-mode.mjs', 'scripts/lib/skill-retirement-contract.mjs', 'scripts/lib/skill-retirement-projection.mjs', 'scripts/vendor/yaml.mjs']) cpSync(path.resolve(ref), path.join(root, ref));
     writeFileSync(path.join(root, 'yss-project.yaml'), identity);
     const before = readdirSync(root).sort();
     const result = spawnSync(process.execPath, [path.join(root, '.template-source/scripts/manage-profile-skills.mjs'), command, '--profile', 'backend'], { cwd: root, encoding: 'utf8' });
@@ -173,7 +173,7 @@ for (const profile of ['spec', 'backend']) for (const [kind, identity] of [
   mkdirSync(path.join(root, 'scripts/vendor'), { recursive: true });
   const origin = profile === 'backend' ? 'profiles/backend/scripts/lib/skill-supply-chain.mjs' : 'scripts/lib/skill-supply-chain.mjs';
   cpSync(path.resolve(origin), path.join(root, 'scripts/lib/skill-supply-chain.mjs'));
-  for (const ref of ['scripts/lib/workbuddy-projection.mjs', 'scripts/lib/repository-mode.mjs', 'scripts/vendor/yaml.mjs']) cpSync(path.resolve(ref), path.join(root, ref));
+  for (const ref of ['scripts/lib/workbuddy-projection.mjs', 'scripts/lib/repository-mode.mjs', 'scripts/lib/skill-retirement-contract.mjs', 'scripts/lib/skill-retirement-projection.mjs', 'scripts/vendor/yaml.mjs']) cpSync(path.resolve(ref), path.join(root, ref));
   const canonical = path.join(root, '.agents/skills/probe'), legacy = path.join(root, '.codebuddy/skills/probe');
   mkdirSync(canonical, { recursive: true }); mkdirSync(path.dirname(legacy), { recursive: true });
   writeFileSync(path.join(canonical, 'SKILL.md'), '---\nname: probe\n---\n');
@@ -222,6 +222,9 @@ test('Source Profile entry sync and lock accept quoted identity and generate the
     writeFileSync(path.join(canonical, 'SKILL.md'), '---\nname: probe\n---\nold canonical\n');
     chmodSync(path.join(canonical, 'SKILL.md'), 0o644);
     cpSync(canonical, legacy, { recursive: true });
+    for (const ref of ['.template-spec/agents/yss-skill-registry.yaml','profiles/backend/.template-spec/agents/yss-skill-registry.yaml']) {
+      mkdirSync(path.dirname(path.join(root,ref)),{recursive:true});cpSync(path.resolve(ref),path.join(root,ref));
+    }
     const sourceFile = path.join(root, '.agents/skills/yss-product-lifecycle/references/daily-delivery.md');
     const targetFile = path.join(backend, '.agents/skills/harness-orchestrator/references/daily-delivery.md');
     const lockFile = path.join(backend, 'skills-lock.json');
@@ -287,4 +290,30 @@ test('Source Profile entry sync and lock accept quoted identity and generate the
     assert.equal(run('sync').status, 1, 'symlink parent must be rejected');
     assert.equal(readFileSync(sourceFile, 'utf8'), '# 变更后的原文\n');
   } finally { rmSync(root, { recursive: true, force: true }); }
+});
+
+test('v2 retirement refreshes the same exported Set before lock filtering and refuses physical residue before writes',async()=>{
+ const root=mkdtempSync(path.join(os.tmpdir(),'retirement-lock-'));
+ try{
+  for(const ref of ['scripts/lib/skill-supply-chain.mjs','scripts/lib/repository-mode.mjs', 'scripts/lib/skill-retirement-contract.mjs', 'scripts/lib/skill-retirement-projection.mjs','scripts/lib/workbuddy-projection.mjs','scripts/vendor/yaml.mjs']){
+   mkdirSync(path.dirname(path.join(root,ref)),{recursive:true});cpSync(path.resolve(ref),path.join(root,ref));
+  }
+  const {OBSOLETE,updateSkillLock}=await import(pathToFileURL(path.join(root,'scripts/lib/skill-supply-chain.mjs')));
+  const sameSet=OBSOLETE;
+  const registry=JSON.parse(JSON.stringify((await import('../scripts/vendor/yaml.mjs')).parse(readFileSync('.template-spec/agents/yss-skill-registry.yaml','utf8'))));
+  registry.skills=[];registry.platform_skills=[];registry.external_skills=[];
+  Object.assign(registry.retirement_contract,{schema_version:2,retired_id_source:'.template-spec/agents/yss-skill-registry.yaml#/retirement_contract/retired_ids',retired_ids:['newly-retired']});
+  mkdirSync(path.join(root,'.template-spec/agents'),{recursive:true});
+  writeFileSync(path.join(root,'.template-spec/agents/yss-skill-registry.yaml'),JSON.stringify(registry));
+  const lock=path.join(root,'skills-lock.json'),js=path.join(root,'scripts/lib/skill-supply-chain.mjs');
+  writeFileSync(lock,JSON.stringify({version:3,skills:{shared:{'newly-retired':{}},platform:{}}}));
+  const physical=path.join(root,'.agents/skills/newly-retired');mkdirSync(physical,{recursive:true});writeFileSync(path.join(physical,'SKILL.md'),'user content');
+  const before=[readFileSync(lock),readFileSync(js)];
+  assert.throws(()=>updateSkillLock([]),/retired|退役|obsolete/);
+  assert.deepEqual([readFileSync(lock),readFileSync(js)],before);
+  rmSync(physical,{recursive:true});updateSkillLock([]);
+  assert.equal(JSON.parse(readFileSync(lock)).skills.shared['newly-retired'],undefined);
+  assert.equal(OBSOLETE,sameSet);assert.deepEqual([...sameSet],['newly-retired']);
+  assert.match(readFileSync(js,'utf8'),/new Set\(\["newly-retired"\]\)/);
+ }finally{rmSync(root,{recursive:true,force:true});}
 });

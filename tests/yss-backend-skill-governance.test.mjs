@@ -219,3 +219,13 @@ test("Boot 3 component Skill semantics match the source-backed security and fail
   assert.match(security, /不得把 delegating encoder 的默认 id 改回 `noop`/);
   assert.doesNotMatch(security, /`Jwks\.generateRsa\(\)` 解码硬编码/);
 });
+
+
+test('Backend audit keeps cross-repo frontend references separate from physical retirement',()=>{
+ const backend=yaml('profiles/backend/.template-spec/agents/yss-skill-registry.yaml');
+ const rows=auditBackendSkills(backend);
+ for(const id of ['yss-ui','yss-formily','yss-frontend-scaffold-generator']){
+  const row=rows.find(row=>row.skill===id);assert.ok(row,id);
+  assert.equal(['deprecated','remove-ready'].includes(row.classification),false,id);
+ }
+});

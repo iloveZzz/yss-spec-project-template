@@ -10,9 +10,6 @@
     "mattpocock/skills": {
       "revision": "0ab1b63a410a03d3627979a109c8695de27af954"
     },
-    "tt-a1i/archify": {
-      "revision": "199360cc6687a7857b54dd188d4922b09e466a4b"
-    },
     "ayghri/i-have-adhd": {
       "revision": "839872f9d1cd634fed642b4589ce7226199cc15f"
     }
@@ -23,19 +20,6 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/alibaba-java-code-style/SKILL.md",
-        "targets": [
-          ".agents/skills",
-          ".claude/skills",
-          ".workbuddy/skills"
-        ]
-      },
-      "archify": {
-        "source": "tt-a1i/archify",
-        "sourceType": "github",
-        "skillPath": "archify/SKILL.md",
-        "sourceRevision": "199360cc6687a7857b54dd188d4922b09e466a4b",
-        "upstreamHash": "a04c5666d6a5f46bc6f220a36b851e96aaa69ff0630049631364fb23fa5b2ee5",
-        "adaptationRef": ".template-source/agents/archify-integration.md",
         "targets": [
           ".agents/skills",
           ".claude/skills",

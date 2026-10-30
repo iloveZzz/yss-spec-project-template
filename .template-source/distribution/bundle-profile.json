@@ -853,7 +853,9 @@
           ".template-spec/process/orchestration/workflow/work-units/work-unit.code-review.yaml",
           "scripts/lib/repository-mode.mjs",
           "scripts/lib/skill-supply-chain.mjs",
-          "scripts/lib/workbuddy-projection.mjs"
+          "scripts/lib/workbuddy-projection.mjs",
+          "scripts/lib/skill-retirement-contract.mjs",
+          "scripts/lib/skill-retirement-projection.mjs"
         ],
         "shared-6bad868043": [
           ".template-spec/process/harness-process-tailoring.md"
@@ -1080,6 +1082,8 @@
           "scripts/lib/review-package.mjs",
           "scripts/lib/runtime-store.mjs",
           "scripts/lib/skill-registry.mjs",
+          "scripts/lib/skill-retirement-contract.mjs",
+          "scripts/lib/skill-retirement-projection.mjs",
           "scripts/lib/slice-applicability.mjs",
           "scripts/lib/slice-contract-preparation.mjs",
           "scripts/lib/slice-contract-views.mjs",

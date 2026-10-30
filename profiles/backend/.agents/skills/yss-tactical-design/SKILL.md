@@ -29,7 +29,7 @@ disable-model-invocation: true
 
 新产物输出 Technical Design Contract schema v2 的 DDD `design` 分支（沿用 v1 DDD 内容结构）；旧独立 tactical-design contract schema v1 仅显式兼容读取，不自动迁移或批准。输出验证结果、评审引用和影响标记；来自 Strategic Design Handoff 时保留 `strategic_context_import_ref` 与 `context_reconciliation_ref`。状态使用 `draft`、`ready-for-human`、`approved`、`blocked`、`stale`、`drift`、`new_impacts`。
 
-当用户或当前技术分析 / 架构评审合同明确要求聚合关系、状态转换、调用链、数据流或 Before/After 图示时，追加使用 `archify`。图必须从当前 Spec、ADR、OpenAPI、Tactical Design Contract 和代码证据派生，保存成 `*.archify.json`、`*.html` 与 `*.receipt.json` 配对资产；它是审查证据，不是新的事实源或批准门禁。没有明确图示要求时，不把 `archify` 加入 `required_skills`。
+当用户或当前技术分析 / 架构评审合同明确要求聚合关系、状态转换、调用链、数据流或 Before/After 图示时，提供相应图示。图必须从当前 Spec、ADR、OpenAPI、Tactical Design Contract 和代码证据派生，作为审查证据，不是新的事实源或批准门禁。
 
 本 skill 不能自行批准资产、设置 `ready-for-agent`、创建 Ticket 或修改生命周期状态。批准由 `harness-orchestrator` 维护；独立架构评审使用 `evidence.tactical-design-review`。
 

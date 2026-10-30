@@ -17,8 +17,8 @@ import {verifyExistingArchitecture,existingArchitectureDigest} from '../../lib/e
 import {loadSkillRegistry} from '../../lib/skill-registry.mjs';
 import {parseContextContract,resolveContextTermRefs} from '../../lib/context-contract.mjs';
 
-test('installed Backend prepares, implements and delivers a role-free current Slice',async()=>{
- const f=installedFixture('backend'),e=existingFixture(),{root,write,read,asset,run}=f;
+test(process.env.YSS_CHAIN_STOP_AFTER_SLICE_APPROVAL==='1'?'installed Backend prepares an approved current Slice':'installed Backend prepares, implements and delivers a role-free current Slice',async()=>{
+ const f=installedFixture('backend',process.env.YSS_CHAIN_EXISTING_ROOT?{existingRoot:process.env.YSS_CHAIN_EXISTING_ROOT}:{}),e=existingFixture(),{root,write,read,asset,run}=f;
  try {
   for(const ref of ['.template-spec/engineering/backend-platforms.json','docs/engineering/evidence'])fs.cpSync(path.join(e.root,ref),path.join(root,ref),{recursive:true});
   const feature='feature.engineering',cpRef='.work/engineering/checkpoint.json',project=fs.realpathSync(e.project);
@@ -110,6 +110,10 @@ for(const [cmd,args]of [['javac',['-d',dir,...walk('src/main/java'),main]],['jav
   user.present();user.record.responses=[];user.respond();user.record.request.presented_source.ref=relative(user.record.request.presented_source.ref);user.record.responses[0].source.ref=relative(user.record.responses[0].source.ref);user.save();
   cp.human_review={implementation:{slice_contract_ref:sliceRef,vertical_slice_ticket_ref:ticket},user_decisions:[{...user.requirement,subject_ref:'implementation-scope.json',user_decision_ref:relative(user.ref)}]};write(cpRef,cp);
   run('actual-approved-slice4',['contract','verify','--kind','slice','--file',sliceRef,'--approval-ref',cpRef]);
+  if(process.env.YSS_CHAIN_STOP_AFTER_SLICE_APPROVAL==='1'){
+   write('worker-stage.json',{project,sliceRef,sliceBinding,cpRef,feature,changed:'src/main/java/application/Boundary.java',completed:{slice_approval:true}});
+   return;
+  }
   const provenance={tool:'node',task_ref:'worker.json',execution_ref:'worker-execution.json',identity:{status:'unavailable',reason:'Node test process has no stable agent/session identifier'}};
   const worker=compileSliceTaskPackage(sliceBinding,{root,work_unit_id:'work-unit.worker',task_id:'worker.current',provenance});write('worker.json',worker);
   run('missing-dispatch-is-not-execution',['contract','verify','--kind','task','--file','worker.json'],'INPUT');

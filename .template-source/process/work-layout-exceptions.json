@@ -129,15 +129,6 @@
     },
     {
       "repository": ".",
-      "file": "profiles/backend/scripts/lib/instance-distribution.mjs",
-      "kind": "content",
-      "text": "  \"docs/.scratch\",",
-      "count": 1,
-      "category": "compatibility",
-      "reason": "禁止分发实例资产或升级覆盖既有工作包的保护规则"
-    },
-    {
-      "repository": ".",
       "file": "scripts/lib/work-layout.mjs",
       "kind": "content",
       "text": "export const HISTORICAL_WORK_ROOTS = Object.freeze(['docs/.scratch', '.scratch', 'docs/requirements/tickets']);",

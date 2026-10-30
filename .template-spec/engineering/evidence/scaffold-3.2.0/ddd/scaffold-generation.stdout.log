@@ -1,0 +1,74 @@
+🚀 开始生成项目: ddd-probe
+📦 基础包名: com.yss.referenceprobe
+📁 输出目录: /private/tmp/pr131-requalification/projects
+
+📁 创建项目目录结构...
+  ✓ ddd-probe-domain
+  ✓ ddd-probe-application
+  ✓ ddd-probe-infrastructure
+  ✓ ddd-probe-adapter
+  ✓ ddd-probe-bootstrap
+  ✓ ddd-probe-adapter/ddd-probe-web
+  ✓ db
+
+📝 生成 Maven POM 文件...
+  ✓ 父级 pom.xml
+  ✓ domain pom.xml
+  ✓ application pom.xml
+  ✓ infrastructure pom.xml
+  ✓ adapter pom.xml
+  ✓ web pom.xml
+  ✓ bootstrap pom.xml
+
+☕ 生成机械启动入口...
+  ✓ DddProbeApplication.java
+  ✓ ArchitectureRulesTest.java
+
+⚙️  生成配置文件...
+  ✓ application.yml
+  ✓ application-scaffold-local.yml
+  ✓ test H2 configuration
+  ✓ logback-spring.xml
+
+📚 生成项目文档...
+  ✓ README.md
+📁 创建项目目录结构...
+  ✓ ddd-probe-reference-domain
+  ✓ ddd-probe-reference-application
+  ✓ ddd-probe-reference-infrastructure
+  ✓ ddd-probe-reference-adapter
+  ✓ ddd-probe-reference-bootstrap
+  ✓ ddd-probe-reference-adapter/ddd-probe-reference-web
+  ✓ db
+
+📝 生成 Maven POM 文件...
+  ✓ 父级 pom.xml
+  ✓ domain pom.xml
+  ✓ application pom.xml
+  ✓ infrastructure pom.xml
+  ✓ adapter pom.xml
+  ✓ web pom.xml
+  ✓ bootstrap pom.xml
+
+☕ 生成机械启动入口...
+  ✓ DddProbeReferenceApplication.java
+  ✓ ArchitectureRulesTest.java
+
+⚙️  生成配置文件...
+  ✓ application.yml
+  ✓ application-scaffold-local.yml
+  ✓ test H2 configuration
+  ✓ logback-spring.xml
+
+📚 生成项目文档...
+  ✓ README.md
+
+✅ 工程文件生成完成，等待受控 Maven 验证
+📂 项目位置: /private/tmp/pr131-requalification/projects/ddd-probe
+
+🎯 下一步:
+  cd /private/tmp/pr131-requalification/projects/ddd-probe
+  ./mvnw validate
+  ./mvnw test
+  ./mvnw package
+  ./mvnw spring-boot:run -pl ddd-probe-bootstrap

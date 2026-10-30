@@ -44,7 +44,7 @@ schema v1 战术合同只按 DDD 显式兼容读取；使用 `--legacy-ddd`，�
 
 ## 交接
 
-按现有架构审查门禁进行内容复核，默认同一 Agent 自检，按明确来源满足独立复核要求。批准且版本当前后交回生命周期，再交编译器；DDD 实现使用 `yss-domain`，MVC 实现按已登记 Profile 的能力与 Recipe 路由。发现 `stale`、`drift`、`new_impacts` 或路径越界时回交重路由。需要图示时按用户或合同要求调用 `archify`，图只作派生证据。
+按现有架构审查门禁进行内容复核，默认同一 Agent 自检，按明确来源满足独立复核要求。批准且版本当前后交回生命周期，再交编译器；DDD 实现使用 `yss-domain`，MVC 实现按已登记 Profile 的能力与 Recipe 路由。发现 `stale`、`drift`、`new_impacts` 或路径越界时回交重路由。按用户或合同要求提供图示，图只作派生证据。
 
 ## 后端脚手架平台承接
 

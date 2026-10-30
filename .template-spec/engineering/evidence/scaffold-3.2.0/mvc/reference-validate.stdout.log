@@ -38,6 +38,8 @@
 [[1;34mINFO[m] [1m------------< [0;36mcom.yss.example:mvc-probe-reference-service[0;1m >-------------[m
 [[1;34mINFO[m] [1mBuilding mvc-probe-reference-service 1.0.0-SNAPSHOT                [3/4][m
 [[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+Downloading from snapshots: https://maven.aliyun.com/nexus/content/groups/public/com/yss/example/mvc-probe-reference-repository/1.0.0-SNAPSHOT/maven-metadata.xml
+Downloading from 2306938-snapshot-Yloqmt: https://packages.aliyun.com/6381d2a25db8487f76c8149c/maven/2306938-snapshot-yloqmt/com/yss/example/mvc-probe-reference-repository/1.0.0-SNAPSHOT/maven-metadata.xml
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mmaven-enforcer-plugin:3.5.0:enforce[m [1m(enforce-platform)[m @ [36mmvc-probe-reference-service[0;1m ---[m
 [[1;34mINFO[m] Rule 2: org.apache.maven.enforcer.rules.dependency.DependencyConvergence passed
@@ -45,19 +47,21 @@
 [[1;34mINFO[m] [1m-------------< [0;36mcom.yss.example:mvc-probe-reference-server[0;1m >-------------[m
 [[1;34mINFO[m] [1mBuilding mvc-probe-reference-server 1.0.0-SNAPSHOT                 [4/4][m
 [[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+Downloading from snapshots: https://maven.aliyun.com/nexus/content/groups/public/com/yss/example/mvc-probe-reference-service/1.0.0-SNAPSHOT/maven-metadata.xml
+Downloading from 2306938-snapshot-Yloqmt: https://packages.aliyun.com/6381d2a25db8487f76c8149c/maven/2306938-snapshot-yloqmt/com/yss/example/mvc-probe-reference-service/1.0.0-SNAPSHOT/maven-metadata.xml
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mmaven-enforcer-plugin:3.5.0:enforce[m [1m(enforce-platform)[m @ [36mmvc-probe-reference-server[0;1m ---[m
 [[1;34mINFO[m] Rule 2: org.apache.maven.enforcer.rules.dependency.DependencyConvergence passed
 [[1;34mINFO[m] [1m------------------------------------------------------------------------[m
 [[1;34mINFO[m] [1mReactor Summary for mvc-probe-reference 1.0.0-SNAPSHOT:[m
 [[1;34mINFO[m] 
-[[1;34mINFO[m] mvc-probe-reference ................................ [1;32mSUCCESS[m [  0.073 s]
-[[1;34mINFO[m] mvc-probe-reference-repository ..................... [1;32mSUCCESS[m [  0.102 s]
-[[1;34mINFO[m] mvc-probe-reference-service ........................ [1;32mSUCCESS[m [  0.012 s]
-[[1;34mINFO[m] mvc-probe-reference-server ......................... [1;32mSUCCESS[m [  0.037 s]
+[[1;34mINFO[m] mvc-probe-reference ................................ [1;32mSUCCESS[m [  0.078 s]
+[[1;34mINFO[m] mvc-probe-reference-repository ..................... [1;32mSUCCESS[m [  0.110 s]
+[[1;34mINFO[m] mvc-probe-reference-service ........................ [1;32mSUCCESS[m [  2.554 s]
+[[1;34mINFO[m] mvc-probe-reference-server ......................... [1;32mSUCCESS[m [  0.390 s]
 [[1;34mINFO[m] [1m------------------------------------------------------------------------[m
 [[1;34mINFO[m] [1;32mBUILD SUCCESS[m
 [[1;34mINFO[m] [1m------------------------------------------------------------------------[m
-[[1;34mINFO[m] Total time:  0.327 s
-[[1;34mINFO[m] Finished at: 2026-10-13T02:41:43+08:00
+[[1;34mINFO[m] Total time:  3.245 s
+[[1;34mINFO[m] Finished at: 2026-10-30T11:21:19+08:00
 [[1;34mINFO[m] [1m------------------------------------------------------------------------[m
