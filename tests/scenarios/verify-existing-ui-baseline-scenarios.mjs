@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os';
 import {pathToFileURL} from 'node:url';
 import { baselineFixture, handoffFixture } from '../../scripts/fixtures/existing-ui-baseline/fixture.mjs';
 import { validateExistingUiBaseline } from '../../scripts/lib/existing-ui-baseline.mjs';
-import { exportBundle as nativeExportBundle,openBundle as nativeOpenBundle,importBundle as nativeImportBundle,inspectSource,finalizeDelivery as nativeFinalizeDelivery } from '../../scripts/lib/strategic-handoff.mjs';
+import { exportBundle as nativeExportBundle,openBundle as nativeOpenBundle,importBundle as nativeImportBundle,inspectSource,finalizeDelivery as nativeFinalizeDelivery } from '../helpers/legacy-strategic-handoff-fixture.mjs';
 import { read,json,hash,digest,treeDigest,schema,ROOT } from '../../scripts/lib/strategic-handoff-io.mjs';
 import { loadDeliveryProfile } from '../../scripts/lib/harness-execution-scope.mjs';
 import { context } from '../../scripts/fixtures/strategic-handoff/fixture.mjs';

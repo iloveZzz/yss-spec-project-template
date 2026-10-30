@@ -78,6 +78,6 @@ Plan 专业审查只消费生命周期主控 `planning.review_control` 和 check
 
 详细合同、字段和验证规则见 `references/domain-strategy-contract.md`、`references/stage-decision-package-contract.md` 与 `references/validation-rules.md`。当前机器可读合同分别为 `references/domain-strategy-v3.schema.json` 和 `references/stage-decision-package-v3.schema.json`；v2 schema 仅用于历史读取。对应验证器为 `scripts/validate-domain-strategy.mjs` 与 `scripts/validate-stage-decision-package.mjs`。
 
-## 战略交接快照包
+## PR/MR 交接输入
 
-跨仓交付或恢复时读取 [战略交接合同](references/strategic-handoff-routing.md)。只接受当前可核验包与承接结果；用户决定、版本失效和批准边界仍由主控持有。
+跨仓交接按 [交接承接说明](references/strategic-handoff-routing.md) 核验 PR/MR 来源；旧战略包不可作为新的已验证输入，用户决定、版本失效和批准边界仍由主控持有。

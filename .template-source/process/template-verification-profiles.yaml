@@ -897,6 +897,20 @@ profiles:
             ract.yaml"
         depends_on: []
         failure_mode: "已移除的前端 Profile、前端移交验证入口、前端生命周期稳定 ID 或 frontend-accepted 推进目标重新出现"
+      - id: check.strategic-handoff-retirement
+        run: "node --test tests/strategic-handoff-retirement.test.mjs"
+        group: frontend-delivery
+        inputs_complete: true
+        input_patterns:
+          - "tests/strategic-handoff-retirement.test.mjs"
+          - "scripts/strategic-handoff"
+          - "scripts/strategic-consumer-entry"
+          - "scripts/verify-strategic-handoff-consumption"
+          - "scripts/strategic-feedback"
+          - "scripts/lib/strategic-handoff-consumption.mjs"
+          - "scripts/lib/backend-delivery.mjs"
+        depends_on: []
+        failure_mode: "旧交接或外部验收未明确拒绝，或历史材料被改写"
       - id: check.backend-delivery-terminal
         tier: slow # 基础终点场景与业务目标场景分别计时，保留单项 300s 上限。
         resources: [ native-cli, python-jsonschema ]
@@ -964,7 +978,7 @@ profiles:
           - "scripts/verify-strategic-handoff-consumption"
           - ".agents/skills/yss-tactical-design/tests/fixtures/valid-tactical-design.yaml"
         depends_on: []
-        failure_mode: "来源删除后目录或 ZIP 验包失败、Receipt3 或原始交付记录丢失、Backend 战术和切片消费失败"
+        failure_mode: "源码或 Backend 组合目录缺少手动 PR/MR 交接或旧入口未明确拒绝"
       - id: check.strategic-handoff-package-scenarios
         resources: [ native-cli, "repo-root-evidence" ]
         run: "node tests/scenarios/verify-strategic-handoff-package-scenarios.mjs"
@@ -972,6 +986,7 @@ profiles:
         inputs_complete: true
         input_patterns:
           - "tests/scenarios/verify-strategic-handoff-package-scenarios.mjs"
+          - "tests/helpers/legacy-strategic-handoff-fixture.mjs"
           - "scripts/verify-strategic-handoff-package-scenarios"
         depends_on: []
         failure_mode: "战略交接包的导出、验包、导入仍生成或消费前端草案，或后端消费者草案缺失"
@@ -2577,15 +2592,59 @@ profiles:
           - "tests/verification-policy-baseline.test.mjs"
         depends_on: []
         failure_mode: "验证策略静默删除 required checks、Gate 或 CI 守卫"
-      - id: check.plugin-supported-scope
-        run: node --test --test-skip-pattern='当前主机真实公开打包'
-          .template-source/plugins/yss-backend-delivery/tests/permissions.test.mjs
-          .template-source/tooling/node/test/plugin-native-schema.test.mjs
-        resources: [native-cli]
+      - id: check.plugin-pr-entry
+        run: node --test .template-source/tooling/node/test/plugin-pr-entry.test.mjs .template-source/tooling/node/test/plugin-candidate-ci.test.mjs
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - .template-source/plugins/yss-backend-delivery/entry.mjs
+          - .template-source/plugins/yss-backend-delivery/native-project.mjs
+          - .template-source/tooling/node/test/plugin-pr-entry.test.mjs
+          - .template-source/tooling/node/test/plugin-candidate-ci.test.mjs
+          - .template-source/scripts/plugin-candidate.mjs
+          - .template-source/scripts/lib/plugin-candidate.mjs
+        depends_on: []
+        failure_mode: PR/MR 定位输入越界或被错误当作已验证
+      - id: check.plugin-entry-migration
+        run: node .template-source/scripts/plugin-candidate.mjs run --tooling scripts/test-with-plugin-clis.mjs test/plugin-entry-migration.test.mjs test/plugin-project.test.mjs
+        timeout_ms: 600000
+        resources: [native-cli, plugin-candidate]
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - .template-source/plugins/yss-backend-delivery/entry.mjs
+          - .template-source/plugins/yss-backend-delivery/native-project.mjs
+          - .template-source/tooling/node/test/plugin-entry-migration.test.mjs
+          - .template-source/tooling/node/test/plugin-project.test.mjs
+          - .template-source/scripts/plugin-candidate.mjs
+          - .template-source/scripts/lib/plugin-candidate.mjs
+        depends_on: []
+        failure_mode: 原生入口无法透传或错误授权 PR/MR 定位
+      - id: check.plugin-backend-profile
+        run: node .template-source/scripts/plugin-candidate.mjs run --test .template-source/tooling/node/test/backend-plugin-profile.test.mjs .template-source/tooling/node/test/plugin-build.test.mjs
+        timeout_ms: 600000
+        resources: [native-cli, plugin-candidate]
         group: feature-assets
         inputs_complete: true
         input_patterns:
           - .template-source/plugins/yss-backend-delivery/**
+          - .template-source/tooling/node/test/backend-plugin-profile.test.mjs
+          - .template-source/tooling/node/test/plugin-build.test.mjs
+          - .template-source/scripts/plugin-candidate.mjs
+          - .template-source/scripts/lib/plugin-candidate.mjs
+        depends_on: []
+        failure_mode: Backend 插件身份、入口或历史 Spec 保护失效
+      - id: check.plugin-supported-scope
+        run: node .template-source/scripts/plugin-candidate.mjs run --test --test-skip-pattern='当前主机真实公开打包'
+          .template-source/plugins/yss-backend-delivery/tests/permissions.test.mjs
+          .template-source/tooling/node/test/plugin-native-schema.test.mjs
+        resources: [native-cli, plugin-candidate]
+        group: feature-assets
+        inputs_complete: true
+        input_patterns:
+          - .template-source/plugins/yss-backend-delivery/**
+          - .template-source/scripts/plugin-candidate.mjs
+          - .template-source/scripts/lib/plugin-candidate.mjs
           - scripts/fixtures/contract-efficiency/plugin-smoke.mjs
           - .template-source/tooling/node/scripts/test-with-plugin-clis.mjs
           - .template-source/tooling/node/test/product-design-plugin.test.mjs
@@ -3160,6 +3219,7 @@ routing:
       - tests/implementation-candidate-current.test.mjs
       - tests/backend-delivery-terminal.test.mjs
       - tests/backend-delivery-business-terminal.test.mjs
+      - tests/strategic-handoff-retirement.test.mjs
       - tests/slice-task-package-frontend-boundary.test.mjs
       - .template-spec/process/frontend-backend-delivery.md
       - .template-spec/process/schemas/backend-delivery*
@@ -3190,6 +3250,7 @@ routing:
       - scripts/lib/strategic-handoff*
       - scripts/lib/source-context-snapshot.mjs
       - tests/progression-target-evidence.test.mjs
+      - tests/helpers/legacy-strategic-handoff-fixture.mjs
       - tests/strategic-handoff-readonly.test.mjs
       - tests/strategic-handoff-sealed-owner.test.mjs
       - scripts/lib/strategic-feedback*

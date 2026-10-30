@@ -6,7 +6,7 @@ import path from 'node:path';
 import { tmpdir } from 'node:os';
 import { spawnSync } from 'node:child_process';
 import { fixture, context } from '../../scripts/fixtures/strategic-handoff/fixture.mjs';
-import { exportBundle, finalizeDelivery, openBundle, openDelivery, importBundle } from '../../scripts/lib/strategic-handoff.mjs';
+import { exportBundle, finalizeDelivery, openBundle, openDelivery, importBundle } from '../helpers/legacy-strategic-handoff-fixture.mjs';
 import { read, json, hash, digest } from '../../scripts/lib/strategic-handoff-io.mjs';
 import { parseContextContract } from '../../scripts/lib/context-contract.mjs';
 const setup=async t=>{const base=mkdtempSync(path.join(tmpdir(),'handoff-test-'));t.after(()=>rmSync(base,{recursive:true,force:true}));const source=path.join(base,'source');mkdirSync(source);return{base,source,...await fixture(source,{technicalDesign:true})};};
@@ -144,43 +144,19 @@ test('版本差异绑定前版，重复版本不允许；修改规则产生更�
  const second=path.join(f.base,'v2');await exportBundle({sourceRoot:f.source,handoffRef:'handoff.yaml',output:second,previous:first});assert.deepEqual(await openBundle(second,b=>b.changes.updated),['rule.complete','scenario.submit']);
 });
 
-test('受控延期只阻断依赖切片；未知依赖扩大阻断；目标未对账禁止消费',async t=>{
+test('历史战略消费绑定不再作为当前验证', async () => {
  const {verifyConsumption}=await import('../../scripts/lib/strategic-handoff-consumption.mjs');
- const f=await setupV4(t),output=path.join(f.base,'package');await exportBundle({sourceRoot:f.source,handoffRef:'handoff.yaml',output});
- const target=makeRoot('handoff-consumption-');t.after(()=>rmSync(target,{recursive:true,force:true}));writeFileSync(path.join(target,'CONTEXT.md'),context);
- const result=await importBundle({bundle:output,targetRoot:target});
- const draft=read(path.join(target,result.traceability_ref));
- const tactical={schema_version:1,status:'approved',strategic_handoff:{...draft,context_reconciliation_ref:'reconciliation.yaml'},behavior_catalog:[{behavior_id:'behavior.submit'}],test_seams:[{seam_id:'test-seam.submit',subject_ref:'behavior.submit'}]};
- const record={schema_version:1,repository_mode:'project-instance',stage:'stage.system-data-engineering',work_unit:'work-unit.technical-analysis',status:'reconciled',context_snapshot:f.snapshot,changes:{added:['Global/Supplier'],updated:[],deprecated:[]},unresolved_terms:[],evidence_refs:['CONTEXT.md']};
- writeFileSync(path.join(target,'reconciliation.yaml'),json(record));
- for(const row of tactical.strategic_handoff.rows)Object.assign(row,{disposition:'implemented',tactical_refs:['behavior.submit'],test_seam_refs:['test-seam.submit'],scenario_tests:[{outcome:'success',seam_ref:'test-seam.submit'},{outcome:'failure',seam_ref:'test-seam.submit'}],evidence_refs:['CONTEXT.md'],dependency_status:'known',dependent_slice_refs:['slice.submit']});
- assert.equal((await verifyConsumption(tactical,{root:target})).result,'verified');
- const mvc={schema_version:2,status:'approved',architecture:{family:'layered-mvc'},strategic_handoff:structuredClone(tactical.strategic_handoff),design:{use_case_catalog:[{use_case_id:'use-case.submit'}],test_seams:[{seam_id:'test-seam.submit',subject_ref:'use-case.submit'}]}};
- for(const row of mvc.strategic_handoff.rows)row.tactical_refs=['use-case.submit'];
- assert.equal((await verifyConsumption(mvc,{root:target})).result,'verified');
- mvc.strategic_handoff.rows[0].tactical_refs=['aggregate.fake'];
- await assert.rejects(()=>verifyConsumption(mvc,{root:target}),/落点悬空/);
-
- const row=tactical.strategic_handoff.rows[0];Object.assign(row,{disposition:'deferred',reason:'分批实现',risk:'不能提交',owner:'需求负责人',followup_ticket_ref:'ticket.followup',verification_plan:'提交测试',target_version:'v2'});
- assert.equal((await verifyConsumption(tactical,{root:target,sliceRef:'slice.submit'})).result,'blocked');
- assert.equal((await verifyConsumption(tactical,{root:target,sliceRef:'slice.other'})).result,'verified');
- row.dependency_status='unknown';assert.equal((await verifyConsumption(tactical,{root:target,sliceRef:'slice.other'})).result,'blocked');
- row.dependency_status='known';row.disposition='implemented';advanceStrategy(f);const second=path.join(f.base,'v2');await exportBundle({sourceRoot:f.source,handoffRef:'handoff.yaml',output:second,previous:output});await importBundle({bundle:second,targetRoot:target});
- const stale=await verifyConsumption(tactical,{root:target,sliceRef:'slice.submit'});assert.equal(stale.result,'blocked');assert(stale.issues.some(x=>x.reason==='stale-source'));assert.equal((await verifyConsumption(tactical,{root:target,sliceRef:'slice.other'})).result,'verified');
- f.strategy.contexts[0].responsibilities.push('新增责任边界');advanceStrategy(f,'v3');const third=path.join(f.base,'v3');await exportBundle({sourceRoot:f.source,handoffRef:'handoff.yaml',output:third,previous:second});await importBundle({bundle:third,targetRoot:target});const changedBoundary=await verifyConsumption(tactical,{root:target,sliceRef:'slice.other'});assert.equal(changedBoundary.block_all,true);assert(changedBoundary.issues.some(x=>x.reason==='upstream-design-stale'));
- writeFileSync(path.join(target,'reconciliation.yaml'),json({...record,status:'blocked',unresolved_terms:[{term:'Supplier',reason:'冲突',owner:'需求负责人',next_action:'回交战略方'}]}));
- await assert.rejects(()=>verifyConsumption(tactical,{root:target}),error=>error.code==='CONTEXT'&&error.message.includes('对账状态不允许'));
+ await assert.rejects(()=>verifyConsumption({strategic_handoff:{}}),/legacy-strategic-handoff-unsupported/);
 });
 
 test('源规则必须稳定可追溯，关键场景不能遗漏结果',async t=>{
  const {extractTraceability}=await import('../../scripts/lib/strategic-handoff-rules.mjs');const f=await setupV4(t);
  for(const mutate of [s=>delete s.traceability_version,s=>s.scenarios[0].rule_refs=['rule.missing'],s=>delete s.scenarios[0].success_results,s=>s.invariants[0].rule_ref='rule.missing',s=>s.rule_catalog.push({...s.rule_catalog[0]})]){const s=structuredClone(f.strategy);mutate(s);assert.throws(()=>extractTraceability(s));}
 });
-test('统一 CLI 在源目录消失后通过 ZIP 验包',async t=>{
- const f=await setupV5(t),output=path.join(f.base,'cli');
+test('旧战略 CLI 明确不支持新的离线导出', () => {
  const cli=path.resolve(import.meta.dirname,'../../scripts/strategic-handoff');
- const exported=spawnSync(process.execPath,[cli,'export','--source-root',f.source,'--handoff','handoff.yaml','--output',output,'--zip'],{encoding:'utf8'});assert.equal(exported.status,0,exported.stderr);
- rmSync(f.source,{recursive:true});const checked=spawnSync(process.execPath,[cli,'verify','--bundle',`${output}.zip`],{encoding:'utf8'});assert.equal(checked.status,0,checked.stderr);assert.equal(JSON.parse(checked.stdout).result,'verified');
+ const result=spawnSync(process.execPath,[cli,'export'],{encoding:'utf8'});
+ assert.notEqual(result.status,0);assert.match(result.stderr,/legacy-strategic-handoff-unsupported/);
 });
 
 test('当前 Plan、Spec、产品决定可离线验证；交接只需独立复核',async t=>{

@@ -221,3 +221,28 @@ test('设计动画验证按需申请固定设计原型工具链',async()=>{
  const result=verificationPreflight({root:process.cwd(),nodeVersion:'v24.21.0',environment:{},plan});
  assert.match(result.errors.find(item=>item.name==='design-vue-toolchain')?.error ?? '',/YSS_DESIGN_PROTOTYPE_TOOLCHAIN/);
 });
+
+test('设计原型与插件候选可同时声明独立工具需求',async()=>{
+ const {verificationToolRequirements,validateVerificationToolRequirements}=await import('../.template-source/scripts/lib/verification-preflight.mjs');
+ const needs=verificationToolRequirements({strategy:'daily-necessary',commands:[{command:'node --test tests/design-prototype-animation.test.mjs'},{command:'node candidate-test',resources:['plugin-candidate']}]});
+ assert.equal(needs.design_vue,true);assert.equal(needs.plugin_candidate,true);assert.equal(needs.go,true);
+ assert.throws(()=>validateVerificationToolRequirements({...needs,plugin_candidate:'true'}),/VERIFICATION_TOOL_REQUIREMENTS_INVALID/);
+ assert.throws(()=>validateVerificationToolRequirements({...needs,unexpected:true}),/VERIFICATION_TOOL_REQUIREMENTS_INVALID/);
+});
+
+test('插件候选作为独立资源登记，缺少来源凭据时预检失败',()=>{
+ const result=verificationPreflight({root:path.resolve(import.meta.dirname,'..'),nodeVersion:'v24.21.0',environment:{},
+  plan:{strategy:'daily-necessary',commands:[{command:'node candidate-test',resources:['plugin-candidate']}]},
+  probe:()=>({status:0,stdout:'go version go1.27.1'})});
+ assert.equal(result.status,'failed');
+ assert.deepEqual(result.errors.map(item=>item.name),['plugin-candidate']);
+ assert.match(result.errors[0].error,/verified plugin candidate receipt is required/);
+});
+
+test('工作树插件候选不能作为正式发布证据',()=>{
+ const result=verificationPreflight({root:path.resolve(import.meta.dirname,'..'),nodeVersion:'v24.21.0',environment:{},
+  plan:{candidate_release:true,commands:[{command:'node candidate-test',resources:['plugin-candidate']}]},
+  probe:(file,args)=>file==='python3'?{status:0,stdout:JSON.stringify({version:[3,12],executable:'/fixture/python',jsonschema:'4.0.0'})}:{status:1,stderr:'unexpected'}});
+ assert.equal(result.status,'failed');
+ assert.ok(result.errors.some(item=>item.name==='plugin-candidate' && /not release evidence/.test(item.error)));
+});

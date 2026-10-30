@@ -45,7 +45,7 @@ test('fixed CLI initializes, binds and resumes a separate governance project wit
     assert.equal(result.result, 'applied'); assert.equal(result.ready_for_agent, false);
     assert.equal(existsSync(path.join(target, '.git')), false);
     const metadata = JSON.parse(readFileSync(path.join(target, '.yss.json')));
-    assert.equal(metadata.profile, 'spec'); assert.equal(metadata.templateCommit, initial.binding.template_commit);
+    assert.equal(metadata.profile, 'backend'); assert.equal(metadata.templateCommit, initial.binding.template_commit);
     assert.match(readFileSync(path.join(target, 'yss-project.yaml'), 'utf8'), /repository_mode: project-instance/);
     assert.equal(readFileSync(path.join(backend, 'keep.txt'), 'utf8'), 'user code');
   });
@@ -54,16 +54,15 @@ test('fixed CLI initializes, binds and resumes a separate governance project wit
     const context = path.join(target, 'CONTEXT.md'); writeFileSync(context, readFileSync(context, 'utf8') + '\n测试接入说明。\n');
     const result = success(call('query-project', ['--target-dir', target]));
     assert.equal(result.result, 'binding-matched'); assert.ok(result.query);
-    assert.equal(result.effective_orchestrator, path.join(target, '.agents/skills/yss-product-lifecycle/SKILL.md'));
+    assert.equal(result.effective_orchestrator, path.join(target, '.agents/skills/harness-orchestrator/SKILL.md'));
     assert.equal(result.ready_for_agent, false);
   });
 
   await t.test('M4 queries use scoped local routes and reject release, missing checkpoint and unapproved dispatch', () => {
-    const review = success(call('query-project', ['--target-dir', target, '--work-unit', 'work-unit.code-review']));
-    assert.equal(review.query.execution.responsibility_scope.scope_id, 'plan-to-backend');
-    assert.deepEqual(review.query.execution.transition.next, ['work-unit.slice-implementation', 'work-unit.backend-delivery']);
+    const review = success(call('query-project', ['--target-dir', target, '--work-unit', 'work-unit.harness-entry']));
+    assert.equal(review.query.lifecycle.work_unit.id, 'work-unit.harness-entry');
+    assert.equal(call('query-project', ['--target-dir', target, '--work-unit', 'work-unit.code-review']).status, 1);
     assert.equal(call('query-project', ['--target-dir', target, '--work-unit', 'work-unit.release-and-retrospective']).status, 1);
-    assert.equal(success(call('query-project', ['--target-dir', target, '--work-unit', 'work-unit.prototype-design-v2'])).query.lifecycle.work_unit.id, 'work-unit.prototype-design-v2');
     assert.equal(call('project-resume', ['--target-dir', target, '--checkpoint', 'missing.yaml']).status, 1);
     writeFileSync(path.join(target, 'dispatch-input.json'), JSON.stringify({binding:{},work_unit_id:'work-unit.synthetic',runtime_id:'runtime.generic'}));
     assert.equal(call('project-dispatch', ['--target-dir', target, '--input', 'dispatch-input.json']).status, 1);
@@ -71,7 +70,7 @@ test('fixed CLI initializes, binds and resumes a separate governance project wit
   });
 
   await t.test('core drift cannot be hidden by rewriting local managed-file hashes', () => {
-    const ref = '.agents/skills/yss-product-lifecycle/SKILL.md';
+    const ref = '.agents/skills/harness-orchestrator/SKILL.md';
     const file = path.join(target, ref), old = readFileSync(file);
     writeFileSync(file, Buffer.concat([old, Buffer.from('\nchanged\n')]));
     const metadataFile = path.join(target, '.yss.json'), oldMetadata = readFileSync(metadataFile);

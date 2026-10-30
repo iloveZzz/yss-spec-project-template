@@ -12,7 +12,7 @@ import {contextBinary} from '../scripts/lib/native-context.mjs';
 import {makeRoot} from './helpers/yss-instance.mjs';
 import {checkBusinessTickets,ticketMetadata} from '../scripts/lib/business-tickets.mjs';
 import {fixture as handoffFixture} from '../scripts/fixtures/strategic-handoff/fixture.mjs';
-import {exportBundle} from '../scripts/lib/strategic-handoff.mjs';
+import {exportBundle} from './helpers/legacy-strategic-handoff-fixture.mjs';
 import {digest as objectDigest} from '../scripts/lib/strategic-handoff-io.mjs';
 import {parse as parseYaml} from '../scripts/vendor/yaml.mjs';
 import {approvedSpecFixture,localPlanFixture,bindLocalPlanHandoff} from '../scripts/fixtures/spec-baseline/fixture.mjs';

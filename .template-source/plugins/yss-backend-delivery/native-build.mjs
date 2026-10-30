@@ -7,7 +7,7 @@ import { digest, invoke, json, physical } from './native-tool.mjs';
 const HERE = import.meta.dirname;
 
 export function buildNative({ binary, output, profile, identity, pluginRoot, binaryCommit = null }) {
-  if (profile !== 'spec') throw new Error('unsupported-plugin-profile: '+profile);
+  if (profile !== 'backend') throw new Error('unsupported-plugin-profile: '+profile);
   if (!binary) throw new Error('native-binary-required');
   if (binaryCommit !== null && !/^[a-f0-9]{40}$/.test(binaryCommit)) throw new Error('full-binary-commit-required');
   const input = physical(binary, true), target = physical(output);

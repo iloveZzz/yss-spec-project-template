@@ -11,12 +11,12 @@ test('构建必须显式提供固定原生二进制，不能静默使用旧 Node
   try { await assert.rejects(async () => build({ output: '/private/tmp/yss-backend-required-binary' }), /native-binary-required/); }
   finally { if (previous !== undefined) process.env.YSS_PLUGIN_BINARY = previous; }
 });
-test('后端固定二进制初始化、绑定、升级、回退和冲突保护', () => behavior(build, 'yss-backend-delivery', 'spec'));
-test('真实旧SpecCLI身份迁移后整体回退保留业务与旧字节', () => legacyMigration(build, 'yss-backend-delivery', 'spec'));
+test('后端固定二进制初始化、绑定、升级、回退和冲突保护', () => behavior(build, 'yss-backend-delivery', 'backend'));
+test('真实旧 Spec CLI 身份明确拒绝迁移并保留项目', () => legacyMigration(build, 'yss-backend-delivery', 'spec'));
+test('真实归档插件身份明确拒绝迁移并保留项目', () => legacyMigration(build, 'yss-backend-delivery', 'spec', true));
+for (const history of ['m4', 'v02']) test('历史 '+history+' 身份明确拒绝迁移并保留项目', () => legacyMigration(build, 'yss-backend-delivery', 'spec', false, history));
 
-test('真实归档 yss-backend-delivery 当前绑定迁移和整体回退保留原字节', () => legacyMigration(build, 'yss-backend-delivery', 'spec', true));
 
-for (const history of ['m4', 'v02']) test('历史 '+history+' 固定原版本恢复与公开迁移整体回退', () => legacyMigration(build, 'yss-backend-delivery', 'spec', false, history));
-test('后端插件真实信号取消后等待原生回滚并允许幂等恢复', () => cancellation(build, 'yss-backend-delivery', 'spec'));
-test('后端跨原生二进制来源升级保护绑定并整体回退', () => sourceUpgrade(build, 'yss-backend-delivery', 'spec'));
-test('后端插件审查候选、离线基线与决议重规划', () => upgradeReview(build, 'yss-backend-delivery', 'spec'));
+test('后端插件真实信号取消后等待原生回滚并允许幂等恢复', () => cancellation(build, 'yss-backend-delivery', 'backend'));
+test('后端跨原生二进制来源升级保护绑定并整体回退', () => sourceUpgrade(build, 'yss-backend-delivery', 'backend'));
+test('后端插件审查候选、离线基线与决议重规划', () => upgradeReview(build, 'yss-backend-delivery', 'backend'));

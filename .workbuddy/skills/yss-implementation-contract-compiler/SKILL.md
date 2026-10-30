@@ -44,7 +44,7 @@ Slice v3 的当前执行结果须按 `references/yss-skill-execution-result.md` 
 
 ## 硬规则
 
-显式战略交接按 `.template-spec/process/strategic-handoff-package.md` 核验来源和接收；本地批准资产绑定当前功能 checkpoint 与 Spec，核验适用的设计及后端/API 依赖，不补外部回执。跨端预检见 `.template-spec/process/delivery-preflight.md`；前端实现由独立规格处理。历史 `frontend_delivery` 按原合同核验，不新建或回退本地；无法核验时阻断。正式实现、生成和恢复须当前批准的 Slice Contract；接口或部署漂移使受影响证据失效。
+PR/MR 交接先按主控在线核验，旧战略包消费验证已退役；本地批准资产绑定当前功能 checkpoint 与 Spec，核验适用的设计及后端/API 依赖，不补外部回执。跨端预检见 `.template-spec/process/delivery-preflight.md`；前端实现由独立规格处理。历史 `frontend_delivery` 按原合同核验，不新建或回退本地；无法核验时阻断。正式实现、生成和恢复须当前批准的 Slice Contract；接口或部署漂移使受影响证据失效。
 
 - 编译器不得输出 `approved`、`ready-for-agent` 或 `completed`。
 - Registry 使用其权威 schema v3，编译规则保持 schema v2；新 Slice 使用 v3，旧 Slice v2 按原规则读取和显式迁移。已停止支持的 schema 一律拒绝，不自动升级，不提供未登记的旧技能名兼容。
@@ -73,9 +73,9 @@ Slice v3 的当前执行结果须按 `references/yss-skill-execution-result.md` 
 
 输出唯一 YAML 合同草案及派生报告；报告包含 capability/Recipe 解析记录、技能依赖闭包、不适用理由、阻塞项、TDD 模式、工作单元、预期证据、验证命令、人工审查点、完整重路由触发器，以及由当前工作单元和实际影响选出的 `primary_skill` / `check_ids`。自然语言说明不能替代结构化合同字段。编译器不得自行批准合同、设置 `ready-for-agent` 或关闭批准门禁；不按岗位或固定人数派活；前端实现由独立前端规格与 CLI 维护。
 
-## 战略交接快照包
+## PR/MR 交接输入
 
-消费战略包时必须绑定导入收据、包摘要、目标对账和逐条承接。按 [跨仓承接核验](references/strategic-handoff-routing.md) 执行；源变化使依赖项 stale，未知依赖扩大阻断，编译器不能补字段后沿用旧批准。
+PR/MR 材料按 [交接承接说明](references/strategic-handoff-routing.md) 核验并保留来源；旧战略包绑定的消费验证已退役，不得凭旧回执或补字段沿用批准。源变化或未知依赖仍阻断受影响工作。
 
 ## 后端脚手架平台承接
 

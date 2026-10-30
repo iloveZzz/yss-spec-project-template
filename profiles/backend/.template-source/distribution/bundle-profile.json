@@ -323,7 +323,8 @@
       },
       "skills": [
         "implement",
-        "code-review"
+        "code-review",
+        "handoff"
       ],
       "files": [
         ".gitignore"
@@ -749,21 +750,6 @@
           "shared-80a34a8f0e",
           "shared-9210a302c3",
           "shared-98faaac7c9",
-          "shared-bafb559263",
-          "shared-d409b50876",
-          "shared-e36a280800"
-        ],
-        "handoff": [
-          "shared-04bca02649",
-          "shared-05c066c915",
-          "shared-48379e0e09",
-          "shared-54a03e700f",
-          "shared-5f8eee6019",
-          "shared-7c16721ce5",
-          "shared-80a34a8f0e",
-          "shared-9210a302c3",
-          "shared-98faaac7c9",
-          "shared-a6fc653806",
           "shared-bafb559263",
           "shared-d409b50876",
           "shared-e36a280800"

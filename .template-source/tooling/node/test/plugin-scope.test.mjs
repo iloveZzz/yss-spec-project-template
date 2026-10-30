@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { tmpdir } from 'node:os';
-import { loadExecutionScope, assertScopeWorkUnit, assertScopeImpacts, assertScopeSlice, scopedNextRoutes } from '../../../../scripts/lib/lifecycle-execution-scope.mjs';
+import { loadExecutionScope, authorizeBackendDelivery, assertScopeWorkUnit, assertScopeImpacts, assertScopeSlice, scopedNextRoutes } from '../../../../scripts/lib/lifecycle-execution-scope.mjs';
 import { validateNextRoute, validateImplementationEntry } from '../../../../scripts/lib/lifecycle-transition.mjs';
 import { enforceHarnessTaskScope, enforceHarnessSkillScope } from '../../../../scripts/lib/harness-execution-scope.mjs';
 import { completeBackendDelivery } from '../../../../scripts/lib/backend-delivery-terminal.mjs';
@@ -84,4 +84,30 @@ test('approved read-only inspection context cannot be used as implementation aut
   const context=createApprovedExecutionContext(f.binding,{root:f.root,readOnly:true});
   assert.throws(()=>assertApprovedExecutionContext(context,{root:f.root}),/EXECUTION_CONTEXT_READ_ONLY/);
   assert.doesNotThrow(()=>assertApprovedExecutionContext(context,{root:f.root,readOnly:true}));
+});
+
+test('Backend plugin 只承接 Backend 身份，不生成或借用 Spec 职责范围', t => {
+  const f = installedFixture('backend');
+  t.after(() => f.cleanup());
+  const meta = JSON.parse(f.read('.yss.json'));
+  const receipt = { schema_version: 3, plugin: 'yss-backend-delivery', profile: 'backend',
+    template_commit: meta.templateCommit, bundle_hash: meta.bundleHash, binary_sha256: 'a'.repeat(64),
+    execution_scope: 'backend-profile', execution_owner: 'project-local-harness-orchestrator', business_execution_ready: false };
+  const file = path.join(f.root, '.yss-backend-plugin.json');
+  f.write('.yss-backend-plugin.json', receipt);
+  const before = fs.readFileSync(file);
+  assert.equal(loadExecutionScope(f.root), null);
+  assert.throws(() => authorizeBackendDelivery({root:f.root, deliveryMode:'local-evidence'}), /checkpoint/);
+  f.write('.yss-execution-scope.yaml', {schema_version:1, scope_id:'plan-to-backend'});
+  assert.throws(() => loadExecutionScope(f.root), /scope|职责/);
+  fs.rmSync(path.join(f.root, '.yss-execution-scope.yaml'));
+  f.write('.yss-plugin.json', {plugin:'yss-backend-delivery', execution_scope:'plan-to-backend'});
+  assert.throws(() => loadExecutionScope(f.root), /旧|legacy|历史/);
+  fs.rmSync(path.join(f.root, '.yss-plugin.json'));
+  f.write('.yss-backend-plugin.json', {...receipt, profile:'spec'});
+  assert.throws(() => loadExecutionScope(f.root));
+  f.write('.yss-backend-plugin.json', {...receipt, business_execution_ready:true});
+  assert.throws(() => loadExecutionScope(f.root));
+  f.write('.yss-backend-plugin.json', receipt);
+  assert.deepEqual(fs.readFileSync(file), before);
 });

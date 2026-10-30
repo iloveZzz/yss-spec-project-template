@@ -74,7 +74,7 @@ export function invokeAsync(binary, args, options = {}) {
 }
 export function tool(root) {
   const pin = JSON.parse(readFileSync(safe(root, 'assets/native-lock.json')));
-  if (pin.schemaVersion !== 1 || pin.protocolVersion !== 1 || !['spec', 'design'].includes(pin.profile)
+  if (pin.schemaVersion !== 1 || pin.protocolVersion !== 1 || !['spec', 'design', 'backend'].includes(pin.profile)
       || pin.platform !== `${process.platform}/${process.arch}` || pin.binaryPath !== nativeBinaryPath()
       || !/^[a-f0-9]{64}$/.test(pin.binarySha256)) throw new Error('native-tool-pin-mismatch');
   const binary = safe(root, pin.binaryPath);

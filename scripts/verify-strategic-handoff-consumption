@@ -1,22 +1,3 @@
 #!/usr/bin/env node
-import path from 'node:path';
-import { parseArgs } from 'node:util';
-import { read } from './lib/strategic-handoff-io.mjs';
-import { verifyConsumption } from './lib/strategic-handoff-consumption.mjs';
-import { nativeEvidenceVerify, missingCapabilities, NEEDS } from './lib/native-evidence.mjs';
-// 报告键顺序与旧实现保持一致（yss 返回的报告按字母序）。
-const ORDER = ['result', 'bundle_digest', 'consumed_bundle_digest', 'frontend_acceptance_digest', 'tactical_digest', 'technical_design_digest', 'scope', 'coverage_complete', 'block_all', 'blocked_slice_refs', 'issues'];
-try {
- const {values,positionals}=parseArgs({allowPositionals:true,options:{root:{type:'string',default:process.cwd()},slice:{type:'string'}}});
- if(positionals.length!==1)throw new TypeError('用法: verify-strategic-handoff-consumption --root <target> [--slice <slice-id>] <tactical.yaml>');
- let result;
- // 消费校验归 yss（handoff verify --kind consumption）；旧版 yss 缺少能力时退回进程内实现。
- if(!missingCapabilities(NEEDS.handoffConsumption).length) {
-  const root=path.resolve(values.root);
-  const r=nativeEvidenceVerify({root,kind:'consumption',file:path.resolve(positionals[0]),group:'handoff',extra:values.slice?['--slice',values.slice]:[]});
-  const report=r.envelope.result?.coverage?.handoff_consumption;
-  if(!report){process.stderr.write(`${JSON.stringify({result:'blocked',error:r.message})}\n`);process.exit(r.exitCode||1);}
-  result=Object.fromEntries([...ORDER.filter(key=>key in report),...Object.keys(report).filter(key=>!ORDER.includes(key))].map(key=>[key,report[key]]));
- } else result=await verifyConsumption(read(positionals[0]),{root:values.root,sliceRef:values.slice});
- process.stdout.write(`${JSON.stringify(result,null,2)}\n`);if(result.result==='blocked')process.exitCode=1;
-}catch(error){process.stderr.write(`${JSON.stringify({result:'blocked',error:error.message})}\n`);process.exitCode=1;}
+console.error(JSON.stringify({result:'blocked',code:'UNPORTED',error:'legacy-strategic-handoff-unsupported: 旧战略交接已停止支持；手动 handoff 请使用 PR/MR'}));
+process.exitCode = 1;

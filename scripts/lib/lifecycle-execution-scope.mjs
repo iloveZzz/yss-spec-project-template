@@ -27,6 +27,16 @@ export function loadExecutionScope(root = ROOT) {
   const marker = path.join(root, '.yss-plugin.json');
   const plugin = existsSync(current)?read(root,'.yss-backend-plugin.json'):existsSync(marker)?read(root,'.yss-plugin.json'):null;
   if(existsSync(current)) {
+    if (plugin?.schema_version === 3) {
+      check(plugin.plugin === 'yss-backend-delivery' && plugin.profile === 'backend'
+        && plugin.execution_scope === 'backend-profile' && plugin.execution_owner === 'project-local-harness-orchestrator'
+        && plugin.business_execution_ready === false, 'Backend 插件身份或职责绑定无效');
+      check(!existsSync(marker) && !plugin.legacy_binding, 'Backend 插件不能复用历史 Spec 绑定');
+      check(!existsSync(path.join(root, SCOPE_REF)), 'Backend 插件不能借用 Spec 职责范围');
+      const metadata = readInstanceMetadata(root);
+      check(metadata?.kind === 'native' && metadata.profile === 'backend', 'Backend 插件缺少匹配的原生身份');
+      return null;
+    }
     check(plugin?.schema_version===2&&plugin?.plugin==='yss-backend-delivery'&&plugin?.execution_scope==='plan-to-backend','native插件职责绑定无效');
     if(existsSync(marker)) {
       const legacy=read(root,'.yss-plugin.json');

@@ -21,9 +21,9 @@ test('Spec governed initial roots preserve the independent installation', () => 
     'grilling', 'domain-modeling', 'yss-stage-decision', 'i-have-adhd', 'code-review'];
   assert.deepEqual([...data.instance_distribution.initial_skills].sort(), [...roots].sort());
   assert.equal(new Set(data.instance_distribution.initial_skills).size, 8);
-  assert.deepEqual(policy.installations.skills.skills, ['yss-product-lifecycle','grilling','yss-research','domain-modeling','to-spec','i-have-adhd','code-review','implement']);
+  assert.deepEqual(policy.installations.skills.skills, ['yss-product-lifecycle','grilling','yss-research','domain-modeling','to-spec','i-have-adhd','code-review','implement','handoff']);
   const backendPolicy=JSON.parse(readFileSync(path.join(composeProfileTree('backend'),'.template-source/distribution/bundle-profile.json')));
-  assert.deepEqual(backendPolicy.installations.skills.skills,['implement','code-review']);
+  assert.deepEqual(backendPolicy.installations.skills.skills,['implement','code-review','handoff']);
   for (const id of roots) {
     assert.ok(data.skills.some(s => s.id === id), id);
     assert.ok(lock.skills.shared[id], id);

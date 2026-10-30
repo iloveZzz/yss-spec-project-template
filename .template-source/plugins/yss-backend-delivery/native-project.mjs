@@ -37,6 +37,7 @@ function executeNode(file, args, cwd) {
 }
 function legacyBinding(target, ctx) {
   if (!existsSync(path.join(target, '.yss-plugin.json'))) return null;
+  if (ctx.pin.profile === 'backend') throw new Error('legacy-profile-migration-unsupported');
   const bytes = readFileSync(safe(target, '.yss-plugin.json')), old = JSON.parse(bytes);
   const policies = read(path.resolve(ctx.binary, '../../..'), 'assets/legacy-bindings.json');
   const policy = policies.find(item => item.plugin === old.plugin && item.bundle_digest === old.plugin_bundle_sha256);
@@ -64,11 +65,12 @@ function candidateBackend(value, target, root) {
   return { root: candidate, repository_scope: 'external-repository', registration_status: 'pending-lifecycle-onboarding' };
 }
 function binding(ctx, legacy = null, backend = null) {
-  return { schema_version: 2, plugin: ctx.identity.name, plugin_version: ctx.identity.version, profile: ctx.pin.profile,
+  const nativeBackend = ctx.pin.profile === 'backend';
+  return { schema_version: nativeBackend ? 3 : 2, plugin: ctx.identity.name, plugin_version: ctx.identity.version, profile: ctx.pin.profile,
     plugin_bundle_sha256: ctx.bundleDigest, binary_sha256: ctx.pin.binarySha256, inspection_digest: ctx.pin.inspectionDigest,
     template_commit: ctx.snapshot.templateCommit, bundle_hash: ctx.snapshot.bundleHash,
-    execution_owner: 'project-local-yss-product-lifecycle', business_execution_ready: false,
-    execution_scope: 'plan-to-backend',
+    execution_owner: nativeBackend ? 'project-local-harness-orchestrator' : 'project-local-yss-product-lifecycle', business_execution_ready: false,
+    execution_scope: nativeBackend ? 'backend-profile' : 'plan-to-backend',
     ...(legacy ? { legacy_binding: legacy } : {}), ...(backend ? { backend } : {}) };
 }
 function check(root, target, ctx, requireBinding = false) {
@@ -83,10 +85,12 @@ function check(root, target, ctx, requireBinding = false) {
       || metadata.templateSourceState !== 'committed') throw new Error('native-project-version-mismatch: use project-migration-plan');
   const statusPlan = envelope.result.plan || envelope.result;
   if (statusPlan.conflicts?.length || statusPlan.changes?.length) throw new Error('native-project-managed-conflict-or-drift');
-  safe(target, '.agents/skills/yss-product-lifecycle/SKILL.md');
+  const orchestrator = ctx.pin.profile === 'backend' ? 'harness-orchestrator' : 'yss-product-lifecycle';
+  safe(target, `.agents/skills/${orchestrator}/SKILL.md`);
   const contextReport = invoke(ctx.binary, ['context', 'check', '--root', target]);
   if (!contextReport.result?.context_snapshot) throw new Error('native-context-capability-missing');
   const receipt = existsSync(path.join(target, ctx.receipt)) ? read(target, ctx.receipt) : null;
+  if (ctx.pin.profile === 'backend' && (existsSync(path.join(target, '.yss-plugin.json')) || existsSync(path.join(target, '.yss-execution-scope.yaml')))) throw new Error('legacy-profile-migration-unsupported');
   if (receipt && digest(receipt) !== digest(binding(ctx, legacyBinding(target, ctx), receipt.backend || null))) throw new Error('native-plugin-binding-mismatch: use project-migration-plan');
   if (receipt && ctx.pin.profile === 'spec') {
     const document = parseDocument(readFileSync(safe(target, '.yss-execution-scope.yaml'), 'utf8'), { uniqueKeys: true });
@@ -94,11 +98,12 @@ function check(root, target, ctx, requireBinding = false) {
   }
   if (requireBinding && !receipt) throw new Error('project-binding-required');
   return { result: receipt ? 'binding-matched' : 'compatible-unbound', target, binding: receipt,
-    profile: ctx.pin.profile, native: envelope, effective_orchestrator: path.join(target, '.agents/skills/yss-product-lifecycle/SKILL.md'),
+    profile: ctx.pin.profile, native: envelope, effective_orchestrator: path.join(target, `.agents/skills/${orchestrator}/SKILL.md`),
     ready_for_agent: false, stage_verification_required: true };
 }
 function plan(root, values, kind) {
   const target = physical(values['target-dir']), ctx = context(root, target);
+  if (ctx.pin.profile === 'backend' && existsSync(path.join(target, '.yss-template.json'))) throw new Error('legacy-profile-migration-unsupported');
   const native = existsSync(path.join(target, '.yss.json'));
   // Native init validates empty targets and its own completed recovery archive;
   // the wrapper must not invent a second historical-init acceptance policy.
@@ -120,7 +125,7 @@ function plan(root, values, kind) {
     ...(command === 'migrate' && legacy?.baseline_policy ? { legacyBaselinePolicy: legacy.baseline_policy } : {}) };
   if (request.previousDigest) {
     const old = read(target, ctx.receipt);
-    if (old.schema_version !== 2 || old.plugin !== ctx.identity.name || old.profile !== ctx.pin.profile || old.business_execution_ready !== false) throw new Error('foreign-native-binding');
+    if (old.schema_version !== (ctx.pin.profile === 'backend' ? 3 : 2) || old.plugin !== ctx.identity.name || old.profile !== ctx.pin.profile || old.business_execution_ready !== false) throw new Error('foreign-native-binding');
   }
   const parent = realpathSync(mkdtempSync(path.join(tmpdir(), 'yss-plugin-plan-')));
   try {
@@ -184,6 +189,7 @@ async function apply(root, plan) {
 }
 
 export async function runProjectCommand(root, command, values) {
+  if (command === 'project-import-design') throw new Error('legacy-strategic-handoff-unsupported');
   if (['project-plan', 'project-bind-plan', 'project-migration-plan', 'project-upgrade-plan'].includes(command)) return plan(root, values, command === 'project-plan' ? 'initialize' : command === 'project-bind-plan' ? 'bind-existing' : 'upgrade');
   if (['project-apply', 'project-bind-apply', 'project-migration-apply', 'project-upgrade-apply'].includes(command)) {
     if (!values.plan) throw new Error('plan-file-required');
@@ -205,15 +211,11 @@ export async function runProjectCommand(root, command, values) {
     const entryValues = { ...values, ...(values.input ? { input: physical(values.input, true) } : {}) };
     return projectEntry(target, entryValues, checked, executeNode);
   }
-  if (command === 'project-import-design') {
-    if (!values.bundle || existsSync(path.join(target, '.yss-backend-delivery.json'))) throw new Error('design-bundle-required-or-backend-already-delivered');
-    return JSON.parse(executeNode(safe(target, 'scripts/strategic-consumer-entry'), ['--root', target, '--bundle', physical(values.bundle, 'either')], target));
-  }
   if (command === 'project-resume') {
     if (!values.checkpoint) throw new Error('checkpoint-required'); checked.verification = executeNode(safe(target, 'scripts/verify-lifecycle-checkpoint'), [safe(target, values.checkpoint)], target);
   } else if (command === 'project-dispatch') {
     if (!values.input) throw new Error('dispatch-input-required'); checked.task = JSON.parse(executeNode(safe(target, 'scripts/dispatch-slice-task'), ['--root', target, '--input', safe(target, values.input)], target));
-  } else if (command === 'query-project') checked.query = JSON.parse(executeNode(safe(target, 'scripts/query-lifecycle-context'), ['--mode', 'route', '--work-unit', values['work-unit'] || 'work-unit.plan-requirements'], target));
+  } else if (command === 'query-project') checked.query = JSON.parse(executeNode(safe(target, 'scripts/query-lifecycle-context'), [...(ctx.pin.profile === 'backend' ? [] : ['--mode', 'route']), '--work-unit', values['work-unit'] || (ctx.pin.profile === 'backend' ? 'work-unit.harness-entry' : 'work-unit.plan-requirements')], target));
   else throw new Error('unknown-project-command');
   return checked;
 }

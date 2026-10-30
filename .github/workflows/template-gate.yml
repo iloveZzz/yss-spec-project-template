@@ -22,6 +22,7 @@ jobs:
       - uses: ./.github/actions/setup-template
         with:
           runtime-only: 'true'
+          candidate-go: 'true'
       - name: scripts/ci-gate
         shell: bash
         env:

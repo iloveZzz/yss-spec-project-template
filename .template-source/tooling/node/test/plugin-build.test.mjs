@@ -13,7 +13,7 @@ const BUILD = path.join(ROOT, '.template-source/plugins/yss-backend-delivery/bui
 const NAME = 'yss-backend-delivery';
 function run(file, args, cwd) {
   const execute = () => spawnSync(process.execPath, [file, ...args], { cwd, encoding: 'utf8', timeout: 60000,
-    env: { ...process.env, NODE_PATH: '', NODE_OPTIONS: '' } });
+    env: { ...process.env, YSS_PLUGIN_BINARY: process.env.YSS_PLUGIN_BINARY || process.env.YSS_NATIVE_BINARY, NODE_PATH: '', NODE_OPTIONS: '' } });
   return file === BUILD ? measureTestBuild(args[args.indexOf('--output') + 1], execute) : execute();
 }
 
@@ -43,7 +43,7 @@ test('generated development plugin is portable, deterministic and fails closed o
     const lock = JSON.parse(readFileSync(path.join(moved, 'bundle-lock.json')));
     assert.equal(lock.schema_version, 2);
     const pin = JSON.parse(readFileSync(path.join(moved, 'assets/native-lock.json')));
-    assert.equal(pin.protocolVersion, 1); assert.equal(pin.profile, 'spec');
+    assert.equal(pin.protocolVersion, 1); assert.equal(pin.profile, 'backend');
     assert.equal(pin.inspection.sourceState, 'committed');
     assert.ok(lock.files.some(x => x.ref === 'skills/backend-delivery/SKILL.md'));
     const exported = lock.files.filter(x => x.ref.startsWith('assets/template/'));
@@ -52,8 +52,8 @@ test('generated development plugin is portable, deterministic and fails closed o
       const source = pin.inspection.files[item.ref.slice('assets/template/'.length)];
       assert.equal(item.sha256, source.digest); assert.equal(item.mode, fileMode(source.mode));
     }
-    assert.ok(exported.some(x => x.ref.endsWith('/Select.vue')), 'Vue SFC remains a raw authoring asset');
-    assert.ok(exported.some(x => x.ref.endsWith('/build-shadcn-vue-prototype.mjs')), 'Node governance tooling remains available');
+    assert.ok(exported.some(x => x.ref.endsWith('/harness-profile.yaml')), 'Backend profile policy remains available');
+    assert.ok(exported.some(x => x.ref.endsWith('/verify-lifecycle-checkpoint')), 'Backend checkpoint validation remains available');
     assert.ok(!lock.files.some(x => x.ref.includes('assets/cli/') || x.ref.includes('cli-package.json.gz')));
     assert.equal(pin.binarySha256, lock.files.find(x => x.ref === pin.binaryPath).sha256);
     assert.equal(lock.release_ready, false);
