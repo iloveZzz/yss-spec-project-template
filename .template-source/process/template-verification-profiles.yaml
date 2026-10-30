@@ -942,6 +942,7 @@ profiles:
           - .template-source/scripts/verify-template-release.mjs
           - scripts/verify-strategic-context-import
           - scripts/verify-template-candidate
+          - tests/legacy-coverage.test.mjs
           - tests/legacy-verification.test.mjs
           - tests/scenarios/verify-strategic-context-import-scenarios.mjs
           - tests/scenarios/verify-template-verification-scenarios.mjs
@@ -3090,6 +3091,7 @@ routing:
       - tests/verification-artifacts.test.mjs
       - tests/verification-report-v2.test.mjs
       - tests/verification-report.test.mjs
+      - tests/legacy-coverage.test.mjs
       - tests/legacy-verification.test.mjs
       - tests/verification-execution.test.mjs
       - tests/verification-script-retirement.test.mjs

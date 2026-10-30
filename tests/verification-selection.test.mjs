@@ -13,6 +13,23 @@ delete process.env.YSS_VERIFY_SLOW;
 test.after(()=>{if(inheritedSlow!==undefined)process.env.YSS_VERIFY_SLOW=inheritedSlow;});
 const pilot='.agents/skills/yss-research/SKILL.md';
 const pilotConfig=()=>loadVerificationProfiles();
+test('退役覆盖率测试的真实删除差异选择发行消费者并拒绝未知相邻路径',async t=>{
+ const {selectVerificationInputs}=await import('../.template-source/scripts/lib/template-verification-worker.mjs');
+ const directory=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'retired-coverage-selection-')));t.after(()=>fs.rmSync(directory,{recursive:true,force:true}));
+ const git=(...args)=>{const r=spawnSync('git',['-c','user.name=t','-c','user.email=t@example.invalid','-c','commit.gpgsign=false',...args],{cwd:directory,encoding:'utf8'});assert.equal(r.status,0,r.stderr);return r.stdout.trim();};
+ fs.mkdirSync(path.join(directory,'.template-source/process'),{recursive:true});fs.mkdirSync(path.join(directory,'tests'));
+ fs.copyFileSync(path.join(ROOT,'.template-source/process/template-verification-profiles.yaml'),path.join(directory,'.template-source/process/template-verification-profiles.yaml'));
+ fs.writeFileSync(path.join(directory,'tests/legacy-coverage.test.mjs'),'retired');
+ git('init','-q');git('add','.');git('commit','-qm','base');const base=git('rev-parse','HEAD');
+ git('rm','-q','tests/legacy-coverage.test.mjs');git('commit','-qm','retire');
+ for(const profile of ['fast','release']){
+  const {scope,plan}=await selectVerificationInputs(['--profile',profile,'--base',base],directory);
+  assert.deepEqual(scope.files,['tests/legacy-coverage.test.mjs']);
+  assert.ok(plan.commands.some(row=>row.id==='check.release-profile-consumers'),profile);
+ }
+ fs.mkdirSync(path.join(directory,'tests'),{recursive:true});fs.writeFileSync(path.join(directory,'tests/legacy-coverage-unknown.test.mjs'),'unknown');
+ await assert.rejects(selectVerificationInputs(['--profile','release','--base',base],directory),/UNKNOWN_VERIFICATION_PATH/);
+});
 test('可信发行来源登记的变更选择报告与发行消费者核验',()=>{
  const file='.template-source/process/trusted-verification-releases.json';
  for(const profile of ['fast','release']){
