@@ -103,6 +103,7 @@ function check(root, target, ctx, requireBinding = false) {
 }
 function plan(root, values, kind) {
   const target = physical(values['target-dir']), ctx = context(root, target);
+  if (ctx.pin.profile === 'backend' && existsSync(path.join(target, '.yss-template.json'))) throw new Error('legacy-profile-migration-unsupported');
   const native = existsSync(path.join(target, '.yss.json'));
   // Native init validates empty targets and its own completed recovery archive;
   // the wrapper must not invent a second historical-init acceptance policy.

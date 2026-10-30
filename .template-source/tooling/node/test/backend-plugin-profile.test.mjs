@@ -35,4 +35,11 @@ test('Backend 插件事务绑定本地主控并保留历史 Spec 身份', t => {
   assert.notEqual(rejected.status, 0);
   assert.match(rejected.stderr, /legacy-profile-migration-unsupported/);
   assert.equal(readFileSync(legacy, 'utf8'), bytes);
+  rmSync(legacy);
+  const legacyMetadata = path.join(target, '.yss-template.json');
+  writeFileSync(legacyMetadata, bytes);
+  const rejectedMetadata = call('project-migration-plan', ['--target-dir', target]);
+  assert.equal(rejectedMetadata.status, 1, rejectedMetadata.stderr);
+  assert.match(JSON.parse(rejectedMetadata.stderr).error, /legacy-profile-migration-unsupported/);
+  assert.equal(readFileSync(legacyMetadata, 'utf8'), bytes);
 });

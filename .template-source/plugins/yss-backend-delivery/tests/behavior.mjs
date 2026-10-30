@@ -115,11 +115,32 @@ export function legacyMigration(build, name, profile, archived = false, history 
     writeFileSync(path.join(target, 'business.txt'), '旧业务资产');
     const observed = inventory(target);
     const result = spawnSync(process.execPath, [path.join(plugin, 'scripts/plugin.mjs'), 'project-migration-plan', '--target-dir', target], { encoding: 'utf8', timeout: 120000, maxBuffer: 128 * 1024 * 1024 });
-    assert.notEqual(result.status, 0, 'historical Spec identity must not migrate to Backend');
+    assert.equal(result.error, undefined);
+    assert.equal(result.signal, null);
+    assert.equal(result.status, 1, result.stderr || result.stdout);
+    assert.match(JSON.parse(result.stderr).error, /legacy-profile-migration-unsupported/);
     assert.deepEqual(inventory(target), observed, 'rejected historical migration must preserve project bytes and modes');
     assert.deepEqual(readFileSync(path.join(target, oldMetadata)), before);
     if (legacy) assert.deepEqual(readFileSync(path.join(target, '.yss-plugin.json')), legacy);
     assert.deepEqual(readFileSync(path.join(target, 'CONTEXT.md')), context);
+    if (history) {
+      const beforeAttempt = inventory(target);
+      assert.throws(() => restoreHistoricalBridge(parent, target), /later edits block recovery/);
+      assert.deepEqual(inventory(target), beforeAttempt);
+      rmSync(path.join(target, 'business.txt'));
+      const bridge = JSON.parse(readFileSync(path.join(parent, 'historical-bridge-plan.json')));
+      const backup = path.join(bridge.backup_path, 'before/.yss-template.json'), backupBytes = readFileSync(backup);
+      writeFileSync(backup, Buffer.concat([backupBytes, Buffer.from('\ncorrupt-backup')]));
+      const beforeCorruptAttempt = inventory(target);
+      assert.throws(() => restoreHistoricalBridge(parent, target));
+      assert.deepEqual(inventory(target), beforeCorruptAttempt);
+      writeFileSync(backup, backupBytes);
+      assert.equal(restoreHistoricalBridge(parent, target).result, 'restored');
+      const original = JSON.parse(readFileSync(path.join(parent, 'historical-original.json')));
+      assert.deepEqual(readFileSync(path.join(target, '.yss-template.json')), Buffer.from(original.metadata, 'base64'));
+      assert.deepEqual(readFileSync(path.join(target, '.yss-plugin.json')), Buffer.from(original.receipt, 'base64'));
+      assert.deepEqual(readFileSync(path.join(target, 'CONTEXT.md')), context);
+    }
     passed = true;
   } catch (error) { error.message += '\nlegacy fixture: ' + parent; throw error; }
   finally { if (passed || !process.env.YSS_PLUGIN_RETAIN_FAILED) rmSync(parent, { recursive: true, force: true }); }
