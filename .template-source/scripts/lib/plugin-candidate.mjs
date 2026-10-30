@@ -54,6 +54,8 @@ export function candidateFromEnvironment(root, environment = process.env) {
   if (!path.isAbsolute(receipt.cli_root || '') || call('git',['-C',receipt.cli_root,'rev-parse','HEAD']) !== candidateCliCommit
       || call('git',['-C',receipt.cli_root,'rev-parse','HEAD^{tree}']) !== receipt.cli_tree
       || call('git',['-C',receipt.cli_root,'status','--porcelain'])) throw new Error('candidate CLI source mismatch');
+  const requiredGo = readFileSync(path.join(receipt.cli_root,'go.mod'),'utf8').match(/^go ([0-9.]+)$/m)?.[1];
+  if (!requiredGo || receipt.go_version !== `go${requiredGo}`) throw new Error('candidate Go provenance mismatch');
   for (const [ref, digest] of [[receipt.lock_file,receipt.lock_sha256],[receipt.bundle_file,receipt.bundle_sha256]]) {
     if (!path.isAbsolute(ref || '') || !digestPattern.test(digest || '')) throw new Error('candidate material path or digest invalid');
     const item = lstatSync(ref);
@@ -69,5 +71,5 @@ export function candidateFromEnvironment(root, environment = process.env) {
   if (version.status !== 'ok' || version.code !== 'OK' || version.result?.cliCommit !== candidateCliCommit || version.result?.sourceState !== 'working-tree') throw new Error('candidate binary provenance mismatch');
   return {...candidate, template_commit:template, template_tree:receipt.template_tree, cli_commit:candidateCliCommit,
     cli_tree:receipt.cli_tree, bundle_sha256:receipt.bundle_sha256, lock_sha256:receipt.lock_sha256,
-    receipt_sha256:expected, binary_source_state:'working-tree', release_evidence:false};
+    receipt_sha256:expected, go_version:receipt.go_version, binary_source_state:'working-tree', release_evidence:false};
 }

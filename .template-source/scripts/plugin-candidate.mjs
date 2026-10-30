@@ -25,7 +25,8 @@ function prepare(cliRoot, output) {
   if (actualCli !== cliCommit || git(root, 'status', '--porcelain') || git(cliRoot, 'status', '--porcelain')) throw new Error('candidate source commit or cleanliness mismatch');
   const templateTree = git(root, 'rev-parse', 'HEAD^{tree}'), cliTree = git(cliRoot, 'rev-parse', 'HEAD^{tree}');
   const requiredGo = readFileSync(path.join(cliRoot, 'go.mod'), 'utf8').match(/^go ([0-9.]+)$/m)?.[1];
-  if (!requiredGo || run('go', ['env','GOVERSION'], cliRoot).trim() !== `go${requiredGo}`) throw new Error('candidate Go version mismatch');
+  const observedGo = run('go', ['env','GOVERSION'], cliRoot).trim();
+  if (!requiredGo || observedGo !== `go${requiredGo}`) throw new Error('candidate Go version mismatch');
   mkdirSync(output, {recursive:false});
   const original = JSON.parse(readFileSync(path.join(cliRoot, 'docs/source-lock.json')));
   const lock = candidateLock(original, template, cliCommit, ref => sha256(Buffer.from(run('git', ['-C',root,'show',`${template}:${ref}`], root))));
@@ -39,7 +40,7 @@ function prepare(cliRoot, output) {
   run('go', ['build','-trimpath','-buildvcs=false','-overlay',overlay,'-ldflags',`-X github.com/iloveZzz/yss-cli/internal/domain.BuildCommit=${cliCommit} -X github.com/iloveZzz/yss-cli/internal/domain.BuildSourceState=working-tree`,'-o',binary,'./cmd/yss'], cliRoot, env);
   const version = JSON.parse(run(binary, ['version','--json'], root));
   if (version.status !== 'ok' || version.result?.cliCommit !== cliCommit || version.result?.sourceState !== 'working-tree') throw new Error('candidate binary provenance mismatch');
-  const receipt = {schema_version:1, template_commit:template, template_tree:templateTree, cli_commit:cliCommit, cli_tree:cliTree, cli_root:cliRoot,
+  const receipt = {schema_version:1, template_commit:template, template_tree:templateTree, cli_commit:cliCommit, cli_tree:cliTree, cli_root:cliRoot, go_version:observedGo,
     binary, binary_sha256:sha256(readFileSync(binary)), lock_file:lockFile, lock_sha256:sha256(readFileSync(lockFile)),
     bundle_file:archive, bundle_sha256:sha256(readFileSync(archive)), binary_source_state:'working-tree',
     inspections:Object.fromEntries(['spec','backend'].map(profile => [profile, inspect(binary, profile)]))};
