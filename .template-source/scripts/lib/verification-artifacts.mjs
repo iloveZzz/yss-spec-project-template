@@ -78,16 +78,19 @@ export function produceCliArtifact({root,source,directory,run,environment=proces
 export function verifyInstalledCliMigration({artifact,directory,run}={}){
  validateArtifact(artifact,artifact.source_tuple);const family=artifact.source_tuple.family;fs.mkdirSync(directory,{recursive:true});const target=path.join(directory,'instance');const environment={...process.env,YSS_NATIVE_BINARY:artifact.binary,YSS_NATIVE_BINARY_SHA256:artifact.source_tuple.binary_sha256},options={environment,run,cwd:artifact.installed_root};
  initializeNative(family,target,options);runNative(['doctor','--root',target],options);runNative(['diff','--root',target],options);
- const metadata=path.join(target,'.yss.json'),context=fs.readFileSync(path.join(target,'CONTEXT.md'));const user=path.join(target,'src/user.txt');fs.mkdirSync(path.dirname(user),{recursive:true});fs.writeFileSync(user,'uncommitted work');
- const plan=path.join(directory,'plan.json');applyNative('sync',family,target,plan,[],options);assert.deepEqual(fs.readFileSync(path.join(target,'CONTEXT.md')),context);assert.equal(fs.readFileSync(user,'utf8'),'uncommitted work');
+ const metadata=path.join(target,'.yss.json'),contextPath=path.join(target,'CONTEXT.md');
+ if(!fs.existsSync(contextPath))fs.writeFileSync(contextPath,'# 用户上下文\n这是受管升级测试中的用户资料。\n');
+ const context=fs.readFileSync(contextPath),user=path.join(target,'src/user.txt');fs.mkdirSync(path.dirname(user),{recursive:true});fs.writeFileSync(user,'uncommitted work');
+ const plan=path.join(directory,'plan.json');applyNative('sync',family,target,plan,[],options);assert.deepEqual(fs.readFileSync(contextPath),context);assert.equal(fs.readFileSync(user,'utf8'),'uncommitted work');
  // A bounded native upgrade fixture exercises an actual nonempty transaction.
  // Historical metadata and interrupted journals remain a separate required matrix.
- const meta=JSON.parse(fs.readFileSync(metadata)),managed=path.join(target,'scripts/sync-skills'),oldBytes='// previous managed tool\n',record=meta.managedFiles?.['scripts/sync-skills'];ensure(record?.ownership==='managed','原生升级 fixture 缺少真实 managed baseline');
+ const managedRef=family==='spec'?'.agents/skills/yss-product-lifecycle/SKILL.md':'scripts/sync-skills';
+ const meta=JSON.parse(fs.readFileSync(metadata)),managed=path.join(target,managedRef),oldBytes='// previous managed tool\n',record=meta.managedFiles?.[managedRef];ensure(record?.ownership==='managed','原生升级 fixture 缺少真实 managed baseline');
  fs.writeFileSync(managed,oldBytes);record.baseline.digest=hash(oldBytes);record.lastApplied.digest=hash(oldBytes);meta.baselineDigest=hash(JSON.stringify(meta.managedFiles));fs.writeFileSync(metadata,JSON.stringify(meta,null,2)+'\n');const before=fs.readFileSync(metadata);
  // yss 2.3 起升级只有 sync（计划 → 应用）与 rollback，没有独立的 migrate 命令；同一个有真实受管工具差异的事务夹具走这条路径。
- const migrationPlan=path.join(directory,'migration-plan.json');const upgrade=runNative(['sync','--root',target,'--profile',family,'--plan','--out',migrationPlan],options).result;assert.deepEqual(fs.readFileSync(metadata),before,'升级计划必须只读');ensure(upgrade.changes.some(row=>row.path==='scripts/sync-skills'),'升级计划没有声明受管工具更新');runNative(['sync','--root',target,'--profile',family,'--apply','--plan-file',migrationPlan],options);ensure(fs.readFileSync(managed,'utf8')!==oldBytes,'原生升级没有更新受管资产');
+ const migrationPlan=path.join(directory,'migration-plan.json');const upgrade=runNative(['sync','--root',target,'--profile',family,'--plan','--out',migrationPlan],options).result;assert.deepEqual(fs.readFileSync(metadata),before,'升级计划必须只读');ensure(upgrade.changes.some(row=>row.path===managedRef),'升级计划没有声明受管工具更新');runNative(['sync','--root',target,'--profile',family,'--apply','--plan-file',migrationPlan],options);ensure(fs.readFileSync(managed,'utf8')!==oldBytes,'原生升级没有更新受管资产');
  const noop=runNative(['sync','--root',target,'--profile',family,'--plan','--out',path.join(directory,'noop.json')],options).result;ensure(noop.changes.length===0&&!(noop.conflicts?.length),'升级后重新规划不幂等');
- runNative(['rollback','--root',target,'--apply'],options);assert.deepEqual(fs.readFileSync(metadata),before,'整体回退没有恢复 metadata');ensure(fs.readFileSync(managed,'utf8')===oldBytes&&fs.readFileSync(user,'utf8')==='uncommitted work','回退破坏用户资产');
+ runNative(['rollback','--root',target,'--apply'],options);assert.deepEqual(fs.readFileSync(metadata),before,'整体回退没有恢复 metadata');assert.deepEqual(fs.readFileSync(contextPath),context,'整体回退没有保留用户上下文');ensure(fs.readFileSync(managed,'utf8')===oldBytes&&fs.readFileSync(user,'utf8')==='uncommitted work','回退破坏用户资产');
  return {family,status:'passed',cases:['init','doctor','diff','sync-dry-run','sync-apply','migration-plan-read-only','migration-apply','idempotency','rollback','user-file-preservation'],migration_fixture:'native-managed-upgrade'};
 }
 export function prepareArtifactConsumers({artifacts,directory,run}={}){

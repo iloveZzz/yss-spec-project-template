@@ -71,6 +71,17 @@
 
    PR 使用 `scripts/verify-template-fast --base <完整 SHA>`；main 集成验证和正式发布任务使用 `scripts/verify-template`，执行当前完整适用集合并核验已提交来源。两档属于不同任务边界，不自动追加为每次日常交付的固定检查。
 
+   计划包含 `check.design-prototype-animation` 或执行完整发布验证时，先用技能当前锁在隔离目录准备原型工具链（需要 pnpm 10.32.1）：
+
+   ```bash
+   task_toolchain="$(mktemp -d)"
+   cp .agents/skills/yss-design-system/assets/prototype/{package.json,pnpm-lock.yaml} "$task_toolchain/"
+   pnpm --dir "$task_toolchain" install --frozen-lockfile --ignore-scripts
+   export YSS_DESIGN_PROTOTYPE_TOOLCHAIN="$task_toolchain"
+   ```
+
+   检查要求实际构建，缺工具链、锁不一致或依赖版本不匹配会失败；验证完成后可移除隔离目录。它只验证生成 CSS，不能代替浏览器中的视觉或交互验证。 GitHub 与 GitLab 使用 `scripts/ci-gate --prepare-tools`，按所选计划自动准备该工具链。
+
    模板源维护引入或更新分发到实例的 Node 工具时，维护侧依赖、构建和 vendor 校验只在模板源治理区及 CI 中执行；实例门禁不得安装依赖或重建 vendor。实例只消费已提交的 `scripts/lib/*.mjs` 与 `scripts/vendor/*.mjs`，具体维护侧命令和治理决策不属于项目实例文档。
 
 6. 需要重新加载技能的客户端在变更落地后重启或刷新项目。

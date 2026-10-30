@@ -45,6 +45,20 @@ test('WorkBuddy projection creates ordinary resources, preserves executable bits
   assert.equal(f.sync({ check: true }).status, 'checked');
 });
 
+test('WorkBuddy projection accepts a repository accessed through a linked ancestor', t => {
+  const f = fixture(t);
+  const aliasParent = path.join(f.repositoryRoot, 'linked-parent');
+  symlinkSync(path.dirname(f.repositoryRoot), aliasParent);
+  const repositoryRoot = path.join(aliasParent, path.basename(f.repositoryRoot));
+  const source = path.join(repositoryRoot, '.agents/skills/probe');
+  const target = path.join(repositoryRoot, '.workbuddy/skills/probe');
+  assert.equal(implementation.syncWorkBuddyProjection({ repositoryRoot, source, target }).status, 'created');
+  f.git('add', '.workbuddy/skills');
+  f.git('commit', '-qm', 'projection baseline');
+  writeFileSync(path.join(f.source, 'SKILL.md'), 'updated source\n');
+  assert.equal(implementation.syncWorkBuddyProjection({ repositoryRoot, source, target }).status, 'updated');
+});
+
 test('WorkBuddy projection updates only an unchanged committed baseline', t => {
   const f = fixture(t); f.tracked();
   writeFileSync(path.join(f.source, 'SKILL.md'), 'updated source\n');

@@ -8,10 +8,24 @@ import {checkNativeContext, contextExecution, decodeContext} from '../scripts/li
 import {parseContextContract,resolveContextTermRefs} from '../scripts/lib/context-contract.mjs';
 import {initializeNative} from '../.template-source/scripts/lib/native-yss.mjs';
 
-test('原生 Context 返回可消费的空术语快照，旧参数转为明确原生参数',t=>{
+for (const profile of ['spec', 'backend']) test(`${profile} 原生 Context 返回可消费的空术语快照，旧参数转为明确原生参数`,t=>{
   const base=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'context-native-'))),root=path.join(base,'instance');
   t.after(()=>fs.rmSync(base,{recursive:true,force:true}));
-  initializeNative('backend',root);
+  initializeNative(profile,root);
+  if (profile === 'spec') {
+    assert.equal(fs.existsSync(path.join(root,'CONTEXT.md')),false,'Spec 3.0 初始化不生成用户术语');
+    fs.writeFileSync(path.join(root,'CONTEXT.md'),`---
+context_schema_version: 1
+---
+# CONTEXT
+## 流程术语
+| 术语 | 含义 | 英文标识 | 避免 / 备注 |
+|---|---|---|---|
+## 业务术语
+| 术语 | 含义 | 英文标识 | 适用限界上下文 | 避免 / 备注 |
+|---|---|---|---|---|
+`);
+  }
   const result=checkNativeContext({root});
   assert.deepEqual(result.context_snapshot.term_refs,[]);
   assert.equal(result.context_snapshot.referenced_terms_digest,'sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945');

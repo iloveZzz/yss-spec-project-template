@@ -100,8 +100,14 @@ export function verifyTemplateRelease({ root, commit, output, runtimeStore = 'of
     for (const forbidden of ['.github', '.template-source', 'submodules']) assert.equal(existsSync(path.join(instance, forbidden)), false, `实例不得包含 ${forbidden}`);
     const metadata = JSON.parse(readFileSync(path.join(instance, '.yss.json'), 'utf8'));
     assert.equal(metadata.templateCommit, spec.source_tuple.template_commit, '实例没有绑定固定 CLI 内置的模板来源');
-    run(process.execPath, [path.join(instance, 'scripts/sync-skills'), '--check'], instance);
-    run(process.execPath, [path.join(instance, 'scripts/update-skill-lock'), '--check'], instance);
+    const doctor=runNative(['doctor','--root',instance],nativeOptions).result;
+    assert.equal(doctor.readiness?.files,'aligned','实例受管文件未对齐');
+    assert.equal(doctor.readiness?.skills?.status,'ready','实例技能或投影漂移');
+    assert.equal(doctor.stats?.changed,0,'实例受管文件存在变更');
+    assert.equal(doctor.stats?.conflicts,0,'实例受管文件存在冲突');
+    const diff=runNative(['diff','--root',instance],nativeOptions).result;
+    assert.equal(diff.stats?.changed,0,'实例受管文件存在变更');
+    assert.equal(diff.stats?.conflicts,0,'实例受管文件存在冲突');
     mkdirSync(path.join(instance, '.github/workflows'), { recursive: true });
     const userWorkflow = path.join(instance, '.github/workflows/user.yml');
     const userBytes = 'name: User owned workflow\non: workflow_dispatch\njobs: {}\n';

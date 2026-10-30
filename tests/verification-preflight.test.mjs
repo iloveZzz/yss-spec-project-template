@@ -95,11 +95,11 @@ test('CI 文档计划保留 schema 前置但不准备无关重工具',async()=>{
  const {planTemplateVerification}=await import('../scripts/lib/template-verification.mjs');
  assert.equal(typeof verificationToolRequirements,'function');assert.equal(typeof validateVerificationToolRequirements,'function');
  const requirements=verificationToolRequirements(planTemplateVerification({changedFiles:['README.md'],ciGuards:true}));
- assert.deepEqual(requirements,{schema_version:1,python:'jsonschema',go:false,native_cli:false,tooling:false,vue:false});
+ assert.deepEqual(requirements,{schema_version:1,python:'jsonschema',go:false,native_cli:false,tooling:false,vue:false,design_vue:false});
  for(const bad of [null,[],{}, {...requirements,extra:true},{...requirements,go:1},{...requirements,tooling:'false'},{...requirements,python:'no'},{...requirements,schema_version:2}])assert.throws(()=>validateVerificationToolRequirements(bad));
  for(const field of Object.keys(requirements)){const bad={...requirements};delete bad[field];assert.throws(()=>validateVerificationToolRequirements(bad));}
  assert.deepEqual(validateVerificationToolRequirements(requirements),requirements);
- const base={schema_version:1,python:'none',go:false,native_cli:false,tooling:false,vue:false};
+ const base={schema_version:1,python:'none',go:false,native_cli:false,tooling:false,vue:false,design_vue:false};
  const daily=commands=>({strategy:'daily-necessary',commands});
  for(const [task,changes]of [[{command:'go test ./...'},{go:true}],[{command:'node --test report.test.mjs',resources:['go']},{go:true}],[{command:'python3 -c ast'},{python:'runtime'}],[{command:'node schema',resources:['python-jsonschema']},{python:'jsonschema'}],[{command:'pnpm --dir .template-source/tooling/node test'},{tooling:true}],[{command:'node native',resources:['native-cli']},{native_cli:true}],[{command:'scripts/verify-existing-ui-baseline-scenarios'},{vue:true}]])assert.deepEqual(verificationToolRequirements(daily([task])),{...base,...changes});
  assert.equal(verificationToolRequirements({commands:[]}).python,'jsonschema');
@@ -133,7 +133,7 @@ test('报告 v2 的 CI 路由声明冻结计划编译所需原生 CLI',async t=>
   const commands=selected.commands.filter(row=>row.id==='check.verification-report-v2');assert.equal(commands.length,1,ref);
   // Isolate this consumer so another selected native check cannot hide its dependency.
   const plan={...selected,commands},needs=verificationToolRequirements(plan,{reportValidation:true});
-  assert.deepEqual(needs,{schema_version:1,python:'jsonschema',go:true,native_cli:true,tooling:false,vue:false},ref);
+  assert.deepEqual(needs,{schema_version:1,python:'jsonschema',go:true,native_cli:true,tooling:false,vue:false,design_vue:false},ref);
   const missing=verificationPreflight({root,plan,nodeVersion:'v24.21.0',environment:{},probe:file=>{
    if(file==='python3')return {status:0,stdout:JSON.stringify({version:[3,12],jsonschema:'4.23.0',executable:'/fixture/python'})};
    assert.equal(file,'go');return {status:0,stdout:'go version go1.27.1 linux/amd64'};
@@ -153,7 +153,7 @@ test('后端终点 slow 检查单独准备原生 CLI 和 Python schema 校验器
   const commands=selected.commands.filter(row=>row.id===id);
   assert.equal(commands.length,1);
   const plan={...selected,commands};
-  assert.deepEqual(verificationToolRequirements(plan),{schema_version:1,python:'jsonschema',go:false,native_cli:true,tooling:false,vue:false});
+  assert.deepEqual(verificationToolRequirements(plan),{schema_version:1,python:'jsonschema',go:false,native_cli:true,tooling:false,vue:false,design_vue:false});
   const result=verificationPreflight({root:path.resolve(import.meta.dirname,'..'),plan,environment:{},probe:()=>({status:1,stderr:'missing Python'})});
   assert.equal(result.status,'failed');
   assert.deepEqual(result.errors.map(row=>row.name),['python-jsonschema','native-cli']);
@@ -167,7 +167,7 @@ test('仅实施编排文档变化也准备 checkpoint 的原生依赖',async t=>
  assert.equal(plan.commands.filter(row=>row.id==='check.daily-checkpoint').length,1);
  assert.deepEqual(plan.commands.filter(row=>row.id!=='check.daily-checkpoint'&&row.resources?.includes('native-cli')),[],'不得由其他原生消费者掩盖 checkpoint 的缺失声明');
  await t.test('CI 工具准备选择原生 CLI',()=>{
-  assert.deepEqual(verificationToolRequirements(plan,{reportValidation:true}),{schema_version:1,python:'jsonschema',go:false,native_cli:true,tooling:false,vue:false});
+  assert.deepEqual(verificationToolRequirements(plan,{reportValidation:true}),{schema_version:1,python:'jsonschema',go:false,native_cli:true,tooling:false,vue:false,design_vue:false});
  });
  await t.test('未配置原生 CLI 时预检拒绝',()=>{
   const result=verificationPreflight({root:path.resolve(import.meta.dirname,'..'),plan,nodeVersion:'v24.21.0',environment:{},probe:file=>{
@@ -209,6 +209,25 @@ test('维护审查的实际场景输入声明 Go',async()=>{
  const {planTemplateVerification}=await import('../scripts/lib/template-verification.mjs');
  const workflow=planTemplateVerification({changedFiles:['tests/scenarios/verify-maintenance-review-workflow-scenarios.mjs']});
  assert.equal(verificationToolRequirements(workflow).go,true);assert.equal(verificationToolRequirements(workflow).native_cli,false);
+});
+
+test('设计动画验证按需申请固定设计原型工具链',async()=>{
+ const {verificationToolRequirements}=await import('../.template-source/scripts/lib/verification-preflight.mjs');
+ const plan={strategy:'daily-necessary',commands:[{command:'node --test tests/design-prototype-animation.test.mjs'}]};
+ assert.equal(verificationToolRequirements(plan).design_vue,true);
+ const {planTemplateVerification}=await import('../scripts/lib/template-verification.mjs');
+ assert.equal(verificationToolRequirements(planTemplateVerification({changedFiles:['.agents/skills/yss-design-system/assets/prototype/package.json']})).design_vue,true);
+ assert.equal(verificationToolRequirements({...plan,commands:[{command:'node --test tests/other.test.mjs'}]}).design_vue,false);
+ const result=verificationPreflight({root:process.cwd(),nodeVersion:'v24.21.0',environment:{},plan});
+ assert.match(result.errors.find(item=>item.name==='design-vue-toolchain')?.error ?? '',/YSS_DESIGN_PROTOTYPE_TOOLCHAIN/);
+});
+
+test('设计原型与插件候选可同时声明独立工具需求',async()=>{
+ const {verificationToolRequirements,validateVerificationToolRequirements}=await import('../.template-source/scripts/lib/verification-preflight.mjs');
+ const needs=verificationToolRequirements({strategy:'daily-necessary',commands:[{command:'node --test tests/design-prototype-animation.test.mjs'},{command:'node candidate-test',resources:['plugin-candidate']}]});
+ assert.equal(needs.design_vue,true);assert.equal(needs.plugin_candidate,true);assert.equal(needs.go,true);
+ assert.throws(()=>validateVerificationToolRequirements({...needs,plugin_candidate:'true'}),/VERIFICATION_TOOL_REQUIREMENTS_INVALID/);
+ assert.throws(()=>validateVerificationToolRequirements({...needs,unexpected:true}),/VERIFICATION_TOOL_REQUIREMENTS_INVALID/);
 });
 
 test('插件候选作为独立资源登记，缺少来源凭据时预检失败',()=>{

@@ -147,6 +147,22 @@ test('新 Spec 仅补装设计系统即可离线检查设计投影漂移', t => 
   assert.match(result.stdout, /无漂移/);
 });
 
+test('设计技能单独复制与补装均保留 yaml 上游 ISC 许可全文', t => {
+  const sourceLicense = fs.readFileSync(path.join(root, '.template-source/cli-core/vendor/yaml.LICENSE'));
+  const relative = 'scripts/vendor/yaml.LICENSE';
+  const {skill} = copiedDesignSkill(t);
+  assert.deepEqual(fs.readFileSync(path.join(skill, relative)), sourceLicense);
+  for (const ref of ['LICENSE', 'THIRD-PARTY-NOTICES.md', relative]) {
+    assert.ok(fs.existsSync(path.join(skill, ref)), ref);
+    assert.ok(policy.installations.governed.skillReferences['yss-design-system'].includes(`.agents/skills/yss-design-system/${ref}`), ref);
+  }
+  const instance = governedInstance(t, ['yss-design-system']);
+  assert.deepEqual(fs.readFileSync(path.join(instance, '.agents/skills/yss-design-system', relative)), sourceLicense);
+  for (const ref of ['LICENSE', 'THIRD-PARTY-NOTICES.md']) {
+    assert.deepEqual(fs.readFileSync(path.join(instance, '.agents/skills/yss-design-system', ref)), fs.readFileSync(path.join(skill, ref)));
+  }
+});
+
 test('新 Spec 按需补装原型后可构建并校验 H1/H2，且拒绝覆盖已有原型', t => {
   const instance = governedInstance(t, ['yss-prototype-stage', 'yss-design-system']);
   const script = '.agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs';

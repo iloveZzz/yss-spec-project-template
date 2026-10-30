@@ -42,7 +42,7 @@ test('固定原生消费保留完整 Bundle 并绑定二进制 bytes',t=>{
  fs.writeFileSync(path.join(artifact.installed_root,'bundle/scripts/runtime-store'),'tampered governance tool');assert.throws(()=>validateArtifact(artifact,tuple),/安装树/);
 });
 
-test('四 Profile 真实原生受管升级执行非空事务、重新规划幂等并整体回退',t=>{
+test('Spec 与 Backend 真实原生受管升级执行非空事务、重新规划幂等并整体回退',t=>{
  const base=temporary(t),root=path.join(base,'source');fs.mkdirSync(root);const pinned=nativeBinary(),version=runNative(['version']).result;
  for(const family of NATIVE_PROFILES){
   const inspection=inspectNative(family),tuple={...source(pinned.digest),family,version:version.version,template_version:inspection.templateVersion,cli_commit:version.cliCommit,template_commit:inspection.templateCommit,snapshot_hash:inspection.sourceSnapshotHash,manifest_hash:inspection.manifestHash,bundle_hash:inspection.bundleHash};
@@ -50,6 +50,13 @@ test('四 Profile 真实原生受管升级执行非空事务、重新规划幂�
   const artifact=produceCliArtifact({root,source:tuple,directory:path.join(base,family,'artifact'),run});
   const result=verifyInstalledCliMigration({artifact,directory:path.join(base,family,'upgrade'),run});
   assert.equal(result.status,'passed');assert.equal(result.migration_fixture,'native-managed-upgrade');
+  const upgradeRoot=path.join(base,family,'upgrade'),target=path.join(upgradeRoot,'instance');
+  const managedRef=family==='spec'?'.agents/skills/yss-product-lifecycle/SKILL.md':'scripts/sync-skills';
+  const plan=JSON.parse(fs.readFileSync(path.join(upgradeRoot,'migration-plan.json')));
+  assert.ok(plan.changes.some(change=>change.path===managedRef),`${family}: 必须有真实受管升级`);
+  assert.equal(fs.readFileSync(path.join(target,managedRef),'utf8'),'// previous managed tool\n',`${family}: rollback 恢复受管输入`);
+  assert.equal(fs.readFileSync(path.join(target,'src/user.txt'),'utf8'),'uncommitted work',`${family}: rollback 保留用户文件`);
+  assert.ok(fs.readFileSync(path.join(target,'CONTEXT.md')).length>0,`${family}: 保留用户上下文`);
   // yss 2.3 起没有 migrate：升级是 sync 的计划与应用，回退是 rollback --apply。
   const sync=commands.filter(row=>row.file===artifact.binary&&row.args[0]==='sync');
   assert.ok(sync.some(row=>row.args.includes('--apply')),`${family}: sync apply`);

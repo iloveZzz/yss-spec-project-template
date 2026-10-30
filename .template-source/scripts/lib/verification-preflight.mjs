@@ -17,7 +17,7 @@ export function validateVerificationReportDirectory(root,directory) {
   return target;
 }
 export function validateVerificationToolRequirements(value) {
-  const keys=['schema_version','python','go','native_cli','tooling','vue'];
+  const keys=['schema_version','python','go','native_cli','tooling','vue','design_vue'];
   if(!value||Array.isArray(value)||typeof value!=='object'||Object.keys(value).some(key=>!keys.includes(key)&&key!=='plugin_candidate')||keys.some(key=>!Object.hasOwn(value,key))||value.schema_version!==1||!['none','runtime','jsonschema'].includes(value.python)||keys.slice(2).some(key=>typeof value[key]!=='boolean')||(Object.hasOwn(value,'plugin_candidate')&&typeof value.plugin_candidate!=='boolean'))throw new TypeError('VERIFICATION_TOOL_REQUIREMENTS_INVALID');
   return value;
 }
@@ -30,6 +30,7 @@ export function verificationToolRequirements(plan,{reportValidation=false}={}) {
     ...(plan.commands.some(item=>item.resources?.includes('plugin-candidate'))?{plugin_candidate:true}:{}),
     tooling:/\bpnpm\b/.test(commands)||!daily&&/\.template-source\/tooling\/node/.test(commands)||plan.commands.some(item=>item.resources?.includes('pnpm-tooling')),
     vue:/verify-yss-prototype-contract-scenarios|build-shadcn-vue|verify-existing-ui-baseline-scenarios/.test(commands),
+    design_vue:/(?:^|\s)tests\/design-prototype-animation\.test\.mjs(?:\s|$)/m.test(commands),
   });
 }
 export function verificationPreflight({root,plan,reportDir,environment=process.env,nodeVersion=process.version,probe=spawnSync}) {
@@ -69,6 +70,16 @@ export function verificationPreflight({root,plan,reportDir,environment=process.e
     if(hash(fs.readFileSync(path.join(assets,'pnpm-lock.yaml')))!==hash(fs.readFileSync(path.join(toolchain,'pnpm-lock.yaml'))))throw new Error('作者工具 pnpm lock 与技能基线不匹配');
     for(const [name,version] of Object.entries({...expected.dependencies,...expected.devDependencies}))if(JSON.parse(fs.readFileSync(path.join(toolchain,'node_modules',name,'package.json'))).version!==version)throw new Error(`${name} 需要锁定 ${version}`);
     return {root:toolchain,package_manager:expected.packageManager,package_sha256:hash(fs.readFileSync(path.join(assets,'package.json'))),lock_sha256:hash(fs.readFileSync(path.join(toolchain,'pnpm-lock.yaml'))),packages:{...expected.dependencies,...expected.devDependencies}};
+  });
+  if(needs.design_vue)check('design-vue-toolchain',()=>{
+    if(!environment.YSS_DESIGN_PROTOTYPE_TOOLCHAIN)throw new Error('选中设计原型动画构建需要 YSS_DESIGN_PROTOTYPE_TOOLCHAIN；请参考 .template-source/agents/skills-maintenance.md 准备固定工具链');
+    const assets=path.join(root,'.agents/skills/yss-design-system/assets/prototype'),toolchain=fs.realpathSync(environment.YSS_DESIGN_PROTOTYPE_TOOLCHAIN);
+    for(const file of ['package.json','pnpm-lock.yaml'])if(!fs.readFileSync(path.join(assets,file)).equals(fs.readFileSync(path.join(toolchain,file))))throw new Error(`设计原型工具链 ${file} 与技能基线不匹配`);
+    const lock=fs.readFileSync(path.join(assets,'pnpm-lock.yaml'));
+    if(!lock.equals(fs.readFileSync(path.join(toolchain,'node_modules/.pnpm/lock.yaml'))))throw new Error('设计原型已安装依赖锁与技能基线不匹配');
+    const expected=JSON.parse(fs.readFileSync(path.join(assets,'package.json')));
+    for(const [name,version] of Object.entries({...expected.dependencies,...expected.devDependencies}))if(JSON.parse(fs.readFileSync(path.join(toolchain,'node_modules',name,'package.json'))).version!==version)throw new Error(`${name} 需要锁定 ${version}`);
+    return {root:toolchain,package_manager:expected.packageManager,lock_sha256:hash(lock)};
   });
   if(plan.source_requirement==='committed')check('committed-source',()=>{const head=invoke('git',['rev-parse','HEAD']);if(!/^[a-f0-9]{40}$/.test(head))throw new Error('模板 SHA 不是完整 40 位');if(invoke('git',['status','--porcelain','--untracked-files=all']))throw new Error('固定源候选工作树不干净');return head;});
   return {status:errors.length?'failed':'passed',observations,errors};

@@ -93,6 +93,7 @@ import {createHash} from 'node:crypto';
 const root=process.cwd(),args=['--profile','fast',...process.argv.slice(2)],directory=args[args.indexOf('--report-dir')+1];
 fs.appendFileSync(process.env.STUB_LOG,'verify-template-fast '+process.argv.slice(2).join(' ')+'\\n');
 if(process.env.STUB_FAIL?.split(' ').includes('verify-template-fast'))process.exit(1);
+if(process.env.STUB_EXPECT_DESIGN && process.env.YSS_DESIGN_PROTOTYPE_TOOLCHAIN!==process.env.STUB_EXPECT_DESIGN)process.exit(9);
 if(process.env.STUB_WAIT_FAST){fs.writeFileSync(process.env.STUB_FAST_PID,String(process.pid));await new Promise(()=>setInterval(()=>{},1000));}
 if(process.env.STUB_NO_REPORT)process.exit(0);
 if(process.env.FAST_WRITE)fs.writeFileSync(process.env.FAST_WRITE,'mutated after preparation');
@@ -492,7 +493,7 @@ const out=process.argv[process.argv.indexOf('--out')+1];fs.mkdirSync(out);fs.wri
   const commit = sh(f.cli, 'rev-parse', 'HEAD'), hash = bytes => createHash('sha256').update(bytes).digest('hex');
   const release = {status:'ok',result:{version:'9.9.9',commit,sourceLockSha256:hash(lock),binaries:{[platformKey()]:{sha256:hash('release-binary')}}}};
   const input = path.join(f.directory, 'native.json');
-  fs.writeFileSync(input, JSON.stringify({schema_version:1,python:'none',go:false,native_cli:true,tooling:false,vue:false}));
+  fs.writeFileSync(input, JSON.stringify({schema_version:1,python:'none',go:false,native_cli:true,tooling:false,vue:false,design_vue:false}));
   const pinFile = path.join(f.root, '.template-source/distribution/yss-cli-pin.json'), pinBytes = fs.readFileSync(pinFile);
   for (const current of [f.pin.go_version, target]) {
     const envFile = path.join(f.directory, `env-${current}`), resolverLog = path.join(f.directory, `resolve-${current}`);
@@ -536,13 +537,16 @@ test("仓库自身的 Node 版本声明三处一致", () => {
 
 test('需求文件仅准备所选工具且拒绝非法结构、路径和混用',t=>{
  const directory=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'ci-setup-requirements-')));t.after(()=>fs.rmSync(directory,{recursive:true,force:true}));
- const file=path.join(directory,'requirements.json'),none={schema_version:1,python:'none',go:false,native_cli:false,tooling:false,vue:false};
+ const file=path.join(directory,'requirements.json'),none={schema_version:1,python:'none',go:false,native_cli:false,tooling:false,vue:false,design_vue:false};
  const run=(value,args=[])=>{fs.writeFileSync(file,typeof value==='string'?value:JSON.stringify(value));return spawnSync(CI_SETUP,['--dry-run','--requirements-file',file,...args],{encoding:'utf8',env:{...process.env,CI:''}});};
  const schema=run({...none,python:'jsonschema'});assert.equal(schema.status,0,schema.stderr);assert.match(schema.stdout,/jsonschema==4\.23\.0/);assert.doesNotMatch(schema.stdout,/构建 yss|pnpm|作者工具链|Go：/);
  const runtime=run({...none,python:'runtime'});assert.equal(runtime.status,0,runtime.stderr);assert.match(runtime.stdout,/Python/);assert.doesNotMatch(runtime.stdout,/pip install.*jsonschema/);
  const vue=run({...none,vue:true});assert.equal(vue.status,0,vue.stderr);assert.match(vue.stdout,/原型作者工具链/);assert.doesNotMatch(vue.stdout,/pnpm --dir \.template-source\/tooling\/node install|Go：/);
+ const design=run({...none,design_vue:true});assert.equal(design.status,0,design.stderr);assert.match(design.stdout,/设计原型固定工具链/);assert.match(design.stdout,/yss-design-system\/assets\/prototype/);assert.doesNotMatch(design.stdout,/原型作者工具链|Go：/);
+ assert.doesNotMatch(schema.stdout,/设计原型固定工具链/);
  const native=run({...none,native_cli:true});assert.equal(native.status,0,native.stderr);assert.match(native.stdout,/最新正式 Release/);assert.match(native.stdout,/ensure-native-yss\.mjs --json/);assert.match(native.stdout,/Go：/);assert.doesNotMatch(native.stdout,/pnpm --dir \.template-source\/tooling\/node install/);
  const candidate=run({...none,native_cli:true,plugin_candidate:true});assert.equal(candidate.status,0,candidate.stderr);assert.match(candidate.stdout,/固定 CLI 提交并在仓外构建成对插件候选/);
+ const both=run({...none,design_vue:true,plugin_candidate:true});assert.equal(both.status,0,both.stderr);assert.match(both.stdout,/设计原型固定工具链/);assert.match(both.stdout,/固定 CLI 提交并在仓外构建成对插件候选/);
  assert.notEqual(run({...none,plugin_candidate:'true'}).status,0);
  for(const bad of ['{',{}, {...none,native_cli:'false'},{...none,unknown:'$(touch sentinel)'}])assert.notEqual(run(bad).status,0);
  for(const args of [['--no-python'],['--toolchain'],['--yss-commit','pin']])assert.notEqual(run(none,args).status,0);
@@ -556,13 +560,14 @@ test('需求文件仅准备所选工具且拒绝非法结构、路径和混用',
 
 test('准备只接受受控导出数据，shell 字符串不执行',async t=>{
  const f=fixture(t),sentinel=path.join(f.root,'sentinel'),vue=path.join(f.directory,'$(touch sentinel) `touch sentinel`');fs.mkdirSync(vue);
- const run=async(value)=>{const reportDir=path.join(f.directory,'export-'+Math.random());return runGate({verification,root:f.root,mode:'push',reportDir,prepareTools:true,env:{...process.env,...f.env,STUB_LOG:f.stubLog,SETUP_ENV:value},stdout:sink(),stderr:sink()});};
+ const run=async(value,extra={})=>{const reportDir=path.join(f.directory,'export-'+Math.random());return runGate({verification,root:f.root,mode:'push',reportDir,prepareTools:true,env:{...process.env,...f.env,STUB_LOG:f.stubLog,SETUP_ENV:value,...extra},stdout:sink(),stderr:sink()});};
  const safe=await run('YSS_VUE_TOOLCHAIN='+vue);assert.equal(safe.exitCode,0,JSON.stringify(safe.report));assert.equal(fs.existsSync(sentinel),false);
+ const design=await run('YSS_DESIGN_PROTOTYPE_TOOLCHAIN='+vue,{STUB_EXPECT_DESIGN:vue});assert.equal(design.exitCode,0,JSON.stringify(design.report));assert.equal(fs.existsSync(sentinel),false);
  const pinFile=path.join(f.directory,'batch-pin.json');fs.writeFileSync(pinFile,'fixed pin bytes');
  const pinHash=createHash('sha256').update(fs.readFileSync(pinFile)).digest('hex');
  assert.equal((await run(`YSS_NATIVE_PIN_FILE=${pinFile}\nYSS_NATIVE_PIN_SHA256=${pinHash}`)).exitCode,0);
  assert.equal((await run(`YSS_NATIVE_PIN_FILE=${pinFile}\nYSS_NATIVE_PIN_SHA256=${'0'.repeat(64)}`)).exitCode,1);
- for(const value of ['EVIL=bad','YSS_VUE_TOOLCHAIN=relative','YSS_NATIVE_BINARY_SHA256=bad','YSS_VUE_TOOLCHAIN=/does-not-exist','YSS_VUE_TOOLCHAIN='+vue+'\nYSS_VUE_TOOLCHAIN='+vue]){const result=await run(value);assert.equal(result.exitCode,1,value);assert.equal(result.report.steps.find(x=>x.id==='verify-template').status,'skipped');}
+ for(const value of ['EVIL=bad','YSS_VUE_TOOLCHAIN=relative','YSS_DESIGN_PROTOTYPE_TOOLCHAIN=relative','YSS_NATIVE_BINARY_SHA256=bad','YSS_VUE_TOOLCHAIN=/does-not-exist','YSS_VUE_TOOLCHAIN='+vue+'\nYSS_VUE_TOOLCHAIN='+vue]){const result=await run(value);assert.equal(result.exitCode,1,value);assert.equal(result.report.steps.find(x=>x.id==='verify-template').status,'skipped');}
  assert.equal(fs.existsSync(sentinel),false);
 });
 
@@ -620,12 +625,24 @@ test('slow 准备不消耗验证本身1000秒预算，超时保留实际退出',
  assert.deepEqual(run.report.verification.guard_task_ids,[]);
  });
 
+test('设计原型准备拒绝未切换到 packageManager 指定版本的 pnpm', t => {
+ const directory=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'design-pnpm-version-')));
+ t.after(()=>fs.rmSync(directory,{recursive:true,force:true}));
+ const bin=path.join(directory,'bin');fs.mkdirSync(bin);
+ const marker=path.join(directory,'install-called');
+ fs.writeFileSync(path.join(bin,'pnpm'),`#!/usr/bin/env bash\nif [[ "$1" == "--version" ]]; then echo 10.15.0; else touch "$TEST_INSTALL_MARKER"; fi\n`,{mode:0o755});
+ const input=path.join(directory,'requirements.json');
+ fs.writeFileSync(input,JSON.stringify({schema_version:1,python:'none',go:false,native_cli:false,tooling:false,vue:false,design_vue:true}));
+ const run=spawnSync(CI_SETUP,['--requirements-file',input],{encoding:'utf8',env:{...process.env,CI:'',YSS_CI_ALLOW_LOCAL:'1',YSS_CI_PNPM_VERSION:'10.15.0',YSS_CI_ENV_FILE:path.join(directory,'setup.env'),RUNNER_TEMP:directory,PATH:bin+path.delimiter+process.env.PATH,TEST_INSTALL_MARKER:marker}});
+ assert.notEqual(run.status,0);assert.match(run.stderr,/设计原型需要 pnpm@10\.32\.1，实际 pnpm@10\.15\.0/);assert.equal(fs.existsSync(marker),false);
+});
+
 test('CI 工具环境固定插件候选凭据并拒绝漂移或缺项',t=>{
  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'candidate-setup-env-'));t.after(()=>fs.rmSync(dir,{recursive:true,force:true}));
  const receipt=path.join(dir,'receipt.json'),file=path.join(dir,'env');fs.writeFileSync(receipt,'candidate');
  const digest=createHash('sha256').update('candidate').digest('hex');
- fs.writeFileSync(file,`YSS_PLUGIN_CANDIDATE_RECEIPT=${receipt}\nYSS_PLUGIN_CANDIDATE_RECEIPT_SHA256=${digest}\n`);
- assert.equal(readCiSetupEnvironment(file).YSS_PLUGIN_CANDIDATE_RECEIPT,receipt);
+ fs.writeFileSync(file,`YSS_PLUGIN_CANDIDATE_RECEIPT=${receipt}\nYSS_PLUGIN_CANDIDATE_RECEIPT_SHA256=${digest}\nYSS_DESIGN_PROTOTYPE_TOOLCHAIN=${dir}\n`);
+ const environment=readCiSetupEnvironment(file);assert.equal(environment.YSS_PLUGIN_CANDIDATE_RECEIPT,receipt);assert.equal(environment.YSS_DESIGN_PROTOTYPE_TOOLCHAIN,dir);
  fs.writeFileSync(receipt,'changed');assert.throws(()=>readCiSetupEnvironment(file),/摘要/);
  fs.writeFileSync(file,`YSS_PLUGIN_CANDIDATE_RECEIPT=${receipt}\n`);assert.throws(()=>readCiSetupEnvironment(file),/缺失/);
 });
