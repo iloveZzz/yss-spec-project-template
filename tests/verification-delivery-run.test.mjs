@@ -24,7 +24,7 @@ test('固定来源任务使用候选入口并将路径作为数据传给shell',t
 test('legacy-full准备任务显式登记，清理只删除本轮可写实例',t=>{
   const temp=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'delivery-cleanup-')));t.after(()=>fs.rmSync(temp,{recursive:true,force:true}));
   const root=path.join(temp,'source'),directory=path.join(temp,'report');fs.mkdirSync(root);fs.mkdirSync(directory);
-  const plan={strategy:'release',effective_profile:'release',commands:[{task_id:'legacy.010',command:'node --test submodules/create-yss-spec/tests/sync-fast-smoke.test.js'},{command:'node .template-source/scripts/verify-cli-upgrade.mjs'}]};
+  const plan={strategy:'release',effective_profile:'release',commands:[{task_id:'legacy.010',command:'node --test submodules/create-yss-spec/tests/sync-fast-smoke.test.js'},{command:'node --test tests/cli-retirement.test.mjs'}]};
   const prepared=compileDeliveryPreparationTasks(plan,{root,reportDir:directory});
   assert.equal(prepared.tasks.length,5);
   assert.deepEqual(prepared.families,['spec','backend']);

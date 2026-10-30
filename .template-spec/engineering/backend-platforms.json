@@ -851,12 +851,12 @@
             {
               "architecture_family": "domain-driven",
               "ref": ".template-spec/engineering/evidence/scaffold-3.2.0/ddd/contract.dto-wire.json",
-              "digest": "sha256:82a25faa5cb16e8879d1d4891520cc41d6e3f451c0175382cb86759cb7093f99"
+              "digest": "sha256:de843385de40f7fb814596f377d64d2a7ff23a045e7dba08834b36e8839167c6"
             },
             {
               "architecture_family": "layered-mvc",
               "ref": ".template-spec/engineering/evidence/scaffold-3.2.0/mvc/contract.dto-wire.json",
-              "digest": "sha256:a8b9ec86db423e9fc164ad544f1cadf3593ec75d3b14ad7a71d5769ca5418768"
+              "digest": "sha256:1c645a6869e5fbd711209e020a8988befb330e129d82a76dc7bd0cc7b50a84e0"
             }
           ],
           "blockers": [],
@@ -886,12 +886,12 @@
             {
               "architecture_family": "domain-driven",
               "ref": ".template-spec/engineering/evidence/scaffold-3.2.0/ddd/contract.error-mapping.json",
-              "digest": "sha256:17effd30e17327b085c8835438ebf62cf549d9da79c6ae7b5f90472f1f4305ad"
+              "digest": "sha256:7a40a2a8ad5f57f15a4dae18da5cc14df57fc212b447b75696642013be7944a0"
             },
             {
               "architecture_family": "layered-mvc",
               "ref": ".template-spec/engineering/evidence/scaffold-3.2.0/mvc/contract.error-mapping.json",
-              "digest": "sha256:0a3064f44cdc8e0e157b49dd8a640f8e4a1b3c8a29b9512839a6445a887fe4a6"
+              "digest": "sha256:84758770aaafdd5057f9607be8bbc53d825d1b87f2cb5cf7f17ae2f2660fd4e5"
             }
           ],
           "blockers": [],
@@ -939,12 +939,12 @@
             {
               "architecture_family": "domain-driven",
               "ref": ".template-spec/engineering/evidence/scaffold-3.2.0/ddd/framework.mybatis.json",
-              "digest": "sha256:d0056566165112b953da658d16ac7e4acc43fcb37a8a4b49cf624537a0e93be2"
+              "digest": "sha256:1f89fd5708c56f660bc9e9a2f9e19780afc30984234891dddca48e860188666b"
             },
             {
               "architecture_family": "layered-mvc",
               "ref": ".template-spec/engineering/evidence/scaffold-3.2.0/mvc/framework.mybatis.json",
-              "digest": "sha256:b1365b1c6960a2cb24863e7f90db7329058565ccb340d08e04238c822b560180"
+              "digest": "sha256:cd13e5d4d957aab2ab224184222e639a191a9c70b960a332285e455c4b0e3b1e"
             }
           ],
           "blockers": [],
@@ -975,12 +975,12 @@
             {
               "architecture_family": "domain-driven",
               "ref": ".template-spec/engineering/evidence/scaffold-3.2.0/ddd/contract.request-validation.json",
-              "digest": "sha256:d9af083cfc443268bc1e8edecae6ddbbb2b95493602a07cb15ddbe66f517c35c"
+              "digest": "sha256:1c9e397544cde98d8e839754f82eda9b11b81b582a53c1db7dc61f8ccea58f10"
             },
             {
               "architecture_family": "layered-mvc",
               "ref": ".template-spec/engineering/evidence/scaffold-3.2.0/mvc/contract.request-validation.json",
-              "digest": "sha256:8d2b0c05ebdc8577607c09f6d95573c6c77a0e579f4e90f57f88b93b82db8d6a"
+              "digest": "sha256:90c6205e9b8c4ddf2f20c494ddcfa38f6d1bb35e6c399689d417562a11e667da"
             }
           ],
           "blockers": [],
@@ -994,12 +994,12 @@
         {
           "architecture_family": "domain-driven",
           "ref": ".template-spec/engineering/evidence/scaffold-3.2.0/ddd/qualification.json",
-          "digest": "sha256:e6b7db832c7e63b0a73e499681146d93aa14841c1694a9e97313a929c18810d9"
+          "digest": "sha256:9bdaaa72dc3972f9cf890405d47fde81523203a888b3645c8dd2b2ca8b552e56"
         },
         {
           "architecture_family": "layered-mvc",
           "ref": ".template-spec/engineering/evidence/scaffold-3.2.0/mvc/qualification.json",
-          "digest": "sha256:53a544b94d2e0e6d3f8533b441b06ce977c3c7cb1e054b31e087f0ad5978a03c"
+          "digest": "sha256:de5717e50a6ffdc12b6f3e635de5b3a2c16da2f2672adac666744e83762a94b9"
         }
       ],
       "artifact_resolution_evidence": {

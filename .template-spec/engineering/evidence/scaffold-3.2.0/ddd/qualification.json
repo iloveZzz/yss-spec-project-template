@@ -2463,44 +2463,44 @@
       }
     ],
     "artifact_count": 81,
-    "effective_pom_digest": "sha256:2e1c896dd62b99efacc964abc48351021bae55a769c52199ad2702d10fc6987f",
+    "effective_pom_digest": "sha256:f054ff9c4e63a92cdd7ad417b6eaf20f7211f6ab1f67e6e5146df71bb2ddace5",
     "dependency_tree_digest": "sha256:c4ac2695816a076a3e8d47dcdd0aa098c0ad3cf658effbd148f262909d75ca7f",
     "commands": [
       {
-        "command": "./mvnw -version",
+        "command": "./mvnw -version --settings /Users/zhudaoming/.m2/settings.xml",
         "exit_code": 0,
         "termination": null,
-        "executed_at": "2026-10-12T18:17:11.636Z",
-        "duration_ms": 108,
-        "stdout_ref": "/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-v6/ddd/platform-java.stdout.log",
-        "stderr_ref": "/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-v6/ddd/platform-java.stderr.log"
+        "executed_at": "2026-10-30T03:23:19.913Z",
+        "duration_ms": 363,
+        "stdout_ref": "platform-java.stdout.log",
+        "stderr_ref": "platform-java.stderr.log"
       },
       {
-        "command": "./mvnw org.apache.maven.plugins:maven-help-plugin:3.5.1:effective-pom -Dartifact=org.springframework.boot:spring-boot-dependencies:3.5.16 -Doutput=/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-v6/ddd/boot-bom-effective.xml",
+        "command": "./mvnw org.apache.maven.plugins:maven-help-plugin:3.5.1:effective-pom -Dartifact=org.springframework.boot:spring-boot-dependencies:3.5.16 -Doutput=/private/tmp/pr131-requalification/evidence/ddd/boot-bom-effective.xml --settings /Users/zhudaoming/.m2/settings.xml",
         "exit_code": 0,
         "termination": null,
-        "executed_at": "2026-10-12T18:17:11.744Z",
-        "duration_ms": 602,
-        "stdout_ref": "/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-v6/ddd/platform-boot-bom.stdout.log",
-        "stderr_ref": "/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-v6/ddd/platform-boot-bom.stderr.log"
+        "executed_at": "2026-10-30T03:23:20.278Z",
+        "duration_ms": 1030,
+        "stdout_ref": "platform-boot-bom.stdout.log",
+        "stderr_ref": "platform-boot-bom.stderr.log"
       },
       {
-        "command": "./mvnw org.apache.maven.plugins:maven-help-plugin:3.5.1:effective-pom -Doutput=/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-v6/ddd/effective-pom.xml",
+        "command": "./mvnw org.apache.maven.plugins:maven-help-plugin:3.5.1:effective-pom -Doutput=/private/tmp/pr131-requalification/evidence/ddd/effective-pom.xml --settings /Users/zhudaoming/.m2/settings.xml",
         "exit_code": 0,
         "termination": null,
-        "executed_at": "2026-10-12T18:17:12.346Z",
-        "duration_ms": 735,
-        "stdout_ref": "/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-v6/ddd/platform-effective-pom.stdout.log",
-        "stderr_ref": "/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-v6/ddd/platform-effective-pom.stderr.log"
+        "executed_at": "2026-10-30T03:23:21.308Z",
+        "duration_ms": 921,
+        "stdout_ref": "platform-effective-pom.stdout.log",
+        "stderr_ref": "platform-effective-pom.stderr.log"
       },
       {
-        "command": "./mvnw org.apache.maven.plugins:maven-dependency-plugin:3.8.1:tree -DoutputType=json -DoutputFile=.yss/platform-dependencies.json",
+        "command": "./mvnw org.apache.maven.plugins:maven-dependency-plugin:3.8.1:tree -DoutputType=json -DoutputFile=.yss/platform-dependencies.json --settings /Users/zhudaoming/.m2/settings.xml",
         "exit_code": 0,
         "termination": null,
-        "executed_at": "2026-10-12T18:17:13.081Z",
-        "duration_ms": 838,
-        "stdout_ref": "/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-v6/ddd/platform-dependency-tree.stdout.log",
-        "stderr_ref": "/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-v6/ddd/platform-dependency-tree.stderr.log"
+        "executed_at": "2026-10-30T03:23:22.229Z",
+        "duration_ms": 1413,
+        "stdout_ref": "platform-dependency-tree.stdout.log",
+        "stderr_ref": "platform-dependency-tree.stderr.log"
       }
     ]
   },
@@ -2516,26 +2516,26 @@
     },
     "commands": [
       {
-        "command": "./mvnw -Pscaffold-local clean package -DskipTests",
+        "command": "./mvnw -Pscaffold-local clean package -DskipTests --settings /Users/zhudaoming/.m2/settings.xml",
         "exit_code": 0,
         "termination": null,
-        "executed_at": "2026-10-12T18:17:15.304Z",
-        "duration_ms": 2703,
-        "stdout_ref": "/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-v6/ddd/platform-local-package.stdout.log",
-        "stderr_ref": "/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-v6/ddd/platform-local-package.stderr.log"
+        "executed_at": "2026-10-30T03:23:28.404Z",
+        "duration_ms": 3109,
+        "stdout_ref": "platform-local-package.stdout.log",
+        "stderr_ref": "platform-local-package.stderr.log"
       }
     ],
-    "executed_at": "2026-10-12T18:17:18.010Z",
-    "artifact_digest": "sha256:6c05c36f7b602f40a2664faab8f4965a4523c9a7f243341a6525b26fc0790bf4",
-    "stdout_ref": "/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-v6/ddd/startup.stdout.log",
-    "stderr_ref": "/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-v6/ddd/startup.stderr.log"
+    "executed_at": "2026-10-30T03:23:31.515Z",
+    "artifact_digest": "sha256:7305e57859d6509ce8ed91082b45b9c801e59588d64c97fd26b298aaab699401",
+    "stdout_ref": "startup.stdout.log",
+    "stderr_ref": "startup.stderr.log"
   },
   "startup_check": "passed",
   "platform_verification": "unverified",
   "verification_mode": "standalone-generation",
-  "project_root": "/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe",
-  "scaffold_manifest_ref": "/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/.yss/scaffold-generation.json",
-  "generated_at": "2026-10-12T18:17:11.636Z",
+  "project_root": "/private/tmp/pr131-requalification/projects/ddd-probe",
+  "scaffold_manifest_ref": "/private/tmp/pr131-requalification/projects/ddd-probe/.yss/scaffold-generation.json",
+  "generated_at": "2026-10-30T03:21:35.728Z",
   "status": "passed",
   "failure_category": null,
   "completion_level": "standalone-scaffold-verified",
@@ -2561,33 +2561,33 @@
     "commands": [
       {
         "command": "./mvnw validate --settings /Users/zhudaoming/.m2/settings.xml",
-        "cwd": "/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/examples/reference",
+        "cwd": "/private/tmp/pr131-requalification/projects/ddd-probe/examples/reference",
         "phase": "validate",
         "exit_code": 0,
-        "started_at": "2026-10-12T18:16:57.452Z",
-        "executed_at": "2026-10-12T18:16:58.195Z",
-        "stdout_ref": "/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-v6/ddd/reference-validate.stdout.log",
-        "stderr_ref": "/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-v6/ddd/reference-validate.stderr.log"
+        "started_at": "2026-10-30T03:21:16.052Z",
+        "executed_at": "2026-10-30T03:21:21.106Z",
+        "stdout_ref": "reference-validate.stdout.log",
+        "stderr_ref": "reference-validate.stderr.log"
       },
       {
         "command": "./mvnw test --settings /Users/zhudaoming/.m2/settings.xml",
-        "cwd": "/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/examples/reference",
+        "cwd": "/private/tmp/pr131-requalification/projects/ddd-probe/examples/reference",
         "phase": "test",
         "exit_code": 0,
-        "started_at": "2026-10-12T18:16:58.195Z",
-        "executed_at": "2026-10-12T18:17:04.949Z",
-        "stdout_ref": "/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-v6/ddd/reference-test.stdout.log",
-        "stderr_ref": "/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-v6/ddd/reference-test.stderr.log"
+        "started_at": "2026-10-30T03:21:21.106Z",
+        "executed_at": "2026-10-30T03:21:28.424Z",
+        "stdout_ref": "reference-test.stdout.log",
+        "stderr_ref": "reference-test.stderr.log"
       },
       {
         "command": "./mvnw package --settings /Users/zhudaoming/.m2/settings.xml",
-        "cwd": "/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/examples/reference",
+        "cwd": "/private/tmp/pr131-requalification/projects/ddd-probe/examples/reference",
         "phase": "package",
         "exit_code": 0,
-        "started_at": "2026-10-12T18:17:04.949Z",
-        "executed_at": "2026-10-12T18:17:11.627Z",
-        "stdout_ref": "/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-v6/ddd/reference-package.stdout.log",
-        "stderr_ref": "/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-v6/ddd/reference-package.stderr.log"
+        "started_at": "2026-10-30T03:21:28.424Z",
+        "executed_at": "2026-10-30T03:21:35.714Z",
+        "stdout_ref": "reference-package.stdout.log",
+        "stderr_ref": "reference-package.stderr.log"
       }
     ]
   },
@@ -2597,9 +2597,9 @@
       "phase": "validate",
       "exit_code": 0,
       "failure_category": null,
-      "duration_ms": 659.889,
-      "started_at": "2026-10-12T18:16:47.399Z",
-      "executed_at": "2026-10-12T18:16:48.061Z",
+      "duration_ms": 6597.186,
+      "started_at": "2026-10-30T03:20:58.518Z",
+      "executed_at": "2026-10-30T03:21:05.120Z",
       "stdout_ref": "mvnw-validate.stdout.log",
       "stderr_ref": "mvnw-validate.stderr.log"
     },
@@ -2608,9 +2608,9 @@
       "phase": "test",
       "exit_code": 0,
       "failure_category": null,
-      "duration_ms": 4642.02,
-      "started_at": "2026-10-12T18:16:48.061Z",
-      "executed_at": "2026-10-12T18:16:52.708Z",
+      "duration_ms": 5436.035,
+      "started_at": "2026-10-30T03:21:05.120Z",
+      "executed_at": "2026-10-30T03:21:10.561Z",
       "stdout_ref": "mvnw-test.stdout.log",
       "stderr_ref": "mvnw-test.stderr.log"
     },
@@ -2619,9 +2619,9 @@
       "phase": "package",
       "exit_code": 0,
       "failure_category": null,
-      "duration_ms": 4743.961,
-      "started_at": "2026-10-12T18:16:52.708Z",
-      "executed_at": "2026-10-12T18:16:57.452Z",
+      "duration_ms": 5486.883,
+      "started_at": "2026-10-30T03:21:10.561Z",
+      "executed_at": "2026-10-30T03:21:16.052Z",
       "stdout_ref": "mvnw-package.stdout.log",
       "stderr_ref": "mvnw-package.stderr.log"
     }
@@ -2630,7 +2630,7 @@
   "recipe_digest": "sha256:ad6dc0bdc21d0c19158ae8cf39e717d50eec69e110c85595a9c764f567544317",
   "source_fingerprint": {
     "schema_version": 1,
-    "generator_digest": "sha256:a0f4edee5e897fb53920db3e0e0d588984d7b0a71834b04ff1c92b401e79a17e",
+    "generator_digest": "sha256:58e810b5e0a438577cf7949d0dcb02f05648c0314612523263bf065f359ed7c5",
     "verifier_digest": "sha256:42bd2250774f7208afc23c863638a12cfb7185492f2d459ad746a83c52400c4a"
   },
   "generated_tree_digest": "sha256:01db1425dc335bf81bd75e48dd50d32835c58b8f1aa5054bc42824a56549e0e5",
@@ -2639,6 +2639,7 @@
     "test_count": 6,
     "scope": "test-scope mapping, MyBatis RowBounds, TransactionTemplate, HTTP status and JSON; not component error envelope, pagination interceptor, use-case proxy or production dialect certification"
   },
+  "verified_capabilities": [],
   "reference_dependencies": {
     "status": "passed",
     "runtime_artifacts": [
@@ -5098,46 +5099,144 @@
       }
     ],
     "artifact_count": 82,
-    "effective_pom_digest": "sha256:d5f4efbb931d4337cc30e91ef4447ee53a786f8a9d15dd48aa2b7d3aab632f12",
+    "effective_pom_digest": "sha256:42d6e6dfa547a02ad529ce4da62307abbc336bc6ec53134f9d244ccc4681e44a",
     "dependency_tree_digest": "sha256:e5618e6d1826d745bca43585b47498a5f0bae3b5209a3f52b2990a0c67a82825",
     "commands": [
       {
-        "command": "./mvnw -version",
+        "command": "./mvnw -version --settings /Users/zhudaoming/.m2/settings.xml",
         "exit_code": 0,
         "termination": null,
-        "executed_at": "2026-10-12T18:17:19.934Z",
-        "duration_ms": 122,
-        "stdout_ref": "/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-v6/ddd/reference/platform-java.stdout.log",
-        "stderr_ref": "/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-v6/ddd/reference/platform-java.stderr.log"
+        "executed_at": "2026-10-30T03:23:23.834Z",
+        "duration_ms": 213,
+        "stdout_ref": "reference/platform-java.stdout.log",
+        "stderr_ref": "reference/platform-java.stderr.log"
       },
       {
-        "command": "./mvnw org.apache.maven.plugins:maven-help-plugin:3.5.1:effective-pom -Dartifact=org.springframework.boot:spring-boot-dependencies:3.5.16 -Doutput=/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-v6/ddd/reference/boot-bom-effective.xml",
+        "command": "./mvnw org.apache.maven.plugins:maven-help-plugin:3.5.1:effective-pom -Dartifact=org.springframework.boot:spring-boot-dependencies:3.5.16 -Doutput=/private/tmp/pr131-requalification/evidence/ddd/reference/boot-bom-effective.xml --settings /Users/zhudaoming/.m2/settings.xml",
         "exit_code": 0,
         "termination": null,
-        "executed_at": "2026-10-12T18:17:20.056Z",
-        "duration_ms": 605,
-        "stdout_ref": "/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-v6/ddd/reference/platform-boot-bom.stdout.log",
-        "stderr_ref": "/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-v6/ddd/reference/platform-boot-bom.stderr.log"
+        "executed_at": "2026-10-30T03:23:24.047Z",
+        "duration_ms": 774,
+        "stdout_ref": "reference/platform-boot-bom.stdout.log",
+        "stderr_ref": "reference/platform-boot-bom.stderr.log"
       },
       {
-        "command": "./mvnw org.apache.maven.plugins:maven-help-plugin:3.5.1:effective-pom -Doutput=/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-v6/ddd/reference/effective-pom.xml",
+        "command": "./mvnw org.apache.maven.plugins:maven-help-plugin:3.5.1:effective-pom -Doutput=/private/tmp/pr131-requalification/evidence/ddd/reference/effective-pom.xml --settings /Users/zhudaoming/.m2/settings.xml",
         "exit_code": 0,
         "termination": null,
-        "executed_at": "2026-10-12T18:17:20.661Z",
-        "duration_ms": 771,
-        "stdout_ref": "/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-v6/ddd/reference/platform-effective-pom.stdout.log",
-        "stderr_ref": "/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-v6/ddd/reference/platform-effective-pom.stderr.log"
+        "executed_at": "2026-10-30T03:23:24.821Z",
+        "duration_ms": 1025,
+        "stdout_ref": "reference/platform-effective-pom.stdout.log",
+        "stderr_ref": "reference/platform-effective-pom.stderr.log"
       },
       {
-        "command": "./mvnw org.apache.maven.plugins:maven-dependency-plugin:3.8.1:tree -DoutputType=json -DoutputFile=.yss/platform-dependencies.json",
+        "command": "./mvnw org.apache.maven.plugins:maven-dependency-plugin:3.8.1:tree -DoutputType=json -DoutputFile=.yss/platform-dependencies.json --settings /Users/zhudaoming/.m2/settings.xml",
         "exit_code": 0,
         "termination": null,
-        "executed_at": "2026-10-12T18:17:21.432Z",
-        "duration_ms": 831,
-        "stdout_ref": "/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-v6/ddd/reference/platform-dependency-tree.stdout.log",
-        "stderr_ref": "/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-v6/ddd/reference/platform-dependency-tree.stderr.log"
+        "executed_at": "2026-10-30T03:23:25.846Z",
+        "duration_ms": 1026,
+        "stdout_ref": "reference/platform-dependency-tree.stdout.log",
+        "stderr_ref": "reference/platform-dependency-tree.stderr.log"
       }
     ]
+  },
+  "reference_http": {
+    "argv": [
+      "/Library/Java/JavaVirtualMachines/amazon-corretto-17.jdk/Contents/Home/bin/java",
+      "-jar",
+      "/private/tmp/pr131-requalification/projects/ddd-probe/examples/reference/ddd-probe-reference-bootstrap/target/ddd-probe-reference-bootstrap-1.0.0-SNAPSHOT.jar",
+      "--server.address=127.0.0.1",
+      "--server.port=57668"
+    ],
+    "artifact_sha256": "sha256:f1a50c17747687e4802910f73bdb6512242159931c697387065bb5491186df49",
+    "started_at": "2026-10-30T03:23:34.338Z",
+    "http": [
+      {
+        "method": "POST",
+        "path": "/reference-entries",
+        "status": 200,
+        "body": {
+          "success": true,
+          "dataType": null,
+          "code": "DM-A0001",
+          "message": "数据返回正常",
+          "tips": "信息返回正常",
+          "data": {
+            "id": "9819712b-b7c5-425f-a831-e5f004377cc0",
+            "name": "initial"
+          }
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/reference-entries/9819712b-b7c5-425f-a831-e5f004377cc0",
+        "status": 200,
+        "body": {
+          "success": true,
+          "dataType": null,
+          "code": "DM-A0001",
+          "message": "数据返回正常",
+          "tips": "信息返回正常",
+          "data": {
+            "id": "9819712b-b7c5-425f-a831-e5f004377cc0",
+            "name": "initial"
+          }
+        }
+      },
+      {
+        "method": "PUT",
+        "path": "/reference-entries/9819712b-b7c5-425f-a831-e5f004377cc0/name",
+        "status": 200,
+        "body": {
+          "success": true,
+          "dataType": null,
+          "code": "DM-A0001",
+          "message": "数据返回正常",
+          "tips": "信息返回正常",
+          "data": {
+            "id": "9819712b-b7c5-425f-a831-e5f004377cc0",
+            "name": "renamed"
+          }
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/reference-entries/9819712b-b7c5-425f-a831-e5f004377cc0",
+        "status": 200,
+        "body": {
+          "success": true,
+          "dataType": null,
+          "code": "DM-A0001",
+          "message": "数据返回正常",
+          "tips": "信息返回正常",
+          "data": {
+            "id": "9819712b-b7c5-425f-a831-e5f004377cc0",
+            "name": "renamed"
+          }
+        }
+      },
+      {
+        "method": "POST",
+        "path": "/reference-entries",
+        "status": 400,
+        "body": {
+          "errCode": "A0104",
+          "tips": "请根据错误提示将参数修改正确后请重试。",
+          "message": "[name]名称不能为空"
+        }
+      },
+      {
+        "method": "GET",
+        "path": "/reference-entries/999999",
+        "status": 404,
+        "body": {
+          "errCode": "REFERENCE_NOT_FOUND",
+          "tips": "请联系客服或技术支持人员协助解决",
+          "message": "参考条目不存在"
+        }
+      }
+    ],
+    "status": "passed"
   },
   "evidence_artifacts": [
     {
@@ -5154,11 +5253,7 @@
     },
     {
       "ref": "effective-pom.xml",
-      "digest": "sha256:2e1c896dd62b99efacc964abc48351021bae55a769c52199ad2702d10fc6987f"
-    },
-    {
-      "ref": "generate.log",
-      "digest": "sha256:7cdd68549c8527944a1438b0fee4cd17c65967400bcba32dfb3679e5050b37dc"
+      "digest": "sha256:f054ff9c4e63a92cdd7ad417b6eaf20f7211f6ab1f67e6e5146df71bb2ddace5"
     },
     {
       "ref": "mvnw-package.stderr.log",
@@ -5166,7 +5261,7 @@
     },
     {
       "ref": "mvnw-package.stdout.log",
-      "digest": "sha256:a9683446aa8e5918e5e48a93d4bf4c7858dcfae8acc78e8261ae3dfeec31fa7a"
+      "digest": "sha256:9c800e872a6c69886436419f59a54b3a3de332d4f40c8c69b932c21d1bae5307"
     },
     {
       "ref": "mvnw-test.stderr.log",
@@ -5174,7 +5269,7 @@
     },
     {
       "ref": "mvnw-test.stdout.log",
-      "digest": "sha256:ed1a5e5af0bced7df934a64315003a682faa948979f00f67358b98f9b9bf9987"
+      "digest": "sha256:cda34af5d513e1ea27aff764feab889b2f9979f1c0291363db1e1a72889f6edf"
     },
     {
       "ref": "mvnw-validate.stderr.log",
@@ -5182,7 +5277,7 @@
     },
     {
       "ref": "mvnw-validate.stdout.log",
-      "digest": "sha256:84da17af1e3f469ab869a95e19b4836c731e9d6657b4048bf87968ce2584a749"
+      "digest": "sha256:4224b1862443056b4fe1c1d0ed31fcced8766b5e9d2eb1a7788388338ec05a7b"
     },
     {
       "ref": "platform-boot-bom.stderr.log",
@@ -5190,7 +5285,7 @@
     },
     {
       "ref": "platform-boot-bom.stdout.log",
-      "digest": "sha256:e298f82ab8b8b3b7770c5abf1fc74cb4e87c1936b94e2dfed6f1d11adedf41af"
+      "digest": "sha256:d82f7e5bb3ad9e51e9a71b83444bab7421e45904ccfa644e9e84f949663e5616"
     },
     {
       "ref": "platform-dependency-tree.stderr.log",
@@ -5198,7 +5293,7 @@
     },
     {
       "ref": "platform-dependency-tree.stdout.log",
-      "digest": "sha256:529810edbda5b1214a6e1a6b9e45473547b7b88d197e5ef89bd2a11d0edc90ad"
+      "digest": "sha256:6aa362466ef0dc2d358fd23493f58d4f5f91814ebf7131f70191b2fecf32adac"
     },
     {
       "ref": "platform-effective-pom.stderr.log",
@@ -5206,7 +5301,7 @@
     },
     {
       "ref": "platform-effective-pom.stdout.log",
-      "digest": "sha256:b54e32fe574942bb305c6c44d2948dd2529134ffb2bfec2593d4826877962280"
+      "digest": "sha256:be9ff4ef0ea30a1eebaf7857ff4cb4b6dbd1775e8efd411d265a9f0849249c45"
     },
     {
       "ref": "platform-java.stderr.log",
@@ -5222,7 +5317,7 @@
     },
     {
       "ref": "platform-local-package.stdout.log",
-      "digest": "sha256:9d09875879229f5b4d51b19b58c2f53f93e090194ace3138893d9147651417be"
+      "digest": "sha256:bd2f7766e577bca1be8bf0ab15b6afcd6351e92c237ac403cee0c4476da50fb6"
     },
     {
       "ref": "platform-local-repository.stderr.log",
@@ -5234,7 +5329,7 @@
     },
     {
       "ref": "platform-tests.xml",
-      "digest": "sha256:5b23dda4057f92e19f3b8999903590e9af918ce676ee48fdbbfcae9254c5421d"
+      "digest": "sha256:cbcad29088af821d9ad944cea71deb2b4fe2b64d764e74f45b5619646be354ad"
     },
     {
       "ref": "reference-package.stderr.log",
@@ -5242,7 +5337,23 @@
     },
     {
       "ref": "reference-package.stdout.log",
-      "digest": "sha256:d1315d5ea8035d42c178d728db19542e157c0e30f47e70fbeefbda0a6f3f97af"
+      "digest": "sha256:54ee3f38f282fb79dae5748a2729ac375a87d8c71d435d314aa76a0354d0b2bf"
+    },
+    {
+      "ref": "reference-runtime-jar-entries.log",
+      "digest": "sha256:94038433f89069a19cc4def3fb745991d5f053591280bb49d09b4f8ce3919b27"
+    },
+    {
+      "ref": "reference-runtime-jar.stderr.log",
+      "digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "ref": "reference-startup.stderr.log",
+      "digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "ref": "reference-startup.stdout.log",
+      "digest": "sha256:162d29746b12a1be12d3e9eaaee4c93ed066eddcb537732e947c8471e8af5faa"
     },
     {
       "ref": "reference-test.stderr.log",
@@ -5250,7 +5361,7 @@
     },
     {
       "ref": "reference-test.stdout.log",
-      "digest": "sha256:41d78f846a21e3db151336f23097a76a441aa837c045bcdb2d1d00492aac0cd4"
+      "digest": "sha256:33d889d555ebe5f7f06d0b469a433ecc64358017e3983870c8015743c2eea0c1"
     },
     {
       "ref": "reference-validate.stderr.log",
@@ -5258,7 +5369,7 @@
     },
     {
       "ref": "reference-validate.stdout.log",
-      "digest": "sha256:97a5c0f7b9ca0923b563ec79645b6f5cc65eb55ca846c856f01caa4168163523"
+      "digest": "sha256:811ea772da6f65993493678b19aa2fedcd08ab8b891c0f501fcae7dd69b6748f"
     },
     {
       "ref": "runtime-jar-entries.log",
@@ -5269,21 +5380,86 @@
       "digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
+      "ref": "scaffold-generation.stderr.log",
+      "digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "ref": "scaffold-generation.stdout.log",
+      "digest": "sha256:aacb5ff4ba394dd9070d0a0dbd7ff55acd6879dbbd4860382aff9906b735da91"
+    },
+    {
       "ref": "startup.stderr.log",
       "digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
       "ref": "startup.stdout.log",
-      "digest": "sha256:e8da3ea733534569e524db5e5065a8af4492e9ecdcac2258a8c47b4368ceae6c"
-    },
-    {
-      "ref": "reference-http.json",
-      "digest": "sha256:d1698f026273fa2aa380005a25651104fcdfbd1e531b389aaaffcc7528dc563c"
+      "digest": "sha256:a2a18da01daacc932d7c239da0d1db08cdee01674f4fd83cc7a16167f02e86da"
     },
     {
       "ref": "reference-tests.xml",
-      "digest": "sha256:b8033e97d3195ec431ff0f844b54e80cc729d51ac4b8b191d7660b5bab650883"
+      "digest": "sha256:b41a210ea1a829de5f45a57af442553f0fe5f17c2fbbf6309de8f9714de20c23"
+    },
+    {
+      "ref": "reference-http.json",
+      "digest": "sha256:5aaf1a4a5e62cea2ca92ca09e845bfa79bad0966807380f8ecef86284de8fd69"
+    },
+    {
+      "ref": "reference/boot-bom-effective.xml.gz",
+      "digest": "sha256:35639010c16be3265c66ff5198328c617e2f4b8d748a6d33a1f0e3007f38622b",
+      "encoding": "gzip",
+      "uncompressed_digest": "sha256:7c0441cbbca936355013fb26e350ba105d8b546ace71970039ec2414c43aa15a"
+    },
+    {
+      "ref": "reference/dependency-trees.json.gz",
+      "digest": "sha256:1a8b776b8111d954cb7e0c37c43d3046f63b485d22437ca301ea7732e63f549a",
+      "encoding": "gzip",
+      "uncompressed_digest": "sha256:c1b144152fa52b91dcc177326893853d23188891075895cf2459852115074ce4"
+    },
+    {
+      "ref": "reference/effective-pom.xml.gz",
+      "digest": "sha256:1b546968659cc9f10291516bf038eaacf3e912ff2a097b94ea0c0aa4f784d857",
+      "encoding": "gzip",
+      "uncompressed_digest": "sha256:42d6e6dfa547a02ad529ce4da62307abbc336bc6ec53134f9d244ccc4681e44a"
+    },
+    {
+      "ref": "reference/platform-boot-bom.stderr.log",
+      "digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "ref": "reference/platform-boot-bom.stdout.log",
+      "digest": "sha256:9b6e5ed3f7407c4ae38d94f87c764fa21dd6b4b1278dff4596bb7753a9f050fa"
+    },
+    {
+      "ref": "reference/platform-dependency-tree.stderr.log",
+      "digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "ref": "reference/platform-dependency-tree.stdout.log",
+      "digest": "sha256:321870e50e238a7eda274c76d066b15a163bee483ae080ffa3fa3256060ea6f9"
+    },
+    {
+      "ref": "reference/platform-effective-pom.stderr.log",
+      "digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "ref": "reference/platform-effective-pom.stdout.log",
+      "digest": "sha256:1813dffcfcad243a61aebd9f8bff19d6851e30f2562baea47093f2f5455fc47c"
+    },
+    {
+      "ref": "reference/platform-java.stderr.log",
+      "digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "ref": "reference/platform-java.stdout.log",
+      "digest": "sha256:6be74df6e83e342c78b2a7cceb1f5bddb1314793a978dcc65abe38266f4da0a5"
+    },
+    {
+      "ref": "generate.log",
+      "digest": "sha256:719f6dd66d3e714a3615a6eb889bd336ba339be0ec0d373950d47207738600aa"
+    },
+    {
+      "ref": "artifact-binding-check.json",
+      "digest": "sha256:13572cd2021c16a241277153e21257a7d222c7be6427726e689904600578bf3a"
     }
-  ],
-  "verified_capabilities": []
+  ]
 }

@@ -39,14 +39,14 @@
 [[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mmaven-clean-plugin:3.4.1:clean[m [1m(default-clean)[m @ [36mmvc-probe-repository[0;1m ---[m
-[[1;34mINFO[m] Deleting /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe/mvc-probe-repository/target
+[[1;34mINFO[m] Deleting /private/tmp/pr131-requalification/projects/mvc-probe/mvc-probe-repository/target
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mmaven-enforcer-plugin:3.5.0:enforce[m [1m(enforce-platform)[m @ [36mmvc-probe-repository[0;1m ---[m
 [[1;34mINFO[m] Rule 2: org.apache.maven.enforcer.rules.dependency.DependencyConvergence passed
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:resources[m [1m(default-resources)[m @ [36mmvc-probe-repository[0;1m ---[m
-[[1;34mINFO[m] skip non existing resourceDirectory /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe/mvc-probe-repository/src/main/resources
-[[1;34mINFO[m] skip non existing resourceDirectory /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe/mvc-probe-repository/src/main/resources
+[[1;34mINFO[m] skip non existing resourceDirectory /private/tmp/pr131-requalification/projects/mvc-probe/mvc-probe-repository/src/main/resources
+[[1;34mINFO[m] skip non existing resourceDirectory /private/tmp/pr131-requalification/projects/mvc-probe/mvc-probe-repository/src/main/resources
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.14.1:compile[m [1m(default-compile)[m @ [36mmvc-probe-repository[0;1m ---[m
 [[1;34mINFO[m] Recompiling the module because of [1mchanged source code[m.
@@ -54,7 +54,7 @@
 [[1;33mWARNING[m] 以下选项未被任何处理程序识别: '[mapstruct.verbose, mapstruct.suppressGeneratorVersionInfoComment, mapstruct.suppressGeneratorTimestamp]'
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:testResources[m [1m(default-testResources)[m @ [36mmvc-probe-repository[0;1m ---[m
-[[1;34mINFO[m] skip non existing resourceDirectory /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe/mvc-probe-repository/src/test/resources
+[[1;34mINFO[m] skip non existing resourceDirectory /private/tmp/pr131-requalification/projects/mvc-probe/mvc-probe-repository/src/test/resources
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.14.1:testCompile[m [1m(default-testCompile)[m @ [36mmvc-probe-repository[0;1m ---[m
 [[1;34mINFO[m] No sources to compile
@@ -63,7 +63,7 @@
 [[1;34mINFO[m] Tests are skipped.
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mmaven-jar-plugin:3.4.2:jar[m [1m(default-jar)[m @ [36mmvc-probe-repository[0;1m ---[m
-[[1;34mINFO[m] Building jar: /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe/mvc-probe-repository/target/mvc-probe-repository-1.0.0-SNAPSHOT.jar
+[[1;34mINFO[m] Building jar: /private/tmp/pr131-requalification/projects/mvc-probe/mvc-probe-repository/target/mvc-probe-repository-1.0.0-SNAPSHOT.jar
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mspring-boot-maven-plugin:3.5.16:repackage[m [1m(repackage)[m @ [36mmvc-probe-repository[0;1m ---[m
 [[1;34mINFO[m] 
@@ -74,14 +74,14 @@
 [[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mmaven-clean-plugin:3.4.1:clean[m [1m(default-clean)[m @ [36mmvc-probe-service[0;1m ---[m
-[[1;34mINFO[m] Deleting /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe/mvc-probe-service/target
+[[1;34mINFO[m] Deleting /private/tmp/pr131-requalification/projects/mvc-probe/mvc-probe-service/target
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mmaven-enforcer-plugin:3.5.0:enforce[m [1m(enforce-platform)[m @ [36mmvc-probe-service[0;1m ---[m
 [[1;34mINFO[m] Rule 2: org.apache.maven.enforcer.rules.dependency.DependencyConvergence passed
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:resources[m [1m(default-resources)[m @ [36mmvc-probe-service[0;1m ---[m
-[[1;34mINFO[m] skip non existing resourceDirectory /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe/mvc-probe-service/src/main/resources
-[[1;34mINFO[m] skip non existing resourceDirectory /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe/mvc-probe-service/src/main/resources
+[[1;34mINFO[m] skip non existing resourceDirectory /private/tmp/pr131-requalification/projects/mvc-probe/mvc-probe-service/src/main/resources
+[[1;34mINFO[m] skip non existing resourceDirectory /private/tmp/pr131-requalification/projects/mvc-probe/mvc-probe-service/src/main/resources
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.14.1:compile[m [1m(default-compile)[m @ [36mmvc-probe-service[0;1m ---[m
 [[1;34mINFO[m] Recompiling the module because of [1mchanged dependency[m.
@@ -89,7 +89,7 @@
 [[1;33mWARNING[m] 以下选项未被任何处理程序识别: '[mapstruct.verbose, mapstruct.suppressGeneratorVersionInfoComment, mapstruct.suppressGeneratorTimestamp]'
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:testResources[m [1m(default-testResources)[m @ [36mmvc-probe-service[0;1m ---[m
-[[1;34mINFO[m] skip non existing resourceDirectory /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe/mvc-probe-service/src/test/resources
+[[1;34mINFO[m] skip non existing resourceDirectory /private/tmp/pr131-requalification/projects/mvc-probe/mvc-probe-service/src/test/resources
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.14.1:testCompile[m [1m(default-testCompile)[m @ [36mmvc-probe-service[0;1m ---[m
 [[1;34mINFO[m] No sources to compile
@@ -98,7 +98,7 @@
 [[1;34mINFO[m] Tests are skipped.
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mmaven-jar-plugin:3.4.2:jar[m [1m(default-jar)[m @ [36mmvc-probe-service[0;1m ---[m
-[[1;34mINFO[m] Building jar: /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe/mvc-probe-service/target/mvc-probe-service-1.0.0-SNAPSHOT.jar
+[[1;34mINFO[m] Building jar: /private/tmp/pr131-requalification/projects/mvc-probe/mvc-probe-service/target/mvc-probe-service-1.0.0-SNAPSHOT.jar
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mspring-boot-maven-plugin:3.5.16:repackage[m [1m(repackage)[m @ [36mmvc-probe-service[0;1m ---[m
 [[1;34mINFO[m] 
@@ -109,7 +109,7 @@
 [[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mmaven-clean-plugin:3.4.1:clean[m [1m(default-clean)[m @ [36mmvc-probe-server[0;1m ---[m
-[[1;34mINFO[m] Deleting /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe/mvc-probe-server/target
+[[1;34mINFO[m] Deleting /private/tmp/pr131-requalification/projects/mvc-probe/mvc-probe-server/target
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mmaven-enforcer-plugin:3.5.0:enforce[m [1m(enforce-platform)[m @ [36mmvc-probe-server[0;1m ---[m
 [[1;34mINFO[m] Rule 2: org.apache.maven.enforcer.rules.dependency.DependencyConvergence passed
@@ -134,25 +134,25 @@
 [[1;34mINFO[m] Tests are skipped.
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mmaven-jar-plugin:3.4.2:jar[m [1m(default-jar)[m @ [36mmvc-probe-server[0;1m ---[m
-[[1;34mINFO[m] Building jar: /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe/mvc-probe-server/target/mvc-probe-server-1.0.0-SNAPSHOT.jar
+[[1;34mINFO[m] Building jar: /private/tmp/pr131-requalification/projects/mvc-probe/mvc-probe-server/target/mvc-probe-server-1.0.0-SNAPSHOT.jar
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mspring-boot-maven-plugin:3.5.16:repackage[m [1m(repackage)[m @ [36mmvc-probe-server[0;1m ---[m
-[[1;34mINFO[m] Replacing main artifact /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe/mvc-probe-server/target/mvc-probe-server-1.0.0-SNAPSHOT.jar with repackaged archive, adding nested dependencies in BOOT-INF/.
-[[1;34mINFO[m] The original artifact has been renamed to /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe/mvc-probe-server/target/mvc-probe-server-1.0.0-SNAPSHOT.jar.original
+[[1;34mINFO[m] Replacing main artifact /private/tmp/pr131-requalification/projects/mvc-probe/mvc-probe-server/target/mvc-probe-server-1.0.0-SNAPSHOT.jar with repackaged archive, adding nested dependencies in BOOT-INF/.
+[[1;34mINFO[m] The original artifact has been renamed to /private/tmp/pr131-requalification/projects/mvc-probe/mvc-probe-server/target/mvc-probe-server-1.0.0-SNAPSHOT.jar.original
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mspring-boot-maven-plugin:3.5.16:repackage[m [1m(default)[m @ [36mmvc-probe-server[0;1m ---[m
-[[1;34mINFO[m] Replacing main artifact /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe/mvc-probe-server/target/mvc-probe-server-1.0.0-SNAPSHOT.jar with repackaged archive, adding nested dependencies in BOOT-INF/.
-[[1;34mINFO[m] The original artifact has been renamed to /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe/mvc-probe-server/target/mvc-probe-server-1.0.0-SNAPSHOT.jar.original
+[[1;34mINFO[m] Replacing main artifact /private/tmp/pr131-requalification/projects/mvc-probe/mvc-probe-server/target/mvc-probe-server-1.0.0-SNAPSHOT.jar with repackaged archive, adding nested dependencies in BOOT-INF/.
+[[1;34mINFO[m] The original artifact has been renamed to /private/tmp/pr131-requalification/projects/mvc-probe/mvc-probe-server/target/mvc-probe-server-1.0.0-SNAPSHOT.jar.original
 [[1;34mINFO[m] [1m------------------------------------------------------------------------[m
 [[1;34mINFO[m] [1mReactor Summary for mvc-probe 1.0.0-SNAPSHOT:[m
 [[1;34mINFO[m] 
-[[1;34mINFO[m] mvc-probe .......................................... [1;32mSUCCESS[m [  0.136 s]
-[[1;34mINFO[m] mvc-probe-repository ............................... [1;32mSUCCESS[m [  0.566 s]
-[[1;34mINFO[m] mvc-probe-service .................................. [1;32mSUCCESS[m [  0.196 s]
-[[1;34mINFO[m] mvc-probe-server ................................... [1;32mSUCCESS[m [  2.048 s]
+[[1;34mINFO[m] mvc-probe .......................................... [1;32mSUCCESS[m [  0.231 s]
+[[1;34mINFO[m] mvc-probe-repository ............................... [1;32mSUCCESS[m [  0.726 s]
+[[1;34mINFO[m] mvc-probe-service .................................. [1;32mSUCCESS[m [  0.199 s]
+[[1;34mINFO[m] mvc-probe-server ................................... [1;32mSUCCESS[m [  1.757 s]
 [[1;34mINFO[m] [1m------------------------------------------------------------------------[m
 [[1;34mINFO[m] [1;32mBUILD SUCCESS[m
 [[1;34mINFO[m] [1m------------------------------------------------------------------------[m
-[[1;34mINFO[m] Total time:  3.047 s
-[[1;34mINFO[m] Finished at: 2026-10-13T02:42:06+08:00
+[[1;34mINFO[m] Total time:  3.075 s
+[[1;34mINFO[m] Finished at: 2026-10-30T11:23:31+08:00
 [[1;34mINFO[m] [1m------------------------------------------------------------------------[m

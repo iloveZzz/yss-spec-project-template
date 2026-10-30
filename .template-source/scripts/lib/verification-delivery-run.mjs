@@ -34,7 +34,7 @@ export function compileDeliveryPreparationTasks(plan,{root,reportDir}={}) {
   tasks.push({id:'check.cli-artifact-consumers',task_id:'check.cli-artifact-consumers',group:'artifact-preparation',kind:'artifact-consumers',gate_ids:['check.verification-distribution'],depends_on:families.map(family=>`check.cli-artifact-${family}`),command:command('prepare-consumers'),receipt_file:receiptFile});
   for(const task of plan.commands||[]){
     if(task.command.includes('tests/cli-retirement.test.mjs')||['legacy.001','legacy.010'].includes(task.task_id))task.depends_on=[...new Set([...(task.depends_on||[]),'check.cli-artifact-consumers'])];
-    if(/(?:verify-cli-upgrade|verify-(?:delivery-harness|strategic-handoff)-distribution)\.mjs|runtime-store-distribution\.test\.mjs/.test(task.command))task.depends_on=[...new Set([...(task.depends_on||[]),'check.cli-artifact-consumers'])];
+    if(/verify-(?:delivery-harness|strategic-handoff)-distribution\.mjs|runtime-store-distribution\.test\.mjs/.test(task.command))task.depends_on=[...new Set([...(task.depends_on||[]),'check.cli-artifact-consumers'])];
   }
   const cleanupTask={id:'check.verification-artifact-cleanup',task_id:'check.verification-artifact-cleanup',group:'cleanup',kind:'cleanup',gate_ids:['check.verification-final-integrity'],depends_on:[],command:command('cleanup')};
   return {tasks,cleanupTask,receiptFile,artifactDirectory,families:[...families]};

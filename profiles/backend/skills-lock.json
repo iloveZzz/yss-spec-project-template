@@ -572,7 +572,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-research/SKILL.md",
-        "effectiveHash": "8da7e53ded435d3b1ada2f1e9a39f9ab7526cf0f179fdc3de867b7b265243dc2",
+        "effectiveHash": "303f6e6e903c425c063cd63ece4b7ec001589bb285dc83682d55567804e9bb2a",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"

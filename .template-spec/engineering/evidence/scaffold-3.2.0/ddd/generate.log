@@ -1,6 +1,6 @@
 🚀 开始生成项目: ddd-probe
 📦 基础包名: com.yss.referenceprobe
-📁 输出目录: /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6
+📁 输出目录: /private/tmp/pr131-requalification/projects
 
 📁 创建项目目录结构...
   ✓ ddd-probe-domain
@@ -64,11 +64,24 @@
   ✓ README.md
 
 ✅ 工程文件生成完成，等待受控 Maven 验证
-📂 项目位置: /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe
+📂 项目位置: /private/tmp/pr131-requalification/projects/ddd-probe
 
 🎯 下一步:
-  cd /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe
+  cd /private/tmp/pr131-requalification/projects/ddd-probe
   ./mvnw validate
   ./mvnw test
   ./mvnw package
   ./mvnw spring-boot:run -pl ddd-probe-bootstrap
+[开始] /private/tmp/pr131-requalification/projects/ddd-probe/mvnw validate --settings /Users/zhudaoming/.m2/settings.xml
+[完成] /private/tmp/pr131-requalification/projects/ddd-probe/mvnw (6594ms, exit=0)
+[开始] /private/tmp/pr131-requalification/projects/ddd-probe/mvnw test --settings /Users/zhudaoming/.m2/settings.xml
+[完成] /private/tmp/pr131-requalification/projects/ddd-probe/mvnw (5432ms, exit=0)
+[开始] /private/tmp/pr131-requalification/projects/ddd-probe/mvnw package --settings /Users/zhudaoming/.m2/settings.xml
+[完成] /private/tmp/pr131-requalification/projects/ddd-probe/mvnw (5487ms, exit=0)
+[开始] /private/tmp/pr131-requalification/projects/ddd-probe/examples/reference/mvnw validate --settings /Users/zhudaoming/.m2/settings.xml
+[完成] /private/tmp/pr131-requalification/projects/ddd-probe/examples/reference/mvnw (5053ms, exit=0)
+[开始] /private/tmp/pr131-requalification/projects/ddd-probe/examples/reference/mvnw test --settings /Users/zhudaoming/.m2/settings.xml
+[完成] /private/tmp/pr131-requalification/projects/ddd-probe/examples/reference/mvnw (7317ms, exit=0)
+[开始] /private/tmp/pr131-requalification/projects/ddd-probe/examples/reference/mvnw package --settings /Users/zhudaoming/.m2/settings.xml
+[完成] /private/tmp/pr131-requalification/projects/ddd-probe/examples/reference/mvnw (7291ms, exit=0)
+✅ 脚手架生成与验证完成: /private/tmp/pr131-requalification/projects/ddd-probe

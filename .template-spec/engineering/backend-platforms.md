@@ -127,3 +127,7 @@ Surefire XML 中，空测试、跳过或旧报告不可通过。没有凭据、�
 精确配方按实际 Parent 声明使用 SnakeYAML 2.5，覆盖 Boot BOM 的默认 2.4；不改变 Boot/JDK/YSS 版本。打包检查依据真实 starter 清单中的 `Spring-Boot-Jar-Type: dependencies-starter` 识别 Boot 省略的空 starter，其他运行 JAR 继续核验。DDD 启动探测使用现有 `/actuator/health` 并要求 HTTP 200/UP，通用 MVC 空工程要求未声明根路由返回 404。已知异常组件对未定义静态资源返回 500 的行为保留记录，不属于本次参考接口认证；未修改或发布组件。
 
 源码证据逐字节核对远端 POM、sources JAR 与本地组件源码，再以隔离 Git tree 保存源归档/POM 的内容身份，不冒充上游提交。来源状态为 working-tree；正式固定提交及发布资格另行闭合。未认证缓存、Excel、生产数据库、其他平台或组件全部 API。真实报告与日志位于 `evidence/scaffold-3.2.0/{ddd,mvc}/`。
+
+2026-10-30 因生成器字节变化重新认证上述两个架构：使用当前生成器重新生成空工程及独立参考工程，真实执行 validate/test/package、平台与参考集成测试、依赖和打包检查、启动与六项 HTTP 请求。`qualification.json` 和日志已更新；报告保留 `standalone-generation` / `unverified` 作为原始生成路径事实，维护认证由补充检查结果与 `qualification_origin` 说明。`artifact-binding-check.json` 核对实际使用的 POM/JAR、参考工程内嵌 JAR、已登记私服的唯一 SNAPSHOT 元数据及保留的原始构件字节。构件绑定和能力范围不变；未重新解析远端版本或重新认证上游源码，也不授予产品生命周期批准。
+
+参考工程的大型依赖报告以 gzip 保存，`evidence_artifacts` 同时登记压缩字节摘要与 `uncompressed_digest`；解压后与原始运行报告逐字节一致。

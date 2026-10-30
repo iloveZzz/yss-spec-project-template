@@ -24,38 +24,38 @@
 [[1;34mINFO[m] [1m--------------------------------[ pom ]---------------------------------[m
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mmaven-dependency-plugin:3.8.1:tree[m [1m(default-cli)[m @ [36mmvc-probe[0;1m ---[m
-[[1;34mINFO[m] Wrote dependency tree to: /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe/.yss/platform-dependencies.json
+[[1;34mINFO[m] Wrote dependency tree to: /private/tmp/pr131-requalification/projects/mvc-probe/.yss/platform-dependencies.json
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m----------------< [0;36mcom.yss.example:mvc-probe-repository[0;1m >----------------[m
 [[1;34mINFO[m] [1mBuilding mvc-probe-repository 1.0.0-SNAPSHOT                       [2/4][m
 [[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mmaven-dependency-plugin:3.8.1:tree[m [1m(default-cli)[m @ [36mmvc-probe-repository[0;1m ---[m
-[[1;34mINFO[m] Wrote dependency tree to: /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe/mvc-probe-repository/.yss/platform-dependencies.json
+[[1;34mINFO[m] Wrote dependency tree to: /private/tmp/pr131-requalification/projects/mvc-probe/mvc-probe-repository/.yss/platform-dependencies.json
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m-----------------< [0;36mcom.yss.example:mvc-probe-service[0;1m >------------------[m
 [[1;34mINFO[m] [1mBuilding mvc-probe-service 1.0.0-SNAPSHOT                          [3/4][m
 [[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mmaven-dependency-plugin:3.8.1:tree[m [1m(default-cli)[m @ [36mmvc-probe-service[0;1m ---[m
-[[1;34mINFO[m] Wrote dependency tree to: /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe/mvc-probe-service/.yss/platform-dependencies.json
+[[1;34mINFO[m] Wrote dependency tree to: /private/tmp/pr131-requalification/projects/mvc-probe/mvc-probe-service/.yss/platform-dependencies.json
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m------------------< [0;36mcom.yss.example:mvc-probe-server[0;1m >------------------[m
 [[1;34mINFO[m] [1mBuilding mvc-probe-server 1.0.0-SNAPSHOT                           [4/4][m
 [[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mmaven-dependency-plugin:3.8.1:tree[m [1m(default-cli)[m @ [36mmvc-probe-server[0;1m ---[m
-[[1;34mINFO[m] Wrote dependency tree to: /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe/mvc-probe-server/.yss/platform-dependencies.json
+[[1;34mINFO[m] Wrote dependency tree to: /private/tmp/pr131-requalification/projects/mvc-probe/mvc-probe-server/.yss/platform-dependencies.json
 [[1;34mINFO[m] [1m------------------------------------------------------------------------[m
 [[1;34mINFO[m] [1mReactor Summary for mvc-probe 1.0.0-SNAPSHOT:[m
 [[1;34mINFO[m] 
-[[1;34mINFO[m] mvc-probe .......................................... [1;32mSUCCESS[m [  0.355 s]
-[[1;34mINFO[m] mvc-probe-repository ............................... [1;32mSUCCESS[m [  0.096 s]
-[[1;34mINFO[m] mvc-probe-service .................................. [1;32mSUCCESS[m [  0.021 s]
-[[1;34mINFO[m] mvc-probe-server ................................... [1;32mSUCCESS[m [  0.032 s]
+[[1;34mINFO[m] mvc-probe .......................................... [1;32mSUCCESS[m [  0.494 s]
+[[1;34mINFO[m] mvc-probe-repository ............................... [1;32mSUCCESS[m [  0.184 s]
+[[1;34mINFO[m] mvc-probe-service .................................. [1;32mSUCCESS[m [  0.016 s]
+[[1;34mINFO[m] mvc-probe-server ................................... [1;32mSUCCESS[m [  0.048 s]
 [[1;34mINFO[m] [1m------------------------------------------------------------------------[m
 [[1;34mINFO[m] [1;32mBUILD SUCCESS[m
 [[1;34mINFO[m] [1m------------------------------------------------------------------------[m
-[[1;34mINFO[m] Total time:  0.627 s
-[[1;34mINFO[m] Finished at: 2026-10-13T02:42:01+08:00
+[[1;34mINFO[m] Total time:  0.889 s
+[[1;34mINFO[m] Finished at: 2026-10-30T11:23:23+08:00
 [[1;34mINFO[m] [1m------------------------------------------------------------------------[m

@@ -40,14 +40,14 @@
 [[1;34mINFO[m] Rule 2: org.apache.maven.enforcer.rules.dependency.DependencyConvergence passed
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:resources[m [1m(default-resources)[m @ [36mmvc-probe-repository[0;1m ---[m
-[[1;34mINFO[m] skip non existing resourceDirectory /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe/mvc-probe-repository/src/main/resources
-[[1;34mINFO[m] skip non existing resourceDirectory /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe/mvc-probe-repository/src/main/resources
+[[1;34mINFO[m] skip non existing resourceDirectory /private/tmp/pr131-requalification/projects/mvc-probe/mvc-probe-repository/src/main/resources
+[[1;34mINFO[m] skip non existing resourceDirectory /private/tmp/pr131-requalification/projects/mvc-probe/mvc-probe-repository/src/main/resources
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.14.1:compile[m [1m(default-compile)[m @ [36mmvc-probe-repository[0;1m ---[m
 [[1;34mINFO[m] Nothing to compile - all classes are up to date.
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:testResources[m [1m(default-testResources)[m @ [36mmvc-probe-repository[0;1m ---[m
-[[1;34mINFO[m] skip non existing resourceDirectory /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe/mvc-probe-repository/src/test/resources
+[[1;34mINFO[m] skip non existing resourceDirectory /private/tmp/pr131-requalification/projects/mvc-probe/mvc-probe-repository/src/test/resources
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.14.1:testCompile[m [1m(default-testCompile)[m @ [36mmvc-probe-repository[0;1m ---[m
 [[1;34mINFO[m] No sources to compile
@@ -56,7 +56,7 @@
 [[1;34mINFO[m] No tests to run.
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mmaven-jar-plugin:3.4.2:jar[m [1m(default-jar)[m @ [36mmvc-probe-repository[0;1m ---[m
-[[1;34mINFO[m] Building jar: /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe/mvc-probe-repository/target/mvc-probe-repository-1.0.0-SNAPSHOT.jar
+[[1;34mINFO[m] Building jar: /private/tmp/pr131-requalification/projects/mvc-probe/mvc-probe-repository/target/mvc-probe-repository-1.0.0-SNAPSHOT.jar
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mspring-boot-maven-plugin:3.5.16:repackage[m [1m(repackage)[m @ [36mmvc-probe-repository[0;1m ---[m
 [[1;34mINFO[m] 
@@ -70,8 +70,8 @@
 [[1;34mINFO[m] Rule 2: org.apache.maven.enforcer.rules.dependency.DependencyConvergence passed
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:resources[m [1m(default-resources)[m @ [36mmvc-probe-service[0;1m ---[m
-[[1;34mINFO[m] skip non existing resourceDirectory /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe/mvc-probe-service/src/main/resources
-[[1;34mINFO[m] skip non existing resourceDirectory /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe/mvc-probe-service/src/main/resources
+[[1;34mINFO[m] skip non existing resourceDirectory /private/tmp/pr131-requalification/projects/mvc-probe/mvc-probe-service/src/main/resources
+[[1;34mINFO[m] skip non existing resourceDirectory /private/tmp/pr131-requalification/projects/mvc-probe/mvc-probe-service/src/main/resources
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.14.1:compile[m [1m(default-compile)[m @ [36mmvc-probe-service[0;1m ---[m
 [[1;34mINFO[m] Recompiling the module because of [1mchanged dependency[m.
@@ -79,7 +79,7 @@
 [[1;33mWARNING[m] 以下选项未被任何处理程序识别: '[mapstruct.verbose, mapstruct.suppressGeneratorVersionInfoComment, mapstruct.suppressGeneratorTimestamp]'
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:testResources[m [1m(default-testResources)[m @ [36mmvc-probe-service[0;1m ---[m
-[[1;34mINFO[m] skip non existing resourceDirectory /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe/mvc-probe-service/src/test/resources
+[[1;34mINFO[m] skip non existing resourceDirectory /private/tmp/pr131-requalification/projects/mvc-probe/mvc-probe-service/src/test/resources
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.14.1:testCompile[m [1m(default-testCompile)[m @ [36mmvc-probe-service[0;1m ---[m
 [[1;34mINFO[m] No sources to compile
@@ -88,7 +88,7 @@
 [[1;34mINFO[m] No tests to run.
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mmaven-jar-plugin:3.4.2:jar[m [1m(default-jar)[m @ [36mmvc-probe-service[0;1m ---[m
-[[1;34mINFO[m] Building jar: /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe/mvc-probe-service/target/mvc-probe-service-1.0.0-SNAPSHOT.jar
+[[1;34mINFO[m] Building jar: /private/tmp/pr131-requalification/projects/mvc-probe/mvc-probe-service/target/mvc-probe-service-1.0.0-SNAPSHOT.jar
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mspring-boot-maven-plugin:3.5.16:repackage[m [1m(repackage)[m @ [36mmvc-probe-service[0;1m ---[m
 [[1;34mINFO[m] 
@@ -124,8 +124,8 @@
 [[1;34mINFO[m]  T E S T S
 [[1;34mINFO[m] -------------------------------------------------------
 [[1;34mINFO[m] Running com.yss.referenceprobe.[1mPlatformIntegrationTest[m
-02:41:38.213 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.yss.referenceprobe.PlatformIntegrationTest]: PlatformIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
-02:41:38.255 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.yss.referenceprobe.MvcProbeApplication for test class com.yss.referenceprobe.PlatformIntegrationTest
+11:21:12.996 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.yss.referenceprobe.PlatformIntegrationTest]: PlatformIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+11:21:13.043 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.yss.referenceprobe.MvcProbeApplication for test class com.yss.referenceprobe.PlatformIntegrationTest
 
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -136,39 +136,39 @@
 
  :: Spring Boot ::               (v3.5.16)
 
-2026-10-13T02:41:38.421+08:00  INFO 3643 --- [mvc-probe] [           main] c.y.r.PlatformIntegrationTest            : Starting PlatformIntegrationTest using Java 17.0.16 with PID 3643 (started by zhudaoming in /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe/mvc-probe-server)
-2026-10-13T02:41:38.421+08:00  INFO 3643 --- [mvc-probe] [           main] c.y.r.PlatformIntegrationTest            : The following 1 profile is active: "scaffold-test"
-2026-10-13T02:41:38.628+08:00  INFO 3643 --- [mvc-probe] [           main] c.y.c.m.config.MapperConfiguration       : 【MapperConfiguration】mapperScannerConfigurer 初始化mapper扫描 com.yss.cloud.**.mapper
-2026-10-13T02:41:38.631+08:00  WARN 3643 --- [mvc-probe] [           main] o.m.s.mapper.ClassPathMapperScanner      : No MyBatis mapper was found in '[com.yss.cloud.**.mapper]' package. Please check your configuration.
-2026-10-13T02:41:38.771+08:00  INFO 3643 --- [mvc-probe] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 0 (http)
-2026-10-13T02:41:38.778+08:00  INFO 3643 --- [mvc-probe] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-10-13T02:41:38.778+08:00  INFO 3643 --- [mvc-probe] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.55]
-2026-10-13T02:41:38.801+08:00  INFO 3643 --- [mvc-probe] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
-2026-10-13T02:41:38.801+08:00  INFO 3643 --- [mvc-probe] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 376 ms
-2026-10-13T02:41:38.944+08:00  INFO 3643 --- [mvc-probe] [           main] c.y.c.m.config.MapperConfiguration       : 【MapperConfiguration】PageInterceptor 完成初始化分页插件 PageInterceptor{helperDialect='mysql', reasonable=true, supportMethodsArguments=true, params='count=countSql', autoRuntimeDialect=true}
-2026-10-13T02:41:38.947+08:00  INFO 3643 --- [mvc-probe] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
-2026-10-13T02:41:39.012+08:00  INFO 3643 --- [mvc-probe] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:mvc_probe_test user=SA
-2026-10-13T02:41:39.012+08:00  INFO 3643 --- [mvc-probe] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
-2026-10-13T02:41:39.015+08:00  INFO 3643 --- [mvc-probe] [           main] c.y.c.m.config.MapperConfiguration       : 【MapperConfiguration】根据 JDBC URL 识别 DbType: H2
-2026-10-13T02:41:39.018+08:00  INFO 3643 --- [mvc-probe] [           main] c.y.c.m.config.MapperConfiguration       : 【MapperConfiguration】根据 JDBC URL 识别 DbType: H2
-2026-10-13T02:41:39.024+08:00  INFO 3643 --- [mvc-probe] [           main] c.y.c.m.config.MapperConfiguration       : 【MapperConfiguration】根据 JDBC URL 识别 DbType: H2
+2026-10-30T11:21:13.223+08:00  INFO 34622 --- [mvc-probe] [           main] c.y.r.PlatformIntegrationTest            : Starting PlatformIntegrationTest using Java 17.0.16 with PID 34622 (started by zhudaoming in /private/tmp/pr131-requalification/projects/mvc-probe/mvc-probe-server)
+2026-10-30T11:21:13.224+08:00  INFO 34622 --- [mvc-probe] [           main] c.y.r.PlatformIntegrationTest            : The following 1 profile is active: "scaffold-test"
+2026-10-30T11:21:13.466+08:00  INFO 34622 --- [mvc-probe] [           main] c.y.c.m.config.MapperConfiguration       : 【MapperConfiguration】mapperScannerConfigurer 初始化mapper扫描 com.yss.cloud.**.mapper
+2026-10-30T11:21:13.470+08:00  WARN 34622 --- [mvc-probe] [           main] o.m.s.mapper.ClassPathMapperScanner      : No MyBatis mapper was found in '[com.yss.cloud.**.mapper]' package. Please check your configuration.
+2026-10-30T11:21:13.629+08:00  INFO 34622 --- [mvc-probe] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 0 (http)
+2026-10-30T11:21:13.635+08:00  INFO 34622 --- [mvc-probe] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-30T11:21:13.635+08:00  INFO 34622 --- [mvc-probe] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.55]
+2026-10-30T11:21:13.663+08:00  INFO 34622 --- [mvc-probe] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-10-30T11:21:13.663+08:00  INFO 34622 --- [mvc-probe] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 434 ms
+2026-10-30T11:21:13.819+08:00  INFO 34622 --- [mvc-probe] [           main] c.y.c.m.config.MapperConfiguration       : 【MapperConfiguration】PageInterceptor 完成初始化分页插件 PageInterceptor{helperDialect='mysql', reasonable=true, supportMethodsArguments=true, params='count=countSql', autoRuntimeDialect=true}
+2026-10-30T11:21:13.822+08:00  INFO 34622 --- [mvc-probe] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-10-30T11:21:13.895+08:00  INFO 34622 --- [mvc-probe] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:mvc_probe_test user=SA
+2026-10-30T11:21:13.896+08:00  INFO 34622 --- [mvc-probe] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-10-30T11:21:13.899+08:00  INFO 34622 --- [mvc-probe] [           main] c.y.c.m.config.MapperConfiguration       : 【MapperConfiguration】根据 JDBC URL 识别 DbType: H2
+2026-10-30T11:21:13.904+08:00  INFO 34622 --- [mvc-probe] [           main] c.y.c.m.config.MapperConfiguration       : 【MapperConfiguration】根据 JDBC URL 识别 DbType: H2
+2026-10-30T11:21:13.911+08:00  INFO 34622 --- [mvc-probe] [           main] c.y.c.m.config.MapperConfiguration       : 【MapperConfiguration】根据 JDBC URL 识别 DbType: H2
  _ _   |_  _ _|_. ___ _ |    _ 
 | | |\/|_)(_| | |_\  |_)||_|_\ 
      /               |         
                         3.5.16 
-2026-10-13T02:41:39.060+08:00  INFO 3643 --- [mvc-probe] [           main] m.e.s.MybatisPlusApplicationContextAware : Register ApplicationContext instances org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext@64030b91
-2026-10-13T02:41:39.150+08:00  INFO 3643 --- [mvc-probe] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 58484 (http) with context path '/'
-2026-10-13T02:41:39.155+08:00  INFO 3643 --- [mvc-probe] [           main] c.y.r.PlatformIntegrationTest            : Started PlatformIntegrationTest in 0.854 seconds (process running for 1.22)
-2026-10-13T02:41:39.534+08:00  WARN 3643 --- [mvc-probe] [           main] jakarta.persistence.spi                  : jakarta.persistence.spi::No valid providers found.
-2026-10-13T02:41:39.576+08:00  INFO 3643 --- [mvc-probe] [o-auto-1-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
-2026-10-13T02:41:39.576+08:00  INFO 3643 --- [mvc-probe] [o-auto-1-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
-2026-10-13T02:41:39.577+08:00  INFO 3643 --- [mvc-probe] [o-auto-1-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
-2026-10-13T02:41:39.601+08:00  WARN 3643 --- [mvc-probe] [o-auto-1-exec-1] jakarta.persistence.spi                  : jakarta.persistence.spi::No valid providers found.
-2026-10-13T02:41:39.614+08:00  WARN 3643 --- [mvc-probe] [o-auto-1-exec-2] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.bind.MethodArgumentNotValidException: Validation failed for argument [0] in public com.yss.referenceprobe.PlatformIntegrationTest$ProbePayload com.yss.referenceprobe.PlatformIntegrationTest$ProbeController.echo(com.yss.referenceprobe.PlatformIntegrationTest$ProbePayload): [Field error in object 'probePayload' on field 'value': rejected value []; codes [NotBlank.probePayload.value,NotBlank.value,NotBlank.java.lang.String,NotBlank]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [probePayload.value,value]; arguments []; default message [value]]; default message [不能为空]] ]
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m6[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.458 s -- in com.yss.referenceprobe.[1mPlatformIntegrationTest[m
+2026-10-30T11:21:13.955+08:00  INFO 34622 --- [mvc-probe] [           main] m.e.s.MybatisPlusApplicationContextAware : Register ApplicationContext instances org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext@64030b91
+2026-10-30T11:21:14.064+08:00  INFO 34622 --- [mvc-probe] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 56121 (http) with context path '/'
+2026-10-30T11:21:14.070+08:00  INFO 34622 --- [mvc-probe] [           main] c.y.r.PlatformIntegrationTest            : Started PlatformIntegrationTest in 0.98 seconds (process running for 1.384)
+2026-10-30T11:21:14.438+08:00  WARN 34622 --- [mvc-probe] [           main] jakarta.persistence.spi                  : jakarta.persistence.spi::No valid providers found.
+2026-10-30T11:21:14.480+08:00  INFO 34622 --- [mvc-probe] [o-auto-1-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-10-30T11:21:14.480+08:00  INFO 34622 --- [mvc-probe] [o-auto-1-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-10-30T11:21:14.481+08:00  INFO 34622 --- [mvc-probe] [o-auto-1-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2026-10-30T11:21:14.505+08:00  WARN 34622 --- [mvc-probe] [o-auto-1-exec-1] jakarta.persistence.spi                  : jakarta.persistence.spi::No valid providers found.
+2026-10-30T11:21:14.520+08:00  WARN 34622 --- [mvc-probe] [o-auto-1-exec-2] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.bind.MethodArgumentNotValidException: Validation failed for argument [0] in public com.yss.referenceprobe.PlatformIntegrationTest$ProbePayload com.yss.referenceprobe.PlatformIntegrationTest$ProbeController.echo(com.yss.referenceprobe.PlatformIntegrationTest$ProbePayload): [Field error in object 'probePayload' on field 'value': rejected value []; codes [NotBlank.probePayload.value,NotBlank.value,NotBlank.java.lang.String,NotBlank]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [probePayload.value,value]; arguments []; default message [value]]; default message [不能为空]] ]
+[[1;34mINFO[m] [1;32mTests run: [0;1;32m6[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.583 s -- in com.yss.referenceprobe.[1mPlatformIntegrationTest[m
 [[1;34mINFO[m] Running com.yss.referenceprobe.[1mMvcProbeApplicationTest[m
-2026-10-13T02:41:39.637+08:00  INFO 3643 --- [mvc-probe] [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.yss.referenceprobe.MvcProbeApplicationTest]: MvcProbeApplicationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
-2026-10-13T02:41:39.638+08:00  INFO 3643 --- [mvc-probe] [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.yss.referenceprobe.MvcProbeApplication for test class com.yss.referenceprobe.MvcProbeApplicationTest
+2026-10-30T11:21:14.542+08:00  INFO 34622 --- [mvc-probe] [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.yss.referenceprobe.MvcProbeApplicationTest]: MvcProbeApplicationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-10-30T11:21:14.543+08:00  INFO 34622 --- [mvc-probe] [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.yss.referenceprobe.MvcProbeApplication for test class com.yss.referenceprobe.MvcProbeApplicationTest
 
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -179,27 +179,27 @@
 
  :: Spring Boot ::               (v3.5.16)
 
-2026-10-13T02:41:39.650+08:00  INFO 3643 --- [mvc-probe] [           main] c.y.r.MvcProbeApplicationTest            : Starting MvcProbeApplicationTest using Java 17.0.16 with PID 3643 (started by zhudaoming in /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe/mvc-probe-server)
-2026-10-13T02:41:39.650+08:00  INFO 3643 --- [mvc-probe] [           main] c.y.r.MvcProbeApplicationTest            : The following 1 profile is active: "scaffold-test"
-2026-10-13T02:41:39.708+08:00  INFO 3643 --- [mvc-probe] [           main] c.y.c.m.config.MapperConfiguration       : 【MapperConfiguration】mapperScannerConfigurer 初始化mapper扫描 com.yss.cloud.**.mapper
-2026-10-13T02:41:39.709+08:00  WARN 3643 --- [mvc-probe] [           main] o.m.s.mapper.ClassPathMapperScanner      : No MyBatis mapper was found in '[com.yss.cloud.**.mapper]' package. Please check your configuration.
-2026-10-13T02:41:39.753+08:00  INFO 3643 --- [mvc-probe] [           main] c.y.c.m.config.MapperConfiguration       : 【MapperConfiguration】PageInterceptor 完成初始化分页插件 PageInterceptor{helperDialect='mysql', reasonable=true, supportMethodsArguments=true, params='count=countSql', autoRuntimeDialect=true}
-2026-10-13T02:41:39.753+08:00  INFO 3643 --- [mvc-probe] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Starting...
-2026-10-13T02:41:39.754+08:00  INFO 3643 --- [mvc-probe] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-2 - Added connection conn10: url=jdbc:h2:mem:mvc_probe_test user=SA
-2026-10-13T02:41:39.754+08:00  INFO 3643 --- [mvc-probe] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Start completed.
-2026-10-13T02:41:39.754+08:00  INFO 3643 --- [mvc-probe] [           main] c.y.c.m.config.MapperConfiguration       : 【MapperConfiguration】根据 JDBC URL 识别 DbType: H2
-2026-10-13T02:41:39.756+08:00  INFO 3643 --- [mvc-probe] [           main] c.y.c.m.config.MapperConfiguration       : 【MapperConfiguration】根据 JDBC URL 识别 DbType: H2
-2026-10-13T02:41:39.758+08:00  INFO 3643 --- [mvc-probe] [           main] c.y.c.m.config.MapperConfiguration       : 【MapperConfiguration】根据 JDBC URL 识别 DbType: H2
+2026-10-30T11:21:14.554+08:00  INFO 34622 --- [mvc-probe] [           main] c.y.r.MvcProbeApplicationTest            : Starting MvcProbeApplicationTest using Java 17.0.16 with PID 34622 (started by zhudaoming in /private/tmp/pr131-requalification/projects/mvc-probe/mvc-probe-server)
+2026-10-30T11:21:14.554+08:00  INFO 34622 --- [mvc-probe] [           main] c.y.r.MvcProbeApplicationTest            : The following 1 profile is active: "scaffold-test"
+2026-10-30T11:21:14.610+08:00  INFO 34622 --- [mvc-probe] [           main] c.y.c.m.config.MapperConfiguration       : 【MapperConfiguration】mapperScannerConfigurer 初始化mapper扫描 com.yss.cloud.**.mapper
+2026-10-30T11:21:14.610+08:00  WARN 34622 --- [mvc-probe] [           main] o.m.s.mapper.ClassPathMapperScanner      : No MyBatis mapper was found in '[com.yss.cloud.**.mapper]' package. Please check your configuration.
+2026-10-30T11:21:14.667+08:00  INFO 34622 --- [mvc-probe] [           main] c.y.c.m.config.MapperConfiguration       : 【MapperConfiguration】PageInterceptor 完成初始化分页插件 PageInterceptor{helperDialect='mysql', reasonable=true, supportMethodsArguments=true, params='count=countSql', autoRuntimeDialect=true}
+2026-10-30T11:21:14.668+08:00  INFO 34622 --- [mvc-probe] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Starting...
+2026-10-30T11:21:14.668+08:00  INFO 34622 --- [mvc-probe] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-2 - Added connection conn10: url=jdbc:h2:mem:mvc_probe_test user=SA
+2026-10-30T11:21:14.668+08:00  INFO 34622 --- [mvc-probe] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Start completed.
+2026-10-30T11:21:14.668+08:00  INFO 34622 --- [mvc-probe] [           main] c.y.c.m.config.MapperConfiguration       : 【MapperConfiguration】根据 JDBC URL 识别 DbType: H2
+2026-10-30T11:21:14.669+08:00  INFO 34622 --- [mvc-probe] [           main] c.y.c.m.config.MapperConfiguration       : 【MapperConfiguration】根据 JDBC URL 识别 DbType: H2
+2026-10-30T11:21:14.670+08:00  INFO 34622 --- [mvc-probe] [           main] c.y.c.m.config.MapperConfiguration       : 【MapperConfiguration】根据 JDBC URL 识别 DbType: H2
  _ _   |_  _ _|_. ___ _ |    _ 
 | | |\/|_)(_| | |_\  |_)||_|_\ 
      /               |         
                         3.5.16 
-2026-10-13T02:41:39.766+08:00  INFO 3643 --- [mvc-probe] [           main] m.e.s.MybatisPlusApplicationContextAware : Register ApplicationContext instances org.springframework.web.context.support.GenericWebApplicationContext@6aa792
-2026-10-13T02:41:39.775+08:00  INFO 3643 --- [mvc-probe] [           main] c.y.r.MvcProbeApplicationTest            : Started MvcProbeApplicationTest in 0.135 seconds (process running for 1.84)
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m1[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.143 s -- in com.yss.referenceprobe.[1mMvcProbeApplicationTest[m
+2026-10-30T11:21:14.678+08:00  INFO 34622 --- [mvc-probe] [           main] m.e.s.MybatisPlusApplicationContextAware : Register ApplicationContext instances org.springframework.web.context.support.GenericWebApplicationContext@49f41c2e
+2026-10-30T11:21:14.690+08:00  INFO 34622 --- [mvc-probe] [           main] c.y.r.MvcProbeApplicationTest            : Started MvcProbeApplicationTest in 0.145 seconds (process running for 2.004)
+[[1;34mINFO[m] [1;32mTests run: [0;1;32m1[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.154 s -- in com.yss.referenceprobe.[1mMvcProbeApplicationTest[m
 [[1;34mINFO[m] Running com.yss.referenceprobe.architecture.[1mLayeredMvcArchitectureTest[m
-2026-10-13T02:41:39.784+08:00  INFO 3643 --- [mvc-probe] [           main] com.tngtech.archunit.core.PluginLoader   : Detected Java version 17.0.16
-[[1;34mINFO[m] [1;32mTests run: [0;1;32m1[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.424 s -- in com.yss.referenceprobe.architecture.[1mLayeredMvcArchitectureTest[m
+2026-10-30T11:21:14.702+08:00  INFO 34622 --- [mvc-probe] [           main] com.tngtech.archunit.core.PluginLoader   : Detected Java version 17.0.16
+[[1;34mINFO[m] [1;32mTests run: [0;1;32m1[m, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.442 s -- in com.yss.referenceprobe.architecture.[1mLayeredMvcArchitectureTest[m
 [[1;34mINFO[m] 
 [[1;34mINFO[m] Results:
 [[1;34mINFO[m] 
@@ -207,25 +207,25 @@
 [[1;34mINFO[m] 
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mmaven-jar-plugin:3.4.2:jar[m [1m(default-jar)[m @ [36mmvc-probe-server[0;1m ---[m
-[[1;34mINFO[m] Building jar: /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe/mvc-probe-server/target/mvc-probe-server-1.0.0-SNAPSHOT.jar
+[[1;34mINFO[m] Building jar: /private/tmp/pr131-requalification/projects/mvc-probe/mvc-probe-server/target/mvc-probe-server-1.0.0-SNAPSHOT.jar
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mspring-boot-maven-plugin:3.5.16:repackage[m [1m(repackage)[m @ [36mmvc-probe-server[0;1m ---[m
-[[1;34mINFO[m] Replacing main artifact /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe/mvc-probe-server/target/mvc-probe-server-1.0.0-SNAPSHOT.jar with repackaged archive, adding nested dependencies in BOOT-INF/.
-[[1;34mINFO[m] The original artifact has been renamed to /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe/mvc-probe-server/target/mvc-probe-server-1.0.0-SNAPSHOT.jar.original
+[[1;34mINFO[m] Replacing main artifact /private/tmp/pr131-requalification/projects/mvc-probe/mvc-probe-server/target/mvc-probe-server-1.0.0-SNAPSHOT.jar with repackaged archive, adding nested dependencies in BOOT-INF/.
+[[1;34mINFO[m] The original artifact has been renamed to /private/tmp/pr131-requalification/projects/mvc-probe/mvc-probe-server/target/mvc-probe-server-1.0.0-SNAPSHOT.jar.original
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mspring-boot-maven-plugin:3.5.16:repackage[m [1m(default)[m @ [36mmvc-probe-server[0;1m ---[m
-[[1;34mINFO[m] Replacing main artifact /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe/mvc-probe-server/target/mvc-probe-server-1.0.0-SNAPSHOT.jar with repackaged archive, adding nested dependencies in BOOT-INF/.
-[[1;34mINFO[m] The original artifact has been renamed to /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe/mvc-probe-server/target/mvc-probe-server-1.0.0-SNAPSHOT.jar.original
+[[1;34mINFO[m] Replacing main artifact /private/tmp/pr131-requalification/projects/mvc-probe/mvc-probe-server/target/mvc-probe-server-1.0.0-SNAPSHOT.jar with repackaged archive, adding nested dependencies in BOOT-INF/.
+[[1;34mINFO[m] The original artifact has been renamed to /private/tmp/pr131-requalification/projects/mvc-probe/mvc-probe-server/target/mvc-probe-server-1.0.0-SNAPSHOT.jar.original
 [[1;34mINFO[m] [1m------------------------------------------------------------------------[m
 [[1;34mINFO[m] [1mReactor Summary for mvc-probe 1.0.0-SNAPSHOT:[m
 [[1;34mINFO[m] 
-[[1;34mINFO[m] mvc-probe .......................................... [1;32mSUCCESS[m [  0.211 s]
-[[1;34mINFO[m] mvc-probe-repository ............................... [1;32mSUCCESS[m [  0.346 s]
-[[1;34mINFO[m] mvc-probe-service .................................. [1;32mSUCCESS[m [  0.310 s]
-[[1;34mINFO[m] mvc-probe-server ................................... [1;32mSUCCESS[m [  5.994 s]
+[[1;34mINFO[m] mvc-probe .......................................... [1;32mSUCCESS[m [  0.135 s]
+[[1;34mINFO[m] mvc-probe-repository ............................... [1;32mSUCCESS[m [  0.289 s]
+[[1;34mINFO[m] mvc-probe-service .................................. [1;32mSUCCESS[m [  0.307 s]
+[[1;34mINFO[m] mvc-probe-server ................................... [1;32mSUCCESS[m [  4.094 s]
 [[1;34mINFO[m] [1m------------------------------------------------------------------------[m
 [[1;34mINFO[m] [1;32mBUILD SUCCESS[m
 [[1;34mINFO[m] [1m------------------------------------------------------------------------[m
-[[1;34mINFO[m] Total time:  6.969 s
-[[1;34mINFO[m] Finished at: 2026-10-13T02:41:43+08:00
+[[1;34mINFO[m] Total time:  4.937 s
+[[1;34mINFO[m] Finished at: 2026-10-30T11:21:15+08:00
 [[1;34mINFO[m] [1m------------------------------------------------------------------------[m
