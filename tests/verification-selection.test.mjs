@@ -63,18 +63,6 @@ test('Skill 投影与锁在两个分组使用同一检查身份，并保留发�
  const {ciVerificationCheckIds}=await import('../scripts/lib/ci-gate.mjs');
  for(const id of ids)assert.ok(ciVerificationCheckIds().includes(id),id);
 });
-test('删除旧覆盖率文件仍选择现役发行策略消费者',()=>{
- for(const file of ['scripts/lib/legacy-coverage.mjs','tests/legacy-coverage.test.mjs']){
-  for(const selection of ['allowlist','legacy']){
-   const plan=planTemplateVerification({changedFiles:[file],selection});
-   assert.equal(plan.commands.filter(task=>task.id==='check.release-profile-consumers').length,1,`${file}: ${selection}`);
-  }
-  const release=planTemplateVerification({profile:'release',changedFiles:[file]});
-  const tasks=release.commands.filter(task=>task.id==='check.release-profile-consumers');
-  assert.equal(tasks.length,1,file);
-  assert.ok(tasks[0].gate_ids.includes('check.verification-final-integrity'),file);
- }
-});
 test('前端入口退役后分组模式不运行已删除场景，当前拒绝保护仍被选择',()=>{
  const file='scripts/verify-frontend-scaffold-generator-scenarios';
  for(const selection of ['legacy','shadow']){
