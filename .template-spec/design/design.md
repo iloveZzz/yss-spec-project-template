@@ -2,6 +2,8 @@
 
 > 规范源：仓库根目录 [`DESIGN.md`](../../DESIGN.md)。其中的 YAML frontmatter 和组件变体是视觉令牌的唯一事实来源；本文件只记录 YSS 的中文治理说明、运行时双轨、产品生命周期衔接和验证要求。
 
+已核验 `matt-spec-v1` 的新 Spec 按 `yss-product-lifecycle` 与 `yss-prototype-stage` 根据当前问题和风险选择设计表达与检查。本文件的 H1/H2、六轴 QA、阶段资产及批准要求适用于采用相应历史合同的工作，不作为新 Spec 的通用前提；已有合同仍按原政策核验。
+
 ## 与 DESIGN.md 的职责边界
 
 - `DESIGN.md`：机器可读的颜色、排版、圆角、间距和组件视觉变体规范；使用 Google `design.md` alpha 格式。
@@ -39,7 +41,7 @@
 
 项目覆盖与官方默认的差异直接读取根 `DESIGN.md` 并用 `design-md diff` 核验；本文件不复制差异值。上游预设色板可以保留其自身颜色谱，但**色板预设 ≠ 品牌 seed**。
 
-Codex `$design-qa` 的 Colors/tokens 与 Fonts/typography 对照必须以根 `DESIGN.md` 为 source visual truth，并用 `.template-spec/design/tokens/*` 复核实际投影；不得回退到上游默认或历史品牌值。执行清单见 `.agents/skills/yss-design-system/references/design-qa-theme.md`。
+使用可用且适用的 Codex `$design-qa` 时，Colors/tokens 与 Fonts/typography 对照必须以根 `DESIGN.md` 为 source visual truth，并用 `.template-spec/design/tokens/*` 复核实际投影；不得回退到上游默认或历史品牌值。工具不可用时按实际产物核对根规范、相关投影及可观察的样式和状态，记录未运行的检查；适用历史合同的要求不能据此省略。执行清单见 `.agents/skills/yss-design-system/references/design-qa-theme.md`。
 
 高保真 H1/H2 优先使用 `vue-shadcn-prebuilt`，`react-shadcn-prebuilt` 仅历史只读，轻量局部修改可保留 `html-css-js`；二者以本地 Token CSS 保留 YSS 企业后台视觉语言。React AntD 原型生成路线已退役。生产实现只在目标工程按 lockfile 核验组件 API；原型阶段不调用生产组件库。已有项目中冻结的组件库原型及其事实证据保持只读；模板不再预置 Antdv Next fact pack，也不生成新的 Provider 事实包。
 
@@ -287,11 +289,11 @@ H1/H2 原型使用 HTML/CSS/JavaScript：
 - 主操作是否唯一且清楚，次级操作是否降级。
 - 是否存在硬编码颜色、任意间距、重复自造控件或与系统冲突的交互。
 - 是否覆盖关键响应式断点、实际点击区域及相邻间距；是否验证 Field 错误关联、InputGroup 内层样式、Sheet/Menu 焦点及分页选择一致性。
-- Codex `$design-qa` 是否按项目覆盖对照主色、错误色、背景、文本、圆角和字体栈。
+- 是否按项目覆盖对照主色、错误色、背景、文本、圆角和字体栈；Codex `$design-qa` 可用且适用时可辅助检查，未执行的检查需记录。
 
 ## 当前能力导航与待办
 
-- H1/H2 已默认接入根 `DESIGN.md` 派生的本地 CSS、规范及资源摘要；见设计系统技能 `references/prototype-default-theme.md` 与 `references/shadcn-vue-integration.md`。
+- H1/H2 已默认接入根 `DESIGN.md` 派生的本地 CSS、规范及资源摘要；见设计系统技能 `references/prototype-default-theme.md` 与原型技能 `references/shadcn-vue-integration.md`。
 - 构建、来源摘要及浏览器计算样式检查已有工具；页面仍须执行适用六轴 QA，不能用工具存在代替结果。
 - 主题与组件状态展示入口：`.template-source/design/preview.html`；不是可批准的产品原型。组件及页面配方见原型技能 `references/component-recipes.md`。
 - 暗色快照保留历史参考入口，未完成当前规范验证。未来启用需按当前 seed 重派生并补齐截图、对比度与交互验收，本轮不执行。

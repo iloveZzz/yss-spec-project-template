@@ -2,11 +2,11 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import test from "node:test";
 import { execFileSync } from "node:child_process";
-import { readFileSync, cpSync, mkdtempSync, mkdirSync, readdirSync, writeFileSync, rmSync, unlinkSync } from "node:fs";
+import { readFileSync, cpSync, mkdtempSync, mkdirSync, readdirSync, writeFileSync, rmSync, unlinkSync, chmodSync, realpathSync, symlinkSync } from "node:fs";
 import os from "node:os";
 import { spawnSync } from "node:child_process";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const toolingRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const repositoryRoot = path.resolve(toolingRoot, "../../..");
@@ -52,7 +52,7 @@ function isolated(t) {
   t.after(()=>rmSync(root,{recursive:true,force:true}));
   const ref='.agents/skills/yss-design-system/scripts/design-md.mjs';
   mkdirSync(path.dirname(path.join(root,ref)),{recursive:true});cpSync(command,path.join(root,ref));
-  mkdirSync(path.join(root,'scripts'),{recursive:true});cpSync(path.join(repositoryRoot,'scripts/vendor'),path.join(root,'scripts/vendor'),{recursive:true});
+  cpSync(path.join(repositoryRoot,'.agents/skills/yss-design-system/scripts/vendor'),path.join(root,'.agents/skills/yss-design-system/scripts/vendor'),{recursive:true});
   cpSync(path.join(repositoryRoot,'DESIGN.md'),path.join(root,'DESIGN.md'));
   mkdirSync(path.join(root,'.template-spec/design'),{recursive:true});cpSync(path.join(repositoryRoot,'.template-spec/design/tokens'),path.join(root,'.template-spec/design/tokens'),{recursive:true});
   mkdirSync(path.join(root,'.template-source/design'),{recursive:true});cpSync(path.join(repositoryRoot,'.template-source/design/design-system-sync.yaml'),path.join(root,'.template-source/design/design-system-sync.yaml'));
@@ -62,6 +62,283 @@ function state(root){
   const entries={};function scan(dir){for(const e of readdirSync(dir,{withFileTypes:true})){const f=path.join(dir,e.name);if(e.isDirectory())scan(f);else if(e.isFile())entries[path.relative(root,f)]=createHash('sha256').update(readFileSync(f)).digest('hex');}}scan(root);return entries;
 }
 function run(data,args,options={}){const r=spawnSync(process.execPath,[data.file,...args],{cwd:data.root,encoding:'utf8',...options});assert.equal(r.error,undefined);return r;}
+
+test('仓外复制技能的漂移检查使用显式项目根且不修改其他项目', t => {
+  const a = isolated(t), b = isolated(t);
+  const skill = mkdtempSync(path.join(os.tmpdir(), 'yss portable skill '));
+  t.after(() => rmSync(skill, {recursive:true, force:true}));
+  cpSync(path.join(repositoryRoot, '.agents/skills/yss-design-system'), skill, {recursive:true});
+  const bCss = path.join(b.root, '.template-spec/design/tokens/variables.css');
+  writeFileSync(bCss, readFileSync(bCss, 'utf8') + '\n/* other project */');
+  const beforeA = state(a.root), beforeB = state(b.root);
+  const result = spawnSync(process.execPath, [path.join(skill, 'scripts/design-md.mjs'), 'drift', '--project-root', a.root], {cwd:b.root, encoding:'utf8'});
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /无漂移/);
+  assert.deepEqual(state(a.root), beforeA);
+  assert.deepEqual(state(b.root), beforeB);
+  for (const args of [['drift'], ['drift','--project-root'], ['drift','--project-root',a.root,'--project-root',b.root], ['drift','--project-root',a.root,'--project-root='+b.root], ['drift','--project-root',path.join(a.root,'missing')]]) {
+    const bad = spawnSync(process.execPath, [path.join(skill,'scripts/design-md.mjs'), ...args], {cwd:b.root, encoding:'utf8'});
+    assert.notEqual(bad.status, 0, args.join(' '));
+    assert.match(bad.stderr, /--project-root/);
+  }
+  assert.deepEqual(state(a.root), beforeA);
+  assert.deepEqual(state(b.root), beforeB);
+});
+
+test('同进程使用不同项目根不会复用前一个项目', async t => {
+  const a = isolated(t), b = isolated(t);
+  const bCss = path.join(b.root,'.template-spec/design/tokens/variables.css');
+  writeFileSync(bCss, readFileSync(bCss,'utf8') + '\n/* drift */');
+  const {main} = await import(pathToFileURL(a.file).href);
+  assert.doesNotThrow(() => main(['drift','--project-root',a.root]));
+  assert.throws(() => main(['drift','--project-root',b.root]), /漂移/);
+});
+
+test('lint、diff、export 的上游调用使用指定项目根且不转发项目根选项', t => {
+  const a = isolated(t), b = isolated(t);
+  const bin = path.join(a.root,'fake-bin');
+  mkdirSync(bin);
+  const stub = path.join(bin,'npx');
+  writeFileSync(stub, '#!/usr/bin/env node\nprocess.stdout.write(JSON.stringify({cwd:process.cwd(),args:process.argv.slice(2)}));\n');
+  chmodSync(stub, 0o755);
+  for (const [args,expected] of [[['lint','DESIGN.md'],['lint','DESIGN.md','--format','json']], [['diff','DESIGN.md','DESIGN.md'],['diff','DESIGN.md','DESIGN.md','--format','json']], [['export','dtcg'],['export','DESIGN.md','--format','dtcg']]]) {
+    const result = run(a,[...args,'--project-root',a.root],{cwd:b.root,env:{...process.env,PATH:bin+path.delimiter+process.env.PATH}});
+    assert.equal(result.status,0,result.stderr);
+    const upstream = JSON.parse(result.stdout);
+    assert.equal(upstream.cwd, realpathSync(a.root));
+    assert.equal(upstream.args.includes('--project-root'), false);
+    assert.deepEqual(upstream.args.slice(2),expected);
+  }
+});
+
+test('技能内 YAML vendor 与仓库共享版本保持一致', () => {
+  for (const file of ['yaml.mjs','NOTICES.md']) {
+    assert.deepEqual(readFileSync(path.join(repositoryRoot,'.agents/skills/yss-design-system/scripts/vendor',file)),readFileSync(path.join(repositoryRoot,'scripts/vendor',file)));
+  }
+});
+
+test('指定项目的 CSS 写入不修改当前工作目录中的其他项目', t => {
+  const a = isolated(t), b = isolated(t);
+  const bin = path.join(a.root,'fake-bin');
+  mkdirSync(bin);
+  const stub = path.join(bin,'npx');
+  writeFileSync(stub, '#!/usr/bin/env node\nprocess.stdout.write("{}");\n');
+  chmodSync(stub, 0o755);
+  const aCss = path.join(a.root,'.template-spec/design/tokens/variables.css');
+  const css = readFileSync(aCss,'utf8');
+  const broken = css.replace('--yss-color-primary-control: #245bdb;', '--yss-color-primary-control: #000000;');
+  assert.notEqual(broken,css);
+  writeFileSync(aCss,broken);
+  const beforeB = state(b.root);
+  const result = run(a,['export','dtcg','--write-css','--write-manifest','--project-root',a.root],{cwd:b.root,env:{...process.env,PATH:bin+path.delimiter+process.env.PATH}});
+  assert.equal(result.status,0,result.stderr);
+  assert.match(readFileSync(aCss,'utf8'),/--yss-color-primary-control: #245bdb;/);
+  assert.deepEqual(state(b.root),beforeB);
+});
+
+test('主题写入拒绝指向项目外的文件或目录符号链接', {skip:process.platform==='win32'}, t => {
+  for (const kind of ['file','directory','manifest']) {
+    const data=isolated(t), outside=mkdtempSync(path.join(os.tmpdir(),'yss external tokens '));
+    t.after(()=>rmSync(outside,{recursive:true,force:true}));
+    const bin=path.join(data.root,'fake-bin');
+    mkdirSync(bin);
+    writeFileSync(path.join(bin,'npx'),'#!/usr/bin/env node\nprocess.stdout.write("{}");\n');
+    chmodSync(path.join(bin,'npx'),0o755);
+    const tokens=path.join(data.root,'.template-spec/design/tokens');
+    const css=path.join(tokens,'variables.css'), manifest=path.join(tokens,'.design-md-projection.json');
+    if(kind==='directory') {
+      cpSync(tokens,outside,{recursive:true});
+      rmSync(tokens,{recursive:true});
+      symlinkSync(outside,tokens,'dir');
+    } else {
+      const target=kind==='file'?css:manifest;
+      cpSync(target,path.join(outside,path.basename(target)));
+      unlinkSync(target);
+      symlinkSync(path.join(outside,path.basename(target)),target);
+    }
+    const before=state(outside);
+    const args=kind==='manifest'?['export','dtcg','--write-manifest']:['export','dtcg','--write-css'];
+    const result=run(data,[...args,'--project-root',data.root],{env:{...process.env,PATH:bin+path.delimiter+process.env.PATH}});
+    assert.notEqual(result.status,0,kind);
+    assert.match(result.stderr,/链接|symlink/i);
+    assert.deepEqual(state(outside),before,kind);
+  }
+});
+
+test('没有同步文件时非法项目身份阻止主题写入', t => {
+  for (const [file,content] of [['yss-project.yaml','schema_version: 999\nrepository_mode: project-instance\n'],['.yss.json','{"schemaVersion":5,"profile":"spec"}']]) {
+    const data = isolated(t);
+    unlinkSync(path.join(data.root,'.template-source/design/design-system-sync.yaml'));
+    writeFileSync(path.join(data.root,file),content);
+    const css=path.join(data.root,'.template-spec/design/tokens/variables.css');
+    writeFileSync(css,readFileSync(css,'utf8').replace('--yss-color-primary-control: #245bdb;','--yss-color-primary-control: #000000;'));
+    const bin=path.join(data.root,'fake-bin');
+    mkdirSync(bin);
+    writeFileSync(path.join(bin,'npx'),'#!/usr/bin/env node\nprocess.stdout.write("{}");\n');
+    chmodSync(path.join(bin,'npx'),0o755);
+    const before=state(data.root);
+    const result=run(data,['export','dtcg','--write-css','--project-root',data.root],{env:{...process.env,PATH:bin+path.delimiter+process.env.PATH}});
+    assert.notEqual(result.status,0,file);
+    assert.match(result.stderr,/yss-project\.yaml|\.yss\.json/);
+    assert.deepEqual(state(data.root),before);
+  }
+});
+
+test('无效作者工具链失败时保持现有主题文件不变', t => {
+  for (const kind of ['missing','no-theme']) {
+    const data=isolated(t), bin=path.join(data.root,'fake-bin'), author=path.join(data.root,'author');
+    mkdirSync(bin);
+    writeFileSync(path.join(bin,'npx'),'#!/usr/bin/env node\nprocess.stdout.write("{}");\n');
+    chmodSync(path.join(bin,'npx'),0o755);
+    if (kind==='no-theme') {
+      const antd=path.join(author,'node_modules/antd');
+      mkdirSync(antd,{recursive:true});
+      writeFileSync(path.join(antd,'package.json'),'{"version":"6.6.4","main":"index.js"}');
+      writeFileSync(path.join(antd,'index.js'),'module.exports = {};');
+    }
+    const theme=path.join(data.root,'.template-spec/design/tokens/theme.json');
+    writeFileSync(theme,'{"userOwned":true}\n');
+    const before=state(data.root);
+    const result=run(data,['export','dtcg','--write','--antd-toolchain',author,'--project-root',data.root],{env:{...process.env,PATH:bin+path.delimiter+process.env.PATH}});
+    assert.notEqual(result.status,0,kind);
+    assert.deepEqual(state(data.root),before,kind);
+  }
+});
+
+test('主题算法执行失败时所有项目投影保持不变', t => {
+  const data=isolated(t), bin=path.join(data.root,'fake-bin'), author=path.join(data.root,'author');
+  mkdirSync(bin);
+  writeFileSync(path.join(bin,'npx'),'#!/usr/bin/env node\nprocess.stdout.write("{}");\n');
+  chmodSync(path.join(bin,'npx'),0o755);
+  const antd=path.join(author,'node_modules/antd');
+  mkdirSync(antd,{recursive:true});
+  writeFileSync(path.join(antd,'package.json'),'{"version":"6.6.4","main":"index.js"}');
+  writeFileSync(path.join(antd,'index.js'),'module.exports = { theme: { defaultAlgorithm(){}, darkAlgorithm(){}, compactAlgorithm(){}, getDesignToken(){ throw new Error("algorithm failed") } } };');
+  writeFileSync(path.join(data.root,'.template-spec/design/tokens/theme.json'),'{"userOwned":true}\n');
+  const before=state(data.root);
+  const result=run(data,['export','dtcg','--write','--write-manifest','--antd-toolchain',author,'--project-root',data.root],{env:{...process.env,PATH:bin+path.delimiter+process.env.PATH}});
+  assert.notEqual(result.status,0);
+  assert.match(result.stderr,/algorithm failed/);
+  assert.deepEqual(state(data.root),before);
+});
+
+test('成功生成主题时同时写入完整投影和一致的摘要', t => {
+  const data=isolated(t), bin=path.join(data.root,'fake-bin'), author=path.join(data.root,'author');
+  mkdirSync(bin);
+  writeFileSync(path.join(bin,'npx'),'#!/usr/bin/env node\nprocess.stdout.write("{}");\n');
+  chmodSync(path.join(bin,'npx'),0o755);
+  const antd=path.join(author,'node_modules/antd');
+  mkdirSync(antd,{recursive:true});
+  writeFileSync(path.join(antd,'package.json'),'{"version":"6.6.4","main":"index.js"}');
+  writeFileSync(path.join(antd,'index.js'),'module.exports={theme:{defaultAlgorithm(){},darkAlgorithm(){},compactAlgorithm(){},getDesignToken({token}){return token}}};');
+  const result=run(data,['export','dtcg','--write','--write-manifest','--antd-toolchain',author,'--project-root',data.root],{env:{...process.env,PATH:bin+path.delimiter+process.env.PATH}});
+  assert.equal(result.status,0,result.stderr);
+  const check=run(data,['drift','--project-root',data.root]);
+  assert.equal(check.status,0,check.stderr);
+  assert.match(check.stdout,/无漂移/);
+});
+
+test('写入多份投影中途失败时恢复原文件', t => {
+  const data=isolated(t), bin=path.join(data.root,'fake-bin');
+  mkdirSync(bin);
+  writeFileSync(path.join(bin,'npx'),'#!/usr/bin/env node\nprocess.stdout.write("{}");\n');
+  chmodSync(path.join(bin,'npx'),0o755);
+  const css=path.join(data.root,'.template-spec/design/tokens/variables.css');
+  writeFileSync(css,readFileSync(css,'utf8').replace('--yss-color-primary-control: #245bdb;','--yss-color-primary-control: #000000;'));
+  const preload=path.join(data.root,'fail-rename.cjs');
+  writeFileSync(preload,`const fs=require('node:fs'); const original=fs.linkSync; fs.linkSync=(a,b)=>{if(String(a).endsWith('/new-1')) throw new Error('simulated rename failure'); return original(a,b)}; require('node:module').syncBuiltinESMExports();`);
+  const before=state(data.root);
+  const result=run(data,['export','dtcg','--write-css','--write-manifest','--project-root',data.root],{env:{...process.env,NODE_OPTIONS:`--require="${preload}"`,PATH:bin+path.delimiter+process.env.PATH}});
+  assert.notEqual(result.status,0);
+  assert.match(result.stderr,/simulated rename failure/);
+  assert.deepEqual(state(data.root),before);
+});
+
+test('回滚时目标被占用则保留新文件与备份', t => {
+  const data=isolated(t), bin=path.join(data.root,'fake-bin');
+  mkdirSync(bin);
+  writeFileSync(path.join(bin,'npx'),'#!/usr/bin/env node\nprocess.stdout.write("{}");\n');
+  chmodSync(path.join(bin,'npx'),0o755);
+  const manifest=path.join(data.root,'.template-spec/design/tokens/.design-md-projection.json');
+  const original=readFileSync(manifest);
+  const preload=path.join(data.root,'occupy-rollback.cjs');
+  writeFileSync(preload,`const fs=require('node:fs'); const original=fs.linkSync; fs.linkSync=(a,b)=>{if(String(a).endsWith('/new-1')){fs.writeFileSync(b,'new user data'); throw new Error('simulated rename failure')} return original(a,b)}; require('node:module').syncBuiltinESMExports();`);
+  const result=run(data,['export','dtcg','--write-css','--write-manifest','--project-root',data.root],{env:{...process.env,NODE_OPTIONS:`--require="${preload}"`,PATH:bin+path.delimiter+process.env.PATH}});
+  assert.notEqual(result.status,0);
+  assert.match(result.stderr,/回滚未完成/);
+  assert.equal(readFileSync(manifest,'utf8'),'new user data');
+  const staging=readdirSync(path.dirname(manifest),{withFileTypes:true}).find(entry=>entry.isDirectory() && entry.name.startsWith('.design-md-'))?.name;
+  assert.ok(staging);
+  assert.deepEqual(readFileSync(path.join(path.dirname(manifest),staging,'old-1')),original);
+});
+
+test('并发修改投影时拒绝覆盖并保留用户内容', t => {
+  for (const moment of ['read', 'rename', 'old-inode']) {
+    const data=isolated(t), bin=path.join(data.root,'fake-bin');
+    mkdirSync(bin);
+    writeFileSync(path.join(bin,'npx'),'#!/usr/bin/env node\nprocess.stdout.write("{}");\n');
+    chmodSync(path.join(bin,'npx'),0o755);
+    const css=path.join(data.root,'.template-spec/design/tokens/variables.css');
+    const preload=path.join(data.root,`concurrent-${moment}.cjs`);
+    const hook = moment === 'read'
+      ? `const original=fs.readFileSync; fs.readFileSync=(a,...args)=>{const value=original(a,...args); if(!done && a===target){done=true; fs.writeFileSync(target,'concurrent user change')} return value}`
+      : moment === 'rename'
+        ? `const original=fs.renameSync; fs.renameSync=(a,b)=>{if(!done && a===target){done=true; fs.writeFileSync(target,'concurrent user change')} return original(a,b)}`
+        : `const original=fs.linkSync; fs.linkSync=(a,b)=>{if(!done && String(a).endsWith('/new-0') && b===target){done=true; fs.writeFileSync(require('node:path').join(require('node:path').dirname(a),'old-0'),'concurrent user change')} return original(a,b)}`;
+    writeFileSync(preload,`const fs=require('node:fs'); const target=${JSON.stringify(css)}; let done=false; ${hook}; require('node:module').syncBuiltinESMExports();`);
+    const result=run(data,['export','dtcg','--write-css','--project-root',data.root],{env:{...process.env,NODE_OPTIONS:`--require="${preload}"`,PATH:bin+path.delimiter+process.env.PATH}});
+    assert.notEqual(result.status,0,moment);
+    assert.match(result.stderr,/文件发生变化/,moment);
+    assert.equal(readFileSync(css,'utf8'),'concurrent user change',moment);
+  }
+});
+
+test('硬链接不可用时不移动原文件，运行中失败时恢复原文件', t => {
+  for (const failAfterProbe of [false, true]) {
+    const data=isolated(t), bin=path.join(data.root,'fake-bin');
+    mkdirSync(bin);
+    writeFileSync(path.join(bin,'npx'),'#!/usr/bin/env node\nprocess.stdout.write("{}");\n');
+    chmodSync(path.join(bin,'npx'),0o755);
+    const preload=path.join(data.root,'no-links.cjs');
+    writeFileSync(preload,`const fs=require('node:fs'); const original=fs.linkSync; let count=0; fs.linkSync=(a,b)=>{if(++count>${failAfterProbe ? 1 : 0}){const e=new Error('simulated EPERM'); e.code='EPERM'; throw e} return original(a,b)}; require('node:module').syncBuiltinESMExports();`);
+    const before=state(data.root);
+    const result=run(data,['export','dtcg','--write-css','--write-manifest','--project-root',data.root],{env:{...process.env,NODE_OPTIONS:`--require="${preload}"`,PATH:bin+path.delimiter+process.env.PATH}});
+    assert.notEqual(result.status,0,String(failAfterProbe));
+    assert.match(result.stderr,/simulated EPERM/);
+    assert.deepEqual(state(data.root),before,String(failAfterProbe));
+  }
+});
+
+test('硬链接和回滚复制均失败时保留原文件备份', t => {
+  const data=isolated(t), bin=path.join(data.root,'fake-bin');
+  mkdirSync(bin);
+  writeFileSync(path.join(bin,'npx'),'#!/usr/bin/env node\nprocess.stdout.write("{}");\n');
+  chmodSync(path.join(bin,'npx'),0o755);
+  const css=path.join(data.root,'.template-spec/design/tokens/variables.css');
+  const original=readFileSync(css);
+  const preload=path.join(data.root,'fail-restore.cjs');
+  writeFileSync(preload,`const fs=require('node:fs'); const link=fs.linkSync; let count=0; fs.linkSync=(a,b)=>{if(++count>1) throw new Error('link failed'); return link(a,b)}; fs.copyFileSync=()=>{throw new Error('copy failed')}; require('node:module').syncBuiltinESMExports();`);
+  const result=run(data,['export','dtcg','--write-css','--project-root',data.root],{env:{...process.env,NODE_OPTIONS:`--require="${preload}"`,PATH:bin+path.delimiter+process.env.PATH}});
+  assert.notEqual(result.status,0);
+  assert.match(result.stderr,/回滚未完成/);
+  const staging=readdirSync(path.dirname(css),{withFileTypes:true}).find(entry=>entry.isDirectory() && entry.name.startsWith('.design-md-'))?.name;
+  assert.ok(staging);
+  assert.deepEqual(readFileSync(path.join(path.dirname(css),staging,'old-0')),original);
+});
+
+test('生成摘要缺少投影输入时不写入 CSS', t => {
+  const data=isolated(t), bin=path.join(data.root,'fake-bin');
+  mkdirSync(bin);
+  writeFileSync(path.join(bin,'npx'),'#!/usr/bin/env node\nprocess.stdout.write("{}");\n');
+  chmodSync(path.join(bin,'npx'),0o755);
+  const css=path.join(data.root,'.template-spec/design/tokens/variables.css');
+  writeFileSync(css,readFileSync(css,'utf8').replace('--yss-color-primary-control: #245bdb;','--yss-color-primary-control: #000000;'));
+  unlinkSync(path.join(data.root,'.template-spec/design/tokens/tokens.dark.json'));
+  const before=state(data.root);
+  const result=run(data,['export','dtcg','--write-css','--write-manifest','--project-root',data.root],{env:{...process.env,PATH:bin+path.delimiter+process.env.PATH}});
+  assert.notEqual(result.status,0);
+  assert.deepEqual(state(data.root),before);
+});
 
 test('项目实例自定义 DESIGN 不受模板源同步摘要约束', t => {
   for (const mode of ['governed', 'skills', 'backend-skills']) {
@@ -118,7 +395,7 @@ test('悬空token、同步摘要错、投影漂移、缺工具与错antd版本�
     if(kind==='token'){const f=path.join(data.root,'DESIGN.md');writeFileSync(f,readFileSync(f,'utf8').replace('{colors.primary}','{colors.absent}'));}
     if(kind==='sync'){const f=path.join(data.root,'.template-source/design/design-system-sync.yaml');writeFileSync(f,readFileSync(f,'utf8').replace(/baseline_sha256: [a-f0-9]+/,'baseline_sha256: '+ '0'.repeat(64)));}
     if(kind==='projection'){const f=path.join(data.root,'.template-spec/design/tokens/variables.css');writeFileSync(f,readFileSync(f,'utf8')+'\n/* drift */');}
-    if(kind==='dependency')unlinkSync(path.join(data.root,'scripts/vendor/yaml.mjs'));
+    if(kind==='dependency')unlinkSync(path.join(data.root,'.agents/skills/yss-design-system/scripts/vendor/yaml.mjs'));
     if(kind==='tool')args=['export','dtcg','--write'];
     if(kind==='version'){const author=path.join(data.root,'wrong-author');mkdirSync(path.join(author,'node_modules/antd'),{recursive:true});writeFileSync(path.join(author,'package.json'),'{}');writeFileSync(path.join(author,'node_modules/antd/package.json'),' {"version":"0.0.0"}');args=['export','dtcg','--write','--antd-toolchain',author];}
     const r=run(data,args);assert.equal(r.status,1,kind+': '+r.stderr);

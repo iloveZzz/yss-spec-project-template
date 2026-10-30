@@ -1518,7 +1518,9 @@
           ".template-spec/design/tokens/tokens.dark.json",
           ".template-spec/design/tokens/tokens.default.json",
           ".template-spec/design/tokens/variables.css",
-          ".template-spec/design/tokens/variables.dark.css"
+          ".template-spec/design/tokens/variables.dark.css",
+          "scripts/vendor/yaml.mjs",
+          "scripts/vendor/NOTICES.md"
         ],
         "setup-yss-harness": []
       }

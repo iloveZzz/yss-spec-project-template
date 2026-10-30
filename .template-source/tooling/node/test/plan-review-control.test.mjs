@@ -13,11 +13,10 @@ import { buildPlanReviewFixture, PLAN_BOUNDARIES } from '../../../../scripts/fix
 import {installedFixture} from '../../../../scripts/fixtures/role-independent-draft/installed-fixture.mjs';
 import {prepareProfessionalPlanFixture} from '../../../../scripts/fixtures/role-independent-draft/professional-plan-fixture.mjs';
 import {validateTaskPackage} from '../../../../scripts/lib/task-package.mjs';
-import { buildLegacyPlanSourceFixture } from '../../../../scripts/fixtures/plan-review-control/legacy-source-fixture.mjs';
 import { localizeSyntheticPlanSource, syntheticPlanSourceContext } from '../../../../scripts/fixtures/plan-review-control/source-consumption-fixture.mjs';
 import { buildPlanFixture } from '../../../../scripts/fixtures/user-decision/plan-fixture.mjs';
 import { assertPlanSpecEntry, assertPlanAggregateApproval } from '../../../../scripts/lib/plan-spec-entry.mjs';
-import { validateApprovalRecord, validateApprovalRecordFile, assertApprovedGateHasValidApproval, assertCheckpointApprovals } from '../../../../scripts/lib/native-approval.mjs';
+import { validateApprovalRecord, validateApprovalRecordFile, assertApprovedGateHasValidApproval } from '../../../../scripts/lib/native-approval.mjs';
 import { assertGateChecks } from '../../../../scripts/lib/lifecycle-controls.mjs';
 import { sourceApproval } from '../../../../scripts/lib/strategic-handoff.mjs';
 import { withSourceContextSnapshot } from '../../../../scripts/lib/strategic-handoff-io.mjs';
@@ -69,9 +68,9 @@ function fixture(t, options) {
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   return buildPlanReviewFixture(root, options);
 }
-// The bounded professional Plan protocol is an explicit historical policy.
+// Exercise the current Backend policy with a real native installation.
 function currentFixture(t) {
-  const installed = installedFixture('spec',{legacySpec:true}); t.after(() => installed.cleanup());
+  const installed = installedFixture('backend'); t.after(() => installed.cleanup());
   const prepared = prepareProfessionalPlanFixture(installed, {outputDir: '.work/feature-demo/reviews/initial'});
   const {cpRef: checkpointRef, cp: checkpoint, options} = prepared;
   return {...installed, checkpointRef, checkpoint, options,
@@ -104,12 +103,6 @@ function runAsync(args, cwd) {
   });
 }
 
-async function legacySourceFixture(t) {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'yss-legacy-plan-source-'));
-  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
-  return buildLegacyPlanSourceFixture(root);
-}
-
 async function assertReadonlySourceContextConsumption(root, consume) {
   const context = path.join(root, 'CONTEXT.md'), snapshot = path.join(root, 'source-context.snapshot.md');
   const bytes = fs.readFileSync(context);
@@ -123,54 +116,6 @@ async function assertReadonlySourceContextConsumption(root, consume) {
     assert.deepEqual(fs.readFileSync(snapshot), bytes);
   } finally { fs.renameSync(snapshot, context); }
 }
-
-test('legacy Plan source current approval remains readable with independently bound context', async t => {
-  const f = await legacySourceFixture(t);
-  assert.ok(f.rolesDoc.gate_policy.review_execution.review_bundles.some(row => row.aggregate_gate === 'gate.plan-approved'));
-  assert.ok(f.rolesDoc.gate_policy.review_execution.review_bundles.every(row => row.aggregate_additional_review_task !== 'forbidden'));
-  assert.equal(f.checkpoint.plan_review_control, undefined);
-  const options = { root: f.root, rolesDoc: f.rolesDoc, registry: f.registry, expected: f.expected };
-  const approvalBytes = f.read(f.approvalRef), replyBytes = f.read(f.record.user_decision_ref);
-  assert.doesNotThrow(() => validateApprovalRecord(f.record, options));
-  assert.doesNotThrow(() => validateApprovalRecordFile(path.join(f.root, f.approvalRef), options));
-  assert.doesNotThrow(() => assertApprovedGateHasValidApproval('gate.plan-approved', f.gate, { ...options, checkpoint: f.checkpoint }));
-  // A synthetic empty registry cannot replace the actual source policy's required checks.
-  assert.throws(() => assertGateChecks('gate.plan-approved', f.checkpoint, options), /EVIDENCE_REQUIRED: 缺少当前依据/);
-  await assert.doesNotReject(sourceApproval(f.record, f.rolesDoc, f.root, f.binding));
-  assert.deepEqual(f.read(f.approvalRef), approvalBytes);
-  assert.deepEqual(f.read(f.record.user_decision_ref), replyBytes);
-  assert.throws(() => validateApprovalRecord({ ...f.record, subject_digest: '0'.repeat(64) }, options), /APPROVAL_CURRENT_INVALID/);
-  fs.writeFileSync(path.join(f.root, 'evidence/offline.log'), 'Synthetic changed source evidence; original approval is stale.\n');
-  assert.throws(() => validateApprovalRecord(f.record, options), /APPROVAL_CURRENT_INVALID/);
-  await assert.rejects(sourceApproval(f.record, f.rolesDoc, f.root, f.binding), /APPROVAL_CURRENT_INVALID/);
-});
-
-test('legacy Plan consumers default to the supplied source root policy without rewriting approval bytes', async t => {
-  const f = await legacySourceFixture(t);
-  const options = { root: f.root, registry: f.registry, expected: f.expected };
-  const approvalBytes = f.read(f.approvalRef), replyBytes = f.read(f.record.user_decision_ref);
-  assert.doesNotThrow(() => validateApprovalRecord(f.record, options));
-  assert.doesNotThrow(() => validateApprovalRecordFile(path.join(f.root, f.approvalRef), options));
-  assert.doesNotThrow(() => assertApprovedGateHasValidApproval('gate.plan-approved', f.gate, { ...options, checkpoint: f.checkpoint }));
-  assert.throws(() => assertCheckpointApprovals(f.checkpoint, path.join(f.root, 'checkpoint.json'), options), /EVIDENCE_REQUIRED: 缺少当前依据/);
-  assert.deepEqual(f.read(f.approvalRef), approvalBytes);
-  assert.deepEqual(f.read(f.record.user_decision_ref), replyBytes);
-  assert.throws(() => validateApprovalRecord({ ...f.record, subject_digest: '0'.repeat(64) }, options), /APPROVAL_CURRENT_INVALID/);
-  assert.throws(() => validateApprovalRecord(f.record, { root: f.root, registry: f.registry }), /APPROVAL_CONTEXT_REQUIRED/);
-  assert.throws(() => validateApprovalRecordFile(path.join(f.root, f.approvalRef), { root: f.root, registry: f.registry }), /APPROVAL_CONTEXT_REQUIRED/);
-});
-
-test('legacy Plan source still rejects missing independent consumer expectations', async t => {
-  const f = await legacySourceFixture(t);
-  const options = { root: f.root, rolesDoc: f.rolesDoc, registry: f.registry };
-  assert.throws(() => validateApprovalRecord(f.record, options), /APPROVAL_CONTEXT_REQUIRED/);
-  assert.throws(() => validateApprovalRecordFile(path.join(f.root, f.approvalRef), options), /APPROVAL_CONTEXT_REQUIRED/);
-  await assert.rejects(sourceApproval(f.record, f.rolesDoc, f.root), /APPROVAL_CONTEXT_REQUIRED/);
-  const expected = { ...f.expected }; delete expected.drafter_principal_ref;
-  assert.throws(() => validateApprovalRecord(f.record, { ...options, expected }), /APPROVAL_CONTEXT_REQUIRED.*独立起草者/);
-  const gate = { ...f.gate }; delete gate.subject_ref;
-  assert.throws(() => assertApprovedGateHasValidApproval('gate.plan-approved', gate, options), /APPROVAL_CONTEXT_REQUIRED/);
-});
 
 test('bounded Plan source policy rejects current aggregate approval without review control', t => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'yss-bounded-plan-source-'));

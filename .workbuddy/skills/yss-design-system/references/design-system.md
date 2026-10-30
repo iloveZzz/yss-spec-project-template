@@ -2,6 +2,8 @@
 
 本文件是 YSS 设计系统的 skill 侧执行清单，面向 Agent 执行、设计评审和前端实现，不单独承载新的 Token 决策或具体值。
 
+此清单保留历史原型和实现合同的适用规则；已有正式合同按原合同核验。新 Spec 依 [按需设计规范](spec-design.md) 选取与当前产物和风险有关的内容，不将本清单的档位、完整状态矩阵、视口清单或实现检查作为前提。
+
 权威资料：
 
 - 规范源：根 `DESIGN.md`（项目视觉 Token 与组件视觉变体）
@@ -191,7 +193,7 @@
 
 HTML 原型：
 
-- 使用 `yss-prototype-stage` 的 HTML/CSS/JavaScript adapter，消费项目 semantic token、所选密度和状态合同；生产组件 API 只在下游实现阶段从目标仓实际依赖核验。
+- 相应历史合同使用 `yss-prototype-stage` 的 HTML/CSS/JavaScript adapter，消费项目 semantic token、所选密度和状态合同；工具不可用时保留合同要求的缺口。其他设计可独立选择表达；生产组件 API 从目标仓实际依赖核验。
 
 YSS UI / Vue：
 

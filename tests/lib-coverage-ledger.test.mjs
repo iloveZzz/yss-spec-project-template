@@ -18,6 +18,12 @@ function walk(directory) {
   return files;
 }
 
+function coverageSource(file, text) {
+  if (file !== path.join(ROOT, "tests/verification-selection.test.mjs")) return text;
+  // 选择器用路径作为测试输入；只计入自身实际导入。
+  return [...text.matchAll(/(?:\bfrom\s+|\bimport\s*\()\s*['"]([^'"]+)['"]/g)].map((match) => match[1]).join("\n");
+}
+
 function scan() {
   const libs = fs.readdirSync(path.join(ROOT, "scripts/lib"))
     .filter((name) => name.endsWith(".mjs"))
@@ -25,7 +31,7 @@ function scan() {
     .sort();
   const referenced = new Set();
   for (const file of walk(path.join(ROOT, "tests"))) {
-    const text = fs.readFileSync(file, "utf8");
+    const text = coverageSource(file, fs.readFileSync(file, "utf8"));
     for (const lib of libs) {
       const base = path.posix.basename(lib, ".mjs");
       if (text.includes("lib/" + base) || text.includes(base + ".mjs")) referenced.add(lib);
@@ -33,6 +39,14 @@ function scan() {
   }
   return { libs, referenced };
 }
+
+test("选择器输入路径不作为覆盖，直接导入仍计入", () => {
+  const source = "const changed='scripts/lib/example-test-probe.mjs'; import { x } from '../scripts/lib/real-test-probe.mjs';";
+  const actual = coverageSource(path.join(ROOT, "tests/verification-selection.test.mjs"), source);
+  assert.doesNotMatch(actual, /example-test-probe/);
+  assert.match(actual, /real-test-probe/);
+  assert.equal(coverageSource(path.join(ROOT, "tests/other.test.mjs"), source), source);
+});
 
 test("scripts/lib 未覆盖台账与当前测试引用一致", () => {
   const config = JSON.parse(fs.readFileSync(path.join(ROOT, CONFIG), "utf8"));
