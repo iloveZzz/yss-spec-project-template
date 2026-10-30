@@ -1390,6 +1390,10 @@ profiles:
           - "tests/backend-decision-distribution.test.mjs"
           - "tests/backend-handoff-reference.test.mjs"
           - "tests/skills-reference-imports.test.mjs"
+          - ".agents/skills/yss-design-system/scripts/verify-prototype-source.mjs"
+          - ".agents/skills/yss-design-system/assets/prototype/**"
+          - ".workbuddy/skills/yss-design-system/assets/prototype/**"
+          - ".workbuddy/skills/yss-design-system/scripts/verify-prototype-source.mjs"
           - ".agents/skills/**/*.mjs"
           - ".agents/skills/**/*.js"
           - ".template-source/design/**"
@@ -3171,6 +3175,13 @@ routing:
       - .template-spec/process/schemas/strategic-*feedback*
     groups:
       - strategic-handoff-package
+  - patterns:
+      - .agents/skills/yss-design-system/assets/prototype/**
+      - .workbuddy/skills/yss-design-system/assets/prototype/**
+      - .agents/skills/yss-design-system/scripts/verify-prototype-source.mjs
+      - .workbuddy/skills/yss-design-system/scripts/verify-prototype-source.mjs
+    groups:
+      - feature-assets
   - patterns:
       - DESIGN.md
       - .template-spec/design/**

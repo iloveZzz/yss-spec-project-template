@@ -643,3 +643,10 @@ test('Matt closure documents select doc facts without incomplete inputs',()=>{
   assert.ok(planTemplateVerification({changedFiles:[file]}).commands.some(x=>x.id==='check.doc-facts'));
  }
 });
+
+test('设计原型来源与素材变更选择独立安装和引用检查', () => {
+ for (const ref of ['.agents/skills/yss-design-system/assets/prototype/registry-manifest.json','.agents/skills/yss-design-system/assets/prototype/package.json','.agents/skills/yss-design-system/assets/prototype/vite.config.ts','.agents/skills/yss-design-system/assets/prototype/pnpm-lock.yaml','.agents/skills/yss-design-system/assets/prototype/SHADCN-LICENSE.txt','.agents/skills/yss-design-system/scripts/verify-prototype-source.mjs']) {
+  const checks = planTemplateVerification({changedFiles:[ref]}).commands;
+  assert.ok(checks.some(item => item.id === 'check.initialization-reference-boundaries'), ref);
+ }
+});
