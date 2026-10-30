@@ -98,9 +98,10 @@ assert.equal(progress.issues.no_blockers_claim, 'current-applicable-verification
 assert.equal(progress.issues.unknown_owner, 'not-registered-never-auto-assigned');
 assert.equal(progress.recovery.authorized_agent_actions, 'continue-and-report-result');
 assert.equal(progress.template_source, 'maintenance-step-and-verification-target-never-product-stage');
-const controller = readFileSync(path.join(ROOT, '.agents/skills/yss-product-lifecycle/SKILL.md'), 'utf8');
-assert.ok(controller.includes('`user_progress_report`'));
-assert.ok(Buffer.byteLength(controller) <= 8192, '主控入口保持 8KB 预算，条件细节放在引用中');
+const backendController = readFileSync(path.join(ROOT, 'profiles/backend/.agents/skills/harness-orchestrator/SKILL.md'), 'utf8');
+assert.ok(backendController.includes('`user_progress_report`'), 'Backend 主控继续消费旧阶段进度合同');
+const specController = readFileSync(path.join(ROOT, '.agents/skills/yss-product-lifecycle/SKILL.md'), 'utf8');
+assert.ok(Buffer.byteLength(specController) <= 8192, 'Spec 主控入口保持 8KB 预算，条件细节放在引用中');
 
 assert.deepEqual(first, second, "同一查询必须产生确定性结果");
 // 合并调用须保留原来三次查询的路由、阶段和技能信息。
@@ -177,20 +178,15 @@ const cli = spawnSync("node", [
 assert.equal(cli.status, 0, cli.stderr);
 assert.deepEqual(JSON.parse(cli.stdout), first, "CLI 输出必须等于库函数的规范投影");
 
-const skillPath = path.join(ROOT, ".agents/skills/yss-product-lifecycle/SKILL.md");
-const skill = readFileSync(skillPath, "utf8");
-assert.ok(Buffer.byteLength(skill) <= 8192, "生命周期入口 Skill 必须保持在 8KB 软预算内");
-assert.equal(skill.includes("| 主阶段 |"), false, "入口 Skill 不得复制完整阶段表");
-for (const marker of [
+assert.equal(specController.includes("| 主阶段 |"), false, "Spec 入口不得复制旧阶段表");
+// 保留旧查询的真实来源绑定，不再要求新 Spec 主技能加载这些阶段政策。
+const legacyReadSet = new Set(first.sources.read_set.map((item) => item.ref));
+for (const ref of [
   ".template-spec/process/lifecycle-registry.yaml",
   ".template-spec/process/orchestration-contract.yaml",
   ".template-spec/agents/yss-skill-registry.yaml",
-  "scripts/query-lifecycle-context",
-  "### 仓库身份",
-  "### 流转与实现",
-  "### 用户决定",
-  "### 外部副作用与 Git",
-]) assert.match(skill, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+]) assert.ok(legacyReadSet.has(ref), `旧生命周期查询必须绑定 ${ref}`);
+assert.ok(backendController.includes('scripts/query-lifecycle-context'), 'Backend 专项预检继续使用生命周期查询');
 
 // Small real filesystem fixtures exercise readiness without changing template inputs.
 const readinessRoot = fs.mkdtempSync(path.join(os.tmpdir(), "yss-skill-ready-' "));

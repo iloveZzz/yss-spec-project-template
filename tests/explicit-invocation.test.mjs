@@ -24,10 +24,19 @@ const explicit = registry.skills.filter((skill) => mode(skill) === "user").map((
 test("显式技能集合固定：增减必须是有意的改动，并同步更新本清单", () => {
   assert.deepEqual(explicit, [
     "cross-repo-implementation-routing", "git-commit-core", "handoff", "implement", "implementation-repo-onboarding",
-    "java-backend-commit", "llm-wiki", "prototype-review", "publish-skills-sh", "setup-matt-pocock-skills", "to-spec", "to-tickets", "triage",
-    "wayfinder", "yss-backend-spec-review", "yss-implementation-contract-compiler", "yss-openapi-draft-review", "yss-prototype-stage",
+    "java-backend-commit", "llm-wiki", "publish-skills-sh", "setup-matt-pocock-skills", "to-spec", "to-tickets", "triage",
+    "wayfinder", "yss-backend-spec-review", "yss-implementation-contract-compiler", "yss-openapi-draft-review",
     "yss-skill-source-index-refresh", "yss-stage-decision", "yss-tactical-design", "yss-technical-design",
   ]);
+});
+
+test("新 Spec 产品设计可按需模型调用，规格兼容入口仍只允许用户显式调用", () => {
+  for (const id of ["yss-prototype-stage", "prototype-review"]) {
+    assert.equal(mode(registry.skills.find((skill) => skill.id === id)), "model", id);
+    assert.doesNotMatch(read(`.agents/skills/${id}/SKILL.md`), /^disable-model-invocation: true$/m);
+    assert.equal(yaml(`.agents/skills/${id}/agents/openai.yaml`).policy.allow_implicit_invocation, true, id);
+  }
+  assert.equal(mode(registry.skills.find((skill) => skill.id === "to-spec")), "user");
 });
 
 test("合同声明为生命周期可调用的模型调用技能永远不能是显式（lifecycle_may_invoke_user_invoked 为 false）", () => {

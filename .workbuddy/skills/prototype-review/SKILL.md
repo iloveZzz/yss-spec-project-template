@@ -1,91 +1,16 @@
 ---
 name: prototype-review
-description: Use when independently reviewing low-fidelity UI, interaction specs or state matrices before prototype profile choice or Spec/OpenAPI calibration.
-disable-model-invocation: true
+description: 审阅实际产品设计中的行为、流程、状态与验收一致性，定位阻断问题及未覆盖范围。
 ---
 
-功能包根只从 `.template-spec/agents/issue-tracker.md` 的 `tracker.root` 读取；本文 `.work/` 路径是新项目示例，已有项目沿用已配置的根。
+# 产品设计复核
 
-# Prototype Review
+只消费当前规格和实际设计产物，默认诚实自检；独立复核仅按真实用户或适用外部规则要求，不能把技能名称当成独立来源证明。
 
-Use this skill as the independent low-fidelity review in `yss-prototype-stage`. The review is fail-closed: if the design cannot drive calibrated requirements, API, frontend acceptance, and slices, send it back to product design. `yss-product-lifecycle` alone records the resulting `check.prototype-reviewed` decision.
+文字设计核查主体、条件、量词、权限、边界、异常和验收；流程/状态走查可达性、适用取消、失败、恢复与退出；线框核对任务入口、信息层级、动作结果和主要状态。只检查实际声明的范围，不要求每种产物齐全。
 
-文档输出时按 `lifecycle-document-output` 条件调用 `i-have-adhd`，读取 `.template-spec/process/document-writing.md`；作用域仅限当前产物，派发时传递条件及引用。
+有可交互原型时消费真实操作证据，缺证据明确未验证，必要时返回执行者实际检查。静态视觉稿不能证明交互，代码阅读不能代替关键操作。必要显示/无障碍条件按具体风险检查，不要求所有项目同一档位或固定 QA 套件。
 
-## Trigger Boundary
+不要求 OpenAPI、端点、实现组件或 Slice；以用户可观察行为判断。规则与规格冲突、关键验收缺失、权限及恢复行为不清等作为阻断发现；偏好与未来改进分开。
 
-Run this independent gate only when UI changes affect a primary user flow, navigation, permissions, exception/recovery states, state transitions, or OpenAPI implications. For copy edits, token/color/spacing adjustments, and isolated visual fixes with no behavior, state, permission, navigation, or API impact, record `not-applicable` with the impact assessment; do not create prototype-review artifacts.
-
-## Required Inputs
-
-- Spec baseline or confirmed user stories.
-- `.work/<feature>/design/<feature>-interaction-spec.md` or prototype link.
-- State matrix, preferably based on `.template-spec/design/templates/state-matrix-template.md`.
-- Existing OpenAPI Draft only if the review is checking alignment; do not require OpenAPI before product design.
-- `.work/<feature>/verification/prototype-evidence.yaml` may be created as a pending Prototype Evidence schema v4 record from `.template-spec/design/templates/prototype-evidence-template.yaml`, but档位构建与浏览器验证属于后续 `check.prototype-verified`。
-
-## Review Gates
-
-| Gate | Pass condition |
-|---|---|
-| Page coverage | All primary pages, entry points, and navigation exits are named |
-| Flow coverage | Main path, cancel/back, failure, retry, and completion paths are explicit |
-| State coverage | loading, empty, error, readonly, disabled, no-permission, conflict, and dirty-form states are addressed or explicitly not applicable |
-| State transition coverage | 每个状态列出进入事件、允许转换、guard、动作和退出路径；不存在只能进入不能退出的状态 |
-| Permission coverage | Hidden vs disabled vs rejected actions are clear |
-| Content hierarchy | 必需内容有任务优先级、长度/空值变化与区域；动作有可见结果，来源与 actionKey 引用现有合同 |
-| Conditional comparison | 仅命中不确定性时比较；交互候选有实质差异且同输入/保真，标准先于选择，保留选择代价与用户决定引用 |
-| Data coverage | Visible fields, filters, sort, pagination, forms, tables, drawers, modals, and audit/version data are listed |
-| API implication | Request/response fields, error structure, pagination/filtering, permissions, and concurrency implications can be drafted |
-| Action contract coverage | Every primary page action has an `actionKey`, endpoint or explicit non-goal, permission behavior, state transition, idempotency/concurrency rule, and error codes |
-| P0 contract coverage | Every P0 requirement with manage/maintain/configure/create/update/archive/retry/cancel/publish/export/create-draft semantics is mapped to an API implication or an explicit non-goal |
-| Rule/source coverage | Validation, approval, coverage, and publish gates state where rules come from, who can configure them, whether they are fixed, and how blocker/warning decisions are represented |
-| Frontend acceptance | A frontend engineer can tell which components, visible states, data dependencies, and E2E paths are needed |
-
-## Decision Rules
-
-- If a feature has UI impact and lacks page map, user flow, prototype/wireframe, or state matrix, block prototype profile selection, Spec calibration, and OpenAPI Draft.
-- If the prototype hides business rules behind generic text such as "校验失败", require field-level errors and recovery behavior.
-- If a page shows a user action but the OpenAPI implication list lacks endpoint/non-goal mapping, block prototype profile selection, Spec calibration, or OpenAPI Draft.
-- If Spec P0 scope says a user can manage or configure an object but the design only shows read-only data, block until the write path or scope downgrade is explicit.
-- 对比方案仅换色、隐藏关键状态或增加未批准业务规则时，指出受影响的具体决策；审美偏好与未来建议进入 Non-Blocking Suggestions，不替代行为缺陷判断。
-- If a state is intentionally out of scope, record why and who owns the decision.
-- If implementation dependencies are unclear, route to `yss-implementation-contract-compiler` only after the prototype passes this review.
-
-## Output Contract
-
-```markdown
-### Review Result
-<Approved / Blocked>
-
-### Blocking Findings
-- <missing asset or decision>
-
-### Non-Blocking Suggestions
-- <improvement that can wait>
-
-### OpenAPI Draft Readiness
-- <paths, fields, errors, permissions, pagination/YSS wrappers, action mappings, rule sources, concurrency notes>
-
-### Spec Calibration Readiness
-- <requirements gaps, acceptance criteria updates, non-goals, pending decisions>
-
-### Frontend Prototype Readiness
-- <component states, data dependencies, profile triggers, frontend acceptance notes>
-
-### Lifecycle Evidence
-- <persistent review path; blockers; `check.prototype-reviewed` candidate result>
-
-### Next Action
-- <yss-prototype-stage / return to product design>
-```
-
-Use `.template-spec/design/templates/prototype-review-checklist.md` when writing a persistent review artifact.
-
-评审恢复路径时区分“保留草稿”“重新加载”“合并”，按既有状态矩阵核对最终字段和再次提交结果。候选初始化确认只证明声明的初始输入，不能替代实际操作；发现仅出现按钮但结果未核验时记为证据缺口。
-
-涉及组件组合、分页/选择、字段错误或浮层时，按需读取 [组件检查与六轴 QA](references/component-qa.md)，并入现有评审，不另建门禁。
-
-涉及企业多页工作区时，按原型技能 `references/enterprise-workspace.md` 核对导航退出、dirty 页签关闭、跨页保留与场景重置的区别，并检查隐藏页浮层清理和窄屏可达性；工程证据、视觉观察及偏好建议分别记录。
-
-涉及搜索选择或日期范围时，按 [组件检查](references/component-qa.md) 核对搜索词/已选值、半完成范围、取消保值与隐藏浮层焦点；研究问题按可观察任务交接，不把模拟结果记成用户证据。
+返回有定位、依据和影响的发现、实际检查及限制，交回产品设计与 life。关键问题修复后复查受影响部分，不自行批准，不以新建审查文件代替解决问题。

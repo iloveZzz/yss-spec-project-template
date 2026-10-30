@@ -4,24 +4,24 @@ import assert from 'node:assert/strict';
 import {readFileSync,existsSync,cpSync} from 'node:fs';
 import path from 'node:path';
 import {readingFixture,repo} from './fixture.mjs';
-import {parseSliceYaml} from '../../lib/slice-contract.mjs';
 const cp='.work/demo/checkpoint.yaml';
+// 历史 stage-gates-v1 注册布局回归，不消费 matt-spec-v1 默认 Profile。
 function registeredReading(checkpoint='intake-checkpoint.json'){
  const f=readingFixture(),owner=repo;
- const profile=readFileSync(path.join(owner,'.template-spec/process/harness-profile.yaml'),'utf8');
+ const profile={schema_version:3,profile_id:'harness.spec-template',required_capabilities:['role-independent-governance-v1','stage-gates-v1']};
  f.put('.template-spec/process/harness-profile.yaml',profile);
  const contract='.template-spec/process/orchestration-contract.yaml';f.put(contract,JSON.stringify(loadOrchestrationContract(ref=>readFileSync(path.join(owner,ref)),contract).value));
  f.put('.template-spec/agents/issue-tracker.md','---\ntracker:\n  platform: local-markdown\n  root: .work\n---\n');
- const c=JSON.parse(readFileSync(path.join(repo,'scripts/fixtures/reading-views/checkpoint.json'),'utf8'));c.schema_version=parseSliceYaml(profile).required_capabilities.includes('stage-gates-v1')?2:1;c.feature_id='feature.supplier';c.artifacts={};f.put(checkpoint,JSON.stringify(c));
+ const c=JSON.parse(readFileSync(path.join(repo,'scripts/fixtures/reading-views/checkpoint.json'),'utf8'));c.schema_version=2;c.feature_id='feature.supplier';c.artifacts={};f.put(checkpoint,JSON.stringify(c));
  f.put('.work/supplier/map.md','---\ncheckpoint_ref: '+checkpoint+'\n---\n# 当前功能\n');
  return {...f,checkpoint};
 }
-test('current registered Spec reading separates canonical ID and checkpoint directory',async()=>{
+test('historical stage-gates Spec reading separates canonical ID and checkpoint directory',async()=>{
  const {readingLocation}=await import('../../lib/reading-view-policy.mjs');const f=registeredReading();
  try{assert.deepEqual(readingLocation(f.root,f.checkpoint),{feature:'feature.supplier',base:'.work/supplier',directory:'.work/supplier/reading'});}finally{f.cleanup();}
 });
 
-test('registered reading refuses missing, duplicate and conflicting maps and unsupported declared policies',async()=>{
+test('historical registered reading refuses missing, duplicate and conflicting maps and unsupported declared policies',async()=>{
  const {readingLocation}=await import('../../lib/reading-view-policy.mjs');const {rmSync}=await import('node:fs');
  for(const scenario of ['missing','duplicate','wrong-checkpoint','wrong-tracker','unknown-version','null-policy','legacy-profile','legacy-checkpoint']){
   const f=registeredReading();try{
@@ -41,7 +41,7 @@ test('registered reading refuses missing, duplicate and conflicting maps and uns
   }finally{f.cleanup();}
  }
 });
-test('reading policy root references retain traversal and absolute-path rejection',async()=>{
+test('historical reading policy root references retain traversal and absolute-path rejection',async()=>{
  const {readingPolicy}=await import('../../lib/reading-view-policy.mjs');const f=registeredReading();try{
   for(const ref of ['intake-checkpoint.json','.work/demo/中文 状态.json']){
    f.put('.template-spec/process/reading-policy.yaml',{schema_version:1,mode:'managed',checkpoints:[ref]});assert.deepEqual(readingPolicy(f.root).checkpoints,[ref]);

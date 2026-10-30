@@ -1,30 +1,14 @@
 schema_version: 3
 profile_id: harness.spec-template
 status: active
-name: Spec 综合研发 Harness
-purpose: 维护需求、必要产品设计与实现合同；按明确目标完成后端交付或业务验收。
-audience:
-  qualification_registry: not-required
-lifecycle:
-  repository_modes: [ project-instance ]
-  allowed_stages:
-    - stage.entry-triage
-    - stage.plan
-    - stage.spec-architecture
-    - stage.product-design
-    - stage.system-data-engineering
-    - stage.ticket-formalization
-    - stage.vertical-slice-implementation
-    - stage.verification-release-retrospective
-  entry_work_unit: work-unit.entry-triage
-  terminal_work_unit: work-unit.release-and-retrospective
-  terminal_stage: stage.verification-release-retrospective
+name: 非技术 Spec
+purpose: 澄清业务需求、形成非技术规格与必要产品设计，发布到所选 Issue tracker 供下游引用。
+spec_workflow: matt-spec-v1
 execution:
-  side: backend
-  product_design: all-applicable-inputs-checks-and-acceptance-retained
-  frontend_implementation: external-toolchain-only
-  handoff: explicit-external-consumer-only
-required_capabilities: [ role-independent-governance-v1, stage-gates-v1 ]
+  side: specification
+  product_design: risk-based
+  implementation: downstream-profile
+  handoff: tracker-reference
 instantiation:
   cli_package: yss
   native_profile: spec

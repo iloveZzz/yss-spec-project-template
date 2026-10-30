@@ -1,3 +1,9 @@
+# 新 Spec 入口
+
+对已核验 matt-spec-v1，使用 yss-product-lifecycle 与其共享规格方法，不加载旧生命周期资格。实际身份/来源/事务保护继续由受支持 CLI 核验；没有未来技术资产不阻断非技术工作。tracker 读取 `.template-spec/agents/issue-tracker.md`，审批按实际动作；产品设计按风险裁剪。
+
+模板源和 Backend 使用各自入口。以下维护与共享说明仅在对应用途适用，不覆盖新 Spec 以上职责：
+
 # 按任务加载的详细入口政策
 
 Spec 同时声明 `stage-gates-v1` 时，按 [四阶段门禁](stage-gates.md) 处理阶段放行；专业技能中的历史子批准／会签指令只适用于其原政策。内部内容检查与技术准备复用已有授权，不新增角色门禁或单独人工确认。Backend 按自身现行政策执行。

@@ -75,15 +75,6 @@
     },
     {
       "repository": ".",
-      "file": ".template-spec/agents/issue-tracker.md",
-      "kind": "content",
-      "text": "    - docs/.scratch",
-      "count": 1,
-      "category": "compatibility",
-      "reason": "机器配置 legacy_roots 只读扫描；正文使用当前 tracker.root"
-    },
-    {
-      "repository": ".",
       "file": ".template-spec/process/work-layout.md",
       "kind": "content",
       "text": "| `tracker.root` 仍配置为 `docs/.scratch` | 它是该实例的当前根，允许正常读写；attach、sync、升级均不自动搬迁 |",

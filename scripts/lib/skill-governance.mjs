@@ -49,8 +49,14 @@ export function validateSkillGovernance({ read = (relative) => readFileSync(path
   const prototypeAdapter = read(".agents/skills/yss-prototype-stage/references/product-design-adapter.md");
   const prototypeEvidence = read(".template-spec/design/templates/prototype-evidence-template.yaml");
   const projectDesign = read(".template-spec/design/design.md");
-  for (const marker of ["product-design-adapter.md", "Prototype Evidence schema v4", "Visual Baseline schema v1", "H1", "H2", "原型阶段不得调用生产组件库"]) {
-    if (!prototypeStage.includes(marker)) fail(`原型阶段合同缺少 YSS adapter 标记: ${marker}`);
+  const workflowRef = ".template-spec/process/spec-workflow.json";
+  const workflow = exists(workflowRef) ? JSON.parse(read(workflowRef)) : null;
+  const riskBasedSpec = workflow?.schemaVersion === 1 && workflow.profile === "spec" && workflow.specWorkflow === "matt-spec-v1";
+  // 新 Spec 按需使用构建工具；旧流程仍要求主技能持有完整原型合同。
+  if (!riskBasedSpec) {
+    for (const marker of ["product-design-adapter.md", "Prototype Evidence schema v4", "Visual Baseline schema v1", "H1", "H2", "原型阶段不得调用生产组件库"]) {
+      if (!prototypeStage.includes(marker)) fail(`原型阶段合同缺少 YSS adapter 标记: ${marker}`);
+    }
   }
   for (const marker of ["prepare-static", "prepare-flow", "html-css-js", "offline-html-v1", "seal-project", "design-contract", "1440x900", "390x844"]) {
     if (!prototypeAdapter.includes(marker)) fail(`Product Design adapter 缺少执行约束: ${marker}`);
