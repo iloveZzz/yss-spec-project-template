@@ -5,6 +5,8 @@ import { parseDocument } from "../vendor/yaml.mjs";
 import { loadOrchestrationContract } from "./orchestration-contract.mjs";
 import { nestedSkillPaths, OBSOLETE, PROJECTION_ROOTS, ROOT, unregisteredNestedSkillPaths } from "./skill-supply-chain.mjs";
 
+import { readRetirementContract } from './skill-retirement-contract.mjs';
+
 export const DEFAULT_REGISTRY = path.join(ROOT, ".template-spec/agents/yss-skill-registry.yaml");
 const LOCK_PATH = path.join(ROOT, "skills-lock.json");
 const COMPILER_CONTRACT = path.join(ROOT, ".agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml");
@@ -70,9 +72,23 @@ export function loadSkillRegistry(filePath = DEFAULT_REGISTRY) {
   return yamlFromFile(filePath, "技能路由注册表");
 }
 
+export function validateSkillAliases(registry) {
+  const definitions = [...(registry.skills ?? []), ...(registry.platform_skills ?? []), ...(registry.external_skills ?? [])];
+  const ids = new Set(definitions.map(skill => skill.id));
+  const entries = definitions.flatMap(skill => (skill.aliases ?? []).map(alias => [alias, skill.id]));
+  const aliases = new Map(entries);
+  if (aliases.size !== entries.length || entries.some(([alias, target]) => ids.has(alias) || aliases.has(target))) fail('alias 冲突或链');
+}
+
 export function resolveSkillForNewUse(registry, requestedId) {
   requireString(requestedId, "requested skill id");
-  if (OBSOLETE.has(requestedId)) {
+  validateSkillAliases(registry);
+  const matches = (registry.skills ?? []).flatMap(skill => (skill.aliases ?? []).filter(alias => alias === requestedId).map(() => skill.id));
+  if (matches.length > 1 || (matches.length && (registry.skills ?? []).some(skill => (skill.aliases ?? []).includes(matches[0])))) fail(`alias 冲突或链: ${requestedId}`);
+  const canonicalId = matches[0] ?? requestedId;
+  const skill = [...(registry.skills ?? []), ...(registry.external_skills ?? [])].find(item => item.id === canonicalId);
+  const retired = readRetirementContract(registry, {legacyIds: OBSOLETE});
+  if (retired.has(canonicalId) && skill?.source !== 'cross-repo-reference') {
     const lifecycleOwner = ["harness-orchestrator", "yss-strategic-design", "yss-product-lifecycle"].find(id => registry.skills?.some(skill => skill.id === id));
     const replacementSkill = ({ "grill-me": "grilling", "wait-what": "i-have-adhd", "grill-with-docs": lifecycleOwner, "to-questionnaire": lifecycleOwner, "improve-codebase-architecture": "codebase-design", "yss-harness-upgrade": "setup-yss-harness" })[requestedId] ?? null;
     throw new SkillLifecycleError(
@@ -87,9 +103,6 @@ export function resolveSkillForNewUse(registry, requestedId) {
       }
     );
   }
-  const aliases = new Map((registry.skills ?? []).flatMap((skill) => (skill.aliases ?? []).map((alias) => [alias, skill.id])));
-  const canonicalId = aliases.get(requestedId) ?? requestedId;
-  const skill = [...(registry.skills ?? []), ...(registry.external_skills ?? [])].find((item) => item.id === canonicalId);
   if (!skill) fail(`未知 skill: ${requestedId}`);
   if (skill.maturity === "deprecated") {
     throw new SkillLifecycleError(
@@ -430,16 +443,7 @@ export function validateSkillRegistry(registry, { lock, compilerContract, lifecy
   }
 
   requireObject(registry.retirement_contract, "retirement_contract");
-  if (registry.retirement_contract.schema_version !== 1) fail("retirement_contract.schema_version 必须为 1");
-  requireStringSet(registry.retirement_contract.stages, ["deprecated", "retired"], "retirement_contract.stages");
-  if (registry.retirement_contract.deprecated_new_use !== "forbidden") fail("retirement_contract.deprecated_new_use 必须为 forbidden");
-  requireStringSet(registry.retirement_contract.cleanup_statuses, [...CLEANUP_STATUSES], "retirement_contract.cleanup_statuses");
-  if (registry.retirement_contract.hard_retirement_tombstone !== ".template-spec/agents/skill-migrations.md") fail("retirement_contract.hard_retirement_tombstone 必须指向技能迁移说明");
-  if (registry.retirement_contract.retired_id_source !== "scripts/lib/skill-supply-chain.mjs#OBSOLETE") fail("retirement_contract.retired_id_source 必须指向统一 OBSOLETE 集");
-  requireObject(registry.retirement_contract.failure_codes, "retirement_contract.failure_codes");
-  if (registry.retirement_contract.failure_codes.deprecated !== SKILL_LIFECYCLE_FAILURE_CODES.deprecated || registry.retirement_contract.failure_codes.retired !== SKILL_LIFECYCLE_FAILURE_CODES.retired) {
-    fail("retirement_contract.failure_codes 必须稳定为 skill-deprecated/skill-retired");
-  }
+  readRetirementContract(registry, {legacyIds: OBSOLETE});
 
   const platform = registry.platform_skills ?? [];
   if (!Array.isArray(platform)) fail("platform_skills 必须是数组");

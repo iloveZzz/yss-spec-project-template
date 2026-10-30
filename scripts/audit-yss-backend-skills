@@ -5,6 +5,8 @@ import { pathToFileURL } from "node:url";
 import { loadSkillRegistry } from "./lib/skill-registry.mjs";
 import { OBSOLETE, ROOT } from "./lib/skill-supply-chain.mjs";
 
+import { readRetirementContract } from './lib/skill-retirement-contract.mjs';
+
 const CLASSIFICATIONS = ["keep", "enhance", "merge-ready", "deprecated", "remove-ready"];
 
 function referencesFor(registry) {
@@ -38,6 +40,7 @@ function referencesFor(registry) {
 }
 
 export function auditBackendSkills(registry, { root = ROOT } = {}) {
+  const retired = readRetirementContract(registry, {legacyIds: OBSOLETE});
   const refs = referencesFor(registry);
   const shared = registry.skills.map((skill) => ({ ...skill, source_kind: "shared" }));
   const external = (registry.external_skills ?? []).map((skill) => ({ ...skill, impacts: ["backend"], source_kind: "external" }));
@@ -65,7 +68,7 @@ export function auditBackendSkills(registry, { root = ROOT } = {}) {
         rationale = classification === "remove-ready"
           ? "replacement is active, positive references are zero, and cleanup_status is remove-ready"
           : "migration shell remains; new use is forbidden";
-      } else if (OBSOLETE.has(skill.id)) {
+      } else if (retired.has(skill.id) && skill.source !== 'cross-repo-reference') {
         classification = canonicalExists ? "deprecated" : "remove-ready";
         rationale = "skill is present in the hard-retirement obsolete set";
       } else if (forbiddenProviders.length || platformManaged.length || capabilities.some((item) => item.id === "migration.springboot3")) {

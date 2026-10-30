@@ -4,11 +4,12 @@ import { loadExecutionScope, assertScopeWorkUnit, scopedNextRoutes } from './lif
 import { createHash } from "node:crypto";
 import { readFileSync, existsSync, lstatSync, readdirSync, withValidationPhase, validationDependencies } from "./validation-phase.mjs";
 import { realpathSync } from "node:fs";
+import { readRetirementContract } from './skill-retirement-contract.mjs';
 import { OBSOLETE } from "./skill-supply-chain.mjs";
 import path from "node:path";
 import { parseDocument } from "../vendor/yaml.mjs";
 import { ROOT, loadRegistry, semanticDigest, validateRegistry } from "./lifecycle-registry.mjs";
-import { loadSkillRegistry } from "./skill-registry.mjs";
+import { loadSkillRegistry, validateSkillAliases } from "./skill-registry.mjs";
 import { loadLifecyclePresenter } from './lifecycle-presentation.mjs';
 
 const LIFECYCLE_REGISTRY_REF = ".template-spec/process/lifecycle-registry.yaml";
@@ -77,11 +78,15 @@ export function createLifecycleContextQuery({ queryProfile, orchestrationContrac
 
   // Availability is an observation, not permission to install, invoke or approve.
   function inspectWorkUnitSkills({ root = ROOT, registry, route, agentRuntime, when = [] }) {
+    validateSkillAliases(registry);
+    const retired = readRetirementContract(registry, {legacyIds: OBSOLETE});
     const issues = [], missing = [], required = new Set();
     const report = (code, skill, ref, message) => issues.push({ code, skill: skill ?? null, ref, message });
     const definitions = [...(registry.skills ?? []), ...(registry.external_skills ?? [])];
     const externalIds = new Set((registry.external_skills ?? []).map(skill => skill.id));
-    const aliases = new Map(definitions.flatMap(skill => (skill.aliases ?? []).map(alias => [alias, skill.id])));
+    const aliasEntries = definitions.flatMap(skill => (skill.aliases ?? []).map(alias => [alias, skill.id]));
+    const aliases = new Map(aliasEntries);
+    if (aliases.size !== aliasEntries.length || aliasEntries.some(([, target]) => aliases.has(target))) throw new TypeError('alias 冲突或链');
     const roots = registry.agent_runtime_roots ?? registry.instance_distribution?.projection_roots ?? {};
     const dependencies = registry.skill_dependencies ?? {};
     function visit(requested) {
@@ -89,7 +94,7 @@ export function createLifecycleContextQuery({ queryProfile, orchestrationContrac
       if (required.has(id)) return;
       required.add(id);
       const definition = definitions.find(skill => skill.id === id);
-      if (OBSOLETE.has(id) || definition?.maturity === 'deprecated') {
+      if ((retired.has(id) && definition?.source !== 'cross-repo-reference') || definition?.maturity === 'deprecated') {
         report('skill-retired', id, '.template-spec/agents/skill-migrations.md',
           definition?.replacement_skill ? '技能已停止新用法；请使用 ' + definition.replacement_skill : '技能已退役；按迁移说明重新路由');
         return;

@@ -1,3 +1,6 @@
+import { parseDocument } from "../vendor/yaml.mjs";
+import { readRetirementContract } from "./skill-retirement-contract.mjs";
+import { syncRetirementProjection } from "./skill-retirement-projection.mjs";
 import { createHash } from "node:crypto";
 import { readRepositoryMode } from "./repository-mode.mjs";
 import { syncWorkBuddyProjections, removeWorkBuddyProjection } from "./workbuddy-projection.mjs";
@@ -19,13 +22,9 @@ function projectionRootsFor(lock) {
   return [...new Set(roots)];
 }
 
-export const OBSOLETE = new Set(["yss-antd-design", "yss-antdv-next-design", "to-" + "prd", "to-" + "issues", "design-an-interface", "qa", "request-refactor-plan", "ubiquitous-language", "edit-article", "obsidian-vault", "writing-great-skills", "code-review-process", "yss-domain-modeling", "yss-dir", "yss-duckdb", "yss-file", "yss-filerunner", "yss-db2mybatis", "yss-mail", "yss-mapper-dynamic", "yss-quality", "yss-sql-condition", "yss-sql-tpl", "yss-valuation", "yss-variable", "yss-openapi", "web-design-engineer", "web-video-presentation", "wireframe-prototype", "wizard", "git-guardrails-claude-code", "claude-handoff", "batch-grill-me", "grill-me", "product-design-prototype", "research", "ask-matt", "dispatching-parallel-agents", "loop-me", "migrate-to-shoehorn", "prototype-page-acceptance", "scaffold-exercises", "setup-pre-commit", "setup-ts-deep-modules", "teach", "writing-beats", "writing-fragments", "writing-shape", "yss-microapp-commit", "yss-page-module-development", "yss-dictionary", "yss-jdbc", "yss-log", "yss-taskflow", "yss-backend-scaffold-application", "yss-backend-scaffold-domain", "yss-backend-scaffold-infrastructure", "yss-backend-scaffold-web", "yss-router", "yss-source-index"]);
-for (const id of ["component-selection-imports", "page-form-module", "page-list-module", "page-skeleton", "vue3-best-practices", "yss-use-table-height", "yss-use-tree-height", "yss-components", "yss-mvc-scaffold-generator", "yss-mvc-design", "yss-mvc-data-analysis-project-initializer", "yss-backend-scaffold-parent", "yss-backend-scaffold-adapter", "yss-application-layer-reference", "yss-domain-layer-reference", "yss-infrastructure-layer-reference", "yss-web-layer-reference"]) OBSOLETE.add(id);
-OBSOLETE.add("grill-with-docs");
-OBSOLETE.add("to-questionnaire");
-OBSOLETE.add("improve-codebase-architecture");
-OBSOLETE.add("wait-what");
-OBSOLETE.add("yss-harness-upgrade");
+// YSS_RETIREMENT_BEGIN sha256=9af8c83cf359052411b734f0d108c2f0fce2f7e9776e1f85a586ffd7167e29e6
+export const OBSOLETE = new Set(["ask-matt","batch-grill-me","claude-handoff","code-review-process","component-selection-imports","design-an-interface","dispatching-parallel-agents","edit-article","file-export-download","formily-foundation","formily-linkage-effects","formily-mode-slot-detail","formily-step-flow","frontend-commit","git-guardrails-claude-code","grill-me","grill-with-docs","improve-codebase-architecture","loop-me","migrate-to-shoehorn","obsidian-vault","page-form-module","page-list-module","page-skeleton","product-design-prototype","prototype-page-acceptance","qa","request-refactor-plan","research","scaffold-exercises","setup-pre-commit","setup-ts-deep-modules","teach","theme-token-usage","to-issues","to-prd","to-questionnaire","ubiquitous-language","vue3-best-practices","wait-what","web-design-engineer","web-video-presentation","wireframe-prototype","wizard","writing-beats","writing-fragments","writing-great-skills","writing-shape","yedit-table-usage","yss-antd-design","yss-antdv-next-design","yss-api-integration","yss-application-layer-reference","yss-backend-scaffold-adapter","yss-backend-scaffold-application","yss-backend-scaffold-domain","yss-backend-scaffold-infrastructure","yss-backend-scaffold-parent","yss-backend-scaffold-web","yss-components","yss-db2mybatis","yss-dictionary","yss-dir","yss-domain-layer-reference","yss-domain-modeling","yss-duckdb","yss-file","yss-filerunner","yss-formily","yss-formily-schema-generator","yss-frontend-scaffold-generator","yss-harness-upgrade","yss-hook","yss-infrastructure-layer-reference","yss-jdbc","yss-log","yss-mail","yss-mapper-dynamic","yss-microapp-commit","yss-mvc-data-analysis-project-initializer","yss-mvc-design","yss-mvc-scaffold-generator","yss-openapi","yss-page-module-development","yss-quality","yss-router","yss-source-index","yss-sql-condition","yss-sql-tpl","yss-taskflow","yss-ui","yss-ui-business-page-generation","yss-use-table-height","yss-use-tree-height","yss-valuation","yss-variable","yss-web-layer-reference","ytable-usage","ytree-usage"]);
+// YSS_RETIREMENT_END
 export function obsoleteCanonicalResidues(names, obsolete = OBSOLETE) {
   return names.filter((name) => obsolete.has(name)).sort();
 }
@@ -107,7 +106,23 @@ export function unlockedCanonicalEntries(names, allowedNames, hasSkillMd = () =>
   const allowed = new Set(allowedNames);
   return names.filter((name) => !allowed.has(name) && !OBSOLETE.has(name) && hasSkillMd(name)).sort();
 }
+function refreshRetirement(check) {
+  const file = path.join(ROOT, ".template-spec/agents/yss-skill-registry.yaml");
+  if (!existsSync(file)) return;
+  const document = parseDocument(readFileSync(file, "utf8"), { uniqueKeys: true });
+  if (document.errors.length) throw document.errors[0];
+  const registry = document.toJS({ maxAliasCount: 0 });
+  const ids = readRetirementContract(registry, { legacyIds: OBSOLETE });
+  if (registry.retirement_contract?.schema_version === 2) {
+    const residue = [...ids].filter(id => lstatSafe(path.join(SOURCE_ROOT, id)));
+    if (residue.length) throw new TypeError(`retired skills remain in canonical root: ${residue.join(", ")}`);
+    syncRetirementProjection({ root: ROOT, ids, check });
+  }
+  OBSOLETE.clear();
+  for (const id of ids) OBSOLETE.add(id);
+}
 export function syncSkills({ check = false, hashCache = new Map(), workbuddyRepositoryRoot = ROOT, templateSourceRoot = ROOT } = {}) {
+  refreshRetirement(check);
   let trackedSet;
   const tracked = ref => (trackedSet ??= trackedPaths()).has(ref);
   const sourceHash = source => {
@@ -222,6 +237,7 @@ function metadata(name, skillPath, directory, previous, canonical = false, sourc
   return result;
 }
 export function updateSkillLock(arguments_ = process.argv.slice(2), { hashCache = new Map() } = {}) {
+  refreshRetirement(arguments_.includes("--check"));
   const oldLock = parseLock(); const projectionRoots = projectionRootsFor(oldLock); const previous = priorMetadata(oldLock); const sources = sourceRevisionMap(oldLock, arguments_); const upstreamRoot = option(arguments_, "upstream-root");
   delete sources["iloveZzz/yss-harness-design-agent"];
   if (upstreamRoot && !existsSync(upstreamRoot)) throw new TypeError(`--upstream-root 不存在: ${upstreamRoot}`);
