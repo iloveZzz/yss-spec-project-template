@@ -42,14 +42,14 @@ function state(directory,prefix=''){return fs.readdirSync(path.join(directory,pr
  if(s.isSymbolicLink())return [{...item,type:'link',target:fs.readlinkSync(file)}];
  return [{...item,type:'file',digest:hash(fs.readFileSync(file))}];
 });}
-function conflictTdd(){
+function conflictDesignSkill(){
  for(const base of ['.agents/skills']){
   const conflict=path.join(scratch,`conflict-${base.split('/')[0].slice(1)}`);initializeNative('spec',conflict,options);
-  const file=path.join(conflict,base,'tdd/SKILL.md');fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,'# 用户已有 TDD 定制\n');
+  const file=path.join(conflict,base,'yss-design-system/SKILL.md');fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,'# 用户已有设计技能定制\n');
   const before=state(conflict),plan=path.join(scratch,`${path.basename(conflict)}.json`);
-  const preview=runNative(['skills','ensure','tdd','--root',conflict,'--plan','--out',plan],options).result;
-  assert.ok(preview.conflicts.includes(`${base}/tdd/SKILL.md`),'Preview must expose the exact custom path');assert.deepEqual(state(conflict),before);
-  runNative(['skills','ensure','tdd','--root',conflict,'--apply','--plan-file',plan],{...options,expectedCode:'CONFLICT'});assert.deepEqual(state(conflict),before,'Apply refusal changed user bytes/modes/timestamps');
+  const preview=runNative(['skills','ensure','yss-design-system','--root',conflict,'--plan','--out',plan],options).result;
+  assert.ok(preview.conflicts.includes(`${base}/yss-design-system/SKILL.md`),'Preview must expose the exact custom path');assert.deepEqual(state(conflict),before);
+  runNative(['skills','ensure','yss-design-system','--root',conflict,'--apply','--plan-file',plan],{...options,expectedCode:'CONFLICT'});assert.deepEqual(state(conflict),before,'Apply refusal changed user bytes/modes/timestamps');
  }
 }
 function ensureSpec(target,inspection,source){
@@ -61,17 +61,13 @@ function ensureSpec(target,inspection,source){
  assert.equal(fs.existsSync(path.join(target,exampleRef)),initialExample);
  const exampleHash=initialExample?asset(target,source,exampleRef):null;
  if(initialExample)assert.equal(exampleHash,inspection.files[exampleRef].digest);
- assert.equal(fs.existsSync(path.join(target,retroRef)),false);assert.equal(fs.existsSync(path.join(target,'.agents/skills/tdd')),false);
- conflictTdd();
- let before=state(target),plan=path.join(scratch,'tdd.json'),preview=runNative(['skills','ensure','tdd','--root',target,'--plan','--out',plan],options).result;
- assert.ok(preview.changes.some(row=>row.path==='.agents/skills/tdd/SKILL.md'));assert.deepEqual(state(target),before);
- runNative(['skills','ensure','tdd','--root',target,'--apply','--plan-file',plan],options);const tddHash=skill(target,source,'tdd');
- before=state(target);applyNative('skills','spec',target,path.join(scratch,'tdd-replay.json'),['ensure','tdd'],options);assert.deepEqual(state(target),before,'Satisfied TDD replay wrote files');
- const stage='stage.verification-release-retrospective';assert.ok(inspection.stageRequirements[stage].paths.includes(retroRef));before=state(target);plan=path.join(scratch,'stage.json');
- preview=runNative(['assets','ensure',stage,'--root',target,'--plan','--out',plan],options).result;assert.ok(preview.changes.some(row=>row.path===retroRef));assert.deepEqual(state(target),before);
- runNative(['assets','ensure',stage,'--root',target,'--apply','--plan-file',plan],options);const retroHash=asset(target,source,retroRef);
- before=state(target);applyNative('assets','spec',target,path.join(scratch,'stage-replay.json'),['ensure',stage],options);assert.deepEqual(state(target),before,'Satisfied stage replay wrote files');
- return {initial_example:initialExample?'fixed-initialization-asset':'not-installed',lifecycle_writing_examples_sha256:exampleHash,retro_stage_ensure:'passed',retro_sha256:retroHash,tdd_plan_apply_replay:'passed',tdd_conflict_preservation:'passed',tdd_hash:tddHash};
+ assert.equal(fs.existsSync(path.join(target,retroRef)),false);assert.equal(fs.existsSync(path.join(target,'.agents/skills/yss-design-system')),false);
+ conflictDesignSkill();
+ let before=state(target),plan=path.join(scratch,'design.json'),preview=runNative(['skills','ensure','yss-design-system','--root',target,'--plan','--out',plan],options).result;
+ assert.ok(preview.changes.some(row=>row.path==='.agents/skills/yss-design-system/SKILL.md'));assert.deepEqual(state(target),before);
+ runNative(['skills','ensure','yss-design-system','--root',target,'--apply','--plan-file',plan],options);const designHash=skill(target,source,'yss-design-system');
+ before=state(target);applyNative('skills','spec',target,path.join(scratch,'design-replay.json'),['ensure','yss-design-system'],options);assert.deepEqual(state(target),before,'Satisfied design skill replay wrote files');
+ return {initial_example:initialExample?'fixed-initialization-asset':'not-installed',lifecycle_writing_examples_sha256:exampleHash,design_skill_plan_apply_replay:'passed',design_skill_conflict_preservation:'passed',design_skill_hash:designHash};
 }
 try{
  assert.equal(hash(fs.readFileSync(binary)),pin.digest);
@@ -82,7 +78,8 @@ try{
   for(const row of exported.files){const file=path.join(out,row.path);assert.equal(hash(fs.readFileSync(file)),row.digest);assert.equal(fs.statSync(file).mode&0o777,row.mode);}
   report.bundle_exports.push({profile,template_commit:inspection.templateCommit,bundle_sha256:inspection.bundleHash,manifest_sha256:inspection.manifestHash,files:exported.files.length,status:'passed'});
   const target=path.join(scratch,`${profile}-instance`);initializeNative(profile,target,options);
-  const writing={document_writing_sha256:asset(target,out,writingRef)},skills={'i-have-adhd':skill(target,out,'i-have-adhd')};
+  const writing={},skills={'i-have-adhd':skill(target,out,'i-have-adhd')};
+  if(profile==='backend')writing.document_writing_sha256=asset(target,out,writingRef);
   if(inspection.files[portableWritingRef])writing.portable_document_writing_sha256=asset(target,out,portableWritingRef);
   if(profile==='spec')Object.assign(writing,ensureSpec(target,inspection,out));
   else{
@@ -91,9 +88,9 @@ try{
    writing.retro_sha256=asset(target,out,retroRef);for(const name of ['implement','tdd'])skills[name]=skill(target,out,name);
   }
   fs.writeFileSync(path.join(target,'contract-smoke.md'),'# 合同阅读验收\n\n目标：保留约束。\n');
-  const view=JSON.parse(node([path.join(target,'scripts/contract'),'view','contract-smoke.md','--kind','spec','--json'],target));assert.equal(view.execution_allowed,false);assert.ok(view.markdown.includes('保留约束'));
+  if(profile==='backend'){const view=JSON.parse(node([path.join(target,'scripts/contract'),'view','contract-smoke.md','--kind','spec','--json'],target));assert.equal(view.execution_allowed,false);assert.ok(view.markdown.includes('保留约束'));}
   runNative(['sync','--root',target],options);
-  const review=JSON.parse(node([path.join(target,'scripts/contract'),'prepare-review','contract-smoke.md','contract-smoke.md','--kind','spec','--json'],target));assert.equal(review.approval_reusable,false);assert.equal(review.execution_allowed,false);
+  if(profile==='backend'){const review=JSON.parse(node([path.join(target,'scripts/contract'),'prepare-review','contract-smoke.md','contract-smoke.md','--kind','spec','--json'],target));assert.equal(review.approval_reusable,false);assert.equal(review.execution_allowed,false);}
   const initialized=execute('git',['init','-q',target],scratch);assert.equal(initialized.status,0,initialized.stderr);
   const identity=parseDocument(fs.readFileSync(path.join(target,'yss-project.yaml'),'utf8')).toJS();
   assert.equal(identity.schema_version,2);assert.equal(identity.repository_mode,'project-instance');
@@ -105,10 +102,11 @@ try{
   assert.equal(sourceProfile.schema_version,3);assert.equal(sourceProfile.profile_id,metadata.profileId);assert.equal(activeProfile.schema_version,sourceProfile.schema_version);assert.equal(activeProfile.profile_id,sourceProfile.profile_id);assert.deepEqual(activeProfile.required_capabilities,sourceProfile.required_capabilities);
   assert.equal(hash(profileBytes),metadata.managedFiles[profileRef].lastApplied.digest);assert.equal(fs.statSync(path.join(target,profileRef)).mode&0o777,metadata.managedFiles[profileRef].lastApplied.mode);
   // Task2 intake is historical-only; current read-only consultation creates no task.
-  const unit=profile==='backend'?'work-unit.harness-entry':'work-unit.entry-triage',before=state(target);
-  runNative(['lifecycle','query','--root',target,'--id',unit],options);
+  const before=state(target);
+  if(profile==='backend')runNative(['lifecycle','query','--root',target,'--id','work-unit.harness-entry'],options);
+  else {const query=runNative(['skills','ensure','yss-design-system','--root',target],options).result;assert.equal(query.stats.changed,0);assert.equal(query.stats.conflicts,0);}
   assert.deepEqual(state(target),before,'Read-only query changed the instance');
-  rows.push({profile,template_commit:inspection.templateCommit,template_source_state:inspection.sourceState,bundle_sha256:inspection.bundleHash,native_copy_export_init_sync:'passed',writing_assets:writing,installed_skill_hashes:skills,reader:'passed',review_preparation:'passed',legacy_task2_generation:'not-executed-historical-only',read_only_query:'passed',release_ready:false});save();console.log(`${profile}: fixed native export/init/sync/read and current read-only query passed`);
+  rows.push({profile,template_commit:inspection.templateCommit,template_source_state:inspection.sourceState,bundle_sha256:inspection.bundleHash,native_copy_export_init_sync:'passed',writing_assets:writing,installed_skill_hashes:skills,reader:profile==='backend'?'passed':'not-applicable',review_preparation:profile==='backend'?'passed':'not-applicable',legacy_task2_generation:'not-executed-historical-only',read_only_query:'passed',release_ready:false});save();console.log(`${profile}: fixed native export/init/sync and current read-only query passed`);
  }
  report.input_after_sha256=verificationInputDigest(root);report.input_drift=report.input_after_sha256!==inputDigest;assert.equal(report.input_drift,false,'Distribution source changed during smoke');
  report.binary_after_sha256=hash(fs.readFileSync(pin.binary));assert.equal(report.binary_after_sha256,pin.digest);report.status='passed';
