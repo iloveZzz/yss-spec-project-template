@@ -273,7 +273,7 @@ export function addVerificationExecutionTasks(plan,{root,repositoryMode='templat
   if(!plan.commands.some(task=>task.task_id==='check.verification-environment')) {
     // Node --check parses files without running their application dependencies.
     // Keep the syntax tasks in the plan; Node itself is always checked by preflight.
-    const preflightPlan={source_requirement:plan.source_requirement,...daily?{strategy:plan.strategy}:{},commands:plan.commands.filter(task=>task.kind!=='syntax').map(task=>({command:task.command,...daily?{resources:task.resources||[]}:{}}))};
+    const preflightPlan={source_requirement:plan.source_requirement,...daily?{strategy:plan.strategy}:{},...(plan.effective_profile==='release'?{candidate_release:true}:{}),commands:plan.commands.filter(task=>task.kind!=='syntax').map(task=>({command:task.command,...daily?{resources:task.resources||[]}:(task.resources||[]).includes('plugin-candidate')?{resources:['plugin-candidate']}:{}}))};
     const command=`${quote(process.execPath)} ${quote(path.join(root,'.template-source/scripts/lib/verification-preflight.mjs'))} --root ${quote(root)} --purpose ${quote(purpose)} --plan-json ${quote(JSON.stringify(preflightPlan))}`;
     plan.commands.unshift({id:'check.verification-environment',task_id:'check.verification-environment',kind:'preflight',group:'preflight',command,gate_ids:['check.verification-environment'],depends_on:[],...daily?{selection_reason:'selected-commands -> 所选命令所需工具缺失或版本错误；合同：fast 执行前置'}:{}});
     plan.groups.unshift('preflight');

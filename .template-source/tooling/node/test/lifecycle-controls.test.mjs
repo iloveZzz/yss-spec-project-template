@@ -33,7 +33,7 @@ test('current Spec retains four stage gates, conditional handoff and rejects cyc
  const r=loadRegistry();assert.equal(r.stages.length,8);assert.equal(r.gates.length,4);assert.equal(r.checks.length,13);
  assert.deepEqual(r.gates.map(g=>g.id).sort(),['gate.plan-approved','gate.spec-baseline-approved','gate.implementation-admitted','gate.delivery-accepted'].sort());
  const orchestration=loadOrchestrationContract(ref=>readFileSync(path.join(root,ref)),'.template-spec/process/orchestration-contract.yaml').value;
- assert.equal(orchestration.work_unit_routes['work-unit.strategic-design-handoff'].applies_when,'explicit-user-package-request');
+ assert.equal(orchestration.work_unit_routes['work-unit.strategic-design-handoff'].applies_when,'unsupported-legacy-only');
  const cyclic=structuredClone(r);cyclic.checks[0].requires_checks=[cyclic.checks[1].id];cyclic.checks[1].requires_checks=[cyclic.checks[0].id];
  assert.throws(()=>validateRegistry(cyclic,{baseline:null}),/依赖循环/);
 });

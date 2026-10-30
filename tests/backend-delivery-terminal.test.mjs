@@ -32,7 +32,7 @@ test('普通材料离线后按当前本端合同复验后端终点，不触发�
 test('本地后端证据复用批准Slice、独立审查与构建部署，不生成战略交接包',async t=>{
   const f=localFixture(t);
   assert.equal((await producer.inspectLocalBackendDelivery(f.root,'local-delivery.json')).delivery.delivery_mode,'local-evidence');
-  await assert.rejects(()=>producer.exportBackendDelivery({sourceRoot:f.root,deliveryRef:'local-delivery.json',output:path.join(f.root,'external-package')}),/本地证据.*外部交付/);
+  await assert.rejects(()=>producer.exportBackendDelivery({sourceRoot:f.root,deliveryRef:'local-delivery.json',output:path.join(f.root,'external-package')}),/legacy-strategic-handoff-unsupported/);
   assert.equal(fs.existsSync(path.join(f.root,'external-package')),false);
   f.delivery.scope.source_ids=['AC-unknown'];f.verification();
   await assert.rejects(()=>producer.inspectLocalBackendDelivery(f.root,'local-delivery.json'),/Spec|验收/);

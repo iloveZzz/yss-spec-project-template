@@ -650,3 +650,24 @@ test('设计原型来源与素材变更选择独立安装和引用检查', () =>
   assert.ok(checks.some(item => item.id === 'check.initialization-reference-boundaries'), ref);
  }
 });
+
+test('插件候选来源或执行器变化选择全部真实插件消费者',()=>{
+ for(const file of ['.template-source/scripts/plugin-candidate.mjs','.template-source/scripts/lib/plugin-candidate.mjs']){
+  const selected=planTemplateVerification({changedFiles:[file]}).commands;
+  for(const id of ['check.plugin-entry-migration','check.plugin-backend-profile','check.plugin-supported-scope']){
+   const check=selected.find(row=>row.id===id);
+   assert.ok(check,`${file}: ${id}`);
+   assert.ok(check.resources.includes('plugin-candidate'),`${id} must identify candidate evidence`);
+  }
+ }
+});
+
+test('发布预检保留候选资源并明确禁止工作树候选充当发布证据',t=>{
+ const directory=fs.mkdtempSync(path.join(os.tmpdir(),'candidate-release-plan-')); t.after(()=>fs.rmSync(directory,{recursive:true,force:true}));
+ const plan=planTemplateVerification({profile:'release',changedFiles:['.template-source/scripts/plugin-candidate.mjs']});
+ const compiled=addVerificationExecutionTasks(plan,{root:ROOT,reportDir:directory});
+ const preflight=compiled.commands.find(item=>item.id==='check.verification-environment');
+ assert.ok(preflight);
+ assert.match(preflight.command,/"candidate_release":true/);
+ assert.match(preflight.command,/"resources":\["plugin-candidate"\]/);
+});

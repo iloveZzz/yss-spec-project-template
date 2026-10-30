@@ -111,7 +111,7 @@ test("setup-template 是薄封装：先供给 Node，再保留已有 Go 或按 p
   const nodeAt = steps.findIndex(step => step.uses === "actions/setup-node@v4"), readerAt = steps.findIndex(step => step.id === "go_version"), goAt = steps.findIndex(step => step.uses === "actions/setup-go@v5");
   assert.ok(nodeAt >= 0 && readerAt > nodeAt && goAt > readerAt, "Go pin reader 必须位于 Node 安装后、Go 安装前");
   assert.equal(steps[readerAt].shell, "bash");
-  assert.deepEqual(steps[readerAt].env, { INPUT_YSS_COMMIT: "${{ inputs.yss-commit }}", INPUT_RUNTIME_ONLY: "${{ inputs.runtime-only }}" });
+  assert.deepEqual(steps[readerAt].env, { INPUT_YSS_COMMIT: "${{ inputs.yss-commit }}", INPUT_RUNTIME_ONLY: "${{ inputs.runtime-only }}", INPUT_CANDIDATE_GO: "${{ inputs.candidate-go }}" });
   assert.equal(steps[goAt].if, "steps.go_version.outputs.go != ''");
   const run = steps[readerAt].run;
   assert.ok(run, "通过 bash 独立步骤读取 Go 版本");
@@ -141,6 +141,10 @@ test("setup-template 是薄封装：先供给 Node，再保留已有 Go 或按 p
     assert.equal(bootstrap.status, 0, bootstrap.stderr);
     assert.equal(fs.readFileSync(bootstrapOutput, "utf8"), pinnedOutput, `${name} 无 Go 时按 pin 供给启动器`);
   }
+  const candidateOutput = path.join(directory, 'candidate');
+  const candidate = spawnSync('/bin/bash', ['-e','-c',run], {cwd:ROOT,encoding:'utf8',env:{...environment,INPUT_YSS_COMMIT:'',INPUT_RUNTIME_ONLY:'true',INPUT_CANDIDATE_GO:'true',PATH:`${existingGo}:${nodeOnly}`,GITHUB_OUTPUT:candidateOutput}});
+  assert.equal(candidate.status,0,candidate.stderr);
+  assert.equal(fs.readFileSync(candidateOutput,'utf8'),pinnedOutput);
 });
 
 test('适配器仅供给基础运行时，按需准备统一交给 gate',()=>{

@@ -75,7 +75,7 @@ try {
   metrics.selected_files = tests.map(file => path.relative(root, file));
   digest = verificationInputDigest(root); metrics.input_sha256 = digest; save();
   const pinned=nativeBinary(env),version=runNative(['version'],{environment:env}).result;
-  const dependencies=['spec'].map(profile=>({profile,binarySha256:pinned.digest,version,snapshot:inspectNative(profile,{environment:env})}));
+  const dependencies=['backend'].map(profile=>({profile,binarySha256:pinned.digest,version,snapshot:inspectNative(profile,{environment:env})}));
   env.YSS_PLUGIN_BINARY=pinned.binary;
   env.YSS_NATIVE_BINARY=pinned.binary;
   env.YSS_NATIVE_BINARY_SHA256=pinned.digest;

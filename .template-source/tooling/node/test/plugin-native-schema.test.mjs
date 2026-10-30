@@ -9,7 +9,7 @@ import { nativeBinary, inspectNative } from '../../../scripts/lib/native-yss.mjs
 import { treeInventory } from '../scripts/tooling-fixture.mjs';
 
 test('known native Bundle4/5 initialize matching governed metadata without weakening project checks', t => {
-  const { binary } = nativeBinary(), snapshot = inspectNative('spec');
+  const { binary } = nativeBinary(), snapshot = inspectNative('backend');
   assert.ok([4, 5].includes(snapshot.schemaVersion));
   t.diagnostic(`real Bundle schema ${snapshot.schemaVersion}, template ${snapshot.templateCommit}`);
   const dir = fs.realpathSync(fs.mkdtempSync(path.join(tmpdir(), 'plugin-native-schema-')));
@@ -36,7 +36,7 @@ test('known native Bundle4/5 initialize matching governed metadata without weake
   assert.equal(ok(call('project-check', ['--target-dir', target])).result, 'binding-matched');
   assert.deepEqual(treeInventory(target), before);
   for (const [key, value] of [
-    ['schemaVersion', 999], ['schemaVersion', snapshot.schemaVersion === 4 ? 5 : 4], ['profile', 'backend'],
+    ['schemaVersion', 999], ['schemaVersion', snapshot.schemaVersion === 4 ? 5 : 4], ['profile', 'spec'],
     ['templateCommit', '0'.repeat(40)], ['snapshotHash', '0'.repeat(64)], ['manifestHash', '0'.repeat(64)], ['templateSourceState', 'unknown'],
     ...(snapshot.schemaVersion === 5 ? [['distribution', { ...metadata.distribution, installation: 'skills' }]] : [])
   ]) {
@@ -47,7 +47,7 @@ test('known native Bundle4/5 initialize matching governed metadata without weake
       assert.deepEqual(treeInventory(target), changed, `${key} rejection must be read-only`);
     } finally { fs.writeFileSync(metadataFile, original); }
   }
-  const skill = path.join(target, '.agents/skills/yss-product-lifecycle/SKILL.md'), mode = fs.statSync(skill).mode & 0o777;
+  const skill = path.join(target, '.agents/skills/harness-orchestrator/SKILL.md'), mode = fs.statSync(skill).mode & 0o777;
   try {
     fs.chmodSync(skill, 0o755);
     const changed = treeInventory(target);

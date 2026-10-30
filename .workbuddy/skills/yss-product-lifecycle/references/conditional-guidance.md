@@ -77,7 +77,7 @@ Spec 是综合研发主控；Spec 文档批准只是一个里程碑。正式功�
 
 `governed` 按 `workflow_execution_result` 与 `state-model.md` 记录状态、证据新鲜度、阻塞、动作、路由、Ticket / Git checkpoint。`daily / standard` 在原任务记录补齐实际测试和适用复核，由 `verify-daily` 核验当前边界；通过只表示本普通任务证据闭合，不表示正式批准、合并或发布。
 
-当前 Profile 职责完成、状态查询或恢复时，用 `yss lifecycle status` 核验显式登记的同功能 checkpoint、当前输入和接收证据。Spec 在本地完成必要设计；用户明确要求正式打包 / 离线交付时才导出冻结包；导入另需目标写入授权。独立 Backend 消费者存在不自动触发包流程，普通材料读取不登记正式跨 Profile 接收 / 汇总。handoff 仅用户手动调用，默认临时续接说明与引用。Backend 终点为 `backend-deliverable`，不等于业务验收或发布。正式 Handoff 的来源批准继续按冻结的 Spec 或 Backend 源政策核验。
+当前 Profile 职责完成、状态查询或恢复时，核验显式登记的同功能 checkpoint 和当前输入。handoff 仅用户手动调用，通过 PR/MR 文件变更与正文交接；旧冻结包和外部后端机器验收不支持，保留本地后端验证。Backend 终点不等于业务验收或发布。
 
 ## 资产整理与工程接入
 

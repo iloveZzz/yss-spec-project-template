@@ -68,7 +68,7 @@ Matt skills 决定如何工作；YSS 生命周期决定是否允许推进；YSS 
 | 实现 | 原生 `work-unit.slice-implementation`；`implement`（用户显式兼容） | 当前合同批准并持久化后执行；内部使用 `tdd`，结果回交后再次核验 |
 | Bug | `diagnosing-bugs`、`tdd` | 先建立红色反馈；高风险影响升级上游门禁 |
 | 审查 | `code-review` | 唯一默认代码审查入口，按当前政策选择自检或所需独立复核；冻结候选复核期间只读；Standards 消费 Spec、仓库治理规则、Slice `required_skills` 和 YSS / Alibaba 专项检查输入；finding 按合同分流修复或 stale 回 实现合同编译器 |
-| 用户明确要求跨上下文交接 | `handoff` | 默认临时续接说明和产物引用；明确正式打包才走原冻结包协议 |
+| 用户明确要求跨上下文交接 | `handoff` | 在 PR/MR 文件变更提供材料，正文提供交接说明；不支持旧冻结包 |
 | 阶段边界 | 生命周期 phase-boundary 合同 | 按 `Continue → /clear → /handoff → subagent → /compact` 选择上下文动作；只记录证据，不扩展生命周期状态 |
 | 解释未落地 | 普通对话与文档写作规范 | 只重新解释当前结论，不改变阶段、门禁、Ticket 或 `ready-for-agent` |
 | 人工步骤 | 人工 checkpoint | 记录 Agent 无法替代的点击、审批、凭据和迁移步骤；秘密值必须隐藏并脱敏 |

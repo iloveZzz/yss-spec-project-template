@@ -28,7 +28,7 @@ disable-model-invocation: true
 - `domain-driven`：调用 `yss-tactical-design`，补齐适用的战略领域输入。
 - `layered-mvc`：由本 skill 直接设计模块职责与依赖方向、用例流程、业务规则、状态转换、事务与回滚、幂等与并发、持久化映射、外部集成和公开测试 seam；不要求战略 DDD、聚合、值对象、Domain Event 或 DDD Gateway。分层边界消费 `.template-spec/agents/backend-architecture-profiles.md`，不得为 MVC 加载 `yss-domain` 或生成 DDD Gateway。
 
-已有 Strategic Design Handoff 时，两种分支都必须先完成导入和目标词汇对账，再逐条承接规则与关键场景。没有战略交接包的项目直接消费批准需求，不能为 MVC 补造战略 DDD。
+PR/MR 材料按主控的在线固定提交核验后作为普通输入，逐条承接规则与关键场景并核验目标词汇。旧战略包及其消费验证已退役，历史绑定不得当作当前验证通过；不能为 MVC 补造战略 DDD。
 
 既有身份 v2 的纯工程变更可显式使用 `design_scope: engineering-only`；按 `references/engineering-design.schema.json` 绑定真实构建单元、写路径、只读依赖、失败处理与测试 seam。不得更改登记业务边界、领域模型、业务规则/状态、持久化、数据库 schema 或 UI；命中这些影响回原架构设计。缺省仍保留原 DDD/MVC 规则，不自动降级。工程分支仍需当前 Spec/API/工程依据、逐条承接、独立技术审查及正式 Slice 批准。
 

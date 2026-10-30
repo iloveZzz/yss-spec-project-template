@@ -2,6 +2,6 @@
   "name": "yss-backend-delivery",
   "version": "0.4.0-dev.1+native.20261006",
   "displayName": "YSS 需求到后端交付",
-  "flow": "Plan → Spec → Design → 工程契约 → 后端实现与验证 → 交付",
+  "flow": "PR/MR 交接 → 后端实现与本地验证",
   "entry": "backend-delivery"
 }

@@ -1,3 +1,5 @@
-## 战略交接快照包
+## PR/MR 交接输入
 
-跨仓交接使用 `scripts/strategic-handoff export / verify / import`。正式导出前补齐源战略的稳定规则 ID、关键场景和当前批准绑定；源资产原字节冻结、包内路径通过清单解析。目标导入只产生快照和对账/承接草案，正式 reconciliation 通过后才能进入战术设计。流程与字段见 `.template-spec/process/strategic-handoff-package.md`。
+用户手动调用 `handoff`，以 GitHub PR / GitLab MR 的文件变更交付材料，并在正文说明来源与待办。接收方按主控在线核验完整变更、固定 head 与所选文件，再作为普通材料处理；Issue 中的 Spec 仍为权威，文件是该次快照。材料和快照不授予批准或实现资格。
+
+旧战略交接包的导出、导入和消费验证已退役，遇到历史绑定应明确阻断受影响工作，不得将旧回执伪装成当前验证。已有数据保留；目标词汇、当前合同和真实用户批准仍须核验。

@@ -718,7 +718,8 @@
         "to-spec",
         "i-have-adhd",
         "code-review",
-        "implement"
+        "implement",
+        "handoff"
       ],
       "files": [
         ".gitignore"
@@ -1177,18 +1178,6 @@
         "grilling": [
           "shared-5efaf28cbd"
         ],
-        "handoff": [
-          "shared-179f5e18c6",
-          "shared-1ecd7d9d6d",
-          "shared-3dcde92723",
-          "shared-5efaf28cbd",
-          "shared-6228adc270",
-          "shared-6bad868043",
-          "shared-933ab8965d",
-          "shared-b3140b6e52",
-          "shared-dd1f0cf33e",
-          "shared-f0a8def348"
-        ],
         "i-have-adhd": [
           "shared-179f5e18c6",
           "shared-6228adc270",
@@ -1480,7 +1469,8 @@
         "to-spec",
         "grilling",
         "domain-modeling",
-        "i-have-adhd"
+        "i-have-adhd",
+        "handoff"
       ],
       "entries": {
         "AGENTS.md": ".template-source/distribution/entries/spec-governed-AGENTS.md",

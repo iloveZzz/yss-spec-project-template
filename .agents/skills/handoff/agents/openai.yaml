@@ -1,5 +1,5 @@
 interface:
   display_name: "Handoff"
-  short_description: "Compact a conversation into a handoff"
+  short_description: "手动将选定产物交接到 PR 或 MR"
 policy:
   allow_implicit_invocation: false

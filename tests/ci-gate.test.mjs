@@ -5,7 +5,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { STEPS, checkNodeEngines, runGate, satisfiesNodeRange, validateOptions } from "../scripts/lib/ci-gate.mjs";
+import { STEPS, checkNodeEngines, readCiSetupEnvironment, runGate, satisfiesNodeRange, validateOptions } from "../scripts/lib/ci-gate.mjs";
 import {loadVerificationProfiles} from '../scripts/lib/template-verification.mjs';
 import { readYssCliPin, platformKey } from "../.template-source/scripts/lib/yss-cli-pin.mjs";
 import { createHash } from 'node:crypto';
@@ -542,6 +542,8 @@ test('需求文件仅准备所选工具且拒绝非法结构、路径和混用',
  const runtime=run({...none,python:'runtime'});assert.equal(runtime.status,0,runtime.stderr);assert.match(runtime.stdout,/Python/);assert.doesNotMatch(runtime.stdout,/pip install.*jsonschema/);
  const vue=run({...none,vue:true});assert.equal(vue.status,0,vue.stderr);assert.match(vue.stdout,/原型作者工具链/);assert.doesNotMatch(vue.stdout,/pnpm --dir \.template-source\/tooling\/node install|Go：/);
  const native=run({...none,native_cli:true});assert.equal(native.status,0,native.stderr);assert.match(native.stdout,/最新正式 Release/);assert.match(native.stdout,/ensure-native-yss\.mjs --json/);assert.match(native.stdout,/Go：/);assert.doesNotMatch(native.stdout,/pnpm --dir \.template-source\/tooling\/node install/);
+ const candidate=run({...none,native_cli:true,plugin_candidate:true});assert.equal(candidate.status,0,candidate.stderr);assert.match(candidate.stdout,/固定 CLI 提交并在仓外构建成对插件候选/);
+ assert.notEqual(run({...none,plugin_candidate:'true'}).status,0);
  for(const bad of ['{',{}, {...none,native_cli:'false'},{...none,unknown:'$(touch sentinel)'}])assert.notEqual(run(bad).status,0);
  for(const args of [['--no-python'],['--toolchain'],['--yss-commit','pin']])assert.notEqual(run(none,args).status,0);
  assert.notEqual(spawnSync(CI_SETUP,['--dry-run','--requirements-file','relative.json'],{encoding:'utf8'}).status,0);
@@ -617,3 +619,13 @@ test('slow 准备不消耗验证本身1000秒预算，超时保留实际退出',
  for(const name of ['sync-skills','update-skill-lock','verify-lifecycle-registry','verify-skill-registry'])assert.equal(run.calls.filter(x=>x.split(' ')[0]===name).length,0,name);
  assert.deepEqual(run.report.verification.guard_task_ids,[]);
  });
+
+test('CI 工具环境固定插件候选凭据并拒绝漂移或缺项',t=>{
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'candidate-setup-env-'));t.after(()=>fs.rmSync(dir,{recursive:true,force:true}));
+ const receipt=path.join(dir,'receipt.json'),file=path.join(dir,'env');fs.writeFileSync(receipt,'candidate');
+ const digest=createHash('sha256').update('candidate').digest('hex');
+ fs.writeFileSync(file,`YSS_PLUGIN_CANDIDATE_RECEIPT=${receipt}\nYSS_PLUGIN_CANDIDATE_RECEIPT_SHA256=${digest}\n`);
+ assert.equal(readCiSetupEnvironment(file).YSS_PLUGIN_CANDIDATE_RECEIPT,receipt);
+ fs.writeFileSync(receipt,'changed');assert.throws(()=>readCiSetupEnvironment(file),/摘要/);
+ fs.writeFileSync(file,`YSS_PLUGIN_CANDIDATE_RECEIPT=${receipt}\n`);assert.throws(()=>readCiSetupEnvironment(file),/缺失/);
+});

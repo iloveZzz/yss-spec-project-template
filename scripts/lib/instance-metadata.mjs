@@ -18,13 +18,13 @@ function baselineSource(value){
 function disposition(value,local=false){ensure(value&&['keep-local','use-merged'].includes(value.choice),'未知保留决定');return {choice:value.choice,target:descriptor(value.target),applied:descriptor(value.applied,local),...(value.ruleId?{ruleId:value.ruleId}:{})};}
 function managedDigest(managed,version){ensure(managed&&typeof managed==='object'&&!Array.isArray(managed),'受管基线缺失');const ordered=[];for(const ref of Object.keys(managed).sort()){ensure(ref&&!ref.startsWith('/')&&!ref.includes('\\')&&!ref.split('/').some(p=>!p||p==='.'||p==='..'||p.toLowerCase()==='.git'),'受管路径越界');const item=managed[ref];ordered.push(JSON.stringify(ref)+':'+JSON.stringify({baseline:descriptor(item.baseline),lastApplied:descriptor(item.lastApplied,version>=3),ownership:item.ownership,...(item.baselineSource?{baselineSource:baselineSource(item.baselineSource)}:{}),...(item.disposition?{disposition:disposition(item.disposition,version>=3)}:{})}));ensure(typeof item.ownership==='string','归属缺失');}return sha(('{'+ordered.join(',')+'}').replace(/[<>&\u2028\u2029]/g,c=>'\\u'+c.charCodeAt(0).toString(16).padStart(4,'0')));}
 function validateBindings(root,native){
- for(const [ref,profile,plugin] of [
-  ['.yss-backend-plugin.json','spec','yss-backend-delivery'],
+ for(const [ref,plugin] of [
+  ['.yss-backend-plugin.json','yss-backend-delivery'],
  ]){
   const binding=read(root,ref);
   if(!binding)continue;
   ensure(native,'插件 binding 缺少匹配原生身份: '+ref);
-  ensure([2,3,4,5].includes(native.schemaVersion)&&(native.schemaVersion!==5||native.distribution.installation==='governed')&&native.profile===profile&&binding.schema_version===2&&binding.plugin===plugin&&binding.profile===profile&&binding.template_commit===native.templateCommit&&binding.bundle_hash===native.bundleHash&&hex(binding.binary_sha256),'插件 binding 与原生身份或来源不一致: '+ref);
+  ensure([2,3,4,5].includes(native.schemaVersion)&&(native.schemaVersion!==5||native.distribution.installation==='governed')&&((native.profile==='spec'&&binding.schema_version===2)||(native.profile==='backend'&&binding.schema_version===3))&&binding.plugin===plugin&&binding.profile===native.profile&&binding.template_commit===native.templateCommit&&binding.bundle_hash===native.bundleHash&&hex(binding.binary_sha256),'插件 binding 与原生身份或来源不一致: '+ref);
  }
 }
 /** Native identity wins only after validation; preserved legacy bytes are lineage. */

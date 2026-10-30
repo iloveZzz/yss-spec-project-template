@@ -29,7 +29,7 @@ test('固定原生工具路径在 Windows 显式保留 exe 后缀', () => {
   assert.equal(runtime.nativeBinaryPath('linux'), 'assets/tool/yss');
 });
 
-for (const [profile, name, build] of [['spec', 'yss-backend-delivery', backendBuild]]) {
+for (const [profile, name, build] of [['backend', 'yss-backend-delivery', backendBuild]]) {
   test(`${profile} 当前主机真实公开打包并执行固定 staged binary`, () => {
     const binary = process.env.YSS_PLUGIN_TEST_BINARY;
     assert.ok(binary, 'fixed YSS_PLUGIN_TEST_BINARY required; no silent test skip');

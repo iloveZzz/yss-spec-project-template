@@ -101,7 +101,9 @@ export async function main() {
   }
   if (positionals[0] === 'query-plan') {
     const template = safe(root, 'assets/template');
-    const child = spawnSync(process.execPath, [safe(template, 'scripts/query-lifecycle-context'), '--mode', 'route', '--stage', 'stage.plan', '--work-unit', 'work-unit.plan-requirements'], { cwd: template, encoding: 'utf8', timeout: 30000 });
+    const { tool } = await import('./native-tool.mjs');
+    const args = tool(root).pin.profile === 'backend' ? ['--work-unit', 'work-unit.harness-entry'] : ['--mode', 'route', '--stage', 'stage.plan', '--work-unit', 'work-unit.plan-requirements'];
+    const child = spawnSync(process.execPath, [safe(template, 'scripts/query-lifecycle-context'), ...args], { cwd: template, encoding: 'utf8', timeout: 30000 });
     if (child.error || child.status !== 0) throw new Error(`query-failed: ${child.error?.message || child.stderr}`);
     result.query = JSON.parse(child.stdout);
   }

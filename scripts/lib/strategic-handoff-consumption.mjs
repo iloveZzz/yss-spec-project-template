@@ -1,5 +1,3 @@
-import {nativeHandoffConsumption} from './native-evidence.mjs';
-export async function verifyConsumption(data,{root=process.cwd(),sliceRef,consumer='tactical',native}={}) {
- if(native===false)throw new TypeError('NATIVE_REQUIRED: 战略消费不再支持进程内校验');
- return nativeHandoffConsumption({root,data,sliceRef,consumer});
+export async function verifyConsumption() {
+ throw Object.assign(new Error('legacy-strategic-handoff-unsupported: 旧战略交接消费已停止支持'), {code:'UNPORTED'});
 }
