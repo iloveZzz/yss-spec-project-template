@@ -17,7 +17,9 @@ function locationFrom(root, ref) {
 }
 function identity(root) {
   const value = parseYaml(readTracking(root, 'yss-project.yaml'));
-  if (value?.schema_version !== 1 || value.repository_mode !== 'project-instance') throw new Error('stage-tracking-project-instance-required');
+  if (!value || typeof value !== 'object' || Array.isArray(value) ||
+      JSON.stringify(Object.keys(value).sort()) !== JSON.stringify(['repository_mode', 'schema_version']) ||
+      ![1, 2].includes(value.schema_version) || value.repository_mode !== 'project-instance') throw new Error('stage-tracking-project-instance-required');
 }
 function enabledTracker(bytes) {
   const match = bytes.match(/^---\r?\n([\s\S]*?)\r?\n---/);

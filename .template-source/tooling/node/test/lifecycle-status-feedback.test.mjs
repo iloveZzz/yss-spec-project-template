@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {installLegacySpecPolicy} from '../../../../scripts/lib/testing/legacy-spec-policy.mjs';
+import {composeProfileTree} from '../../../../scripts/lib/profile-tree.mjs';
 import test from 'node:test';
 import {loadOrchestrationContract} from '../../../../scripts/lib/orchestration-contract.mjs';
 import {cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync} from 'node:fs';
@@ -12,7 +12,8 @@ const sourceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '.
 const {lifecycleStatus} = await import(path.join(sourceRoot, 'scripts/lib/lifecycle-status.mjs'));
 const {renderLifecycleStatus} = await import(path.join(sourceRoot, 'scripts/lib/lifecycle-presentation.mjs'));
 const checkpointRef = 'docs/checkpoint.json';
-const copiedRefs = ['.template-spec/process/lifecycle-registry.yaml', '.template-spec/agents/digital-human-roles.yaml', ...loadOrchestrationContract(ref => readFileSync(path.join(sourceRoot, ref)), '.template-spec/process/orchestration-contract.yaml').refs, 'scripts/verify-lifecycle-checkpoint', 'scripts/verify-plan-spec-entry'];
+const backendRoot = composeProfileTree('backend');
+const copiedRefs = ['.template-spec/process/harness-profile.yaml', '.template-spec/process/lifecycle-registry.yaml', ...loadOrchestrationContract(ref => readFileSync(path.join(backendRoot, ref)), '.template-spec/process/orchestration-contract.yaml').refs, 'scripts/verify-lifecycle-checkpoint', 'scripts/verify-plan-spec-entry'];
 
 function fixture(run) {
   const root = mkdtempSync(path.join(tmpdir(), 'yss-status-feedback-'));
@@ -25,16 +26,13 @@ function fixture(run) {
     put('yss-project.yaml', {schema_version: 1, repository_mode: 'project-instance'});
     for (const ref of copiedRefs) {
       mkdirSync(path.dirname(path.join(root, ref)), {recursive: true});
-      cpSync(path.join(sourceRoot, ref), path.join(root, ref), {recursive:true});
+      cpSync(path.join(backendRoot, ref), path.join(root, ref), {recursive:true});
     }
-    put('.template-spec/process/harness-profile.yaml', {schema_version: 1, profile_id: 'harness.spec-template'});
-    installLegacySpecPolicy(root);
-    rmSync(path.join(root, '.template-spec/process/harness-profile.yaml'));
     const checkpoint = {
-      schema_version: 1, repository_mode: 'project-instance', mode: 'route', status: 'routing', stage: 'stage.plan',
+      schema_version: 1, repository_mode: 'project-instance', mode: 'route', status: 'routing', stage: 'stage.harness-entry',
       artifacts: {}, gates: {}, context_reconciliation: {status: 'pending', ref: null, evidence_refs: []},
-      next_work_unit: 'work-unit.spec-synthesis', blockers: [],
-      stage_tracking: {items: [{id: 'spec', stage: 'stage.spec-architecture', work_unit: 'work-unit.spec-synthesis', owner: '需求负责人', progress: 'pending', source_refs: [], completion: [], dependencies: []}]},
+      next_work_unit: 'work-unit.technical-design', blockers: [],
+      stage_tracking: {items: [{id: 'technical-design', stage: 'stage.technical-design', work_unit: 'work-unit.technical-design', owner: '技术负责人', progress: 'pending', source_refs: [], completion: [], dependencies: []}]},
     };
     const status = () => {put(checkpointRef, checkpoint); return lifecycleStatus({root, checkpointRef});};
     run({root, checkpoint, status, put});
@@ -43,9 +41,9 @@ function fixture(run) {
 
 test('text explains the recorded next stage without claiming approval or entry permission', () => fixture(({status}) => {
   const result = status(), text = renderLifecycleStatus(result);
-  assert.equal(result.next_stage, 'stage.spec-architecture');
-  assert.match(text, /当前阶段：Plan/);
-  assert.match(text, /下一阶段（路由目标）：Spec \/ 功能架构/);
+  assert.equal(result.next_stage, 'stage.technical-design');
+  assert.match(text, /当前阶段：Harness 入口/);
+  assert.match(text, /下一阶段（路由目标）：技术设计/);
   assert.match(text, /不代表.*批准.*可进入/);
   assert.match(text, /待核验.*批准/);
   assert.match(text, /继续条件/);
@@ -59,8 +57,8 @@ test('missing or conflicting recorded stage relations remain unverified, includi
   assert.equal(result.next_stage, null);
   assert.match(renderLifecycleStatus(result), /下一阶段.*待核验/);
   checkpoint.stage_tracking.items = [
-    {...checkpoint.stage_tracking.items[0], stage: 'stage.spec-architecture'},
-    {...checkpoint.stage_tracking.items[0], id: 'another', stage: 'stage.product-design'},
+    {...checkpoint.stage_tracking.items[0], stage: 'stage.technical-design'},
+    {...checkpoint.stage_tracking.items[0], id: 'another', stage: 'stage.slice-contract'},
   ];
   result = status();
   assert.equal(result.next_stage, null);
@@ -79,7 +77,7 @@ test('unknown next units and cancelled work items cannot establish a next stage'
   let result = status();
   assert.equal(result.next_stage, null);
   assert.equal(result.next_step.action_type, 'repair');
-  checkpoint.next_work_unit = 'work-unit.spec-synthesis';
+  checkpoint.next_work_unit = 'work-unit.technical-design';
   Object.assign(checkpoint.stage_tracking.items[0], {work_unit: checkpoint.next_work_unit, progress: 'cancelled'});
   result = status();
   assert.equal(result.next_stage, null);
@@ -87,10 +85,10 @@ test('unknown next units and cancelled work items cannot establish a next stage'
 }));
 
 test('a next work unit in the same stage explains that current-stage work remains', () => fixture(({checkpoint, status}) => {
-  checkpoint.next_work_unit = 'work-unit.plan-requirements';
-  Object.assign(checkpoint.stage_tracking.items[0], {stage: 'stage.plan', work_unit: checkpoint.next_work_unit});
+  checkpoint.next_work_unit = 'work-unit.harness-entry';
+  Object.assign(checkpoint.stage_tracking.items[0], {stage: 'stage.harness-entry', work_unit: checkpoint.next_work_unit});
   const result = status();
-  assert.equal(result.next_stage, 'stage.plan');
+  assert.equal(result.next_stage, 'stage.harness-entry');
   assert.match(renderLifecycleStatus(result), /仍在当前阶段，先完成当前单元/);
   assert.match(renderLifecycleStatus(result), /不代表已批准或可进入/);
 }));
@@ -152,12 +150,12 @@ test('blocked and stale gates remain blockers when a contradictory applicability
 
 test('CLI text output is read-only and lists human pause recovery and verification boundaries', () => fixture(({root, checkpoint, status}) => {
   checkpoint.status = 'paused-human-gate';
-  checkpoint.pause = {owner_or_authority: 'role.test-engineer', reason_code: 'review-required', resume_condition: '当前候选通过独立审查后复验'};
+  checkpoint.pause = {owner_or_authority: '质量负责人', reason_code: 'review-required', resume_condition: '当前候选通过独立审查后复验'};
   status();
   const before = new Map(['yss-project.yaml', checkpointRef, ...copiedRefs].map(ref => [ref, readFileSync(path.join(root, ref))]));
   const cli = spawnSync(process.execPath, [path.join(sourceRoot, 'scripts/lifecycle-status'), '--root', root, '--checkpoint', checkpointRef, '--format', 'text'], {encoding: 'utf8'});
   assert.equal(cli.status, 0, cli.stderr);
-  assert.match(cli.stdout, /负责人：测试工程师/);
+  assert.match(cli.stdout, /负责人：质量负责人/);
   assert.match(cli.stdout, /当前候选通过独立审查后复验/);
   assert.match(cli.stdout, /待核验/);
   assert.match(cli.stdout, /未核验完整批准或执行授权/);

@@ -81,6 +81,15 @@ for(const [cmd,args]of [['javac',['-d',dir,...walk('src/main/java'),main]],['jav
   const prepared=prepareSliceImplementationContract({root,ticket_ref:ticket,sources,refinements});
   assert.deepEqual(prepared.report.blockers,[]);write('slice.json',prepared.slice_contract);
   run('current-backend-slice4-draft',['contract','verify','--kind','slice-draft','--file','slice.json']);
+  const viewContract=structuredClone(prepared.slice_contract),selectedUnit=viewContract.work_units[0].id;
+  const secondUnit=structuredClone(viewContract.work_units[0]);secondUnit.id='work-unit.second';viewContract.work_units.push(secondUnit);write('slice-views.json',viewContract);
+  for(const view of ['review','task','full']){
+   const result=run(`current-backend-slice4-${view}`,['contract','view','--kind','slice','--file','slice-views.json','--view',view,...(view==='task'?['--unit',selectedUnit]:[]),'--profile','backend']);
+   assert.equal(result.view,view);assert.equal(result.execution_allowed,false);
+   assert.deepEqual(result.content.work_units.map(unit=>unit.id),view==='task'?[selectedUnit]:[selectedUnit,secondUnit.id]);
+  }
+  const escaped=structuredClone(prepared.slice_contract);escaped.work_units[0].allowed_write_paths=['outside'];write('slice-escape.json',escaped);
+  run('slice4-scope-escape-refused',['contract','verify','--kind','slice-draft','--file','slice-escape.json'],'PATH');
   assert.equal(prepared.slice_contract.schema_version,4);
   // Current native-installed governance owns the positive persistence path.
   persistSliceDraft(prepared,'persisted-draft.yaml',{root});

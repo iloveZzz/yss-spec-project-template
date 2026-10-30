@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 import { createHash } from "node:crypto";
-import { existsSync, readFileSync, writeFileSync, realpathSync } from "node:fs";
+import { constants, copyFileSync, existsSync, readFileSync, writeFileSync, realpathSync, statSync, lstatSync, mkdtempSync, renameSync, linkSync, rmSync, unlinkSync, chmodSync } from "node:fs";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
-import { parseDocument } from "../../../../scripts/vendor/yaml.mjs";
+import { parseDocument } from "./vendor/yaml.mjs";
 
-const repositoryRoot = fileURLToPath(new URL("../../../../", import.meta.url));
+function createDesignService(repositoryRoot) {
 const designPath = path.join(repositoryRoot, "DESIGN.md");
 const projectionDir = path.join(repositoryRoot, ".template-spec/design/tokens");
 const manifestPath = path.join(projectionDir, ".design-md-projection.json");
@@ -85,15 +85,13 @@ function projectedCssVariables(frontmatter) {
   };
 }
 
-function writeCssProjection(frontmatter) {
-  const cssPath = path.join(projectionDir, "variables.css");
-  let source = readFileSync(cssPath, "utf8");
+function renderCssProjection(frontmatter, source) {
   for (const [name, value] of Object.entries(projectedCssVariables(frontmatter))) {
     const declaration = `  --${name}: ${value};`;
     const pattern = new RegExp(`^\\s*--${escapeRegExp(name)}:.*;$`, "m");
     source = pattern.test(source) ? source.replace(pattern, declaration) : source.replace(":root {\n", `:root {\n${declaration}\n`);
   }
-  writeFileSync(cssPath, source);
+  return source;
 }
 
 function validateCssProjection(frontmatter) {
@@ -130,7 +128,8 @@ function readDesign(file = designPath) {
     const [, group, token] = reference.match(/^\{([^}]+)\.([^}]+)\}$/);
     if (frontmatter[group]?.[token] === undefined) fail(`悬空 token 引用: ${reference}`);
   }
-  if (file === designPath && existsSync(syncMetadataPath) && checkTemplateSync()) {
+  const checkSync = file === designPath && checkTemplateSync();
+  if (checkSync && existsSync(syncMetadataPath)) {
     const syncDocument = parseDocument(readFileSync(syncMetadataPath, "utf8"), { uniqueKeys: true, maxAliasCount: 0 });
     if (syncDocument.errors.length) fail(syncDocument.errors[0].message);
     const sync = syncDocument.toJS({ maxAliasCount: 0 })?.design_system_sync;
@@ -154,14 +153,99 @@ function projectionFiles() {
   return ["theme.json", "tokens.default.json", "tokens.dark.json", "tokens.compact.json", "variables.css", "variables.dark.css"].map((file) => path.join(projectionDir, file));
 }
 
-function writeProjectionManifest() {
-  const { source } = readDesign();
-  const files = Object.fromEntries(projectionFiles().map((file) => [path.relative(repositoryRoot, file), sha256(readFileSync(file))]));
-  writeFileSync(manifestPath, `${JSON.stringify({ schema_version: 1, source: "DESIGN.md", source_sha256: sha256(source), files }, null, 2)}\n`);
+function assertSafeProjectionOutputs(files) {
+  for (const file of files) {
+    let current = repositoryRoot;
+    const parts = path.relative(repositoryRoot, file).split(path.sep);
+    for (const [index, part] of parts.entries()) {
+      current = path.join(current, part);
+      const info = lstatSync(current, { throwIfNoEntry: false });
+      if (info?.isSymbolicLink()) fail(`写入路径不能包含符号链接: ${current}`);
+      if (index < parts.length - 1 && !info?.isDirectory()) fail(`写入目录不可用: ${current}`);
+      if (index === parts.length - 1 && info && !info.isFile()) fail(`写入目标不是普通文件: ${current}`);
+    }
+  }
 }
 
-function writeThemeProjection(frontmatter) {
-  const themeFile = path.join(projectionDir, "theme.json");
+function snapshotFiles(files) {
+  return new Map(files.map(file => {
+    const info = lstatSync(file, { throwIfNoEntry: false });
+    return [file, info ? { bytes: readFileSync(file), mode: info.mode & 0o777 } : null];
+  }));
+}
+
+function matchesSnapshot(file, original) {
+  const info = lstatSync(file, { throwIfNoEntry: false });
+  return Boolean(info) === Boolean(original) && (!info || (info.isFile() && (info.mode & 0o777) === original.mode && readFileSync(file).equals(original.bytes)));
+}
+
+function commitProjections(changes, originals) {
+  if (!changes.size) return;
+  const files = [...changes.keys()];
+  assertSafeProjectionOutputs(files);
+  const staging = mkdtempSync(path.join(projectionDir, ".design-md-"));
+  const committed = [];
+  let preserveStaging = false;
+  try {
+    for (const [index, file] of files.entries()) {
+      const staged = path.join(staging, `new-${index}`), original = originals.get(file);
+      writeFileSync(staged, changes.get(file), { flag: "wx", mode: original?.mode ?? 0o666 });
+      if (original) chmodSync(staged, original.mode);
+    }
+    const probe = path.join(staging, "link-probe");
+    linkSync(path.join(staging, "new-0"), probe);
+    unlinkSync(probe);
+    assertSafeProjectionOutputs(files);
+    for (const [file, original] of originals) {
+      if (!matchesSnapshot(file, original)) fail(`写入前文件发生变化: ${file}`);
+    }
+    for (const [index, file] of files.entries()) {
+      const original = originals.get(file), backup = path.join(staging, `old-${index}`);
+      const item = { file, backup, original, installed: false };
+      if (original) renameSync(file, backup);
+      committed.push(item);
+      if (original && !matchesSnapshot(backup, original)) fail(`写入前文件发生变化: ${file}`);
+      linkSync(path.join(staging, `new-${index}`), file);
+      item.installed = true;
+    }
+    for (const item of committed) {
+      if (item.original && !matchesSnapshot(item.backup, item.original)) fail(`写入时原文件发生变化: ${item.file}`);
+    }
+  } catch (error) {
+    try {
+      for (const item of committed.reverse()) {
+        if (item.installed) {
+          const displaced = `${item.backup}-installed`;
+          renameSync(item.file, displaced);
+          const info = lstatSync(displaced, { throwIfNoEntry: false });
+          if (!info?.isFile() || !readFileSync(displaced).equals(Buffer.from(changes.get(item.file)))) {
+            linkSync(displaced, item.file);
+            unlinkSync(displaced);
+            throw new Error(`回滚时目标发生变化: ${item.file}`);
+          }
+          unlinkSync(displaced);
+        }
+        if (item.original) {
+          if (lstatSync(item.file, { throwIfNoEntry: false })) throw new Error(`回滚目标已被占用: ${item.file}`);
+          try { linkSync(item.backup, item.file); }
+          catch (linkError) {
+            if (!lstatSync(item.backup).isFile()) throw linkError;
+            copyFileSync(item.backup, item.file, constants.COPYFILE_EXCL);
+          }
+          unlinkSync(item.backup);
+        }
+      }
+    } catch (rollbackError) {
+      preserveStaging = true;
+      throw new Error(`${error.message}；回滚未完成，备份保留于 ${staging}: ${rollbackError.message}`);
+    }
+    throw error;
+  } finally {
+    if (!preserveStaging) rmSync(staging, { recursive: true, force: true });
+  }
+}
+
+function themeProjection(frontmatter) {
   const theme = { token: {}, algorithm: "default" };
   const token = theme.token || (theme.token = {});
   const colors = frontmatter.colors;
@@ -197,15 +281,21 @@ function writeThemeProjection(frontmatter) {
     paddingLG: Number.parseInt(spacing.card, 10)
   });
   theme.components = { Card: { borderRadiusLG: token.borderRadiusLG, paddingLG: token.paddingLG } };
-  writeFileSync(themeFile, `${JSON.stringify(theme, null, 2)}\n`);
+  return theme;
 }
 
-function writeAlgorithmProjections(toolchain) {
+function loadAlgorithmTheme(toolchain) {
   if (!toolchain) fail("export --write 需要 --antd-toolchain <独立作者工具目录>，固定 antd 6.6.4");
   const require = createRequire(path.join(path.resolve(toolchain), "package.json"));
   if (require("antd/package.json").version !== "6.6.4") fail("主题算法需要 antd 6.6.4");
-  const { theme } = require("antd");
-  const config = JSON.parse(readFileSync(path.join(projectionDir, "theme.json")));
+  const theme = require("antd").theme;
+  if (!theme || ["defaultAlgorithm", "darkAlgorithm", "compactAlgorithm", "getDesignToken"].some(key => typeof theme[key] !== "function")) {
+    fail("antd 6.6.4 主题算法不完整");
+  }
+  return theme;
+}
+
+function algorithmProjections(theme, config, readSnapshot) {
   const kebab = key => key.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`);
   const snapshots = {};
   for (const [mode, algorithm] of Object.entries({ default: theme.defaultAlgorithm, dark: theme.darkAlgorithm, compact: theme.compactAlgorithm })) {
@@ -213,7 +303,6 @@ function writeAlgorithmProjections(toolchain) {
     // Let the dark algorithm derive neutral colors instead of pinning light aliases.
     if (mode === "dark") for (const key of ["colorBgBase", "colorTextBase", "colorBgLayout", "colorText", "colorTextSecondary", "colorBorder"]) delete token[key];
     snapshots[mode] = theme.getDesignToken({ token, algorithm });
-    writeFileSync(path.join(projectionDir, `tokens.${mode}.json`), JSON.stringify(snapshots[mode], null, 2) + "\n");
   }
   const rewrite = (css, token) => {
     const values = Object.fromEntries(Object.entries(token).map(([key,value]) => [kebab(key),value]));
@@ -225,11 +314,15 @@ function writeAlgorithmProjections(toolchain) {
     });
   };
   const cssPath = path.join(projectionDir, "variables.css");
-  const css = readFileSync(cssPath, "utf8");
+  const css = readSnapshot(cssPath);
   const darkStart = css.indexOf('[data-theme="dark"]');
-  writeFileSync(cssPath, darkStart < 0 ? rewrite(css, snapshots.default) : rewrite(css.slice(0, darkStart), snapshots.default) + rewrite(css.slice(darkStart), snapshots.dark));
+  const lightCss = darkStart < 0 ? rewrite(css, snapshots.default) : rewrite(css.slice(0, darkStart), snapshots.default) + rewrite(css.slice(darkStart), snapshots.dark);
   const darkPath = path.join(projectionDir, "variables.dark.css");
-  writeFileSync(darkPath, rewrite(readFileSync(darkPath, "utf8"), snapshots.dark));
+  return new Map([
+    ...Object.entries(snapshots).map(([mode, token]) => [path.join(projectionDir, `tokens.${mode}.json`), JSON.stringify(token, null, 2) + "\n"]),
+    [cssPath, lightCss],
+    [darkPath, rewrite(readSnapshot(darkPath), snapshots.dark)]
+  ]);
 }
 
 function driftCheck() {
@@ -244,7 +337,7 @@ function driftCheck() {
   }
 }
 
-export function main(argv = process.argv.slice(2)) {
+function runCommand(argv) {
   const [command, ...args] = argv;
   if (command === "lint") {
     const file = args.find((arg) => !arg.startsWith("-")) || designPath;
@@ -259,22 +352,75 @@ export function main(argv = process.argv.slice(2)) {
   }
   if (command === "export") {
     const format = args[0] || "dtcg";
-    const { frontmatter } = readDesign();
+    const { source, frontmatter } = readDesign();
+    const outputs = [
+      ...(args.includes("--write") ? projectionFiles() : []),
+      ...(args.includes("--write-css") ? [path.join(projectionDir, "variables.css")] : []),
+      ...(args.includes("--write-manifest") ? [manifestPath] : [])
+    ];
+    const inputs = args.includes("--write-manifest") ? projectionFiles() : [];
+    const snapshotPaths = [...new Set([...outputs, ...inputs])];
+    assertSafeProjectionOutputs(snapshotPaths);
     process.stdout.write(runUpstream(["export", "DESIGN.md", "--format", format]));
+    const originals = snapshotFiles(snapshotPaths);
+    const snapshotBytes = file => {
+      const original = originals.get(file);
+      if (!original) fail(`缺少投影输入: ${file}`);
+      return original.bytes;
+    };
+    const readSnapshot = file => snapshotBytes(file).toString("utf8");
+    const changes = new Map();
+    const cssPath = path.join(projectionDir, "variables.css");
     if (args.includes("--write")) {
       const toolchain = args[args.indexOf("--antd-toolchain") + 1];
       if (!args.includes("--antd-toolchain") || !toolchain) fail("缺少 --antd-toolchain");
-      writeThemeProjection(frontmatter);
-      writeAlgorithmProjections(toolchain);
-      writeCssProjection(frontmatter);
+      const theme = loadAlgorithmTheme(toolchain);
+      const config = themeProjection(frontmatter);
+      changes.set(path.join(projectionDir, "theme.json"), `${JSON.stringify(config, null, 2)}\n`);
+      for (const [file, value] of algorithmProjections(theme, config, readSnapshot)) changes.set(file, value);
+      changes.set(cssPath, renderCssProjection(frontmatter, changes.get(cssPath)));
     }
     // Visual role aliases do not require rerunning a production theme algorithm.
-    if (args.includes("--write-css") && !args.includes("--write")) writeCssProjection(frontmatter);
-    if (args.includes("--write-manifest")) writeProjectionManifest();
+    if (args.includes("--write-css") && !args.includes("--write")) changes.set(cssPath, renderCssProjection(frontmatter, readSnapshot(cssPath)));
+    if (args.includes("--write-manifest")) {
+      const files = Object.fromEntries(projectionFiles().map(file => [path.relative(repositoryRoot, file), sha256(changes.has(file) ? changes.get(file) : snapshotBytes(file))]));
+      changes.set(manifestPath, `${JSON.stringify({ schema_version: 1, source: "DESIGN.md", source_sha256: sha256(source), files }, null, 2)}\n`);
+    }
+    commitProjections(changes, originals);
     return;
   }
   if (command === "drift") { driftCheck(); process.stdout.write("DESIGN.md 投影无漂移\n"); return; }
   fail("用法: design-md lint|diff|export|drift");
+}
+
+return runCommand;
+}
+
+export function main(argv = process.argv.slice(2)) {
+  const args = [...argv];
+  if (args.some(arg => arg.startsWith("--project-root="))) throw new Error("使用 --project-root <目录>");
+  const index = args.indexOf("--project-root");
+  let root;
+  if (index >= 0) {
+    const value = args[index + 1];
+    if (!value || value.startsWith("-") || args.indexOf("--project-root", index + 1) >= 0) {
+      throw new Error("--project-root 必须指定一次有效目录");
+    }
+    root = path.resolve(value);
+    args.splice(index, 2);
+    if (!existsSync(root) || !statSync(root).isDirectory()) throw new Error("--project-root 目录不存在或不可用");
+  } else {
+    const skill = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
+    const skillRoot = path.dirname(path.dirname(skill));
+    const candidate = path.dirname(skillRoot);
+    const canonical = path.basename(skill) === "yss-design-system" &&
+      path.basename(path.dirname(skill)) === "skills" && [".agents", ".workbuddy"].includes(path.basename(skillRoot));
+    const identified = existsSync(path.join(candidate, "yss-project.yaml")) || existsSync(path.join(candidate, ".yss.json")) ||
+      (existsSync(path.join(candidate, "DESIGN.md")) && existsSync(path.join(candidate, ".template-spec/design/tokens")));
+    if (!canonical || !identified) throw new Error("无法确定项目根目录，请指定 --project-root <目录>");
+    root = candidate;
+  }
+  return createDesignService(root)(args);
 }
 
 function isDirectExecution() {

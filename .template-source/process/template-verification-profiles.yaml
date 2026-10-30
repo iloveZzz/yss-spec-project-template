@@ -14,6 +14,8 @@ profiles:
           - ".template-source/tooling/node/test/design-md.test.mjs"
           - ".agents/skills/yss-design-system/scripts/design-md.mjs"
           - ".workbuddy/skills/yss-design-system/scripts/design-md.mjs"
+          - ".agents/skills/yss-design-system/scripts/vendor/**"
+          - ".workbuddy/skills/yss-design-system/scripts/vendor/**"
           - ".template-source/design/**"
           - ".template-spec/design/**"
           - "scripts/vendor/yaml.mjs"
@@ -239,6 +241,15 @@ profiles:
           - ".template-source/tooling/node/test/lifecycle-status-feedback.test.\
             mjs"
           - "scripts/lib/lifecycle-status.mjs"
+          - "scripts/lib/lifecycle-presentation.mjs"
+          - "scripts/lib/orchestration-contract.mjs"
+          - "scripts/lib/profile-tree.mjs"
+          - "profiles/backend/**"
+          - ".template-spec/process/orchestration-contract.yaml"
+          - ".template-spec/process/orchestration/**"
+          - ".template-spec/process/lifecycle-registry.yaml"
+          - "scripts/verify-lifecycle-checkpoint"
+          - "scripts/verify-plan-spec-entry"
         depends_on: []
         failure_mode: "状态反馈与合同摘要不一致"
       - id: check.plugin-scope-terminal
@@ -405,6 +416,7 @@ profiles:
           - "scripts/fixtures/role-independent-draft/**"
           - "scripts/lib/slice-contract.mjs"
           - "scripts/lib/slice-contract-preparation.mjs"
+          - "scripts/lib/slice-execution-preflight.mjs"
           - "scripts/lib/implementation-contract-compiler.mjs"
           - "scripts/lib/contract-views.mjs"
           - "scripts/lib/slice-contract-views.mjs"
@@ -447,6 +459,18 @@ profiles:
         inputs_complete: true
         input_patterns:
           - "scripts/fixtures/stage-tracking/tracking.test.mjs"
+          - "scripts/fixtures/role-independent-draft/installed-fixture.mjs"
+          - "scripts/lib/stage-tracking.mjs"
+          - "scripts/lib/stage-tracking-migration.mjs"
+          - "scripts/stage-tracking"
+          - "scripts/vendor/yaml.mjs"
+          - ".template-source/distribution/yss-cli-pin.json"
+          - ".template-source/distribution/bundle-profile.json"
+          - ".template-spec/process/checkpoint-boundary.yaml"
+          - ".template-spec/process/schemas/stage-tracking.schema.json"
+          - ".template-spec/process/schemas/lifecycle-checkpoint.schema.json"
+          - ".template-spec/process/templates/lifecycle-checkpoint-template.yaml"
+          - ".template-spec/process/lifecycle-registry.yaml"
           - "scripts/fixtures/user-decision/plan-fixture.mjs"
           - ".template-source/tooling/node/test/approval-consumption.test.mjs"
           - "tests/helpers/yss-instance.mjs"
@@ -963,12 +987,9 @@ profiles:
         depends_on: []
         failure_mode: "推进意图被当作冻结战略包的批准或交付证据"
       - id: check.role-independent-formal-current
-        tier: slow # 原串行长链已执行 142s 仍被取消；fast 明确延后，release 保留。
+        tier: slow # Backend 完整交付链在 fast 延后，release 保留。
         run: "node --test --test-concurrency=1
-          scripts/fixtures/role-independent-draft/formal-plan.test.mjs
-          scripts/fixtures/role-independent-draft/professional-plan.test.mjs
-          scripts/fixtures/role-independent-draft/worker-chain.test.mjs
-          scripts/fixtures/role-independent-draft/handoff-chain.test.mjs"
+          scripts/fixtures/role-independent-draft/worker-chain.test.mjs"
         group: implementation
         resources: [ native-cli, "repo-root-evidence" ]
         inputs_complete: true
@@ -989,7 +1010,7 @@ profiles:
           - ".template-spec/process/schemas/**"
           - ".template-spec/process/orchestration/**"
         depends_on: []
-        failure_mode: "新治理实际安装、连续准备、适用自检、原始用户决定或当前实现证据链未闭合"
+        failure_mode: "Backend 实际安装、连续准备、适用自检、原始用户决定或当前实现证据链未闭合"
       - id: check.validation-native-transport
         run: "node --test tests/validation-phase-native-transport.test.mjs"
         group: feature-assets
@@ -1022,11 +1043,12 @@ profiles:
         depends_on: []
         failure_mode: "合同审查准备放过过期的阅读视图、前后资产身份冲突，或把原决定当成已批准"
       - id: check.plan-review-control-unit
-        tier: slow # 当前安装与事务回归实测超过 60s；fast 延后，release 保留。
+        tier: slow # Backend 四项事务单独实测 252s；并发运行曾超过 300s。
         run: "node --test
           .template-source/tooling/node/test/plan-review-control.test.mjs"
         group: feature-assets
         resources: [ native-cli, python-jsonschema ]
+        timeout_ms: 1800000
         inputs_complete: true
         input_patterns:
           - ".template-source/tooling/node/test/plan-review-control.test.mjs"
@@ -2122,7 +2144,6 @@ profiles:
         failure_mode: "已有性能对照入口的 Python 语法错误；对照仍显式使用原组范围"
       - id: "check.cli-content-identity"
         group: drift-identity
-        tier: slow # cbe04769 发布差异检查实测 81s；fast 延后，release 保留。
         resources: [ "native-cli" ]
         lane: cli-identity-scaffold
         inputs_complete: true
@@ -2136,7 +2157,6 @@ profiles:
         failure_mode: "固定的 yss 二进制与 yss-cli 固定文件的版本、提交或摘要不符，或原生 CLI 消费入口、兼容或来源身份错误"
       - id: "check.cli-content-identity-install"
         group: drift-identity
-        tier: slow # cbe04769 发布差异检查实测 95s；fast 延后，release 保留。
         resources: [ "native-cli" ]
         lane: cli-identity-install
         inputs_complete: true
@@ -2163,7 +2183,6 @@ profiles:
         failure_mode: "固定的 yss 二进制与 yss-cli 固定文件的版本、提交或摘要不符，或原生 CLI 消费入口、兼容或来源身份错误"
       - id: "check.cli-content-identity-rest"
         group: drift-identity
-        tier: slow # cbe04769 发布差异检查实测 62s；fast 延后，release 保留。
         resources: [ "native-cli" ]
         lane: cli-identity-rest
         inputs_complete: true
@@ -2301,9 +2320,22 @@ profiles:
       - id: check.work-layout-stage-tracking
         run: "node --test scripts/fixtures/stage-tracking/tracking.test.mjs"
         group: work-layout
+        resources: [ native-cli ]
         inputs_complete: true
         input_patterns:
           - "scripts/fixtures/stage-tracking/**"
+          - "scripts/fixtures/role-independent-draft/installed-fixture.mjs"
+          - "scripts/lib/stage-tracking.mjs"
+          - "scripts/lib/stage-tracking-migration.mjs"
+          - "scripts/stage-tracking"
+          - "scripts/vendor/yaml.mjs"
+          - ".template-source/distribution/yss-cli-pin.json"
+          - ".template-source/distribution/bundle-profile.json"
+          - ".template-spec/process/checkpoint-boundary.yaml"
+          - ".template-spec/process/schemas/stage-tracking.schema.json"
+          - ".template-spec/process/schemas/lifecycle-checkpoint.schema.json"
+          - ".template-spec/process/templates/lifecycle-checkpoint-template.yaml"
+          - ".template-spec/process/lifecycle-registry.yaml"
         depends_on: []
         failure_mode: "阶段任务定义和 checkpoint 的根不一致"
       - id: check.work-layout-tickets
@@ -2328,11 +2360,13 @@ profiles:
       - id: check.work-layout-lifecycle-transition
         run: "node tests/scenarios/verify-lifecycle-transition-scenarios.mjs"
         group: work-layout
+        resources: [ native-cli ]
         inputs_complete: true
         input_patterns:
           - "tests/scenarios/verify-lifecycle-transition-scenarios.mjs"
           - "scripts/verify-lifecycle-transition-scenarios"
           - "scripts/fixtures/user-decision/plan-fixture.mjs"
+          - "scripts/lib/lifecycle-readiness.mjs"
         depends_on: []
         failure_mode: "目录修正后对应生命周期或证据消费者接受错误引用或拒绝当前有效引用"
       - id: check.work-layout-lifecycle-operator
@@ -2528,12 +2562,9 @@ profiles:
           - .template-source/tooling/node/test/plugin-native-schema.test.mjs
         depends_on: []
         failure_mode: 已移除插件 Profile 仍被接受，或权限与固定可执行路径的支持边界回退
-      - id: check.spec-stage-gates
-        run: node --test --test-concurrency=1 tests/stage-gates-contract.test.mjs
-          tests/stage-result-native.test.mjs
-          scripts/fixtures/role-independent-draft/stage-gates-plan.test.mjs
-          scripts/fixtures/role-independent-draft/stage-gates-delivery.test.mjs
-          scripts/fixtures/role-independent-draft/stage-gates-handoff.test.mjs
+      - id: check.backend-governance-contract
+        run: node --test --test-concurrency=1 tests/backend-governance-contract.test.mjs
+          tests/backend-stage-routing.test.mjs
         resources: [native-cli]
         group: lifecycle
         inputs_complete: true
@@ -2541,34 +2572,36 @@ profiles:
           - .agents/skills/yss-stage-decision/references/*-v4.schema.json
           - .template-source/contracts/2026-10-21-stage-gates-*.md
           - scripts/lib/stage-result.mjs
+          - scripts/lib/native-evidence.mjs
+          - scripts/lib/structured-assets.mjs
+          - scripts/lib/json-schema.mjs
+          - .template-source/distribution/bundle-profile.json
+          - .template-source/distribution/yss-cli-pin.json
           - scripts/lib/testing/stage-gates-fixture.mjs
           - scripts/lib/testing/stage-content-fixture.mjs
+          - scripts/fixtures/role-independent-draft/installed-fixture.mjs
           - tests/stage-gates-contract.test.mjs
           - tests/stage-result-native.test.mjs
-          - scripts/fixtures/role-independent-draft/stage-gates-*.test.mjs
+          - tests/backend-governance-contract.test.mjs
+          - tests/backend-stage-routing.test.mjs
+          - scripts/fixtures/role-independent-draft/stage-gates-plan.test.mjs
+          - scripts/fixtures/role-independent-draft/stage-gates-delivery.test.mjs
+          - scripts/fixtures/role-independent-draft/stage-gates-handoff.test.mjs
+          - scripts/fixtures/role-independent-draft/stage-gates-worker.test.mjs
           - .template-spec/process/orchestration/domain/stage-gates.yaml
           - .template-spec/process/schemas/stage-result.schema.json
           - .template-spec/process/schemas/lifecycle-checkpoint-v2.schema.json
         depends_on: []
-        failure_mode: 四阶段范围、真实授权、实际证据或旧来源选择失效
+        failure_mode: 当前 Backend 治理合同、阶段路由或共享校验器的拒绝保护失效
       - id: check.spec-stage-installed
-        run: node --test --test-concurrency=1 scripts/fixtures/role-independent-draft/stage-gates-installed.test.mjs
+        run: node --test --test-concurrency=1 scripts/fixtures/role-independent-draft/spec-v3-installed.test.mjs
         resources: [native-cli]
         group: lifecycle
         inputs_complete: true
         timeout_ms: 600000
-        input_patterns: ["scripts/fixtures/role-independent-draft/stage-gates-installed.test.mjs", "scripts/lib/testing/stage-*.mjs", ".template-spec/process/orchestration/domain/stage-gates.yaml", ".template-source/distribution/bundle-profile.json"]
+        input_patterns: ["scripts/fixtures/role-independent-draft/spec-v3-installed.test.mjs", "scripts/fixtures/role-independent-draft/stage-gates-installed.test.mjs", "scripts/fixtures/role-independent-draft/stage-gates-worker.test.mjs", "scripts/fixtures/role-independent-draft/installed-fixture.mjs", ".template-source/distribution/bundle-profile.json", ".template-source/distribution/yss-cli-pin.json"]
         depends_on: []
-        failure_mode: 实际安装后的阶段登记、Spec 停止目标或冻结交接失效
-      - id: check.spec-stage-worker
-        run: node --test --test-concurrency=1 scripts/fixtures/role-independent-draft/stage-gates-worker.test.mjs
-        resources: [native-cli]
-        group: lifecycle
-        inputs_complete: true
-        timeout_ms: 1200000
-        input_patterns: ["scripts/fixtures/role-independent-draft/stage-gates-worker.test.mjs", "scripts/lib/testing/stage-*.mjs", ".template-spec/process/orchestration/domain/stage-gates.yaml", "scripts/lib/slice-*.mjs", "scripts/lib/lifecycle-readiness.mjs"]
-        depends_on: []
-        failure_mode: 实际安装后的自动准入、执行证据或交付验收失效
+        failure_mode: 最新 CLI 的新 Spec 安装身份、旧阶段拒绝或设计技能按需补装失效
   release:
     selection: impact
     required_checks:
@@ -2938,7 +2971,7 @@ routing:
       - .template-source/scripts/replay-lifecycle-triage
       - tests/lifecycle-triage-replay.test.mjs
     groups: [lifecycle]
-  - patterns: ["tests/stage-gates-contract.test.mjs", "tests/stage-result-native.test.mjs"]
+  - patterns: ["tests/stage-gates-contract.test.mjs", "tests/stage-result-native.test.mjs", "tests/backend-governance-contract.test.mjs", "tests/backend-stage-routing.test.mjs"]
     groups: [lifecycle]
 
   - patterns: [ "tests/spec-initial-entry.test.mjs", "tests/backend-decision-distribution.test.mjs", "tests/backend-handoff-reference.test.mjs", "tests/skills-reference-imports.test.mjs" ]
@@ -3145,6 +3178,8 @@ routing:
       - .template-source/tooling/node/test/design-md.test.mjs
       - .agents/skills/yss-design-system/scripts/design-md.mjs
       - .workbuddy/skills/yss-design-system/scripts/design-md.mjs
+      - .agents/skills/yss-design-system/scripts/vendor/**
+      - .workbuddy/skills/yss-design-system/scripts/vendor/**
     groups:
       - design-system
   - patterns:
@@ -3584,7 +3619,7 @@ groups:
           Profile)' tests/cli-retirement.test.mjs"
         when: template-source
         id: check.cli-content-identity
-      - run: "node --test --test-name-pattern='^(Spec 原生阶段资源|现役 yss-research)'
+      - run: "node --test --test-name-pattern='^(Spec 3[.]0 按需补装设计技能|现役 yss-research)'
           tests/cli-retirement.test.mjs"
         when: template-source
         id: check.cli-content-identity-install
@@ -3593,7 +3628,7 @@ groups:
         when: template-source
         id: check.cli-content-identity-sync
       - run: "node --test --test-skip-pattern='^(按需安装两个后端脚手架|公开 Bundle 导出|已移除前端
-          Profile)' --test-skip-pattern='^(Spec 原生阶段资源|现役 yss-research)'
+          Profile)' --test-skip-pattern='^(Spec 3[.]0 按需补装设计技能|现役 yss-research)'
           --test-skip-pattern='^backend: 内容来源' tests/cli-retirement.test.mjs"
         when: template-source
         id: check.cli-content-identity-rest
@@ -3649,7 +3684,7 @@ groups:
           Profile)' tests/cli-retirement.test.mjs"
         when: template-source
         id: check.cli-content-identity
-      - run: "node --test --test-name-pattern='^(Spec 原生阶段资源|现役 yss-research)'
+      - run: "node --test --test-name-pattern='^(Spec 3[.]0 按需补装设计技能|现役 yss-research)'
           tests/cli-retirement.test.mjs"
         when: template-source
         id: check.cli-content-identity-install
@@ -3658,7 +3693,7 @@ groups:
         when: template-source
         id: check.cli-content-identity-sync
       - run: "node --test --test-skip-pattern='^(按需安装两个后端脚手架|公开 Bundle 导出|已移除前端
-          Profile)' --test-skip-pattern='^(Spec 原生阶段资源|现役 yss-research)'
+          Profile)' --test-skip-pattern='^(Spec 3[.]0 按需补装设计技能|现役 yss-research)'
           --test-skip-pattern='^backend: 内容来源' tests/cli-retirement.test.mjs"
         when: template-source
         id: check.cli-content-identity-rest
@@ -4045,6 +4080,7 @@ gates:
     impact_dependencies: []
     depends_on: []
     check_ids:
+      - check.workbuddy-skills
       - check.skill-projection-identity
       - check.skill-lock-current
       - check.4301e56b48a9d570
@@ -4081,6 +4117,8 @@ gates:
     impact_dependencies: []
     depends_on: []
     check_ids:
+      - check.schema-generations
+      - check.backend-governance-contract
       - check.structured-assets
       - check.schema-runtime
       - check.8cd499a929b8a5a4
@@ -4162,6 +4200,12 @@ gates:
     impact_dependencies: []
     depends_on: []
     check_ids:
+      - check.profile-consumers-stage-tracking-tracking
+      - check.work-layout-stage-tracking
+      - check.lifecycle-status-feedback
+      - check.backend-governance-contract
+      - check.spec-stage-installed
+      - check.role-independent-formal-current
       - check.yss-cli-pin
       - check.role-independent-contracts
       - check.document-reading-views
@@ -4216,6 +4260,8 @@ gates:
     impact_dependencies: []
     depends_on: []
     check_ids:
+      - check.backend-governance-contract
+      - check.role-independent-formal-current
       - check.spec-role-free-guidance
       - check.role-independent-contracts
       - check.plan-review-control-convergence
@@ -4255,6 +4301,7 @@ gates:
     impact_dependencies: []
     depends_on: []
     check_ids:
+      - check.role-independent-formal-current
       - check.ba0fad1faed81f06
       - check.83f08a7516716a38
       - check.3d61dc45c4a35922
@@ -4374,6 +4421,7 @@ gates:
     impact_dependencies: []
     depends_on: []
     check_ids:
+      - check.spec-stage-installed
       - check.native-consumer-routing
       - check.daily-input-preparation
       - check.daily-test-evidence

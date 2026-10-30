@@ -6,9 +6,138 @@ import path from 'node:path';
 import {planTemplateVerification,loadVerificationProfiles,ROOT} from '../scripts/lib/template-verification.mjs';
 import {resolveVerificationScope} from '../scripts/lib/verification-report.mjs';
 import {spawnSync} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
 import {compileTaskExecution,addVerificationExecutionTasks} from '../.template-source/scripts/lib/verification-execution-plan.mjs';
+const inheritedSlow=process.env.YSS_VERIFY_SLOW;
+delete process.env.YSS_VERIFY_SLOW;
+test.after(()=>{if(inheritedSlow!==undefined)process.env.YSS_VERIFY_SLOW=inheritedSlow;});
 const pilot='.agents/skills/yss-research/SKILL.md';
 const pilotConfig=()=>loadVerificationProfiles();
+test('内部验证默认 fast 与显式 slow 各自生效',()=>{
+ const file='scripts/fixtures/role-independent-draft/worker-chain.test.mjs';
+ assert.ok(!planTemplateVerification({changedFiles:[file]}).commands.some(row=>row.id==='check.role-independent-formal-current'));
+ assert.ok(planTemplateVerification({changedFiles:[file],includeSlow:true}).commands.some(row=>row.id==='check.role-independent-formal-current'));
+});
+test('选择测试忽略外部慢档环境但保留显式 slow',()=>{
+ for(const value of ['1','only']){
+  const env={...process.env,YSS_VERIFY_SLOW:value};delete env.NODE_TEST_CONTEXT;
+  const result=spawnSync(process.execPath,['--test','--test-name-pattern=^内部验证默认 fast',fileURLToPath(import.meta.url)],{env,encoding:'utf8',timeout:120000});
+  assert.equal(result.status,0,`${value}: ${result.stderr||result.stdout}`);
+ }
+});
+test('新 Spec 真实安装与已退役入口选择当前验证，保留其他阶段检查',()=>{
+ const current='scripts/fixtures/role-independent-draft/spec-v3-installed.test.mjs';
+ const retired='scripts/fixtures/role-independent-draft/stage-gates-installed.test.mjs';
+ for(const file of [current,retired,'.template-source/distribution/bundle-profile.json','.template-source/distribution/yss-cli-pin.json','scripts/fixtures/role-independent-draft/installed-fixture.mjs']){
+  const plan=planTemplateVerification({changedFiles:[file]});
+  const checks=plan.commands.filter(row=>row.id==='check.spec-stage-installed');
+  assert.equal(checks.length,1,file);
+  assert.ok(checks[0].command.includes(current),file);
+  assert.ok(checks[0].resources.includes('native-cli'),file);
+  if(file===current||file===retired)assert.ok(!plan.commands.some(row=>row.id==='check.spec-stage-gates'),file);
+ }
+});
+test('旧 Spec 退出测试退役后选择现行 Backend 合同及共享校验',()=>{
+ for(const file of ['scripts/fixtures/role-independent-draft/stage-gates-plan.test.mjs','scripts/fixtures/role-independent-draft/stage-gates-delivery.test.mjs','scripts/fixtures/role-independent-draft/stage-gates-handoff.test.mjs','scripts/fixtures/role-independent-draft/stage-gates-worker.test.mjs','scripts/fixtures/role-independent-draft/installed-fixture.mjs','tests/stage-gates-contract.test.mjs','tests/stage-result-native.test.mjs','tests/backend-governance-contract.test.mjs','tests/backend-stage-routing.test.mjs','scripts/lib/stage-result.mjs','scripts/lib/native-evidence.mjs','scripts/lib/structured-assets.mjs','scripts/lib/json-schema.mjs','.template-source/distribution/bundle-profile.json','.template-source/distribution/yss-cli-pin.json','.template-spec/process/schemas/stage-result.schema.json']){
+  const checks=planTemplateVerification({changedFiles:[file]}).commands.filter(row=>row.id==='check.backend-governance-contract');
+  assert.equal(checks.length,1,file);
+  assert.ok(checks[0].command.includes('tests/backend-governance-contract.test.mjs'),file);
+  assert.ok(checks[0].command.includes('tests/backend-stage-routing.test.mjs'),file);
+  assert.ok(checks[0].resources.includes('native-cli'),file);
+ }
+});
+test('退役 Spec 四阶段实现入口选择当前真实安装检查',()=>{
+ const file='scripts/fixtures/role-independent-draft/stage-gates-worker.test.mjs';
+ const plan=planTemplateVerification({changedFiles:[file]});
+ assert.equal(fs.existsSync(path.join(ROOT,file)),false);
+ assert.equal(plan.commands.filter(row=>row.id==='check.spec-stage-installed').length,1);
+ assert.ok(!plan.commands.some(row=>['check.spec-stage-gates','check.spec-stage-worker'].includes(row.id)));
+});
+test('CLI 安装测试新名称在两个入口精确归组且不会重复执行',()=>{
+ const title='Spec 3.0 按需补装设计技能并保留项目文件';
+ const backend='Backend 3.0 日常路线拒绝前端声明与实际前端文件';
+ for(const name of ['drift-identity','cli-sync']){
+  const commands=loadVerificationProfiles().groups[name].commands;
+  const install=commands.find(row=>row.id==='check.cli-content-identity-install').run;
+  const rest=commands.find(row=>row.id==='check.cli-content-identity-rest').run;
+  const include=install.match(/--test-name-pattern='([^']+)'/);
+  const excludes=[...rest.matchAll(/--test-skip-pattern='([^']+)'/g)];
+  assert.ok(include,name);
+  assert.ok(new RegExp(include[1]).test(title),name);
+  assert.ok(excludes.some(([,pattern])=>new RegExp(pattern).test(title)),name);
+  assert.ok(!excludes.some(([,pattern])=>new RegExp(pattern).test(backend)),name);
+  for(const group of ['check.cli-content-identity','check.cli-content-identity-install','check.cli-content-identity-sync']){
+   const expression=commands.find(row=>row.id===group).run.match(/--test-name-pattern='([^']+)'/);
+   assert.ok(expression&&!new RegExp(expression[1]).test(backend),`${name}: ${group}`);
+  }
+ }
+});
+test('退役旧 Spec 集成后仍按受影响输入选择当前执行前置与生命周期测试',()=>{
+ for(const [file,id] of [['scripts/lib/slice-execution-preflight.mjs','check.role-independent-draft'],['scripts/lib/lifecycle-readiness.mjs','check.work-layout-lifecycle-transition']]){
+  assert.ok(planTemplateVerification({changedFiles:[file]}).commands.some(row=>row.id===id),file);
+ }
+});
+test('CLI 身份测试文件变更时 fast 覆盖所有分组',()=>{
+ for(const file of ['tests/cli-retirement.test.mjs','.template-source/distribution/yss-cli-pin.json']){
+  const plan=planTemplateVerification({changedFiles:[file]});
+  for(const suffix of ['','-install','-sync','-rest']){
+   const id=`check.cli-content-identity${suffix}`;
+   assert.equal(plan.commands.filter(row=>row.id===id).length,1,`${file}: ${id}`);
+   assert.ok(plan.commands.find(row=>row.id===id).resources.includes('native-cli'),id);
+  }
+ }
+});
+test('分发和真实安装变更的 release 检查绑定对应治理风险',()=>{
+ const files=['.template-source/distribution/bundle-profile.json','scripts/fixtures/role-independent-draft/spec-v3-installed.test.mjs','tests/backend-stage-routing.test.mjs'];
+ const plan=planTemplateVerification({profile:'release',changedFiles:files});
+ for(const [id,gates] of [
+  ['check.schema-generations',['check.verification-governance-syntax']],
+  ['check.workbuddy-skills',['check.verification-skills']],
+  ['check.backend-governance-contract',['check.verification-governance-syntax','check.verification-lifecycle','check.verification-approval']],
+  ['check.spec-stage-installed',['check.verification-lifecycle','check.verification-spec-cli']],
+  ['check.role-independent-formal-current',['check.verification-lifecycle','check.verification-approval','check.verification-strategic-contract']]
+ ]){
+  const check=plan.commands.find(row=>row.id===id);
+  assert.ok(check,id);
+  for(const gate of gates)assert.ok(check.gate_ids.includes(gate),`${id}: ${gate}`);
+ }
+ assert.ok(plan.commands.every(check=>check.gate_ids.length));
+});
+test('退役旧 Spec 链后 release 保留真实 Backend 交付链及原治理范围',()=>{
+ for(const file of ['scripts/fixtures/role-independent-draft/formal-plan.test.mjs','scripts/fixtures/role-independent-draft/professional-plan.test.mjs','scripts/fixtures/role-independent-draft/handoff-chain.test.mjs','scripts/fixtures/role-independent-draft/worker-chain.test.mjs','scripts/lib/slice-task-package.mjs']){
+  const plan=planTemplateVerification({profile:'release',changedFiles:[file]});
+  const check=plan.commands.find(row=>row.id==='check.role-independent-formal-current');
+  assert.ok(check,file);
+  assert.ok(check.command.includes('scripts/fixtures/role-independent-draft/worker-chain.test.mjs'),file);
+  for(const retired of ['formal-plan.test.mjs','professional-plan.test.mjs','handoff-chain.test.mjs'])assert.ok(!check.command.includes(retired),retired);
+  for(const gate of ['check.verification-lifecycle','check.verification-approval','check.verification-strategic-contract'])assert.ok(check.gate_ids.includes(gate),gate);
+  assert.ok(check.resources.includes('native-cli')&&check.resources.includes('repo-root-evidence'),file);
+ }
+});
+test('Backend 阶段跟踪和状态反馈的真实依赖触发当前验证',()=>{
+ const tracking=['scripts/lib/stage-tracking-migration.mjs','scripts/lib/stage-tracking.mjs','scripts/fixtures/role-independent-draft/installed-fixture.mjs','.template-source/distribution/yss-cli-pin.json','.template-source/distribution/bundle-profile.json','.template-spec/process/schemas/stage-tracking.schema.json'];
+ for(const file of tracking){
+  const plan=planTemplateVerification({changedFiles:[file]});
+  for(const id of ['check.profile-consumers-stage-tracking-tracking','check.work-layout-stage-tracking']){
+   const check=plan.commands.find(row=>row.id===id);
+   assert.ok(check,file+': '+id);
+   assert.ok(check.resources.includes('native-cli'),id);
+  }
+ }
+ for(const file of ['scripts/lib/profile-tree.mjs','profiles/backend/.template-spec/process/harness-profile.yaml','scripts/lib/lifecycle-presentation.mjs']){
+  const plan=planTemplateVerification({changedFiles:[file]});
+  assert.ok(plan.commands.find(row=>row.id==='check.lifecycle-status-feedback')?.resources.includes('native-cli'),file);
+ }
+ const plan=planTemplateVerification({profile:'release',changedFiles:[...tracking,'scripts/lib/profile-tree.mjs']});
+ for(const [id,gates] of [
+  ['check.profile-consumers-stage-tracking-tracking',['check.verification-distribution','check.verification-lifecycle']],
+  ['check.work-layout-stage-tracking',['check.verification-governance-syntax','check.verification-lifecycle']],
+  ['check.lifecycle-status-feedback',['check.verification-lifecycle']]
+ ]){
+  const check=plan.commands.find(row=>row.id===id);assert.ok(check,id);
+  for(const gate of gates)assert.ok(check.gate_ids.includes(gate),`${id}: ${gate}`);
+ }
+});
 test('初始化入口、Backend 策略和跨端引用变更运行同一个完整分发检查',()=>{
  const impacted=[
   'tests/spec-initial-entry.test.mjs',
@@ -28,7 +157,7 @@ test('初始化入口、Backend 策略和跨端引用变更运行同一个完整
  assert.equal(planTemplateVerification({changedFiles:['README.md']}).commands.some(item=>item.id==='check.initialization-reference-boundaries'),false);
 });
 test('设计工具和身份回归测试变更均选择真实设计工具检查',()=>{
- for(const file of ['.agents/skills/yss-design-system/scripts/design-md.mjs','.workbuddy/skills/yss-design-system/scripts/design-md.mjs','.template-source/tooling/node/test/design-md.test.mjs']){
+ for(const file of ['.agents/skills/yss-design-system/scripts/design-md.mjs','.workbuddy/skills/yss-design-system/scripts/design-md.mjs','.template-source/tooling/node/test/design-md.test.mjs','.agents/skills/yss-design-system/scripts/vendor/yaml.mjs','.workbuddy/skills/yss-design-system/scripts/vendor/yaml.mjs']){
   const checks=planTemplateVerification({changedFiles:[file]}).commands.filter(item=>item.id==='check.design-md-instance-identity');
   assert.equal(checks.length,1,file);
   assert.ok(checks[0].command.includes('.template-source/tooling/node/test/design-md.test.mjs'),file);
@@ -172,7 +301,6 @@ test('Plan审查测试唯一归属保留触发与门禁，耗时组在fast明确
   ['check.role-independent-formal-current','scripts/fixtures/role-independent-draft/handoff-chain.test.mjs'],
   ['check.plan-review-control-unit','.template-source/tooling/node/test/plan-review-control.test.mjs'],
   ['check.plugin-scope-terminal','.template-source/tooling/node/test/plugin-terminal.test.mjs'],
-  ...['check.cli-content-identity','check.cli-content-identity-rest','check.cli-content-identity-install'].map(id=>[id,'.template-source/distribution/yss-cli-pin.json']),
   ['check.plan-spec-entry-scenarios','tests/scenarios/verify-plan-spec-entry-scenarios.mjs'],
   ['check.backend-scaffold-direct-generation','scripts/lib/standalone-backend-scaffold.mjs'],
   ['check.backend-delivery-terminal','scripts/lib/backend-delivery.mjs'],
@@ -395,6 +523,16 @@ test('检查超时：默认值、显式值与非法值', async () => {
   assert.equal(compileVerificationCheck({ run: 'node --test x', timeout_ms: 0 }, { profile: 'fast' }).timeout_ms, 0);
   assert.equal(compileVerificationCheck({ run: 'node --test x', timeout_ms: 1234 }, { profile: 'fast' }).timeout_ms, 1234);
   assert.throws(() => compileVerificationCheck({ run: 'node --test x', timeout_ms: -1 }, { profile: 'fast' }), /VERIFICATION_TIMEOUT_INVALID/);
+});
+test('真实 Backend 审查事务在 slow 与 release 中使用足够的超时预算',()=>{
+ const file='.template-source/tooling/node/test/plan-review-control.test.mjs';
+ for(const options of [{includeSlow:true},{profile:'release'}]){
+  const plan=planTemplateVerification({changedFiles:[file],...options});
+  const check=plan.commands.find(row=>row.id==='check.plan-review-control-unit');
+  assert.ok(check,JSON.stringify(options));
+  assert.equal(check.timeout_ms,1800000,JSON.stringify(options));
+  assert.ok(check.resources.includes('native-cli'));
+ }
 });
 
 test('WorkBuddy projection changes route to skill checks while private host configuration remains unknown', () => {
