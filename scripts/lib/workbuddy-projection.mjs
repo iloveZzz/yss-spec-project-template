@@ -1,4 +1,4 @@
-import { cpSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, renameSync, rmdirSync, rmSync } from 'node:fs';
+import { cpSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync, renameSync, rmdirSync, rmSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import path from 'node:path';
 
@@ -55,8 +55,8 @@ function equal(left, right) {
 function gitLocation(root, ref) {
   const top = spawnSync('git', ['rev-parse', '--show-toplevel'], { cwd: root, encoding: 'utf8' });
   if (top.status !== 0) return { root, ref };
-  const gitRoot = top.stdout.trim();
-  return { root: gitRoot, ref: path.relative(gitRoot, path.join(root, ref)).split(path.sep).join('/') };
+  const gitRoot = realpathSync(top.stdout.trim());
+  return { root: gitRoot, ref: path.relative(gitRoot, path.join(realpathSync(root), ref)).split(path.sep).join('/') };
 }
 function baseline(root, ref) {
   ({ root, ref } = gitLocation(root, ref));

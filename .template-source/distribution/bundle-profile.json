@@ -1521,6 +1521,9 @@
         ],
         "prototype-review": [],
         "yss-design-system": [
+          ".agents/skills/yss-design-system/LICENSE",
+          ".agents/skills/yss-design-system/THIRD-PARTY-NOTICES.md",
+          ".agents/skills/yss-design-system/scripts/vendor/yaml.LICENSE",
           "DESIGN.md",
           ".template-spec/design/tokens/.design-md-projection.json",
           ".template-spec/design/tokens/theme.json",

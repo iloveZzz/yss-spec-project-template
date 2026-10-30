@@ -15,7 +15,7 @@
 1. 新建时在用户约定位置创建新的空原型目录；存在任何用户文件时停止，另选新目录，不覆盖、不静默升级。复制本技能 `assets/prototype/package.json`、`pnpm-lock.yaml`、[Vite 配置](../assets/prototype/vite.config.ts) 和许可证到新目录。命令在该原型目录执行，不在技能或生产目录安装。
 2. 根据页面需要查清清单中组件的文件及依赖，例如 `ui/button/`、`ui/card/` 下必要文件。将每个 `source_url` 的 `https://github.com/unovue/shadcn-vue/blob/` 前缀替换为 `https://raw.githubusercontent.com/unovue/shadcn-vue/`，保留提交及路径；下载至原型目录外的新临时文件。不得使用可变 registry 或凭空补充未知文件。
 3. 在临时文件上执行 `node "<技能目录>/scripts/verify-prototype-source.mjs" --entry "<清单内ui路径>" --file "<临时文件>"`；仅校验成功才放入新原型的 `src/components/ui/<组>/`。读取其 import，按相同流程准备必需相对文件及 `@/components/ui/...`、`@/registry/new-york-v4/ui/...` 组件，直至闭合。原始文件保持字节不变；随技能提供的 Vite 配置将上游 registry 别名映射到 `src/components/ui`，同时将 `@` 映射到 `src`。未列入清单、校验失败或无法确认版本时停止该组件的准备，并报告缺口。
-4. 创建 `src/lib/utils.ts`，以 `clsx` 和 `tailwind-merge` 实现 `cn(...inputs) = twMerge(clsx(inputs))`；创建 `index.html`、`src/main.ts`、`src/App.vue` 和 `src/style.css`；入口导入 CSS 和 App。CSS 导入 `tailwindcss`，依据原型实际组件需要提供语义变量与 `@theme inline` 映射。
+4. 创建 `src/lib/utils.ts`，以 `clsx` 和 `tailwind-merge` 实现 `cn(...inputs) = twMerge(clsx(inputs))`；创建 `index.html`、`src/main.ts`、`src/App.vue` 和 `src/style.css`；入口导入 CSS 和 App。CSS 使用 `@import "tailwindcss";` 和 `@import "tw-animate-css";`，以支持固定组件中的动画工具类，并依据原型实际组件需要提供语义变量与 `@theme inline` 映射。动画可按设计意图调整或关闭，尊重用户的减少动态效果偏好。
 5. 使用 pnpm 10.32.1 在原型目录执行 `pnpm install --frozen-lockfile`，再执行 `pnpm exec vite --host 127.0.0.1`。本机无对应版本时先在隔离工具环境准备，不修改用户全局配置。浏览器实际打开页面后才声称已渲染；需要交互时实际操作要验证的路径。
 
 原型默认模拟数据，不连接真实接口。记录组件来源与摘要、实际包及锁文件、许可证、运行方式、实际检查和未验证范围。网络、组件、依赖或浏览器不可用时保留已有设计成果，说明具体缺口；按用户需要交付可审阅的降级成果，列出未取得的组件和未验证的交互，不声称原型已运行或使用未取得组件。

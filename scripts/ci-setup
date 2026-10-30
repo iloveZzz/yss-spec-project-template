@@ -40,6 +40,7 @@ requirements_file=""
 requirements_mode=0
 legacy_options=0
 toolchain=0
+design_toolchain=0
 yss_commit=""
 dry_run=0
 while (($#)); do
@@ -70,11 +71,11 @@ try {
   if(!path.isAbsolute(file)||!fs.lstatSync(file).isFile())throw new Error('需求文件必须是绝对普通文件');
   const {validateVerificationToolRequirements}=await import(pathToFileURL(path.join(process.argv[3],'.template-source/scripts/lib/verification-preflight.mjs')));
   const needs=validateVerificationToolRequirements(JSON.parse(fs.readFileSync(file,'utf8')));
-  console.log([needs.python,Number(needs.go),Number(needs.native_cli),Number(needs.tooling),Number(needs.vue)].join(' '));
+  console.log([needs.python,Number(needs.go),Number(needs.native_cli),Number(needs.tooling),Number(needs.vue),Number(needs.design_vue)].join(' '));
 }catch(error){console.error(error.message);process.exit(2);}
 JS
 )" || exit 2
-  read -r python_requirement go_needed native_needed tooling toolchain <<< "$requirements"
+  read -r python_requirement go_needed native_needed tooling toolchain design_toolchain <<< "$requirements"
   if [[ "$python_requirement" == none ]]; then python=0; fi
   if [[ "$python_requirement" != jsonschema ]]; then python_schema=0; fi
   if ((native_needed)); then yss_commit=latest; fi
@@ -255,7 +256,7 @@ elif [[ -n "$yss_commit" ]]; then
   fi
 fi
 
-if ((tooling || toolchain)); then
+if ((tooling || toolchain || design_toolchain)); then
   step "pnpm ${YSS_CI_PNPM_VERSION}：准备所选工具的运行器"
   if ((!dry_run)); then
     if [[ "$(pnpm --version 2>/dev/null || true)" != "$YSS_CI_PNPM_VERSION" ]]; then
@@ -281,6 +282,22 @@ if ((toolchain)); then
     cp .agents/skills/yss-prototype-stage/assets/shadcn-vue-authoring/{package.json,pnpm-lock.yaml} "$prototype_toolchain/"
     pnpm --dir "$prototype_toolchain" install --frozen-lockfile --ignore-scripts
     export_var YSS_VUE_TOOLCHAIN "$prototype_toolchain"
+  fi
+fi
+
+if ((design_toolchain)); then
+  step "准备设计原型固定工具链"
+  if ((dry_run)); then
+    echo "+ cp .agents/skills/yss-design-system/assets/prototype/{package.json,pnpm-lock.yaml} <临时目录> && pnpm --dir <临时目录> install --frozen-lockfile --ignore-scripts"
+  else
+    design_prototype_toolchain="$(work_dir)/yss-design-prototype"
+    mkdir -p "$design_prototype_toolchain"
+    cp .agents/skills/yss-design-system/assets/prototype/{package.json,pnpm-lock.yaml} "$design_prototype_toolchain/"
+    design_pnpm_expected="$(node -p 'require(process.argv[1]).packageManager' "$design_prototype_toolchain/package.json")"
+    design_pnpm_actual="pnpm@$(cd "$design_prototype_toolchain" && pnpm --version)"
+    [[ "$design_pnpm_actual" == "$design_pnpm_expected" ]] || fail "设计原型需要 ${design_pnpm_expected}，实际 ${design_pnpm_actual}"
+    (cd "$design_prototype_toolchain" && pnpm install --frozen-lockfile --ignore-scripts)
+    export_var YSS_DESIGN_PROTOTYPE_TOOLCHAIN "$design_prototype_toolchain"
   fi
 fi
 

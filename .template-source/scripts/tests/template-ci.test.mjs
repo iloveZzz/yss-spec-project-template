@@ -95,9 +95,24 @@ test('synthetic 固定源 Go 消费者真实编译、复制和公开导出产生
   assert.ok(readFileSync(result.full_verification.report).length > 0);
   assert.ok(!result.commands.some(row=>row.command==='npm'));assert.equal(result.artifacts.length,1);assert.ok(result.commands.some(row=>row.args[0]==='bundle'&&row.args[1]==='export'));
   assert.ok(result.commands.some(row=>row.args[0]==='init'&&row.args.includes('--apply')));
+  assert.ok(result.commands.some(row=>row.args[0]==='doctor'));
+  assert.ok(result.commands.some(row=>row.args[0]==='diff'));
   assert.ok(result.commands.every(row => row.exit_code === 0));
   assert.equal(git(f.repo, 'status', '--porcelain'), '');
   assert.equal(JSON.parse(readFileSync(path.join(f.output, 'release-verification.json'))).status, 'passed');
+});
+
+test('实例检查即使退出成功也拒绝受管状态漂移', t => {
+  const previous=process.env.YSS_FIXTURE_DRIFT;
+  t.after(()=>{if(previous===undefined)delete process.env.YSS_FIXTURE_DRIFT;else process.env.YSS_FIXTURE_DRIFT=previous;});
+  for(const command of ['doctor','diff']) {
+    const f=fixture(t);process.env.YSS_FIXTURE_DRIFT=command;
+    assert.throws(()=>verifyTemplateRelease({root:f.repo,commit:f.sha,output:f.output,cliFamily:'spec'}),/受管|漂移|conflict/i);
+    const report=JSON.parse(readFileSync(path.join(f.output,'release-verification.json')));
+    assert.equal(report.status,'failed');
+    assert.equal(report.commands.at(-1).args[0],command);
+    assert.equal(report.commands.at(-1).exit_code,0);
+  }
 });
 
 test('真实发布报告兼容 v1 baseline，并拒绝删除 syntax/终检、任务自证和来源错配',t=>{

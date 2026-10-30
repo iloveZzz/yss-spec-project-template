@@ -13,6 +13,16 @@ delete process.env.YSS_VERIFY_SLOW;
 test.after(()=>{if(inheritedSlow!==undefined)process.env.YSS_VERIFY_SLOW=inheritedSlow;});
 const pilot='.agents/skills/yss-research/SKILL.md';
 const pilotConfig=()=>loadVerificationProfiles();
+test('设计技能许可文件变化选择真实安装闭包验证',()=>{
+ for(const root of ['.agents/skills/yss-design-system','.workbuddy/skills/yss-design-system']) {
+  for(const relative of ['LICENSE','THIRD-PARTY-NOTICES.md','scripts/vendor/yaml.LICENSE']) {
+   const file=`${root}/${relative}`;
+   const plan=planTemplateVerification({changedFiles:[file]});
+   assert.deepEqual(plan.unknown_files,[],file);
+   assert.ok(plan.commands.some(row=>row.id==='check.initialization-reference-boundaries'),file);
+  }
+ }
+});
 test('内部验证默认 fast 与显式 slow 各自生效',()=>{
  const file='scripts/fixtures/role-independent-draft/worker-chain.test.mjs';
  assert.ok(!planTemplateVerification({changedFiles:[file]}).commands.some(row=>row.id==='check.role-independent-formal-current'));
@@ -649,4 +659,41 @@ test('设计原型来源与素材变更选择独立安装和引用检查', () =>
   const checks = planTemplateVerification({changedFiles:[ref]}).commands;
   assert.ok(checks.some(item => item.id === 'check.initialization-reference-boundaries'), ref);
  }
+});
+
+test('设计原型动画依赖与指南变化选择动画构建验证', () => {
+ const paths = ['tests/design-prototype-animation.test.mjs'];
+ for (const root of ['.agents/skills/yss-design-system', '.workbuddy/skills/yss-design-system']) {
+  paths.push(`${root}/assets/prototype/package.json`, `${root}/assets/prototype/pnpm-lock.yaml`, `${root}/assets/prototype/vite.config.ts`, `${root}/references/shadcn-vue-prototype.md`);
+ }
+ for (const file of paths) {
+  const plan = planTemplateVerification({changedFiles:[file]});
+  assert.deepEqual(plan.unknown_files, [], file);
+  const check = plan.commands.find(item => item.id === 'check.design-prototype-animation');
+  assert.ok(check, file);
+  assert.ok(check.command.includes('tests/design-prototype-animation.test.mjs'), file);
+ }
+});
+
+test('设计原型动画门禁缺少工具链或使用过期工具链时明确失败', t => {
+ const env = {...process.env};
+ delete env.YSS_DESIGN_PROTOTYPE_TOOLCHAIN;
+ delete env.NODE_TEST_CONTEXT;
+ const args = ['--test', 'tests/design-prototype-animation.test.mjs'];
+ const missing = spawnSync(process.execPath, args, {cwd: ROOT, env, encoding: 'utf8'});
+ assert.notEqual(missing.status, 0);
+ assert.match(missing.stdout + missing.stderr, /缺少原型构建工具链.*pnpm install --frozen-lockfile/);
+ const stale = fs.mkdtempSync(path.join(os.tmpdir(), 'yss-animation-stale-'));
+ t.after(() => fs.rmSync(stale, {recursive: true, force: true}));
+ fs.writeFileSync(path.join(stale, 'package.json'), '{}');
+ const wrong = spawnSync(process.execPath, args, {cwd: ROOT, env: {...env, YSS_DESIGN_PROTOTYPE_TOOLCHAIN: stale}, encoding: 'utf8'});
+ assert.notEqual(wrong.status, 0);
+ assert.match(wrong.stdout + wrong.stderr, /package.json 与当前技能不一致/);
+ const source = path.join(ROOT, '.agents/skills/yss-design-system/assets/prototype');
+ for (const file of ['package.json', 'pnpm-lock.yaml']) fs.copyFileSync(path.join(source, file), path.join(stale, file));
+ fs.mkdirSync(path.join(stale, 'node_modules/.pnpm'), {recursive: true});
+ fs.writeFileSync(path.join(stale, 'node_modules/.pnpm/lock.yaml'), 'stale');
+ const wrongInstalled = spawnSync(process.execPath, args, {cwd: ROOT, env: {...env, YSS_DESIGN_PROTOTYPE_TOOLCHAIN: stale}, encoding: 'utf8'});
+ assert.notEqual(wrongInstalled.status, 0);
+ assert.match(wrongInstalled.stdout + wrongInstalled.stderr, /已安装依赖锁与当前技能不一致/);
 });
