@@ -1,0 +1,80 @@
+[[1;33mWARNING[m] 
+[[1;33mWARNING[m] Some problems were encountered while building the effective settings
+[[1;33mWARNING[m] Unrecognised tag: 'distributionManagement' (position: START_TAG seen ...</properties>\r\n            <distributionManagement>... @206:37)  @ /Users/zhudaoming/.m2/settings.xml, line 206, column 37
+[[1;33mWARNING[m] 
+[[1;34mINFO[m] Scanning for projects...
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] [1mReactor Build Order:[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] ddd-probe-reference-parent                                         [pom]
+[[1;34mINFO[m] ddd-probe-reference-domain                                         [jar]
+[[1;34mINFO[m] ddd-probe-reference-application                                    [jar]
+[[1;34mINFO[m] ddd-probe-reference-infrastructure                                 [jar]
+[[1;34mINFO[m] ddd-probe-reference-adapter                                        [pom]
+[[1;34mINFO[m] ddd-probe-reference-web                                            [jar]
+[[1;34mINFO[m] ddd-probe-reference-bootstrap                                      [jar]
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m-------------< [0;36mcom.yss.example:ddd-probe-reference-parent[0;1m >-------------[m
+[[1;34mINFO[m] [1mBuilding ddd-probe-reference-parent 1.0.0-SNAPSHOT                 [1/7][m
+[[1;34mINFO[m] [1m--------------------------------[ pom ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-dependency-plugin:3.8.1:tree[m [1m(default-cli)[m @ [36mddd-probe-reference-parent[0;1m ---[m
+[[1;34mINFO[m] Wrote dependency tree to: /private/tmp/pr131-requalification/projects/ddd-probe/examples/reference/.yss/platform-dependencies.json
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m-------------< [0;36mcom.yss.example:ddd-probe-reference-domain[0;1m >-------------[m
+[[1;34mINFO[m] [1mBuilding ddd-probe-reference-domain 1.0.0-SNAPSHOT                 [2/7][m
+[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-dependency-plugin:3.8.1:tree[m [1m(default-cli)[m @ [36mddd-probe-reference-domain[0;1m ---[m
+[[1;34mINFO[m] Wrote dependency tree to: /private/tmp/pr131-requalification/projects/ddd-probe/examples/reference/ddd-probe-reference-domain/.yss/platform-dependencies.json
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m----------< [0;36mcom.yss.example:ddd-probe-reference-application[0;1m >-----------[m
+[[1;34mINFO[m] [1mBuilding ddd-probe-reference-application 1.0.0-SNAPSHOT            [3/7][m
+[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-dependency-plugin:3.8.1:tree[m [1m(default-cli)[m @ [36mddd-probe-reference-application[0;1m ---[m
+[[1;34mINFO[m] Wrote dependency tree to: /private/tmp/pr131-requalification/projects/ddd-probe/examples/reference/ddd-probe-reference-application/.yss/platform-dependencies.json
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m---------< [0;36mcom.yss.example:ddd-probe-reference-infrastructure[0;1m >---------[m
+[[1;34mINFO[m] [1mBuilding ddd-probe-reference-infrastructure 1.0.0-SNAPSHOT         [4/7][m
+[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-dependency-plugin:3.8.1:tree[m [1m(default-cli)[m @ [36mddd-probe-reference-infrastructure[0;1m ---[m
+[[1;34mINFO[m] Wrote dependency tree to: /private/tmp/pr131-requalification/projects/ddd-probe/examples/reference/ddd-probe-reference-infrastructure/.yss/platform-dependencies.json
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m------------< [0;36mcom.yss.example:ddd-probe-reference-adapter[0;1m >-------------[m
+[[1;34mINFO[m] [1mBuilding ddd-probe-reference-adapter 1.0.0-SNAPSHOT                [5/7][m
+[[1;34mINFO[m] [1m--------------------------------[ pom ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-dependency-plugin:3.8.1:tree[m [1m(default-cli)[m @ [36mddd-probe-reference-adapter[0;1m ---[m
+[[1;34mINFO[m] Wrote dependency tree to: /private/tmp/pr131-requalification/projects/ddd-probe/examples/reference/ddd-probe-reference-adapter/.yss/platform-dependencies.json
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--------------< [0;36mcom.yss.example:ddd-probe-reference-web[0;1m >---------------[m
+[[1;34mINFO[m] [1mBuilding ddd-probe-reference-web 1.0.0-SNAPSHOT                    [6/7][m
+[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-dependency-plugin:3.8.1:tree[m [1m(default-cli)[m @ [36mddd-probe-reference-web[0;1m ---[m
+[[1;34mINFO[m] Wrote dependency tree to: /private/tmp/pr131-requalification/projects/ddd-probe/examples/reference/ddd-probe-reference-adapter/ddd-probe-reference-web/.yss/platform-dependencies.json
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m-----------< [0;36mcom.yss.example:ddd-probe-reference-bootstrap[0;1m >------------[m
+[[1;34mINFO[m] [1mBuilding ddd-probe-reference-bootstrap 1.0.0-SNAPSHOT              [7/7][m
+[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-dependency-plugin:3.8.1:tree[m [1m(default-cli)[m @ [36mddd-probe-reference-bootstrap[0;1m ---[m
+[[1;34mINFO[m] Wrote dependency tree to: /private/tmp/pr131-requalification/projects/ddd-probe/examples/reference/ddd-probe-reference-bootstrap/.yss/platform-dependencies.json
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] [1mReactor Summary for ddd-probe-reference-parent 1.0.0-SNAPSHOT:[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] ddd-probe-reference-parent ......................... [1;32mSUCCESS[m [  0.261 s]
+[[1;34mINFO[m] ddd-probe-reference-domain ......................... [1;32mSUCCESS[m [  0.011 s]
+[[1;34mINFO[m] ddd-probe-reference-application .................... [1;32mSUCCESS[m [  0.099 s]
+[[1;34mINFO[m] ddd-probe-reference-infrastructure ................. [1;32mSUCCESS[m [  0.053 s]
+[[1;34mINFO[m] ddd-probe-reference-adapter ........................ [1;32mSUCCESS[m [  0.003 s]
+[[1;34mINFO[m] ddd-probe-reference-web ............................ [1;32mSUCCESS[m [  0.028 s]
+[[1;34mINFO[m] ddd-probe-reference-bootstrap ...................... [1;32mSUCCESS[m [  0.018 s]
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] [1;32mBUILD SUCCESS[m
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] Total time:  0.622 s
+[[1;34mINFO[m] Finished at: 2026-10-30T11:23:26+08:00
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m

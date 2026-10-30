@@ -41,7 +41,7 @@
     {
       "architecture_family": "layered-mvc",
       "ref": ".template-spec/engineering/evidence/scaffold-3.2.0/mvc/qualification.json",
-      "digest": "sha256:53a544b94d2e0e6d3f8533b441b06ce977c3c7cb1e054b31e087f0ad5978a03c"
+      "digest": "sha256:de5717e50a6ffdc12b6f3e635de5b3a2c16da2f2672adac666744e83762a94b9"
     }
   ],
   "scope": "ReferenceEntry HTTP create/read/rename, blank-name validation, missing entry, DTO wire format, MapStruct bean, MyBatis/H2 persistence and Spring service transaction rollback. No blanket component API or production certification.",

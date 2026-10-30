@@ -64,11 +64,15 @@ test('runtime module copies bind the canonical source in every composed Profile'
 test('supported native Bundle exports contain runtime manager and portable policy', t => {
   const scratch=temporary(t);
   for(const profile of NATIVE_PROFILES){
-    const expected=inspectNative(profile).files;
+    const inspection=inspectNative(profile),expected=inspection.files;
     const out=path.join(scratch,profile);const exported=runNative(['bundle','export','--profile',profile,'--out',out]).result;
     // 固定 CLI 的 Bundle 绑定其自身清单，当前模板策略由上面的组合树用例核验。
     for(const ref of sharedRefs){assert.ok(exported.files.some(row=>row.path===ref),`${profile}/${ref}`);assert.equal(nativeDigest(fs.readFileSync(path.join(out,ref))),expected[ref].digest,`${profile}/${ref}`);}
-    assert.equal(fs.existsSync(path.join(out,'.template-source')),false);
+    const sourceRoot=path.join(out,'.template-source');
+    if(fs.existsSync(sourceRoot))for(const entry of fs.readdirSync(sourceRoot,{recursive:true,withFileTypes:true}).filter(entry=>!entry.isDirectory())){
+      const ref=path.relative(out,path.join(entry.parentPath,entry.name)).split(path.sep).join('/');
+      assert.ok(entry.isFile() && inspection.manifest.allowFiles.includes(ref),`${profile}/${ref} must be an explicitly allowed reference file`);
+    }
   }
 });
 

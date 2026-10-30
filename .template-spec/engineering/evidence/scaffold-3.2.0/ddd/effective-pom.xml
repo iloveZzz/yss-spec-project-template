@@ -70,8 +70,8 @@
       <caffeine.version>3.2.4</caffeine.version>
       <cassandra-driver.version>4.19.3</cassandra-driver.version>
       <chartset.UTF8>UTF-8</chartset.UTF8>
-      <checkstyle.additional.suppressions.file>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/checkstyle/checkstyle-suppressions.xml</checkstyle.additional.suppressions.file>
-      <checkstyle.suppressions.file>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.file>
+      <checkstyle.additional.suppressions.file>/private/tmp/pr131-requalification/projects/ddd-probe/checkstyle/checkstyle-suppressions.xml</checkstyle.additional.suppressions.file>
+      <checkstyle.suppressions.file>/private/tmp/pr131-requalification/projects/ddd-probe/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.file>
       <classmate.version>1.7.3</classmate.version>
       <commons-codec.version>1.18.0</commons-codec.version>
       <commons-dbcp2.version>2.13.0</commons-dbcp2.version>
@@ -10562,15 +10562,15 @@
       </pluginRepository>
     </pluginRepositories>
     <build>
-      <sourceDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/src/main/java</sourceDirectory>
-      <scriptSourceDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/src/main/scripts</scriptSourceDirectory>
-      <testSourceDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/src/test/java</testSourceDirectory>
-      <outputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/target/classes</outputDirectory>
-      <testOutputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/target/test-classes</testOutputDirectory>
+      <sourceDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/src/main/java</sourceDirectory>
+      <scriptSourceDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/src/main/scripts</scriptSourceDirectory>
+      <testSourceDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/src/test/java</testSourceDirectory>
+      <outputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/target/classes</outputDirectory>
+      <testOutputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/target/test-classes</testOutputDirectory>
       <resources>
         <resource>
           <filtering>true</filtering>
-          <directory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/src/main/resources</directory>
+          <directory>/private/tmp/pr131-requalification/projects/ddd-probe/src/main/resources</directory>
           <includes>
             <include>**/application*.yml</include>
             <include>**/application*.yaml</include>
@@ -10578,7 +10578,7 @@
           </includes>
         </resource>
         <resource>
-          <directory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/src/main/resources</directory>
+          <directory>/private/tmp/pr131-requalification/projects/ddd-probe/src/main/resources</directory>
           <excludes>
             <exclude>**/application*.yml</exclude>
             <exclude>**/application*.yaml</exclude>
@@ -10588,10 +10588,10 @@
       </resources>
       <testResources>
         <testResource>
-          <directory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/src/test/resources</directory>
+          <directory>/private/tmp/pr131-requalification/projects/ddd-probe/src/test/resources</directory>
         </testResource>
       </testResources>
-      <directory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/target</directory>
+      <directory>/private/tmp/pr131-requalification/projects/ddd-probe/target</directory>
       <finalName>ddd-probe-parent-1.0.0-SNAPSHOT</finalName>
       <pluginManagement>
         <plugins>
@@ -10612,7 +10612,7 @@
                 </goals>
                 <configuration>
                   <projectType>application</projectType>
-                  <outputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/target/classes/META-INF/sbom</outputDirectory>
+                  <outputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/target/classes/META-INF/sbom</outputDirectory>
                   <outputFormat>json</outputFormat>
                   <outputName>application.cdx</outputName>
                 </configuration>
@@ -10636,14 +10636,14 @@
                 <configuration>
                   <verbose>true</verbose>
                   <generateGitPropertiesFile>true</generateGitPropertiesFile>
-                  <generateGitPropertiesFilename>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/target/classes/git.properties</generateGitPropertiesFilename>
+                  <generateGitPropertiesFilename>/private/tmp/pr131-requalification/projects/ddd-probe/target/classes/git.properties</generateGitPropertiesFilename>
                 </configuration>
               </execution>
             </executions>
             <configuration>
               <verbose>true</verbose>
               <generateGitPropertiesFile>true</generateGitPropertiesFile>
-              <generateGitPropertiesFilename>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/target/classes/git.properties</generateGitPropertiesFilename>
+              <generateGitPropertiesFilename>/private/tmp/pr131-requalification/projects/ddd-probe/target/classes/git.properties</generateGitPropertiesFilename>
             </configuration>
           </plugin>
           <plugin>
@@ -10734,12 +10734,12 @@
                   <goal>verify</goal>
                 </goals>
                 <configuration>
-                  <classesDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/target/classes</classesDirectory>
+                  <classesDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/target/classes</classesDirectory>
                 </configuration>
               </execution>
             </executions>
             <configuration>
-              <classesDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/target/classes</classesDirectory>
+              <classesDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/target/classes</classesDirectory>
             </configuration>
           </plugin>
           <plugin>
@@ -11069,7 +11069,7 @@
                 <goal>site</goal>
               </goals>
               <configuration>
-                <outputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/target/site</outputDirectory>
+                <outputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/target/site</outputDirectory>
                 <reportPlugins>
                   <reportPlugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -11085,7 +11085,7 @@
                 <goal>deploy</goal>
               </goals>
               <configuration>
-                <outputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/target/site</outputDirectory>
+                <outputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/target/site</outputDirectory>
                 <reportPlugins>
                   <reportPlugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -11096,7 +11096,7 @@
             </execution>
           </executions>
           <configuration>
-            <outputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/target/site</outputDirectory>
+            <outputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/target/site</outputDirectory>
             <reportPlugins>
               <reportPlugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -11108,7 +11108,7 @@
       </plugins>
     </build>
     <reporting>
-      <outputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/target/site</outputDirectory>
+      <outputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/target/site</outputDirectory>
     </reporting>
   </project>
   <!-- ====================================================================== -->
@@ -11165,8 +11165,8 @@
       <caffeine.version>3.2.4</caffeine.version>
       <cassandra-driver.version>4.19.3</cassandra-driver.version>
       <chartset.UTF8>UTF-8</chartset.UTF8>
-      <checkstyle.additional.suppressions.file>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-domain/checkstyle/checkstyle-suppressions.xml</checkstyle.additional.suppressions.file>
-      <checkstyle.suppressions.file>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-domain/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.file>
+      <checkstyle.additional.suppressions.file>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-domain/checkstyle/checkstyle-suppressions.xml</checkstyle.additional.suppressions.file>
+      <checkstyle.suppressions.file>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-domain/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.file>
       <classmate.version>1.7.3</classmate.version>
       <commons-codec.version>1.18.0</commons-codec.version>
       <commons-dbcp2.version>2.13.0</commons-dbcp2.version>
@@ -21665,15 +21665,15 @@
       </pluginRepository>
     </pluginRepositories>
     <build>
-      <sourceDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-domain/src/main/java</sourceDirectory>
-      <scriptSourceDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-domain/src/main/scripts</scriptSourceDirectory>
-      <testSourceDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-domain/src/test/java</testSourceDirectory>
-      <outputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-domain/target/classes</outputDirectory>
-      <testOutputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-domain/target/test-classes</testOutputDirectory>
+      <sourceDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-domain/src/main/java</sourceDirectory>
+      <scriptSourceDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-domain/src/main/scripts</scriptSourceDirectory>
+      <testSourceDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-domain/src/test/java</testSourceDirectory>
+      <outputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-domain/target/classes</outputDirectory>
+      <testOutputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-domain/target/test-classes</testOutputDirectory>
       <resources>
         <resource>
           <filtering>true</filtering>
-          <directory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-domain/src/main/resources</directory>
+          <directory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-domain/src/main/resources</directory>
           <includes>
             <include>**/application*.yml</include>
             <include>**/application*.yaml</include>
@@ -21681,7 +21681,7 @@
           </includes>
         </resource>
         <resource>
-          <directory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-domain/src/main/resources</directory>
+          <directory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-domain/src/main/resources</directory>
           <excludes>
             <exclude>**/application*.yml</exclude>
             <exclude>**/application*.yaml</exclude>
@@ -21691,10 +21691,10 @@
       </resources>
       <testResources>
         <testResource>
-          <directory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-domain/src/test/resources</directory>
+          <directory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-domain/src/test/resources</directory>
         </testResource>
       </testResources>
-      <directory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-domain/target</directory>
+      <directory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-domain/target</directory>
       <finalName>ddd-probe-domain-1.0.0-SNAPSHOT</finalName>
       <pluginManagement>
         <plugins>
@@ -21715,7 +21715,7 @@
                 </goals>
                 <configuration>
                   <projectType>application</projectType>
-                  <outputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-domain/target/classes/META-INF/sbom</outputDirectory>
+                  <outputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-domain/target/classes/META-INF/sbom</outputDirectory>
                   <outputFormat>json</outputFormat>
                   <outputName>application.cdx</outputName>
                 </configuration>
@@ -21739,14 +21739,14 @@
                 <configuration>
                   <verbose>true</verbose>
                   <generateGitPropertiesFile>true</generateGitPropertiesFile>
-                  <generateGitPropertiesFilename>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-domain/target/classes/git.properties</generateGitPropertiesFilename>
+                  <generateGitPropertiesFilename>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-domain/target/classes/git.properties</generateGitPropertiesFilename>
                 </configuration>
               </execution>
             </executions>
             <configuration>
               <verbose>true</verbose>
               <generateGitPropertiesFile>true</generateGitPropertiesFile>
-              <generateGitPropertiesFilename>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-domain/target/classes/git.properties</generateGitPropertiesFilename>
+              <generateGitPropertiesFilename>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-domain/target/classes/git.properties</generateGitPropertiesFilename>
             </configuration>
           </plugin>
           <plugin>
@@ -21837,12 +21837,12 @@
                   <goal>verify</goal>
                 </goals>
                 <configuration>
-                  <classesDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-domain/target/classes</classesDirectory>
+                  <classesDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-domain/target/classes</classesDirectory>
                 </configuration>
               </execution>
             </executions>
             <configuration>
-              <classesDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-domain/target/classes</classesDirectory>
+              <classesDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-domain/target/classes</classesDirectory>
             </configuration>
           </plugin>
           <plugin>
@@ -22323,7 +22323,7 @@
                 <goal>site</goal>
               </goals>
               <configuration>
-                <outputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-domain/target/site</outputDirectory>
+                <outputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-domain/target/site</outputDirectory>
                 <reportPlugins>
                   <reportPlugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -22339,7 +22339,7 @@
                 <goal>deploy</goal>
               </goals>
               <configuration>
-                <outputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-domain/target/site</outputDirectory>
+                <outputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-domain/target/site</outputDirectory>
                 <reportPlugins>
                   <reportPlugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -22350,7 +22350,7 @@
             </execution>
           </executions>
           <configuration>
-            <outputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-domain/target/site</outputDirectory>
+            <outputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-domain/target/site</outputDirectory>
             <reportPlugins>
               <reportPlugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -22362,7 +22362,7 @@
       </plugins>
     </build>
     <reporting>
-      <outputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-domain/target/site</outputDirectory>
+      <outputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-domain/target/site</outputDirectory>
     </reporting>
   </project>
   <!-- ====================================================================== -->
@@ -22419,8 +22419,8 @@
       <caffeine.version>3.2.4</caffeine.version>
       <cassandra-driver.version>4.19.3</cassandra-driver.version>
       <chartset.UTF8>UTF-8</chartset.UTF8>
-      <checkstyle.additional.suppressions.file>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-application/checkstyle/checkstyle-suppressions.xml</checkstyle.additional.suppressions.file>
-      <checkstyle.suppressions.file>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-application/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.file>
+      <checkstyle.additional.suppressions.file>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-application/checkstyle/checkstyle-suppressions.xml</checkstyle.additional.suppressions.file>
+      <checkstyle.suppressions.file>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-application/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.file>
       <classmate.version>1.7.3</classmate.version>
       <commons-codec.version>1.18.0</commons-codec.version>
       <commons-dbcp2.version>2.13.0</commons-dbcp2.version>
@@ -32961,15 +32961,15 @@
       </pluginRepository>
     </pluginRepositories>
     <build>
-      <sourceDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-application/src/main/java</sourceDirectory>
-      <scriptSourceDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-application/src/main/scripts</scriptSourceDirectory>
-      <testSourceDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-application/src/test/java</testSourceDirectory>
-      <outputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-application/target/classes</outputDirectory>
-      <testOutputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-application/target/test-classes</testOutputDirectory>
+      <sourceDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-application/src/main/java</sourceDirectory>
+      <scriptSourceDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-application/src/main/scripts</scriptSourceDirectory>
+      <testSourceDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-application/src/test/java</testSourceDirectory>
+      <outputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-application/target/classes</outputDirectory>
+      <testOutputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-application/target/test-classes</testOutputDirectory>
       <resources>
         <resource>
           <filtering>true</filtering>
-          <directory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-application/src/main/resources</directory>
+          <directory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-application/src/main/resources</directory>
           <includes>
             <include>**/application*.yml</include>
             <include>**/application*.yaml</include>
@@ -32977,7 +32977,7 @@
           </includes>
         </resource>
         <resource>
-          <directory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-application/src/main/resources</directory>
+          <directory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-application/src/main/resources</directory>
           <excludes>
             <exclude>**/application*.yml</exclude>
             <exclude>**/application*.yaml</exclude>
@@ -32987,10 +32987,10 @@
       </resources>
       <testResources>
         <testResource>
-          <directory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-application/src/test/resources</directory>
+          <directory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-application/src/test/resources</directory>
         </testResource>
       </testResources>
-      <directory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-application/target</directory>
+      <directory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-application/target</directory>
       <finalName>ddd-probe-application-1.0.0-SNAPSHOT</finalName>
       <pluginManagement>
         <plugins>
@@ -33011,7 +33011,7 @@
                 </goals>
                 <configuration>
                   <projectType>application</projectType>
-                  <outputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-application/target/classes/META-INF/sbom</outputDirectory>
+                  <outputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-application/target/classes/META-INF/sbom</outputDirectory>
                   <outputFormat>json</outputFormat>
                   <outputName>application.cdx</outputName>
                 </configuration>
@@ -33035,14 +33035,14 @@
                 <configuration>
                   <verbose>true</verbose>
                   <generateGitPropertiesFile>true</generateGitPropertiesFile>
-                  <generateGitPropertiesFilename>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-application/target/classes/git.properties</generateGitPropertiesFilename>
+                  <generateGitPropertiesFilename>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-application/target/classes/git.properties</generateGitPropertiesFilename>
                 </configuration>
               </execution>
             </executions>
             <configuration>
               <verbose>true</verbose>
               <generateGitPropertiesFile>true</generateGitPropertiesFile>
-              <generateGitPropertiesFilename>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-application/target/classes/git.properties</generateGitPropertiesFilename>
+              <generateGitPropertiesFilename>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-application/target/classes/git.properties</generateGitPropertiesFilename>
             </configuration>
           </plugin>
           <plugin>
@@ -33133,12 +33133,12 @@
                   <goal>verify</goal>
                 </goals>
                 <configuration>
-                  <classesDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-application/target/classes</classesDirectory>
+                  <classesDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-application/target/classes</classesDirectory>
                 </configuration>
               </execution>
             </executions>
             <configuration>
-              <classesDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-application/target/classes</classesDirectory>
+              <classesDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-application/target/classes</classesDirectory>
             </configuration>
           </plugin>
           <plugin>
@@ -33619,7 +33619,7 @@
                 <goal>site</goal>
               </goals>
               <configuration>
-                <outputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-application/target/site</outputDirectory>
+                <outputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-application/target/site</outputDirectory>
                 <reportPlugins>
                   <reportPlugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -33635,7 +33635,7 @@
                 <goal>deploy</goal>
               </goals>
               <configuration>
-                <outputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-application/target/site</outputDirectory>
+                <outputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-application/target/site</outputDirectory>
                 <reportPlugins>
                   <reportPlugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -33646,7 +33646,7 @@
             </execution>
           </executions>
           <configuration>
-            <outputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-application/target/site</outputDirectory>
+            <outputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-application/target/site</outputDirectory>
             <reportPlugins>
               <reportPlugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -33658,7 +33658,7 @@
       </plugins>
     </build>
     <reporting>
-      <outputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-application/target/site</outputDirectory>
+      <outputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-application/target/site</outputDirectory>
     </reporting>
   </project>
   <!-- ====================================================================== -->
@@ -33715,8 +33715,8 @@
       <caffeine.version>3.2.4</caffeine.version>
       <cassandra-driver.version>4.19.3</cassandra-driver.version>
       <chartset.UTF8>UTF-8</chartset.UTF8>
-      <checkstyle.additional.suppressions.file>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-infrastructure/checkstyle/checkstyle-suppressions.xml</checkstyle.additional.suppressions.file>
-      <checkstyle.suppressions.file>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-infrastructure/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.file>
+      <checkstyle.additional.suppressions.file>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-infrastructure/checkstyle/checkstyle-suppressions.xml</checkstyle.additional.suppressions.file>
+      <checkstyle.suppressions.file>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-infrastructure/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.file>
       <classmate.version>1.7.3</classmate.version>
       <commons-codec.version>1.18.0</commons-codec.version>
       <commons-dbcp2.version>2.13.0</commons-dbcp2.version>
@@ -44257,15 +44257,15 @@
       </pluginRepository>
     </pluginRepositories>
     <build>
-      <sourceDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-infrastructure/src/main/java</sourceDirectory>
-      <scriptSourceDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-infrastructure/src/main/scripts</scriptSourceDirectory>
-      <testSourceDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-infrastructure/src/test/java</testSourceDirectory>
-      <outputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-infrastructure/target/classes</outputDirectory>
-      <testOutputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-infrastructure/target/test-classes</testOutputDirectory>
+      <sourceDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-infrastructure/src/main/java</sourceDirectory>
+      <scriptSourceDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-infrastructure/src/main/scripts</scriptSourceDirectory>
+      <testSourceDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-infrastructure/src/test/java</testSourceDirectory>
+      <outputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-infrastructure/target/classes</outputDirectory>
+      <testOutputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-infrastructure/target/test-classes</testOutputDirectory>
       <resources>
         <resource>
           <filtering>true</filtering>
-          <directory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-infrastructure/src/main/resources</directory>
+          <directory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-infrastructure/src/main/resources</directory>
           <includes>
             <include>**/application*.yml</include>
             <include>**/application*.yaml</include>
@@ -44273,7 +44273,7 @@
           </includes>
         </resource>
         <resource>
-          <directory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-infrastructure/src/main/resources</directory>
+          <directory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-infrastructure/src/main/resources</directory>
           <excludes>
             <exclude>**/application*.yml</exclude>
             <exclude>**/application*.yaml</exclude>
@@ -44283,10 +44283,10 @@
       </resources>
       <testResources>
         <testResource>
-          <directory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-infrastructure/src/test/resources</directory>
+          <directory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-infrastructure/src/test/resources</directory>
         </testResource>
       </testResources>
-      <directory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-infrastructure/target</directory>
+      <directory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-infrastructure/target</directory>
       <finalName>ddd-probe-infrastructure-1.0.0-SNAPSHOT</finalName>
       <pluginManagement>
         <plugins>
@@ -44307,7 +44307,7 @@
                 </goals>
                 <configuration>
                   <projectType>application</projectType>
-                  <outputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-infrastructure/target/classes/META-INF/sbom</outputDirectory>
+                  <outputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-infrastructure/target/classes/META-INF/sbom</outputDirectory>
                   <outputFormat>json</outputFormat>
                   <outputName>application.cdx</outputName>
                 </configuration>
@@ -44331,14 +44331,14 @@
                 <configuration>
                   <verbose>true</verbose>
                   <generateGitPropertiesFile>true</generateGitPropertiesFile>
-                  <generateGitPropertiesFilename>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-infrastructure/target/classes/git.properties</generateGitPropertiesFilename>
+                  <generateGitPropertiesFilename>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-infrastructure/target/classes/git.properties</generateGitPropertiesFilename>
                 </configuration>
               </execution>
             </executions>
             <configuration>
               <verbose>true</verbose>
               <generateGitPropertiesFile>true</generateGitPropertiesFile>
-              <generateGitPropertiesFilename>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-infrastructure/target/classes/git.properties</generateGitPropertiesFilename>
+              <generateGitPropertiesFilename>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-infrastructure/target/classes/git.properties</generateGitPropertiesFilename>
             </configuration>
           </plugin>
           <plugin>
@@ -44429,12 +44429,12 @@
                   <goal>verify</goal>
                 </goals>
                 <configuration>
-                  <classesDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-infrastructure/target/classes</classesDirectory>
+                  <classesDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-infrastructure/target/classes</classesDirectory>
                 </configuration>
               </execution>
             </executions>
             <configuration>
-              <classesDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-infrastructure/target/classes</classesDirectory>
+              <classesDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-infrastructure/target/classes</classesDirectory>
             </configuration>
           </plugin>
           <plugin>
@@ -44915,7 +44915,7 @@
                 <goal>site</goal>
               </goals>
               <configuration>
-                <outputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-infrastructure/target/site</outputDirectory>
+                <outputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-infrastructure/target/site</outputDirectory>
                 <reportPlugins>
                   <reportPlugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -44931,7 +44931,7 @@
                 <goal>deploy</goal>
               </goals>
               <configuration>
-                <outputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-infrastructure/target/site</outputDirectory>
+                <outputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-infrastructure/target/site</outputDirectory>
                 <reportPlugins>
                   <reportPlugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -44942,7 +44942,7 @@
             </execution>
           </executions>
           <configuration>
-            <outputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-infrastructure/target/site</outputDirectory>
+            <outputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-infrastructure/target/site</outputDirectory>
             <reportPlugins>
               <reportPlugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -44954,7 +44954,7 @@
       </plugins>
     </build>
     <reporting>
-      <outputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-infrastructure/target/site</outputDirectory>
+      <outputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-infrastructure/target/site</outputDirectory>
     </reporting>
   </project>
   <!-- ====================================================================== -->
@@ -45015,8 +45015,8 @@
       <caffeine.version>3.2.4</caffeine.version>
       <cassandra-driver.version>4.19.3</cassandra-driver.version>
       <chartset.UTF8>UTF-8</chartset.UTF8>
-      <checkstyle.additional.suppressions.file>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-adapter/checkstyle/checkstyle-suppressions.xml</checkstyle.additional.suppressions.file>
-      <checkstyle.suppressions.file>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-adapter/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.file>
+      <checkstyle.additional.suppressions.file>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-adapter/checkstyle/checkstyle-suppressions.xml</checkstyle.additional.suppressions.file>
+      <checkstyle.suppressions.file>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-adapter/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.file>
       <classmate.version>1.7.3</classmate.version>
       <commons-codec.version>1.18.0</commons-codec.version>
       <commons-dbcp2.version>2.13.0</commons-dbcp2.version>
@@ -55507,15 +55507,15 @@
       </pluginRepository>
     </pluginRepositories>
     <build>
-      <sourceDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-adapter/src/main/java</sourceDirectory>
-      <scriptSourceDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-adapter/src/main/scripts</scriptSourceDirectory>
-      <testSourceDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-adapter/src/test/java</testSourceDirectory>
-      <outputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-adapter/target/classes</outputDirectory>
-      <testOutputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-adapter/target/test-classes</testOutputDirectory>
+      <sourceDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-adapter/src/main/java</sourceDirectory>
+      <scriptSourceDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-adapter/src/main/scripts</scriptSourceDirectory>
+      <testSourceDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-adapter/src/test/java</testSourceDirectory>
+      <outputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-adapter/target/classes</outputDirectory>
+      <testOutputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-adapter/target/test-classes</testOutputDirectory>
       <resources>
         <resource>
           <filtering>true</filtering>
-          <directory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-adapter/src/main/resources</directory>
+          <directory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-adapter/src/main/resources</directory>
           <includes>
             <include>**/application*.yml</include>
             <include>**/application*.yaml</include>
@@ -55523,7 +55523,7 @@
           </includes>
         </resource>
         <resource>
-          <directory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-adapter/src/main/resources</directory>
+          <directory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-adapter/src/main/resources</directory>
           <excludes>
             <exclude>**/application*.yml</exclude>
             <exclude>**/application*.yaml</exclude>
@@ -55533,10 +55533,10 @@
       </resources>
       <testResources>
         <testResource>
-          <directory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-adapter/src/test/resources</directory>
+          <directory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-adapter/src/test/resources</directory>
         </testResource>
       </testResources>
-      <directory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-adapter/target</directory>
+      <directory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-adapter/target</directory>
       <finalName>ddd-probe-adapter-1.0.0-SNAPSHOT</finalName>
       <pluginManagement>
         <plugins>
@@ -55557,7 +55557,7 @@
                 </goals>
                 <configuration>
                   <projectType>application</projectType>
-                  <outputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-adapter/target/classes/META-INF/sbom</outputDirectory>
+                  <outputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-adapter/target/classes/META-INF/sbom</outputDirectory>
                   <outputFormat>json</outputFormat>
                   <outputName>application.cdx</outputName>
                 </configuration>
@@ -55581,14 +55581,14 @@
                 <configuration>
                   <verbose>true</verbose>
                   <generateGitPropertiesFile>true</generateGitPropertiesFile>
-                  <generateGitPropertiesFilename>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-adapter/target/classes/git.properties</generateGitPropertiesFilename>
+                  <generateGitPropertiesFilename>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-adapter/target/classes/git.properties</generateGitPropertiesFilename>
                 </configuration>
               </execution>
             </executions>
             <configuration>
               <verbose>true</verbose>
               <generateGitPropertiesFile>true</generateGitPropertiesFile>
-              <generateGitPropertiesFilename>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-adapter/target/classes/git.properties</generateGitPropertiesFilename>
+              <generateGitPropertiesFilename>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-adapter/target/classes/git.properties</generateGitPropertiesFilename>
             </configuration>
           </plugin>
           <plugin>
@@ -55679,12 +55679,12 @@
                   <goal>verify</goal>
                 </goals>
                 <configuration>
-                  <classesDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-adapter/target/classes</classesDirectory>
+                  <classesDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-adapter/target/classes</classesDirectory>
                 </configuration>
               </execution>
             </executions>
             <configuration>
-              <classesDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-adapter/target/classes</classesDirectory>
+              <classesDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-adapter/target/classes</classesDirectory>
             </configuration>
           </plugin>
           <plugin>
@@ -56014,7 +56014,7 @@
                 <goal>site</goal>
               </goals>
               <configuration>
-                <outputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-adapter/target/site</outputDirectory>
+                <outputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-adapter/target/site</outputDirectory>
                 <reportPlugins>
                   <reportPlugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -56030,7 +56030,7 @@
                 <goal>deploy</goal>
               </goals>
               <configuration>
-                <outputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-adapter/target/site</outputDirectory>
+                <outputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-adapter/target/site</outputDirectory>
                 <reportPlugins>
                   <reportPlugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -56041,7 +56041,7 @@
             </execution>
           </executions>
           <configuration>
-            <outputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-adapter/target/site</outputDirectory>
+            <outputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-adapter/target/site</outputDirectory>
             <reportPlugins>
               <reportPlugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -56053,7 +56053,7 @@
       </plugins>
     </build>
     <reporting>
-      <outputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-adapter/target/site</outputDirectory>
+      <outputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-adapter/target/site</outputDirectory>
     </reporting>
   </project>
   <!-- ====================================================================== -->
@@ -56110,8 +56110,8 @@
       <caffeine.version>3.2.4</caffeine.version>
       <cassandra-driver.version>4.19.3</cassandra-driver.version>
       <chartset.UTF8>UTF-8</chartset.UTF8>
-      <checkstyle.additional.suppressions.file>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-adapter/ddd-probe-web/checkstyle/checkstyle-suppressions.xml</checkstyle.additional.suppressions.file>
-      <checkstyle.suppressions.file>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-adapter/ddd-probe-web/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.file>
+      <checkstyle.additional.suppressions.file>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-adapter/ddd-probe-web/checkstyle/checkstyle-suppressions.xml</checkstyle.additional.suppressions.file>
+      <checkstyle.suppressions.file>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-adapter/ddd-probe-web/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.file>
       <classmate.version>1.7.3</classmate.version>
       <commons-codec.version>1.18.0</commons-codec.version>
       <commons-dbcp2.version>2.13.0</commons-dbcp2.version>
@@ -66658,15 +66658,15 @@
       </pluginRepository>
     </pluginRepositories>
     <build>
-      <sourceDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-adapter/ddd-probe-web/src/main/java</sourceDirectory>
-      <scriptSourceDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-adapter/ddd-probe-web/src/main/scripts</scriptSourceDirectory>
-      <testSourceDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-adapter/ddd-probe-web/src/test/java</testSourceDirectory>
-      <outputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-adapter/ddd-probe-web/target/classes</outputDirectory>
-      <testOutputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-adapter/ddd-probe-web/target/test-classes</testOutputDirectory>
+      <sourceDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-adapter/ddd-probe-web/src/main/java</sourceDirectory>
+      <scriptSourceDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-adapter/ddd-probe-web/src/main/scripts</scriptSourceDirectory>
+      <testSourceDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-adapter/ddd-probe-web/src/test/java</testSourceDirectory>
+      <outputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-adapter/ddd-probe-web/target/classes</outputDirectory>
+      <testOutputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-adapter/ddd-probe-web/target/test-classes</testOutputDirectory>
       <resources>
         <resource>
           <filtering>true</filtering>
-          <directory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-adapter/ddd-probe-web/src/main/resources</directory>
+          <directory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-adapter/ddd-probe-web/src/main/resources</directory>
           <includes>
             <include>**/application*.yml</include>
             <include>**/application*.yaml</include>
@@ -66674,7 +66674,7 @@
           </includes>
         </resource>
         <resource>
-          <directory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-adapter/ddd-probe-web/src/main/resources</directory>
+          <directory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-adapter/ddd-probe-web/src/main/resources</directory>
           <excludes>
             <exclude>**/application*.yml</exclude>
             <exclude>**/application*.yaml</exclude>
@@ -66684,10 +66684,10 @@
       </resources>
       <testResources>
         <testResource>
-          <directory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-adapter/ddd-probe-web/src/test/resources</directory>
+          <directory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-adapter/ddd-probe-web/src/test/resources</directory>
         </testResource>
       </testResources>
-      <directory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-adapter/ddd-probe-web/target</directory>
+      <directory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-adapter/ddd-probe-web/target</directory>
       <finalName>ddd-probe-web-1.0.0-SNAPSHOT</finalName>
       <pluginManagement>
         <plugins>
@@ -66708,7 +66708,7 @@
                 </goals>
                 <configuration>
                   <projectType>application</projectType>
-                  <outputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-adapter/ddd-probe-web/target/classes/META-INF/sbom</outputDirectory>
+                  <outputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-adapter/ddd-probe-web/target/classes/META-INF/sbom</outputDirectory>
                   <outputFormat>json</outputFormat>
                   <outputName>application.cdx</outputName>
                 </configuration>
@@ -66732,14 +66732,14 @@
                 <configuration>
                   <verbose>true</verbose>
                   <generateGitPropertiesFile>true</generateGitPropertiesFile>
-                  <generateGitPropertiesFilename>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-adapter/ddd-probe-web/target/classes/git.properties</generateGitPropertiesFilename>
+                  <generateGitPropertiesFilename>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-adapter/ddd-probe-web/target/classes/git.properties</generateGitPropertiesFilename>
                 </configuration>
               </execution>
             </executions>
             <configuration>
               <verbose>true</verbose>
               <generateGitPropertiesFile>true</generateGitPropertiesFile>
-              <generateGitPropertiesFilename>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-adapter/ddd-probe-web/target/classes/git.properties</generateGitPropertiesFilename>
+              <generateGitPropertiesFilename>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-adapter/ddd-probe-web/target/classes/git.properties</generateGitPropertiesFilename>
             </configuration>
           </plugin>
           <plugin>
@@ -66830,12 +66830,12 @@
                   <goal>verify</goal>
                 </goals>
                 <configuration>
-                  <classesDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-adapter/ddd-probe-web/target/classes</classesDirectory>
+                  <classesDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-adapter/ddd-probe-web/target/classes</classesDirectory>
                 </configuration>
               </execution>
             </executions>
             <configuration>
-              <classesDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-adapter/ddd-probe-web/target/classes</classesDirectory>
+              <classesDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-adapter/ddd-probe-web/target/classes</classesDirectory>
             </configuration>
           </plugin>
           <plugin>
@@ -67316,7 +67316,7 @@
                 <goal>site</goal>
               </goals>
               <configuration>
-                <outputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-adapter/ddd-probe-web/target/site</outputDirectory>
+                <outputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-adapter/ddd-probe-web/target/site</outputDirectory>
                 <reportPlugins>
                   <reportPlugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -67332,7 +67332,7 @@
                 <goal>deploy</goal>
               </goals>
               <configuration>
-                <outputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-adapter/ddd-probe-web/target/site</outputDirectory>
+                <outputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-adapter/ddd-probe-web/target/site</outputDirectory>
                 <reportPlugins>
                   <reportPlugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -67343,7 +67343,7 @@
             </execution>
           </executions>
           <configuration>
-            <outputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-adapter/ddd-probe-web/target/site</outputDirectory>
+            <outputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-adapter/ddd-probe-web/target/site</outputDirectory>
             <reportPlugins>
               <reportPlugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -67355,7 +67355,7 @@
       </plugins>
     </build>
     <reporting>
-      <outputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-adapter/ddd-probe-web/target/site</outputDirectory>
+      <outputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-adapter/ddd-probe-web/target/site</outputDirectory>
     </reporting>
   </project>
   <!-- ====================================================================== -->
@@ -67412,8 +67412,8 @@
       <caffeine.version>3.2.4</caffeine.version>
       <cassandra-driver.version>4.19.3</cassandra-driver.version>
       <chartset.UTF8>UTF-8</chartset.UTF8>
-      <checkstyle.additional.suppressions.file>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-bootstrap/checkstyle/checkstyle-suppressions.xml</checkstyle.additional.suppressions.file>
-      <checkstyle.suppressions.file>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-bootstrap/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.file>
+      <checkstyle.additional.suppressions.file>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-bootstrap/checkstyle/checkstyle-suppressions.xml</checkstyle.additional.suppressions.file>
+      <checkstyle.suppressions.file>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-bootstrap/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.file>
       <classmate.version>1.7.3</classmate.version>
       <commons-codec.version>1.18.0</commons-codec.version>
       <commons-dbcp2.version>2.13.0</commons-dbcp2.version>
@@ -77954,15 +77954,15 @@
       </pluginRepository>
     </pluginRepositories>
     <build>
-      <sourceDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-bootstrap/src/main/java</sourceDirectory>
-      <scriptSourceDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-bootstrap/src/main/scripts</scriptSourceDirectory>
-      <testSourceDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-bootstrap/src/test/java</testSourceDirectory>
-      <outputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-bootstrap/target/classes</outputDirectory>
-      <testOutputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-bootstrap/target/test-classes</testOutputDirectory>
+      <sourceDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-bootstrap/src/main/java</sourceDirectory>
+      <scriptSourceDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-bootstrap/src/main/scripts</scriptSourceDirectory>
+      <testSourceDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-bootstrap/src/test/java</testSourceDirectory>
+      <outputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-bootstrap/target/classes</outputDirectory>
+      <testOutputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-bootstrap/target/test-classes</testOutputDirectory>
       <resources>
         <resource>
           <filtering>true</filtering>
-          <directory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-bootstrap/src/main/resources</directory>
+          <directory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-bootstrap/src/main/resources</directory>
           <includes>
             <include>**/application*.yml</include>
             <include>**/application*.yaml</include>
@@ -77970,7 +77970,7 @@
           </includes>
         </resource>
         <resource>
-          <directory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-bootstrap/src/main/resources</directory>
+          <directory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-bootstrap/src/main/resources</directory>
           <excludes>
             <exclude>**/application*.yml</exclude>
             <exclude>**/application*.yaml</exclude>
@@ -77980,10 +77980,10 @@
       </resources>
       <testResources>
         <testResource>
-          <directory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-bootstrap/src/test/resources</directory>
+          <directory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-bootstrap/src/test/resources</directory>
         </testResource>
       </testResources>
-      <directory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-bootstrap/target</directory>
+      <directory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-bootstrap/target</directory>
       <finalName>ddd-probe-bootstrap-1.0.0-SNAPSHOT</finalName>
       <pluginManagement>
         <plugins>
@@ -78004,7 +78004,7 @@
                 </goals>
                 <configuration>
                   <projectType>application</projectType>
-                  <outputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-bootstrap/target/classes/META-INF/sbom</outputDirectory>
+                  <outputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-bootstrap/target/classes/META-INF/sbom</outputDirectory>
                   <outputFormat>json</outputFormat>
                   <outputName>application.cdx</outputName>
                 </configuration>
@@ -78028,14 +78028,14 @@
                 <configuration>
                   <verbose>true</verbose>
                   <generateGitPropertiesFile>true</generateGitPropertiesFile>
-                  <generateGitPropertiesFilename>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-bootstrap/target/classes/git.properties</generateGitPropertiesFilename>
+                  <generateGitPropertiesFilename>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-bootstrap/target/classes/git.properties</generateGitPropertiesFilename>
                 </configuration>
               </execution>
             </executions>
             <configuration>
               <verbose>true</verbose>
               <generateGitPropertiesFile>true</generateGitPropertiesFile>
-              <generateGitPropertiesFilename>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-bootstrap/target/classes/git.properties</generateGitPropertiesFilename>
+              <generateGitPropertiesFilename>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-bootstrap/target/classes/git.properties</generateGitPropertiesFilename>
             </configuration>
           </plugin>
           <plugin>
@@ -78126,12 +78126,12 @@
                   <goal>verify</goal>
                 </goals>
                 <configuration>
-                  <classesDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-bootstrap/target/classes</classesDirectory>
+                  <classesDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-bootstrap/target/classes</classesDirectory>
                 </configuration>
               </execution>
             </executions>
             <configuration>
-              <classesDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-bootstrap/target/classes</classesDirectory>
+              <classesDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-bootstrap/target/classes</classesDirectory>
             </configuration>
           </plugin>
           <plugin>
@@ -78612,7 +78612,7 @@
                 <goal>site</goal>
               </goals>
               <configuration>
-                <outputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-bootstrap/target/site</outputDirectory>
+                <outputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-bootstrap/target/site</outputDirectory>
                 <reportPlugins>
                   <reportPlugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -78628,7 +78628,7 @@
                 <goal>deploy</goal>
               </goals>
               <configuration>
-                <outputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-bootstrap/target/site</outputDirectory>
+                <outputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-bootstrap/target/site</outputDirectory>
                 <reportPlugins>
                   <reportPlugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -78639,7 +78639,7 @@
             </execution>
           </executions>
           <configuration>
-            <outputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-bootstrap/target/site</outputDirectory>
+            <outputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-bootstrap/target/site</outputDirectory>
             <reportPlugins>
               <reportPlugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -78651,7 +78651,7 @@
       </plugins>
     </build>
     <reporting>
-      <outputDirectory>/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v6/ddd-probe/ddd-probe-bootstrap/target/site</outputDirectory>
+      <outputDirectory>/private/tmp/pr131-requalification/projects/ddd-probe/ddd-probe-bootstrap/target/site</outputDirectory>
     </reporting>
     <profiles>
       <profile>

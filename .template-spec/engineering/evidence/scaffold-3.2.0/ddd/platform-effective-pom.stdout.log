@@ -19,11 +19,11 @@
 [[1;34mINFO[m] [1m--------------------------------[ pom ]---------------------------------[m
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mmaven-help-plugin:3.5.1:effective-pom[m [1m(default-cli)[m @ [36mddd-probe-parent[0;1m ---[m
-[[1;34mINFO[m] Effective-POM written to: /Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-v6/ddd/effective-pom.xml
+[[1;34mINFO[m] Effective-POM written to: /private/tmp/pr131-requalification/evidence/ddd/effective-pom.xml
 [[1;34mINFO[m] [1m------------------------------------------------------------------------[m
 [[1;34mINFO[m] [1mReactor Summary for ddd-probe-parent 1.0.0-SNAPSHOT:[m
 [[1;34mINFO[m] 
-[[1;34mINFO[m] ddd-probe-parent ................................... [1;32mSUCCESS[m [  0.257 s]
+[[1;34mINFO[m] ddd-probe-parent ................................... [1;32mSUCCESS[m [  0.297 s]
 [[1;34mINFO[m] ddd-probe-domain ................................... [1;33mSKIPPED[m
 [[1;34mINFO[m] ddd-probe-application .............................. [1;33mSKIPPED[m
 [[1;34mINFO[m] ddd-probe-infrastructure ........................... [1;33mSKIPPED[m
@@ -33,6 +33,6 @@
 [[1;34mINFO[m] [1m------------------------------------------------------------------------[m
 [[1;34mINFO[m] [1;32mBUILD SUCCESS[m
 [[1;34mINFO[m] [1m------------------------------------------------------------------------[m
-[[1;34mINFO[m] Total time:  0.380 s
-[[1;34mINFO[m] Finished at: 2026-10-13T02:17:13+08:00
+[[1;34mINFO[m] Total time:  0.437 s
+[[1;34mINFO[m] Finished at: 2026-10-30T11:23:22+08:00
 [[1;34mINFO[m] [1m------------------------------------------------------------------------[m

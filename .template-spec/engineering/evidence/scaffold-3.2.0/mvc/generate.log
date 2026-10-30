@@ -1,9 +1,12 @@
-{
-  "status": "generated",
-  "project_root": "/Users/zhudaoming/.yss-harness/runtime/5391a3c4185fae417c28ef908ade1508f7dbb75bdbec2c8283412e6bb15ef967/maintenance/scaffold-unification-20261013/qualification-projects-v7/mvc-probe",
-  "modules": [
-    "server",
-    "service",
-    "repository"
-  ]
-}
+[开始] /private/tmp/pr131-requalification/projects/mvc-probe/mvnw validate --settings /Users/zhudaoming/.m2/settings.xml
+[完成] /private/tmp/pr131-requalification/projects/mvc-probe/mvnw (6258ms, exit=0)
+[开始] /private/tmp/pr131-requalification/projects/mvc-probe/mvnw test --settings /Users/zhudaoming/.m2/settings.xml
+[完成] /private/tmp/pr131-requalification/projects/mvc-probe/mvnw (5925ms, exit=0)
+[开始] /private/tmp/pr131-requalification/projects/mvc-probe/mvnw package --settings /Users/zhudaoming/.m2/settings.xml
+[完成] /private/tmp/pr131-requalification/projects/mvc-probe/mvnw (5331ms, exit=0)
+[开始] /private/tmp/pr131-requalification/projects/mvc-probe/examples/reference/mvnw validate --settings /Users/zhudaoming/.m2/settings.xml
+[完成] /private/tmp/pr131-requalification/projects/mvc-probe/examples/reference/mvnw (3625ms, exit=0)
+[开始] /private/tmp/pr131-requalification/projects/mvc-probe/examples/reference/mvnw test --settings /Users/zhudaoming/.m2/settings.xml
+[完成] /private/tmp/pr131-requalification/projects/mvc-probe/examples/reference/mvnw (6256ms, exit=0)
+[开始] /private/tmp/pr131-requalification/projects/mvc-probe/examples/reference/mvnw package --settings /Users/zhudaoming/.m2/settings.xml
+[完成] /private/tmp/pr131-requalification/projects/mvc-probe/examples/reference/mvnw (6635ms, exit=0)

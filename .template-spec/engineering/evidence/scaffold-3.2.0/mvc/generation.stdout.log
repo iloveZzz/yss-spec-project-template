@@ -1,0 +1,9 @@
+{
+  "status": "generated",
+  "project_root": "/private/tmp/pr131-requalification/projects/mvc-probe",
+  "modules": [
+    "server",
+    "service",
+    "repository"
+  ]
+}

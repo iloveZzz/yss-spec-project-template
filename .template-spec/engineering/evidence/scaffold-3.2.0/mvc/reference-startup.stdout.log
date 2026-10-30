@@ -1,0 +1,41 @@
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::               (v3.5.16)
+
+2026-10-30T11:23:34.438+08:00  INFO 40203 --- [mvc-probe-reference] [           main] c.y.r.r.MvcProbeReferenceApplication     : Starting MvcProbeReferenceApplication v1.0.0-SNAPSHOT using Java 17.0.16 with PID 40203 (/private/tmp/pr131-requalification/projects/mvc-probe/examples/reference/mvc-probe-reference-server/target/mvc-probe-reference-server-1.0.0-SNAPSHOT.jar started by zhudaoming in /private/tmp/pr131-requalification/projects/mvc-probe/examples/reference)
+2026-10-30T11:23:34.439+08:00  INFO 40203 --- [mvc-probe-reference] [           main] c.y.r.r.MvcProbeReferenceApplication     : No active profile set, falling back to 1 default profile: "default"
+2026-10-30T11:23:34.893+08:00  INFO 40203 --- [mvc-probe-reference] [           main] c.y.c.m.config.MapperConfiguration       : 【MapperConfiguration】mapperScannerConfigurer 初始化mapper扫描 com.yss.referenceprobe.reference.repository.mapper
+2026-10-30T11:23:35.130+08:00  INFO 40203 --- [mvc-probe-reference] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 57665 (http)
+2026-10-30T11:23:35.138+08:00  INFO 40203 --- [mvc-probe-reference] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-10-30T11:23:35.138+08:00  INFO 40203 --- [mvc-probe-reference] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.55]
+2026-10-30T11:23:35.155+08:00  INFO 40203 --- [mvc-probe-reference] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-10-30T11:23:35.156+08:00  INFO 40203 --- [mvc-probe-reference] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 692 ms
+2026-10-30T11:23:35.216+08:00  INFO 40203 --- [mvc-probe-reference] [           main] c.y.c.m.config.MapperConfiguration       : 【MapperConfiguration】PageInterceptor 完成初始化分页插件 PageInterceptor{helperDialect='mysql', reasonable=true, supportMethodsArguments=true, params='count=countSql', autoRuntimeDialect=true}
+2026-10-30T11:23:35.228+08:00  INFO 40203 --- [mvc-probe-reference] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-10-30T11:23:35.345+08:00  INFO 40203 --- [mvc-probe-reference] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:reference user=SA
+2026-10-30T11:23:35.346+08:00  INFO 40203 --- [mvc-probe-reference] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-10-30T11:23:35.352+08:00  INFO 40203 --- [mvc-probe-reference] [           main] c.y.c.m.config.MapperConfiguration       : 【MapperConfiguration】根据 JDBC URL 识别 DbType: H2
+2026-10-30T11:23:35.361+08:00  INFO 40203 --- [mvc-probe-reference] [           main] c.y.c.m.config.MapperConfiguration       : 【MapperConfiguration】根据 JDBC URL 识别 DbType: H2
+2026-10-30T11:23:35.380+08:00  INFO 40203 --- [mvc-probe-reference] [           main] c.y.c.m.config.MapperConfiguration       : 【MapperConfiguration】根据 JDBC URL 识别 DbType: H2
+ _ _   |_  _ _|_. ___ _ |    _ 
+| | |\/|_)(_| | |_\  |_)||_|_\ 
+     /               |         
+                        3.5.16 
+2026-10-30T11:23:35.740+08:00  INFO 40203 --- [mvc-probe-reference] [           main] m.e.s.MybatisPlusApplicationContextAware : Register ApplicationContext instances org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext@1c481ff2
+2026-10-30T11:23:35.786+08:00  INFO 40203 --- [mvc-probe-reference] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 57665 (http) with context path '/'
+2026-10-30T11:23:35.792+08:00  INFO 40203 --- [mvc-probe-reference] [           main] c.y.r.r.MvcProbeReferenceApplication     : Started MvcProbeReferenceApplication in 1.595 seconds (process running for 1.887)
+2026-10-30T11:23:35.933+08:00  INFO 40203 --- [mvc-probe-reference] [.1-57665-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-10-30T11:23:35.933+08:00  INFO 40203 --- [mvc-probe-reference] [.1-57665-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-10-30T11:23:35.934+08:00  INFO 40203 --- [mvc-probe-reference] [.1-57665-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2026-10-30T11:23:36.002+08:00  WARN 40203 --- [mvc-probe-reference] [.1-57665-exec-1] jakarta.persistence.spi                  : jakarta.persistence.spi::No valid providers found.
+2026-10-30T11:23:36.087+08:00  WARN 40203 --- [mvc-probe-reference] [.1-57665-exec-5] c.y.c.e.advice.GlobalExceptionAdvice     : Validation rejected code=A0104 count=1 type=MethodArgumentNotValidException traceId=ea7e9a5f-a7dd-4a2a-b4c8-7bdd0658598d
+2026-10-30T11:23:36.099+08:00  INFO 40203 --- [mvc-probe-reference] [ionShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2026-10-30T11:23:36.101+08:00  INFO 40203 --- [mvc-probe-reference] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2026-10-30T11:23:36.103+08:00  INFO 40203 --- [mvc-probe-reference] [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-10-30T11:23:36.104+08:00  INFO 40203 --- [mvc-probe-reference] [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.

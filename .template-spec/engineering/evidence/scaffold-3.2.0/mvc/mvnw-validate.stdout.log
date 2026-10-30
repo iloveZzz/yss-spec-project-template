@@ -3,6 +3,12 @@
 [[1;33mWARNING[m] Unrecognised tag: 'distributionManagement' (position: START_TAG seen ...</properties>\r\n            <distributionManagement>... @206:37)  @ /Users/zhudaoming/.m2/settings.xml, line 206, column 37
 [[1;33mWARNING[m] 
 [[1;34mINFO[m] Scanning for projects...
+Downloading from 2306938-snapshot-Yloqmt: https://packages.aliyun.com/6381d2a25db8487f76c8149c/maven/2306938-snapshot-yloqmt/com/yss/cloud/yss-cloud-microservice/3.2.0-SNAPSHOT/maven-metadata.xml
+Downloading from snapshots: https://maven.aliyun.com/nexus/content/groups/public/com/yss/cloud/yss-cloud-microservice/3.2.0-SNAPSHOT/maven-metadata.xml
+Progress (1): 612 B                   Downloaded from 2306938-snapshot-Yloqmt: https://packages.aliyun.com/6381d2a25db8487f76c8149c/maven/2306938-snapshot-yloqmt/com/yss/cloud/yss-cloud-microservice/3.2.0-SNAPSHOT/maven-metadata.xml (612 B at 823 B/s)
+Downloading from 2306938-snapshot-Yloqmt: https://packages.aliyun.com/6381d2a25db8487f76c8149c/maven/2306938-snapshot-yloqmt/com/yss/cloud/yss-components-bom/3.2.0-SNAPSHOT/maven-metadata.xml
+Downloading from snapshots: https://maven.aliyun.com/nexus/content/groups/public/com/yss/cloud/yss-components-bom/3.2.0-SNAPSHOT/maven-metadata.xml
+Progress (1): 608 B                   Downloaded from 2306938-snapshot-Yloqmt: https://packages.aliyun.com/6381d2a25db8487f76c8149c/maven/2306938-snapshot-yloqmt/com/yss/cloud/yss-components-bom/3.2.0-SNAPSHOT/maven-metadata.xml (608 B at 1.8 kB/s)
 [[1;33mWARNING[m] 
 [[1;33mWARNING[m] Some problems were encountered while building the effective model for com.yss.example:mvc-probe-server:jar:1.0.0-SNAPSHOT
 [[1;33mWARNING[m] 'dependencies.dependency.(groupId:artifactId:type:classifier)' must be unique: org.projectlombok:lombok:jar -> duplicate declaration of version 1.18.42 @ line 2, column 1386
@@ -31,6 +37,21 @@
 [[1;34mINFO[m] [1m----------------< [0;36mcom.yss.example:mvc-probe-repository[0;1m >----------------[m
 [[1;34mINFO[m] [1mBuilding mvc-probe-repository 1.0.0-SNAPSHOT                       [2/4][m
 [[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+Downloading from snapshots: https://maven.aliyun.com/nexus/content/groups/public/com/yss/cloud/yss-component-mybatis-plus-starter/3.2.0-SNAPSHOT/maven-metadata.xml
+Downloading from 2306938-snapshot-Yloqmt: https://packages.aliyun.com/6381d2a25db8487f76c8149c/maven/2306938-snapshot-yloqmt/com/yss/cloud/yss-component-mybatis-plus-starter/3.2.0-SNAPSHOT/maven-metadata.xml
+Progress (1): 1.0 kB                    Downloaded from 2306938-snapshot-Yloqmt: https://packages.aliyun.com/6381d2a25db8487f76c8149c/maven/2306938-snapshot-yloqmt/com/yss/cloud/yss-component-mybatis-plus-starter/3.2.0-SNAPSHOT/maven-metadata.xml (1.0 kB at 2.9 kB/s)
+Downloading from snapshots: https://maven.aliyun.com/nexus/content/groups/public/com/yss/cloud/yss-component-persistence/3.2.0-SNAPSHOT/maven-metadata.xml
+Downloading from 2306938-snapshot-Yloqmt: https://packages.aliyun.com/6381d2a25db8487f76c8149c/maven/2306938-snapshot-yloqmt/com/yss/cloud/yss-component-persistence/3.2.0-SNAPSHOT/maven-metadata.xml
+Progress (1): 615 B                   Downloaded from 2306938-snapshot-Yloqmt: https://packages.aliyun.com/6381d2a25db8487f76c8149c/maven/2306938-snapshot-yloqmt/com/yss/cloud/yss-component-persistence/3.2.0-SNAPSHOT/maven-metadata.xml (615 B at 2.0 kB/s)
+Downloading from 2306938-snapshot-Yloqmt: https://packages.aliyun.com/6381d2a25db8487f76c8149c/maven/2306938-snapshot-yloqmt/com/yss/cloud/yss-microservice-components/3.2.0-SNAPSHOT/maven-metadata.xml
+Downloading from snapshots: https://maven.aliyun.com/nexus/content/groups/public/com/yss/cloud/yss-microservice-components/3.2.0-SNAPSHOT/maven-metadata.xml
+Progress (1): 617 B                   Downloaded from 2306938-snapshot-Yloqmt: https://packages.aliyun.com/6381d2a25db8487f76c8149c/maven/2306938-snapshot-yloqmt/com/yss/cloud/yss-microservice-components/3.2.0-SNAPSHOT/maven-metadata.xml (617 B at 1.9 kB/s)
+Downloading from 2306938-snapshot-Yloqmt: https://packages.aliyun.com/6381d2a25db8487f76c8149c/maven/2306938-snapshot-yloqmt/com/yss/cloud/yss-component-persistence-common/3.2.0-SNAPSHOT/maven-metadata.xml
+Downloading from snapshots: https://maven.aliyun.com/nexus/content/groups/public/com/yss/cloud/yss-component-persistence-common/3.2.0-SNAPSHOT/maven-metadata.xml
+Progress (1): 1.0 kB                    Downloaded from 2306938-snapshot-Yloqmt: https://packages.aliyun.com/6381d2a25db8487f76c8149c/maven/2306938-snapshot-yloqmt/com/yss/cloud/yss-component-persistence-common/3.2.0-SNAPSHOT/maven-metadata.xml (1.0 kB at 3.1 kB/s)
+Downloading from snapshots: https://maven.aliyun.com/nexus/content/groups/public/com/yss/cloud/yss-component-mybatis-mapper/3.2.0-SNAPSHOT/maven-metadata.xml
+Downloading from 2306938-snapshot-Yloqmt: https://packages.aliyun.com/6381d2a25db8487f76c8149c/maven/2306938-snapshot-yloqmt/com/yss/cloud/yss-component-mybatis-mapper/3.2.0-SNAPSHOT/maven-metadata.xml
+Progress (1): 1.0 kB                    Downloaded from 2306938-snapshot-Yloqmt: https://packages.aliyun.com/6381d2a25db8487f76c8149c/maven/2306938-snapshot-yloqmt/com/yss/cloud/yss-component-mybatis-mapper/3.2.0-SNAPSHOT/maven-metadata.xml (1.0 kB at 3.0 kB/s)
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mmaven-enforcer-plugin:3.5.0:enforce[m [1m(enforce-platform)[m @ [36mmvc-probe-repository[0;1m ---[m
 [[1;34mINFO[m] Rule 2: org.apache.maven.enforcer.rules.dependency.DependencyConvergence passed
@@ -38,6 +59,8 @@
 [[1;34mINFO[m] [1m-----------------< [0;36mcom.yss.example:mvc-probe-service[0;1m >------------------[m
 [[1;34mINFO[m] [1mBuilding mvc-probe-service 1.0.0-SNAPSHOT                          [3/4][m
 [[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+Downloading from 2306938-snapshot-Yloqmt: https://packages.aliyun.com/6381d2a25db8487f76c8149c/maven/2306938-snapshot-yloqmt/com/yss/example/mvc-probe-repository/1.0.0-SNAPSHOT/maven-metadata.xml
+Downloading from snapshots: https://maven.aliyun.com/nexus/content/groups/public/com/yss/example/mvc-probe-repository/1.0.0-SNAPSHOT/maven-metadata.xml
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mmaven-enforcer-plugin:3.5.0:enforce[m [1m(enforce-platform)[m @ [36mmvc-probe-service[0;1m ---[m
 [[1;34mINFO[m] Rule 2: org.apache.maven.enforcer.rules.dependency.DependencyConvergence passed
@@ -45,19 +68,21 @@
 [[1;34mINFO[m] [1m------------------< [0;36mcom.yss.example:mvc-probe-server[0;1m >------------------[m
 [[1;34mINFO[m] [1mBuilding mvc-probe-server 1.0.0-SNAPSHOT                           [4/4][m
 [[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+Downloading from 2306938-snapshot-Yloqmt: https://packages.aliyun.com/6381d2a25db8487f76c8149c/maven/2306938-snapshot-yloqmt/com/yss/example/mvc-probe-service/1.0.0-SNAPSHOT/maven-metadata.xml
+Downloading from snapshots: https://maven.aliyun.com/nexus/content/groups/public/com/yss/example/mvc-probe-service/1.0.0-SNAPSHOT/maven-metadata.xml
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mmaven-enforcer-plugin:3.5.0:enforce[m [1m(enforce-platform)[m @ [36mmvc-probe-server[0;1m ---[m
 [[1;34mINFO[m] Rule 2: org.apache.maven.enforcer.rules.dependency.DependencyConvergence passed
 [[1;34mINFO[m] [1m------------------------------------------------------------------------[m
 [[1;34mINFO[m] [1mReactor Summary for mvc-probe 1.0.0-SNAPSHOT:[m
 [[1;34mINFO[m] 
-[[1;34mINFO[m] mvc-probe .......................................... [1;32mSUCCESS[m [  0.129 s]
-[[1;34mINFO[m] mvc-probe-repository ............................... [1;32mSUCCESS[m [  0.238 s]
-[[1;34mINFO[m] mvc-probe-service .................................. [1;32mSUCCESS[m [  0.013 s]
-[[1;34mINFO[m] mvc-probe-server ................................... [1;32mSUCCESS[m [  0.060 s]
+[[1;34mINFO[m] mvc-probe .......................................... [1;32mSUCCESS[m [  0.103 s]
+[[1;34mINFO[m] mvc-probe-repository ............................... [1;32mSUCCESS[m [  2.490 s]
+[[1;34mINFO[m] mvc-probe-service .................................. [1;32mSUCCESS[m [  0.462 s]
+[[1;34mINFO[m] mvc-probe-server ................................... [1;32mSUCCESS[m [  1.330 s]
 [[1;34mINFO[m] [1m------------------------------------------------------------------------[m
 [[1;34mINFO[m] [1;32mBUILD SUCCESS[m
 [[1;34mINFO[m] [1m------------------------------------------------------------------------[m
-[[1;34mINFO[m] Total time:  0.649 s
-[[1;34mINFO[m] Finished at: 2026-10-13T02:41:30+08:00
+[[1;34mINFO[m] Total time:  5.719 s
+[[1;34mINFO[m] Finished at: 2026-10-30T11:21:04+08:00
 [[1;34mINFO[m] [1m------------------------------------------------------------------------[m

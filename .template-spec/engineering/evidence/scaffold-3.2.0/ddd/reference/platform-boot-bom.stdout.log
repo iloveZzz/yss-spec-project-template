@@ -1,0 +1,38 @@
+[[1;33mWARNING[m] 
+[[1;33mWARNING[m] Some problems were encountered while building the effective settings
+[[1;33mWARNING[m] Unrecognised tag: 'distributionManagement' (position: START_TAG seen ...</properties>\r\n            <distributionManagement>... @206:37)  @ /Users/zhudaoming/.m2/settings.xml, line 206, column 37
+[[1;33mWARNING[m] 
+[[1;34mINFO[m] Scanning for projects...
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] [1mReactor Build Order:[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] ddd-probe-reference-parent                                         [pom]
+[[1;34mINFO[m] ddd-probe-reference-domain                                         [jar]
+[[1;34mINFO[m] ddd-probe-reference-application                                    [jar]
+[[1;34mINFO[m] ddd-probe-reference-infrastructure                                 [jar]
+[[1;34mINFO[m] ddd-probe-reference-adapter                                        [pom]
+[[1;34mINFO[m] ddd-probe-reference-web                                            [jar]
+[[1;34mINFO[m] ddd-probe-reference-bootstrap                                      [jar]
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m-------------< [0;36mcom.yss.example:ddd-probe-reference-parent[0;1m >-------------[m
+[[1;34mINFO[m] [1mBuilding ddd-probe-reference-parent 1.0.0-SNAPSHOT                 [1/7][m
+[[1;34mINFO[m] [1m--------------------------------[ pom ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-help-plugin:3.5.1:effective-pom[m [1m(default-cli)[m @ [36mddd-probe-reference-parent[0;1m ---[m
+[[1;34mINFO[m] Effective-POM written to: /private/tmp/pr131-requalification/evidence/ddd/reference/boot-bom-effective.xml
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] [1mReactor Summary for ddd-probe-reference-parent 1.0.0-SNAPSHOT:[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] ddd-probe-reference-parent ......................... [1;32mSUCCESS[m [  0.184 s]
+[[1;34mINFO[m] ddd-probe-reference-domain ......................... [1;33mSKIPPED[m
+[[1;34mINFO[m] ddd-probe-reference-application .................... [1;33mSKIPPED[m
+[[1;34mINFO[m] ddd-probe-reference-infrastructure ................. [1;33mSKIPPED[m
+[[1;34mINFO[m] ddd-probe-reference-adapter ........................ [1;33mSKIPPED[m
+[[1;34mINFO[m] ddd-probe-reference-web ............................ [1;33mSKIPPED[m
+[[1;34mINFO[m] ddd-probe-reference-bootstrap ...................... [1;33mSKIPPED[m
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] [1;32mBUILD SUCCESS[m
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] Total time:  0.358 s
+[[1;34mINFO[m] Finished at: 2026-10-30T11:23:24+08:00
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
