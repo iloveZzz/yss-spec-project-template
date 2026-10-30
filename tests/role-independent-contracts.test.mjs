@@ -19,15 +19,12 @@ function validate(schema, values) { return validateJsonSchemas(values.map(value 
 function accepts(schema, value) { const [r] = validate(schema, [value]); assert.equal(r.valid, true, r.error); }
 function rejects(schema, value) { const [r] = validate(schema, [value]); assert.equal(r.valid, false); }
 const copy = value => structuredClone(value);
-function assertLegacyCheckIDs(policy, profile, rolesRef) {
- const legacy=parse(fs.readFileSync(path.join(root,rolesRef),'utf8'));
- const current=policy.gate_policy.profiles[profile], old=legacy.gate_policy;
- assert.deepEqual(new Set(policy.technical_checks.filter(row=>row.profiles.includes(profile)).map(row=>row.id)),new Set(legacy.review_capabilities.map(row=>row.id)),`${profile}: professional check groups`);
+function assertCurrentCheckIDs(policy, profile, registry) {
+ const current=policy.gate_policy.profiles[profile];
  const currentIDs=[...current.automatic_checks,...current.evidence_only,...current.user_decision_gates,...current.contract_approval_gates,...current.check_reviews.map(row=>row.gate),...current.technical_reviews.map(row=>row.gate)];
- const legacyIDs=[...old.automatic_checks,...old.evidence_only,...old.biological_human,...old.orchestrator,...old.check_reviews.map(row=>row.gate),...old.dual_digital_human.map(row=>row.gate),...old.digital_human_review.map(row=>row.gate)];
- if(profile==='spec'&&policy.stage_gates) {
-  assert.deepEqual(new Set(currentIDs),new Set([...policy.stage_gates.gates.map(g=>g.id),...legacyIDs.filter(id=>id.startsWith('check.'))]),'Spec retains quality checks within four stage exits');
- } else assert.deepEqual(new Set(currentIDs),new Set(legacyIDs),`${profile}: complete gate/check IDs`);
+ const registered=new Set(['gates','checks'].flatMap(key=>registry[key].map(row=>row.id)));
+ assert.equal(new Set(currentIDs).size,currentIDs.length,`${profile}: duplicate gate/check`);
+ for(const id of currentIDs)assert.ok(registered.has(id),`${profile}: unknown gate/check ${id}`);
 }
 
 test('new task3, approval3 and review-bundle3 accept role-free self-check without stable identity', () => { accepts('digital-human-task-package', task); accepts('approval-record', check); accepts('review-bundle', bundle); });
@@ -67,9 +64,10 @@ test('passed results cannot have failing exit codes or omit candidate/log bindin
  rejects('digital-human-task-package',{...task,verification_results:[{...result,exit_code:1}]});
  const bad={...result};delete bad.evidence_digest;rejects('digital-human-task-package',{...task,verification_results:[bad]});
 });
-test('policy2 extracts checks without holders, preserves all legacy check IDs and defaults to single executor', () => {
+test('policy2 uses registered checks without holders and defaults to single executor', () => {
  const p=loadOrchestrationContract(ref=>fs.readFileSync(path.join(root,ref)),'.template-spec/process/orchestration-contract.yaml').value;
- assertLegacyCheckIDs(p,'spec','.template-spec/agents/digital-human-roles.yaml');
+ const registry=parse(fs.readFileSync(path.join(root,'.template-spec/process/lifecycle-registry.yaml'),'utf8'));
+ assertCurrentCheckIDs(p,'spec',registry);
  assert.equal(p.schema_version,2); assert.equal(p.task_package.schema_version,3); assert.equal(p.request_triage.delivery_path.version,2); assert.equal(p.request_triage.delivery_path.standard.version,2);
  assert.equal(p.review_verification.default_mode,'self-check'); assert.equal(p.governance_versions.required_capability,'role-independent-governance-v1');
  assert.deepEqual(p.profile_admission.new_profiles,['spec','backend']); assert.equal(p.profile_admission.legacy_design,undefined);
@@ -86,10 +84,8 @@ test('Backend materialized policy selects only its declared gates/checks and ret
  const tree=composeProfileTree('backend');
  const p=loadOrchestrationContract(ref=>fs.readFileSync(path.join(tree,ref)),'.template-spec/process/orchestration-contract.yaml').value;
  const registry=parse(fs.readFileSync(path.join(tree,'.template-spec/process/lifecycle-registry.yaml'),'utf8'));
- const ids=new Set(['gates','checks'].flatMap(k=>registry[k].map(x=>x.id)));
  const gates=p.gate_policy.profiles.backend;
- assertLegacyCheckIDs(p,'backend','profiles/backend/.template-spec/agents/digital-human-roles.yaml');
- for(const id of [...gates.automatic_checks,...gates.user_decision_gates,...gates.contract_approval_gates,...gates.evidence_only,...gates.check_reviews.map(x=>x.gate),...gates.technical_reviews.map(x=>x.gate)]) assert.ok(ids.has(id),id);
+ assertCurrentCheckIDs(p,'backend',registry);
  assert.ok(!gates.technical_reviews.some(x=>x.gate==='gate.delivery-accepted'));
  assert.equal(p.gate_policy.default_if_unlisted,'reject-unlisted');
  assert.equal(p.profile_admission.backend.business_accepted,false);

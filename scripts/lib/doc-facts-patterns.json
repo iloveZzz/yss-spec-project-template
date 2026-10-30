@@ -6,6 +6,8 @@
     ".template-source/agents/*.md",
     ".template-source/contracts/2026-10-22-matt-method-optimization-design.md",
     ".template-source/contracts/2026-10-22-matt-method-optimization-plan.md",
+    ".template-source/contracts/2026-10-30-template-5-cli-3-cleanup-plan.md",
+    ".template-source/contracts/2026-10-30-template-5-cli-3-cleanup-execution-plan.md",
     ".template-spec/agents/*.md",
     ".template-spec/process/*.md",
     "profiles/backend/.template-spec/process/*.md",

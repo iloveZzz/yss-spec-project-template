@@ -9,6 +9,7 @@ import { assertReleaseCheckout, verifyTemplateRelease as verifyRelease } from '.
 import { RuntimeStore } from '../../cli-core/runtime-store.mjs';
 import {validateReceipt} from '../lib/verification-delivery-run.mjs';
 import {validateBaselineReport} from '../lib/verification-report-validator.mjs';
+import {validateBaseline} from '../lib/verification-baseline.mjs';
 import {createHash} from 'node:crypto';
 import {collectReleaseSources} from '../lib/verification-artifacts.mjs';
 import {PIN_FILE,platformKey} from '../lib/yss-cli-pin.mjs';
@@ -45,6 +46,9 @@ function fixture(t,{bundleSchemaVersion=2}={}) {
   t.after(() => rmSync(base, { recursive: true, force: true }));
   const cli=path.join(base,'native-source'),repo=path.join(base,'template');mkdirSync(cli);mkdirSync(repo);
   git(cli,'init','-q');git(repo,'init','-q');
+  const common=path.resolve(root,git(root,'rev-parse','--git-common-dir'));
+  put(repo,'.git/objects/info/alternates',`${realpathSync(path.join(common,'objects'))}\n`);
+  git(repo,'update-ref','HEAD','1e49127842c358caf552af8ebec58f438a35c5a6');git(repo,'read-tree','--empty');
   put(repo,'README.md','fixed prior release fixture\n');const releaseBase=commit(repo),fixtureRoot=realpathSync(repo);fixtureBases.set(fixtureRoot,releaseBase);t.after(()=>fixtureBases.delete(fixtureRoot));
   put(cli,'go.mod','module github.com/iloveZzz/yss-cli\n\ngo 1.27.1\n');put(cli,'main.go',readFileSync(path.join(root,'.template-source/scripts/tests/fixtures/native-release.go'),'utf8').replace('"schemaVersion":2,',`"schemaVersion":${bundleSchemaVersion},`));const cliCommit=commit(cli);
   put(repo,'yss-project.yaml','schema_version: 1\nrepository_mode: template-source\n');put(repo,'scripts/repository-mode','#!/bin/sh\necho template-source\n',0o755);
@@ -115,22 +119,13 @@ test('实例检查即使退出成功也拒绝受管状态漂移', t => {
   }
 });
 
-test('真实发布报告兼容 v1 baseline，并拒绝删除 syntax/终检、任务自证和来源错配',t=>{
- const f=fixture(t),outer=verifyTemplateRelease({root:f.repo,commit:f.sha,output:f.output,cliFamily:'spec'}),file=path.join(f.output,'release-verification.json'),fullFile=outer.full_verification.report;
- const full=JSON.parse(readFileSync(fullFile));
+test('未认证固定来源的发布报告不能成为 baseline',t=>{
+ const f=fixture(t);verifyTemplateRelease({root:f.repo,commit:f.sha,output:f.output,cliFamily:'spec'});
+ const file=realpathSync(path.join(f.output,'release-verification.json'));
  const verify=()=>validateBaselineReport({root:f.repo,base:f.sha,reportFile:file,expectedDigest:hash(readFileSync(file))});
- const initial=verify();assert.equal(initial.valid,true,initial.reasons.join('; '));
- outer.error='outer integration consumer failure';writeFileSync(file,JSON.stringify(outer));assert.equal(verify().valid,false);delete outer.error;
- const specSources=outer.sources_manifest;outer.cli_families=['spec','backend'];outer.sources_manifest=collectReleaseSources({root:f.repo,commit:f.sha});outer.cli_integrations=[{family:'spec',status:'failed'}];writeFileSync(file,JSON.stringify(outer));const missingIntegration=verify();assert.equal(missingIntegration.valid,false);assert.match(missingIntegration.reasons.join('; '),/集成|integration/);
- outer.cli_families=['spec'];outer.sources_manifest=specSources;delete outer.cli_integrations;writeFileSync(file,JSON.stringify(outer));
- // Model the old runner's separately logged syntax/terminal validators.
- full.schema_version=1;full.plan.commands=full.plan.commands.filter(row=>row.group==='fixture');full.plan.syntax_files=[];
- const terminal=full.results.find(row=>row.task_id==='post.git-diff-check');terminal.command=JSON.stringify(['git','diff','--check']);
- full.results=[...full.results.filter(row=>row.group==='fixture').map((row,index)=>({...row,index})),terminal];
- const persist=()=>{writeFileSync(fullFile,JSON.stringify(full));outer.full_verification.report_sha256=hash(readFileSync(fullFile));writeFileSync(file,JSON.stringify(outer));};persist();
- const result=verify();assert.equal(result.valid,true,result.reasons.join('; '));assert.equal(result.bindings.strategy,'legacy-full');assert.equal(result.bindings.sources_manifest.families[0],'spec');
- full.results.pop();persist();assert.equal(verify().valid,false);
- full.results.push(terminal);full.plan.commands=[];persist();assert.equal(verify().valid,false);
+ const consume=()=>validateBaseline({root:f.repo,base:f.sha,baselineReport:file,baselineReportDigest:hash(readFileSync(file)),validator:validateBaselineReport});
+ const result=verify();assert.equal(result.valid,false);assert.match(result.reasons.join('; '),/REPORT_SOURCE_UNSUPPORTED/);
+ assert.equal(consume().valid,false);
 });
 
 test('退出零但缺失或不完整的全量报告阻止打包', t => {

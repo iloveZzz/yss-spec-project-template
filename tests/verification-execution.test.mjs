@@ -56,6 +56,32 @@ const fixtureRoot=t=>{
   git('init','-q');git('add','.');git('-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit','-qm','fixture');
   return {directory,root};
 };
+test('历史 Node 测试 glob 按固定提交展开，不依赖工作树增删',t=>{
+ const {root}=fixtureRoot(t),git=(...args)=>execFileSync('git',args,{cwd:root,encoding:'utf8'}).trim();
+ fs.mkdirSync(path.join(root,'suite'));for(const ref of ['old.test.mjs','keep.test.mjs'])fs.writeFileSync(path.join(root,'suite',ref),'');
+ git('add','suite');git('-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit','-qm','old tests');const commit=git('rev-parse','HEAD');
+ fs.rmSync(path.join(root,'suite/old.test.mjs'));fs.writeFileSync(path.join(root,'suite/new.test.mjs'),'');
+ const task={command:'node --test suite/*.test.mjs'};
+ assert.deepEqual(compileTaskExecution(task,{root,fixedCommit:commit}).args,['--test','--test-concurrency=1','suite/keep.test.mjs','suite/old.test.mjs']);
+ assert.deepEqual(compileTaskExecution(task,{root}).args,['--test','--test-concurrency=1','suite/keep.test.mjs','suite/new.test.mjs']);
+ assert.throws(()=>compileTaskExecution({command:'node --test suite/no-*.mjs'},{root,fixedCommit:commit}),/NODE_TEST_GLOB_EMPTY/);
+ for(const pattern of ['../*.mjs','/tmp/*.mjs','suite/../../*.mjs'])assert.throws(()=>compileTaskExecution({command:`node --test ${pattern}`},{root,fixedCommit:commit}),/HISTORICAL_GLOB_INVALID/);
+ fs.symlinkSync('/tmp/outside',path.join(root,'suite/link.test.mjs'));git('add','suite');git('-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit','-qm','symlink');
+ assert.throws(()=>compileTaskExecution(task,{root,fixedCommit:git('rev-parse','HEAD')}),/HISTORICAL_GLOB_INVALID/);
+});
+
+test('历史追加语法检查以固定提交的文件类型和首行为准',t=>{
+ const {root}=fixtureRoot(t),git=(...args)=>execFileSync('git',args,{cwd:root,encoding:'utf8'}).trim();
+ fs.writeFileSync(path.join(root,'scripts/node-tool'),'#!/usr/bin/env node\n');fs.writeFileSync(path.join(root,'scripts/plain-tool'),'#!/bin/sh\n');fs.writeFileSync(path.join(root,'scripts/old.mjs'),'');
+ git('add','scripts');git('-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit','-qm','old files');const commit=git('rev-parse','HEAD');
+ fs.rmSync(path.join(root,'scripts/old.mjs'));fs.writeFileSync(path.join(root,'scripts/node-tool'),'#!/bin/sh\n');fs.writeFileSync(path.join(root,'scripts/plain-tool'),'#!/usr/bin/env node\n');
+ const plan={effective_profile:'release',requested_profile:'release',strategy:'release',commands:[{id:'prepared',task_id:'prepared',kind:'artifact-prepare',command:'true',gate_ids:[],depends_on:[]}],syntax_files:[],changed_files:['scripts/node-tool','scripts/plain-tool','scripts/old.mjs'],groups:[],selection:{effective:'legacy',omitted:[]},gates:[]};
+ const syntax=options=>addVerificationExecutionTasks(plan,{root,...options}).commands.filter(task=>task.kind==='syntax').map(task=>task.command);
+ const historical=syntax({fixedCommit:commit});assert.ok(historical.some(command=>command.endsWith("'scripts/node-tool'")));assert.ok(historical.some(command=>command.endsWith("'scripts/old.mjs'")));assert.ok(!historical.some(command=>command.endsWith("'scripts/plain-tool'")));
+ const current=syntax({});assert.ok(current.some(command=>command.endsWith("'scripts/plain-tool'")));assert.ok(!current.some(command=>command.endsWith("'scripts/node-tool'")));assert.ok(!current.some(command=>command.endsWith("'scripts/old.mjs'")));
+ fs.symlinkSync('/tmp/outside',path.join(root,'scripts/link.mjs'));git('add','scripts/link.mjs');git('-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit','-qm','symlink');
+ assert.throws(()=>addVerificationExecutionTasks({...plan,changed_files:['scripts/link.mjs']},{root,fixedCommit:git('rev-parse','HEAD')}),/HISTORICAL_SOURCE_INVALID/);
+});
 test('旧源码消费任务在真实 worker 执行任何命令前被拒绝',async t=>{
   const {directory,root}=fixtureRoot(t),marker=path.join(directory,'old-source-executed');
   const task={id:'check.old-source',task_id:'old-source',kind:'source-test-consumer',group:'checks',command:node(`require('node:fs').writeFileSync(${JSON.stringify(marker)},'executed')`)};
