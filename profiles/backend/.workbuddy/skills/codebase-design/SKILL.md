@@ -104,7 +104,7 @@ Good interfaces make testing natural:
 
 ## Optional architecture visualization
 
-Use `archify` only when the user or the governing YSS contract explicitly asks for a system map, workflow, sequence, data-flow, lifecycle, Mermaid beautification, or Before/After architecture view. Preserve the design facts and terminology from the current evidence; the resulting diagram is derived review evidence, not a replacement for the design decision, ADR, contract, or approval. In a YSS repository, use Archify's YSS-safe delivery wrapper and retain the paired JSON, HTML, and receipt.
+Provide a diagram when the user or the governing YSS contract explicitly asks for a system map, workflow, sequence, data-flow, lifecycle, Mermaid beautification, or Before/After architecture view. Preserve the design facts and terminology from the current evidence; the resulting diagram is derived review evidence, not a replacement for the design decision, ADR, contract, or approval.
 
 ## Rejected framings
 

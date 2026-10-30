@@ -2431,6 +2431,7 @@ profiles:
         inputs_complete: true
         input_patterns:
           - ".agents/skills/**"
+          - ".agents/skills/archify/**" # 退役删除路径由既有扫描承接
           - ".template-spec/agents/yss-skill-registry.yaml"
           - "skills-lock.json"
           - "profiles/**"
@@ -3572,7 +3573,7 @@ groups:
           Profile)' tests/cli-retirement.test.mjs"
         when: template-source
         id: check.cli-content-identity
-      - run: "node --test --test-name-pattern='^(Spec 原生阶段资源|现役 archify)'
+      - run: "node --test --test-name-pattern='^(Spec 原生阶段资源|现役 yss-research)'
           tests/cli-retirement.test.mjs"
         when: template-source
         id: check.cli-content-identity-install
@@ -3581,7 +3582,7 @@ groups:
         when: template-source
         id: check.cli-content-identity-sync
       - run: "node --test --test-skip-pattern='^(按需安装两个后端脚手架|公开 Bundle 导出|已移除前端
-          Profile)' --test-skip-pattern='^(Spec 原生阶段资源|现役 archify)'
+          Profile)' --test-skip-pattern='^(Spec 原生阶段资源|现役 yss-research)'
           --test-skip-pattern='^backend: 内容来源' tests/cli-retirement.test.mjs"
         when: template-source
         id: check.cli-content-identity-rest
@@ -3637,7 +3638,7 @@ groups:
           Profile)' tests/cli-retirement.test.mjs"
         when: template-source
         id: check.cli-content-identity
-      - run: "node --test --test-name-pattern='^(Spec 原生阶段资源|现役 archify)'
+      - run: "node --test --test-name-pattern='^(Spec 原生阶段资源|现役 yss-research)'
           tests/cli-retirement.test.mjs"
         when: template-source
         id: check.cli-content-identity-install
@@ -3646,7 +3647,7 @@ groups:
         when: template-source
         id: check.cli-content-identity-sync
       - run: "node --test --test-skip-pattern='^(按需安装两个后端脚手架|公开 Bundle 导出|已移除前端
-          Profile)' --test-skip-pattern='^(Spec 原生阶段资源|现役 archify)'
+          Profile)' --test-skip-pattern='^(Spec 原生阶段资源|现役 yss-research)'
           --test-skip-pattern='^backend: 内容来源' tests/cli-retirement.test.mjs"
         when: template-source
         id: check.cli-content-identity-rest

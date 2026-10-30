@@ -1326,7 +1326,7 @@ backend_source_index_contract:
   platform_line_source: approved-platform-configuration
   freshness_checker: yss-skill-source-index-refresh/scripts/check-backend-skill-source-index.mjs
   cross_line_fallback: forbidden
-# YSS_RETIREMENT_BEGIN sha256=6a04cc6e77b6dfebe055d5bead61baad0c6a2183e7724fb60ac3f742fd118ac9
+# YSS_RETIREMENT_BEGIN sha256=75e91af4bff0889264d7a1372e17d374d4bf2d26933c60f248ce860769c10b0d
 retirement_contract:
   schema_version: 2
   stages:
@@ -1342,6 +1342,7 @@ retirement_contract:
     deprecated: skill-deprecated
     retired: skill-retired
   retired_ids:
+    - archify
     - ask-matt
     - batch-grill-me
     - claude-handoff

@@ -134,6 +134,7 @@ retirement_contract:
     deprecated: skill-deprecated
     retired: skill-retired
   retired_ids:
+    - archify
     - ask-matt
     - batch-grill-me
     - claude-handoff
@@ -473,12 +474,6 @@ skills:
     aliases: []
     impacts: [backend]
     stack: java
-  - id: archify
-    layer: specialist
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [quality]
   - id: code-review
     layer: core
     maturity: supported

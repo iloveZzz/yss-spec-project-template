@@ -163,10 +163,10 @@ test('Spec 原生阶段资源与 Skill 补装通过保存计划完整闭包安�
  const preview=runNative(['sync','--root',target]).result;assert.equal(preview.stats.changed,0);assert.equal(preview.stats.conflicts,0);
 });
 
-test('现役 archify 与 yss-research 补装不能绕过 UNPORTED，安装闭包中的真实入口可执行',t=>{
+test('现役 yss-research 补装不能绕过 UNPORTED，安装闭包中的真实入口可执行',t=>{
  const base=scratch(t),target=path.join(base,'research');initializeNative('spec',target);
  const context=fs.readFileSync(path.join(target,'CONTEXT.md')),inspection=inspectNative('spec');
- for(const skill of ['archify','yss-research']){
+ for(const skill of ['yss-research']){
   const requirement=inspection.skillRequirements[skill];assert.ok(requirement,skill);
   assert.equal(requirement.unsupportedReason,undefined,`${skill} 是现役必要能力，UNPORTED 必须阻断`);
   assert.ok(requirement.paths.length>0,`${skill} 不能使用空闭包`);
@@ -177,8 +177,6 @@ test('现役 archify 与 yss-research 补装不能绕过 UNPORTED，安装闭包
   runNative(['skills','ensure',skill,'--profile','spec','--root',target,'--apply','--plan-file',plan]);
   assert.ok(fs.existsSync(path.join(target,'.agents/skills',skill,'SKILL.md')));
  }
- const doctor=spawnSync(process.execPath,['.agents/skills/archify/bin/archify.mjs','doctor'],{cwd:target,encoding:'utf8',timeout:60000});
- assert.equal(doctor.status,0,doctor.stderr);assert.equal(doctor.error,undefined);
  const validator=spawnSync(process.execPath,['.agents/skills/yss-research/scripts/validate-research-package.mjs'],{cwd:target,encoding:'utf8',timeout:60000});
  assert.equal(validator.status,1,validator.stderr);assert.match(validator.stderr,/usage: validate-research-package/);
  assert.doesNotMatch(validator.stderr,/ERR_MODULE_NOT_FOUND|Cannot find module/);

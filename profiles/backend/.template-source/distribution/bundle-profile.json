@@ -69,7 +69,6 @@
       "scripts/lib/template-verification.mjs",
       "scripts/lib/maintenance-counterexample.mjs",
       ".agents/skills/release-yss-cli",
-      ".agents/skills/archify",
       ".agents/skills/prototype-review",
       ".agents/skills/prototype/LOGIC.md",
       ".agents/skills/prototype/agents",

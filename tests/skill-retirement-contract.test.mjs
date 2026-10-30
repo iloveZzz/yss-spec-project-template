@@ -109,15 +109,18 @@ test('Backend derivation preserves other bytes and rejects edited subtree before
  }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
-test('root and Backend v2 preserve the full historical root retirement set',async()=>{
+test('root and Backend v2 preserve history and retire archify',async()=>{
  const fs=await import('node:fs'),yaml=await import('../scripts/vendor/yaml.mjs');const {readRetirementContract}=await import('../scripts/lib/skill-retirement-contract.mjs');
  const history=JSON.parse(fs.readFileSync('tests/fixtures/retired-skill-ids-v1.json','utf8'));assert.equal(history.root.length,99);assert.equal(history.backend.length,82);
+ const expected=[...history.root,'archify'].sort();
  for(const prefix of ['', 'profiles/backend/']){
   const registry=yaml.parse(fs.readFileSync(prefix+'.template-spec/agents/yss-skill-registry.yaml','utf8'));
-  assert.deepEqual([...readRetirementContract(registry)].sort(),history.root);
+  assert.deepEqual([...readRetirementContract(registry)].sort(),expected);
   const source=fs.readFileSync(prefix+'scripts/lib/skill-supply-chain.mjs','utf8');
-  const literal=source.match(/export const OBSOLETE = new Set\((\[[^;]*\])\);/)[1];assert.deepEqual(JSON.parse(literal),history.root);
+  const literal=source.match(/export const OBSOLETE = new Set\((\[[^;]*\])\);/)[1];assert.deepEqual(JSON.parse(literal),expected);
   assert.equal((source.match(/YSS_RETIREMENT_BEGIN/g)||[]).length,1);
+  const {resolveSkillForNewUse}=await import('../scripts/lib/skill-registry.mjs');
+  assert.throws(()=>resolveSkillForNewUse(registry,'archify'),/skill-retired/);
  }
 });
 
