@@ -2,7 +2,7 @@ import './slice-repositories.mjs'; // 登记多项目准备核验器（工作流
 import { readWorkLayout } from './work-layout.mjs';
 import { BLOCKING_SIGNALS, allowedResult, blockedResult, hasText, isReadable, readDecompositionResult, artifactBindingReady, sameBackendDesignPrerequisites, validateImplementationRepositoriesReady, SLICE_REPOSITORY_PREPARATION_PROTOCOL } from './lifecycle-readiness.mjs';
 export { validateImplementationRepositoriesReady, SLICE_REPOSITORY_PREPARATION_PROTOCOL };
-import {assertProgressionEntry, readProgressionTarget} from './lifecycle-progression.mjs';
+import {assertProgressionEntry} from './lifecycle-progression.mjs';
 import {approvalExpectationForBoundAsset} from './native-approval.mjs';
 import { assertBusinessApprovalBasis } from './business-ticket-lifecycle.mjs';
 import { assertBusinessTicketTransition, assertImplementationTicket } from './business-tickets.mjs';
@@ -117,10 +117,7 @@ function validateTicketReference(ref, trackerKind, root) {
  */
 export function validateNextRoute(currentWorkUnit, nextRoute, decisionState, options = {}) {
   if ([currentWorkUnit, nextRoute].includes('work-unit.strategic-design-handoff')) {
-    try {
-      const intent = readProgressionTarget({root: options.root || ROOT, checkpointRef: decisionState?.checkpoint_ref});
-      if (!intent?.consumers.some(consumer => ['backend', 'frontend'].includes(consumer.profile) && path.resolve(consumer.root) !== intent.root)) throw Error('业务方案交接仅用于显式外部实现专职消费者；本地资产直接消费');
-    } catch (error) { return blockedResult(['strategic-handoff-consumer-required'], [error.message]); }
+    return blockedResult(['legacy-strategic-handoff-unsupported'], ['旧战略交接已退役；用户手动交接使用 PR/MR']);
   }
   let entryRoutes;
   if (currentWorkUnit === 'work-unit.entry-triage' || currentWorkUnit === 'work-unit.maintenance-research' || nextRoute === 'work-unit.maintenance-research') {

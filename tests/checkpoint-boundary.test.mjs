@@ -19,7 +19,9 @@ test('旧Matt场景消费者接收无需交接的prototype路由',()=>{
 });
 test('材料接续不隐式交接，显式handoff仍验证引用',()=>{
   const contract=loadOrchestrationContract(ref=>fs.readFileSync(ref),'.template-spec/process/orchestration-contract.yaml').value;
-  assert.equal(contract.work_unit_routes['work-unit.strategic-design-handoff'].applies_when,'explicit-user-package-request');
+  assert.equal(contract.work_unit_routes['work-unit.strategic-design-handoff'].applies_when,'unsupported-legacy-only');
+  assert.equal(Object.hasOwn(contract.work_unit_routes['work-unit.strategic-design-handoff'], 'post_approval_action'), false);
+  // 兼容旧版本策略读取的关系不代表新流程支持旧包。
   assert.equal(contract.progression_target.external_strategic_handoff.trigger,'explicit-user-package-request');
   for(const milestone of ['product-design-completed','backend-deliverable','business-accepted']){
     assert.equal(Object.hasOwn(contract.progression_target.completion_policy[milestone].conditional_required_checks??{},'strategic-handoff-delivery'),false);

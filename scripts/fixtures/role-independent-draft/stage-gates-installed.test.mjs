@@ -12,7 +12,7 @@ import {stageContentFixture} from '../../lib/testing/stage-content-fixture.mjs';
 import {parseContextContract,resolveContextTermRefs} from '../../lib/context-contract.mjs';
 import {parseAsset} from '../../lib/structured-assets.mjs';
 import {digest} from '../../lib/strategic-handoff-io.mjs';
-import {finalizeDelivery,importBundle} from '../../lib/strategic-handoff.mjs';
+import {finalizeDelivery,importBundle} from '../../../tests/helpers/legacy-strategic-handoff-fixture.mjs';
 
 test('installed four-stage Spec records one Plan decision, stops at Spec and exports without a fifth approval',async()=>{
  const f=installedFixture('spec'),receiver=installedFixture('backend'),s=stageGatesFixture({existingRoot:f.root});

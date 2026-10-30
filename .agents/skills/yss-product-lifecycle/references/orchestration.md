@@ -67,7 +67,7 @@ Matt phase boundary 是工作阶段之间的上下文决策，不是新的生命
 
 1. **Continue**：下一阶段需要当前会话作为 primary source，或当前上下文仍在 smart zone 内。
 2. **`/clear`**：当前探索、死路和决策对下一阶段完全无关。
-3. **`/handoff`**：用户明确要求交接时，为新上下文生成轻量续接说明与引用；跨目录、换会话本身不触发交接。
+3. **`/handoff`**：仅用户明确要求交接时，在 PR/MR 文件变更提供材料并在正文说明；跨目录、换会话本身不触发交接。
 4. **Subagent**：工作单元边界清晰，可以在无人值守时完成并返回报告。
 5. **`/compact`**：同一 harness、同一目录且上下文仍相关，但需要压缩后继续；它是最后选项。
 
@@ -186,7 +186,7 @@ Checkpoint 中已批准门禁必须带 `basis: [{ref, digest}]` 和按 `evidence
 
 ## 专项合同加载索引
 
-专项加载提示：实现仓库与脚手架查询 `implementation_repository_preparation`、`backend_scaffold`；切片实现查询 `ticket_formalization`、`ready_for_agent`；审查查询 `review_input`；发布查询 `release_readiness`、`git_authorization`、`user_decision_evidence`；战略交接读取 `.template-spec/process/strategic-handoff-package.md` 并按其中验证器执行。
+专项加载提示：实现仓库与脚手架查询 `implementation_repository_preparation`、`backend_scaffold`；切片实现查询 `ticket_formalization`、`ready_for_agent`；审查查询 `review_input`；发布查询 `release_readiness`、`git_authorization`、`user_decision_evidence`；旧战略交接包已退役；用户手动交接读取 `handoff` 技能并使用 PR/MR。
 
 ## 后端脚手架平台
 

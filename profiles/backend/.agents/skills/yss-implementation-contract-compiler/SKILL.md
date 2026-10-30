@@ -20,7 +20,7 @@ Slice v3 的当前执行结果须按 `references/yss-skill-execution-result.md` 
 
 工程基线与 Build Architecture Checklist 的编写结构见 `.template-spec/architecture/templates/system-overview-design-template.md`。保留清单资产及原引用字段、实现前审查批准和持久化要求；事后验证记录见 `.template-spec/templates/verification-record-template.md`，不代替事前准入。
 
-显式战略交接按 `.template-spec/process/strategic-handoff-package.md` 核验来源和接收；本地批准资产绑定当前功能 checkpoint 与 Spec，核验适用的设计及后端/API 依赖，不补外部回执。跨端预检见 `.template-spec/process/delivery-preflight.md`；前端实现由独立规格处理。历史 `frontend_delivery` 按原合同核验，不新建或回退本地；无法核验时阻断。正式实现、生成和恢复须当前批准的 Slice Contract；接口或部署漂移使受影响证据失效。
+PR/MR 交接先按主控在线核验，旧战略包消费验证已退役；本地批准资产绑定当前功能 checkpoint 与 Spec，核验适用的设计及后端/API 依赖，不补外部回执。跨端预检见 `.template-spec/process/delivery-preflight.md`；前端实现由独立规格处理。历史 `frontend_delivery` 按原合同核验，不新建或回退本地；无法核验时阻断。正式实现、生成和恢复须当前批准的 Slice Contract；接口或部署漂移使受影响证据失效。
 
 必须读取 yss-project.yaml、CONTEXT.md、Spec / 战略设计、Technical Design Contract、API / 数据 / UI 影响、实现仓库登记、允许写路径和验证命令。输入缺失、未批准或过期时返回 blocked。
 
@@ -59,9 +59,9 @@ Slice v3 的当前执行结果须按 `references/yss-skill-execution-result.md` 
 - 已存在或已初始化工程不得因架构选择而重新生成；DDD/MVC 互转必须完整重路由到独立迁移工作单元。
 - 任务包写入范围、证据和命令必须能被独立验证，不能用自然语言说明替代结构化字段。
 
-## 战略交接快照包
+## PR/MR 交接输入
 
-使用 `scripts/strategic-handoff export / verify / import`；源资产冻结、规则身份与批准绑定、目标术语对账和逐条承接合同以 `.template-spec/process/strategic-handoff-package.md` 为准。来自导入包时，战术合同绑定 `strategic_handoff`；批准/流转前执行 `scripts/verify-strategic-handoff-consumption --root <target> <tactical>`，切片消费追加 `--slice <slice-id>`。存在延期时仅允许无依赖且核验通过的切片继续；未知依赖扩大阻断。
+PR/MR 材料按 [交接承接说明](references/strategic-handoff-routing.md) 核验并保留来源；旧战略包绑定的消费验证已退役，不得凭旧回执或补字段沿用批准。源变化或未知依赖仍阻断受影响工作。
 
 ## Slice v3 准备与批准
 
@@ -74,7 +74,7 @@ Slice v3 的当前执行结果须按 `references/yss-skill-execution-result.md` 
 后端 Slice 解析出 `component_binding: required` 的 capability 或其主 Skill 时，必须在同一平台兼容条目中逐项解析 `component_capabilities`。编译结果保存 `component_bindings` 与 `component_bindings_digest`；未登记、未验证、架构证据缺失、构件坐标冲突或摘要漂移均阻断。旧合同含组件 Skill 但没有组件绑定时直接 `stale`，重新编译并交生命周期批准，禁止自动补字段后沿用原批准。
 
 
-仅消费战略交接包时，按 [跨仓承接核验](references/strategic-handoff-routing.md) 追加当前摘要与逐规则承接检查；本 profile 的主控批准边界不变。
+PR/MR 材料按 [交接承接说明](references/strategic-handoff-routing.md) 核验并保留来源；旧战略包绑定的消费验证已退役，不得凭旧回执或补字段沿用批准。源变化或未知依赖仍阻断受影响工作。
 
 ## 业务来源
 

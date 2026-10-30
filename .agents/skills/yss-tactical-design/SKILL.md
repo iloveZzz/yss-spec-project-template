@@ -13,7 +13,7 @@ disable-model-invocation: true
 ## 适用边界
 
 - 由 `yss-technical-design` 在已确认 `domain-driven` 的技术设计分支中调用；新建后端必须先通过 `gate.backend-architecture-platform-approved`，由用户在同一次决定中确认 DDD / MVC 与精确 Spring Boot 版本。传统 MVC 由 `yss-technical-design` 自身的 `layered-mvc` 分支负责；既有工程直接核验并复用当前登记架构及固定工程基线/POM 中的实际 Spring Boot 版本，不重复询问。不得按状态、一致性影响、目录或默认值单独推断为 DDD。
-- 输入必须是版本当前的 Spec、功能架构、战略 DDD、状态矩阵、OpenAPI Draft / Freeze、ADR 和工程约束。若输入来自 Strategic Design Handoff，必须先用 `scripts/verify-strategic-handoff-consumption`（yss `handoff verify --kind consumption`）验证历史 v3/v4 或当前 v5 的 `context_delta` 已对账到目标仓根 `CONTEXT.md`，导入收据与上游来源摘要当前，并且目标侧 `context_reconciliation` 有效（可用 `scripts/verify-context-reconciliation` 单独核验）；原 `scripts/verify-strategic-context-import` 已退役；未完成时不得开始战术建模。
+- 输入必须是版本当前的 Spec、功能架构、战略 DDD、状态矩阵、OpenAPI Draft / Freeze、ADR 和工程约束。PR/MR 材料先按主控的在线固定提交核验；旧战略包消费验证已退役，历史绑定不得当作当前验证通过。目标业务词汇仍须对账。
 - 默认将结果写入系统概要设计 / 数据架构中的 Tactical DDD Check；聚合、状态机、一致性或持久化映射复杂到无法清楚表达时，才升级为独立战术设计文档。
 - 没有聚合、状态、不变量、一致性或领域边界影响时返回 `not-applicable` 及原因，不生成空设计。
 
@@ -39,9 +39,9 @@ disable-model-invocation: true
 
 起草 DDD `design` 时读取 [战术合同](references/tactical-design-contract.md)，按 [验证规则](references/validation-rules.md) 执行 `scripts/validate-tactical-design.mjs` 的只读校验；需要正文结构时读取 [输出模板](references/output-template.md)，不批量加载整个 references 目录。该 Skill 不生成 Java、Repository、Controller、DTO、OpenAPI Freeze、实现 Ticket 或生产代码。
 
-## 战略交接快照包
+## PR/MR 交接输入
 
-仅在输入来自战略交接包时，读取 [战略承接核验](references/strategic-handoff-routing.md)，绑定收据、摘要和逐规则承接；源变化或未知依赖阻断并回交主控。
+PR/MR 材料按 [交接承接说明](references/strategic-handoff-routing.md) 核验并保留来源；旧战略包绑定的消费验证已退役，不得凭旧回执或补字段沿用批准。源变化或未知依赖仍阻断受影响工作。
 
 ## 后端脚手架平台承接
 

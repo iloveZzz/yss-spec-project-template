@@ -1,5 +1,7 @@
 # 只读交付预检
 
+> **旧交接已退役：** 旧战略交接包的导出、导入和消费验证，以及依赖它的外部后端机器验收均不支持；涉及这些旧导出和接收的说明仅供理解历史记录，命令不得用于新交付。用户手动调用 `handoff` 使用 PR/MR 文件变更；其他仍被调用的预检和本地后端验证保留，历史原始数据不改写。
+
 `scripts/preflight-delivery --input <输入清单> --stage prepare|build|export|accept --json` 在任何初始化、构建或写入接收状态之前读取当前原始资产。它不初始化项目、不运行清单中的命令、不启动服务、不发 HTTP、不解压 ZIP、不生成批准或收据。结构化结果证明本次读取到的前提；执行边界仍须重新验证。
 
 输入采用 [delivery-preflight-input.schema.json](schemas/delivery-preflight-input.schema.json)，输出采用 [delivery-preflight-result.schema.json](schemas/delivery-preflight-result.schema.json)。`schema_version` 均为 1。退出码：当前阶段就绪为 `0`，存在阻断为 `1`，协议、参数或输入语法无效为 `2`。CLI 总是输出 JSON；`--json` 是显式调用标志。库入口为 `await preflightDelivery(input, {stage, root})`，与 CLI 使用同一结果结构。

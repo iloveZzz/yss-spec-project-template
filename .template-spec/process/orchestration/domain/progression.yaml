@@ -69,6 +69,7 @@ progression_target:
         backend-delivery: backend-api-data-impact
       allowed_execution_scopes: []
       conditional_gates: {}
+  # 仅供旧策略一致性验证；战略包路由已退役，不授予执行或交付资格。
   external_strategic_handoff:
     work_unit: work-unit.strategic-design-handoff
     gate: gate.spec-baseline-approved

@@ -27,6 +27,11 @@ test('single entry and explicit M4 migration preserve project assets and fail cl
     put('project/docs/synthetic-spec.md', 'Unapproved synthetic Spec');
     const reuse = ok(command('project-entry', ['--target-dir', target, '--mode', 'reuse', '--input', put('reuse.json', { artifact_refs: ['docs/synthetic-spec.md'] })]));
     assert.equal(reuse.next_work_unit, 'work-unit.entry-triage'); assert.equal(reuse.stage_verification_required, true);
+    const ref = { url: 'https://github.com/example/spec/pull/10', head_sha: 'a'.repeat(40), paths: ['docs/requirements.md'] };
+    const pr = ok(command('project-entry', ['--target-dir', target, '--mode', 'reuse', '--input', put('pr-reuse.json', { pull_request_ref: ref })]));
+    assert.deepEqual(pr.pull_request_ref, ref);
+    assert.equal(pr.source_verification_required, true); assert.equal(pr.ready_for_agent, false);
+    assert.equal(pr.execution_started, false); assert.equal(fs.existsSync(path.join(target, 'docs/requirements.md')), false);
     assert.equal(command('project-entry', ['--target-dir', target, '--mode', 'resume']).status, 1);
     assert.equal(command('project-entry', ['--target-dir', target, '--mode', 'reuse', '--input', put('bad.json', { artifact_refs: ['../outside'] })]).status, 1);
     assert.deepEqual(fs.readdirSync(path.join(plugin, 'skills')), ['backend-delivery']);

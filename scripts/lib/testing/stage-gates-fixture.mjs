@@ -21,7 +21,7 @@ export function stageGatesFixture({existingRoot}={}) {
   }
  const doc=ref=>parse(read(ref).toString());
  if(!existingRoot){
- const profile=doc('.template-spec/process/harness-profile.yaml');if(!profile.required_capabilities.includes('stage-gates-v1'))profile.required_capabilities.push('stage-gates-v1');write('.template-spec/process/harness-profile.yaml',profile);
+ const profile=doc('.template-spec/process/harness-profile.yaml');profile.lifecycle ||= {};profile.required_capabilities ||= [];for(const capability of ['role-independent-governance-v1','stage-gates-v1'])if(!profile.required_capabilities.includes(capability))profile.required_capabilities.push(capability);write('.template-spec/process/harness-profile.yaml',profile);
  const policyRef='.template-spec/process/orchestration-contract.yaml';const policy=doc(policyRef);if(!policy.parts.includes('orchestration/domain/stage-gates.yaml'))policy.parts.push('orchestration/domain/stage-gates.yaml');write(policyRef,policy);
  }
  const versionOf=ref=>{try{const d=doc(ref);return d.domain_version||d.package_version||'v1';}catch{return 'v1';}};

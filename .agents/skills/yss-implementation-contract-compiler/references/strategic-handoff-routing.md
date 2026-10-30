@@ -1,7 +1,7 @@
-## 战略交接快照包
+## PR/MR 交接输入
 
-跨仓交接使用 `scripts/strategic-handoff export / verify / import`。正式导出前补齐源战略的稳定规则 ID、关键场景和当前批准绑定；源资产原字节冻结、包内路径通过清单解析。目标导入只产生快照和对账/承接草案，正式 reconciliation 通过后才能进入战术设计。流程与字段见 `.template-spec/process/strategic-handoff-package.md`。
+用户手动调用 `handoff`，以 GitHub PR / GitLab MR 的文件变更交付材料，并在正文说明来源与待办。接收方按主控在线核验完整变更、固定 head 与所选文件，再作为普通材料处理；Issue 中的 Spec 仍为权威，文件是该次快照。材料和快照不授予批准或实现资格。
 
-来自战略交接包的技术设计合同（DDD / MVC）必须绑定 `strategic_handoff` 导入收据、包摘要、正式目标对账及逐条承接 rows。来自导入包时禁止仅填 `upstream_current: true`。批准前执行 `scripts/verify-strategic-handoff-consumption --root <target> <tactical>`；存在受控延期时按切片执行 `--slice <slice-id>`，实际核验通过且合同批准后才可继续相关切片。最新源规则、关键场景或资产变化使依赖项 stale；未知依赖扩大阻断，业务冲突回交战略方。结果绑定当前包与战术摘要，不能复用旧输出宣布 ready-for-agent。
+旧战略交接包的导出、导入和消费验证已退役，遇到历史绑定应明确阻断受影响工作，不得将旧回执伪装成当前验证。已有数据保留；目标词汇、当前合同和真实用户批准仍须核验。
 
-Slice v3 的任务进度、缺口和实时就绪结果不回写合同。源事实集中在 basis，Skill 闭包只在 resolution 保存，工作单元继承共同约束；独立工程审查与已有用户确认共同交生命周期批准。详见合同引用。
+Slice v3 的任务进度、缺口和实时就绪结果不回写合同；源事实集中在 basis，Skill 闭包保存在 resolution，工作单元继承共同约束。

@@ -15,7 +15,7 @@
 - 已绑定项目更换模板、Bundle 或二进制来源时，使用新插件的 `project-upgrade-plan` / `project-upgrade-apply`。直接 `yss sync` 缺少新绑定会返回 `BINDING_REQUIRED`；已登记身份与绑定本身不一致则返回 `BINDING_CONFLICT`。同一来源的治理资源补装仍可使用原生公开入口，其计划保护既有绑定 bytes 与 mode。
 - `project-status`、`project-recover`、`project-rollback` 默认只读；后两者写入需 `--apply`。恢复和最近事务回退一起处理原生身份、治理文件、绑定及职责 scope。并发修改与摘要漂移停止回退并保留现场。
 - 写入期间收到 SIGINT/SIGTERM 时，插件转发取消并等待原生事务结束，返回原始取消协议与退出码。仅剩已完整恢复的 `.yss` 初始化档案时，可重新预演初始化；是否接受由原生公开入口校验。未知、未完成或异家族历史仍阻断。
-- `project-entry --target-dir <绝对治理根> --mode new|reuse|resume --input <JSON文件>` 交回项目本地主控。new 用空对象，reuse 提供项目内 `artifact_refs` 或 checkpoint，resume 必须提供 checkpoint。交接不是阶段完成或实现许可。
+- `project-entry --target-dir <绝对治理根> --mode new|reuse|resume --input <JSON文件>` 交回项目本地主控。new 用空对象；reuse 可提供项目内 `artifact_refs`、checkpoint，或 `pull_request_ref: {url, head_sha, paths}`；resume 必须提供 checkpoint。PR/MR 定位未经网络验证，主控须在线读取当前 head、完整变更与选定文件。交接不是阶段完成或实现许可。
 
 旧格式未完成事务继续使用仓外恢复包中的固定原版本执行器；不由新版猜测恢复。更早的 M4 / v0.2 绑定先用对应归档插件的公开迁移入口桥接到已登记旧版本，再迁移原生身份。原生 rollback 只回退第二阶段；第一阶段使用旧桥接独立备份恢复，不宣称旧协议直迁。旧桥接可能同步 CONTEXT，须从其独立备份按 before/after 摘要与 mode 守卫恢复原字节，再完成旧公开 check 与新迁移；此保护恢复是额外步骤。旧 npm 版本长期保留可得，不 unpublish。插件升级不自动改写已有项目。
 
@@ -27,7 +27,7 @@
 
 本地机制验证、真实业务交付、已安装 Codex 会话、六平台原生运行与稳定发布分别验收。当前产物保持 `release_ready: false`；不写已安装 cache，不提交、推送或发布。
 
-后端输出范围为 Plan → Spec → Design → 工程契约 → 后端实现与交付。初始化 tracker 必选 github/gitlab；`--backend-root` 只登记独立既有后端候选，不写业务代码。`project-import-design`、`query-project`、`project-resume`、`project-dispatch` 保留治理交接；生产前端不属于此插件职责。
+后端输出范围为 Plan → Spec → Design → 工程契约 → 后端实现与交付。初始化 tracker 必选 github/gitlab；`--backend-root` 只登记独立既有后端候选，不写业务代码。`query-project`、`project-resume`、`project-dispatch` 保留治理恢复；`project-import-design` 已退役，交接使用 PR/MR；生产前端不属于此插件职责。
 
 原生行为测试必须提供固定 `YSS_PLUGIN_TEST_BINARY`；旧身份测试另提供 `YSS_PLUGIN_LEGACY_SPEC` / `YSS_PLUGIN_LEGACY_DESIGN` 的固定恢复包根，以及 `YSS_PLUGIN_LEGACY_ARCHIVE_ROOT`。跨二进制升级测试还需真实前版的 `YSS_PLUGIN_PREVIOUS_BINARY` 与独立固定摘要 `YSS_PLUGIN_PREVIOUS_BINARY_SHA256`。缺少输入时报错，不能跳过后仍宣称行为已验证。
 

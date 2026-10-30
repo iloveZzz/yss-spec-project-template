@@ -2,7 +2,7 @@
 import fs from 'node:fs';import path from 'node:path';import assert from 'node:assert/strict';import {spawnSync} from 'node:child_process';import test from 'node:test';
 import {installedFixture,hash} from './installed-fixture.mjs';import {professionalPlanFixture} from './professional-plan-fixture.mjs';
 import {parseContextContract,resolveContextTermRefs} from '../../lib/context-contract.mjs';import {parseSliceYaml} from '../../lib/slice-contract.mjs';
-import {digest} from '../../lib/strategic-handoff-io.mjs';import {finalizeDelivery,importBundle} from '../../lib/strategic-handoff.mjs';
+import {digest} from '../../lib/strategic-handoff-io.mjs';import {finalizeDelivery,importBundle} from '../../../tests/helpers/legacy-strategic-handoff-fixture.mjs';
 import {installLegacySpecPolicy} from '../../lib/testing/legacy-spec-policy.mjs';
 
 test('installed Spec completes role-free Handoff5; Backend imports Receipt3 while source is unavailable',async()=>{

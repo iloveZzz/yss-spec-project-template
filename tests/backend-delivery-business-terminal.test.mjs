@@ -31,6 +31,6 @@ for(const explicit of [false,true])test(`本地业务主线${explicit?'显式bus
   if(explicit)f.write('.work/local/progression-target.json',{...target,target:'business-accepted'});else fs.rmSync(targetRef);
   assert.deepEqual(fs.readFileSync(path.join(f.root,checkpointRef)),checkpointBefore);
   assert.equal(fs.existsSync(targetRef),explicit);
-  await assert.rejects(()=>producer.exportBackendDelivery({sourceRoot:f.root,deliveryRef:'local-delivery.json',output:path.join(f.root,'self-package')}),/本地证据.*外部交付/);
+  await assert.rejects(()=>producer.exportBackendDelivery({sourceRoot:f.root,deliveryRef:'local-delivery.json',output:path.join(f.root,'self-package')}),/legacy-strategic-handoff-unsupported/);
   assert.equal(fs.existsSync(path.join(f.root,'self-package')),false);
 });

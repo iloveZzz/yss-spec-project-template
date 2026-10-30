@@ -1,23 +1,14 @@
-import {loadOrchestrationContract} from './orchestration-contract.mjs';
-import {nativeEvidenceVerify,NEEDS} from './native-evidence.mjs';
-import {withValidationPhase} from './validation-phase.mjs';
 import { verifySliceContractApproval } from './approved-execution-context.mjs';
-import { cpSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
-import path from 'node:path';
-import { tmpdir } from 'node:os';
+import { readFileSync } from 'node:fs';
 import { readSliceContract } from './slice-contract.mjs';
 import { parseContent, ids } from './plan-spec-markdown.mjs';
 import {authorizeBackendDelivery} from './lifecycle-execution-scope.mjs';
-import { openBundle, openDelivery, importBundle, sourceApproval } from './strategic-handoff.mjs';
-import { read, safe, ensure, hash, digest, json, files, write, project, schema, archive, sourceApprovalPolicy, assertHandoffEvidenceRef, ROOT, parse } from './strategic-handoff-io.mjs';
+import { sourceApproval } from './strategic-handoff.mjs';
+import { read, safe, ensure, hash, digest, project, schema, assertHandoffEvidenceRef } from './strategic-handoff-io.mjs';
 
 // Evidence binds the deliverable basis, avoiding a circular hash through its own logs.
 export function backendDeliveryBasis(delivery) {
   return digest(Object.fromEntries(['delivery_mode','delivery_id','version','strategic_bundle_digest','strategic_route_id','scope','openapi','slice_contract','build','environment'].filter(key=>delivery[key]!==undefined).map(key=>[key,delivery[key]])));
-}
-
-export function openBackendStrategicInput(input, action, options = {}) {
-  return existsSync(path.join(input,'delivery-record.json')) ? openDelivery(input,action,options) : openBundle(input,action,options);
 }
 
 function boundFile(root, binding) {
@@ -97,92 +88,10 @@ export async function inspectLocalBackendDelivery(root, ref, {checkpointRef, rea
   return inspected;
 }
 
-export async function inspectBackendDelivery(root, ref, { readOnly = false } = {}) {
-  const {delivery,basis,tests}=await inspectDeliveryEvidence(root,ref);
-  return openBackendStrategicInput(safe(root,delivery.strategic_bundle_ref),bundle=>{
-    ensure(bundle.handoff.schema_version!==5||bundle.recordBytes,'Handoff v5 后端交付必须保留正式 delivery wrapper');
-    ensure(bundle.manifest.bundle_digest===delivery.strategic_bundle_digest,'后端交付与战略版本不一致');
-    if([4,5].includes(bundle.handoff.schema_version)){
-      const route=bundle.handoff.consumer_routes.find(item=>item.capability==='backend-technical-design');
-      ensure(route&&route.activation!=='not-applicable'&&delivery.strategic_route_id===route.route_id,'后端交付未绑定当前 backend-technical-design route_id');
-    }
-    const sources=new Set([...bundle.indexes.rules.map(x=>x.rule_id),...bundle.indexes.scenarios.map(x=>x.scenario_id)]);
-    ensure(delivery.scope.source_ids.every(id=>sources.has(id)),'后端交付引用未知规则/场景');
-    const scenarios=bundle.indexes.scenarios.filter(x=>delivery.scope.source_ids.includes(x.scenario_id));
-    ensure(scenarios.length>0,'后端交付范围缺少业务成功/失败场景');
-    for(const scenario of scenarios) {
-      ensure(scenario.rule_refs.every(id=>delivery.scope.source_ids.includes(id)),'交付场景缺少关联规则');
-      for(const outcome of ['success','failure'])ensure(tests.coverage.some(x=>x.source_id===scenario.scenario_id&&x.outcome===outcome),'后端交付缺少成功/失败场景验证');
-    }
-    ensure(delivery.scope.operation_ids.every(id=>tests.operation_ids.includes(id)),'后端契约验证未覆盖交付接口');
-    return {delivery,basis};
-  }, { readOnly });
+function legacyUnsupported() {
+  throw Object.assign(new Error('legacy-strategic-handoff-unsupported: 依赖旧战略包的外部后端交付验收已停止支持'), {code:'UNPORTED'});
 }
 
-// The native package entry authenticates the sealed source policy and original
-// package bytes. The callback receives a materialized IO view, not a new authority.
-export async function openBackendDelivery(input, action) {
- const temporary=mkdtempSync(path.join(tmpdir(),'yss-backend-delivery-'));
- try {
-  return await withValidationPhase({root:ROOT,purpose:'backend-delivery-package',readOnly:true},async()=>{
-   const result=nativeEvidenceVerify({root:ROOT,group:'handoff',kind:'backend-delivery',file:input,needs:NEEDS.backendDeliveryPackage});
-   if(result.exitCode!==0)throw Object.assign(new Error(result.message),{code:result.diagnostics[0]?.code??result.code,native:true});
-   const proof=result.envelope.result?.coverage;
-   ensure(proof?.result==='verified','NATIVE_PROTOCOL: 缺少 backend-delivery 报告');
-   let root=path.resolve(input);
-   if(lstatSync(root).isFile()){root=path.join(temporary,'unpacked');mkdirSync(root);archive('unpack',path.resolve(input),root);}
-   const manifest=parse(readFileSync(path.join(root,'manifest.json')));
-   const {bundle_digest,...body}=manifest;
-   ensure(bundle_digest===proof.bundle_digest&&digest(body)===proof.bundle_digest,'VALIDATION_INPUT_CHANGED: 后端包清单已改变');
-   const source=path.join(temporary,'source');mkdirSync(source);
-   let delivery;
-   for(const file of manifest.files){
-    const bytes=readFileSync(path.join(root,file.path));
-    ensure(bytes.length===file.size_bytes&&hash(bytes)===file.sha256,`VALIDATION_INPUT_CHANGED: ${file.path}`);
-    if(file.original_ref){const target=path.join(source,file.original_ref);mkdirSync(path.dirname(target),{recursive:true});writeFileSync(target,bytes);if(file.original_ref===manifest.delivery_ref)delivery=parse(bytes);}
-   }
-   ensure(delivery&&delivery.delivery_id===proof.delivery_id&&delivery.version===proof.version,'NATIVE_PROTOCOL: 后端包身份与认证结果不一致');
-   return await action({root,source,manifest,delivery,basis:backendDeliveryBasis(delivery)});
-  });
- }finally{rmSync(temporary,{recursive:true,force:true});}
-}
-
-export async function exportBackendDelivery({sourceRoot,deliveryRef,output,zip=false}) {
-  const root=project(sourceRoot), target=path.resolve(output);
-  ensure(!existsSync(target)&&(!zip||!existsSync(`${target}.zip`)),'后端包输出已存在');
-  const {delivery}=await inspectBackendDelivery(root,deliveryRef);
-  const refs=new Set([deliveryRef,'yss-project.yaml','CONTEXT.md',delivery.openapi.ref,delivery.openapi.approval_ref,delivery.slice_contract.ref,delivery.slice_contract.approval_ref,delivery.environment.test_data.ref,...delivery.supporting_files]);
-  const identity=read(safe(root,'yss-project.yaml'));
-  if(identity.schema_version===2) {
-    for(const ref of loadOrchestrationContract(ref=>readFileSync(safe(root,ref)),'.template-spec/process/orchestration-contract.yaml').refs)refs.add(ref);
-    for(const ref of ['.yss.json','.template-spec/process/harness-profile.yaml','.template-spec/process/lifecycle-registry.yaml','.template-spec/agents/yss-skill-registry.yaml'])refs.add(ref);
-  } else refs.add('.template-spec/agents/digital-human-roles.yaml');
-  for(const binding of Object.values(delivery.verification)) {
-    refs.add(binding.ref);
-    for(const result of read(safe(root,binding.ref)).results)for(const file of result.evidence)refs.add(file.ref);
-  }
-  // Keep the original strategic bytes and paths; offline validation reconstructs a temporary source view.
-  const strategy=safe(root,delivery.strategic_bundle_ref);
-  if(lstatSync(strategy).isDirectory())files(root,delivery.strategic_bundle_ref).forEach(ref=>refs.add(ref));
-  else refs.add(delivery.strategic_bundle_ref);
-  ensure(refs.size<=20000,'后端包文件数量超限');
-  refs.forEach(assertHandoffEvidenceRef);
-  const captured=[...refs].sort().map(ref=>({ref,bytes:readFileSync(safe(root,ref))}));
-  mkdirSync(path.dirname(target),{recursive:true});
-  const staging=mkdtempSync(path.join(path.dirname(target),'.backend-export-'));
-  try {
-    const entries=[];
-    for(const {ref,bytes} of captured) {
-      const name=ref==='CONTEXT.md'?'payload/source-context.snapshot.md':`payload/files/${ref}`;
-      write(staging,name,bytes);entries.push({path:name,original_ref:ref,size_bytes:bytes.length,sha256:hash(bytes)});
-    }
-    const body={schema_version:1,kind:'backend-delivery',delivery_id:delivery.delivery_id,version:delivery.version,delivery_ref:deliveryRef,files:entries};
-    const manifest={...body,bundle_digest:digest(body)};write(staging,'manifest.json',json(manifest));
-    await openBackendDelivery(staging,()=>null);
-    for(const {ref,bytes} of captured)ensure(hash(readFileSync(safe(root,ref)))===hash(bytes),`导出期间后端源资产变化: ${ref}`);
-    if(zip)archive('pack',staging,`${staging}.zip`);
-    ensure(!existsSync(target)&&(!zip||!existsSync(`${target}.zip`)),'后端包输出并发冲突');
-    renameSync(staging,target);if(zip)renameSync(`${staging}.zip`,`${target}.zip`);
-    return {result:'exported',delivery_id:delivery.delivery_id,version:delivery.version,bundle_digest:manifest.bundle_digest,output:target,...(zip?{zip:`${target}.zip`}:{})};
-  } finally { rmSync(staging,{recursive:true,force:true});rmSync(`${staging}.zip`,{force:true}); }
-}
+export async function inspectBackendDelivery() { return legacyUnsupported(); }
+export async function openBackendDelivery() { return legacyUnsupported(); }
+export async function exportBackendDelivery() { return legacyUnsupported(); }

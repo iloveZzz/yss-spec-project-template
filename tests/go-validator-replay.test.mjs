@@ -10,7 +10,7 @@ import {nativeEvidenceVerify, nativeContractVerify, nativeLifecycleVerify, asser
 import {generateTaskPackageDefaults, validateTaskPackage} from '../scripts/lib/task-package.mjs';
 import {parse as parseYamlText} from '../scripts/vendor/yaml.mjs';
 import {fixture as handoffFixture, context as handoffContext} from '../scripts/fixtures/strategic-handoff/fixture.mjs';
-import {exportBundle, openBundle, importBundle} from '../scripts/lib/strategic-handoff.mjs';
+import {exportBundle, openBundle, importBundle} from './helpers/legacy-strategic-handoff-fixture.mjs';
 import {verifyConsumption} from '../scripts/lib/strategic-handoff-consumption.mjs';
 import {verifyContextReconciliation} from '../scripts/lib/context-reconciliation.mjs';
 import {readWorkLayout} from '../scripts/lib/work-layout.mjs';

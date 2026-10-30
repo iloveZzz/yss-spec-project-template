@@ -184,6 +184,7 @@ async function apply(root, plan) {
 }
 
 export async function runProjectCommand(root, command, values) {
+  if (command === 'project-import-design') throw new Error('legacy-strategic-handoff-unsupported');
   if (['project-plan', 'project-bind-plan', 'project-migration-plan', 'project-upgrade-plan'].includes(command)) return plan(root, values, command === 'project-plan' ? 'initialize' : command === 'project-bind-plan' ? 'bind-existing' : 'upgrade');
   if (['project-apply', 'project-bind-apply', 'project-migration-apply', 'project-upgrade-apply'].includes(command)) {
     if (!values.plan) throw new Error('plan-file-required');
@@ -204,10 +205,6 @@ export async function runProjectCommand(root, command, values) {
   if (command === 'project-entry') {
     const entryValues = { ...values, ...(values.input ? { input: physical(values.input, true) } : {}) };
     return projectEntry(target, entryValues, checked, executeNode);
-  }
-  if (command === 'project-import-design') {
-    if (!values.bundle || existsSync(path.join(target, '.yss-backend-delivery.json'))) throw new Error('design-bundle-required-or-backend-already-delivered');
-    return JSON.parse(executeNode(safe(target, 'scripts/strategic-consumer-entry'), ['--root', target, '--bundle', physical(values.bundle, 'either')], target));
   }
   if (command === 'project-resume') {
     if (!values.checkpoint) throw new Error('checkpoint-required'); checked.verification = executeNode(safe(target, 'scripts/verify-lifecycle-checkpoint'), [safe(target, values.checkpoint)], target);
