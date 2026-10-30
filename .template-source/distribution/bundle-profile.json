@@ -1496,8 +1496,29 @@
         ".template-spec/templates/spec-template.md"
       ],
       "skillReferences": {
-        "yss-research": [],
-        "yss-prototype-stage": [],
+        "yss-research": [
+          ".template-spec/plan/templates/competitive-analysis-template.md",
+          ".template-spec/plan/templates/competitive-matrix-template.md",
+          "scripts/lib/json-schema.mjs",
+          "scripts/lib/source-context-snapshot.mjs",
+          "scripts/lib/validation-phase.mjs"
+        ],
+        "yss-prototype-stage": [
+          "scripts/lib/backend-platform-provenance.mjs",
+          "scripts/lib/backend-platform.mjs",
+          "scripts/lib/json-schema.mjs",
+          "scripts/lib/lifecycle-registry.mjs",
+          "scripts/lib/native-context.mjs",
+          "scripts/lib/native-evidence.mjs",
+          "scripts/lib/native-user-decision.mjs",
+          "scripts/lib/scaffold-reference-example.mjs",
+          "scripts/lib/source-context-snapshot.mjs",
+          "scripts/lib/structured-assets.mjs",
+          "scripts/lib/user-decision-core.mjs",
+          "scripts/lib/validation-phase.mjs",
+          "scripts/lib/work-layout.mjs",
+          "scripts/vendor/yaml.mjs"
+        ],
         "prototype-review": [],
         "yss-design-system": [
           "DESIGN.md",

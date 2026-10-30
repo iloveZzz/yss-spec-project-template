@@ -1822,10 +1822,22 @@ profiles:
           - ".codebuddy/skills/**"
           - "scripts/verify-skill-governance"
           - "scripts/lib/skill-governance.mjs"
+          - ".template-spec/process/spec-workflow.json"
           - ".cursorrules"
           - ".template-source/agents/skills-maintenance.md"
         depends_on: []
         failure_mode: "技能入口命名、引用或资源结构错误"
+      - id: check.spec-skill-governance
+        run: node --test tests/skill-governance.test.mjs
+        group: skills
+        inputs_complete: true
+        input_patterns:
+          - tests/skill-governance.test.mjs
+          - scripts/lib/skill-governance.mjs
+          - .template-spec/process/spec-workflow.json
+          - .agents/skills/yss-prototype-stage/SKILL.md
+        depends_on: []
+        failure_mode: 新 Spec 被旧原型门禁阻断，或旧流程与证据保护被一并放宽
       - id: "check.prototype-work-layout"
         run: "node --test .agents/skills/yss-prototype-stage/tests/reliability.test.mjs"
         group: "work-layout"
@@ -2939,6 +2951,8 @@ routing:
     groups: [ feature-assets ]
   - patterns: [ "tests/harness-skill-scope.test.mjs" ]
     groups: [ skills ]
+  - patterns: [ "tests/skill-governance.test.mjs" ]
+    groups: [ skills ]
   - patterns: [ "tests/test_setup_yss_bootstrap.py" ]
     groups: [ skills ]
   - patterns: [ "tests/yss-backend-skill-governance.test.mjs" ]
@@ -3728,6 +3742,8 @@ groups:
         id: check.022dccdddca70b70
       - run: scripts/verify-skill-governance
         id: check.93d2af5732ccdd96
+      - run: node --test tests/skill-governance.test.mjs
+        id: check.spec-skill-governance
       - run: node --test
           .agents/skills/yss-skill-source-index-refresh/scripts/refresh-yss-skill-index.test.mjs
         id: check.208c7eedeff4e6e9
@@ -4036,6 +4052,7 @@ gates:
       - check.c80aaecf300ddc1f
       - check.022dccdddca70b70
       - check.93d2af5732ccdd96
+      - check.spec-skill-governance
       - check.208c7eedeff4e6e9
       - check.f8acc69a55fea6b0
       - check.skill-registry-unit
