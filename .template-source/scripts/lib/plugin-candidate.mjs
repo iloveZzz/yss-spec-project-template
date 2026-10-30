@@ -50,6 +50,7 @@ export function candidateFromEnvironment(root, environment = process.env) {
   };
   const template = call('git',['rev-parse','HEAD']);
   if (receipt.template_tree !== call('git',['rev-parse','HEAD^{tree}'])) throw new Error('candidate template tree mismatch');
+  if (call('git',['status','--porcelain'])) throw new Error('candidate template worktree changed');
   if (!path.isAbsolute(receipt.cli_root || '') || call('git',['-C',receipt.cli_root,'rev-parse','HEAD']) !== candidateCliCommit
       || call('git',['-C',receipt.cli_root,'rev-parse','HEAD^{tree}']) !== receipt.cli_tree
       || call('git',['-C',receipt.cli_root,'status','--porcelain'])) throw new Error('candidate CLI source mismatch');
