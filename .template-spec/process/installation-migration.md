@@ -1,6 +1,6 @@
 # 安装方式与显式迁移
 
-新安装合同提供 `skills` 和 `governed` 两种安装选择。新建缺省 skills，提供独立技能和工程入口；显式 governed 安装现有生命周期政策。选择保存在受管安装元数据，不要求普通任务填写模式或资格字段。Profile 仍为 Spec/Backend。
+新安装合同提供 `skills` 和 `governed` 两种安装选择。新建和接管缺省 governed，安装现有生命周期政策；仅需独立技能和工程入口时显式选择 `--installation skills`。选择保存在受管安装元数据，不要求普通任务填写模式或资格字段。Profile 仍为 Spec/Backend。
 
 普通同步保持原选择；没有新字段的旧 metadata3/4 按原正式合同解释，不能按新建默认值转换。当前转换只接受可核验 metadata4/5；metadata3 先使用已有显式治理迁移。
 

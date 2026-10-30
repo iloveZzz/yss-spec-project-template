@@ -62,9 +62,9 @@ Profile 职责:
   产品与业务设计在 spec 内完成；backend 承担技术设计与专职交付。
   本次目标、本端职责与整体业务分别核验；旧实例先核对能力并显式同步。
 
-快速上手（以下选择完整治理；独立技能安装使用默认 skills）:
-  yss init --profile spec --installation governed --root ./demo-spec --project-name 演示项目
-  yss init --profile backend --installation governed --root ./demo-backend --project-name 演示项目
+快速上手（默认 governed 治理安装；独立技能显式选择 --installation skills）:
+  yss init --profile spec --root ./demo-spec --project-name 演示项目
+  yss init --profile backend --root ./demo-backend --project-name 演示项目
   yss doctor --root ./demo-spec --human
   yss context verify --root ./demo-spec --json
 

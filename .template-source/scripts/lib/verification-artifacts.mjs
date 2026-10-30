@@ -3,7 +3,7 @@ import path from 'node:path';
 import assert from 'node:assert/strict';
 import {spawnSync} from 'node:child_process';
 import {NATIVE_PROFILES, nativeBinary, nativeDigest as hash, inspectNative, initializeNative, runNative, applyNative} from './native-yss.mjs';
-import {readYssCliPin, verifyPinnedBinary} from './yss-cli-pin.mjs';
+import {readNativeYssPin, verifyPinnedBinary} from './yss-cli-pin.mjs';
 const ensure=(ok,message)=>{if(!ok)throw new TypeError(message);};
 const historicalPackages={spec:'create-yss-spec',backend:'create-yss-harness-backend'};
 function git(root,args){const result=spawnSync('git',args,{cwd:root,encoding:'utf8'});ensure(result.status===0,result.stderr||'无法核验固定 Git 来源');return result.stdout.trim();}
@@ -41,7 +41,7 @@ export function collectReleaseSources({root,commit,families=NATIVE_PROFILES,envi
  ensure(git(cliSource,['status','--porcelain','--untracked-files=normal','--ignore-submodules=none'])==='','发行 yss 源码要求干净固定工作树');
  const sourceCommit=git(cliSource,['rev-parse','HEAD']);ensure(sourceCommit===version.cliCommit,'yss 源码实际提交与二进制 CLI commit 错配');
  // 发布验证只接受固定文件登记的二进制与源码提交；平台验收由维护者人工记录，不在此校验。
- const pin=readYssCliPin(root);
+ const pin=readNativeYssPin(root,environment);
  if(pin){ensure(verifyPinnedBinary({digest:binary.digest,pin,environment}).pinned,'发布验证必须使用固定的 yss 二进制，不接受 YSS_NATIVE_BINARY_OVERRIDE');ensure(sourceCommit===pin.commit,`yss 源码提交 ${sourceCommit.slice(0,8)} 与固定文件的 ${pin.commit.slice(0,8)} 不一致`);}
  const inspections=Object.fromEntries(families.map(family=>[family,inspectNative(family,{environment})]));
  for(const bundle of Object.values(inspections))ensure([2,3,4,5].includes(bundle.schemaVersion)&&bundle.sourceState==='committed','Bundle 必须来自已提交的模板来源');

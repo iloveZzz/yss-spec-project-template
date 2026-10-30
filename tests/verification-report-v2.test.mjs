@@ -5,6 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { createVerificationReport, finalizeVerificationReport,saveVerificationReport,verificationInputDigest } from '../scripts/lib/verification-report.mjs';
 import {collectReleaseSources} from '../.template-source/scripts/lib/verification-artifacts.mjs';
+import {platformKey} from '../.template-source/scripts/lib/yss-cli-pin.mjs';
 import { validateVerificationReport,compileExpectedVerificationPlan,assertNativeMigrationCommands } from '../.template-source/scripts/lib/verification-report-validator.mjs';
 import {compileLegacyPlan,loadLegacyManifest} from '../.template-source/scripts/lib/legacy-verification.mjs';
 import {addVerificationExecutionTasks,compileTaskExecution} from '../.template-source/scripts/lib/verification-execution-plan.mjs';
@@ -260,9 +261,12 @@ test('无 gitmodules 的维护证据仍独立核验真实来源、command、invo
  // Synthetic native identity exercises the real collector and maintenance subprocess, not release qualification.
  fs.writeFileSync(path.join(cli,'go.mod'),'module github.com/iloveZzz/yss-cli\n\ngo 1.27.1\n');fs.copyFileSync(new URL('../.template-source/scripts/tests/fixtures/native-release.go',import.meta.url),path.join(cli,'main.go'));const cliCommit=commit(cli);
  const binary=path.join(f.directory,'yss-fixture'),built=spawnSync('go',['build','-trimpath','-ldflags',`-X main.cliCommit=${cliCommit} -X main.templateCommit=${templateCommit} -X main.designCommit=${templateCommit} -X main.backendCommit=${templateCommit}`,'-o',binary,'.'],{cwd:cli,env:{...process.env,CGO_ENABLED:'0'},encoding:'utf8'});assert.equal(built.status,0,built.stderr);
- const keys=[...new Set(['YSS_NATIVE_BINARY','YSS_NATIVE_BINARY_SHA256','YSS_NATIVE_SOURCE_ROOT','YSS_NATIVE_BINARY_OVERRIDE',...Object.keys(process.env).filter(key=>key.startsWith('YSS_RELEASE_'))])],previous=Object.fromEntries(keys.map(key=>[key,process.env[key]]));
+ const keys=[...new Set(['YSS_NATIVE_BINARY','YSS_NATIVE_BINARY_SHA256','YSS_NATIVE_SOURCE_ROOT','YSS_NATIVE_PIN_FILE','YSS_NATIVE_PIN_SHA256','YSS_NATIVE_BINARY_OVERRIDE',...Object.keys(process.env).filter(key=>key.startsWith('YSS_RELEASE_'))])],previous=Object.fromEntries(keys.map(key=>[key,process.env[key]]));
  t.after(()=>{for(const key of keys)if(previous[key]===undefined)delete process.env[key];else process.env[key]=previous[key];});for(const key of keys)delete process.env[key];
  Object.assign(process.env,{YSS_NATIVE_BINARY:binary,YSS_NATIVE_BINARY_SHA256:createHash('sha256').update(fs.readFileSync(binary)).digest('hex'),YSS_NATIVE_SOURCE_ROOT:fs.realpathSync(cli)});
+ const pinFile=path.join(f.directory,'fixture-pin.json');
+ fs.writeFileSync(pinFile,JSON.stringify({schema_version:1,repository:'https://example.invalid/yss-cli.git',version:'1.0.0-fixture.1',commit:cliCommit,go_version:'1.27.1',build:'regression-only:synthetic-fixture',binaries:{[platformKey()]:{sha256:process.env.YSS_NATIVE_BINARY_SHA256}}}));
+ Object.assign(process.env,{YSS_NATIVE_PIN_FILE:pinFile,YSS_NATIVE_PIN_SHA256:createHash('sha256').update(fs.readFileSync(pinFile)).digest('hex')});
  const sources=collectReleaseSources({root:source,commit:templateCommit});assert.equal(fs.existsSync(path.join(source,'.gitmodules')),false);
  f.report.root=fs.realpathSync(source);f.report.input_sha256=verificationInputDigest(source);f.report.input_after_sha256=f.report.input_sha256;f.report.sources_manifest=structuredClone(sources);
  const evidence={command:'scripts/verify-template',args:['--report-dir',f.directory],exit_code:0,evidence_ref:file};

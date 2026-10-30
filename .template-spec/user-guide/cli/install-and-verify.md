@@ -40,12 +40,12 @@ yss upgrade --to <固定版本> --tool-root /absolute/path/tools/yss --json
 
 ## 新建、接管和补装
 
-Profile 选择职责，installation 选择安装方式，`--full` 只扩大当前安装方式的资源集合。独立安装默认保留 `implement`、`code-review`；Spec 治理初始根为 `yss-product-lifecycle`、`setup-yss-harness`、`yss-research`、`grilling`、`domain-modeling`、`yss-stage-decision`、`i-have-adhd`、`code-review`，实际文件可因必要依赖闭包增加。阶段资源和当前任务命中的条件技能仍须补装，不承诺新建后能自动完成所有阶段。
+Profile 选择职责，installation 选择安装方式，`--full` 只扩大当前安装方式的资源集合。独立技能集合由各 Profile 的固定 Bundle 决定；Spec 治理初始根为 `yss-product-lifecycle`、`setup-yss-harness`、`yss-research`、`grilling`、`domain-modeling`、`yss-stage-decision`、`i-have-adhd`、`code-review`，实际文件可因必要依赖闭包增加。阶段资源和当前任务命中的条件技能仍须补装，不承诺新建后能自动完成所有阶段。
 
-新建默认安装独立技能（`skills`），无需先建立 Ticket、checkpoint 或治理批准；完整生命周期使用 `--installation governed`。以下示例选择完整治理安装，后续才能补装阶段资产；只需独立技能时，首条命令省略 `--installation` 或改为 `skills`，并跳过阶段资产补装。
+新建和接管默认采用治理安装（`governed`），安装能力不创建 Ticket、checkpoint 或治理批准。以下示例使用默认治理安装，后续可补装阶段资产；只需独立技能时，首条命令显式增加 `--installation skills`，并跳过阶段资产补装。
 
 ```bash
-yss init --profile spec --installation governed --root /absolute/path/project --project-name Example --plan --out /absolute/path/init-plan.json --json
+yss init --profile spec --root /absolute/path/project --project-name Example --plan --out /absolute/path/init-plan.json --json
 yss init --profile spec --root /absolute/path/project --apply --plan-file /absolute/path/init-plan.json --json
 yss doctor --root /absolute/path/project --json
 yss diff --root /absolute/path/project --json

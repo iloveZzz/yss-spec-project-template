@@ -42,8 +42,8 @@ export function verificationPreflight({root,plan,reportDir,environment=process.e
   else if(needs.python==='runtime')check('python',()=>{const value=JSON.parse(invoke('python3',['-c','import sys,json; print(json.dumps({"version":[sys.version_info.major,sys.version_info.minor],"executable":sys.executable}))']));if(value.version[0]!==3||value.version[1]!==12)throw new Error('需要 Python 3.12');return value;});
   if(needs.go)check('go',()=>invoke('go',['version']));
   if(plan.strategy==='daily-necessary'&&needs.native_cli)check('native-cli',()=>{
-    const binary=require('./native-yss.mjs').nativeBinary(environment),pins=require('./yss-cli-pin.mjs'),pin=pins.readYssCliPin(root);
-    // 仓库里有固定文件，二进制就必须与它一致；本地联调自己构建的二进制要显式覆盖，结果会标记为未固定。
+    const binary=require('./native-yss.mjs').nativeBinary(environment),pins=require('./yss-cli-pin.mjs'),pin=pins.readNativeYssPin(root,environment);
+    // 本批显式 pin 优先；预检只核验固定输入，不重新查询 latest。
     return pin?{...binary,pin:pins.verifyPinnedBinary({digest:binary.digest,pin,environment})}:binary;
   });
   if(needs.tooling)check('pnpm-and-tooling-lock',()=>{

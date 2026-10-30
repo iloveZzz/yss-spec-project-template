@@ -11,7 +11,7 @@ description: 按已确认的 DDD 或 MVC 架构完成技术设计、边界决策
 
 两条分支都覆盖业务规则、关键场景及成功/失败测试 seam；有战略交接包时先导入、对账并逐条承接。与测试 Agent 对齐可执行验收，交付技术设计、架构决定和 Slice Contract 的 `architecture` 分区。旧 v1 DDD 合同仅显式只读兼容。
 
-不写生产实现，不自行批准或设置 `ready-for-agent`。输入或架构变化返回 `new_impacts` / `drift` 并重新路由。用户或合同要求图示时调用 `archify`；图是派生证据，不能替代合同和批准。
+不写生产实现，不自行批准或设置 `ready-for-agent`。输入或架构变化返回 `new_impacts` / `drift` 并重新路由。按用户或合同要求提供图示；图是派生证据，不能替代合同和批准。
 文档输出时按 `lifecycle-document-output` 条件调用 `i-have-adhd`，读取 `.template-spec/process/document-writing.md`；作用域仅限当前产物，派发时传递条件及引用。
 
 ## 本地业务分析与本端交付

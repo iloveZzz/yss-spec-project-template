@@ -7,11 +7,11 @@ import path from 'node:path';
 import os from 'node:os';
 import {spawnSync} from 'node:child_process';
 import {NATIVE_PROFILES, nativeBinary, nativeDigest, decodeNative, runNative, initializeNative, applyNative, inspectNative} from '../.template-source/scripts/lib/native-yss.mjs';
-import {readYssCliPin, verifyPinnedBinary} from '../.template-source/scripts/lib/yss-cli-pin.mjs';
+import {readNativeYssPin, verifyPinnedBinary} from '../.template-source/scripts/lib/yss-cli-pin.mjs';
 
-// FR-002：根仓不再用 submodule 固定 yss-cli，由 .template-source/distribution/yss-cli-pin.json 固定版本、提交与各平台摘要。
-test('固定的 yss 二进制与固定文件一致：摘要、版本号和构建提交',t=>{
-  const root=path.resolve(import.meta.dirname,'..'),pin=readYssCliPin(root);
+// 每批只消费已固定的 Release；用例不得自行查询 latest。
+test('本批 yss 二进制与固定文件一致：摘要、版本号和构建提交',t=>{
+  const root=path.resolve(import.meta.dirname,'..'),pin=readNativeYssPin(root);
   assert.ok(pin,'仓库必须带 yss-cli 固定文件');
   const verified=verifyPinnedBinary({digest:nativeBinary().digest,pin});
   if(!verified.pinned){t.diagnostic('本地覆盖（YSS_NATIVE_BINARY_OVERRIDE=1）：二进制未固定，不能当作固定版本通过');return;}
@@ -163,10 +163,10 @@ test('Spec 原生阶段资源与 Skill 补装通过保存计划完整闭包安�
  const preview=runNative(['sync','--root',target]).result;assert.equal(preview.stats.changed,0);assert.equal(preview.stats.conflicts,0);
 });
 
-test('现役 archify 与 yss-research 补装不能绕过 UNPORTED，安装闭包中的真实入口可执行',t=>{
+test('现役 yss-research 补装不能绕过 UNPORTED，安装闭包中的真实入口可执行',t=>{
  const base=scratch(t),target=path.join(base,'research');initializeNative('spec',target);
  const context=fs.readFileSync(path.join(target,'CONTEXT.md')),inspection=inspectNative('spec');
- for(const skill of ['archify','yss-research']){
+ for(const skill of ['yss-research']){
   const requirement=inspection.skillRequirements[skill];assert.ok(requirement,skill);
   assert.equal(requirement.unsupportedReason,undefined,`${skill} 是现役必要能力，UNPORTED 必须阻断`);
   assert.ok(requirement.paths.length>0,`${skill} 不能使用空闭包`);
@@ -177,8 +177,6 @@ test('现役 archify 与 yss-research 补装不能绕过 UNPORTED，安装闭包
   runNative(['skills','ensure',skill,'--profile','spec','--root',target,'--apply','--plan-file',plan]);
   assert.ok(fs.existsSync(path.join(target,'.agents/skills',skill,'SKILL.md')));
  }
- const doctor=spawnSync(process.execPath,['.agents/skills/archify/bin/archify.mjs','doctor'],{cwd:target,encoding:'utf8',timeout:60000});
- assert.equal(doctor.status,0,doctor.stderr);assert.equal(doctor.error,undefined);
  const validator=spawnSync(process.execPath,['.agents/skills/yss-research/scripts/validate-research-package.mjs'],{cwd:target,encoding:'utf8',timeout:60000});
  assert.equal(validator.status,1,validator.stderr);assert.match(validator.stderr,/usage: validate-research-package/);
  assert.doesNotMatch(validator.stderr,/ERR_MODULE_NOT_FOUND|Cannot find module/);

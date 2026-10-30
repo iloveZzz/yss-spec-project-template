@@ -118,7 +118,7 @@ test('独立 CLI 扫描不依赖已删除的 Go 测试目录', t => {
   for (const cwd of [root, cli]) assert.equal(spawnSync('git', ['-C', cwd, 'init', '-q']).status, 0);
   fs.mkdirSync(path.join(root, '.template-source/process'), { recursive: true });
   fs.writeFileSync(path.join(root, '.template-source/process/work-layout-exceptions.json'), JSON.stringify({ schema_version: 1, exceptions: [] }));
-  const run = () => spawnSync(process.execPath, [new URL('../scripts/verify-work-layout', import.meta.url).pathname, '--root', root, '--cli-root', cli], { encoding: 'utf8' });
+  const run = () => spawnSync(process.execPath, [new URL('../scripts/verify-work-layout', import.meta.url).pathname, '--root', root, '--cli-root', cli], { encoding: 'utf8', env: {...process.env,YSS_NATIVE_PIN_FILE:undefined,YSS_NATIVE_PIN_SHA256:undefined} });
   assert.equal(run().status, 0, run().stderr);
   fs.writeFileSync(path.join(cli, 'layout.go'), 'const root = "docs/.scratch"');
   assert.notEqual(run().status, 0);
@@ -143,7 +143,7 @@ test('固定模板忽略 CI 的 CLI 来源，显式扫描仍拒绝缺失、错�
   fs.writeFileSync(pinFile, JSON.stringify(pin));
   const policyFile = path.join(root, '.template-source/process/work-layout-exceptions.json');
   fs.writeFileSync(policyFile, JSON.stringify({ schema_version: 1, exceptions: [] }));
-  const run = (source = cli, explicit = true) => spawnSync(process.execPath, [new URL('../scripts/verify-work-layout', import.meta.url).pathname, '--root', root, ...(explicit ? ['--cli-root', source] : [])], { encoding: 'utf8', env: { ...process.env, YSS_NATIVE_SOURCE_ROOT: source } });
+  const run = (source = cli, explicit = true) => spawnSync(process.execPath, [new URL('../scripts/verify-work-layout', import.meta.url).pathname, '--root', root, ...(explicit ? ['--cli-root', source] : [])], { encoding: 'utf8', env: { ...process.env, YSS_NATIVE_SOURCE_ROOT: source, YSS_NATIVE_PIN_FILE:pinFile,YSS_NATIVE_PIN_SHA256:hash(fs.readFileSync(pinFile)) } });
   const implicit = run(path.join(cli, 'absent'), false);
   assert.equal(implicit.status, 0, implicit.stderr);
   assert.equal(JSON.parse(implicit.stdout).repositories, 1);

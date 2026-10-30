@@ -4,18 +4,33 @@
 
 ## 取得最新正式版本并固定来源
 
-1. 默认读取 `https://api.github.com/repos/iloveZzz/yss-cli/releases/latest`，或 [最新 Release 页面](https://github.com/iloveZzz/yss-cli/releases/latest)。有对应能力的已安装 CLI 可运行 `<固定yss> upgrade --check --json`，只查询、不下载程序包、不写入。不要把查询成功或 `updateAvailable=false` 当作安装一致性通过。
+随包 [bootstrap.py](../scripts/bootstrap.py) 使用 Python 3.11+ 标准库，不要求已有 CLI。先检查解释器；缺失或版本不支持时报告缺口，不自动安装 Python。命令可在任意工作目录执行，`<技能目录>` 为当前已读取技能的绝对目录：
+
+```text
+python3 <技能目录>/scripts/bootstrap.py inspect
+python3 <技能目录>/scripts/bootstrap.py prepare --work-dir <仓外全新绝对目录> [--version <指定版本>]
+```
+
+`inspect` 只读检查本机平台和 PATH 程序，不执行候选，也不证明来源可信；它看不到父交互 shell 的 alias/function。`prepare` 仅在获准取得发行包时使用：默认查询一次 latest，随后固定该 Release，核验清单、归档、manifest、摘要和权限，输出引导执行器；不安装、不改 PATH、不操作项目。`--version` 接受带或不带 `v` 的具体版本。
+
+成功需退出 0 且 JSON `status=ok`，读取 `result.executor`、`archive`、`archiveSha256`、`version`、`cliCommit`、`platform`、`releaseUrl`（均在 result 内），以固定值进入安装事务。错误 JSON 的 `stage/code/message` 与非零退出说明失败环节，不把部分下载当成功。可信离线包仍沿用下文核验与 `update plan/apply`。
+
+不具备脚本条件或核对已有来源时，按以下合同取得执行器：
+
+1. 默认读取 `https://api.github.com/repos/iloveZzz/yss-cli/releases/latest`，或 [最新 Release 页面](https://github.com/iloveZzz/yss-cli/releases/latest)。有对应能力的已安装 CLI 可运行 `<固定yss> upgrade --check --json`，只查询、不下载程序包、不写入。已由本批 `prepare` 固定 Release 后不重复查询 latest。不要把查询成功或 `updateAvailable=false` 当作安装一致性通过。
 2. 记录实际 `tag_name`、Release URL、草稿/预发布标记，下载该固定 tag 下的 `checksums.json`。从清单取得 `cliCommit` 完整 SHA、目标平台归档名、大小、包/二进制摘要、来源锁和发行资格；不将 `target_commitish` 的分支名当完整提交。核对 tag、清单和包内 manifest 同源、同版本，当前平台具有实际发行验收。旧或未知清单格式先诊断，不猜字段。
 3. 平台由当前运行环境确定；不能把交叉编译当该平台原生验收。后续下载用固定 tag 的资产 URL，校验长度、SHA-256、包内 manifest 和来源锁；归档保存在工具目录及项目外。下载后远程出现更新 Release 不改变本批次来源。
-4. 网络失败、限流、缺校验清单或来源校验失败时停止该下载分支，保留准确错误。已取得可信固定包时可走离线入口；缺平台包时才按下文构建备用。不静默换镜像、npm、预发布或 main。
+4. 网络失败、限流、缺校验清单或来源校验失败时停止相应下载分支，记录失败环节、可用的 HTTP 状态及诊断；HTTP 错误页不是校验清单。检查系统既有代理与执行器环境是否一致，可在单次命令中复用已有设置，不改用户持久配置或输出凭据；这不改变官方来源。重试仍使用本批固定 tag 和摘要。可信固定包可走离线入口；缺平台包才按下文构建。不静默换镜像、npm、预发布或 main。
 
 按实际 Release 资产、`checksums.json` 及适用的 `build-only-checksums.json` 区分稳定安装包、仅构建包和缺包。`supportedPlatforms` 不是已发布包清单；缺安装资格与没有平台包也不同。`stableReady=false` 或 `nativeRuntimeVerified=false` 的包不能作为稳定在线升级目标，不通过离线入口绕过资格检查，也不据此重建并伪报官方资格。需要使用构建包时仅按该版本明示范围和已有授权处理；普通安装目标无法满足则报告阻断。
 
-macOS 安装前核对归档与工具根处于同一支持原子克隆的 APFS 卷；跨卷或不支持时保留 `UNPORTED`，不退回覆盖复制。平台资格以本批固定包证据为准，不把某次发行的 Mac/Windows 结论写成所有未来版本的默认事实。
+macOS 事务要求实际事务目录中的 `objects/<摘要>` 恢复对象与目标临时文件位于同一支持原子克隆的文件系统（通常 APFS）；下载归档放在哪个卷不是这项检查的判据。工具根内的挂载边界、事务路径和目标路径均需核对；跨卷或不支持时保留 `UNPORTED`，不退回覆盖复制。平台资格以本批固定包证据为准。
 
 ## 选择工具根及检查已有安装
 
 优先解析实际入口的符号链接，找到受管二进制目录；对该目录执行 `<固定yss> update status --tool-root <工具根> --json`。比对 `version --json`、`installation.json`、`release-manifest.json`、实际文件摘要和权限。较新版本提供安装一致性诊断，较旧版本缺诊断字段时从清单逐项核对，不能把缺字段当通过。
+
+父交互 shell 的入口需在该 shell 内核对，子进程的 PATH 检查不能代替：Bash/Zsh 运行 `type -a yss` 和 `command -v yss`；PowerShell 运行 `Get-Command yss -All`。若 alias/function 遮蔽已核验文件，先使用绝对路径。确认要撤销当前会话的该定义后，Bash 用 `unalias yss` 或 `unset -f yss`，Zsh 用 `unalias yss` 或 `unfunction yss`；只执行实际存在的类型。PATH 调整后分别用 Bash `hash -r` 或 Zsh `rehash` 再核对；持久 shell 配置的修改按实际授权处理。
 
 首次安装选择用户级独立目录：macOS/Linux 默认 `~/.local/share/yss`，Windows 默认 `%LOCALAPPDATA%\yss`，先展开为绝对路径并确认不存在或为空。工具根不能是 Git 仓库根或治理项目根；用户指定的独立工具目录可优先使用。现有未受管文件或裸二进制不能直接接管覆盖。
 

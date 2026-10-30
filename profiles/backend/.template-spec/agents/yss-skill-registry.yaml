@@ -1326,8 +1326,9 @@ backend_source_index_contract:
   platform_line_source: approved-platform-configuration
   freshness_checker: yss-skill-source-index-refresh/scripts/check-backend-skill-source-index.mjs
   cross_line_fallback: forbidden
+# YSS_RETIREMENT_BEGIN sha256=75e91af4bff0889264d7a1372e17d374d4bf2d26933c60f248ce860769c10b0d
 retirement_contract:
-  schema_version: 1
+  schema_version: 2
   stages:
     - deprecated
     - retired
@@ -1336,7 +1337,109 @@ retirement_contract:
     - migration-only
     - remove-ready
   hard_retirement_tombstone: .template-spec/agents/skill-migrations.md
-  retired_id_source: scripts/lib/skill-supply-chain.mjs#OBSOLETE
+  retired_id_source: .template-spec/agents/yss-skill-registry.yaml#/retirement_contract/retired_ids
   failure_codes:
     deprecated: skill-deprecated
     retired: skill-retired
+  retired_ids:
+    - archify
+    - ask-matt
+    - batch-grill-me
+    - claude-handoff
+    - code-review-process
+    - component-selection-imports
+    - design-an-interface
+    - dispatching-parallel-agents
+    - edit-article
+    - file-export-download
+    - formily-foundation
+    - formily-linkage-effects
+    - formily-mode-slot-detail
+    - formily-step-flow
+    - frontend-commit
+    - git-guardrails-claude-code
+    - grill-me
+    - grill-with-docs
+    - improve-codebase-architecture
+    - loop-me
+    - migrate-to-shoehorn
+    - obsidian-vault
+    - page-form-module
+    - page-list-module
+    - page-skeleton
+    - product-design-prototype
+    - prototype-page-acceptance
+    - qa
+    - request-refactor-plan
+    - research
+    - scaffold-exercises
+    - setup-pre-commit
+    - setup-ts-deep-modules
+    - teach
+    - theme-token-usage
+    - to-issues
+    - to-prd
+    - to-questionnaire
+    - ubiquitous-language
+    - vue3-best-practices
+    - wait-what
+    - web-design-engineer
+    - web-video-presentation
+    - wireframe-prototype
+    - wizard
+    - writing-beats
+    - writing-fragments
+    - writing-great-skills
+    - writing-shape
+    - yedit-table-usage
+    - yss-antd-design
+    - yss-antdv-next-design
+    - yss-api-integration
+    - yss-application-layer-reference
+    - yss-backend-scaffold-adapter
+    - yss-backend-scaffold-application
+    - yss-backend-scaffold-domain
+    - yss-backend-scaffold-infrastructure
+    - yss-backend-scaffold-parent
+    - yss-backend-scaffold-web
+    - yss-components
+    - yss-db2mybatis
+    - yss-dictionary
+    - yss-dir
+    - yss-domain-layer-reference
+    - yss-domain-modeling
+    - yss-duckdb
+    - yss-file
+    - yss-filerunner
+    - yss-formily
+    - yss-formily-schema-generator
+    - yss-frontend-scaffold-generator
+    - yss-harness-upgrade
+    - yss-hook
+    - yss-infrastructure-layer-reference
+    - yss-jdbc
+    - yss-log
+    - yss-mail
+    - yss-mapper-dynamic
+    - yss-microapp-commit
+    - yss-mvc-data-analysis-project-initializer
+    - yss-mvc-design
+    - yss-mvc-scaffold-generator
+    - yss-openapi
+    - yss-page-module-development
+    - yss-quality
+    - yss-router
+    - yss-source-index
+    - yss-sql-condition
+    - yss-sql-tpl
+    - yss-taskflow
+    - yss-ui
+    - yss-ui-business-page-generation
+    - yss-use-table-height
+    - yss-use-tree-height
+    - yss-valuation
+    - yss-variable
+    - yss-web-layer-reference
+    - ytable-usage
+    - ytree-usage
+# YSS_RETIREMENT_END

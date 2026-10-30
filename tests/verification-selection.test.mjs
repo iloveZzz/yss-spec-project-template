@@ -498,3 +498,10 @@ test('Context与Profile两调用合并，WorkBuddy仅在独立效率检查在场
  const extra=compile(['tests/workbuddy-entry.test.mjs']);
  assert.ok(extra.commands.find(x=>x.id==='check.workbuddy-skills').command.includes('tests/skill-sync-efficiency.test.mjs'),'未选独立项仍保留原触发闭包');
 });
+
+test('Matt closure documents select doc facts without incomplete inputs',()=>{
+ for(const kind of ['design','plan']) {
+  const file=`.template-source/contracts/2026-10-29-matt-skills-integration-closure-${kind}.md`;
+  assert.ok(planTemplateVerification({changedFiles:[file]}).commands.some(x=>x.id==='check.doc-facts'));
+ }
+});

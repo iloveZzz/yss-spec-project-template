@@ -6,7 +6,7 @@
 
 ## 教程：spec
 
-本教程选择完整治理安装；默认 skills 仅提供 `implement`、`code-review` 两个开发入口，不执行下文的 Context / lifecycle 命令。Profile、安装方式与 `--full` 分别选择职责、治理范围与资源规模。治理初始技能根见[新建、接管和补装](install-and-verify.md#新建接管和补装)，专业能力按阶段和任务条件补齐；安装成功不等于 Spec 任务验收或宿主已发现技能。
+本教程采用默认 governed 治理安装；仅需独立技能时显式选择 `--installation skills`，并跳过下文的 Context / lifecycle 命令。Profile、安装方式与 `--full` 分别选择职责、治理范围与资源规模。治理初始技能根见[新建、接管和补装](install-and-verify.md#新建接管和补装)，专业能力按阶段和任务条件补齐；安装成功不等于 Spec 任务验收或宿主已发现技能。
 
 ```text
 Profile spec
@@ -16,7 +16,7 @@ Profile spec
 前置条件：独立新目录，或先 attach 接管已有工程；已有任务从最近可信接入点恢复。
 输入材料：项目名称、当前职责对应的合同/交接材料。
 
-  yss init --profile spec --installation governed --root ./demo-spec --project-name 演示项目
+  yss init --profile spec --root ./demo-spec --project-name 演示项目
   yss doctor --root ./demo-spec --json
   yss context verify --root ./demo-spec --json
   yss lifecycle query --root ./demo-spec --id work-unit.entry-triage --json

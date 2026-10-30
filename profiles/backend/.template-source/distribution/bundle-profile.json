@@ -69,7 +69,6 @@
       "scripts/lib/template-verification.mjs",
       "scripts/lib/maintenance-counterexample.mjs",
       ".agents/skills/release-yss-cli",
-      ".agents/skills/archify",
       ".agents/skills/prototype-review",
       ".agents/skills/prototype/LOGIC.md",
       ".agents/skills/prototype/agents",
@@ -536,6 +535,8 @@
           "scripts/lib/review-package.mjs",
           "scripts/lib/runtime-store.mjs",
           "scripts/lib/skill-registry.mjs",
+          "scripts/lib/skill-retirement-contract.mjs",
+          "scripts/lib/skill-retirement-projection.mjs",
           "scripts/lib/slice-applicability.mjs",
           "scripts/lib/slice-contract-preparation.mjs",
           "scripts/lib/slice-contract-views.mjs",
@@ -636,7 +637,11 @@
         "shared-80a34a8f0e": [
           "scripts/lib/repository-mode.mjs",
           "scripts/lib/skill-supply-chain.mjs",
-          "scripts/lib/workbuddy-projection.mjs"
+          "scripts/lib/workbuddy-projection.mjs",
+          "scripts/lib/skill-retirement-contract.mjs",
+          "scripts/lib/skill-retirement-projection.mjs",
+          ".template-spec/agents/yss-skill-registry.yaml",
+          ".template-spec/agents/skill-migrations.md"
         ],
         "shared-841cabab01": [
           "scripts/lib/strategic-handoff-design-targets.mjs"

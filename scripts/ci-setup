@@ -16,13 +16,13 @@ YSS_CLI_PIN=.template-source/scripts/lib/yss-cli-pin.mjs
 
 usage() {
   cat <<'EOF'
-用法: scripts/ci-setup [--no-python] [--toolchain] [--yss-commit <40位SHA>|pin] [--dry-run]
+用法: scripts/ci-setup [--no-python] [--toolchain] [--yss-commit <40位SHA>|pin|latest] [--dry-run]
        scripts/ci-setup --requirements-file <绝对JSON文件> [--dry-run]
        scripts/ci-setup --print-versions
   默认          校验 Node 主版本、确认 template-source、按 frozen lockfile 安装 pnpm 依赖、安装 Python schema 依赖
   --no-python   跳过 Python schema 依赖
   --toolchain   准备原型作者工具链，并（配合 --yss-commit）安装固定版本的 Go 以构建 yss
-  --yss-commit  从固定提交构建 yss 二进制（需要 go）；写 pin 表示取 yss-cli 固定文件里的提交，并在构建后核对固定的 sha256
+  --yss-commit  latest 每批查询最新正式 Release 后固定源码与摘要；pin/完整 SHA 保留显式历史构建。按需 native_cli 默认 latest
   --dry-run     只打印计划，不执行
   --print-versions  打印 node= 与 python= 的目标版本（KEY=value，可直接追加到 $GITHUB_OUTPUT），供平台适配器选择运行时，不重复写版本号
 环境变量:
@@ -77,7 +77,7 @@ JS
   read -r python_requirement go_needed native_needed tooling toolchain <<< "$requirements"
   if [[ "$python_requirement" == none ]]; then python=0; fi
   if [[ "$python_requirement" != jsonschema ]]; then python_schema=0; fi
-  if ((native_needed)); then yss_commit=pin; fi
+  if ((native_needed)); then yss_commit=latest; fi
 fi
 
 yss_pinned=0
@@ -90,8 +90,8 @@ if [[ "$yss_commit" == pin ]]; then
   [[ -n "$yss_commit" ]] || { echo "无法读取 yss-cli 固定文件的 commit" >&2; exit 2; }
   yss_pinned=1
 fi
-if [[ -n "$yss_commit" && ! "$yss_commit" =~ ^[a-f0-9]{40}$ ]]; then
-  echo "--yss-commit 必须是 40 位小写十六进制的完整提交 SHA，或写 pin" >&2
+if [[ -n "$yss_commit" && "$yss_commit" != latest && ! "$yss_commit" =~ ^[a-f0-9]{40}$ ]]; then
+  echo "--yss-commit 必须是 40 位小写十六进制的完整提交 SHA，或写 pin/latest" >&2
   exit 2
 fi
 if ((!dry_run)) && [[ -z "${CI:-}" && "${YSS_CI_ALLOW_LOCAL:-}" != "1" ]]; then
@@ -136,12 +136,13 @@ ensure_python() {
   [[ "$(python_minor)" == "$YSS_CI_PYTHON_MINOR" ]] || fail "补装后 python3 仍不是 ${YSS_CI_PYTHON_MINOR}"
 }
 
-# Go 版本取自 yss-cli 固定文件的 go_version（构建出固定摘要的那个版本，克隆源码后还会与 go.mod 核对），不在这里再写一份；校验值取自 go.dev 公布的发布清单。
+# latest 保留现有 Go，由固定源码选择精确工具链；缺少 Go 或显式历史构建才从仓内 pin 引导。
 ensure_go() {
   local required have arch file sha tmp
+  if [[ "$yss_commit" == latest ]] && command -v go >/dev/null; then return 0; fi
   required="$(node "$ROOT_DIR/$YSS_CLI_PIN" go_version 2>/dev/null || true)"
   [[ -n "$required" ]] || fail "无法从 yss-cli 固定文件读出所需 Go 版本"
-  [[ -z "${YSS_CI_GO_VERSION:-}" || "$YSS_CI_GO_VERSION" == "$required" ]] || fail "YSS_CI_GO_VERSION 必须等于固定文件的 go_version ${required}"
+  [[ "$yss_commit" == latest || -z "${YSS_CI_GO_VERSION:-}" || "$YSS_CI_GO_VERSION" == "$required" ]] || fail "YSS_CI_GO_VERSION 必须等于固定文件的 go_version ${required}"
   if command -v go >/dev/null; then
     have="$(go env GOVERSION | sed 's/^go//')"
     [[ "$have" == "$required" ]] && return 0
@@ -179,16 +180,30 @@ step "确认仓库模式为 template-source"
 if ((!dry_run)); then test "$(scripts/repository-mode)" = template-source; else echo "+ test \"\$(scripts/repository-mode)\" = template-source"; fi
 
 if ((go_needed)) || [[ -n "$yss_commit" ]] || { ((!requirements_mode)) && ((toolchain)); }; then
-  step "Go：版本取自 yss-cli 固定文件的 go_version"
+  if [[ "$yss_commit" == latest ]]; then
+    step "Go：保留现有工具链，精确编译版本取本批固定源码 go.mod；缺少 Go 时用仓内 pin 引导"
+  else
+    step "Go：版本取自 yss-cli 固定文件的 go_version"
+  fi
   if ((dry_run)); then
-    echo "+ go 缺失或不等于固定文件的 go_version 时，在 root 容器内按 go.dev 公布的 sha256 安装"
+    echo "+ 历史构建按 pin 校验 Go；latest 的精确工具链由 Go 缓存供给，缺少启动器时在 root 容器内按 go.dev 公布的 sha256 安装"
   else
     export GOTOOLCHAIN=local # 固定编译器，不允许 go.mod 触发自动工具链切换。
     ensure_go
   fi
 fi
 
-if [[ -n "$yss_commit" ]]; then
+if [[ "$yss_commit" == latest ]]; then
+  step "查询最新正式 Release，固定本批源码与摘要后构建 yss 或复用缓存；后续验证不重复联网"
+  if ((dry_run)); then
+    echo "+ node .template-source/scripts/ensure-native-yss.mjs --json → 本批固定环境（无原生安装资格的平台仅 regression-only 构建）"
+  else
+    ensure_python
+    native_result="$(node .template-source/scripts/ensure-native-yss.mjs --json)" || fail "最新正式 CLI 回归输入准备失败"
+    native_values="$(node -e 'const v=JSON.parse(process.argv[1]); for(const [key,field] of Object.entries({YSS_NATIVE_BINARY:"binary",YSS_NATIVE_BINARY_SHA256:"sha256",YSS_NATIVE_SOURCE_ROOT:"source",YSS_NATIVE_PIN_FILE:"pinFile",YSS_NATIVE_PIN_SHA256:"pinSha256"})){if(typeof v[field]!=="string"||/[\r\n\0]/.test(v[field]))process.exit(1);console.log(key+"="+v[field]);}' "$native_result")" || fail "本批 CLI 环境格式不符"
+    while IFS= read -r entry; do export_var "${entry%%=*}" "${entry#*=}"; done <<< "$native_values"
+  fi
+elif [[ -n "$yss_commit" ]]; then
   step "从固定提交 ${yss_commit} 构建 yss"
   if ((dry_run)); then
     echo "+ git fetch --depth 1 ${YSS_CLI_REPOSITORY} ${yss_commit} → 按提交内来源锁运行 node tools/fetch-bundle.mjs 生成内嵌 Bundle，再运行 node tools/build-candidate.mjs（官方候选构建配方；没有该脚本的旧提交退回 go build -trimpath）"
@@ -233,6 +248,10 @@ if [[ -n "$yss_commit" ]]; then
     export_var YSS_NATIVE_SOURCE_ROOT "$yss_source"
     export_var YSS_NATIVE_BINARY "$yss_binary"
     export_var YSS_NATIVE_BINARY_SHA256 "$yss_sha256"
+    if ((yss_pinned)); then
+      export_var YSS_NATIVE_PIN_FILE "$ROOT_DIR/.template-source/distribution/yss-cli-pin.json"
+      export_var YSS_NATIVE_PIN_SHA256 "$(node -e 'process.stdout.write(require("node:crypto").createHash("sha256").update(require("node:fs").readFileSync(process.argv[1])).digest("hex"))' "$ROOT_DIR/.template-source/distribution/yss-cli-pin.json")"
+    fi
   fi
 fi
 

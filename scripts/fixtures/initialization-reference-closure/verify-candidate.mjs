@@ -59,7 +59,7 @@ function metadata(root) { return JSON.parse(fs.readFileSync(file(root, '.yss.jso
 function initialise(profile, installation, inspection) {
   const root = path.join(output, `${profile}-${installation}`);
   const args = ['init', '--profile', profile, '--root', root, '--project-name', 'Reference closure verification'];
-  if (installation === 'governed') args.push('--installation', 'governed');
+  args.push('--installation', installation);
   const plan = path.join(output, `${profile}-${installation}-init.json`);
   cli([...args, '--plan', '--out', plan]);
   assert.equal(fs.existsSync(root), false, 'init plan must not create instance');

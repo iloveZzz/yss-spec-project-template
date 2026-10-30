@@ -28,9 +28,18 @@ func main(){values:=map[string]string{};pos:=[]string{};for i:=1;i<len(os.Args);
   if pos[1]=="inspect"{result=inspection(profile)}else{out:=values["out"];if _,e:=os.Lstat(out);e==nil{code="EXISTS";status="error";break};must(os.MkdirAll(out,0755));files:=[]any{};for ref,data:=range assets(){put(out,ref,[]byte(data));files=append(files,map[string]any{"path":ref,"digest":digest([]byte(data)),"mode":420,"ownership":"managed","size":len(data)})};manifest:=filepath.Join(out,".yss-bundle.json");must(os.WriteFile(manifest,jsonBytes(inspection(profile)),0644));result=map[string]any{"inspection":inspection(profile),"directory":out,"manifestPath":manifest,"files":files}}
  case "init","attach":
   if values["apply"]=="true"{for ref,data:=range assets(){put(root,ref,[]byte(data))};put(root,".yss.json",metadata(profile));result=map[string]any{"status":"applied"}}else{result=map[string]any{"command":command,"stats":map[string]any{"changed":5,"conflicts":0}};if out:=values["out"];out!=""{must(os.WriteFile(out,jsonBytes(result),0644))}}
- case "doctor","diff","sync":result=map[string]any{"command":command,"stats":map[string]any{"changed":0,"conflicts":0}};if out:=values["out"];out!=""{must(os.WriteFile(out,jsonBytes(result),0644))}
- case "migrate":
-  action:=pos[1];if action=="apply"{before,e:=os.ReadFile(filepath.Join(root,".yss.json"));must(e);put(root,".fixture-before-metadata",before);before,e=os.ReadFile(filepath.Join(root,"scripts/sync-skills"));must(e);put(root,".fixture-before-agents",before);put(root,"scripts/sync-skills",[]byte(assets()["scripts/sync-skills"]));put(root,".yss.json",metadata(profile));result=map[string]any{"status":"applied"}}else if action=="rollback"{before,e:=os.ReadFile(filepath.Join(root,".fixture-before-metadata"));must(e);put(root,".yss.json",before);before,e=os.ReadFile(filepath.Join(root,".fixture-before-agents"));must(e);put(root,"scripts/sync-skills",before);result=map[string]any{"status":"rolled-back"}}else{changed:=0;if current,e:=os.ReadFile(filepath.Join(root,"scripts/sync-skills"));e==nil&&string(current)!=assets()["scripts/sync-skills"]{changed=1};result=map[string]any{"command":command,"changes":[]any{map[string]any{"path":"scripts/sync-skills"}},"stats":map[string]any{"changed":changed,"conflicts":0}};if out:=values["out"];out!=""{must(os.WriteFile(out,jsonBytes(result),0644))}}
+ case "doctor","diff":result=map[string]any{"command":command,"stats":map[string]any{"changed":0,"conflicts":0}};if out:=values["out"];out!=""{must(os.WriteFile(out,jsonBytes(result),0644))}
+ case "sync":
+  // Match the public sync plan/apply contract; an unchanged plan has no changes.
+  current,e:=os.ReadFile(filepath.Join(root,"scripts/sync-skills"));must(e);changes:=[]any{}
+  if string(current)!=assets()["scripts/sync-skills"]{changes=append(changes,map[string]any{"path":"scripts/sync-skills"})}
+  if values["apply"]=="true"{
+   if len(changes)>0{before,e:=os.ReadFile(filepath.Join(root,".yss.json"));must(e);put(root,".fixture-before-metadata",before);put(root,".fixture-before-sync-skills",current);put(root,"scripts/sync-skills",[]byte(assets()["scripts/sync-skills"]));put(root,".yss.json",metadata(profile))}
+   result=map[string]any{"status":"applied"}
+  }else{result=map[string]any{"command":command,"changes":changes,"stats":map[string]any{"changed":len(changes),"conflicts":0}};if out:=values["out"];out!=""{must(os.WriteFile(out,jsonBytes(result),0644))}}
+ case "rollback":
+  if values["apply"]!="true"{code="ARGUMENT";status="error";break}
+  before,e:=os.ReadFile(filepath.Join(root,".fixture-before-metadata"));must(e);put(root,".yss.json",before);before,e=os.ReadFile(filepath.Join(root,".fixture-before-sync-skills"));must(e);put(root,"scripts/sync-skills",before);result=map[string]any{"status":"rolled-back"}
  default:code="ARGUMENT";status="error"
  }
  fmt.Println(string(jsonBytes(map[string]any{"outputVersion":1,"protocolVersion":1,"version":version,"command":command,"profile":profile,"status":status,"code":code,"result":result})));if code!="OK"{os.Exit(1)}

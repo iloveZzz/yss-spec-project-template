@@ -57,13 +57,23 @@ test("Backend 组合导出的共享维护技能与独立包一致", (t) => {
   exportSkills(["--skill", "setup-yss-harness", "--output", backend], {
     sourceRoot: path.join(composeProfileTree("backend"), ".agents/skills"),
   });
-  for (const ref of ["SKILL.md", "references/operation-contract.md", "references/project-operations.md", "references/program-installation.md", "references/cli-families.md"]) {
+  for (const ref of ["SKILL.md", "references/operation-contract.md", "references/project-operations.md", "references/program-installation.md", "references/cli-families.md", "scripts/bootstrap.py"]) {
     assert.deepEqual(
       fs.readFileSync(path.join(backend, "skills/setup-yss-harness", ref)),
       fs.readFileSync(path.join(canonical, "skills/setup-yss-harness", ref)),
       ref,
     );
+    assert.equal(
+      fs.statSync(path.join(canonical, "skills/setup-yss-harness", ref)).mode & 0o777,
+      fs.statSync(path.join(ROOT, ".agents/skills/setup-yss-harness", ref)).mode & 0o777,
+      `${ref} permissions`,
+    );
   }
+  assert.deepEqual(
+    fs.readFileSync(path.join(canonical, "skills/setup-yss-harness/scripts/bootstrap.py")),
+    fs.readFileSync(path.join(ROOT, ".agents/skills/setup-yss-harness/scripts/bootstrap.py")),
+    "bootstrap script must retain its original bytes",
+  );
 });
 
 test("越界链接阻断公开导出", (t) => {
