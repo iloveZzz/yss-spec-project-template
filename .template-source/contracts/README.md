@@ -4,6 +4,8 @@
 
 | 文件 | 类型 / ID | 版本 | 状态 | 更新时间 |
 |---|---|---|---|---|
+| [2026-10-30-template-5-cli-3-cleanup-execution-plan.md](2026-10-30-template-5-cli-3-cleanup-execution-plan.md) | template-5-cli-3-cleanup-execution | 0.1.0 | in-progress | 2026-10-30 |
+| [2026-10-30-template-5-cli-3-cleanup-plan.md](2026-10-30-template-5-cli-3-cleanup-plan.md) | template-5-cli-3-cleanup | 0.1.0 | proposed | 2026-10-30 |
 | [2026-10-29-matt-skills-integration-closure-plan.md](2026-10-29-matt-skills-integration-closure-plan.md) | matt-skills-integration-closure-plan | 0.1.0 | accepted | 2026-10-29 |
 | [2026-10-29-matt-skills-integration-closure-design.md](2026-10-29-matt-skills-integration-closure-design.md) | matt-skills-integration-closure | 0.1.0 | proposed | 2026-10-29 |
 | [2026-10-22-matt-method-optimization-design.md](2026-10-22-matt-method-optimization-design.md) | matt-method-optimization | 0.1.0 | accepted | 2026-10-22 |

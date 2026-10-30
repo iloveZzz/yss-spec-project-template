@@ -6,8 +6,7 @@ import path from 'node:path';
 import { createVerificationReport, finalizeVerificationReport,saveVerificationReport,verificationInputDigest } from '../scripts/lib/verification-report.mjs';
 import {collectReleaseSources} from '../.template-source/scripts/lib/verification-artifacts.mjs';
 import {platformKey} from '../.template-source/scripts/lib/yss-cli-pin.mjs';
-import { validateVerificationReport,compileExpectedVerificationPlan,assertNativeMigrationCommands } from '../.template-source/scripts/lib/verification-report-validator.mjs';
-import {compileLegacyPlan,loadLegacyManifest} from '../.template-source/scripts/lib/legacy-verification.mjs';
+import { validateVerificationReport,validateLegacyReport,compileExpectedVerificationPlan,validateBaselineReport,assertNativeMigrationCommands } from '../.template-source/scripts/lib/verification-report-validator.mjs';
 import {addVerificationExecutionTasks,compileTaskExecution} from '../.template-source/scripts/lib/verification-execution-plan.mjs';
 import {validateJsonSchema} from '../scripts/lib/json-schema.mjs';
 import {validateMaintenanceVerificationEvidence} from '../scripts/lib/maintenance-intensity.mjs';
@@ -52,6 +51,16 @@ test('完整 v2 报告按独立期望台账核验', t => {
   assert.equal(validateVerificationReport(f.report, f.options).status, 'passed');
   f.report.plan.commands = []; f.report.results = [];
   assert.throws(() => validateVerificationReport(f.report, f.options), /任务|task/);
+});
+
+test('历史 v1 日志必须逐项绑定摘要且拒绝篡改',t=>{
+ const f=fixture(t),report=structuredClone(f.report);report.schema_version=1;report.plan.syntax_files=[];
+ const original=report.results[0];report.results.push({...original,index:1,group:'postchecks',command:JSON.stringify(['git','diff','--check'])});
+ const options={directory:f.directory,expectedPlan:{commands:f.plan.commands,syntax_files:[]}};
+ assert.doesNotThrow(()=>validateLegacyReport(report,options));
+ for(const mutate of [r=>delete r.results[0].log_digests,r=>delete r.results[1].log_digests.stderrFile,r=>r.results[0].log_digests.stdoutFile='f'.repeat(64)]){
+  const changed=structuredClone(report);mutate(changed);assert.throws(()=>validateLegacyReport(changed,options),/摘要/);
+ }
 });
 test('必跑责任报告按独立编译任务拒绝漏项、丢 Gate 和执行篡改',t=>{
  const f=fixture(t),head=spawnSync('git',['rev-parse','HEAD'],{cwd:ROOT,encoding:'utf8'}).stdout.trim();
@@ -324,12 +333,104 @@ test('project-instance 共享消费者与历史 checkpoint 不加载未分发的
  assert.throws(()=>maintenance.validateMaintenanceCheckpoint(checkpoint),/实际 args/);
 });
 
-test('独立编译 explicit legacy-full 保留冻结117检查与115 syntax occurrence',t=>{
- const root=path.resolve(import.meta.dirname,'..'),directory=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'expected-reference-')));t.after(()=>fs.rmSync(directory,{recursive:true,force:true}));
- // manifest、映射目标和独立期望编译消费同一历史提交，不依赖现役 HEAD。
- const fixedCommit='0abbe49ee4cfd8608beab95243520888228dad41',args=['--profile','legacy-full','--report-dir',path.join(directory,'report')],manifest=loadLegacyManifest(root,fixedCommit);
- const expected=addVerificationExecutionTasks(compileLegacyPlan(manifest),{root,reference:true,fixedCommit,reportDir:path.join(directory,'report'),purpose:'verification'}),actual=compileExpectedVerificationPlan({root,args,fixedCommit});
- assert.equal(actual.strategy,'legacy-reference');assert.deepEqual(actual.gates,[]);assert.deepEqual(actual.commands,expected.commands);assert.equal(actual.commands.filter(row=>row.kind==='syntax').length,manifest.syntax_files.length);
+test('旧 candidate 和 legacy-full 策略不能作为当前报告重新编译',t=>{
+ const root=path.resolve(import.meta.dirname,'..'),directory=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'retired-policy-')));t.after(()=>fs.rmSync(directory,{recursive:true,force:true}));
+ const fixedCommit='0abbe49ee4cfd8608beab95243520888228dad41';
+ for(const profile of ['candidate','legacy-full','release'])assert.throws(()=>compileExpectedVerificationPlan({root,fixedCommit,args:['--profile',profile,'--report-dir',path.join(directory,'report')]}),/REPORT_SOURCE_UNSUPPORTED/,profile);
+});
+
+test('固定报告拒绝 5.0 前产品与无法证明的提交',t=>{
+ const root=path.resolve(import.meta.dirname,'..'),directory=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'report-source-')));t.after(()=>fs.rmSync(directory,{recursive:true,force:true}));
+ const old='26036e9752420112aea9e55551483d7a72f1b375',base='4fa7d5785e025c7ba6d95178a41ac1a3ba46792d';
+ for(const fixedCommit of [old,'f'.repeat(40)])assert.throws(()=>compileExpectedVerificationPlan({root,fixedCommit,args:['--profile','release','--base',base],reportDirectory:path.join(directory,'report')}),/REPORT_SOURCE_UNSUPPORTED/);
+ for(const base of [old,'f'.repeat(40)])assert.match(validateBaselineReport({root,base,reportFile:path.join(directory,'untrusted.json'),expectedDigest:'a'.repeat(64)}).reasons.join('; '),/REPORT_SOURCE_UNSUPPORTED/);
+ const isolated=path.join(directory,'unknown-source');fs.mkdirSync(isolated);
+ for(const args of [['init','-q'],['-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit','--allow-empty','-qm','unknown']])assert.equal(spawnSync('git',args,{cwd:isolated}).status,0);
+ const fixedCommit=spawnSync('git',['rev-parse','HEAD'],{cwd:isolated,encoding:'utf8'}).stdout.trim();
+ assert.throws(()=>compileExpectedVerificationPlan({root:isolated,fixedCommit,reportDirectory:path.join(directory,'report')}),/REPORT_SOURCE_UNSUPPORTED/);
+ assert.throws(()=>compileExpectedVerificationPlan({root:isolated,fixedCommit:'1e49127842c358caf552af8ebec58f438a35c5a6',reportDirectory:path.join(directory,'report')}),/REPORT_SOURCE_UNSUPPORTED/);
+ const common=spawnSync('git',['rev-parse','--git-common-dir'],{cwd:root,encoding:'utf8'}).stdout.trim();
+ fs.mkdirSync(path.join(isolated,'.git/objects/info'),{recursive:true});
+ fs.writeFileSync(path.join(isolated,'.git/objects/info/alternates'),`${fs.realpathSync(path.resolve(root,common,'objects'))}\n`);
+ const tree=spawnSync('git',['rev-parse',`${old}^{tree}`],{cwd:isolated,encoding:'utf8'}).stdout.trim();
+ const forged=spawnSync('git',['-c','user.name=Fixture','-c','user.email=fixture@example.invalid','commit-tree',tree,'-p','1e49127842c358caf552af8ebec58f438a35c5a6','-m','old tree with new parent'],{cwd:isolated,encoding:'utf8'});
+ assert.equal(forged.status,0,forged.stderr);
+ const forgedCommit=forged.stdout.trim();
+ assert.equal(spawnSync('git',['merge-base','--is-ancestor','1e49127842c358caf552af8ebec58f438a35c5a6',forgedCommit],{cwd:isolated}).status,0);
+ assert.throws(()=>compileExpectedVerificationPlan({root:isolated,fixedCommit:forgedCommit,reportDirectory:path.join(directory,'report')}),/REPORT_SOURCE_UNSUPPORTED/);
+});
+
+test('同代固定报告允许按影响选择且拒绝篡改遗漏项',t=>{
+ const f=fixture(t);f.plan.selection={effective:'impact',omitted:[{id:'check.unaffected',reason:'outside-release-inputs'}]};
+ f.plan.changed_files=['README.md'];f.plan.scope={kind:'complete-candidate',files:['README.md'],explicit_files:[],base:'1'.repeat(40)};
+ f.report.plan=structuredClone(f.plan);f.report.scope=structuredClone(f.plan.scope);
+ assert.equal(validateVerificationReport(f.report,{...f.options,historical:true}).status,'passed');
+ const altered=structuredClone(f.report);altered.plan.selection.omitted=[];
+ assert.throws(()=>validateVerificationReport(altered,{...f.options,historical:true}),/选择/);
+});
+
+test('经登记的真实执行报告可在不同仓根复验，未登记及篡改拒绝',async t=>{
+ const temporary=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'registered-report-')));t.after(()=>fs.rmSync(temporary,{recursive:true,force:true}));
+ const original=path.join(temporary,'original'),release=path.join(temporary,'original-release'),fullDir=path.join(release,'full-verification');
+ fs.mkdirSync(original);fs.mkdirSync(fullDir,{recursive:true});fs.writeFileSync(path.join(original,'sample.mjs'),'console.log("observed");\n');
+ const oldNode=path.join(temporary,'node');fs.copyFileSync(process.execPath,oldNode);fs.chmodSync(oldNode,0o755);assert.notEqual(oldNode,process.execPath);
+ const commit='1e49127842c358caf552af8ebec58f438a35c5a6',previous='951710a4097d97188545ecfa43a33f7c14c6e91a';
+ const task={id:'check.sample',task_id:'sample',command:'node --test sample.mjs',gate_ids:['G04']};
+ const originalTask={...task,execution:compileTaskExecution(task,{root:original,nodePath:oldNode})};
+ assert.equal(originalTask.execution.file,oldNode,'历史 Node 路径须参与重编译');
+ const plan={effective_profile:'release',source_requirement:'committed',strategy:'release',selection:{effective:'legacy',omitted:[]},policy_digest:'a'.repeat(64),gates:[{id:'G04',selected:true,check_ids:[task.id]}],commands:[originalTask]};
+ const args=['--report-dir',fullDir,'--base',previous],invocation={command:path.join(original,'scripts/run-template-verification'),args:['--profile','release',...args]};
+ const report=createVerificationReport(plan,{root:original,inputDigest:'b'.repeat(64),scope:{kind:'complete-candidate'},concurrency:1,invocation});
+ const result=spawnSync(originalTask.execution.file,originalTask.execution.args,{cwd:original,encoding:'utf8'});assert.equal(result.status,0,result.stderr);
+ const digest=bytes=>createHash('sha256').update(bytes).digest('hex');
+ const stdoutFile=path.join(fullDir,'stdout.log'),stderrFile=path.join(fullDir,'stderr.log');fs.writeFileSync(stdoutFile,result.stdout);fs.writeFileSync(stderrFile,result.stderr);
+ report.results.push({index:0,...originalTask,actual_execution:originalTask.execution,code:0,actual_exit_code:0,actual_exit_signal:null,actual_exit_code_observed:true,stdoutFile,stderrFile,log_digests:{stdoutFile:digest(result.stdout),stderrFile:digest(result.stderr)},duration_ms:1});
+ finalizeVerificationReport(report,{status:'passed',wallMs:1,repositoryMode:'template-source'});report.input_after_sha256=report.input_sha256;report.input_drift=false;report.final_exit={code:0,signal:null,observed:true};
+ const sources={kind:'template-release-sources',families:['spec'],entries:[{namespace:'candidate-release',family:'spec',cli_commit:'1'.repeat(40),template_commit:commit,core_commit:commit,package_name:'yss',version:'3.0.0',template_version:'5.0.0',source_contract_version:2,protocol_version:1,snapshot_hash:'4'.repeat(64),manifest_hash:'5'.repeat(64),bundle_hash:'6'.repeat(64),binary_sha256:'7'.repeat(64)}]};report.sources_manifest=sources;
+ const fullFile=path.join(fullDir,'report.json');fs.writeFileSync(fullFile,JSON.stringify(report));fs.writeFileSync(path.join(release,'command.log'),'observed');
+ const outer={schema_version:2,kind:'template-release-verification',purpose:'verification',requested_commit:commit,template_commit:commit,status:'passed',cli_families:['spec'],commands:[{command:'scripts/verify-template',args,exit_code:0,actual_exit_code:0,actual_exit_signal:null,actual_exit_code_observed:true,log:'command.log',log_sha256:digest('observed')}],full_verification:{report:fullFile,report_sha256:digest(fs.readFileSync(fullFile))},sources_manifest:sources};
+ const bytes=JSON.stringify(outer),outerDigest=digest(bytes);fs.writeFileSync(path.join(release,'report.json'),bytes);
+ // Copy the verifier and a test-only reviewed trust registry; no repository trust is changed.
+ const isolated=path.join(temporary,'verifier');fs.mkdirSync(path.join(isolated,'.template-source/scripts'),{recursive:true});fs.cpSync(path.join(ROOT,'.template-source/scripts/lib'),path.join(isolated,'.template-source/scripts/lib'),{recursive:true});fs.cpSync(path.join(ROOT,'.template-source/process'),path.join(isolated,'.template-source/process'),{recursive:true});fs.symlinkSync(path.join(ROOT,'scripts'),path.join(isolated,'scripts'),'dir');
+ const registryFile=path.join(isolated,'.template-source/process/trusted-verification-releases.json');
+ fs.writeFileSync(registryFile,JSON.stringify({schema_version:1,releases:[{version:'5.0.0',commit,reports:[]}]}));
+ const verifier=await import(pathToFileURL(path.join(isolated,'.template-source/scripts/lib/verification-report-validator.mjs')));
+ const originalOptions={root:ROOT,base:commit,reportFile:path.join(release,'report.json'),expectedDigest:outerDigest,expectedPlan:plan};
+ assert.match(verifier.validateBaselineReport(originalOptions).reasons.join(';'),/REPORT_EVIDENCE_UNREGISTERED/,'同仓根也必须拒绝未登记报告');
+ fs.writeFileSync(registryFile,JSON.stringify({schema_version:1,releases:[{version:'5.0.0',commit,reports:[outerDigest]}]}));
+ const moved=path.join(temporary,'moved-release');fs.renameSync(release,moved);fs.rmSync(original,{recursive:true});
+ const expectedPlan={...plan,commands:[{...task,execution:compileTaskExecution(task,{root:ROOT,nodePath:oldNode})}]};
+ const options={root:ROOT,base:commit,reportFile:path.join(moved,'report.json'),expectedDigest:outerDigest,expectedPlan};
+ assert.deepEqual(verifier.validateBaselineReport(options).reasons,[]);
+ assert.equal(validateBaselineReport(options).valid,false,'原登记没有审批该报告');
+ const mixed=structuredClone(report);mixed.results[0].actual_execution.file='/unreviewed/bin/node';
+ const mixedFile=path.join(moved,'full-verification/report.json');fs.writeFileSync(mixedFile,JSON.stringify(mixed));
+ const mixedOuter={...outer,full_verification:{...outer.full_verification,report_sha256:digest(fs.readFileSync(mixedFile))}},mixedBytes=JSON.stringify(mixedOuter),mixedDigest=digest(mixedBytes);
+ fs.writeFileSync(registryFile,JSON.stringify({schema_version:1,releases:[{version:'5.0.0',commit,reports:[outerDigest,mixedDigest]}]}));fs.writeFileSync(options.reportFile,mixedBytes);
+ assert.match(verifier.validateBaselineReport({...options,expectedDigest:mixedDigest}).reasons.join(';'),/HISTORICAL_NODE_MIXED/,'不得混用历史 Node 可执行文件');
+ fs.writeFileSync(mixedFile,JSON.stringify(report));fs.writeFileSync(options.reportFile,bytes);
+ const unsigned=structuredClone(outer);delete unsigned.commands[0].log_sha256;
+ const unsignedBytes=JSON.stringify(unsigned),unsignedDigest=digest(unsignedBytes);
+ fs.writeFileSync(registryFile,JSON.stringify({schema_version:1,releases:[{version:'5.0.0',commit,reports:[outerDigest,unsignedDigest]}]}));
+ fs.writeFileSync(options.reportFile,unsignedBytes);
+ assert.match(verifier.validateBaselineReport({...options,expectedDigest:unsignedDigest}).reasons.join(';'),/日志摘要缺失/);
+ fs.writeFileSync(options.reportFile,bytes);
+ fs.writeFileSync(path.join(moved,'full-verification/stdout.log'),'tampered');
+ assert.equal(verifier.validateBaselineReport(options).valid,false,'日志篡改必须拒绝');
+});
+
+test('Template 5.0 固定策略按原提交重建检查及路径映射',t=>{
+ const root=path.resolve(import.meta.dirname,'..'),directory=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'current-policy-')));t.after(()=>fs.rmSync(directory,{recursive:true,force:true}));
+ const fixedCommit='1e49127842c358caf552af8ebec58f438a35c5a6',base='951710a4097d97188545ecfa43a33f7c14c6e91a';
+ const plan=compileExpectedVerificationPlan({root,fixedCommit,args:['--profile','release','--base',base],reportDirectory:path.join(directory,'report')});
+ assert.equal(plan.strategy,'release');assert.equal(plan.scope.base,base);
+ assert.ok(plan.commands.some(row=>row.execution?.requested_command==='scripts/verify-repository-scope-scenarios'&&row.execution.args.at(-1).endsWith('/tests/scenarios/verify-repository-scope-scenarios.mjs')));
+ assert.ok(plan.policy_digest&&plan.selection.omitted.length>0);
+ const oldNode=path.join(directory,'node');
+ const recompiled=compileExpectedVerificationPlan({root,fixedCommit,args:['--profile','release','--base',base],reportDirectory:path.join(directory,'report'),nodePath:oldNode});
+ assert.ok(recompiled.commands.find(row=>row.kind==='preflight').command.startsWith(`'${oldNode}' `));
+ assert.ok(recompiled.commands.filter(row=>row.execution?.file===oldNode).length>0);
+ assert.ok(recompiled.commands.filter(row=>row.kind==='artifact-prepare').every(row=>row.command.startsWith(`'${oldNode}' `)));
 });
 
 test('qualified 历史报告不能为当前 release 提供执行许可',t=>{const f=fixture(t);f.plan.strategy='qualified-gates';f.report.plan.strategy='qualified-gates';assert.throws(()=>validateVerificationReport(f.report,f.options),/HISTORICAL_QUALIFIED_BASELINE_REFUSED/);});

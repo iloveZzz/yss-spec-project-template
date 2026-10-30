@@ -200,7 +200,7 @@ const profiles = {
   lifecycle: {
     message: "六类生命周期压力场景验证通过",
     files: [".agents/skills/yss-product-lifecycle/SKILL.md", ".template-spec/process/orchestration-contract.yaml", ".template-spec/process/lifecycle-registry.yaml"],
-    markers: [[".agents/skills/yss-product-lifecycle/SKILL.md", "template-source-product-artifact-forbidden"], [".template-spec/process/orchestration-contract.yaml", "ready-for-agent"]]
+    markers: [[".agents/skills/yss-product-lifecycle/SKILL.md", "不创建产品规格、原型或批准"], [".template-spec/process/orchestration-contract.yaml", "ready-for-agent"]]
   },
   matt: {
     message: "Matt/YSS 集成压力场景验证通过",

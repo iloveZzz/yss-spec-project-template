@@ -54,7 +54,7 @@ export function validateBaseline({root,base,baselineReport,baselineReportDigest,
     } else {
       if (checked.bindings.base_sha!==base || checked.bindings.report_digest!==bindings.report_digest) reasons.push('baseline-assessment-binding-mismatch');
       if (checked.bindings.strategy==='qualified-gates') reasons.push('historical-qualified-baseline-refused');
-      if (!['legacy-full','release'].includes(checked.bindings.strategy)) reasons.push('baseline-strategy-untrusted');
+      if (checked.bindings.strategy!=='release') reasons.push('baseline-strategy-untrusted');
     }
   } catch(error) { reasons.push(error.message); }
   return {valid:reasons.length===0,reasons,bindings};

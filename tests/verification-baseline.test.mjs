@@ -21,11 +21,15 @@ test('基线缺失、简写和仅有 passed 报告均不建立可信差异', t=>
   const f=fixture(t);const outcome=validateBaseline(f);assert.equal(outcome.valid,false);assert.ok(outcome.reasons.includes('baseline-independent-validation-missing'));
 });
 test('基线成功证据必须绑定同一 SHA、报告字节和当前策略', t=> {
-  const f=fixture(t),validator=()=>({valid:true,reasons:[],bindings:{base_sha:f.base,report_digest:f.baselineReportDigest,strategy:'legacy-full'}});
+  const f=fixture(t),validator=()=>({valid:true,reasons:[],bindings:{base_sha:f.base,report_digest:f.baselineReportDigest,strategy:'release'}});
   assert.equal(validateBaseline({...f,validator}).valid,true);
   assert.equal(validateBaseline({...f,validator,baselineReportDigest:'0'.repeat(64)}).valid,false);
   const incompatible=()=>({valid:true,reasons:[],bindings:{base_sha:f.base,report_digest:f.baselineReportDigest,strategy:'qualified-gates',policy_digest:'older'}});
   assert.ok(validateBaseline({...f,validator:incompatible,policyDigest:'current'}).reasons.includes('historical-qualified-baseline-refused'));
+});
+test('旧 legacy-full 验证结果不能作为当前 release 基线', t=> {
+  const f=fixture(t),validator=()=>({valid:true,reasons:[],bindings:{base_sha:f.base,report_digest:f.baselineReportDigest,strategy:'legacy-full'}});
+  assert.equal(validateBaseline({...f,validator}).valid,false);
 });
 test('未来和非祖先提交不能缩小当前候选', t=> {
   const f=fixture(t);fs.writeFileSync(path.join(f.root,'input'),'second');f.git('add','input');f.git('commit','-qm','second');const future=f.git('rev-parse','HEAD');f.git('checkout','--detach',f.base);
@@ -34,7 +38,7 @@ test('未来和非祖先提交不能缩小当前候选', t=> {
 test('Gitlink 基线差异按真实提交登记而不是工作树版本猜测',t=>{
   const f=fixture(t);
   f.git('update-index','--add','--cacheinfo',`160000,${f.base},registered-submodule`);f.git('commit','-qm','registered gitlink');
-  const withLink=f.git('rev-parse','HEAD'),validator=()=>({valid:true,reasons:[],bindings:{base_sha:f.base,report_digest:f.baselineReportDigest,strategy:'legacy-full'}});
+  const withLink=f.git('rev-parse','HEAD'),validator=()=>({valid:true,reasons:[],bindings:{base_sha:f.base,report_digest:f.baselineReportDigest,strategy:'release'}});
   const outcome=validateBaseline({...f,validator});assert.equal(outcome.valid,true);assert.deepEqual(outcome.bindings.changed_gitlinks,['registered-submodule']);assert.equal(outcome.bindings.head_gitlinks['registered-submodule'],f.base);
   f.git('checkout','--detach',f.base);assert.ok(validateBaseline({...f,base:withLink,validator}).reasons.includes('baseline-not-ancestor'));
 });

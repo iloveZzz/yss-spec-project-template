@@ -22,13 +22,13 @@ function outside(root,directory){
 }
 
 /** Release artifact production and consumption remain explicit report tasks. */
-export function compileDeliveryPreparationTasks(plan,{root,reportDir}={}) {
+export function compileDeliveryPreparationTasks(plan,{root,reportDir,nodePath=process.execPath}={}) {
   const enabled=plan.effective_profile==='release'||['legacy-reference','legacy-full'].includes(plan.strategy);
   if(!enabled)return {tasks:[],families:[],receiptFile:null,artifactDirectory:null};
   ensure(reportDir,'四 CLI 固定来源验证需要独立报告目录');outside(root,reportDir);
   const artifactDirectory=path.join(reportDir,'artifacts'),receiptFile=path.join(reportDir,'consumption','receipt.json');
   const candidateEntry=path.join(root,'.template-source/scripts/lib/verification-delivery-run.mjs');
-  const command=(action,family)=>[process.execPath,candidateEntry,'--action',action,'--root',root,'--directory',reportDir,...family?['--family',family]:[]].map(quote).join(' ');
+  const command=(action,family)=>[nodePath,candidateEntry,'--action',action,'--root',root,'--directory',reportDir,...family?['--family',family]:[]].map(quote).join(' ');
   const tasks=families.map(family=>({id:`check.cli-artifact-${family}`,task_id:`check.cli-artifact-${family}`,group:'artifact-preparation',kind:'artifact-prepare',gate_ids:[gates[family]],resources:['cli-artifact-production'],depends_on:['check.verification-environment'],command:command('prepare-cli',family)}));
   for(const family of families)tasks.push({id:`check.cli-migration-${family}`,task_id:`check.cli-migration-${family}`,group:'artifact-preparation',kind:'artifact-migration',gate_ids:['check.verification-cli-migration'],resources:['cli-artifact-consumption'],depends_on:[`check.cli-artifact-${family}`],command:command('migration',family)});
   tasks.push({id:'check.cli-artifact-consumers',task_id:'check.cli-artifact-consumers',group:'artifact-preparation',kind:'artifact-consumers',gate_ids:['check.verification-distribution'],depends_on:families.map(family=>`check.cli-artifact-${family}`),command:command('prepare-consumers'),receipt_file:receiptFile});

@@ -91,7 +91,6 @@
       "scripts/lib/doc-facts-patterns.json",
       "scripts/lib/doc-facts.mjs",
       "scripts/lib/harness-metrics.mjs",
-      "scripts/lib/legacy-coverage.mjs",
       "scripts/lib/maintenance-review-workflow.mjs",
       "scripts/lib/plan-spec-entry-view.mjs",
       "scripts/lib/profile-distribution.mjs",

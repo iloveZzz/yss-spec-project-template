@@ -47,6 +47,7 @@ profiles:
         depends_on: []
         failure_mode: "任务与恢复视图丢失约束或只读边界"
       - id: check.repository-scope-scenarios
+        when: template-source
         run: "node tests/scenarios/verify-repository-scope-scenarios.mjs"
         group: lifecycle
         inputs_complete: true
@@ -130,6 +131,8 @@ profiles:
           - ".template-source/contracts/2026-10-22-matt-method-optimization-plan.md"
           - ".template-source/contracts/2026-10-29-matt-skills-integration-closure-design.md"
           - ".template-source/contracts/2026-10-29-matt-skills-integration-closure-plan.md"
+          - ".template-source/contracts/2026-10-30-template-5-cli-3-cleanup-plan.md"
+          - ".template-source/contracts/2026-10-30-template-5-cli-3-cleanup-execution-plan.md"
         depends_on: []
         failure_mode: "说明文档复述门禁数、阶段数、投影根数量或硬编码与 lock 不一致的上游 revision"
       - id: check.daily-test-evidence
@@ -752,7 +755,7 @@ profiles:
         depends_on: []
         failure_mode: "退役校验器或生产回退复活、调用方仍引用旧路径，或删除规则失去精确 Profile/提交/快照/Bundle 来源约束"
       - id: check.user-decision-scenarios
-        run: "scripts/verify-user-decision-scenarios"
+        run: "node tests/scenarios/verify-user-decision-scenarios.mjs"
         group: feature-assets
         inputs_complete: true
         input_patterns:
@@ -760,6 +763,99 @@ profiles:
           - "tests/scenarios/verify-user-decision-scenarios.mjs"
         depends_on: []
         failure_mode: "用户决定原生调用的来源、展示、范围、撤回或会签绑定被放行或误拒"
+      - id: check.b5ec80cdc570194f
+        group: lifecycle
+        resources: [ native-cli ]
+        inputs_complete: true
+        input_patterns:
+          - scripts/verify-context-contract-scenarios
+          - tests/scenarios/verify-context-contract-scenarios.mjs
+          - scripts/lib/native-context.mjs
+        depends_on: []
+        failure_mode: "Context 合同场景错误放行非法词汇或误拒有效输入"
+      - id: check.c959490d7a86d5c9
+        group: lifecycle
+        inputs_complete: true
+        input_patterns:
+          - scripts/verify-business-language-scenarios
+          - tests/scenarios/verify-business-language-scenarios.mjs
+          - scripts/lib/lifecycle-registry.mjs
+          - scripts/lib/lifecycle-presentation.mjs
+          - scripts/lib/reading-view-markdown.mjs
+          - .template-spec/process/lifecycle-registry.yaml
+          - .template-spec/templates/spec-template.md
+          - .template-spec/design/templates/product-overview-design-template.md
+          - .agents/skills/yss-stage-decision/SKILL.md
+          - CONTEXT.md
+          - README.md
+        depends_on: []
+        failure_mode: "业务视图包含不适用术语或生命周期展示名称失效"
+      - id: check.fbcca7d04b9634fc
+        tier: slow # 包含真实 Spec 与 Backend 初始化；fast 如实延后。
+        group: lifecycle
+        resources: [ native-cli ]
+        inputs_complete: true
+        input_patterns:
+          - scripts/verify-context-reconciliation-scenarios
+          - tests/scenarios/verify-context-reconciliation-scenarios.mjs
+          - scripts/verify-context-reconciliation
+          - scripts/lib/context-reconciliation.mjs
+          - scripts/lib/native-context.mjs
+          - scripts/lib/native-evidence.mjs
+          - .template-spec/process/schemas/context-reconciliation.schema.json
+          - .template-source/distribution/yss-cli-pin.json
+        depends_on: []
+        failure_mode: "Context 调和误判有效记录、来源漂移或只读边界"
+      - id: check.7752ee8d6f74f638
+        group: lifecycle
+        resources: [ python-jsonschema ]
+        inputs_complete: true
+        input_patterns:
+          - scripts/verify-script-performance-scenarios
+          - tests/scenarios/verify-script-performance-scenarios.mjs
+          - scripts/lib/json-schema.mjs
+          - scripts/lib/command-runner.mjs
+        depends_on: []
+        failure_mode: "Schema 批量验证、日志脱敏或进程清理回归"
+      - id: check.14755c909a41ebee
+        tier: slow # 内部调用 Context 调和的真实安装场景。
+        group: lifecycle
+        resources: [ native-cli ]
+        inputs_complete: true
+        input_patterns:
+          - scripts/verify-plan-requirements-context-scenarios
+          - tests/scenarios/verify-plan-requirements-context-scenarios.mjs
+          - scripts/verify-context-contract-scenarios
+          - tests/scenarios/verify-context-contract-scenarios.mjs
+          - scripts/verify-context-reconciliation-scenarios
+          - tests/scenarios/verify-context-reconciliation-scenarios.mjs
+          - scripts/verify-context-reconciliation
+          - scripts/lib/context-reconciliation.mjs
+          - scripts/lib/native-context.mjs
+          - scripts/lib/native-evidence.mjs
+          - .template-spec/process/schemas/context-reconciliation.schema.json
+          - .template-source/distribution/yss-cli-pin.json
+          - .agents/skills/yss-product-lifecycle/references/plan-requirements.md
+        depends_on: []
+        failure_mode: "Plan 需求入口缺少 Context 合同约束或场景执行失败"
+      - id: check.0c8201229a241875
+        group: lifecycle
+        resources: [ python-jsonschema ]
+        inputs_complete: true
+        input_patterns:
+          - scripts/verify-lifecycle-scenarios
+          - tests/scenarios/verify-lifecycle-scenarios.mjs
+          - tests/helpers/scenario-checks.mjs
+          - scripts/verify-lifecycle-registry
+          - scripts/lib/lifecycle-registry.mjs
+          - scripts/lib/lifecycle-transition.mjs
+          - scripts/lib/orchestration-contract.mjs
+          - .agents/skills/yss-product-lifecycle/SKILL.md
+          - .template-spec/process/orchestration-contract.yaml
+          - .template-spec/process/lifecycle-registry.yaml
+          - .template-spec/process/schemas/lifecycle-registry.schema.json
+        depends_on: []
+        failure_mode: "生命周期入口、注册表或推进前置约束失效"
       - id: check.digital-human-native-consumers
         run: "node --test --test-concurrency=1
           .template-source/tooling/node/test/digital-human-roles.test.mjs
@@ -777,7 +873,7 @@ profiles:
         failure_mode: "角色会签消费迁移后错误放行无权角色、缺失批准或失效门禁，或拒绝合法原生身份"
       - id: check.plan-spec-entry-scenarios
         tier: slow # cbe04769 发布差异检查实测 110s；fast 延后，release 保留。
-        run: "node scripts/verify-plan-spec-entry-scenarios"
+        run: "node tests/scenarios/verify-plan-spec-entry-scenarios.mjs"
         group: feature-assets
         resources: [ "native-cli" ]
         inputs_complete: true
@@ -830,6 +926,7 @@ profiles:
         resources: [ "native-cli" ]
         inputs_complete: true
         input_patterns:
+          - .template-source/process/trusted-verification-releases.json
           - .template-source/scripts/lib/verification-qualification.mjs
           - .template-source/scripts/lib/verification-delivery-run.mjs
           # 保留本次删除路径的检查归属；合入后可移除。
@@ -839,6 +936,9 @@ profiles:
           - tests/verification-delivery-run.test.mjs
           - tests/verification-gates.test.mjs
           - .template-source/scripts/lib/legacy-verification.mjs
+          # 本次删除仍触发发行策略消费者，合入后移除。
+          - scripts/lib/legacy-coverage.mjs
+          - tests/legacy-coverage.test.mjs
           - .template-source/scripts/lib/verification-baseline.mjs
           - .template-source/scripts/lib/verification-gates.mjs
           - .template-source/scripts/lib/verification-qualification-plan.mjs
@@ -1215,17 +1315,6 @@ profiles:
           - "tests/verification-script-retirement.test.mjs"
         depends_on: []
         failure_mode: "已搬迁或退役的验证脚本失去历史身份映射，或旧请求回落到已退役命令"
-      - id: check.legacy-coverage
-        run: "node --test tests/legacy-coverage.test.mjs"
-        group: feature-assets
-        inputs_complete: true
-        input_patterns:
-          - "scripts/lib/legacy-coverage.mjs"
-          - "scripts/lib/template-verification.mjs"
-          - "tests/legacy-coverage.test.mjs"
-          - ".template-source/process/template-verification-profiles.yaml"
-        depends_on: []
-        failure_mode: "固定历史策略中的旧覆盖展开字段、顺序或内容漂移，破坏历史 policy 摘要与责任绑定"
       - id: check.yss-cli-pin
         run: "node --test tests/yss-cli-pin.test.mjs"
         group: feature-assets
@@ -2150,6 +2239,7 @@ profiles:
         group: "candidate-integrity"
         inputs_complete: true
         input_patterns:
+          - ".template-source/process/trusted-verification-releases.json"
           - ".template-source/scripts/lib/template-verification-worker.mjs"
           - "scripts/lib/ci-gate.mjs"
           - "scripts/lib/verification-report.mjs"
@@ -2438,15 +2528,6 @@ profiles:
           - "scripts/verify-subagent-task-package-scenarios"
         depends_on: []
         failure_mode: "目录修正后对应生命周期或证据消费者接受错误引用或拒绝当前有效引用"
-      - id: check.work-layout-user-decision
-        run: "node tests/scenarios/verify-user-decision-scenarios.mjs"
-        group: work-layout
-        inputs_complete: true
-        input_patterns:
-          - "tests/scenarios/verify-user-decision-scenarios.mjs"
-          - "scripts/verify-user-decision-scenarios"
-        depends_on: []
-        failure_mode: "目录修正后对应生命周期或证据消费者接受错误引用或拒绝当前有效引用"
       - id: check.work-layout-design-fixtures
         run: "node --test
           .agents/skills/yss-stage-decision/tests/approval-records.test.mjs
@@ -2704,7 +2785,6 @@ profiles:
       - check.daily-preflight
       - check.verification-report-v2
       - check.verification-artifacts
-      - check.legacy-coverage
       - check.yss-cli-pin
 compatibility_patterns:
   - .gitmodules
@@ -2714,90 +2794,8 @@ compatibility_patterns:
   - .template-source/cli-core/**
   - .agents/skills/**/scripts/**
   - submodules/**
-core_escalation_patterns:
-  - .gitmodules
-  - scripts/lib/json-schema.mjs
-  - scripts/lib/validation-phase.mjs
-  - scripts/lib/project-governance.mjs
-  - scripts/lib/checkpoint-boundary.mjs
-  - scripts/lib/governance-io.mjs
-  - scripts/lib/maintenance-counterexample.mjs
-  - .github/**
-  - .template-source/scripts/verify-template-release.mjs
-  - .template-source/scripts/lib/template-release.mjs
-  - .template-source/scripts/tests/template-ci.test.mjs
-  - scripts/lib/user-decision.mjs
-  - scripts/lib/decision-continuation.mjs
-  - scripts/lib/approval-record.mjs
-  - scripts/lib/approval-current.mjs
-  - scripts/lib/approval-record-io.mjs
-  - scripts/lib/approval-consumption.mjs
-  - scripts/lib/approval-checkpoint-discovery.mjs
-  - scripts/lib/review-capabilities.mjs
-  - scripts/lib/review-package.mjs
-  - scripts/prepare-review-package
-  - scripts/lib/plan-review-control.mjs
-  - scripts/plan-review-control
-  - scripts/lib/lifecycle-transition.mjs
-  - AGENTS.md
-  - yss-project.yaml
-  - .template-source/process/maintenance-intensity.yaml
-  - .template-source/process/maintenance-intensity-v1.yaml
-  - .template-spec/process/lifecycle-registry.yaml
-  - scripts/verify-template
-  - scripts/verify-template-fast
-  - scripts/verify-template-candidate
-  - scripts/run-template-verification
-  - scripts/lib/template-verification.mjs
-  - scripts/lib/template-verification-runner.mjs
-  - scripts/verify-template-verification-scenarios
-  - .template-source/process/template-verification-profiles.yaml
-  - scripts/lib/maintenance-intensity.mjs
-  - scripts/verify-maintenance-checkpoint
-  - scripts/verify-maintenance-intensity-scenarios
-  - scripts/lib/maintenance-review-workflow.mjs
-  - scripts/lib/maintenance-review.mjs
-  - scripts/lib/maintenance-candidate.mjs
-  - scripts/lib/template-commit-cache.mjs
-  - scripts/prepare-maintenance-review
-  - scripts/evaluate-maintenance-review-round
-  - scripts/cache-template-commit
-  - scripts/capture-maintenance-candidate
-  - scripts/inspect-maintenance-candidate
-  - .template-source/tooling/node/scripts/design-md.mjs
-  - scripts/lib/verification-selection.mjs
-  - scripts/lib/verification-report.mjs
-  - scripts/lib/read-only-intake.mjs
-  - scripts/run-read-only-intake
-  - .template-source/scripts/lib/verification-gates.mjs
-  - .template-source/scripts/lib/verification-baseline.mjs
-  - .template-source/scripts/lib/verification-qualification.mjs
-  - .template-source/scripts/qualify-template-verification.mjs
-  - .template-source/scripts/lib/template-verification-worker.mjs
-  - .template-source/process/template-verification-legacy.json
-  - .template-source/scripts/lib/verification-preflight.mjs
-  - .template-source/scripts/lib/verification-artifacts.mjs
-  - .template-source/scripts/lib/verification-report-validator.mjs
-  - .template-source/scripts/lib/legacy-verification.mjs
-  - scripts/fixtures/frontend-delivery/scenarios.mjs
-  - tests/verification-preflight.test.mjs
-  - tests/verification-artifacts.test.mjs
-  - tests/verification-report-v2.test.mjs
-  - tests/verification-report.test.mjs
-  - tests/legacy-verification.test.mjs
-  - tests/verification-execution.test.mjs
-  - tests/verification-script-retirement.test.mjs
-  - .template-source/scripts/lib/verification-delivery-run.mjs
-  - .template-source/scripts/verify-delivery-harness-distribution.mjs
-  - .template-source/scripts/verify-strategic-handoff-distribution.mjs
-  - .template-source/scripts/lib/verification-execution-plan.mjs
-  - tests/verification-selection.test.mjs
-  - tests/verification-delivery-run.test.mjs
-  - .template-source/scripts/lib/verification-qualification-plan.mjs
-  - tests/verification-gates.test.mjs
-  - tests/verification-baseline.test.mjs
-  - tests/verification-qualification.test.mjs
 required_files:
+  - .template-source/process/trusted-verification-releases.json
   - scripts/lib/content-identity.mjs
   - scripts/lib/drift-report.mjs
   - scripts/lib/checkpoint-commit.mjs
@@ -2894,15 +2892,15 @@ required_files:
   - scripts/run-template-verification
   - scripts/verify-template-fast
   - scripts/verify-template
-  - scripts/verify-business-language-scenarios
+  - tests/scenarios/verify-business-language-scenarios.mjs
   - scripts/query-lifecycle-context
   - scripts/lib/lifecycle-context-query.mjs
-  - scripts/verify-lifecycle-context-query-scenarios
+  - tests/scenarios/verify-lifecycle-context-query-scenarios.mjs
   - scripts/plan-spec-entry
   - scripts/lifecycle-status
   - scripts/lib/plan-spec-entry-view.mjs
   - scripts/lib/lifecycle-status.mjs
-  - scripts/verify-lifecycle-operator-scenarios
+  - tests/scenarios/verify-lifecycle-operator-scenarios.mjs
   - scripts/prepare-maintenance-review
   - scripts/evaluate-maintenance-review-round
   - scripts/cache-template-commit
@@ -2941,7 +2939,7 @@ syntax_files:
   - scripts/lib/native-user-decision.mjs
   - scripts/lib/user-decision-core.mjs
   - scripts/verify-user-decision
-  - scripts/verify-user-decision-scenarios
+  - tests/scenarios/verify-user-decision-scenarios.mjs
   - scripts/sync-skills
   - scripts/update-skill-lock
   - .template-source/scripts/manage-profile-skills.mjs
@@ -2955,16 +2953,16 @@ syntax_files:
   - scripts/verify-lifecycle-checkpoint
   - scripts/lib/context-contract.mjs
   - scripts/lib/native-context.mjs
-  - scripts/verify-context-contract-scenarios
-  - scripts/verify-business-language-scenarios
+  - tests/scenarios/verify-context-contract-scenarios.mjs
+  - tests/scenarios/verify-business-language-scenarios.mjs
   - scripts/query-lifecycle-context
   - scripts/lib/lifecycle-context-query.mjs
-  - scripts/verify-lifecycle-context-query-scenarios
+  - tests/scenarios/verify-lifecycle-context-query-scenarios.mjs
   - scripts/verify-context-reconciliation
-  - scripts/verify-context-reconciliation-scenarios
-  - scripts/verify-plan-requirements-context-scenarios
+  - tests/scenarios/verify-context-reconciliation-scenarios.mjs
+  - tests/scenarios/verify-plan-requirements-context-scenarios.mjs
   - scripts/verify-scaffold-architecture-decisions
-  - scripts/verify-scaffold-architecture-decision-scenarios
+  - tests/scenarios/verify-scaffold-architecture-decision-scenarios.mjs
   - scripts/lib/task-package-schema.mjs
   - scripts/lib/json-schema.mjs
   - scripts/lib/task-package.mjs
@@ -2974,16 +2972,16 @@ syntax_files:
   - scripts/run-template-verification
   - scripts/verify-maintenance-checkpoint
   - scripts/verify-maintenance-review-record
-  - scripts/verify-maintenance-intensity-scenarios
+  - tests/scenarios/verify-maintenance-intensity-scenarios.mjs
   - scripts/verify-skill-registry
   - scripts/lib/implementation-contract-compiler.mjs
   - scripts/lib/backend-scaffold-prerequisites.mjs
   - scripts/lib/api-contract-decision.mjs
   - scripts/lib/openapi-draft-validation.mjs
-  - scripts/lib/api-contract-decision.test.mjs
+  - tests/api-contract-decision.test.mjs
   - scripts/verify-openapi-draft-validation-record
   - scripts/lib/legacy-backend-scaffold-audit.mjs
-  - scripts/lib/legacy-backend-scaffold-audit.test.mjs
+  - tests/legacy-backend-scaffold-audit.test.mjs
   - scripts/audit-legacy-backend-scaffold
   - scripts/fixtures/backend-scaffold/design-prerequisites.mjs
   - scripts/fixtures/backend-scaffold/attach-design-prerequisites.mjs
@@ -2992,26 +2990,24 @@ syntax_files:
   - scripts/verify-retired-skill-ids
   - scripts/verify-skill-governance
   - scripts/verify-yss-dto-openapi-profile
-  - scripts/verify-yss-dto-openapi-scenarios
+  - tests/scenarios/verify-yss-dto-openapi-scenarios.mjs
   - scripts/verify-digital-human-roles
-  - scripts/verify-digital-human-roles-scenarios
+  - tests/scenarios/verify-digital-human-roles-scenarios.mjs
   - scripts/verify-approval-record
   - scripts/lib/lifecycle-transition.mjs
-  - scripts/verify-lifecycle-scenarios
-  - scripts/verify-lifecycle-transition-scenarios
-  - scripts/verify-matt-yss-integration-scenarios
-  - scripts/verify-prototype-backend-scaffold-scenarios
-  - scripts/verify-yss-implementation-contract-compiler-scenarios
-  - scripts/verify-yss-prototype-contract-scenarios
-  - scripts/verify-openapi-yaml-first-scenarios
-  - scripts/verify-openapi-json-handoff-scenarios
-  - scripts/verify-repository-scope-scenarios
+  - tests/scenarios/verify-lifecycle-scenarios.mjs
+  - tests/scenarios/verify-lifecycle-transition-scenarios.mjs
+  - tests/scenarios/verify-matt-yss-integration-scenarios.mjs
+  - tests/scenarios/verify-prototype-backend-scaffold-scenarios.mjs
+  - tests/scenarios/verify-yss-implementation-contract-compiler-scenarios.mjs
+  - tests/scenarios/verify-yss-prototype-contract-scenarios.mjs
+  - tests/scenarios/verify-openapi-yaml-first-scenarios.mjs
+  - tests/scenarios/verify-openapi-json-handoff-scenarios.mjs
+  - tests/scenarios/verify-repository-scope-scenarios.mjs
   - scripts/export-yss-skills
   - scripts/verify-digital-human-task-package
-  - scripts/verify-digital-human-task-package-scenarios
-  - scripts/verify-subagent-task-package
-  - scripts/verify-subagent-task-package-scenarios
-  - scripts/verify-template-verification-scenarios
+  - tests/scenarios/verify-digital-human-task-package-scenarios.mjs
+  - tests/scenarios/verify-template-verification-scenarios.mjs
   - scripts/lib/maintenance-review-workflow.mjs
   - scripts/lib/maintenance-candidate.mjs
   - scripts/lib/template-commit-cache.mjs
@@ -3020,8 +3016,8 @@ syntax_files:
   - scripts/cache-template-commit
   - scripts/capture-maintenance-candidate
   - scripts/inspect-maintenance-candidate
-  - scripts/verify-maintenance-review-workflow-scenarios
-  - scripts/verify-template-cache-scenarios
+  - tests/scenarios/verify-maintenance-review-workflow-scenarios.mjs
+  - tests/scenarios/verify-template-cache-scenarios.mjs
   - scripts/lib/content-identity.mjs
   - scripts/lib/drift-report.mjs
   - scripts/lib/checkpoint-commit.mjs
@@ -3054,6 +3050,16 @@ syntax_files:
   - tests/verification-selection.test.mjs
   - tests/verification-delivery-run.test.mjs
 routing:
+  - patterns: [".template-source/process/trusted-verification-releases.json"]
+    groups: [candidate-integrity]
+  - patterns:
+      - scripts/verify-context-contract-scenarios
+      - scripts/verify-business-language-scenarios
+      - scripts/verify-context-reconciliation-scenarios
+      - scripts/verify-script-performance-scenarios
+      - scripts/verify-plan-requirements-context-scenarios
+      - scripts/verify-lifecycle-scenarios
+    groups: [lifecycle]
   - patterns: ["scripts/lib/daily-test-evidence.mjs", "tests/daily-test-evidence.test.mjs", "scripts/fixtures/role-independent-draft/daily.test.mjs"]
     groups: [feature-assets]
   - patterns: [".template-source/scripts/manage-profile-skills.mjs"]
@@ -3569,10 +3575,11 @@ routing:
     groups:
       - feature-assets
   - patterns:
+      # 本次删除仍归属发行策略消费者，合入后移除。
       - scripts/lib/legacy-coverage.mjs
       - tests/legacy-coverage.test.mjs
     groups:
-      - feature-assets
+      - candidate-integrity
   - patterns:
       - scripts/verify-profile-distribution
       - scripts/lib/profile-distribution.mjs
@@ -3808,9 +3815,9 @@ groups:
           --test-skip-pattern='^backend: 内容来源' tests/cli-retirement.test.mjs"
         when: template-source
         id: check.cli-content-identity-rest
-      - run: scripts/verify-repository-scope-scenarios
+      - run: node tests/scenarios/verify-repository-scope-scenarios.mjs
         when: template-source
-        id: check.2b52a050306077cc
+        id: check.repository-scope-scenarios
   dedicated-cli-core:
     commands:
       - run: node --test tests/cli-core-retirement.test.mjs
@@ -3844,17 +3851,17 @@ groups:
         id: check.progression-target-evidence
       - run: node --check scripts/lib/strategic-handoff.mjs
         id: check.ba0fad1faed81f06
-      - run: scripts/verify-strategic-handoff-package-scenarios
+      - run: node tests/scenarios/verify-strategic-handoff-package-scenarios.mjs
         id: check.83f08a7516716a38
         resources: [ native-cli ]
   design-system:
     commands:
       - run: node --test .template-source/tooling/node/test/design-md.test.mjs
         id: check.design-md-instance-identity
-      - run: node .template-source/tooling/node/scripts/design-md.mjs lint DESIGN.md
+      - run: node .agents/skills/yss-design-system/scripts/design-md.mjs lint DESIGN.md
         when: template-source
         id: check.5178854477253978
-      - run: node .template-source/tooling/node/scripts/design-md.mjs drift
+      - run: node .agents/skills/yss-design-system/scripts/design-md.mjs drift
         when: template-source
         id: check.a27805ecf41a23e5
   hygiene:
@@ -3878,9 +3885,11 @@ groups:
   skills:
     commands:
       - run: scripts/sync-skills --check
-        id: check.4301e56b48a9d570
+        when: template-source
+        id: check.skill-projection-identity
       - run: scripts/update-skill-lock --check
-        id: check.eb4247ef92d2c0d0
+        when: template-source
+        id: check.skill-lock-current
       - run: node --test tests/skill-sync-efficiency.test.mjs
         when: template-source
         id: check.c80aaecf300ddc1f
@@ -3930,15 +3939,15 @@ groups:
     commands:
       - run: scripts/verify-yss-dto-openapi-profile
         id: check.0bbbe97175f9674e
-      - run: scripts/verify-yss-dto-openapi-scenarios
+      - run: node tests/scenarios/verify-yss-dto-openapi-scenarios.mjs
         id: check.eeb6e42ce91ac26a
-      - run: scripts/verify-openapi-yaml-first-scenarios
+      - run: node tests/scenarios/verify-openapi-yaml-first-scenarios.mjs
         id: check.d3535102c1a26a7d
-      - run: scripts/verify-openapi-json-handoff-scenarios
+      - run: node tests/scenarios/verify-openapi-json-handoff-scenarios.mjs
         id: check.b636f17f4fdfecf1
   collaboration:
     commands:
-      - run: node scripts/verify-plan-review-control-scenarios
+      - run: node tests/scenarios/verify-plan-review-control-scenarios.mjs
         when: template-source
         id: check.plan-review-control-convergence
       - run: node --test .template-source/tooling/node/test/approval-current.test.mjs
@@ -3948,15 +3957,15 @@ groups:
         id: check.role-gates-current-capability
       - run: scripts/verify-digital-human-roles
         id: check.a3cc57f168071cc8
-      - run: scripts/verify-digital-human-roles-scenarios
+      - run: node tests/scenarios/verify-digital-human-roles-scenarios.mjs
         id: check.fa7fc43e32417857
       - run: scripts/verify-approval-record --history
           .template-spec/templates/approval-record-template.yaml
         id: check.aab6b1527f8c70f0
-      - run: scripts/verify-subagent-task-package-scenarios
+      - run: node tests/scenarios/verify-digital-human-task-package-scenarios.mjs
         id: check.ffe328872703d3c0
         resources: [ native-cli ]
-      - run: scripts/verify-digital-human-task-package-scenarios
+      - run: node tests/scenarios/verify-digital-human-task-package-scenarios.mjs
         id: check.b593997f977be2c5
         resources: [ native-cli ]
       - run: node --test tests/read-only-intake.test.mjs
@@ -3978,25 +3987,27 @@ groups:
           .template-source/tooling/node/test/decision-continuation.test.mjs
         when: template-source
         id: check.c17b4b0ba6c92cfc
-      - run: scripts/verify-user-decision-scenarios
-        id: check.491faba2d1fdef3b
+      - run: node tests/scenarios/verify-user-decision-scenarios.mjs
+        id: check.user-decision-scenarios
       - run: yss context check --root . --json
         id: check.1451647ba2722b30
-      - run: scripts/verify-context-contract-scenarios
+      - run: node tests/scenarios/verify-context-contract-scenarios.mjs
         id: check.b5ec80cdc570194f
-      - run: node scripts/verify-business-language-scenarios
+      - run: node tests/scenarios/verify-business-language-scenarios.mjs
         id: check.c959490d7a86d5c9
-      - run: scripts/verify-context-reconciliation-scenarios
+      - run: node tests/scenarios/verify-context-reconciliation-scenarios.mjs
         id: check.fbcca7d04b9634fc
-      - run: node scripts/verify-script-performance-scenarios
+        resources: [ native-cli ]
+      - run: node tests/scenarios/verify-script-performance-scenarios.mjs
         id: check.7752ee8d6f74f638
-      - run: scripts/verify-plan-requirements-context-scenarios
+      - run: node tests/scenarios/verify-plan-requirements-context-scenarios.mjs
         id: check.14755c909a41ebee
+        resources: [ native-cli ]
       - run: scripts/verify-lifecycle-registry
         id: check.9f66238a57e457bf
-      - run: scripts/verify-lifecycle-context-query-scenarios
+      - run: node tests/scenarios/verify-lifecycle-context-query-scenarios.mjs
         id: check.cca7321527c13629
-      - run: scripts/verify-lifecycle-operator-scenarios
+      - run: node tests/scenarios/verify-lifecycle-operator-scenarios.mjs
         id: check.aafa7bdc8a88bf84
       - run: scripts/verify-lifecycle-checkpoint
           .template-spec/process/templates/lifecycle-checkpoint-template.yaml
@@ -4004,16 +4015,17 @@ groups:
       - run: scripts/verify-scaffold-architecture-decisions --allow-template
           .template-spec/process/templates/scaffold-architecture-decisions-template.yaml
         id: check.bbef469ead80be51
-      - run: scripts/verify-scaffold-architecture-decision-scenarios
-        id: check.66e3685569009833
-      - run: scripts/verify-lifecycle-scenarios
+      - run: node tests/scenarios/verify-scaffold-architecture-decision-scenarios.mjs
+        resources: [ native-cli ]
+        id: check.scaffold-decisions-scenarios
+      - run: node tests/scenarios/verify-lifecycle-scenarios.mjs
         id: check.0c8201229a241875
-      - run: scripts/verify-lifecycle-transition-scenarios
+        resources: [ python-jsonschema ]
+      - run: node tests/scenarios/verify-lifecycle-transition-scenarios.mjs
         id: check.84142f2eab38b8a4
-      - run: node scripts/verify-plan-spec-entry-scenarios
-        id: check.d87d713b76204ae4
-      - run: scripts/verify-frontend-scaffold-generator-scenarios
-        id: check.ad648590e5e06103
+      - run: node tests/scenarios/verify-plan-spec-entry-scenarios.mjs
+        resources: [ native-cli ]
+        id: check.plan-spec-entry-scenarios
       - run: node --test tests/lifecycle-query-freshness.test.mjs
         when: template-source
         id: check.lifecycle-query-freshness
@@ -4027,25 +4039,26 @@ groups:
         id: check.evidence-archive-fixtures
       - run: node --test tests/maintenance-counterexample.test.mjs
         id: check.maintenance-counterexample
-      - run: scripts/verify-maintenance-intensity-scenarios
+      - run: node tests/scenarios/verify-maintenance-intensity-scenarios.mjs
         id: check.5fa31f4262e122b1
       - run: node tests/scenarios/verify-maintenance-review-workflow-scenarios.mjs
         id: check.a5802dc214ecfcda
   existing-project-delivery:
     commands:
-      - run: scripts/verify-existing-backend-architecture-scenarios
+      - run: node tests/scenarios/verify-existing-backend-architecture-scenarios.mjs
         id: check.f74a919c8173a935
-      - run: scripts/verify-delivery-preflight-scenarios
+      - run: node tests/scenarios/verify-delivery-preflight-scenarios.mjs
         id: check.9ceb4a3839391bb6
-      - run: scripts/verify-existing-ui-baseline-scenarios
+      - run: node tests/scenarios/verify-existing-ui-baseline-scenarios.mjs
         id: check.a7f4f092f5b64b8d
   implementation:
     commands:
-      - run: scripts/verify-implementation-path-scenarios
+      - run: node tests/scenarios/verify-implementation-path-scenarios.mjs
         id: check.7ea1e4340f4611ee
-      - run: scripts/verify-repository-scope-scenarios
-        id: check.5a81832cac0ee7be
-      - run: scripts/verify-scaffold-generator-scenarios
+      - run: node tests/scenarios/verify-repository-scope-scenarios.mjs
+        when: template-source
+        id: check.repository-scope-scenarios
+      - run: python3 tests/scenarios/verify-scaffold-generator-scenarios.py
         id: check.a156e5fff5a8dfdd
       - run: node --test scripts/fixtures/backend-scaffold/platform-scenarios.test.mjs
         id: check.a53e61d79c3befc1
@@ -4055,19 +4068,17 @@ groups:
       - run: node --test
           .agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs
         id: check.c860ed22ba605f8d
-      - run: node --test scripts/lib/legacy-backend-scaffold-audit.test.mjs
+      - run: node --test tests/legacy-backend-scaffold-audit.test.mjs
         id: check.fcef5f013dd0e7f4
-      - run: node --test scripts/lib/api-contract-decision.test.mjs
+      - run: node --test tests/api-contract-decision.test.mjs
         id: check.1ebcb1124ce67eb1
-      - run: scripts/verify-frontend-scaffold-generator-scenarios
-        id: check.ad648590e5e06103
-      - run: scripts/verify-prototype-backend-scaffold-scenarios
+      - run: node tests/scenarios/verify-prototype-backend-scaffold-scenarios.mjs
         id: check.3851a250b368d3ae
       - run: node --test tests/matt-integration-fixture.test.mjs
         id: check.matt-integration-fixture
-      - run: scripts/verify-matt-yss-integration-scenarios
+      - run: node tests/scenarios/verify-matt-yss-integration-scenarios.mjs
         id: check.d32468f5dd6a4654
-      - run: scripts/verify-yss-implementation-contract-compiler-scenarios
+      - run: node tests/scenarios/verify-yss-implementation-contract-compiler-scenarios.mjs
         id: check.9a4dc0890f5759ad
       - run: scripts/generate-yss-skill-boundaries --check
         id: check.7cffb7c441bd4709
@@ -4075,9 +4086,7 @@ groups:
         id: check.e8232d4ab54fc999
       - run: scripts/verify-retired-skill-ids
         id: check.156d8dea8b8d6810
-      - run: scripts/verify-yss-ui-scenarios
-        id: check.842384deeb868cce
-      - run: scripts/verify-yss-prototype-contract-scenarios
+      - run: node tests/scenarios/verify-yss-prototype-contract-scenarios.mjs
         id: check.2c43904888dff190
       - run: node --test
           .agents/skills/yss-prototype-stage/tests/verification-entry.test.mjs
@@ -4108,9 +4117,9 @@ groups:
         id: check.010ab85199ad1140
   candidate-integrity:
     commands:
-      - run: node scripts/verify-template-verification-scenarios
+      - run: node tests/scenarios/verify-template-verification-scenarios.mjs
         id: check.1f905d7e659c8525
-      - run: node scripts/verify-template-cache-scenarios
+      - run: node tests/scenarios/verify-template-cache-scenarios.mjs
         id: check.e970cf29c7cd81e3
       - run: node --test .template-source/scripts/tests/template-ci.test.mjs
         when: template-source
@@ -4194,8 +4203,6 @@ gates:
       - check.workbuddy-skills
       - check.skill-projection-identity
       - check.skill-lock-current
-      - check.4301e56b48a9d570
-      - check.eb4247ef92d2c0d0
       - check.c80aaecf300ddc1f
       - check.022dccdddca70b70
       - check.93d2af5732ccdd96
@@ -4286,7 +4293,6 @@ gates:
     check_ids:
       - check.business-ticket-contract
       - check.14755c909a41ebee
-      - check.d87d713b76204ae4
       - check.research-evidence-scenarios
       - check.competitive-evidence-scenarios
       - check.competitive-completion-scenarios
@@ -4331,17 +4337,15 @@ gates:
       - check.aafa7bdc8a88bf84
       - check.56ea690765beec6f
       - check.bbef469ead80be51
-      - check.66e3685569009833
+      - check.scaffold-decisions-scenarios
       - check.0c8201229a241875
       - check.84142f2eab38b8a4
-      - check.ad648590e5e06103
       - check.lifecycle-query-freshness
       - check.e9c24c657e0a67e7
       - check.657837436fa3e2f8
       - check.doc-facts
       - check.openapi-validation-scenarios
       - check.frontend-removed
-      - check.legacy-coverage
       - check.ci-gate
       - check.ci-adapters
       - check.legacy-runtime-scan
@@ -4384,7 +4388,6 @@ gates:
       - check.b593997f977be2c5
       - check.read-only-intake
       - check.c17b4b0ba6c92cfc
-      - check.491faba2d1fdef3b
       - check.maintenance-storage
       - check.evidence-archive-fixtures
       - check.maintenance-counterexample
@@ -4396,7 +4399,6 @@ gates:
       - check.user-decision-scenarios
       - check.plan-review-control-unit
       - check.profile-consumers-review-capabilities
-      - check.work-layout-user-decision
     audit_status: conservative-complete
     display_id: G08
     audit_basis: Every registered changed path retains this risk; no narrowing or
@@ -4445,7 +4447,6 @@ gates:
       - check.design-md-instance-identity
       - check.a7f4f092f5b64b8d
       - check.3851a250b368d3ae
-      - check.842384deeb868cce
       - check.2c43904888dff190
       - check.3a2236d542e47171
       - check.7126152a480689b5
@@ -4474,14 +4475,13 @@ gates:
       - check.f74a919c8173a935
       - check.9ceb4a3839391bb6
       - check.7ea1e4340f4611ee
-      - check.5a81832cac0ee7be
+      - check.repository-scope-scenarios
       - check.a156e5fff5a8dfdd
       - check.a53e61d79c3befc1
       - check.edf25d8db265d921
       - check.c860ed22ba605f8d
       - check.fcef5f013dd0e7f4
       - check.1ebcb1124ce67eb1
-      - check.ad648590e5e06103
       - check.d32468f5dd6a4654
       - check.9a4dc0890f5759ad
       - check.7cffb7c441bd4709
@@ -4515,7 +4515,7 @@ gates:
       - check.cli-content-identity-install
       - check.cli-content-identity-sync
       - check.cli-content-identity-rest
-      - check.2b52a050306077cc
+      - check.repository-scope-scenarios
       - check.371da192d6338e6d
     audit_status: conservative-complete
     display_id: G12
@@ -4541,7 +4541,7 @@ gates:
       - check.cli-content-identity-install
       - check.cli-content-identity-sync
       - check.cli-content-identity-rest
-      - check.2b52a050306077cc
+      - check.repository-scope-scenarios
     audit_status: conservative-complete
     display_id: G13
     audit_basis: Every registered changed path retains this risk; no narrowing or

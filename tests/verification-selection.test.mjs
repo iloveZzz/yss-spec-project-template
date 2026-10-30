@@ -7,12 +7,148 @@ import {planTemplateVerification,loadVerificationProfiles,ROOT} from '../scripts
 import {resolveVerificationScope} from '../scripts/lib/verification-report.mjs';
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
-import {compileTaskExecution,addVerificationExecutionTasks} from '../.template-source/scripts/lib/verification-execution-plan.mjs';
+import {compileTaskExecution,addVerificationExecutionTasks,resolveVerificationSource} from '../.template-source/scripts/lib/verification-execution-plan.mjs';
 const inheritedSlow=process.env.YSS_VERIFY_SLOW;
 delete process.env.YSS_VERIFY_SLOW;
 test.after(()=>{if(inheritedSlow!==undefined)process.env.YSS_VERIFY_SLOW=inheritedSlow;});
 const pilot='.agents/skills/yss-research/SKILL.md';
 const pilotConfig=()=>loadVerificationProfiles();
+test('可信发行来源登记的变更选择报告与发行消费者核验',()=>{
+ const file='.template-source/process/trusted-verification-releases.json';
+ for(const profile of ['fast','release']){
+  const plan=planTemplateVerification({profile,changedFiles:[file]});
+  for(const id of ['check.release-profile-consumers','check.verification-report-v2'])assert.ok(plan.commands.some(task=>task.id===id),`${profile}: ${id}`);
+ }
+});
+test('相同的现役场景只执行一次并合并其发布 Gate',()=>{
+ for(const [scenario,gates] of [
+  ['verify-plan-spec-entry-scenarios.mjs',['check.verification-plan-spec']],
+  ['verify-scaffold-architecture-decision-scenarios.mjs',['check.verification-lifecycle','check.verification-implementation']],
+  ['verify-repository-scope-scenarios.mjs',['check.verification-implementation','check.verification-cli-core','check.verification-spec-cli']],
+ ]){
+  const file=`tests/scenarios/${scenario}`;
+  const plan=planTemplateVerification({profile:'release',changedFiles:[file]});
+  const checks=plan.commands.filter(task=>task.command===`node ${file}`);
+  assert.equal(checks.length,1,scenario);
+  for(const gate of gates)assert.ok(checks[0].gate_ids.includes(gate),`${scenario}: ${gate}`);
+ }
+});
+test('现役检查、必需文件与语法清单直接使用已迁移的场景路径',()=>{
+ const config=loadVerificationProfiles();
+ const active=[...Object.values(config.groups).flatMap(group=>group.commands.map(task=>typeof task==='string'?task:task.run)),...config.required_files,...config.syntax_files];
+ for(const entry of active){
+  for(const match of entry.matchAll(/scripts\/verify-[a-z0-9-]+-scenarios/g)){
+   const ref=match[0],target=resolveVerificationSource(ref);
+   assert.ok(!fs.existsSync(path.join(ROOT,target)),`${entry} 应直接引用 ${target}`);
+  }
+  for(const ref of ['scripts/lib/api-contract-decision.test.mjs','scripts/lib/legacy-backend-scaffold-audit.test.mjs','scripts/verify-subagent-task-package','.template-source/tooling/node/scripts/design-md.mjs'])assert.ok(!entry.includes(ref),`${entry} 应直接引用 ${resolveVerificationSource(ref)}`);
+ }
+});
+test('Skill 投影与锁在两个分组使用同一检查身份，并保留发布 Gate 与 CI 守卫',async()=>{
+ const ids=['check.skill-projection-identity','check.skill-lock-current'];
+ const config=loadVerificationProfiles();
+ for(const group of ['skills','drift-identity']){
+  for(const id of ids)assert.equal(config.groups[group].commands.filter(task=>task.id===id).length,1,`${group}: ${id}`);
+ }
+ for(const file of ['.template-source/scripts/manage-profile-skills.mjs','scripts/lib/drift-report.mjs']){
+  const grouped=planTemplateVerification({changedFiles:[file],selection:'legacy'});
+  for(const id of ids)assert.equal(grouped.commands.filter(task=>task.id===id).length,1,`${file}: ${id}`);
+ }
+ const release=planTemplateVerification({profile:'release',changedFiles:['.agents/skills/yss-cache/SKILL.md']});
+ for(const id of ids){
+  const tasks=release.commands.filter(task=>task.id===id);
+  assert.equal(tasks.length,1,id);
+  assert.ok(tasks[0].gate_ids.includes('check.verification-skills'),id);
+ }
+ const {ciVerificationCheckIds}=await import('../scripts/lib/ci-gate.mjs');
+ for(const id of ids)assert.ok(ciVerificationCheckIds().includes(id),id);
+});
+test('删除旧覆盖率文件仍选择现役发行策略消费者',()=>{
+ for(const file of ['scripts/lib/legacy-coverage.mjs','tests/legacy-coverage.test.mjs']){
+  for(const selection of ['allowlist','legacy']){
+   const plan=planTemplateVerification({changedFiles:[file],selection});
+   assert.equal(plan.commands.filter(task=>task.id==='check.release-profile-consumers').length,1,`${file}: ${selection}`);
+  }
+  const release=planTemplateVerification({profile:'release',changedFiles:[file]});
+  const tasks=release.commands.filter(task=>task.id==='check.release-profile-consumers');
+  assert.equal(tasks.length,1,file);
+  assert.ok(tasks[0].gate_ids.includes('check.verification-final-integrity'),file);
+ }
+});
+test('前端入口退役后分组模式不运行已删除场景，当前拒绝保护仍被选择',()=>{
+ const file='scripts/verify-frontend-scaffold-generator-scenarios';
+ for(const selection of ['legacy','shadow']){
+  const plan=planTemplateVerification({changedFiles:[file],selection});
+  assert.ok(!plan.commands.some(task=>['check.ad648590e5e06103','check.842384deeb868cce'].includes(task.id)));
+ }
+ assert.ok(planTemplateVerification({changedFiles:[file]}).commands.some(task=>task.id==='check.frontend-removed'));
+});
+test('用户决定场景的变更只执行一次并保留发布审批风险',()=>{
+ for(const file of ['scripts/verify-user-decision-scenarios','tests/scenarios/verify-user-decision-scenarios.mjs']){
+  for(const profile of ['fast','release']){
+   const plan=planTemplateVerification({profile,changedFiles:[file]});
+   const checks=plan.commands.filter(task=>task.command==='scripts/verify-user-decision-scenarios'||task.command==='node tests/scenarios/verify-user-decision-scenarios.mjs');
+   assert.equal(checks.length,1,`${profile}: ${file}`);
+   assert.equal(checks[0].command,'node tests/scenarios/verify-user-decision-scenarios.mjs');
+   if(profile==='release')assert.ok(checks[0].gate_ids.includes('check.verification-approval'));
+  }
+ }
+});
+test('生命周期现役场景直接运行真实路径，文件变化命中检查和原有 Gate',()=>{
+ const cases=[
+  ['context-contract','check.b5ec80cdc570194f','check.verification-lifecycle'],
+  ['business-language','check.c959490d7a86d5c9','check.verification-lifecycle'],
+  ['script-performance','check.7752ee8d6f74f638','check.verification-lifecycle'],
+ ];
+ for(const [name,id,gate] of cases){
+  const file=`tests/scenarios/verify-${name}-scenarios.mjs`,command=`node ${file}`;
+  for(const options of [{},{profile:'release'},{selection:'legacy'}]){
+   const plan=planTemplateVerification({...options,changedFiles:[file]});
+   const tasks=plan.commands.filter(task=>task.id===id);
+   assert.equal(tasks.length,1,`${name}: ${JSON.stringify(options)}`);
+   assert.equal(tasks[0].command,command,name);
+   if(options.profile==='release')assert.ok(tasks[0].gate_ids.includes(gate),name);
+  }
+ }
+});
+test('生命周期组使用真实场景路径，Plan→Spec 慢检查仍延后且 release 保留责任',()=>{
+ const group=loadVerificationProfiles().groups.lifecycle.commands;
+ for(const [id,name] of [
+  ['check.user-decision-scenarios','user-decision'],['check.b5ec80cdc570194f','context-contract'],
+  ['check.c959490d7a86d5c9','business-language'],['check.fbcca7d04b9634fc','context-reconciliation'],
+  ['check.7752ee8d6f74f638','script-performance'],['check.14755c909a41ebee','plan-requirements-context'],
+  ['check.cca7321527c13629','lifecycle-context-query'],['check.aafa7bdc8a88bf84','lifecycle-operator'],
+  ['check.scaffold-decisions-scenarios','scaffold-architecture-decision'],['check.0c8201229a241875','lifecycle'],
+  ['check.84142f2eab38b8a4','lifecycle-transition'],['check.plan-spec-entry-scenarios','plan-spec-entry'],
+ ])assert.equal(group.find(task=>task.id===id)?.run,`node tests/scenarios/verify-${name}-scenarios.mjs`,id);
+ const file='tests/scenarios/verify-plan-spec-entry-scenarios.mjs',id='check.plan-spec-entry-scenarios';
+ const fast=planTemplateVerification({changedFiles:[file]});
+ assert.ok(!fast.commands.some(task=>task.id===id));
+ assert.ok(fast.selection.omitted.some(task=>task.id===id&&task.reason==='deferred-slow-check'));
+ const release=planTemplateVerification({profile:'release',changedFiles:[file]});
+ const task=release.commands.find(task=>task.id===id);
+ assert.equal(task.command,`node ${file}`);
+ assert.ok(task.gate_ids.includes('check.verification-plan-spec'));
+});
+test('修复的 Context 调和、Plan 需求与生命周期场景按真实路径选择',()=>{
+ for(const [name,id,gate,slow] of [
+  ['context-reconciliation','check.fbcca7d04b9634fc','check.verification-lifecycle',true],
+  ['plan-requirements-context','check.14755c909a41ebee','check.verification-plan-spec',true],
+  ['lifecycle','check.0c8201229a241875','check.verification-lifecycle',false],
+ ]){
+  const file=`tests/scenarios/verify-${name}-scenarios.mjs`,fast=planTemplateVerification({changedFiles:[file]});
+  if(slow){assert.ok(!fast.commands.some(task=>task.id===id),name);assert.ok(fast.selection.omitted.some(task=>task.id===id&&task.reason==='deferred-slow-check'),name);}
+  else assert.equal(fast.commands.filter(task=>task.id===id).length,1,name);
+  for(const options of [{includeSlow:true},{profile:'release'},{selection:'legacy'}]){
+   const plan=planTemplateVerification({...options,changedFiles:[file]}),tasks=plan.commands.filter(task=>task.id===id);
+   assert.equal(tasks.length,1,`${name}: ${JSON.stringify(options)}`);
+   assert.equal(tasks[0].command,`node ${file}`,name);
+   if(slow)assert.ok(tasks[0].resources.includes('native-cli'),name);
+   else assert.ok(tasks[0].resources.includes('python-jsonschema'),name);
+   if(options.profile==='release')assert.ok(tasks[0].gate_ids.includes(gate),name);
+  }
+ }
+});
 test('设计技能许可文件变化选择真实安装闭包验证',()=>{
  for(const root of ['.agents/skills/yss-design-system','.workbuddy/skills/yss-design-system']) {
   for(const relative of ['LICENSE','THIRD-PARTY-NOTICES.md','scripts/vendor/yaml.LICENSE']) {
@@ -230,7 +366,7 @@ test('分诊回放入口选择离线行为测试',()=>{
   assert.equal(plan.commands.filter(row=>row.id==='check.lifecycle-triage-replay').length,1,ref);
  }
 });
-const releaseRequired=['check.release-profile-consumers','check.daily-execution','check.verification-script-retirement','check.daily-preflight','check.verification-report-v2','check.verification-artifacts','check.legacy-coverage','check.yss-cli-pin'];
+const releaseRequired=['check.release-profile-consumers','check.daily-execution','check.verification-script-retirement','check.daily-preflight','check.verification-report-v2','check.verification-artifacts','check.yss-cli-pin'];
 test('本地 Codex 配置移出跟踪仍选择现有 hook 检查，未知相邻路径继续拒绝', () => {
  const plan=planTemplateVerification({changedFiles:['.codex/settings.local.json']});
  assert.equal(plan.commands.filter(row=>row.id==='check.agent-hook').length,1);
@@ -242,7 +378,7 @@ test('发布必跑唯一覆盖保留空差异、策略及 pin 的完整责任',t
   const p=planTemplateVerification({profile:'release',changedFiles});assert.equal(p.source_requirement,'committed');
   for(const id of releaseRequired){assert.equal(p.commands.filter(x=>x.id===id).length,1,id);assert.equal(p.commands.find(x=>x.id===id).source_requirement,'committed',id);}
   const compiled=addVerificationExecutionTasks(p,{root:ROOT,reportDir:path.join(directory,String(index))});
-  for(const ref of ['legacy-coverage','yss-cli-pin','verification-gates','verification-baseline','verification-qualification','verification-delivery-run','legacy-verification','verification-execution','verification-script-retirement','verification-preflight','verification-report-v2','verification-artifacts']){
+  for(const ref of ['yss-cli-pin','verification-gates','verification-baseline','verification-qualification','verification-delivery-run','legacy-verification','verification-execution','verification-script-retirement','verification-preflight','verification-report-v2','verification-artifacts']){
    const target=path.join(ROOT,'tests',ref+'.test.mjs');
    assert.equal(compiled.commands.filter(row=>row.execution?.args?.some(arg=>path.resolve(ROOT,arg)===target)).length,1,`${changedFiles}: ${ref}`);
   }
@@ -360,7 +496,7 @@ test('日常核心验证器保持 fast，缺映射和依赖错误在执行前拒
  assert.throws(()=>planTemplateVerification({changedFiles:['.agents/skills/yss-cache/scripts/unmapped.mjs']}),/INCOMPLETE_VERIFICATION_INPUTS/,'技能树一致性不能掩盖缺失的脚本行为映射');
  const incomplete=loadVerificationProfiles();incomplete.profiles.fast.checks[0].inputs_complete=false;
  assert.throws(()=>planTemplateVerification({changedFiles:['.agents/skills/yss-cache/SKILL.md'],config:incomplete}),/INCOMPLETE_VERIFICATION_INPUTS/);
- const duplicate=loadVerificationProfiles();duplicate.groups.skills.commands[0].id='check.skill-projection-identity';
+ const duplicate=loadVerificationProfiles();duplicate.groups.skills.commands[0].run='scripts/sync-skills --changed';
  assert.throws(()=>planTemplateVerification({changedFiles:['.agents/skills/yss-cache/SKILL.md'],config:duplicate}),/检查 ID 冲突/);
  const config=loadVerificationProfiles();
  config.profiles.fast.checks.find(item=>item.id==='check.schema-runtime').depends_on=['missing'];

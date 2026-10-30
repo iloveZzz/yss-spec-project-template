@@ -7,7 +7,6 @@
     "check.daily-preflight",
     "check.verification-report-v2",
     "check.verification-artifacts",
-    "check.legacy-coverage",
     "check.yss-cli-pin"
   ],
   "gates": [
@@ -108,5 +107,5 @@
     "check.9f66238a57e457bf",
     "check.022dccdddca70b70"
   ],
-  "fast_check_count": 162
+  "fast_check_count": 166
 }

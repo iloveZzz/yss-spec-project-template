@@ -132,7 +132,43 @@ function shellWords(command){
   }
   if(quoted)throw new TypeError('NODE_TEST_COMMAND_INVALID');if(started)words.push(word);return words;
 }
-export function compileTaskExecution(task,{root,reportDir,fixedCommit,environment=process.env}={}){
+function historicalTree(root,commit){
+  if(!/^[a-f0-9]{40}$/.test(commit||''))throw new TypeError('HISTORICAL_SOURCE_INVALID: 固定提交必须是完整 SHA');
+  const result=spawnSync('git',['ls-tree','-r','-t','-z','--full-tree',commit],{cwd:root,maxBuffer:32*1024*1024});
+  if(result.status!==0)throw new TypeError('HISTORICAL_SOURCE_INVALID: 固定 Git 对象不可读取');
+  let output;try{output=new TextDecoder('utf-8',{fatal:true}).decode(result.stdout);}catch{throw new TypeError('HISTORICAL_SOURCE_INVALID: Git 路径不是 UTF-8');}
+  const entries=new Map();
+  for(const record of output.split('\0').filter(Boolean)){
+    const match=/^(\d{6}) (blob|tree|commit) ([a-f0-9]{40})\t([\s\S]+)$/.exec(record);
+    if(!match)throw new TypeError('HISTORICAL_SOURCE_INVALID: Git 树记录无效');
+    entries.set(match[4],{mode:match[1],type:match[2],object:match[3]});
+  }
+  return entries;
+}
+function historicalGlob(root,commit,pattern){
+  if(path.isAbsolute(pattern)||pattern.includes('\\')||pattern.includes('\0')||pattern.split('/').includes('..')||/^[A-Za-z]:/.test(pattern))throw new TypeError('HISTORICAL_GLOB_INVALID: glob 路径越界');
+  const glob=path.posix.normalize(pattern),matches=[];
+  for(const [ref,entry] of historicalTree(root,commit))if(path.matchesGlob(ref,glob)){
+    if(!['100644','100755','040000'].includes(entry.mode))throw new TypeError(`HISTORICAL_GLOB_INVALID: 固定路径不是普通文件或目录: ${ref}`);
+    matches.push(ref);
+  }
+  return matches.sort();
+}
+function historicalSyntaxExtras(root,commit,files){
+  const tree=historicalTree(root,commit),extras=[];
+  for(const ref of files){
+    if(typeof ref!=='string'||path.isAbsolute(ref)||ref.includes('\\')||ref.includes('\0')||ref.split('/').some(part=>part==='..'||part==='')||/^[A-Za-z]:/.test(ref))throw new TypeError('HISTORICAL_SOURCE_INVALID: 路径越界');
+    const entry=tree.get(ref);if(!entry)continue;
+    if(!['100644','100755'].includes(entry.mode))throw new TypeError(`HISTORICAL_SOURCE_INVALID: 固定路径不是普通文件: ${ref}`);
+    if(/\.(mjs|cjs|js)$/.test(ref)){extras.push(ref);continue;}
+    if(!ref.startsWith('scripts/')||path.extname(ref))continue;
+    const content=spawnSync('git',['cat-file','blob',entry.object],{cwd:root,encoding:'utf8',maxBuffer:32*1024*1024});
+    if(content.status!==0)throw new TypeError(`HISTORICAL_SOURCE_INVALID: 固定文件不可读取: ${ref}`);
+    if(/^#!\s*(?:\S*\/)?(?:node(?:\.exe)?|env\s+(?:-S\s+)?node(?:\.exe)?)(?:\s|$)/.test(content.stdout.split(/\r?\n/,1)[0]))extras.push(ref);
+  }
+  return {extras,tree};
+}
+export function compileTaskExecution(task,{root,reportDir,fixedCommit,environment=process.env,nodePath=process.execPath}={}){
   if(task.kind==='source-test-consumer')throw new TypeError('RETIRED_SOURCE_CONSUMER: 旧源码消费任务不再授予验证资格');
   const requested=task.command.trim();
   // Bind the frozen occurrence before expanding its removed test glob. The
@@ -140,7 +176,7 @@ export function compileTaskExecution(task,{root,reportDir,fixedCommit,environmen
   if(task.task_id==='legacy.012'||requested===retiredCoreTestCommand) {
     if(task.task_id!=='legacy.012'||task.id!=='check.371da192d6338e6d'||task.command!==retiredCoreTestCommand)throw new TypeError('RETIRED_CHECK_REQUEST_MISMATCH');
     const file=observedRetiredTarget(root,retiredCoreTestSource,fixedCommit);
-    return {requested_command:task.command,file:process.execPath,args:['--test','--test-concurrency=1',file],cwd:root,environment:{}};
+    return {requested_command:task.command,file:nodePath,args:['--test','--test-concurrency=1',file],cwd:root,environment:{}};
   }
   if(/^(?:node\s+)?scripts\/verify-context-contract(?:\s|$)/.test(requested)) {
     const words=shellWords(requested);if(words[0]==='node')words.shift();words.shift();
@@ -157,7 +193,7 @@ export function compileTaskExecution(task,{root,reportDir,fixedCommit,environmen
     const [ref,...args]=shellWords(requested);
     if(ref==='scripts/instantiate-harness')throw new TypeError('RETIRED_SCRIPT_REQUEST_UNSUPPORTED: instantiate-harness');
     const file=observedRetiredTarget(root,ref,fixedCommit);
-    return file.endsWith('.py')?pythonExecution(task,root,file,args):{requested_command:task.command,file:process.execPath,args:[file,...args],cwd:root,environment:{}};
+    return file.endsWith('.py')?pythonExecution(task,root,file,args):{requested_command:task.command,file:nodePath,args:[file,...args],cwd:root,environment:{}};
   }
   if(!/^(?:node(?:\.exe)?|['"][^'"]*[\\/]node(?:\.exe)?['"]|\S*[\\/]node(?:\.exe)?)\s/.test(requested))return null;
   const words=shellWords(requested),binary=words.shift();
@@ -175,7 +211,7 @@ export function compileTaskExecution(task,{root,reportDir,fixedCommit,environmen
         execution.args=['-c','import ast, pathlib, sys; ast.parse(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"), filename=sys.argv[1])',python[0]];
         return execution;
       }
-      if(!words.includes('--test'))return {requested_command:task.command,file:process.execPath,args:mapped,cwd:root,environment:{}};
+      if(!words.includes('--test'))return {requested_command:task.command,file:nodePath,args:mapped,cwd:root,environment:{}};
       words.splice(0,words.length,...mapped);
     }
   }
@@ -185,10 +221,10 @@ export function compileTaskExecution(task,{root,reportDir,fixedCommit,environmen
     const word=words[index];
     if(word==='--test-concurrency'){if(!/^[1-9]\d*$/.test(words[++index]||''))throw new TypeError('NODE_TEST_CONCURRENCY_INVALID');continue;}
     if(word.startsWith('--test-concurrency=')){if(!/^[1-9]\d*$/.test(word.slice('--test-concurrency='.length)))throw new TypeError('NODE_TEST_CONCURRENCY_INVALID');continue;}
-    if(!word.startsWith('--')&&/[?*[]/.test(word)){const matches=fs.globSync(word,{cwd:root}).sort();if(!matches.length)throw new TypeError(`NODE_TEST_GLOB_EMPTY: ${word}`);args.push(...matches);}else args.push(word);
+    if(!word.startsWith('--')&&/[?*[]/.test(word)){const matches=fixedCommit?historicalGlob(root,fixedCommit,word):fs.globSync(word,{cwd:root}).sort();if(!matches.length)throw new TypeError(`NODE_TEST_GLOB_EMPTY: ${word}`);args.push(...matches);}else args.push(word);
   }
   const test=args.indexOf('--test');args.splice(test+1,0,'--test-concurrency=1');
-  const execution={requested_command:task.command,file:process.execPath,args,cwd:root,environment:{}};
+  const execution={requested_command:task.command,file:nodePath,args,cwd:root,environment:{}};
   const retired=new Map([['legacy.001','content-identity.test.js'],['legacy.010','sync-fast-smoke.test.js']]);
   const old=retired.get(task.task_id);
   if(old){
@@ -217,7 +253,7 @@ function dailyParsingTargets(plan,root) {
   });
 }
 
-export function addVerificationExecutionTasks(plan,{root,repositoryMode='template-source',reference=false,checkpoints=[],taskPackages=[],purpose='verification',reportDir,fixedCommit,environment=process.env}={}) {
+export function addVerificationExecutionTasks(plan,{root,repositoryMode='template-source',reference=false,checkpoints=[],taskPackages=[],purpose='verification',reportDir,fixedCommit,environment=process.env,nodePath=process.execPath}={}) {
   plan=structuredClone(plan);plan.selection??={requested:'legacy',effective:'legacy',omitted:[]};plan.groups??=[...new Set(plan.commands.map(task=>task.group))];
   const daily=plan.strategy==='daily-necessary';
   if(reference)plan.gates=[];
@@ -233,17 +269,18 @@ export function addVerificationExecutionTasks(plan,{root,repositoryMode='templat
   const append=item=>{if(!plan.commands.some(task=>task.task_id===item.task_id))plan.commands.push(item);};
   if(daily||plan.effective_profile==='release') {
     const selected=daily?dailyParsingTargets(plan,root):(plan.syntax_files||[]);
-    const extras=reference?[]:(plan.changed_files||[]).filter(ref=>fs.existsSync(path.join(root,ref))&&fs.statSync(path.join(root,ref)).isFile()).filter(ref=>/\.(mjs|cjs|js)$/.test(ref)||ref.startsWith('scripts/')&&!path.extname(ref)&&/^#!\s*(?:\S*\/)?(?:node(?:\.exe)?|env\s+(?:-S\s+)?node(?:\.exe)?)(?:\s|$)/.test(fs.readFileSync(path.join(root,ref),'utf8').split(/\r?\n/,1)[0]));
+    const historical=fixedCommit?historicalSyntaxExtras(root,fixedCommit,reference?[]:(plan.changed_files||[])):null;
+    const extras=reference?[]:historical?historical.extras:(plan.changed_files||[]).filter(ref=>fs.existsSync(path.join(root,ref))&&fs.statSync(path.join(root,ref)).isFile()).filter(ref=>/\.(mjs|cjs|js)$/.test(ref)||ref.startsWith('scripts/')&&!path.extname(ref)&&/^#!\s*(?:\S*\/)?(?:node(?:\.exe)?|env\s+(?:-S\s+)?node(?:\.exe)?)(?:\s|$)/.test(fs.readFileSync(path.join(root,ref),'utf8').split(/\r?\n/,1)[0]));
     const files=reference?selected:[...new Set([...selected,...extras])];
-    files.forEach((file,index)=>{const suffix=hash(file).slice(0,16),id=`check.syntax.${suffix}`,taskId=`syntax.${suffix}`;append({id,task_id:reference?`${taskId}.${index}`:taskId,kind:'syntax',group:'postchecks',command:`${quote(process.execPath)} --check ${quote(file)}`,gate_ids:['check.verification-governance-syntax'],depends_on:[],...daily?{selection_reason:`input-match:${file} / ${(plan.changed_files||[]).join(', ')} -> 当前解析语法错误`}:{}});});
-    const roots=daily?[]:['scripts','.template-source/scripts'].filter(ref=>fs.existsSync(path.join(root,ref)));
+    files.forEach((file,index)=>{const suffix=hash(file).slice(0,16),id=`check.syntax.${suffix}`,taskId=`syntax.${suffix}`;append({id,task_id:reference?`${taskId}.${index}`:taskId,kind:'syntax',group:'postchecks',command:`${quote(nodePath)} --check ${quote(file)}`,gate_ids:['check.verification-governance-syntax'],depends_on:[],...daily?{selection_reason:`input-match:${file} / ${(plan.changed_files||[]).join(', ')} -> 当前解析语法错误`}:{}});});
+    const roots=daily?[]:['scripts','.template-source/scripts'].filter(ref=>historical?historical.tree.get(ref)?.mode==='040000':fs.existsSync(path.join(root,ref)));
     // 旧运行时扫描用 Node 实现，不依赖外部 ripgrep；同样的语义与退出码（有匹配即失败）。
     const scanner=fileURLToPath(new URL('./legacy-runtime-scan.mjs',import.meta.url));
     for(const [id,kind] of daily?[]:[
       ['check.verification-post-legacy-runtime-call','call'],
       ['check.verification-post-legacy-runtime-path','path'],
     ]) {
-      append({id,task_id:id.replace('check.verification-',''),kind:'postcheck',group:'postchecks',gate_ids:['check.verification-governance-syntax'],depends_on:[],command:`${quote(process.execPath)} ${quote(scanner)} ${kind}${roots.map(root=>` ${quote(root)}`).join('')}`});
+      append({id,task_id:id.replace('check.verification-',''),kind:'postcheck',group:'postchecks',gate_ids:['check.verification-governance-syntax'],depends_on:[],command:`${quote(nodePath)} ${quote(scanner)} ${kind}${roots.map(root=>` ${quote(root)}`).join('')}`});
     }
   }
   if(!reference&&!daily)for(const raw of plan.supplemental_checks||[]){
@@ -254,7 +291,7 @@ export function addVerificationExecutionTasks(plan,{root,repositoryMode='templat
         &&(existing.source_requirement||plan.source_requirement)===(task.source_requirement||plan.source_requirement)
         &&existing.timeout_ms===task.timeout_ms
         &&JSON.stringify((existing.depends_on||[]).filter(id=>id!=='check.verification-environment').sort())===JSON.stringify(task.depends_on.slice().sort())
-        &&JSON.stringify(existing.execution||compileTaskExecution(existing,{root,reportDir,fixedCommit,environment}))===JSON.stringify(compileTaskExecution(task,{root,reportDir,fixedCommit,environment})));
+        &&JSON.stringify(existing.execution||compileTaskExecution(existing,{root,reportDir,fixedCommit,environment,nodePath}))===JSON.stringify(compileTaskExecution(task,{root,reportDir,fixedCommit,environment,nodePath})));
       if(equivalent){
         equivalent.source_requirement=task.source_requirement;
         equivalent.gate_ids=[...new Set([...equivalent.gate_ids,...task.gate_ids])];
@@ -267,21 +304,21 @@ export function addVerificationExecutionTasks(plan,{root,repositoryMode='templat
   append({id:'check.verification-post-git-diff-check',task_id:'post.git-diff-check',kind:'postcheck',group:'postchecks',gate_ids:['check.verification-final-integrity'],depends_on:[],command:'git diff --check',...daily?{selection_reason:'current-diff -> 差异空白或冲突标记错误；合同：fast 执行终检'}:{}});
   if(!plan.groups.includes('postchecks'))plan.groups.push('postchecks');
   if(!plan.commands.some(task=>task.kind==='artifact-prepare')) {
-    const preparation=compileDeliveryPreparationTasks(plan,{root,reportDir});
+    const preparation=compileDeliveryPreparationTasks(plan,{root,reportDir,nodePath});
     if(preparation.tasks.length){const tasks=[...preparation.tasks,...preparation.cleanupTask?[preparation.cleanupTask]:[]];plan.commands.unshift(...preparation.tasks);if(preparation.cleanupTask)append(preparation.cleanupTask);if(!plan.groups.includes('artifact-preparation'))plan.groups.unshift('artifact-preparation');if(preparation.cleanupTask&&!plan.groups.includes('cleanup'))plan.groups.push('cleanup');for(const gate of plan.gates||[]){const related=tasks.filter(task=>task.gate_ids.includes(gate.id));if(related.length){gate.selected=true;gate.selection_reason='four-family-release-preparation';gate.check_ids=[...new Set([...(gate.check_ids||[]),...related.map(task=>task.id)])];gate.task_ids=[...new Set([...(gate.task_ids||[]),...related.map(task=>task.task_id)])];}}}
   }
   if(!plan.commands.some(task=>task.task_id==='check.verification-environment')) {
     // Node --check parses files without running their application dependencies.
     // Keep the syntax tasks in the plan; Node itself is always checked by preflight.
     const preflightPlan={source_requirement:plan.source_requirement,...daily?{strategy:plan.strategy}:{},...(plan.effective_profile==='release'?{candidate_release:true}:{}),commands:plan.commands.filter(task=>task.kind!=='syntax').map(task=>({command:task.command,...daily?{resources:task.resources||[]}:(task.resources||[]).includes('plugin-candidate')?{resources:['plugin-candidate']}:{}}))};
-    const command=`${quote(process.execPath)} ${quote(path.join(root,'.template-source/scripts/lib/verification-preflight.mjs'))} --root ${quote(root)} --purpose ${quote(purpose)} --plan-json ${quote(JSON.stringify(preflightPlan))}`;
+    const command=`${quote(nodePath)} ${quote(path.join(root,'.template-source/scripts/lib/verification-preflight.mjs'))} --root ${quote(root)} --purpose ${quote(purpose)} --plan-json ${quote(JSON.stringify(preflightPlan))}`;
     plan.commands.unshift({id:'check.verification-environment',task_id:'check.verification-environment',kind:'preflight',group:'preflight',command,gate_ids:['check.verification-environment'],depends_on:[],...daily?{selection_reason:'selected-commands -> 所选命令所需工具缺失或版本错误；合同：fast 执行前置'}:{}});
     plan.groups.unshift('preflight');
     for(const task of plan.commands.filter(task=>task.kind!=='preflight'))task.depends_on=[...new Set(['check.verification-environment',...(task.depends_on||[])])];
     const gate=plan.gates?.find(gate=>gate.id==='check.verification-environment');if(gate){gate.selected=true;gate.selection_reason='mandatory-preflight';gate.check_ids=['check.verification-environment'];gate.task_ids=['check.verification-environment'];}
   }
-  for(const task of plan.commands){const execution=compileTaskExecution(task,{root,reportDir,fixedCommit,environment});if(execution){
-    if(daily&&execution.file===process.execPath&&Object.keys(execution).every(key=>['requested_command','file','args','cwd','environment'].includes(key))){
+  for(const task of plan.commands){const execution=compileTaskExecution(task,{root,reportDir,fixedCommit,environment,nodePath});if(execution){
+    if(daily&&execution.file===nodePath&&Object.keys(execution).every(key=>['requested_command','file','args','cwd','environment'].includes(key))){
       // Normalize only observed Node aliases; formal request identities stay frozen.
       task.requested_command??=task.command;
       task.command=[execution.file,...execution.args].map(quote).join(' ');
