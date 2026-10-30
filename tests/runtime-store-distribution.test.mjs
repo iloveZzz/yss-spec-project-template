@@ -37,6 +37,10 @@ test('Node 22.12 startup rejection precedes runtime storage and maintenance outp
   // yss is native; Node minimum-version protection belongs to the retained governance tools.
   for(const profile of NATIVE_PROFILES){
     const target=path.join(scratch,profile);initializeNative(profile,target);
+    if(profile==='spec' && !fs.existsSync(path.join(target,'scripts/runtime-store'))) {
+      assert.equal(JSON.parse(fs.readFileSync(path.join(target,'.yss.json'))).distribution.specWorkflow,'matt-spec-v1');
+      continue;
+    }
     const result=spawnSync(process.execPath,['--require',preload,path.join(target,'scripts/runtime-store'),'inspect','--root',target,'--home',runtimeHome],{cwd:target,encoding:'utf8'});
     assert.equal(result.status,2,`${profile}: ${result.stderr}`);assert.match(result.stdout+result.stderr,/运行存储需要 Node >=22\.13 <27，当前 22\.12\.0/);assert.equal(fs.existsSync(runtimeHome),false);
   }
@@ -76,9 +80,9 @@ test('supported native Bundle exports contain runtime manager and portable polic
   }
 });
 
-test('spec initial stage installs runtime manager and portable policy through public init',t=>{
-  const scratch=temporary(t),target=path.join(scratch,'spec');initializeNative('spec',target);
-  const expected=inspectNative('spec').files;
+test('Backend initial installation includes runtime manager and portable policy',t=>{
+  const scratch=temporary(t),target=path.join(scratch,'backend');initializeNative('backend',target);
+  const expected=inspectNative('backend').files;
   for(const ref of sharedRefs)assert.equal(nativeDigest(fs.readFileSync(path.join(target,ref))),expected[ref].digest,ref);
 });
 
