@@ -929,16 +929,12 @@ profiles:
           - .template-source/process/trusted-verification-releases.json
           - .template-source/scripts/lib/verification-qualification.mjs
           - .template-source/scripts/lib/verification-delivery-run.mjs
-          # 保留本次删除路径的检查归属；合入后可移除。
           - .template-source/scripts/verify-cli-upgrade.mjs
           - .template-source/process/template-verification-profiles.yaml
           - tests/verification-qualification.test.mjs
           - tests/verification-delivery-run.test.mjs
           - tests/verification-gates.test.mjs
           - .template-source/scripts/lib/legacy-verification.mjs
-          # 本次删除仍触发发行策略消费者，合入后移除。
-          - scripts/lib/legacy-coverage.mjs
-          - tests/legacy-coverage.test.mjs
           - .template-source/scripts/lib/verification-baseline.mjs
           - .template-source/scripts/lib/verification-gates.mjs
           - .template-source/scripts/lib/verification-qualification-plan.mjs
@@ -3574,12 +3570,6 @@ routing:
       - tests/skill-lock-readers.test.mjs
     groups:
       - feature-assets
-  - patterns:
-      # 本次删除仍归属发行策略消费者，合入后移除。
-      - scripts/lib/legacy-coverage.mjs
-      - tests/legacy-coverage.test.mjs
-    groups:
-      - candidate-integrity
   - patterns:
       - scripts/verify-profile-distribution
       - scripts/lib/profile-distribution.mjs
