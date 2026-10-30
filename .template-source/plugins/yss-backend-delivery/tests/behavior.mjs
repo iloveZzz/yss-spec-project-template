@@ -113,47 +113,13 @@ export function legacyMigration(build, name, profile, archived = false, history 
     const legacy = archived || history ? readFileSync(path.join(target, '.yss-plugin.json')) : null;
     const context = readFileSync(path.join(target, 'CONTEXT.md'));
     writeFileSync(path.join(target, 'business.txt'), '旧业务资产');
-    const run = args => {
-      const result = spawnSync(process.execPath, [path.join(plugin, 'scripts/plugin.mjs'), ...args], { encoding: 'utf8', timeout: 120000, maxBuffer: 128 * 1024 * 1024 });
-      assert.equal(result.status, 0, result.stderr || result.stdout); return JSON.parse(result.stdout);
-    };
-    const plan = run(['project-migration-plan', '--target-dir', target]);
-    assert.equal(existsSync(path.join(target, '.yss.json')), false);
-    const saved = path.join(parent, 'plan.json'); writeFileSync(saved, JSON.stringify(plan));
-    run(['project-migration-apply', '--plan', saved]);
-    assert.equal(run(['project-check', '--target-dir', target]).result, 'binding-matched');
+    const observed = inventory(target);
+    const result = spawnSync(process.execPath, [path.join(plugin, 'scripts/plugin.mjs'), 'project-migration-plan', '--target-dir', target], { encoding: 'utf8', timeout: 120000, maxBuffer: 128 * 1024 * 1024 });
+    assert.notEqual(result.status, 0, 'historical Spec identity must not migrate to Backend');
+    assert.deepEqual(inventory(target), observed, 'rejected historical migration must preserve project bytes and modes');
     assert.deepEqual(readFileSync(path.join(target, oldMetadata)), before);
     if (legacy) assert.deepEqual(readFileSync(path.join(target, '.yss-plugin.json')), legacy);
     assert.deepEqual(readFileSync(path.join(target, 'CONTEXT.md')), context);
-    run(['project-rollback', '--target-dir', target, '--apply']);
-    assert.equal(existsSync(path.join(target, '.yss.json')), false);
-    assert.equal(existsSync(path.join(target, '.yss-backend-plugin.json')), false);
-    assert.deepEqual(readFileSync(path.join(target, oldMetadata)), before);
-    if (legacy) assert.deepEqual(readFileSync(path.join(target, '.yss-plugin.json')), legacy);
-    assert.deepEqual(readFileSync(path.join(target, 'CONTEXT.md')), context);
-    assert.equal(readFileSync(path.join(target, 'business.txt'), 'utf8'), '旧业务资产');
-    if (history) {
-      const beforeAttempt = inventory(target);
-      assert.throws(() => restoreHistoricalBridge(parent, target), /later edits block recovery/);
-      assert.deepEqual(inventory(target), beforeAttempt, 'later business files block the first-stage restore without writes');
-      // The extra native-stage business marker was not in the historical bridge
-      // fixture. Its preservation is checked above; remove only our own marker
-      // before proving the exact pre-bridge inventory can be restored.
-      rmSync(path.join(target, 'business.txt'));
-      const bridge = JSON.parse(readFileSync(path.join(parent, 'historical-bridge-plan.json')));
-      const backup = path.join(bridge.backup_path, 'before/.yss-template.json'), backupBytes = readFileSync(backup);
-      writeFileSync(backup, Buffer.concat([backupBytes, Buffer.from('\ncorrupt-backup')]));
-      const beforeCorruptAttempt = inventory(target);
-      assert.throws(() => restoreHistoricalBridge(parent, target));
-      assert.deepEqual(inventory(target), beforeCorruptAttempt, 'all archive bytes must pass before any first-stage write');
-      writeFileSync(backup, backupBytes);
-      const recovery = restoreHistoricalBridge(parent, target);
-      assert.equal(recovery.result, 'restored');
-      const original = JSON.parse(readFileSync(path.join(parent, 'historical-original.json')));
-      assert.deepEqual(readFileSync(path.join(target, '.yss-template.json')), Buffer.from(original.metadata, 'base64'));
-      assert.deepEqual(readFileSync(path.join(target, '.yss-plugin.json')), Buffer.from(original.receipt, 'base64'));
-      assert.deepEqual(readFileSync(path.join(target, 'CONTEXT.md')), context);
-    }
     passed = true;
   } catch (error) { error.message += '\nlegacy fixture: ' + parent; throw error; }
   finally { if (passed || !process.env.YSS_PLUGIN_RETAIN_FAILED) rmSync(parent, { recursive: true, force: true }); }

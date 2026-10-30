@@ -71,6 +71,13 @@ export function sourceUpgrade(build, name, profile) {
     if (previousSource) assert.equal(JSON.parse(metadataBefore).schemaVersion, 2, 'historical plugin must create a real old native identity');
     writeFileSync(path.join(target, 'business.txt'), '跨二进制升级必须保留的业务资产\n');
     const beforeRejected = inventory(target), rejectedPlan = path.join(parent, 'rejected-native-plan.json');
+    if (JSON.parse(receiptBefore).profile !== profile) {
+      const rejected = execute(process.execPath, [path.join(currentPlugin, 'scripts/plugin.mjs'), 'project-upgrade-plan', '--target-dir', target], 1);
+      assert.match(rejected.error, /foreign-native-binding|legacy-profile-migration-unsupported/);
+      assert.deepEqual(inventory(target), beforeRejected, 'cross-Profile rejection must preserve all project bytes and modes');
+      passed = true;
+      return { profile, legacy_profile_rejected: true, preserved: true };
+    }
     const rejection = execute(binary, ['sync', '--root', target, '--profile', profile, '--plan', '--out', rejectedPlan, '--json'], 1);
     assert.equal(rejection.code, 'BINDING_REQUIRED');
     assert.deepEqual(inventory(target), beforeRejected, 'source change without an explicit binding must not write any project bytes or modes');

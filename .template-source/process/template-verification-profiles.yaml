@@ -2573,7 +2573,7 @@ profiles:
         depends_on: []
         failure_mode: PR/MR 定位输入越界或被错误当作已验证
       - id: check.plugin-entry-migration
-        run: cd .template-source/tooling/node && node scripts/test-with-plugin-clis.mjs test/plugin-entry-migration.test.mjs
+        run: cd .template-source/tooling/node && node scripts/test-with-plugin-clis.mjs test/plugin-entry-migration.test.mjs test/plugin-project.test.mjs
         timeout_ms: 600000
         resources: [native-cli]
         group: feature-assets
@@ -2582,10 +2582,11 @@ profiles:
           - .template-source/plugins/yss-backend-delivery/entry.mjs
           - .template-source/plugins/yss-backend-delivery/native-project.mjs
           - .template-source/tooling/node/test/plugin-entry-migration.test.mjs
+          - .template-source/tooling/node/test/plugin-project.test.mjs
         depends_on: []
         failure_mode: 原生入口无法透传或错误授权 PR/MR 定位
       - id: check.plugin-backend-profile
-        run: node --test .template-source/tooling/node/test/backend-plugin-profile.test.mjs
+        run: node --test .template-source/tooling/node/test/backend-plugin-profile.test.mjs .template-source/tooling/node/test/plugin-build.test.mjs
         timeout_ms: 600000
         resources: [native-cli]
         group: feature-assets
@@ -2593,6 +2594,7 @@ profiles:
         input_patterns:
           - .template-source/plugins/yss-backend-delivery/**
           - .template-source/tooling/node/test/backend-plugin-profile.test.mjs
+          - .template-source/tooling/node/test/plugin-build.test.mjs
         depends_on: []
         failure_mode: Backend 插件身份、入口或历史 Spec 保护失效
       - id: check.plugin-supported-scope

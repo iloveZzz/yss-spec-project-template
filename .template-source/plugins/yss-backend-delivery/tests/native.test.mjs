@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { build } from '../build.mjs';
-import { behavior } from './behavior.mjs';
+import { behavior, legacyMigration } from './behavior.mjs';
 import { cancellation } from './cancellation.mjs';
 import { sourceUpgrade } from './source-upgrade.mjs';
 import { upgradeReview } from './upgrade-review.mjs';
@@ -12,6 +12,9 @@ test('构建必须显式提供固定原生二进制，不能静默使用旧 Node
   finally { if (previous !== undefined) process.env.YSS_PLUGIN_BINARY = previous; }
 });
 test('后端固定二进制初始化、绑定、升级、回退和冲突保护', () => behavior(build, 'yss-backend-delivery', 'backend'));
+test('真实旧 Spec CLI 身份明确拒绝迁移并保留项目', () => legacyMigration(build, 'yss-backend-delivery', 'spec'));
+test('真实归档插件身份明确拒绝迁移并保留项目', () => legacyMigration(build, 'yss-backend-delivery', 'spec', true));
+for (const history of ['m4', 'v02']) test('历史 '+history+' 身份明确拒绝迁移并保留项目', () => legacyMigration(build, 'yss-backend-delivery', 'spec', false, history));
 
 
 test('后端插件真实信号取消后等待原生回滚并允许幂等恢复', () => cancellation(build, 'yss-backend-delivery', 'backend'));
