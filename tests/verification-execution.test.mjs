@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { runGroups, runCommandToFiles } from '../scripts/lib/template-verification-runner.mjs';
-import {execFileSync} from 'node:child_process';
+import {execFileSync,spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
 import {executeVerificationPlan,addVerificationExecutionTasks,validateVerificationArguments,prepareVerificationPlan} from '../.template-source/scripts/lib/template-verification-worker.mjs';
@@ -518,4 +518,21 @@ test('真实prepare首次读取实例模式，两阶段计划保留WorkBuddy效�
  const {compileExpectedVerificationPlan}=await import('../.template-source/scripts/lib/verification-report-validator.mjs');
  const expected=compileExpectedVerificationPlan({root,args:['--profile','release','--base',head,'--changed-file','scripts/sync-skills'],reportDirectory:prepared.reportDir});
  assert.equal(expected.commands.find(task=>task.id==='check.workbuddy-skills').command,task.command);
+});
+
+test('正式插件任务缺少已固定独立候选时不能退回 shell 或工作树候选',()=>{
+ const task={id:'check.plugin-entry-migration',command:'node .template-source/scripts/plugin-candidate.mjs run --tooling scripts/test-with-plugin-clis.mjs test/plugin-entry-migration.test.mjs test/plugin-project.test.mjs',resources:['plugin-candidate']};
+ assert.throws(()=>compileTaskExecution(task,{root:process.cwd(),releasePlugin:true,environment:{}}),/committed plugin/i);
+});
+
+test('正式插件进程在 Node 启动前清除注入环境',async t=>{
+ const {committedPluginEnvironment}=await import('../.template-source/scripts/lib/committed-plugin-commands.mjs');
+ const directory=temporary(t),marker=path.join(directory,'ran');
+ const input=Object.fromEntries(['TEMPLATE_SHA','CLI_ROOT','CLI_SHA','CLI_REMOTE','CLI_REF','BINARY','BINARY_SHA256','RECEIPT','RECEIPT_SHA256','GO','GO_SHA256'].map(key=>[`YSS_PLUGIN_COMMITTED_${key}`,'fixture']));
+ const env={...process.env,NODE_OPTIONS:'--import=data:text/javascript,process.exit(0)',NODE_PATH:directory,...committedPluginEnvironment(input)};
+ execFileSync(process.execPath,['-e',`require('node:fs').writeFileSync(${JSON.stringify(marker)},'ran')`],{env});
+ assert.equal(fs.readFileSync(marker,'utf8'),'ran');
+ const wrapper=path.resolve('.template-source/scripts/committed-plugin-run.mjs');
+ const actual=spawnSync(process.execPath,[wrapper,'check.plugin-backend-profile'],{env,encoding:'utf8'});
+ assert.equal(actual.status,1);assert.match(actual.stderr,/committed plugin/);
 });

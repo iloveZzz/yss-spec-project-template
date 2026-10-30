@@ -11,6 +11,7 @@ import {readHistoricalProfiles,compileHistoricalVerificationPlan,assertSupported
 import {sourceTuple,collectReleaseSources,validateArtifact} from './verification-artifacts.mjs';
 import {parseArgs} from 'node:util';
 import {validateJsonSchema} from '../../../scripts/lib/json-schema.mjs';
+import {committedPluginOptionsFromEnvironment,validateCommittedPluginProof} from './committed-plugin-source.mjs';
 
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 const ensure = (condition, message) => { if (!condition) throw new TypeError(message); };
@@ -78,7 +79,7 @@ export function assertEvidenceFile(file, directory, expectedDigest) {
 }
 
 /** expectedPlan is supplied by the consumer, never recovered from this report. */
-export function validateVerificationReport(report, {root,expectedPlan,reportDirectory,expectedInvocation,currentInputDigest,observedExitCode,requireRelease=true,repositoryMode='template-source',historical=false,expectedSourcesManifest,expectedFamilies}={}) {
+export function validateVerificationReport(report, {root,expectedPlan,reportDirectory,expectedInvocation,currentInputDigest,observedExitCode,requireRelease=true,repositoryMode='template-source',historical=false,expectedSourcesManifest,expectedFamilies,expectedCommittedPluginSnapshot}={}) {
   ensure(report?.schema_version === 2 && report.kind === 'template-verification-report', '验证报告 v2 类型或版本不支持');
   validateJsonSchema(report,path.resolve(import.meta.dirname,'../../process/schemas/template-verification-report.schema.json'));
   ensure(report.status === 'passed', '验证报告未通过');
@@ -106,6 +107,23 @@ export function validateVerificationReport(report, {root,expectedPlan,reportDire
   if(!historical||expectedPlan.strategy==='release'){assert.deepEqual(report.plan.selection,expectedPlan.selection,'release 检查选择与独立完整变化集不匹配');assert.deepEqual(report.plan.changed_files,expectedPlan.changed_files,'release 变化路径不匹配');if(expectedPlan.scope)assert.deepEqual(report.scope,expectedPlan.scope,'release 范围或基线不匹配');}
   else ensure(report.plan.selection?.effective !== 'allowlist' && !report.plan.selection?.omitted?.length, '历史 release 不允许裁剪或遗漏');
   const expectedTasks=selected(expectedPlan,repositoryMode), actualTasks=selected(report.plan,repositoryMode);
+  const plugins=expectedTasks.filter(task=>task.execution?.args?.[0]===path.join(root,'.template-source/scripts/committed-plugin-run.mjs'));
+  if(plugins.length){
+    ensure(expectedCommittedPluginSnapshot&&typeof expectedCommittedPluginSnapshot==='object','independent committed plugin input is required');
+    const first=plugins[0].execution.environment,expectedDigest=hash(JSON.stringify(expectedCommittedPluginSnapshot));
+    for(const task of plugins)assert.deepEqual(task.execution.environment,first,'committed plugin input differs between tasks');
+    ensure(first.YSS_PLUGIN_COMMITTED_SNAPSHOT_SHA256===expectedDigest,'independent committed plugin snapshot mismatch');
+    const preflight=report.results.find(row=>row.task_id==='check.verification-environment');
+    ensure(preflight,'committed plugin preflight is missing');
+    const parsed=JSON.parse(fs.readFileSync(assertEvidenceFile(preflight.stdoutFile,reportDirectory,preflight.log_digests?.stdoutFile),'utf8'));
+    const observed=parsed.observations?.filter(item=>item.name==='plugin-committed');
+    ensure(observed?.length===1&&observed[0].status==='passed','committed plugin preflight evidence missing');
+    const proof=observed[0].observed,expectedDir=path.join(reportDirectory,'committed-plugin-rebuild');
+    ensure(proof.directory===expectedDir&&proof.snapshot_sha256===expectedDigest,'committed plugin proof identity mismatch');
+    assertEvidenceFile(path.join(expectedDir,'proof.json'),reportDirectory,proof.proof_sha256);
+    const actual=validateCommittedPluginProof(committedPluginOptionsFromEnvironment(root,first),{evidenceDir:expectedDir,expectedProofSha256:proof.proof_sha256});
+    assert.deepEqual(actual,expectedCommittedPluginSnapshot,'committed plugin input changed');
+  }
   ensure(expectedTasks.length > 0 && actualTasks.length === expectedTasks.length, '验证任务集合不完整');
   const expectedKeys=expectedTasks.map(task=>key(task,task.index));
   ensure(new Set(expectedKeys).size===expectedKeys.length, '独立期望任务 ID 重复');

@@ -479,3 +479,11 @@ test('一次失败传播至合并任务的每个 Gate 且保存原始日志',asy
  assert.deepEqual(report.gate_results.map(row=>row.status),['failed','failed']);
  assert.match(fs.readFileSync(report.results[0].stdoutFile,'utf8'),/raw-evidence/);assert.equal(report.input_sha256,'fixed-input');
 });
+
+test('正式插件报告不能从受审报告本身取得独立来源期望',t=>{
+ const f=fixture(t),task=f.plan.commands[0];
+ task.id='check.plugin-entry-migration';task.command='plugin-run';task.execution={requested_command:'plugin-run',file:process.execPath,args:[path.join(f.directory,'.template-source/scripts/committed-plugin-run.mjs'),task.id],cwd:f.directory,environment:{YSS_PLUGIN_COMMITTED_SNAPSHOT_SHA256:'a'.repeat(64)}};
+ f.plan.gates[0].check_ids=[task.id];f.report.plan=structuredClone(f.plan);Object.assign(f.report.results[0],task,{actual_execution:structuredClone(task.execution)});
+ finalizeVerificationReport(f.report,{status:'passed',wallMs:1,repositoryMode:'template-source'});
+ assert.throws(()=>validateVerificationReport(f.report,f.options),/independent committed plugin/i);
+});

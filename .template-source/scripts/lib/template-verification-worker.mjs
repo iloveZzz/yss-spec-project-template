@@ -96,7 +96,7 @@ async function runPrepared(input) {
     if(reportDir){fs.mkdirSync(reportDir);saveVerificationReport(reportDir,report);process.send?.({kind:'report-directory',directory:reportDir});}
     logRoot=reportDir?path.join(reportDir,'logs'):fs.mkdtempSync(path.join(os.tmpdir(),'yss-template-verification-'));
     const preflightTask=plan.commands.find(task=>task.kind==='preflight');
-    const preflightRow=await runCommandToFiles(preflightTask.command,{cwd:root,environment,logRoot,sequence:'preflight',signal:controller.signal,onProcess:event=>process.send?.({kind:'command-process',...event})});
+    const preflightRow=await runCommandToFiles(preflightTask.command,{cwd:root,environment,execution:preflightTask.execution,logRoot,sequence:'preflight',signal:controller.signal,onProcess:event=>process.send?.({kind:'command-process',...event})});
     preflightRow.id=preflightTask.id;preflightRow.task_id=preflightTask.task_id;preflightRow.gate_ids=preflightTask.gate_ids;preflightRow.group=preflightTask.group;preflightRow.index=plan.commands.indexOf(preflightTask);preflightRow.reused=false;
     preflightRow.log_digests=Object.fromEntries(['stdoutFile','stderrFile'].map(key=>[key,hash(fs.readFileSync(preflightRow[key]))]));
     report.results.push(preflightRow);if(reportDir)saveVerificationReport(reportDir,report);
