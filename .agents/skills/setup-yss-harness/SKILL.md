@@ -7,11 +7,13 @@ description: 安装或升级 YSS CLI，配置项目或用户级 Skills，初始�
 
 先区分程序安装、项目受管技能、用户级技能与工程同步，复用目标路径和已有授权。只要求查询时保持只读；不要因为调用本技能就升级程序、同步工程或改用户级配置。
 
-精简接口自 [CLI 3.0.1](https://github.com/iloveZzz/yss-cli/releases/tag/v3.0.1) 正式提供。先读实际 `yss version`、`yss help` 和目标命令帮助；旧版 3.0.0 及更早版本的命令、安装收据和插件接口不能套用到新版。模板或 Skills 更新不会自动替换已安装的二进制。
+精简接口自 CLI 3.0.1 提供；私有 GitLab 迁移代码在正式 Release 发布前仍属于开发构建。先读实际 `yss version`、`yss help` 和目标命令帮助；旧版 3.0.0 及更早版本的命令、安装收据和插件接口不能套用到新版。模板或 Skills 更新不会自动替换已安装的二进制。
 
 ## 安装或升级程序
 
-从 [官方 Release](https://github.com/iloveZzz/yss-cli/releases) 选择用户指定版本；未指定时查询最新正式版，排除草稿与预发布，并在本次操作中固定版本、源码提交、平台和归档摘要。平台包以该 Release 的实际资产为准：`yss_<版本>_<GOOS>_<GOARCH>.tar.gz`，Windows 使用 `.zip`，不要假定所有平台都有发行包。
+仅从固定私有 [GitLab Release](https://gitlab.yss.test:9443/yss/yss-cli/-/releases) 选择用户指定版本；未指定时查询最新已发布稳定版，排除预发布与未来发行，并在本次操作中固定版本、源码提交、平台和归档摘要。每次通过固定 origin 的 API 按完整路径 `yss/yss-cli` 解析项目，核验正数 ID、完整路径与 Web URL；拒绝退役 ID 37/38、HTTP、任意来源覆盖、跨域跳转和 GitHub 自动 fallback。仅允许同源同项目且与版本和文件名一致的资产 URL，动态解析完成前不向数字 ID 地址发送 token。平台包以该 Release 的实际资产为准：`yss_<版本>_<GOOS>_<GOARCH>.tar.gz`，Windows 使用 `.zip`，不要假定所有平台都有发行包。
+
+设置 `YSS_GITLAB_CA_FILE` 指向受信 CA PEM，PAT 只从 `YSS_GITLAB_TOKEN` 安全环境读取；不关闭 TLS，不把 token 放入 URL、argv、日志或产物。只有显式 `YSS_GITLAB_CI_AUTH=1` 且 `CI_SERVER_URL` 精确等于 `https://gitlab.yss.test:9443` 时才可用 `CI_JOB_TOKEN`。项目或 Release 不存在（HTTP 404）时报告“尚未就绪或没有读取权限”，停止在线安装与升级；不造 Release、不改标签、不改用 GitHub。已另获可信本地归档时可执行离线安装。
 
 首次安装或从旧接口切换时，由 Agent 下载匹配的归档及 `SHA256SUMS`，核验实际 SHA-256，在临时目录安全解包。拒绝越界、链接和重复路径，核对包内 `release-manifest.json` 的版本、平台与载荷摘要，再用新程序查看版本和帮助。使用新程序安装到独立工具目录，不调用旧升级器或仅覆盖旧可执行文件：
 
