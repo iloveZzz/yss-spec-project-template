@@ -13,7 +13,7 @@ description: 安装或升级 YSS CLI，配置项目或用户级 Skills，初始�
 
 仅从固定私有 [GitLab Release](https://gitlab.yss.test:9443/yss/yss-cli/-/releases) 选择用户指定版本；未指定时查询最新已发布稳定版，排除预发布与未来发行，并在本次操作中固定版本、源码提交、平台和归档摘要。每次通过固定 origin 的 API 按完整路径 `yss/yss-cli` 解析项目，核验正数 ID、完整路径与 Web URL；不复用旧实例的 37/38 等映射，数值 ID URL 必须匹配本次已核验 ID；拒绝 HTTP、任意来源覆盖、跨域跳转和 GitHub 自动 fallback。仅允许同源同项目且与版本和文件名一致的资产 URL，动态解析完成前不向数字 ID 地址发送 token。平台包以该 Release 的实际资产为准：`yss_<版本>_<GOOS>_<GOARCH>.tar.gz`，Windows 使用 `.zip`，不要假定所有平台都有发行包。
 
-设置 `YSS_GITLAB_CA_FILE` 指向受信 CA PEM，PAT 只从 `YSS_GITLAB_TOKEN` 安全环境读取；不关闭 TLS，不把 token 放入 URL、argv、日志或产物。只有显式 `YSS_GITLAB_CI_AUTH=1` 且 `CI_SERVER_URL` 精确等于 `https://gitlab.yss.test:9443` 时才可用 `CI_JOB_TOKEN`。项目或 Release 不存在（HTTP 404）时报告“尚未就绪或没有读取权限”，停止在线安装与升级；不造 Release、不改标签、不改用 GitHub。已另获可信本地归档时可执行离线安装。
+设置 `YSS_GITLAB_CA_FILE` 指向受信 CA PEM，PAT 只从 `YSS_GITLAB_TOKEN` 安全环境读取；不关闭 TLS，不把 token 放入 URL、argv、日志或产物。在线升级需要具备项目详情、Release 与资产读取权限的受限 PAT。CLI 保留仅显式 `YSS_GITLAB_CI_AUTH=1` 且 `CI_SERVER_URL` 精确等于 `https://gitlab.yss.test:9443` 时启用的 Job Token 模式，但当前 Job Token 不支持项目详情 API，会在项目核验 HTTP 404 时返回 `NOT_READY` 并停止；不得宣称该模式可完成在线升级，也不得把 PAT 注入日常 CI。日常 CI 另用受支持的固定 `/api/v4/job` 核验本作业身份与 SHA，并从固定规范 HTTPS Git 路径读取跨仓源码；显式 CA、私有来源禁代理及禁止重定向，不能替代在线升级器的项目详情核验。项目或 Release 不存在（HTTP 404）时报告“尚未就绪或没有读取权限”，停止在线安装与升级；不造 Release、不改标签、不改用 GitHub。已另获可信本地归档时可执行离线安装。
 
 首次安装或从旧接口切换时，由 Agent 下载匹配的归档及 `SHA256SUMS`，核验实际 SHA-256，在临时目录安全解包。拒绝越界、链接和重复路径，核对包内 `release-manifest.json` 的版本、平台与载荷摘要，再用新程序查看版本和帮助。使用新程序安装到独立工具目录，不调用旧升级器或仅覆盖旧可执行文件：
 

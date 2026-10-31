@@ -24,34 +24,52 @@ build-check:
       work=$(mktemp -d)
       trap 'rm -rf "$work"' EXIT
       export GIT_CONFIG_NOSYSTEM=1 GIT_CONFIG_GLOBAL=/dev/null GIT_TERMINAL_PROMPT=0
-      export GIT_CONFIG_COUNT=4
+      export GIT_CONFIG_COUNT=5
       export GIT_CONFIG_KEY_0=credential.https://gitlab.yss.test:9443/yss/yss-cli.git.helper
       export GIT_CONFIG_VALUE_0='!f() { test "$1" != get || printf "%s\n" "username=gitlab-ci-token" "password=$CI_JOB_TOKEN"; }; f'
-      export GIT_CONFIG_KEY_1=http.sslCAInfo GIT_CONFIG_VALUE_1="$YSS_GITLAB_CA_FILE"
-      export GIT_CONFIG_KEY_2=http.followRedirects GIT_CONFIG_VALUE_2=false
+      export GIT_CONFIG_KEY_1=http.https://gitlab.yss.test:9443/.sslCAInfo GIT_CONFIG_VALUE_1="$YSS_GITLAB_CA_FILE"
+      export GIT_CONFIG_KEY_2=http.https://gitlab.yss.test:9443/.followRedirects GIT_CONFIG_VALUE_2=false
       export GIT_CONFIG_KEY_3=credential.useHttpPath GIT_CONFIG_VALUE_3=true
+      export GIT_CONFIG_KEY_4=http.https://gitlab.yss.test:9443/.proxy GIT_CONFIG_VALUE_4=
       python3 -I - <<'PYCODE'
-      import json, os, ssl, urllib.request
+      import json, os, re, ssl, urllib.request
       origin = "https://gitlab.yss.test:9443"
-      project = "yss/yss-cli"
+      project = "yss/yss-spec-project-template"
       class NoRedirect(urllib.request.HTTPRedirectHandler):
           def redirect_request(self, *args, **kwargs):
               return None
+      def unique_fields(pairs):
+          result = {}
+          for key, value in pairs:
+              if key in result:
+                  raise ValueError("duplicate job metadata field")
+              result[key] = value
+          return result
       try:
+          job_id = os.environ["CI_JOB_ID"]
+          commit = os.environ["CI_COMMIT_SHA"]
+          if not re.fullmatch(r"[1-9][0-9]*", job_id) or not re.fullmatch(r"[0-9a-f]{40}", commit):
+              raise ValueError("invalid tested job identity")
           context = ssl.create_default_context(cafile=os.environ["YSS_GITLAB_CA_FILE"])
-          opener = urllib.request.build_opener(NoRedirect(), urllib.request.HTTPSHandler(context=context))
-          req = urllib.request.Request(origin + "/api/v4/projects/" + project.replace("/", "%2F"), headers={"JOB-TOKEN": os.environ["CI_JOB_TOKEN"]})
+          opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedirect(), urllib.request.HTTPSHandler(context=context))
+          endpoint = origin + "/api/v4/job"
+          req = urllib.request.Request(endpoint, headers={"JOB-TOKEN": os.environ["CI_JOB_TOKEN"]})
           with opener.open(req, timeout=30) as response:
+              if response.status != 200 or response.geturl() != endpoint:
+                  raise ValueError("unexpected job response")
               raw = response.read(262145)
           if len(raw) > 262144:
-              raise ValueError("project metadata too large")
-          record = json.loads(raw)
-          if type(record["id"]) is not int or record["id"] <= 0:
-              raise ValueError("project ID mismatch")
-          if record["path_with_namespace"] != project or record["web_url"] != origin + "/" + project:
-              raise ValueError("project identity mismatch")
+              raise ValueError("job metadata too large")
+          record = json.loads(raw, object_pairs_hook=unique_fields)
+          if type(record["id"]) is not int or record["id"] != int(job_id):
+              raise ValueError("job ID mismatch")
+          if record["web_url"] != origin + "/" + project + "/-/jobs/" + job_id:
+              raise ValueError("job project URL mismatch")
+          pipeline = record["pipeline"]
+          if type(pipeline["project_id"]) is not int or pipeline["project_id"] <= 0 or pipeline["sha"] != commit:
+              raise ValueError("tested pipeline identity mismatch")
       except Exception:
-          raise SystemExit("Fixed GitLab source identity/CA/auth not ready; no fallback") from None
+          raise SystemExit("Fixed GitLab job identity/CA/auth not ready; no fallback") from None
       PYCODE
       git init "$work/source"
       git -C "$work/source" remote add origin https://gitlab.yss.test:9443/yss/yss-cli.git
