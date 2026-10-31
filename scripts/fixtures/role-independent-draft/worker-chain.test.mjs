@@ -87,10 +87,12 @@ for(const [cmd,args]of [['javac',['-d',dir,...walk('src/main/java'),main]],['jav
   const loaded=readSliceContract('slice.json',{root}),rendered=renderSliceContractView('slice.json',{root});
   assert.equal(loaded.sources.ticket.digest,prepared.slice_contract.basis.ticket.digest);
   assert.match(rendered.acceptance['AC-1'],/输入2返回3.*拒绝/);
+  assert.equal(rendered.ticket_state.owner,'tracker-or-task-package');
   for(const profile of ['review','task','full']) {
    const nodeView=renderNodeContract('slice.json',{root,kind:'slice',profile,unit_id:profile==='task'?prepared.slice_contract.work_units[0].id:undefined,task_layout:'focused'});
    assert.match(nodeView.markdown,/输入2返回3.*拒绝/);
    assert.equal(nodeView.read_only,true);assert.equal(nodeView.execution_allowed,false);
+   if(profile==='task')assert.equal(nodeView.content.上游引用.ticket.ref,ticket);
   }
   const ticketBytes=read(ticket);write(ticket,'changed source');
   assert.throws(()=>readSliceContract('slice.json',{root}),/stale|来源|摘要|原始字节/i);write(ticket,ticketBytes);

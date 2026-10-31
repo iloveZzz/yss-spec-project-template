@@ -169,6 +169,13 @@ test('内部验证默认 fast 与显式 slow 各自生效',()=>{
  assert.ok(!planTemplateVerification({changedFiles:[file]}).commands.some(row=>row.id==='check.role-independent-formal-current'));
  assert.ok(planTemplateVerification({changedFiles:[file],includeSlow:true}).commands.some(row=>row.id==='check.role-independent-formal-current'));
 });
+test('退役旧切片视图夹具后仍选择真实 Backend 切片覆盖',()=>{
+ const retired='scripts/fixtures/role-independent-draft/slice-reading.test.mjs';
+ const plan=planTemplateVerification({profile:'release',changedFiles:[retired]});
+ assert.deepEqual(plan.unknown_files,[]);
+ assert.equal(plan.commands.filter(row=>row.id==='check.role-independent-formal-current').length,1);
+ assert.ok(plan.commands.some(row=>row.id==='check.role-independent-draft'));
+});
 test('选择测试忽略外部慢档环境但保留显式 slow',()=>{
  for(const value of ['1','only']){
   const env={...process.env,YSS_VERIFY_SLOW:value};delete env.NODE_TEST_CONTEXT;

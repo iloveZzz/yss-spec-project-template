@@ -411,8 +411,7 @@ profiles:
           Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
       - id: check.role-independent-draft
         resources: [ native-cli ]
-        run: "node --test scripts/fixtures/role-independent-draft/scenarios.test.mjs
-          scripts/fixtures/role-independent-draft/slice-reading.test.mjs"
+        run: "node --test scripts/fixtures/role-independent-draft/scenarios.test.mjs"
         group: feature-assets
         inputs_complete: true
         input_patterns:
@@ -3383,7 +3382,6 @@ routing:
       - scripts/fixtures/slice-contract-v3/round2.test.mjs
       - scripts/fixtures/slice-contract-v3/scenarios.test.mjs
       - scripts/fixtures/role-independent-draft/scenarios.test.mjs
-      - scripts/fixtures/role-independent-draft/slice-reading.test.mjs
       - scripts/fixtures/stage-tracking/tracking.test.mjs
       - .template-source/tooling/node/test/approval-current.test.mjs
       - .template-source/tooling/node/test/decision-continuation.test.mjs
