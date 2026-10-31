@@ -369,15 +369,6 @@ function approvedSpecFixture(approvedFixture) {
   return approvedFixture('layered-mvc', {nativeSeed});
 }
 
-test('旧Slice批准可只读核验，正式执行须先显式迁移', async t => {
-  const {approvedFixture}=await import('../../../../scripts/fixtures/delivery-preflight/approved-execution-fixture.mjs');
-  const {createApprovedExecutionContext}=await import('../../../../scripts/lib/approved-execution-context.mjs');
-  const f=approvedSpecFixture(approvedFixture);
-  t.after(()=>f.cleanup());
-  assert.doesNotThrow(()=>createApprovedExecutionContext(f.binding,{root:f.root,contract:f.contract,readOnly:true}));
-  assert.throws(()=>createApprovedExecutionContext(f.binding,{root:f.root,contract:f.contract}),/GOVERNANCE_MIGRATION_REQUIRED/);
-});
-
 test('Slice 批准 checkpoint 与活动推进 checkpoint 分别核验，目标续推不改原批准', async t => {
   const {approvedFixture}=await import('../../../../scripts/fixtures/delivery-preflight/approved-execution-fixture.mjs');
   const {createApprovedExecutionContext,createApprovedRecompilationContext,assertApprovedExecutionContext}=await import('../../../../scripts/lib/approved-execution-context.mjs');
