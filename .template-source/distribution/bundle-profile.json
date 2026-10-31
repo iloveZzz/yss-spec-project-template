@@ -243,6 +243,7 @@
   "installations": {
     "project": {
       "skills": [
+        "setup-yss-harness",
         "yss-product-lifecycle",
         "to-spec",
         "grilling",
@@ -394,6 +395,7 @@
     },
     "skills": {
       "skills": [
+        "setup-yss-harness",
         "yss-product-lifecycle",
         "grilling",
         "yss-research",
