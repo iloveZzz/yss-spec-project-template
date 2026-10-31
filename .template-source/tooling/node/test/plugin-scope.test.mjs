@@ -9,7 +9,6 @@ import { validateNextRoute, validateImplementationEntry } from '../../../../scri
 import { enforceHarnessTaskScope, enforceHarnessSkillScope } from '../../../../scripts/lib/harness-execution-scope.mjs';
 import { completeBackendDelivery } from '../../../../scripts/lib/backend-delivery-terminal.mjs';
 import { createApprovedExecutionContext, assertApprovedExecutionContext } from '../../../../scripts/lib/approved-execution-context.mjs';
-import { approvedFixture } from '../../../../scripts/fixtures/delivery-preflight/approved-execution-fixture.mjs';
 import { installedFixture } from '../../../../scripts/fixtures/role-independent-draft/installed-fixture.mjs';
 
 const ROOT=path.resolve(import.meta.dirname,'../../../..');
@@ -78,12 +77,6 @@ test('unscoped projects retain their existing route and cannot select the scoped
   const {root}=fixture(t);fs.rmSync(path.join(root,'.yss-execution-scope.yaml'));
   assert.deepEqual(scopedNextRoutes('work-unit.code-review',['work-unit.release-and-retrospective'],{root}),['work-unit.release-and-retrospective']);
   assert.equal(validateNextRoute('work-unit.backend-delivery',null,{}, {root}).result,'blocked');
-});
-test('approved read-only inspection context cannot be used as implementation authority',t=>{
-  const f=approvedFixture();t.after(()=>fs.rmSync(f.root,{recursive:true,force:true}));
-  const context=createApprovedExecutionContext(f.binding,{root:f.root,readOnly:true});
-  assert.throws(()=>assertApprovedExecutionContext(context,{root:f.root}),/EXECUTION_CONTEXT_READ_ONLY/);
-  assert.doesNotThrow(()=>assertApprovedExecutionContext(context,{root:f.root,readOnly:true}));
 });
 
 test('Backend plugin 只承接 Backend 身份，不生成或借用 Spec 职责范围', t => {

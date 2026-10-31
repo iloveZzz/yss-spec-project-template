@@ -1,4 +1,3 @@
-import {installLegacySpecPolicy} from '../../lib/testing/legacy-spec-policy.mjs';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -6,7 +5,7 @@ import assert from 'node:assert/strict';
 import {spawnSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 export const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
-export function installedFixture(profile='spec',{existingRoot,legacySpec=false}={}) {
+export function installedFixture(profile='spec',{existingRoot}={}) {
  const binary=process.env.YSS_NATIVE_BINARY;
  assert.ok(binary&&path.isAbsolute(binary),'current native candidate required');
  const scratch=existingRoot?path.dirname(existingRoot):fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'role-free-chain-'))),root=existingRoot||path.join(scratch,profile),calls=[];
@@ -33,7 +32,6 @@ export function installedFixture(profile='spec',{existingRoot,legacySpec=false}=
  assert.equal(metadata.templateCommit,snapshot.templateCommit);
  assert.equal(metadata.bundleHash,snapshot.bundleHash);
  if(snapshot.schemaVersion===5)assert.equal(metadata.distribution.installation,'governed');
- if(legacySpec&&profile==='spec'&&!existingRoot)installLegacySpecPolicy(root);
  assert.equal(fs.existsSync(path.join(root,'.template-spec/agents/digital-human-roles.yaml')),false);
  if(!existingRoot){git('init','-q');git('-c','user.name=test','-c','user.email=test@example.invalid','commit','--allow-empty','-qm','base');}
  const commit=git('rev-parse','HEAD');

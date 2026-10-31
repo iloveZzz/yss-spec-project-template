@@ -115,7 +115,6 @@ test('用户决定政策指向当前编排政策，而不是历史角色表', ()
     assert.match(text, /\.template-spec\/process\/orchestration\/domain\/review\.yaml#user_decision_policy/, ref);
     assert.doesNotMatch(text, /digital-human-roles\.yaml#user_decision_policy/, ref);
   }
-  assert.match(read('tests/helpers/scenario-checks.mjs'), /review\.yaml#user_decision_policy/);
 });
 
 test('移除会签措辞不削弱门禁批准记录和当前审批合同', () => {

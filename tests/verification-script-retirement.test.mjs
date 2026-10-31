@@ -188,3 +188,18 @@ test('第五批维护工具与库内测试保留历史命令，迁移失败必�
     fs.unlinkSync(file);assert.throws(()=>assertRequiredFiles({required_files:[old]},root),/RETIRED_SCRIPT_TARGET_MISSING/);
   }
 });
+
+test('冻结原生旧夹具和安装回退已移除，删除路径选择当前批准验证', async () => {
+  const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+  const retired=['tests/helpers/yss-instance.mjs','tests/helpers/fixtures/native-legacy.json.gz','tests/helpers/fixtures/native-legacy.provenance.json','scripts/lib/testing/legacy-spec-policy.mjs'];
+  for(const ref of retired)assert.equal(fs.existsSync(path.join(root,ref)),false,ref);
+  assert.doesNotMatch(fs.readFileSync(path.join(root,'scripts/fixtures/role-independent-draft/installed-fixture.mjs'),'utf8'),/installLegacySpecPolicy|legacySpec/);
+  const {planTemplateVerification}=await import('../scripts/lib/template-verification.mjs');
+  for(const ref of retired){
+    const plan=planTemplateVerification({profile:'release',changedFiles:[ref]});
+    const current=plan.commands.find(check=>check.id==='check.backend-governance-contract');
+    assert.ok(current?.command.includes('scripts/fixtures/role-independent-draft/approval.test.mjs'),ref);
+    assert.ok(plan.commands.some(check=>check.id==='check.role-independent-formal-current'),ref);
+    for(const check of plan.commands)assert.ok(!retired.some(file=>check.command.includes(file)),check.command);
+  }
+});

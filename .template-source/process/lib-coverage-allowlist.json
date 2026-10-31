@@ -8,6 +8,11 @@
       "reason": "当前未发现 tests 直接引用，纳入待补测台账"
     },
     {
+      "path": "scripts/lib/artifact-analysis.mjs",
+      "category": "to-backfill",
+      "reason": "旧归档夹具及专属场景按本轮授权退役；tests 目录无直接行为测试，未沿用旧覆盖声明"
+    },
+    {
       "path": "scripts/lib/asset-command.mjs",
       "category": "to-backfill",
       "reason": "当前未发现 tests 直接引用，纳入待补测台账"
@@ -28,6 +33,11 @@
       "reason": "由 scripts/fixtures/existing-backend 等测试直接引用，tests 目录内没有直接行为测试"
     },
     {
+      "path": "scripts/lib/backend-delivery-terminal.mjs",
+      "category": "fixture-only",
+      "reason": "由 .template-source/tooling/node/test/plugin-scope.test.mjs 直接引用；旧归档测试已退役，tests 目录无直接行为测试"
+    },
+    {
       "path": "scripts/lib/backend-platform-provenance.mjs",
       "category": "to-backfill",
       "reason": "当前未发现 tests 直接引用，纳入待补测台账"
@@ -36,6 +46,11 @@
       "path": "scripts/lib/backend-platform-verification.mjs",
       "category": "to-backfill",
       "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/backend-review.mjs",
+      "category": "fixture-only",
+      "reason": "由 scripts/fixtures/backend-standards/coverage.test.mjs 直接引用；旧归档测试已退役，tests 目录无直接行为测试"
     },
     {
       "path": "scripts/lib/backend-scaffold-prerequisites.mjs",
@@ -58,6 +73,16 @@
       "reason": "当前未发现 tests 直接引用，纳入待补测台账"
     },
     {
+      "path": "scripts/lib/contract-views.mjs",
+      "category": "fixture-only",
+      "reason": "由 scripts/fixtures/role-independent-draft/worker-chain.test.mjs 直接验证；tests 目录无直接行为测试"
+    },
+    {
+      "path": "scripts/lib/delivery-preflight.mjs",
+      "category": "to-backfill",
+      "reason": "旧归档夹具及专属场景按本轮授权退役；tests 目录无直接行为测试，未沿用旧覆盖声明"
+    },
+    {
       "path": "scripts/lib/execution-evidence.mjs",
       "category": "to-backfill",
       "reason": "当前未发现 tests 直接引用，纳入待补测台账"
@@ -66,6 +91,11 @@
       "path": "scripts/lib/existing-backend-architecture.mjs",
       "category": "fixture-only",
       "reason": "由 scripts/fixtures/role-independent-draft/worker-chain.test.mjs 直接引用，tests 目录内没有直接行为测试"
+    },
+    {
+      "path": "scripts/lib/existing-ui-baseline.mjs",
+      "category": "to-backfill",
+      "reason": "旧归档夹具及专属场景按本轮授权退役；tests 目录无直接行为测试，未沿用旧覆盖声明"
     },
     {
       "path": "scripts/lib/first-slice-artifacts.mjs",
@@ -78,6 +108,11 @@
       "reason": "当前未发现 tests 直接引用，纳入待补测台账"
     },
     {
+      "path": "scripts/lib/implementation-contract-compiler.mjs",
+      "category": "fixture-only",
+      "reason": "由 .agents/skills/yss-implementation-contract-compiler/tests/backend-profiles.test.mjs 直接引用；旧归档测试已退役，tests 目录无直接行为测试"
+    },
+    {
       "path": "scripts/lib/lifecycle-context-query-core.mjs",
       "category": "to-backfill",
       "reason": "当前未发现 tests 直接引用，纳入待补测台账"
@@ -86,6 +121,11 @@
       "path": "scripts/lib/lifecycle-controls.mjs",
       "category": "to-backfill",
       "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/lifecycle-execution-scope.mjs",
+      "category": "fixture-only",
+      "reason": "由 .template-source/tooling/node/test/lifecycle-progression.test.mjs 直接引用；旧归档测试已退役，tests 目录无直接行为测试"
     },
     {
       "path": "scripts/lib/lifecycle-progression.mjs",
@@ -121,6 +161,11 @@
       "path": "scripts/lib/plan-stage-coverage.mjs",
       "category": "to-backfill",
       "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/project-governance.mjs",
+      "category": "to-backfill",
+      "reason": "旧 Spec Task3 与复制政策夹具已退役；tests 目录无直接行为测试，未沿用旧覆盖声明"
     },
     {
       "path": "scripts/lib/reading-view-adapters.mjs",
@@ -163,9 +208,19 @@
       "reason": "当前未发现 tests 直接引用，纳入待补测台账"
     },
     {
+      "path": "scripts/lib/slice-contract-preparation.mjs",
+      "category": "fixture-only",
+      "reason": "由 scripts/fixtures/role-independent-draft/worker-chain.test.mjs 直接引用；旧归档测试已退役，tests 目录无直接行为测试"
+    },
+    {
       "path": "scripts/lib/slice-contract-views.mjs",
       "category": "to-backfill",
       "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/slice-contract.mjs",
+      "category": "fixture-only",
+      "reason": "由 scripts/fixtures/role-independent-draft/worker-chain.test.mjs 直接引用；旧归档测试已退役，tests 目录无直接行为测试"
     },
     {
       "path": "scripts/lib/slice-execution-preflight.mjs",
@@ -188,12 +243,12 @@
       "reason": "tests 内只有选择器路径引用，尚未发现直接行为测试"
     },
     {
-      "path": "scripts/lib/stage-tracking.mjs",
+      "path": "scripts/lib/stage-tracking-migration.mjs",
       "category": "to-backfill",
       "reason": "当前未发现 tests 直接引用，纳入待补测台账"
     },
     {
-      "path": "scripts/lib/stage-tracking-migration.mjs",
+      "path": "scripts/lib/stage-tracking.mjs",
       "category": "to-backfill",
       "reason": "当前未发现 tests 直接引用，纳入待补测台账"
     },
@@ -203,14 +258,29 @@
       "reason": "tests 内只有选择器路径引用，尚未发现直接行为测试"
     },
     {
+      "path": "scripts/lib/strategic-feedback.mjs",
+      "category": "to-backfill",
+      "reason": "旧归档夹具及专属场景按本轮授权退役；tests 目录无直接行为测试，未沿用旧覆盖声明"
+    },
+    {
       "path": "scripts/lib/strategic-handoff-design-targets.mjs",
       "category": "to-backfill",
       "reason": "当前未发现 tests 直接引用，纳入待补测台账"
     },
     {
+      "path": "scripts/lib/strategic-handoff-rules.mjs",
+      "category": "to-backfill",
+      "reason": "旧归档夹具及专属场景按本轮授权退役；tests 目录无直接行为测试，未沿用旧覆盖声明"
+    },
+    {
       "path": "scripts/lib/task-package-schema.mjs",
       "category": "to-backfill",
       "reason": "当前未发现 tests 直接引用，纳入待补测台账"
+    },
+    {
+      "path": "scripts/lib/ui-baseline.mjs",
+      "category": "to-backfill",
+      "reason": "旧归档夹具及专属场景按本轮授权退役；tests 目录无直接行为测试，未沿用旧覆盖声明"
     }
   ]
 }

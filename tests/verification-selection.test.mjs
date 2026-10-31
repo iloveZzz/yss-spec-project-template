@@ -80,8 +80,6 @@ test('可信发行来源登记的变更选择报告与发行消费者核验',()=
 });
 test('相同的现役场景只执行一次并合并其发布 Gate',()=>{
  for(const [scenario,gates] of [
-  ['verify-plan-spec-entry-scenarios.mjs',['check.verification-plan-spec']],
-  ['verify-scaffold-architecture-decision-scenarios.mjs',['check.verification-lifecycle','check.verification-implementation']],
   ['verify-repository-scope-scenarios.mjs',['check.verification-implementation','check.verification-cli-core','check.verification-spec-cli']],
  ]){
   const file=`tests/scenarios/${scenario}`;
@@ -129,15 +127,14 @@ test('前端入口退役后分组模式不运行已删除场景，当前拒绝�
  }
  assert.ok(planTemplateVerification({changedFiles:[file]}).commands.some(task=>task.id==='check.frontend-removed'));
 });
-test('用户决定场景的变更只执行一次并保留发布审批风险',()=>{
- for(const file of ['scripts/verify-user-decision-scenarios','tests/scenarios/verify-user-decision-scenarios.mjs']){
-  for(const profile of ['fast','release']){
-   const plan=planTemplateVerification({profile,changedFiles:[file]});
-   const checks=plan.commands.filter(task=>task.command==='scripts/verify-user-decision-scenarios'||task.command==='node tests/scenarios/verify-user-decision-scenarios.mjs');
-   assert.equal(checks.length,1,`${profile}: ${file}`);
-   assert.equal(checks[0].command,'node tests/scenarios/verify-user-decision-scenarios.mjs');
-   if(profile==='release')assert.ok(checks[0].gate_ids.includes('check.verification-approval'));
-  }
+test('退役用户决定夹具的变更选择当前批准合同检查',()=>{
+ for(const file of ['scripts/verify-user-decision-scenarios','tests/scenarios/verify-user-decision-scenarios.mjs'])for(const profile of ['fast','release']){
+  const plan=planTemplateVerification({profile,changedFiles:[file]});
+  const checks=plan.commands.filter(task=>task.id==='check.backend-governance-contract');
+  assert.equal(checks.length,1,`${profile}: ${file}`);
+  assert.ok(checks[0].command.includes('scripts/fixtures/role-independent-draft/approval.test.mjs'));
+  assert.ok(!plan.commands.some(task=>task.id==='check.user-decision-scenarios'));
+  if(profile==='release')assert.ok(checks[0].gate_ids.includes('check.verification-approval'));
  }
 });
 test('生命周期现役场景直接运行真实路径，文件变化命中检查和原有 Gate',()=>{
@@ -157,24 +154,19 @@ test('生命周期现役场景直接运行真实路径，文件变化命中检�
   }
  }
 });
-test('生命周期组使用真实场景路径，Plan→Spec 慢检查仍延后且 release 保留责任',()=>{
+test('生命周期组保留现役场景，退役 Plan→Spec 夹具由当前安装验证覆盖',()=>{
  const group=loadVerificationProfiles().groups.lifecycle.commands;
  for(const [id,name] of [
-  ['check.user-decision-scenarios','user-decision'],['check.b5ec80cdc570194f','context-contract'],
+  ['check.b5ec80cdc570194f','context-contract'],
   ['check.c959490d7a86d5c9','business-language'],['check.fbcca7d04b9634fc','context-reconciliation'],
   ['check.7752ee8d6f74f638','script-performance'],['check.14755c909a41ebee','plan-requirements-context'],
   ['check.cca7321527c13629','lifecycle-context-query'],['check.aafa7bdc8a88bf84','lifecycle-operator'],
-  ['check.scaffold-decisions-scenarios','scaffold-architecture-decision'],['check.0c8201229a241875','lifecycle'],
-  ['check.84142f2eab38b8a4','lifecycle-transition'],['check.plan-spec-entry-scenarios','plan-spec-entry'],
+  ['check.0c8201229a241875','lifecycle'],
  ])assert.equal(group.find(task=>task.id===id)?.run,`node tests/scenarios/verify-${name}-scenarios.mjs`,id);
- const file='tests/scenarios/verify-plan-spec-entry-scenarios.mjs',id='check.plan-spec-entry-scenarios';
- const fast=planTemplateVerification({changedFiles:[file]});
- assert.ok(!fast.commands.some(task=>task.id===id));
- assert.ok(fast.selection.omitted.some(task=>task.id===id&&task.reason==='deferred-slow-check'));
- const release=planTemplateVerification({profile:'release',changedFiles:[file]});
- const task=release.commands.find(task=>task.id===id);
- assert.equal(task.command,`node ${file}`);
- assert.ok(task.gate_ids.includes('check.verification-plan-spec'));
+ const file='tests/scenarios/verify-plan-spec-entry-scenarios.mjs';
+ const plan=planTemplateVerification({profile:'release',changedFiles:[file]});
+ assert.ok(!plan.commands.some(task=>task.id==='check.plan-spec-entry-scenarios'));
+ assert.ok(plan.commands.some(task=>task.id==='check.spec-stage-installed'));
 });
 test('修复的 Context 调和、Plan 需求与生命周期场景按真实路径选择',()=>{
  for(const [name,id,gate,slow] of [
@@ -247,10 +239,10 @@ test('授权延续变化选择真实 Backend 安装实例验证',()=>{
   assert.ok(checks[0].gate_ids.includes('check.verification-approval'),file);
  }
 });
-test('PR 离线计划延后真实依赖原生 CLI 的用户决定与脚手架检查',()=>{
- const files=['tests/scenarios/verify-user-decision-scenarios.mjs','scripts/fixtures/contract-efficiency/api-v2.test.mjs','tests/project-ci.test.mjs','scripts/fixtures/backend-scaffold/platform-scenarios.test.mjs','.agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs','scripts/fixtures/lifecycle-core/views.test.mjs','tests/contract-review-preparation.test.mjs'];
+test('PR 离线计划延后现役原生批准与脚手架检查',()=>{
+ const files=['scripts/fixtures/role-independent-draft/approval.test.mjs','tests/project-ci.test.mjs','scripts/fixtures/backend-scaffold/platform-scenarios.test.mjs','tests/contract-review-preparation.test.mjs'];
  const plan=planTemplateVerification({changedFiles:files,ciOffline:true});
- for(const id of ['check.user-decision-scenarios','check.work-layout-api','check.work-layout-project-ci','check.backend-platform-mechanisms','check.backend-scaffold-direct-generation','check.mvc-data-analysis-retirement','check.lifecycle-core-views','check.contract-review-preparation']){
+ for(const id of ['check.backend-governance-contract','check.work-layout-project-ci','check.backend-platform-mechanisms','check.contract-review-preparation']){
   assert.ok(plan.selection.omitted.some(row=>row.id===id&&row.reason==='deferred-ci-offline'),id);
   assert.ok(!plan.commands.some(row=>row.id===id),id);
  }
@@ -280,16 +272,14 @@ test('Backend 查询快照只由实际执行的消费者测试覆盖',()=>{
   assert.ok(checks[0].gate_ids.includes('check.verification-distribution'));
  }
 });
-test('API 决定与工作布局各执行一次，两个 Gate 保留职责',()=>{
+test('API 决定仅执行现役测试并保留治理与实现职责',()=>{
  for(const file of ['scripts/lib/api-contract-decision.mjs','scripts/fixtures/contract-efficiency/api-v2.test.mjs']){
   const plan=planTemplateVerification({profile:'release',changedFiles:[file]});
-  const api=plan.commands.find(row=>row.id==='check.1ebcb1124ce67eb1');
-  const layout=plan.commands.find(row=>row.id==='check.work-layout-api');
-  assert.ok(api&&layout,file);
-  assert.ok(!api.command.includes('api-v2.test.mjs'));
-  assert.ok(layout.command.includes('api-v2.test.mjs'));
-  assert.ok(layout.gate_ids.includes('check.verification-implementation'));
-  assert.ok(layout.gate_ids.includes('check.verification-governance-syntax'));
+  const checks=plan.commands.filter(row=>row.id==='check.1ebcb1124ce67eb1');
+  assert.equal(checks.length,1,file);
+  assert.ok(checks[0].command.includes('tests/api-contract-decision.test.mjs'));
+  for(const gate of ['check.verification-implementation','check.verification-governance-syntax'])assert.ok(checks[0].gate_ids.includes(gate));
+  assert.ok(!plan.commands.some(row=>row.id==='check.work-layout-api'));
  }
 });
 test('选择测试忽略外部慢档环境但保留显式 slow',()=>{
@@ -347,7 +337,7 @@ test('CLI 安装测试新名称在两个入口精确归组且不会重复执行'
  }
 });
 test('退役旧 Spec 集成后仍按受影响输入选择当前执行前置与生命周期测试',()=>{
- for(const [file,id] of [['scripts/lib/slice-execution-preflight.mjs','check.role-independent-draft'],['scripts/lib/lifecycle-readiness.mjs','check.work-layout-lifecycle-transition']]){
+ for(const [file,id] of [['scripts/lib/slice-execution-preflight.mjs','check.role-independent-draft'],['scripts/lib/lifecycle-readiness.mjs','check.backend-governance-contract']]){
   assert.ok(planTemplateVerification({changedFiles:[file]}).commands.some(row=>row.id===id),file);
  }
 });
@@ -458,20 +448,11 @@ test('候选专用检查缺少候选时显式失败且日常选择只验证其�
  assert.notEqual(child.status,0);
  assert.match(`${child.stdout}${child.stderr}`,/candidate acceptance requires YSS_NATIVE_BINARY/);
 });
-test('后端终点场景拆分后 slow 和 release 保留两组完整检查及原单项预算',()=>{
- const files=['tests/backend-delivery-terminal.test.mjs','tests/backend-delivery-business-terminal.test.mjs'];
- const ids=['check.backend-delivery-terminal','check.backend-delivery-business-terminal'];
- for(const changed of [...files,'scripts/fixtures/backend-delivery/local-terminal-fixture.mjs','scripts/lib/backend-delivery-terminal.mjs','scripts/lib/backend-delivery.mjs']) {
-  for(const options of [{includeSlow:true},{includeSlow:'only'},{profile:'release'}]) {
-   const plan=planTemplateVerification({changedFiles:[changed],...options});
-   const tasks=plan.commands.filter(row=>ids.includes(row.id));
-   assert.deepEqual(tasks.map(row=>row.id).sort(),[...ids].sort(),`${changed}: ${JSON.stringify(options)}`);
-   for(const [index,id] of ids.entries()) {
-    const task=tasks.find(row=>row.id===id);
-    assert.ok(task.command.includes(files[index]),task.command);
-    assert.equal(task.timeout_ms,options.profile==='release'?1800000:300000);
-   }
-  }
+test('旧终点夹具退出后选择当前 Backend 合同及真实批准链',()=>{
+ for(const file of ['tests/backend-delivery-terminal.test.mjs','tests/backend-delivery-business-terminal.test.mjs','scripts/fixtures/backend-delivery/local-terminal-fixture.mjs']){
+  const plan=planTemplateVerification({profile:'release',changedFiles:[file]});
+  for(const id of ['check.backend-governance-contract','check.role-independent-formal-current'])assert.equal(plan.commands.filter(row=>row.id===id).length,1,`${file}: ${id}`);
+  assert.ok(!plan.commands.some(row=>['check.backend-delivery-terminal','check.backend-delivery-business-terminal'].includes(row.id)));
  }
 });
 test('删除的 Design 插件测试选择现役插件边界检查',()=>{
@@ -558,14 +539,14 @@ test('产物消费者实际执行来源收集且不依赖旧名称',t=>{
  assert.throws(()=>planTemplateVerification({changedFiles:['tests/new-unregistered-audit.test.mjs']}),/UNKNOWN_VERIFICATION_PATH/);
 });
 test('CI共享仓根交接运输的检查使用同一互斥资源',()=>{
- const plan=planTemplateVerification({includeSlow:true,changedFiles:['scripts/fixtures/role-independent-draft/handoff-chain.test.mjs','tests/scenarios/verify-strategic-handoff-package-scenarios.mjs','scripts/fixtures/business-tickets/handoff.test.mjs','tests/scenarios/verify-existing-ui-baseline-scenarios.mjs']});
- for(const id of ['check.role-independent-formal-current','check.strategic-handoff-package-scenarios','check.work-layout-tickets','check.existing-ui-baseline-scenarios'])assert.ok(plan.commands.find(check=>check.id===id)?.resources.includes('repo-root-evidence'),id);
+ const plan=planTemplateVerification({includeSlow:true,changedFiles:['scripts/fixtures/role-independent-draft/handoff-chain.test.mjs','tests/scenarios/verify-strategic-handoff-package-scenarios.mjs','scripts/fixtures/business-tickets/handoff.test.mjs']});
+ for(const id of ['check.role-independent-formal-current','check.strategic-handoff-package-scenarios','check.work-layout-tickets'])assert.ok(plan.commands.find(check=>check.id===id)?.resources.includes('repo-root-evidence'),id);
 });
 test('Plan审查测试唯一归属保留触发与门禁，耗时组在fast明确延后',()=>{
  const files=['scripts/lib/plan-review-control.mjs','scripts/lib/review-package.mjs','scripts/lib/work-layout.mjs','scripts/fixtures/plan-review-control/build-fixture.mjs'];
  for(const file of files){
   const plan=planTemplateVerification({includeSlow:true,changedFiles:[file]});
-  for(const name of ['plan-review-control','review-capabilities']){
+  for(const name of ['plan-review-control']){
    const owners=plan.commands.filter(row=>row.command.includes(`/${name}.test.mjs`));
    assert.equal(owners.length,1,`${file}: ${name}`);
    assert.ok(loadVerificationProfiles().gates.find(row=>row.id==='check.verification-approval').check_ids.includes(owners[0].id));
@@ -574,10 +555,8 @@ test('Plan审查测试唯一归属保留触发与门禁，耗时组在fast明确
  for(const [id,file] of [
   ['check.role-independent-formal-current','scripts/fixtures/role-independent-draft/handoff-chain.test.mjs'],
   ['check.plan-review-control-unit','.template-source/tooling/node/test/plan-review-control.test.mjs'],
-  ['check.plugin-scope-terminal','.template-source/tooling/node/test/plugin-terminal.test.mjs'],
-  ['check.plan-spec-entry-scenarios','tests/scenarios/verify-plan-spec-entry-scenarios.mjs'],
+  ['check.plugin-scope-terminal','.template-source/tooling/node/test/plugin-scope.test.mjs'],
   ['check.backend-scaffold-direct-generation','scripts/lib/standalone-backend-scaffold.mjs'],
-  ['check.backend-delivery-terminal','scripts/lib/backend-delivery.mjs'],
   ['check.scaffold-contract-consumers','scripts/lib/implementation-contract-compiler.mjs']
  ]){
   const fast=planTemplateVerification({changedFiles:[file]});
@@ -599,7 +578,7 @@ test('日常新设计与计划只登记文档消费者',()=>{
  }
 });
 test('路由与推进意图测试按自身输入选择，发布路由检查必选且不重复',()=>{
- for(const [file,id]of [['tests/native-consumer-routing.test.mjs','check.native-consumer-routing'],['tests/progression-target-evidence.test.mjs','check.progression-target-evidence']]){
+ for(const [file,id]of [['tests/native-consumer-routing.test.mjs','check.native-consumer-routing'],['.template-source/tooling/node/test/lifecycle-progression.test.mjs','check.profile-consumers-lifecycle-progression']]){
   const plan=planTemplateVerification({changedFiles:[file]});assert.equal(plan.commands.filter(row=>row.id===id).length,1);
  }
  const release=planTemplateVerification({profile:'release',changedFiles:[]});
@@ -726,7 +705,7 @@ test('CI 空变化仍必跑守卫且每个 ID 只出现一次，拒绝失效绑�
 
 test('工作布局扫描准备独立 CLI 例外所需的固定来源', async () => {
  const {verificationToolRequirements}=await import('../.template-source/scripts/lib/verification-preflight.mjs');
- const plan=planTemplateVerification({changedFiles:['scripts/fixtures/backend-scaffold/design-prerequisites.mjs'],ciGuards:true});
+ const plan=planTemplateVerification({changedFiles:['.template-source/cli-core/work-layout.mjs'],ciGuards:true});
  assert.ok(plan.commands.find(item=>item.id==='check.work-layout-hardcodes').resources?.includes('native-cli'));
  assert.equal(verificationToolRequirements(plan,{reportValidation:true}).native_cli,true);
 });
@@ -755,7 +734,7 @@ test('重复登记合并保持输入与 Gate 并集',async()=>{
  const {readHistoricalProfiles}=await import('../.template-source/scripts/lib/legacy-verification.mjs');
  const current=loadVerificationProfiles(),historical=readHistoricalProfiles(ROOT,'6f8f19d5a4ee7e62cbb73c9cc9ed0142ff4730c0');
  const definition=(config,id)=>{const raw=config.profiles.fast.checks.find(x=>x.id===id),base=Object.entries(config.groups).flatMap(([group,g])=>g.commands.map(value=>({...(typeof value==='string'?{run:value}:value),group}))).find(x=>x.id===id);return {...base,...raw};};
- for(const [keep,old] of [['check.openapi-validation-scenarios','check.work-layout-openapi-draft-validation'],['check.structured-assets','check.work-layout-assets']]){
+ for(const [keep,old] of [['check.structured-assets','check.work-layout-assets']]){
   assert.equal(current.profiles.fast.checks.some(x=>x.id===old),false);
   const retained=definition(current,keep),before=[definition(historical,keep),definition(historical,old)];
   assert.ok(historical.profiles.fast.checks.some(x=>x.id===old),'旧策略仍保留旧身份');
