@@ -453,39 +453,6 @@ profiles:
         depends_on: []
         failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各
           Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
-      - id: check.profile-consumers-stage-tracking-tracking
-        resources: [ native-cli ]
-        lane: pc-stage-tracking-tracking
-        run: "node --test --test-skip-pattern='^backend plugin receives'
-          scripts/fixtures/stage-tracking/tracking.test.mjs"
-        group: feature-assets
-        inputs_complete: true
-        input_patterns:
-          - "scripts/fixtures/stage-tracking/tracking.test.mjs"
-          - "scripts/fixtures/role-independent-draft/installed-fixture.mjs"
-          - "scripts/lib/stage-tracking.mjs"
-          - "scripts/lib/stage-tracking-migration.mjs"
-          - "scripts/stage-tracking"
-          - "scripts/vendor/yaml.mjs"
-          - ".template-source/distribution/yss-cli-pin.json"
-          - ".template-source/distribution/bundle-profile.json"
-          - ".template-spec/process/checkpoint-boundary.yaml"
-          - ".template-spec/process/schemas/stage-tracking.schema.json"
-          - ".template-spec/process/schemas/lifecycle-checkpoint.schema.json"
-          - ".template-spec/process/templates/lifecycle-checkpoint-template.yaml"
-          - ".template-spec/process/lifecycle-registry.yaml"
-          - "scripts/fixtures/user-decision/plan-fixture.mjs"
-          - ".template-source/tooling/node/test/approval-consumption.test.mjs"
-          - "tests/helpers/yss-instance.mjs"
-          - "tests/helpers/fixtures/native-legacy.json.gz"
-          - "tests/helpers/fixtures/native-legacy.provenance.json"
-          - "scripts/fixtures/spec-baseline/fixture.mjs"
-          - ".template-source/tooling/node/test/design-preview-browser.mjs"
-          - "scripts/lib/profile-tree.mjs"
-          - "profiles/**"
-        depends_on: []
-        failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各
-          Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
       - id: check.profile-consumers-approval-consumption
         resources: [ native-cli ]
         lane: pc-approval-consumption
@@ -2471,6 +2438,15 @@ profiles:
           - ".template-spec/process/schemas/lifecycle-checkpoint.schema.json"
           - ".template-spec/process/templates/lifecycle-checkpoint-template.yaml"
           - ".template-spec/process/lifecycle-registry.yaml"
+          - "scripts/fixtures/user-decision/plan-fixture.mjs"
+          - ".template-source/tooling/node/test/approval-consumption.test.mjs"
+          - "tests/helpers/yss-instance.mjs"
+          - "tests/helpers/fixtures/native-legacy.json.gz"
+          - "tests/helpers/fixtures/native-legacy.provenance.json"
+          - "scripts/fixtures/spec-baseline/fixture.mjs"
+          - ".template-source/tooling/node/test/design-preview-browser.mjs"
+          - "scripts/lib/profile-tree.mjs"
+          - "profiles/**"
         depends_on: []
         failure_mode: "阶段任务定义和 checkpoint 的根不一致"
       - id: check.work-layout-tickets
@@ -4316,7 +4292,6 @@ gates:
     impact_dependencies: []
     depends_on: []
     check_ids:
-      - check.profile-consumers-stage-tracking-tracking
       - check.work-layout-stage-tracking
       - check.lifecycle-status-feedback
       - check.backend-governance-contract
@@ -4600,7 +4575,7 @@ gates:
       - check.profile-consumers-slice-contract-v3-round2-rest
       - check.profile-consumers-slice-contract-v3-scenarios
       - check.role-independent-draft
-      - check.profile-consumers-stage-tracking-tracking
+      - check.work-layout-stage-tracking
       - check.profile-consumers-approval-consumption
       - check.profile-consumers-approval-current
       - check.profile-consumers-decision-continuation

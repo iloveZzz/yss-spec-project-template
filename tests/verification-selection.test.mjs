@@ -298,7 +298,7 @@ test('Backend 阶段跟踪和状态反馈的真实依赖触发当前验证',()=>
  const tracking=['scripts/lib/stage-tracking-migration.mjs','scripts/lib/stage-tracking.mjs','scripts/fixtures/role-independent-draft/installed-fixture.mjs','.template-source/distribution/yss-cli-pin.json','.template-source/distribution/bundle-profile.json','.template-spec/process/schemas/stage-tracking.schema.json'];
  for(const file of tracking){
   const plan=planTemplateVerification({changedFiles:[file]});
-  for(const id of ['check.profile-consumers-stage-tracking-tracking','check.work-layout-stage-tracking']){
+  for(const id of ['check.work-layout-stage-tracking']){
    const check=plan.commands.find(row=>row.id===id);
    assert.ok(check,file+': '+id);
    assert.ok(check.resources.includes('native-cli'),id);
@@ -310,13 +310,13 @@ test('Backend 阶段跟踪和状态反馈的真实依赖触发当前验证',()=>
  }
  const plan=planTemplateVerification({profile:'release',changedFiles:[...tracking,'scripts/lib/profile-tree.mjs']});
  for(const [id,gates] of [
-  ['check.profile-consumers-stage-tracking-tracking',['check.verification-distribution','check.verification-lifecycle']],
-  ['check.work-layout-stage-tracking',['check.verification-governance-syntax','check.verification-lifecycle']],
+  ['check.work-layout-stage-tracking',['check.verification-governance-syntax','check.verification-lifecycle','check.verification-distribution']],
   ['check.lifecycle-status-feedback',['check.verification-lifecycle']]
  ]){
   const check=plan.commands.find(row=>row.id===id);assert.ok(check,id);
   for(const gate of gates)assert.ok(check.gate_ids.includes(gate),`${id}: ${gate}`);
  }
+ assert.equal(plan.commands.filter(row=>row.command.includes('scripts/fixtures/stage-tracking/tracking.test.mjs')).length,1);
 });
 test('初始化入口、Backend 策略和跨端引用变更运行同一个完整分发检查',()=>{
  const impacted=[
