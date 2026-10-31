@@ -29,5 +29,3 @@
 2. 区分只读回退与脏写回退。
 3. 查看恢复时 Redis 清理失败日志；失败时框架应保持降级并重试。
 4. 多节点差异优先按 fallback 一致性窗口分析，不要误判为 Redis 广播失效。
-
-可先运行 `scripts/inspect-cache-usage.sh <project-root>` 取得静态证据，再进入源码路径。

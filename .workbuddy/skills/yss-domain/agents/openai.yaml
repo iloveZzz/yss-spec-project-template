@@ -1,5 +1,5 @@
 version: 1
 interface:
-  display_name: "YSS Domain"
-  short_description: "按批准战术模型实现聚合、规则与 Domain Gateway 接口"
-  default_prompt: "Use $yss-domain to implement approved aggregates, entities, business rules, domain tests, and the sole Domain Gateway interfaces; reroute instead of inventing unresolved rules."
+  display_name: YSS Domain
+  short_description: 在已确认的 DDD 边界内实现或重构领域行为、不变量、状态机与 Gateway；不起草领域设计。
+  default_prompt: 使用 $yss-domain 按当前用户目标和已有工程资料完成任务，保留用户文件并如实说明实际结果。

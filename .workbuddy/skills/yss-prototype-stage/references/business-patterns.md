@@ -8,10 +8,6 @@
 
 `assets/vue-business-patterns/` 中每个 `*.config.json` 是作者入口，包含 `schema_version: 1`、`title`、`entry`、`scenarios`。在独立作者目录准备固定依赖后执行：
 
-```bash
-node .agents/skills/yss-prototype-stage/scripts/export-business-patterns.mjs --project-root <项目根> --output <新的空目录> --toolchain <作者工具目录>
-```
-
 交付目录中打开 index.html，可逐页评审。定制时复制所选入口、实际导入的 页面 SFC、Frame.vue / mount.ts / patterns.css / refinement.css 与场景 JSON；替换为自己的交互说明和状态矩阵引用，用 build-shadcn-vue-prototype.mjs --config 构建。原型脚本不会自动迁移为生产代码。
 
 默认套用共享紧凑主题；查询筛选与动作同行、表单限制阅读宽度、审批采用紧凑行、窄屏列表展示摘要。布局选择不修改示例行为。已有页面仅在明确允许时采用这些布局，保持原密度可通过作者配置 `density: comfortable` 选择。
@@ -39,4 +35,3 @@ node .agents/skills/yss-prototype-stage/scripts/export-business-patterns.mjs --p
 查询详情重点检查查询层级，分步表单检查字段分组，审批场景检查阻断原因和恢复路径；上述可运行模式用于任务演练。
 
 新增组件状态展示从导出入口的 `component-states/index.html` 进入；字段/详情/菜单/分页等配方见 [组件导航](component-recipes.md)。五类模式保持既有确定性场景和业务规则，不因组件选择新增状态来源。
-

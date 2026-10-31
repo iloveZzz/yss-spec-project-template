@@ -2,12 +2,6 @@
 
 Profile、模块闭包、生成器、成熟度和 Recipe 的权威映射见 `yss-skill-registry.yaml`。本文件定义分层执行边界及对象命名与外部规范适配，不从目录名推断架构。
 
-执行前比较工程基线、仓库登记、Manifest 与当前合同的 `architecture_identity`。缺失、digest 漂移、Profile 不匹配或越界写路径均停止；既有工程不能自动重选架构。新 Profile 的真实编译及首切片验证未通过前保持 `draft`，不能设置 `ready-for-agent`。
-
-## 既有工程适配
-
-`existing_project_profiles` 与下述生成器 Profile 独立维护。首版两个 Maven 适配器通过真实 Git/POM 三方核验、对应架构的成功/失败行为测试与 Maven test/package 后标记 supported；当前适配行为由 `tests/scenarios/verify-existing-backend-architecture-scenarios.mjs` 和对应独立 fixture 核验。这是适配协议支持证据，不是实际产品批准、数据库兼容或真实跨仓 S0 结论。每个工程仍须自己的固定来源、架构边界审查和执行证据，详见 `.template-spec/process/existing-backend-architecture.md`。生成器原有 draft 和首切片要求保持。
-
 ## MVC 分层
 
 - `layered-mvc-service` 的用例层为 `service`；已退役 `mvc-data-analysis-v1` 的历史用例层为 `core`。后者是薄应用层，不是合并 Domain 的容器。MVC 不加载 `yss-domain`，不生成 DDD Gateway。
@@ -32,7 +26,6 @@ Profile、模块闭包、生成器、成熟度和 Recipe 的权威映射见 `yss
 - 阿里手册的 Service/Manager/DAO 分层按所选 Profile 映射，不新增 Manager 层或把 DAO 对象直接传到 Web。DDD 的领域行为与不变量归 Domain；MVC 的规则和事务归 service/core，不为 MVC 补造 Domain/Gateway。
 - COLA 仅作架构参考，不自动引入依赖、`com.alibaba.cola` 注解、组件或返回包装；不得照搬示例的 Domain `BizException`、client DTO 穿层、字段注入或静态 MapStruct `INSTANCE`。异常、wire 协议、转换和注入分别按 `yss-exception`、`yss-dto`、`mapstruct` 及当前 Profile 执行。
 - PO/DTO 的通用 POJO 建议不代替领域身份、值相等、创建/重建和不变量；不得据此为 Entity 添加任意 setter、机械 `@Data`，或禁止创建入口校验。DTO 默认值与公开字段以当前 wire 合同为准，不以手册一般条款删除组件协议。
-- 手册的数据库字段、主键和审计示例按当前数据合同及 YSS 组件适配；不得因此切换已确认的分布式 ID 策略或引入生产驱动。覆盖率、日志语言和留存按已采纳工程基线执行，建议值不自动成为质量门禁。规则原始等级保留；安全、权限、敏感信息、SQL 参数绑定与防数据损坏约束不得豁免。
 
 ## 数据库与 Java 基线
 
@@ -40,7 +33,3 @@ Profile、模块闭包、生成器、成熟度和 Recipe 的权威映射见 `yss
 - 生产数据库、DDL、索引和方言在后续批准的存储工作单元接入；H2 测试不能证明生产方言兼容。业务空工程不包含产品 SQL 或 API；独立参考工程包含其专属 H2 脚本及 OAS 3.1。
 - DDD / 通用 MVC 消费批准的 `platform_configuration` v2，平台清单与证据规则见 `.template-spec/engineering/backend-platforms.md`。凡注册表标记 `component_binding: required` 的能力，编译器必须从该配置指向的同一 compatibility 条目解析 `component_capabilities`；未登记、非 `verified`、架构证据缺失或构件摘要漂移均阻断。数据分析初始化器已退役；旧 Profile 仅只读审计，不授予生成或流转资格。组件 Skill 不擅自升级 Java、Boot、处理器或替换 YSS 依赖。MapStruct + Lombok 必须验证 binding 与生成代码编译。
 - 对 SQL 注入、敏感信息、权限和事务的规则不因 H2 或模板而豁免。MySQL 专属语法规则仅适用于批准的 MySQL 存储工作单元；框架命名/返回包装等差异须记录明确的 YSS 基线例外。
-
-## 验证含义
-
-结构测试只证明分流/生成约束。DDD、通用 MVC 各自需要临时 `CompatibilityProbe` 的真实 Maven validate/test/package 与首切片端到端证据才能声明受支持。默认独立 examples/reference/ 用于 ReferenceEntry 教学与行为验收，不加入产品构建、扫描或阶段批准。用户工程空骨架验证成功最多为 `empty-scaffold-verified`，不能替代自身批准的首切片验证。

@@ -16,12 +16,6 @@
 {"schema_version":1,"title":"资料查询","entry":"entry.ts","scenarios":"scenarios.json","density":"compact"}
 ```
 
-```sh
-node .agents/skills/yss-prototype-stage/scripts/build-shadcn-vue-prototype.mjs \
-  --project-root "$PROJECT_ROOT" --feature records-vue --profile H2 \
-  --toolchain "$AUTHOR_TOOLS" --config "$AUTHOR_DIR/prototype.config.json"
-```
-
 入口可为 TS/JS，通过 `createApp` 挂载 `.vue` 页面；保留无 config 的查询 starter，以及 `--entry` 入口，两者互斥。CLI density 优先于 config；默认 compact，comfortable 可选。路径相对配置目录，不得越界或逃逸符号链接。支持本地 TS/JS、JSON、CSS、图片及 Vue SFC 的 script/script-setup、HTML template、普通/ scoped CSS；不执行外部块、自定义块、预处理器或 CSS module。依赖使用固定工具目录，组件别名为 `@/components/ui/<name>`；上游原始 registry 别名仅由构建器映射。
 
 Vue 在作者侧编译，接收者只拿到普通 HTML、IIFE、本地样式、场景与资源，无运行时模板编译、网络请求或安装要求。构建记录实际作者资源、使用的组件文件、固定依赖、锁、源码与主题摘要；临时目录验证后原子落盘，失败清理，非空目标拒绝覆盖。代码静态限制不是任意不可信代码沙箱；运行原型时仍须浏览器断网与交互验证。

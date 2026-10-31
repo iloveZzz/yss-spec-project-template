@@ -14,8 +14,6 @@ If an `## Agent skills` block already exists in the chosen file, update its cont
 The block:
 
 ```markdown
-## Agent skills
-
 ### Issue tracker
 
 [one-line summary of where issues are tracked]. See `.template-spec/agents/issue-tracker.md`.

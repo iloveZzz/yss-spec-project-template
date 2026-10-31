@@ -1,7 +1,5 @@
 # mapstruct 条件参考
 
-仅在需要具体注解或配置示例时定位对应章节。示例业务名与版本不是工程基线；按当前路线有效输入替换（`daily` 同 Ticket 与已有工程基线，`governed` 批准合同），禁止直接复制成业务实现。
-
 ## Basic Mapper
 
 ```java
@@ -262,7 +260,6 @@ public abstract class UserMapper {
 7. Use `@Condition` for conditional mapping logic
 
 ---
-
 
 ## Anti-Patterns
 

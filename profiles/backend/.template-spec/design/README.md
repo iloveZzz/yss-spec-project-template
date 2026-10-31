@@ -31,7 +31,6 @@
 - `.template-spec/design/templates/state-matrix-template.md`：loading、empty、error、readonly、no-permission、conflict 等状态。
 - `.template-spec/design/templates/prototype-review-checklist.md`：进入 Spec 校准 / API 影响分析 / 契约草案前的原型评审门禁。
 - `.template-spec/design/templates/prototype-confirmation-template.md`：高保真 HTML 原型产出后的用户确认记录。
-- `.template-spec/design/templates/prototype-evidence-template.yaml`：原型阶段的机器可读证据清单；其中历史工具字段仅按实际适用范围填写。
 
 推荐技能：
 
@@ -40,7 +39,6 @@
 - `product-design:index`：Codex 产品原型产出的主路由；根据输入是否有 URL、截图、Figma、代码目标或视觉方向，进入 `$get-context`、`$ideate`、`$prototype`、`$image-to-code`、`$url-to-code`、`$share` 或 `$design-qa` 等 focused skill。
 - Product Design focused skills：基于 Spec 初稿和产品总体设计 / 功能架构，产出低保真 / 高保真页面、原型、交互设计资产和可分享原型；高保真 HTML 原型默认由该路由链路产出。
 原型由 `yss-prototype-stage` 统一生成离线 HTML；项目视觉规范是根 `DESIGN.md`，实际生产组件仍在实现阶段核验。
-- `prototype-review`：原型阶段评审门禁；未通过则不要进入 Spec 校准 / API 影响分析 / 契约草案。
 - 兼容入口：`product-design-prototype`、`high-fidelity-html-prototype` 仅作为历史兼容或产物门禁名称保留；新的产品原型产出默认使用 `product-design:index`，已退休技能不再提供兼容路由。
 
 推荐目录：

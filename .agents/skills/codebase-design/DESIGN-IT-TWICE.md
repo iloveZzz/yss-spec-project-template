@@ -4,8 +4,6 @@ When the user wants to explore alternative interfaces for a chosen deepening can
 
 Uses the vocabulary in [SKILL.md](SKILL.md) — **module**, **interface**, **seam**, **adapter**, **leverage**.
 
-## Process
-
 ### 1. Frame the problem space
 
 Before spawning sub-agents, write a user-facing explanation of the problem space for the chosen candidate:

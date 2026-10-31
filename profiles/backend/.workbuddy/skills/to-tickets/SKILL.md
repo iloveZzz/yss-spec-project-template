@@ -6,11 +6,8 @@ disable-model-invocation: true
 
 # To Tickets
 
-本兼容入口仅由用户显式调用。写入前回交当前生命周期主控，核验仓库身份、当前输入、允许路径和适用门禁。`template-source` 不生成产品票；起草者不批准 Slice 合同、不设置 `ready-for-agent`。保留 mattpocock 上游来源与锁定记录，采用以下 YSS 阶段适配。
-
 ## 先确定输出类型
 
-按 `.template-spec/process/business-tickets.md` 和当前工作单元选择一种输出；目录是否存在不决定路线。
 
 | 当前范围 | 输出与依据 | 工程前置 |
 |---|---|---|
@@ -31,9 +28,5 @@ disable-model-invocation: true
 ## 审阅与回交
 
 展示每票的业务结果、范围、验收、依赖与未决项，以及集合覆盖情况。按实际缺口提问；等义细化沿既有授权延续协议核验，范围、规则或验收实质变化返回原决定边界。拆分本身不增加常规人工批准节点。
-
-业务草案运行 `scripts/verify-business-tickets <集合> --mode draft`；正式化使用 `--mode formal`，并消费已有 Spec / 适用产品设计批准及当前适用专业检查。新治理使用 business-ticket-review2，绑定真实完成准备任务与当前集合原文，默认如实自检；只有明确用户要求或已知外部规则才要求独立或外部复核。旧 review1 继续按原政策只读核验。结构检查不代替语义审查或真实批准。阶段工作项完成、业务正式化和实现就绪分别回报。
-
-主 tracker 以 `.template-spec/agents/issue-tracker.md` 为准，不从 Git remote 猜测。配置缺失时回交主控处理，不自动调用其他显式 Skill。远程不可用或未获发布授权时保留本地待发布草案；远程发布需用户明确授权。业务票保持 `draft` / `ready-for-human`，实现票只有主控完成正式门禁和当前合同批准后才可 `ready-for-agent`。
 
 Spec、map 与父 Ticket 引用同一集合，不复制正文。本入口回交证据及待同步内容，由主控维护父 Ticket 状态；不得自行关闭父票或宣布功能完成。

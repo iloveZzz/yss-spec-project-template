@@ -4,85 +4,10 @@ description: "编译或重验 YSS Slice Implementation Contract、最小 Skill �
 disable-model-invocation: true
 ---
 
-# YSS Implementation Contract Compiler
+# 实施任务整理
 
-Spec 启用 `stage-gates-v1` 时先读 `.template-spec/process/stage-gates.md`，覆盖本文及引用的旧批准、角色、会签与审查预算。
+将用户需求、现有规格和设计整理成可执行的实现任务。每项写明目标行为、受影响仓库与路径、接口依赖及适用技能；直接复用现有 Ticket 或文档。
 
+按实际架构选择 yss-application、yss-domain、yss-repository、yss-web-controller，以及对象转换、异常、校验等相关技能。DDD 与 MVC 不混用职责，业务/API/数据变化保持对应关系。
 
-当前任务先一次性读取 `yss capabilities --json`；仅当 `result.readingViews.schemaVersion: 1` 且对应入口和模式已声明时，Slice 优先用 `yss contract view --root <项目> --kind slice --file <合同>` 阅读，任务加 `--view task --unit <唯一 ID>`，明细加 `--view full`。JSON 只消费结构化 `content`、绑定及检查范围；v3 任务仅展开关联验收，诊断其他验收时按 `full_acceptance_ref` 定向读取。全局、专项和未分类约束必须完整消费。旧 CLI 或其他合同继续用 `scripts/contract view <资产> --kind <类型> [--profile task --unit <ID>|--profile full]`，不向旧 CLI 追加新参数。视图不授予执行权限；原始来源和批准门禁仍适用。类型、准备和迁移见 `.template-spec/process/contract-reading.md`。
-
-同一任务已读且未变化的内容继续使用；来源变化、新影响、冲突、恢复或交接时刷新。证据先读结论与引用，需要诊断才定向读正文。验证复用须同时绑定资产与上游字节、工具及 Schema、参数、仓库根和相关环境；改变的输入只使受影响证据失效，不重复执行同输入命令，不建立跨会话校验缓存。
-
-Slice v3 的当前执行结果须按 `references/yss-skill-execution-result.md` 绑定验收、验证项、合同原字节、实际证据和执行来源；`legacy-evidence-binding-missing` 表示历史可读但不能据此完成当前任务，不补造历史执行信息。
-
-阶段 7 的实现合同编译器。它把已批准的生命周期资产、垂直切片、capability 和窄 Recipe 编译为 `Slice Implementation Contract` v3 草案；不批准合同、不写业务代码、不设置 `ready-for-agent`。
-
-撰写实现合同解释正文或切片交接说明时，按 `lifecycle-document-output` 条件调用 `i-have-adhd`，读取 `.template-spec/process/document-writing.md` 的共用写法及工程契约 / Ticket 指引。作用域仅限当前产物；派发时传递条件及引用，不改变结构化合同、批准状态或就绪条件。
-
-## 输入
-
-先读取 Spec、切片 Ticket、需求冻结、适用的原型确认、OpenAPI Freeze/no-impact、适用的系统/数据架构和 Design Review、Build Architecture Checklist、实现仓库和验证命令。输入缺失、未批准或 `stale` 时输出 `blocked`，交回 `yss-product-lifecycle`。
-
-工程基线与 Build Architecture Checklist 的编写结构见 `.template-spec/architecture/templates/system-overview-design-template.md`。保留清单资产及原引用字段、实现前审查批准和持久化要求；事后验证记录见 `.template-spec/templates/verification-record-template.md`，不代替事前准入。
-
-## 编译循环
-
-1. 判断 frontend/backend/API/data/domain/cross-repo 影响，并按 [compiler-contract.yaml](references/compiler-contract.yaml) 把 impact 映射为入口 capability；逐项填写 backend `component_impacts`。
-2. 按 `.template-spec/process/delivery-preflight.md` 只读检查当前阶段交付前提，再检查工程存在性和核心/长尾 skill 可用性。既有 Java/Maven 工程按 `.template-spec/process/existing-backend-architecture.md` 加载登记、工程基线、独立观测的原始引用与摘要；不伪填生成器或 H2。
-3. 从 `.template-spec/agents/yss-skill-registry.yaml` 选择一个或多个窄 Recipe，合并 `required_capabilities`；Recipe 不得直接引用 skill。
-4. 由 capability 解析入口 skill，只递归 `context-required`；`context-conditional` 仅在显式 condition 命中时加载，其他依赖类型只进入原因链，不扩张执行上下文。
-5. 按“Recipe 声明顺序 → 依赖拓扑 → skill ID”确定性排序，去重 skill 并保留全部原因；冻结 Registry 与编译器合同 SHA-256。
-6. 为切片生成基线合同；为当前行为生成工作单元增量路由。
-7. 选择 `behavior-tdd` 或 `controlled-generation`。
-8. 输出 `draft`、`blocked` 或 `ready-for-lifecycle-review`，交生命周期编排器核验和持久化。
-
-完整草案使用 `scripts/slice-contract prepare` 或 `prepareSliceImplementationContract` 从已有 Ticket / checkpoint 和必要细化组装；执行前读取唯一 YAML，视图和检查报告不授予权限。
-
-来源摘要、闭包、阅读视图和校验直接复用 `slice-contract` / `contract` 入口；不再用临时脚本手工重算同一合同。工具或参数缺失按消费项目 `.template-spec/process/script-execution.md` 诊断，禁止用自写校验替代当前合同门禁。
-
-合同结构见 [slice-implementation-contract.md](references/slice-implementation-contract.md)，专项返回协议见 [yss-skill-execution-result.md](references/yss-skill-execution-result.md)。前端、后端和测试子任务必须由生命周期主控从批准的 Slice Contract 编译任务包；任务包 schema 为 `.template-spec/process/schemas/subagent-task-package.schema.json`，技能列表必须来自 `taskPackageDefaults`，不能由编译器或执行 Agent 另行手写。
-
-## 硬规则
-
-PR/MR 交接先按主控在线核验，旧战略包消费验证已退役；本地批准资产绑定当前功能 checkpoint 与 Spec，核验适用的设计及后端/API 依赖，不补外部回执。跨端预检见 `.template-spec/process/delivery-preflight.md`；前端实现由独立规格处理。历史 `frontend_delivery` 按原合同核验，不新建或回退本地；无法核验时阻断。正式实现、生成和恢复须当前批准的 Slice Contract；接口或部署漂移使受影响证据失效。
-
-- 编译器不得输出 `approved`、`ready-for-agent` 或 `completed`。
-- Registry 使用其权威 schema v3，编译规则保持 schema v2；新 Slice 使用 v3，旧 Slice v2 按原规则读取和显式迁移。已停止支持的 schema 一律拒绝，不自动升级，不提供未登记的旧技能名兼容。
-- `required_capabilities` 与 `required_skills` 必须同时冻结；Registry 或编译器摘要变化后合同立即 `stale`，重新编译后仍须交生命周期重新批准。
-- UI 影响按来源分支核验：新设计保持正式原型确认与 Visual Baseline；无 UI 改动才允许 `existing-ui-baseline` v1，并须当前真实基线确认及 `case_id`。任一来源缺少当前批准或摘要绑定时，不得路由页面实现。模型必须先读 manifest 与语义引用，再查看对应 PNG；禁止目录 glob 和图片独立猜义。
-- Repository/数据模型影响缺少数据架构时，不得路由持久化实现。
-- 后端技术设计由 `yss-technical-design` 先行组织。消费批准且版本当前的 Technical Design Contract，核对其架构与工程基线一致；DDD 才消费聚合、Gateway 等战术字段并路由 `yss-domain`，MVC 消费用例、分层、规则和事务设计并按 Profile 路由。旧 v1 战术合同只按 DDD 显式兼容读取。无相关影响记录带原因的 `not-applicable`。
-- API 变化必须回到生命周期 Draft/Review/Freeze；半成品 backend 不得冒充稳定 source of truth。
-- 后端端到端切片必须包含 Application；对象/POJO 影响按契约自动补 `mapstruct`、`lombok`、`alibaba-java-code-style`。
-- Harness 内实现路径必须是已登记的具体项目相对路径，默认布局为 `apps/backend/<project>/` 或 `apps/frontend/<project>/`；`apps/backend/`、`apps/frontend/` 只能作为容器。外部实现仓库使用其登记的真实项目根路径。`git-submodule` 使用 `implementation_path_policy: git-submodule-harness-apps`，空 gitlink、detached HEAD 或 `--force` 覆盖挂载点不得脚手架；`inspectWorkingTreeScope.writable` 必须为显式布尔值。
-- 当前用户、缓存、审计、Excel、分布式 ID、请求校验、错误映射、加解密或网关韧性命中时，必须按 `compiler-contract.yaml` 的 `impact_to_capabilities` 补齐入口 capability；不能只在 `boundaries.md` 中提及。仅复用已经验证的平台认证 / 授权能力不算 component impact，不自动增加权限专项 skill。
-- 业务行为使用 `behavior-tdd`；只有机械脚手架/生成物可用 `controlled-generation`，并记录例外和验证。
-- 无工程且需要机械生成时，先读取 [脚手架合同编译](references/scaffold-compilation.md)。后端新合同起草 Project Scaffold Contract schema v5 并绑定 reference_example；前端保持 v4，历史后端 v4 保留空工程语义，由生命周期批准并持久化后运行；既有工程不重新生成。脚手架合同不能替代后续批准的 Slice Contract，业务行为必须重路由。
-
-- 专项结果中的越界路径、缺失证据、`drift`、`violation` 或 `new_impacts` 必须阻断或重路由。
-- 本范围内实现工作单元必须使用同一 `contract_id/contract_version`，并在任务包中记录 实际 `provenance`、`execution_state`、`allowed_write_paths`、`downstream_consumers` 和 `convergence_ref`；版本不一致或汇合引用缺失时输出 `blocked`。
-- 长尾 skill 不可用时显式 `blocked`，不得用通用知识假装已应用 YSS 规范。
-
-## 三级编译模式
-
-- 切片基线编译：生成完整合同和技能闭包。
-- 工作单元增量编译：绑定一个行为、主/辅 skills、TDD 模式、路径和证据。
-- 完整重编译：API/schema、状态机、数据模型、仓库、写路径、skill、测试 seam 或架构约束发生实质变化时触发。实现中出现未冻结的新行为（包括明确的权限业务行为）统一写入 `new_impacts`，由生命周期按普通影响面重新分诊。
-
-## 输出
-
-输出唯一 YAML 合同草案及派生报告；报告包含 capability/Recipe 解析记录、技能依赖闭包、不适用理由、阻塞项、TDD 模式、工作单元、预期证据、验证命令、人工审查点、完整重路由触发器，以及由当前工作单元和实际影响选出的 `primary_skill` / `check_ids`。自然语言说明不能替代结构化合同字段。编译器不得自行批准合同、设置 `ready-for-agent` 或关闭批准门禁；不按岗位或固定人数派活；前端实现由独立前端规格与 CLI 维护。
-
-## PR/MR 交接输入
-
-PR/MR 材料按 [交接承接说明](references/strategic-handoff-routing.md) 核验并保留来源；旧战略包绑定的消费验证已退役，不得凭旧回执或补字段沿用批准。源变化或未知依赖仍阻断受影响工作。
-
-## 后端脚手架平台承接
-
-消费生命周期已确认的架构与 `platform_configuration` v2；不得自行选择、批准或静默升级 Boot/Java。平台清单执行 `scripts/backend-platforms` 查询；只允许已验证 YSS 组合，新生成缺少配置或证据即阻断。决定、合同、Manifest 与下游架构身份须绑定同一平台及兼容摘要。详见 仓库共享合同 `.template-spec/engineering/backend-platforms.md`。
-
-后端 Slice 解析出 `component_binding: required` 的 capability 或其主 Skill 时，必须在同一平台兼容条目中逐项解析 `component_capabilities`。编译结果保存 `component_bindings` 与 `component_bindings_digest`；未登记、未验证、架构证据缺失、构件坐标冲突或摘要漂移均阻断。旧合同含组件 Skill 但没有组件绑定时直接 `stale`，重新编译并交生命周期批准，禁止自动补字段后沿用原批准。
-
-## 业务来源
-
-按 `.template-spec/process/business-tickets.md` 执行 Spec 业务草案、Design 校准与业务正式化。业务票放在 `business-tickets/`，集合引用进入 Spec / map / checkpoint；业务票不授予实现资格。实现票仍在 `issues/`，受工程准备、当前 Slice 合同批准和完整就绪检查约束。 新规则项目必须验证 business_ticket_refs 与 acceptance_refs，使用现有 basis.business_ticket_set 绑定当前集合原字节；原始验收仍从 basis.spec 定位，不升级 Slice 主 schema。业务票及阶段工作项不能充当实现票。来源过期返回战略/技术分析，不由编译器重写批准。
+输出供 Agent 直接执行的任务说明。范围内的本地实现沿用用户授权，提交和发布等外部动作仍使用对应授权。

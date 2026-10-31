@@ -2,20 +2,14 @@
 
 本文件只服务唯一默认审查技能 `code-review`。Alibaba Java、YSS 前端 / 后端 skill 是 **Standards 轴的专项检查输入**，不是第二个通用审查 skill。
 
-权威接线：`.template-spec/process/orchestration-contract.yaml` 的 `work_unit_routes.work-unit.code-review.review_standards_route` 与 `review_input`。报告形状：`.template-spec/templates/review-report-template.md`。
-
-上面是 `governed` 正式审查接线。已由 Spec `request_triage.delivery_path` 政策和支持的 CLI 判为 `daily` 时，复用同一任务的验收、工程基线、适用 YSS 技能、真实单仓 diff、实际测试、适用复核及真实来源。以下技术规则与覆盖要求仍适用；Slice `required_skills`、正式 review_input / 覆盖文件 / 模板字段、合同失效与工作单元流转要求仅对正式路径生效。普通结论可保存在任务审查段，不先生成这些文件；缺政策或能力的工具/Profile 不以此段获得普通准入。
-
 ## 1. 编译标准源
 
 按顺序收集，缺项写 `not-applicable` 及原因，不得省略适用项：
 
 1. 仓库文档：`CODING_STANDARDS.md`、`CONTRIBUTING.md` 或实现仓等价文件（若存在）。
-2. 普通任务绑定的适用 YSS 技能；正式切片再取 Slice Implementation Contract 的 `required_skills`。读取对应 `.agents/skills/<id>/SKILL.md` 及其按影响指明的 references，已读且当前资料不重复整读。
 3. 影响面专项检查输入（与合同并集，不得互相替代）：
    - 后端：`alibaba-java-code-style`、`yss-domain`、`yss-application`、`yss-repository`、`yss-mybatis`、`yss-web-controller`、`yss-dto`、`mapstruct`、`lombok`
    - UI：`yss-design-system`（前端实现规范由独立前端规格维护，不在本模板）
-4. 普通任务的专项检查结论，或正式报告模板中的后端 / 前端门禁表。适用覆盖缺失视为 `missing_evidence`。
 
 YSS 页面模块约定（YTable、YFormily、页面骨架等）走 Standards，不并入 UI fidelity。UI fidelity 只核原型与状态矩阵。
 
@@ -41,17 +35,12 @@ YSS 页面模块约定（YTable、YFormily、页面骨架等）走 Standards，�
 
 ## 3. 完成阻断
 
-出现以下任一情况时，`work-unit.code-review` 不得 `completed`：
-
 - 未消费合同 `required_skills` 或漏掉命中影响面的专项检查输入
 - 报告模板适用行空白或只写“符合 YSS / 符合阿里规范”
-- mandatory Alibaba 或 YSS 门禁 `violation` 未关闭
 - 机器检查失败，或可检查规则既无工具结果也无原文引用
 - 用第二个通用审查 skill 代替 `code-review`
 
 ## 4. Finding 分流与豁免
-
-产品切片与模板维护使用**同一闭环**；只是强度不同：切片绑定当前 Slice Implementation Contract，模板维护绑定 L1 / L2。权威字段：`review_standards_route.finding_disposition`。
 
 审查者只记录 finding，不得当场改实现代码。
 
@@ -62,16 +51,8 @@ YSS 页面模块约定（YTable、YFormily、页面骨架等）走 Standards，�
 
 首轮仍完整覆盖全部适用 Standards、Spec 和条件 UI fidelity。候选摘要变化、UI 影响或未知影响不构成全轴复审的默认或兜底；未知项先调查并阻断其依赖结论。复用证据必须可读，确认原检查条件、依据与依赖未变；当前完成结果重新绑定候选、合同和实际验证，不修改历史报告。
 
-`not-applicable` 仅当影响面未命中。命中后的 mandatory 不得豁免；只允许修复，或写完整 `seam-deferred`（风险、责任人、后续 Ticket、验证计划、目标版本或发布日期）。禁止为日常 Alibaba / YSS 新增生物人豁免门禁；安全 / 公共 API 仍走既有 `TODO-HUMAN-REVIEW` 与生物人门禁。
-
-
 ## 可执行后端审查结果
 
-以下正式后端结果形状和流转仅适用于 `governed`。普通结果由 `verify-daily` 消费同一 Ticket 的实际测试、候选摘要、独立审查段和适用 YSS 规则覆盖，不用缺字段的正式结果关闭后端交付。
-
-后端 `work-unit.code-review` 到交付的流转由 `scripts/lib/backend-review.mjs` 检查。
-`decision_state.review_input` 绑定 `slice_contract_ref`、`approval_ref`、跨仓时的 `work_unit_id`、`project_root`、既有候选的 `review_mode`、
-`candidate_snapshot_ref`、`implementation_candidate_ref`、`candidate_digest`、
 `implementation_actor_id`、`implementation_instance_id` 和 `actual_skill_impacts`（无新增影响为 `[]`）。
 `review_result_ref` 指向唯一 `code-review` 结果；记录 `result: completed`、合同原始字节的
 `contract_digest`、候选摘要、`reviewer` / `implementer` 的 actor_id / runtime_id / instance_id，
@@ -83,7 +64,5 @@ YSS 页面模块约定（YTable、YFormily、页面骨架等）走 Standards，�
 
 工作树候选复用现有 packed candidate 工具；审查证据可排除，业务文件不可排除。已提交候选绑定
 不可变 tree ID，并核对当前清洁 checkout。读取结构化结果不会代替 Reviewer 的实际规则判断。
-
-`verification_results` 必须包含实际 command、executed_at、exit_code=0、candidate_digest，以及日志 evidence_ref/evidence_digest。缺少本次机器检查或日志漂移不能完成审查。
 
 政策2的正式后端复核在现有 review_input 中给出 basis 与原生 implementation_candidate，实际结果含 assessment（mode、provenance）；默认同一执行者自检，条件独立要求仍核验。真实源必须是当前完成任务；变更复核还要属于同一 Slice/工作单元与实现仓。当前覆盖、候选快照、逐规则结论、真实命令和源码映射继续核验，不能用新模式跳过这些约束。

@@ -14,9 +14,8 @@
 | 原型验证清单 | `.work/<feature>/verification/prototype-evidence.yaml` | 高保真完成后补齐 CLI 与浏览器验证 |
 | 现有 API 草案 | `.work/<feature>/api/<feature>.yaml` | 可选 |
 
-## 门禁清单
+## 参考清单
 
-| 门禁项 | 是否通过 | 发现的问题 |
 |---|---|---|
 | 页面地图覆盖所有入口、出口和主要页面 |  |  |
 | 主流程从开始到完成是清楚的 |  |  |
@@ -52,16 +51,3 @@
 | 字段级校验错误 |  |  |
 | 权限 / 能力标识 |  |  |
 | 冲突 / 版本 token |  |  |
-
-## 评审结论
-
-```text
-结论：通过 / 阻断
-生命周期门禁：`gate.prototype-reviewed` 通过 / 不通过
-阻断项：
-- 
-非阻断建议：
-- 
-下一步：
-- product-design:index 路由高保真 HTML 原型产出 / 回到 Product Design focused skill 补齐原型 / 进入用户确认
-```

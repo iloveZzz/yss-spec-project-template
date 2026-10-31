@@ -26,7 +26,3 @@
 在本 fixture 的“同质资料、允许批量、需要整体核对”假设下，示范推荐批量处理。代价是必须看清所选范围；逐项方案保留全局上下文但重复提交；队列适合逐项仔细核对但牺牲全局对照。若真实需求禁止批量或每项审核负担更高，应重新比较。此段是条件推演，不是用户选择、实测效率结论或批准记录。
 
 运行后将实际观察与本段假设对照，不用教学推荐替代证据。工具输出仅为 review-only，正式原型仍经过原有低保真评审、H1/H2、QA 和用户确认。
-
-```bash
-node .agents/skills/yss-prototype-stage/scripts/export-low-fidelity-exercise.mjs --project-root <项目根> --output <新的空目录>
-```

@@ -5,7 +5,6 @@ description: 梳理项目的业务词汇、责任范围和关键决策；讨论�
 
 已核验 `matt-spec-v1` 的 Spec 工作不因 installation=governed 强制阶段政策、Context、ADR、研究包或批准套件。仅主动术语归档需要时维护已有 Context；缺失时可在规格整理候选，不自动建文件。当前任务使用技能内方法，真实审批由 life 消费决定，技术/API/实施资格留给下游。其他 Profile 保留各自实际合同。
 
-
 # 业务词汇与关键决策
 
 在设计过程中主动澄清业务词汇、责任范围和关键决策：质疑含糊说法，用边界与失败场景检验规则，并在结论稳定时写入词汇表或决策记录。仅仅读取 `CONTEXT.md` 不需要调用本技能；只有准备改变业务语言或关键决策时才使用。
@@ -25,8 +24,6 @@ YSS repositories use exactly one root context file:
 ```
 
 不要创建嵌套 `CONTEXT.md` 或 `CONTEXT-MAP.md`。多个业务责任区统一记录在根词汇表的 `适用业务责任区` 列中；内部仍使用稳定 `ContextId`。第一次确有必要记录 ADR 时再创建 `docs/adr/`。未启用治理的工程缺少根 `CONTEXT.md` 时，可在当前讨论或授权草稿中整理事实、候选词、规则和未决项；不因此阻断普通需求，也不自动建 Context。正式治理要求该文件时，缺失仍是合同错误，停止受影响生命周期工作；已有非法身份或不支持 Context 版本不能回退普通路径。
-
-## During the session
 
 ### 对照词汇表检查冲突
 

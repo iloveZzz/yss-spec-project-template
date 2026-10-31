@@ -6,8 +6,6 @@ content_profile: plan-spec-v1
 
 > 虚构输入；时间、角色及目标均为样本，不代表实际业务承诺。
 
-本期帮助经办人在提交前发现缺失附件；只检查是否齐全，不判定真实性，不承诺刷新恢复。来源见 `.template-spec/templates/examples/plan-spec/ordinary-source.md` S1–S8。
-
 ## 成功标准
 
 | ID | 指标定义 | 基线或未知原因 | 目标 | 确认状态 | 观测窗口 | 数据来源 | 验证方式 | 未决项 |

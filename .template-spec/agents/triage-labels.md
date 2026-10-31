@@ -6,8 +6,6 @@
 | --- | --- | --- |
 | `needs-triage` | `needs-triage` | 等待维护者评估 Ticket |
 | `needs-info` | `needs-info` | 等待报告者补充信息 |
-| `ready-for-agent` | `ready-for-agent` | 必要门禁已通过、阻塞边已清除，可由 Agent 直接实现的垂直切片 Ticket |
-| `ready-for-human` | `ready-for-human` | Spec、设计、契约草案或其他资产仍需当前政策要求的批准或审查，或需要特权访问 |
 | `wontfix` | `wontfix` | 不会处理 |
 
 当 skill 提及某个 Ticket 状态时，使用表中对应的 Tracker 标签。批准来源与审查方式由当前 Profile 政策和用户决定确定，不由本表指定。

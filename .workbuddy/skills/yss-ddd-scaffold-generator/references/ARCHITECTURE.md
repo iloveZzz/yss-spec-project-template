@@ -2,8 +2,6 @@
 
 本文定义 `architecture=target-domain-model` 的唯一目标结构。历史 `core/client/repository`、DTO 型 Gateway、client-in-domain 以及其他旧架构全部为 `unsupported`，不存在 legacy Profile 或回退分支。
 
-## 1. 模块职责
-
 ### Domain
 
 - 聚合根、Entity、Value Object、领域行为、不变量、Domain Event。
@@ -49,7 +47,7 @@
 ### Adapter/Web
 
 - HTTP Request/Response、校验、Controller、WebConvertor 和异常到 HTTP/YSS Result 的映射。
-- Request 字段来自冻结 OpenAPI/批准 allowlist，不从数据库 metadata 全量推导。
+- Request 字段来自当前 OpenAPI/批准 allowlist，不从数据库 metadata 全量推导。
 - WebConvertor 使用 `@Mapper(componentModel = "spring")` 和构造器注入。
 - DTO 物理位置固定为 Web；独立 client module 为 `unsupported`。如未来确需发布复用制品，必须另行设计并批准新的 Target Profile。
 - Web 不直接依赖 Infrastructure，不把 Domain Model 作为 Controller seam。
@@ -102,15 +100,6 @@ Domain Error -> Application propagation/translation -> Web Exception Translator
 
 ## 4. 生成与演进
 
-- Scaffold 只生成机械模块、POM、Wrapper、配置、架构规则和 Manifest，不生成生产业务 CRUD。
-- 初始生成器为 `initialize-only`，非空目标失败。
-- Manifest v2 记录模板、脚手架父合同、实现合同编译器 合同、downstream 完整 skill tree digest 与 generator-owned 文件 hash。
-- 当前不支持模板升级，不得重跑初始生成器覆盖业务工程。未来如需支持同一 Target Profile 内的模板版本升级，必须另行设计、批准并验证。
+由 Agent 按当前需求和保留的模板直接创建模块、POM、Wrapper 与必要配置。既有工程增量编辑，保留用户内容；不生成 Manifest 资格、架构检查器或测试套件。
 
-## 5. 完成等级
-
-- `generated`：文件已原子生成，尚未完成 Wrapper 验证。
-- `empty-scaffold-verified`：根目录 `./mvnw validate/test/package` 全部通过。
-- `first-slice-verified`：批准且版本当前的 golden first slice 已具备合同声明的职责类型、适用分层与实际执行的行为测试（分页、事务、组件不适用时不生成空实现）；当前批准合同与技能依据无漂移，且根 Wrapper 全部通过。该状态只能由 `scripts/run_first_slice_verification.mjs` 写入。
-
-只有首切片验证器可以把 Manifest 从 `empty-scaffold-verified` 升级到最后一级；手工写值、局部测试或结构扫描均无效。只有最后一级可以声明已满足下游 YSS skills 的首切片就绪条件。
+文件生成、构建和实际运行分别报告，不用完成等级或阶段状态代替事实。后续业务实现按当前需求继续，无需首切片验证器。

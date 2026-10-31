@@ -4,80 +4,12 @@ description: 需求、业务责任区、统一词汇或下游影响未稳定时�
 disable-model-invocation: true
 ---
 
-# YSS Stage Decision
+# 业务边界与方案决策
 
-当前 Spec 同时声明 `stage-gates-v1` 时，先读 `.template-spec/process/stage-gates.md`：仅保留 Plan 确认、Spec/适用设计确认、自动实施准入、交付验收四个出口。本文及引用中的旧专业批准、会签、角色、审查预算、独立产品设计/工程/切片/交接批准仅用于原政策历史读取，不适用于该模式。内部检查是质量结果，默认同一 Agent 自检；准备资产不等待未来批准，现有真实授权可按范围复用。
+从用户目标、现有需求、业务故事和 CONTEXT.md 整理事实、规则、假设、约束与待决定事项。按需使用 yss-research、grilling 和 domain-modeling。
 
+说明每个业务责任区的职责、关键对象、规则提供方和使用方、交接信息、失败路径与非目标。业务依赖方向与 HTTP 或消息方向分开表达，不从数据库表反推业务边界。
 
-已有生命周期资产优先用 `scripts/contract view <资产> --kind <类型>` 阅读；执行任务用 `--profile task --unit <ID>`，绑定与校验明细用 `--profile full`。视图不授予执行权限，仍按本 Skill 的原始来源和批准门禁处理。类型、准备和迁移见 `.template-spec/process/contract-reading.md`。
+复用已有 Plan、Spec 或 ADR 写明选择、理由、代价与重新考虑条件。记录影响当前工作的重要未决项；不要求固定 Schema、稳定 ID、阶段包、检查命令或批准状态。
 
-`yss-stage-decision` 是由生命周期主控调度的上游决策技能，负责把需求、产品、商务输入和业务边界与规则设计结果整理成可审查、可版本化、可被下游消费的方案决策包。它不替代生命周期主控，也不生成产品代码、原型、OpenAPI 或垂直切片 Ticket。
-
-## 文档写作
-
-撰写方案决策包和业务边界说明时，按 `lifecycle-document-output` 条件调用 `i-have-adhd`，读取 `.template-spec/process/document-writing.md` 的共用写法及 Plan 指引；原业务规则、决定依据和未决项完整保留。作用域仅限当前产物，派发时传递条件及引用。
-
-## 适用边界
-
-- 适用于 `project-instance` 的 Plan → Spec 入口。
-- `template-source` 只维护本技能、Schema、验证器和合成 Fixture，不生成具体产品领域资产。
-- 业务边界与协作工作单元只回答：有哪些业务板块、每个业务责任区负责什么、不同责任区如何交接、使用哪些统一业务词汇、发生哪些业务事实、有哪些待确认的关键业务对象和不可违反的业务规则。
-- Entity、Aggregate、Repository、Java 类、数据库表和 OpenAPI Freeze 留给下游工作单元。
-
-## 执行顺序
-
-Plan 的目标与退出条件由 `.template-spec/process/lifecycle-registry.yaml` 持有；从 `.template-spec/plan/templates/plan-template.md` 汇总输入。旧资产按 `.template-spec/process/plan-migration.md` 重新整理并核查，关键未决项不得延期到 Spec，非关键项记录责任人、解决时点与接收方。
-
-1. 读取 `yss-project.yaml`、`CONTEXT.md`、既有 Plan/Spec、ADR 和当前 profile 的主索引/checkpoint；按 `yss-product-lifecycle` 的 `request-triage` 区分事实确认、产品决定、门禁确认和普通澄清。
-2. 分离事实、决策、假设、约束和未决项；技术事实走 `yss-research` 的 `technical-evidence`，领域边界、业务规则、MVP、非目标、成功标准或阶段推进依据等决策证据走 `strategy-evidence`，市场/竞品事实走 `competitive-intelligence`。
-3. 从业务故事、已发生的事实、规则、责任人和失败路径识别业务板块与业务责任区，不从数据库表或调用链直接反推边界。
-4. 为每个业务责任区建立统一业务词汇；对跨责任区协作记录规则提供方、规则使用方、业务决策权、信息传递方向和口径转换负责人。
-5. 记录待确认的关键业务对象，不提前指定技术模型。
-6. 新 Spec 生成 schema v4 `domain_strategy` 和 `stage_decision_package`（旧政策继续读 v2/v3），使用稳定规则、场景、决定、假设、约束、成功标准、测试 seam 和 downstream mapping ID，并以 `context_snapshot` 绑定根 `CONTEXT.md`、术语身份、完整文档 digest、引用术语 digest和证据。
-7. 运行 Schema、唯一性、悬空引用、根路径、术语引用、digest、语义一致性和传播验证；发现关键冲突时返回 `blocked`，不得生成 `approved` 包。v2 仅只读；修改或重发必须使用 `scripts/migrate-contract-v3.mjs` 默认显式迁移为内容 v4 `draft` ，不要求未来 approval_context；阶段确认见四阶段规则。v1 字符串引用先用 `scripts/migrate-context-references.mjs` 迁移到 v2；歧义引用不得猜测。
-
-Plan 成功标准在既有 `success_criteria[].statement` 细化指标定义、基线或未知原因、目标及确认状态、观测窗口、数据来源、验证方式和补齐动作；Plan 引用 `success-criterion.*`。关键取舍复用 `decision.*`，记录真实候选、理由、代价和重新考虑条件，不凑备选数量。表达和诊断见 `.template-spec/process/plan-spec-quality.md`；诊断不批准或阻断阶段，不扩展合同 schema。
-
-## 控制面引用
-
-- 新建领域战略、阶段决策包使用 JSON；存量 YAML 保持只读兼容，显式迁移见 `.template-spec/process/structured-assets.md`。使用 `scripts/contract plan-write/apply-write` 结构化落盘，不对合同作字符串拼接。校验器必须执行权威 Schema 后再检查跨文件语义。
-- 复用 Plan 原始决定编号，不自行重排；批准前用 `scripts/check-plan-stage-coverage` 生成绑定 Plan、决定记录和阶段包摘要的逐项对照证据，非目标使用显式映射。无法提取、缺项或映射歧义必须补齐；语义等价由实际自检或适用复核确认，覆盖检查不构成批准。
-
-- 用户决定遵循 [用户决定协议](../yss-product-lifecycle/references/user-decisions.md)：决定绑定资产、版本、范围和证据。字节摘要变化先使旧验证过期，再核验差异；决定依据与授权范围未变时，按协议延续原回复并重新绑定当前审查和验证。实质范围、关键规则、风险接受或失效条件变化时，展示差异后取得新的真实回复。
-- checkpoint 是唯一机器状态源，业务 Ticket 只保存追踪引用，不复制阶段状态。
-- 每次批准、重发和消费者流转前执行 `context_reconciliation`，核验 `CONTEXT.md` 的全文与引用术语双摘要。
-- 修改本 Skill 时只编辑 `.agents/skills` 权威副本，再由 `maintaining-skills` 生成投影和 `skills-lock.json`。
-- 本 Skill 只能标记影响、提出待解决问题和选择消费者能力；不得预选后端架构族，不得进入技术设计或实现流程，也不得授权实现。
-
-## 语义方向规则
-
-内部字段 `semantic_upstream` 表示规则提供方，`semantic_downstream` 表示规则使用方。二者不等于 HTTP、消息或数据库的技术方向。每条协作关系必须独立记录 `transport_direction` 和 `translation_responsibility`；同一对业务责任区可以存在多条相反方向的信息关系。
-
-## 产物与批准
-
-Plan 专业审查只消费生命周期主控 `planning.review_control` 和 checkpoint `plan_review_control` 的当前周期；同一组合任务先核验业务边界，再核验决策包对它的承接，聚合 Plan 复用逐项结论。修复沿稳定问题 ID 关闭，按依据、场景和关闭条件验证；新阻断及重开须有对应证据。不得以重新生成资产、改任务名或摘要刷新获得新轮次；诊断与异常关闭由主控按唯一策略派发，不自行批准或重置额度。
-
-- 业务边界与规则设计是本类事实的权威资产，方案决策包只通过内部字段 `domain_strategy_ref` 引用它。两个合同的 `context_snapshot.context_ref` 必须精确为仓库根 `CONTEXT.md`，禁止子目录、`CONTEXT-MAP.md`、绝对路径和 Markdown 伪锚点。
-- 进入 `check.domain-strategy-approved` 或 `check.stage-decision-package-approved` 的外部决策证据必须引用通过校验的 `yss-research` `evidence-audited` 研究包；研究包只提供证据，不得直接修改本技能资产或批准门禁。
-- `stage_decision_package` 必须经过 `draft → ready-for-human → approved`；审查模式遵循当前编排政策，默认自检，显式用户或外部规则要求时才使用独立复核。真实用户决定仍由主控核验。
-- 内部专业审查为 `check.domain-strategy-approved` 和 `check.stage-decision-package-approved`，汇入 `gate.plan-approved` 一次确认，实际状态由 `yss-product-lifecycle` 维护。当前 Plan 流程在一个组合审查任务中逐项给出结论，聚合门禁复用实际完成任务的 approval3 证据；未命中项只记录有依据的 `not-applicable`，不要求岗位或固定审查会话身份。
-- 新资产的内嵌 `approval` 使用显式 `schema_version: 2` 和版本 2 `approval_context`，绑定实际 Plan 审阅主体、范围、依据及聚合批准记录。已有无版本注解也可消费通过当前原生核验的专业检查 approval3 单条记录或 bundle 唯一结论；其旧 `approver` 字段不构成角色要求。历史批准记录仍按原政策核验。已有 v3 资产需要显式换注解时，使用 `migrate-contract-v3.mjs --approval-context <context.json>`；只输出待补真实批准的 `draft`，不自动登记。
-- 下游只能消费批准且版本当前的包；发现语义冲突返回 `drift` / `new_impacts`，不得静默修改上游。
-
-## 结果合同
-
-返回标准 `Workflow Execution Result`，至少包含 `work_unit`、`workflow_reference`、`result`、`evidence_refs`、`changed_artifacts`、`new_impacts`、`stale_candidates`、`next_route` 和 `blocking_signals`。`blocked` 必须包含冲突、责任人、恢复条件和下一工作单元。
-
-## 禁止事项
-
-- 不把方案决策包当作第二套业务事实源。
-- 不按数据库、微服务、菜单或 HTTP 调用方向自动划分上下文。
-- 不把同名术语强行合并为全局概念。
-- 不在业务方案设计阶段生成技术模型、生产代码或 API 契约。
-- 不把模板 Fixture 当作具体项目的业务事实。
-
-详细合同、字段和验证规则见 `references/domain-strategy-contract.md`、`references/stage-decision-package-contract.md` 与 `references/validation-rules.md`。当前机器可读合同分别为 `references/domain-strategy-v3.schema.json` 和 `references/stage-decision-package-v3.schema.json`；v2 schema 仅用于历史读取。对应验证器为 `scripts/validate-domain-strategy.mjs` 与 `scripts/validate-stage-decision-package.mjs`。
-
-## PR/MR 交接输入
-
-跨仓交接按 [交接承接说明](references/strategic-handoff-routing.md) 核验 PR/MR 来源；旧战略包不可作为新的已验证输入，用户决定、版本失效和批准边界仍由主控持有。
+输出可供设计和实现使用的业务说明。技术架构与 API 设计按实际任务交给相应技能，不增加流程前置。

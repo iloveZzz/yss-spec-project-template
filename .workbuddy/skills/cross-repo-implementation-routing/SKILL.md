@@ -23,13 +23,11 @@ disable-model-invocation: true
 4. 核对项目根路径：Harness 内 `harness-apps` 与 `git-submodule` 按已登记的具体项目相对路径核验，默认布局为 `apps/backend/<project>/` 或 `apps/frontend/<project>/`；`apps/backend/`、`apps/frontend/` 只能作为容器。`git-submodule` 另核 gitlink、`.gitmodules` 和独立 `git_url`。外部 `external-repository` 记录各自的真实项目根。
 5. 输出最小任务分配：Harness 文档 / OpenAPI / 后端 MR / 前端 MR / 验证 / 发布。`git-submodule` 必须追加 `superproject-gitlink-update`。
 6. 按 `.template-spec/templates/cross-repo-slice-template.md` 生成切片记录草案。
-7. 给出 fresh verification 命令和阶段 checkpoint 回写字段。
 
 ## Routing Matrix
 
 | 影响 | 必需记录 |
 |---|---|
-| Harness-only | change、文档路径、验证命令、checkpoint |
 | backend-only | backend repo、branch、MR / PR、测试命令、CI、OpenAPI 是否受影响 |
 | frontend-only | frontend repo、branch、MR / PR、lint / type-check / build、API client 是否受影响 |
 | backend+frontend | OpenAPI Freeze、generated client、后端验证、前端验证、端到端验收 |
@@ -48,5 +46,4 @@ disable-model-invocation: true
 - 跨仓库实现路由结论。
 - backend / frontend / harness 三方任务分配。
 - cross-repo slice 草案。
-- fresh verification 与 checkpoint 字段。
 - 阻断项和人审点。

@@ -5,7 +5,6 @@ owner: ai
 
 # 当前工作任务事实：<task_id>
 
-只在正式工作单元、跨工作区或工具交接需要结构化包时使用 task3。普通任务复用同一 Ticket/PR，咨询不创建任务包。Schema 沿用 `.template-spec/process/schemas/digital-human-task-package.schema.json` 的新分支；历史 task1/2 只在原政策下读取，不复制岗位字段到新包。
 
 | 事实 | 填写要求 |
 |---|---|
@@ -16,10 +15,8 @@ owner: ai
 | inputs / input_bindings | 实际可读来源及原始字节摘要 |
 | baseline | 已登记真实 Git 根、完整基线 SHA、原生 task-baseline 摘要 |
 | provenance | 实际 tool/task_ref/execution_ref；稳定 identity 可得则记录，不可得写 unavailable/reason |
-| allowed_write_paths / forbidden_actions | 明确仓库相对范围；准备不得产生 user-approval / ready-for-agent |
 | expected_outputs | Drafter/Explorer 用冻结的具体产出文件，描述放 objective/acceptance |
 | expected_evidence_files / verification_commands | 必要真实验证计划，派发 verification_results 为空，不填写未来退出码 |
-| contract / convergence / downstream_consumers | 当前生命周期/批准 Slice 合同、明确汇合与下游 |
 | review_context | 适用时绑定实际候选、basis、check_ids、policy、范围及真实 review；默认 self-check |
 
 `generateTaskPackageDefaults(undefined, overrides, {root})` 从实际输入构造新草案并查询 Go 的检查/Skills 与基线；不创建执行事实。真正持久化/派发仍通过当前 writer guard 与原生 task 校验。准备期保持 draft，正式完成或实现须当前真实决定与完整合同。

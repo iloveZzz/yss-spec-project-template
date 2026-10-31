@@ -22,7 +22,6 @@
 推荐模板：
 
 - [数据架构](templates/data-architecture-template.md)：涉及数据模型、存储、版本、血缘或查询策略时使用。
-- [工程基线与准入清单](templates/system-overview-design-template.md#工程基线与准入清单)：引用单一工程基线，编写实现前必需的 Build Architecture Checklist；实际执行证据写入验证记录。
 
 - `.template-spec/design/templates/product-overview-design-template.md`：Spec 初稿之后、页面 / 原型 / 交互设计之前的产品总体设计 / 功能架构评审稿。
 - `.template-spec/architecture/templates/system-overview-design-template.md`：系统 / 数据架构与工程契约设计审查阶段的系统概要设计评审稿，承接 API 影响分析 / 契约草案 / OpenAPI Draft 与工程基线，并在 OpenAPI Freeze 前反向校验 Draft。

@@ -2,8 +2,6 @@
 
 本文档详细介绍了 `yss-component-dto` 组件的核心数据传输对象（DTO）。这些 DTO 类被广泛应用于各个服务项目，用于规范数据交互格式。公开 HTTP/JSON 的可复用映射以 `openapi-wire-profile.yaml` 为准；本文不把 Java 字段或 getter 自动等同于 wire shape。
 
-## 核心类 (Core Classes)
-
 ### 1. Result.java
 
 **位置**: `../assets/Result.java`
@@ -63,5 +61,5 @@
 ## 使用场景
 
 1. **API 响应**: 普通接口已采用 YSS wrapper 时保持 `Result` 或其派生体系。下载、流式和第三方回调按批准协议核验媒体类型、状态、Header、错误与权限边界，不强套 wrapper，也不豁免契约证据。
-2. **分页查询**: `PageQuery` 用于 Application/Infrastructure 内部协作；公开 HTTP Page Request 默认只声明冻结 OpenAPI 允许的字段，再由 WebConvertor 转换，避免内部字段被继承到绑定面。MyBatis 拦截器所需形状必须由 Query Port 集成测试证明。
+2. **分页查询**: `PageQuery` 用于 Application/Infrastructure 内部协作；公开 HTTP Page Request 默认只声明冻结 OpenAPI 允许的字段，再由 WebConvertor 转换，避免内部字段被继承到绑定面。MyBatis 拦截器所需形状以实际 Query Port 与组件行为为准。
 3. **参数封装**: 使用 `CommandDTO` 封装增删改参数，使用 `QueryDTO` 封装查询参数，保持代码语义清晰。

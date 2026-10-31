@@ -2,7 +2,6 @@
 
 > **历史只读**：本文件与同目录 YAML 仅用于旧实例和历史批准记录的原政策核验。新 Spec / Backend 实例使用 `role-independent-governance-v1`，不分发、不加载本角色表；不得按本文件增加新的会签要求。
 
-结构化事实源是 `.template-spec/agents/digital-human-roles.yaml`。历史角色、技能和会签级别与运行时无关。Cursor、Codex、Grok Bot 等只通过 YAML `runtimes` 绑定。冲突时以 YAML 为准。
 
 ## 何时读本文
 
@@ -18,17 +17,9 @@
 | 执行态 | Explorer / Drafter / Worker / Reviewer / Verifier | 数字人角色 |
 | 运行时绑定 | 如何在 Cursor / Codex / Grok 等落地 | 角色职责本身 |
 
-一次数字人任务包同时写明 `task_id`、`work_unit_id`、`actor_id`、数字人角色、执行态、当前 `runtime_id`，以及从角色表复制的 `core_skills` / `forbidden_skills`。可用 `taskPackageDefaults(roleId)`（`scripts/lib/digital-human-roles.mjs`）读取，禁止手写第二套技能包。`role.test-engineer` 的 core_skills 含 YSS / Alibaba 专项 skill，仅作为 `code-review` Standards 只读输入，不得写实现；finding 交实现者修复或回 实现合同编译器，审查者不得当场改代码。任务包 canonical Schema 为 `.template-spec/process/schemas/digital-human-task-package.schema.json`，按 `contract.kind` 选择生命周期、切片实现或模板维护合同。
-
 ## 历史会签规则（只读）
 
-历史门禁的会签由 `gate_policy.digital_human_review` / `dual_digital_human` / `biological_human` 定义；历史内部专业审查由 `check_reviews` 定义，自动检查由 `automatic_checks` 定义。每项的起草者与会签人只读取 YAML，不在本文复制名单。
-
 专业审查按 YAML `review_capabilities` 和检查策略的 `capability_ids` 选择具备能力的独立执行者；角色是职责边界，不能用另一个职称替代能力或独立身份。正式 v1 审查任务的 `review_context` 绑定当前检查 / 能力、候选、策略、范围、依据摘要和审查 / 起草主体；`skill_source.review_skills` 从能力表编译，只供 Reviewer / Verifier 只读审查，角色核心技能和禁止技能不变。能力定义不在本文重复维护。
-
-Plan、产品设计、工程契约统一呈现适用检查后批准。`gate.delivery-accepted` 由测试角色进行交付验收，实际合并或发布仍须另有生物人授权。内部检查不独立请求用户决定；检查失败仍阻断聚合门禁。专业审查可在同一工作单元完成多个检查项，但必须保留逐项结论、资产摘要与独立执行者身份。
-
-会签写入配置的功能包根（示例 `.work/<feature>/gates/<gate-id>-approval.yaml`），新记录使用 schema v2，形状见 `.template-spec/templates/approval-record-template.yaml`。专业记录绑定 `review_task_ref/digest`、`capability_ids` 与 `basis`，相邻检查可组合为 schema v2 `review-bundle` 并逐项记录。恢复前运行 `scripts/verify-approval-record --require-approved --checkpoint <current checkpoint>`；当前期望上下文由消费 checkpoint / 任务建立，不能反向复制会签记录。错误会签只能得到 `blocked`，不能把门禁标成 `approved`。Checkpoint 里会签桶门禁为 `approved` 时必须有可读 `approval_ref`。历史记录可用 `--history` 只读查看，不放行当前执行；旧消费者须拒绝 v2 并升级。
 
 `paused-human-gate` 表示等待指定会签人；`user_decision_policy` 命中的关键决定同时强制真实用户回复，数字人审查不能代答。请求展示、原始回复证据、复用和恢复规则见 [用户决定协议](../../.agents/skills/yss-product-lifecycle/references/user-decisions.md)。
 
@@ -52,11 +43,10 @@ Plan、产品设计、工程契约统一呈现适用检查后批准。`gate.deli
 |---|---|---|
 | `runtime.generic` | 任何能加载 `core_skills` 并接受任务包的 Agent | 通用会话 / 人设 / system prompt |
 | `runtime.skill-projection` | `yss-skill-registry.yaml` 的 `agent_runtime_roots` | 投影技能 + subagent 任务包 |
-| `runtime.grok` | Grok Bot | 持久 Bot、群聊或 1:1 交接；群超过 6 人改 1:1。Bot 是该平台上的运行时实例，不是数字人角色、技能或门禁 |
 
 新增平台：先加 `runtimes` 条目，再写适配说明。不要把平台限制写进 `roles`。
 
-旧运行时 Profile 模板已退役，本节仅用于历史说明。当前项目遵循[岗位资格退休与兼容边界](../process/orchestration-policy-consumers.md#旧强约束的去向)，不再按岗位绑定运行时或技能白名单。
+旧运行时 Profile 模板已退役，本节仅用于历史说明。当前项目遵循岗位资格退休与兼容边界，不再按岗位绑定运行时或技能白名单。
 
 ## 两套批准
 
@@ -65,12 +55,11 @@ Plan、产品设计、工程契约统一呈现适用检查后批准。`gate.deli
 | 运行时副作用审批 | 发消息、改生产、付款、删数据等工具动作 | 生物人（各平台自己的 Allow / 确认框） |
 | 历史数字人会签（只读） | 旧 `gate.*` 与独立 code review | 见 YAML `gate_policy`；新实例不使用 |
 
-会签写入 `.template-spec/templates/approval-record-template.yaml`，带 `runtime_id`、`principal_ref` 与实例引用。起草者不得出现在会签人里。对外商务合同和运行时外部副作用仍须生物人；交付验收不授予这些权限。
 
 ## 实例化
 
 - 模板仓：`publish-singleton-profiles`。账户级只发布一套职称 profile，不按功能再拆。
-- `project-instance`：历史实例的 `duplicate-and-bind-repo-path` 仅用于解释其固定来源中的既有绑定；新实例遵循[当前编排与复核政策](../process/orchestration-policy-consumers.md#旧强约束的去向)，不再复制岗位 Profile 或绑定岗位技能白名单。
+- `project-instance`：历史实例的 `duplicate-and-bind-repo-path` 仅用于解释其固定来源中的既有绑定；新实例遵循当前编排与复核政策，不再复制岗位 Profile 或绑定岗位技能白名单。
 
 ## 任务包最低字段
 

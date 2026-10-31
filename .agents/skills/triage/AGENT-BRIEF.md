@@ -1,18 +1,11 @@
 # Writing Agent Briefs
 
-在 YSS 中，简报是回交生命周期的取证与工作建议，不是正式 Spec 或 Slice Implementation Contract，也不授予 `ready-for-agent`。正式实现必须引用生命周期批准且当前的切片合同；发布评论另需明确授权。
-
 The brief states **what the agent should do**, which stretches to both surfaces: for an issue, that's building the change from nothing; for a PR, it's what's left to do *to the existing diff* — finish it, close gaps, address review points. Same principles either way; the PR example below shows the difference.
-
-## Principles
 
 ### Durability over precision
 
-The issue may sit in `ready-for-agent` for days or weeks. The codebase will change in the meantime. Write the brief so it stays useful even as files are renamed, moved, or refactored.
-
 - **Do** describe interfaces, types, and behavioral contracts
 - **Do** name specific types, function signatures, or config shapes that the agent should look for or modify
-- 必须保留当前证据路径、版本和批准合同引用；恢复时检查新鲜度，不把旧路径当作当前事实。
 - **Don't** reference line numbers
 - **Don't** assume the current implementation structure will remain the same
 
@@ -66,8 +59,6 @@ Be specific about edge cases and error conditions.
 - Thing that should NOT be changed or addressed in this issue
 - Adjacent feature that might seem related but is separate
 ```
-
-## Examples
 
 ### Good agent brief (bug)
 

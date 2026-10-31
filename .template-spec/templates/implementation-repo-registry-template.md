@@ -27,7 +27,6 @@ owner: ai
 | git_entry_mode | `160000`；仅 `git-submodule` |
 | superproject_git_url | 父仓远端；必须与 `git_url` 不同 |
 | checkout_state | attached-branch / detached-head / uninitialized / empty-gitlink / 不适用 |
-| scaffold_status | existing / required / initialized |
 | preparation_status | existing-and-onboarded / initialized-and-verified / not-applicable |
 | preparation_result_ref | `artifact.implementation-repository-preparation-result` 的当前引用 |
 | project_scaffold_contract_ref | 新建工程必填；统一 schema v4，历史已批准后端 v3 只读兼容 |
@@ -90,7 +89,5 @@ Harness 内项目路径约束：`apps/backend/`、`apps/frontend/` 只能作为�
 
 - 关联 Harness change：
 - 关联垂直切片：
-- 关联阶段 checkpoint：
 - 实现仓库准备聚合结果：
-- `check.implementation-repositories-ready`：approved / blocked
 - fresh verification 命令：

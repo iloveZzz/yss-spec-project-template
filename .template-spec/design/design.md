@@ -7,8 +7,6 @@
 ## 与 DESIGN.md 的职责边界
 
 - `DESIGN.md`：机器可读的颜色、排版、圆角、间距和组件视觉变体规范；使用 Google `design.md` alpha 格式。
-- `.template-spec/design/tokens/*`：由规范源投影的运行时快照，禁止直接修改后作为规范依据；使用 `node .agents/skills/yss-design-system/scripts/design-md.mjs` 执行漂移检查。
-- 本文件：解释页面设计约束、原型证据和生命周期门禁，不重新定义规范 token 的具体值；具体组件库由项目选定。
 - Spec、交互说明和状态矩阵：继续承载业务状态、API、权限、并发、失败恢复和页面验收，不写入 `DESIGN.md`。
 
 ## 来源与定位
@@ -210,15 +208,12 @@ Margin 使用规则：组件自身默认不声明外部 margin，兄弟元素之
 | H1 `visual-review` | 布局、密度、层级、文案和少量关键交互 | shadcn-vue 离线预构建，或轻量原生 HTML/设计工具导出；接收者无需 Node、package、lockfile 或组件 CLI | desktop/narrow 非空渲染、项目 Token、console、关键交互、基础键盘/焦点/对比度；zoom/reduced-motion 按影响 |
 | H2 `flow-review` | 主流程、权限、失败恢复、复杂联动和冲突 | 浏览器可运行流程；主要使用 shadcn-vue 预构建离线资源包，场景可重复触发和重置 | H1 共同证据 + 主流程、关键异常、zoom/reduced-motion；视觉回归按风险 |
 
-- H1 不得为了“显得完整”创建空 `package.json`、lockfile 或空组件证据。H2 不得声明真实目标组件已验证。
 - 原型中识别出的生产组件假设与待验行为写入 `implementation_handoff`，交给独立维护的前端规格与 CLI 承接；不得在原型阶段引入生产组件库、目标 lockfile 或 Storybook。
 - 新视觉方向、信息架构不确定或有多个合理方案时执行三方案 ideation；复用已批准视觉模式时记录 source visual 与 `not-applicable` 理由。
 - 新原型默认使用根 `DESIGN.md` 的 compact 命名变体，comfortable 可显式选择；页面 padding、gap、Card 圆角、Card padding 和控件高度必须在浏览器计算样式中可复核。
 - Design QA、浏览器验证和视觉目标使用同一视口与同一状态；默认 desktop `1440×900`、narrow `390×844`。
 - Design QA 统一覆盖 visual、layout、interaction、content、accessibility、cross-platform 六轴，不再复制第二份检查清单。
 - 交付包包含所有实际使用的本地资源和 Token 副本，登记摘要；复制到独立目录后以 `file://` 无网络复验。模板结构检查不替代浏览器证据。
-- 原型源码默认 throwaway；项目 Token、组件语义映射、状态、测试场景和验收标准可以进入下游，源码复用仍需 实现合同编译器、Slice Contract 与 TDD。
-- 用户确认只覆盖原型确认的决定、可操作范围、模拟/gap 与接受结论；HTML、story 或截图存在都不代表产品设计聚合门禁已经通过。
 
 ### 无障碍覆盖
 
@@ -295,7 +290,3 @@ H1/H2 原型使用 HTML/CSS/JavaScript：
 ## shadcn-vue 主要路线
 
 高保真按原型技能的 `references/shadcn-vue-integration.md` 优先使用 `vue-shadcn-prebuilt`，`react-shadcn-prebuilt` 仅历史只读；简单局部修改可保留原生 HTML。交付格式与视觉权威不变；Vue 作为随包浏览器运行时，作者依赖与构建工具不交付给接收者。
-
-## 企业原型应用壳
-
-新企业高保真默认使用根 DESIGN 的 workspace 角色：模块、分组侧栏、可关闭页面 Tag 和流式工作区，标题采用 workspace-title。表单内部保留阅读宽度，详情按选择出现，窄屏使用 Sheet，旧批准页面仍遵守保持项。页面 Tag 使用导航语义及 aria-current，页内视图切换才使用 Tabs；收起导航的图标居中，提示框及箭头使用一致的反相表面。多页缓存仅保留当前文档内存；关闭修改页须确认，场景切换/重置销毁全部临时状态。原型技能 `references/enterprise-workspace.md` 提供作者接口和教学场景；不改变生产默认主题或增加生命周期门禁。

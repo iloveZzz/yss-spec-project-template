@@ -1,3 +1,0 @@
-#!/usr/bin/env node
-console.error(JSON.stringify({result:'blocked',code:'UNPORTED',error:'legacy-strategic-handoff-unsupported: 旧战略交接已停止支持；手动 handoff 请使用 PR/MR'}));
-process.exitCode = 1;

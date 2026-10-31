@@ -63,7 +63,7 @@ owner: ai
 - [ ] Spec 所需的业务规则和验收线索已列出。
 - [ ] 风险与人工审查点已标注。
 
-## 9. 下一步门禁
+## 9. 下一步参考
 
 - 结论：Approved / Blocked
 - 下一步：Spec baseline / 继续业务架构

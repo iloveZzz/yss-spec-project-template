@@ -3,43 +3,12 @@ name: tdd
 description: Test-driven development. Use when the user wants to build features or fix bugs test-first, mentions "red-green-refactor", or wants integration tests.
 ---
 
-# Test-Driven Development
+# 测试优先开发
 
-TDD is the red → green loop. This skill is the reference that makes that loop produce tests worth keeping: what a good test is, where tests go, the anti-patterns, and the rules of the loop. Every section applies on every cycle — consult them before and during the loop, not after.
+仅在用户明确要求 TDD、red-green-refactor 或测试优先开发时使用，不作为其他任务的前置。
 
-When exploring the codebase, read `CONTEXT.md` (if it exists) so test names and interface vocabulary match the project's domain language, and respect ADRs in the area you're touching.
+围绕用户可观察的行为选择公共接口与最小案例：先写一个能复现问题的失败测试，再实现使其通过的最小变化，随后在行为保持的前提下整理代码。每轮只解决当前案例，不提前建设测试框架。
 
-## What a good test is
+测试断言来自需求、已知样例或独立推导，避免重写实现作为期望值。优先行为而非私有方法或内部调用顺序；mock 放在真实外部边界。按需参考 [测试例子](tests.md) 和 [mock 指南](mocking.md)。
 
-Tests verify behavior through public interfaces, not implementation details. Code can change entirely; tests shouldn't. A good test reads like a specification — "user can checkout with valid cart" tells you exactly what capability exists — and survives refactors because it doesn't care about internal structure.
-
-For the critical boundaries selected in this change, explain what failure the tests can detect and which important cases they miss in the current task or PR. Separate unexecuted checks, unavailable environments and observed passes; simple assertions do not each need a report.
-
-See [tests.md](tests.md) for examples and [mocking.md](mocking.md) for mocking guidelines.
-
-## Seams — where tests go
-
-A **seam** is the public boundary you test at: the interface where you observe behavior without reaching inside. Tests live at seams, never against internals.
-
-Use the task branch already established by the caller; this skill does not route work or grant qualification.
-
-- **Standalone:** derive the seam from the user's existing acceptance criteria and the actual public interface. No lifecycle setup, Tracker, checkpoint or Slice is required. A known interface and confirmed acceptance are enough; do not ask the user to approve an internal seam name again.
-- **Daily:** use the same Ticket / PR acceptance examples, engineering baseline and current route result under the repository's enabled policy. Do not invent daily qualification here.
-- **Standard:** use the current Spec-lite, the same task and still-valid user decisions. Check relevant changed inputs or revoked decisions under the existing protocol; do not replace this path with a Slice prerequisite.
-- **Governed implementation:** consume the current approved Slice Implementation Contract, its public seams and applicable decisions. A stale or missing formal contract returns to its owner; it does not turn the task into standalone work.
-
-Inspect existing material before asking for a genuinely missing business decision. Reuse a confirmed seam while its scope and relevant basis remain valid. If acceptance is missing or materially changed, stop only the dependent tests and implementation and return the gap to the current owner; independent authorized work continues. Routine technical choices within the agreed behavior are the implementer's responsibility. Unrelated edits and elapsed time alone do not invalidate a decision.
-
-When the shape of that interface is itself in question — how deep the module is, where the seam belongs, what the interface should expose — use the `/codebase-design` skill for the vocabulary. It is the shared source of the module, interface, depth, seam, adapter, leverage and locality terms, and it is a reference to consult, not a session to run.
-
-## Anti-patterns
-
-- **Implementation-coupled** — mocks internal collaborators, tests private methods, or verifies through a side channel (querying the database instead of using the interface). The tell: the test breaks when you refactor but behavior hasn't changed.
-- **Tautological** — the assertion recomputes the expected value the way the code does (`expect(add(a, b)).toBe(a + b)`, a snapshot derived by hand the same way, a constant asserted equal to itself), so it passes by construction and can never disagree with the code. Expected values must come from an independent source of truth — a known-good literal, a worked example, the spec.
-- **Horizontal slicing** — writing all tests first, then all implementation. Bulk tests verify _imagined_ behavior: you test the _shape_ of things rather than user-facing behavior, the tests go insensitive to real changes, and you commit to test structure before understanding the implementation. Work in **vertical slices** instead — one test → one implementation → repeat, each test a **tracer bullet** that responds to what the last cycle taught you.
-
-## Rules of the loop
-
-- **Red before green.** Write the failing test first, then only enough code to pass it. Don't anticipate future tests or add speculative features.
-- **One slice at a time.** One seam, one test, one minimal implementation per cycle.
-- **Refactoring follows evidence.** The implementer performs necessary in-scope refactoring with green behavior tests. Use `/code-review` in the current lifecycle's review mode; independent review is conditional, not an extra requirement of TDD. When required, the independent Reviewer stays read-only against the frozen candidate. The implementer fixes findings, then revalidates affected conclusions and dependencies against the changed candidate. Historical records retain their original review requirements.
+沿用工程现有工具，报告实际运行结果和缺少的环境。不要求任务路由、合同、独立复核、证据包或发布资格。

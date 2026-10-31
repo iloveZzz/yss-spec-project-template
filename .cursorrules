@@ -1,7 +1,3 @@
-# YSS Skills Router
+# YSS Skills
 
-先读取根目录 `AGENTS.md` 与 `yss-project.yaml`。技能身份、别名、触发条件和默认可发现性以
-`.template-spec/agents/yss-skill-registry.yaml` 为准；`.agents/skills` 是共享技能权威内容，
-Codex、Cursor、Pi 直接读取它；Claude Code 只读 `.claude/skills`，那里是由 `scripts/sync-skills` 生成的链接，不得手工修改。
-
-原型阶段使用 `yss-prototype-stage`，不得调用生产组件库。前端实现技能已从本模板退役，由独立的前端规格与 CLI 维护。
+读取根 AGENTS.md，按当前任务选择 .agents/skills 中的技能。Claude 使用 .claude/skills 链接，WorkBuddy 使用 .workbuddy/skills 副本。业务需求与技术参考按需读取，不自动执行检查、测试或阶段门禁。

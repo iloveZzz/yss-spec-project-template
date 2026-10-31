@@ -8,8 +8,6 @@ disable-model-invocation: true
 
 显式处理项目 tracker 中的 Issue / 外部 PR。普通对话由 `yss-product-lifecycle` 分诊；本技能不作为自动路由入口。
 
-在 YSS 仓库中先回交生命周期核对仓库身份、请求范围和当前状态；问题理解及补充信息使用 `orchestration-contract.yaml.request_triage`（位于生命周期技能的 `references/`）。本技能负责取证和建议，不创建正式生命周期资产、不批准合同、不直接改变 Ticket 状态。状态变更回交生命周期核验；远端评论、关闭或其他外部动作另检查明确授权。模板源不生成产品 Ticket。
-
 If this repo treats external pull requests as a request surface (see the issue-tracker config), triage covers them too: **a PR is an issue with attached code** — same roles, same states, same machine, with a few deltas marked "for a PR" below. Resolve a bare `#42` to an issue or PR per the tracker config.
 
 Every comment or issue posted to the issue tracker during triage **must** start with this disclaimer:
@@ -34,11 +32,7 @@ Two categories:
 
 - `needs-triage` — maintainer needs to evaluate
 - `needs-info` — waiting on reporter for more information
-- `ready-for-agent` — 仅限生命周期确认合同已批准且当前、适用门禁通过的垂直切片。
-- `ready-for-human` — 资产仍需当前政策要求的批准或审查，不代表可实现或可合并。
 - `wontfix` — will not be actioned
-
-PR 附有代码也不能凭简报直接成为 `ready-for-agent`，或凭 `ready-for-human` 推断可合并。读取已配置 tracker 的真实状态；冲突回交生命周期处理。配置缺失按生命周期 setup readiness 处理，不从 Git remote 推断平台。
 
 ## Invocation
 
@@ -46,7 +40,6 @@ The maintainer invokes `/triage` and describes what they want in natural languag
 
 - "Show me anything that needs my attention"
 - "Let's look at #42" (issue or PR)
-- "Move #42 to ready-for-agent"
 - "What's ready for agents to pick up?"
 
 ## Show what needs attention
@@ -72,10 +65,6 @@ Show counts and a one-line summary per item. Let the maintainer pick.
 4. **Grill (if needed).** If the request needs fleshing out, call the Skill tool twice, for "grilling" and "domain-modeling", and grill it into shape a round of questions at a time, sharpening domain terms; return proposed terminology and ADR changes to the lifecycle orchestrator before formal writes.
 
 5. **Return the outcome.** 返回类别与状态建议、已验证事实、未决项、证据、逐目标下一动作，以及 [AGENT-BRIEF.md](AGENT-BRIEF.md) 格式的简报草案。`needs-info` 只询问真正缺少的信息；`wontfix` 必须区分已实现与拒绝，已有实现还需确认符合用户场景，不能仅因存在同名功能就关闭。拒绝 enhancement 时可提出 `.out-of-scope/` 更新建议；正式写入与 tracker 动作交由生命周期按范围和授权执行。
-
-## State change requests
-
-用户明确要求把 #42 改为 `ready-for-agent` 时，把该请求交给生命周期复算就绪条件；简报、口头要求和 PR diff 均不能代替当前批准合同与门禁证据。缺失时说明具体阻塞，不直接改标签。其他状态也按 tracker 权威规则核验后执行，不重新定义五态。
 
 ## Needs-info template
 

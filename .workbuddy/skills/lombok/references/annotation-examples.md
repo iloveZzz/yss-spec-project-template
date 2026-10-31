@@ -1,14 +1,10 @@
 # lombok 条件参考
 
-仅在需要具体注解或配置示例时定位对应章节。示例业务名与版本不是工程基线；按当前路线有效输入替换（`daily` 同 Ticket 与已有工程基线，`governed` 批准合同），禁止直接复制成业务实现。
-
 ## Maven Configuration
 
 复用工程父 POM 中已批准的 Lombok 版本与编译插件配置。Lombok 依赖按工程策略使用 provided 或 optional；使用显式注解处理器路径的项目，将 Lombok 放入 `annotationProcessorPaths`。
 
 与 MapStruct 共用时，在同一处理器配置中核验 Lombok、MapStruct processor 和适用的 lombok-mapstruct-binding；binding 不作为业务依赖单独引入。具体配置参见 [MapStruct 配置示例](../../mapstruct/references/annotation-examples.md#maven-configuration)，示例版本仍由当前工程基线替换。
-
-## Common Annotations
 
 ### @Data (All-in-One)
 
@@ -269,7 +265,6 @@ Point p2 = p1.withX(5);  // Point(5, 2)
 | `@EqualsAndHashCode.Exclude` | Exclude from equals/hashCode |
 
 ---
-
 
 ## Anti-Patterns
 

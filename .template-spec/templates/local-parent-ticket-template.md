@@ -1,17 +1,12 @@
 ---
 tracker: "<local-markdown | github | gitlab>"
-status: ready-for-human
 publication: "<local | pending>"
 pending_publication_to: "<none | github | gitlab>"
 ---
 
 # 功能父 Ticket：<功能名称>
 
-本模板以下阶段包适用于 `governed`。已按 `request_triage.delivery_path` 核验的 `daily / standard` 只维护同一记录的范围、验收、工程基线、Skills、实际测试、适用复核、回滚及适用 API 契约审查段；格式见生命周期 `references/daily-delivery.md`，不要创建下方阶段包或批准占位符。正式绑定任务仍使用原路径。
-
 默认 Local Markdown 填写 `tracker: local-markdown`、`publication: local`、`pending_publication_to: none`；若选定的远程平台不可用，填写目标平台、`publication: pending` 和对应的 `pending_publication_to`。
-
-Status: ready-for-human
 
 > Local Markdown 主 tracker 的功能父 Ticket。文件位于配置的功能包根，示例为 `.work/<feature>/parent-ticket.md`。
 > 若明确选择的 GitHub / GitLab 暂不可用，将 `tracker` 改为目标平台、`publication` 改为 `pending`，并填写 `pending_publication_to`；不得改投另一平台。
@@ -30,15 +25,6 @@ Status: ready-for-human
 
 ## 生命周期查询
 
-Checkpoint：`.work/<feature>/checkpoint.yaml`（填写实际存在的路径）。
-
-阶段、阻塞、门禁摘要与下一工作单元从同一 checkpoint 按需查询；本票只保存 Ticket 五态、业务说明与资产入口。
-
-```sh
-scripts/lifecycle-status --root . --checkpoint .work/<feature>/checkpoint.yaml
-scripts/stage-tracking check --root . --checkpoint .work/<feature>/checkpoint.yaml
-```
-
 查询不写文件，也不授予执行权限。批准依据仍读取下方批准记录。
 
 ## 资产与证据
@@ -54,15 +40,7 @@ scripts/stage-tracking check --root . --checkpoint .work/<feature>/checkpoint.ya
 
 ## 批准记录
 
-批准记录写在 `.work/<feature>/gates/<gate-id>-approval.yaml`，使用当前 Profile 的 `approval-record` 合同；门禁标为 `approved` 前必须通过 `scripts/verify-approval-record`。
-
-| 门禁 | 记录路径 | 审查 / 批准依据 |
 |---|---|---|
-|  | `.work/<feature>/gates/<gate-id>-approval.yaml` | 当前 Profile 的门禁政策、适用检查和真实用户决定 |
-
-批准结果读取记录原件；阻塞关系与下一工作单元读取上述 checkpoint，不在本票重填状态表。
-
-## Comments
 
 ## 拆分与就绪
 

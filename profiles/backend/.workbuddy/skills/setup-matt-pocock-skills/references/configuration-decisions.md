@@ -35,8 +35,6 @@ If it is installed, ask exactly one question:
 
 > Do you want to keep the default triage labels? (recommended: **yes**)
 
-The defaults are the five canonical roles, each label string equal to its name: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. On **yes**, write them as-is. Only if the user says no — usually because their tracker already uses other names (e.g. `bug:triage` for `needs-triage`) — collect the overrides so `triage` applies existing labels instead of creating duplicates.
-
 **Section C — Business vocabulary and decisions.** The layout does not branch: every YSS Git repository has exactly one case-sensitive `CONTEXT.md` at its root. Multiple business responsibility areas share that glossary and are distinguished by each business term's `适用业务责任区` and stable `<ContextId>/<EnglishIdentifier>` reference. ADRs live under root `docs/adr/` and are created lazily when the first qualifying decision is accepted.
 
 If the root `CONTEXT.md` is missing, initialize it with `context_schema_version: 1`, the process-term table (`术语 | 含义 | 英文标识 | 避免 / 备注`) and the business-term table (`术语 | 含义 | 英文标识 | 适用业务责任区 | 避免 / 备注`). Do not invent business terms during setup. If a lowercase, nested, duplicate, or mapped context layout exists, stop and report `migration-required`; do not preserve or extend it as a second supported layout.

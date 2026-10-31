@@ -5,14 +5,6 @@ description: "接入或排查 YSS 分布式 ID 的 Segment、Snowflake、主键�
 
 # yss-distributed-id
 
-执行路线消费当前 Profile 主控合同的 `request_triage.delivery_path` 与固定 CLI 的 `route` / `verify-daily` 结果。仅已启用且合格的 Spec、Backend、Frontend `daily` 使用同一 Ticket 的范围、验收、工程基线、实际测试与独立审查；本端写范围不扩大。缺政策或能力时保持正式路径，已有正式任务不得降级；本技能不授予执行授权。
-
-处理 `yss-component-distributed-id` 及 Leaf 消费项目的发号、主键填充与迁移。`governed` 从批准的 `platform_configuration.component_platform_line` 选择 [源码索引](references/source-index.md)，合格 `daily` 使用同 Ticket 已核验的既有工程精确平台线；Boot 2 的历史能力不能推定为 Boot 3 可用能力。缺当前事实可只读分诊；普通路径只修现有已确认策略内的行为，不授权改变主键策略、迁移或宣布兼容。
-
-## 平台与源码门禁
-
-接入、修改、代码生成或提供精确类名/配置前，必须读取并执行 [共享平台与源码门禁](../yss-skill-source-index-refresh/references/backend-component-platform-compatibility.md)，以 `--skill yss-distributed-id` 校验当前路线已核验的精确平台线及匹配源码根（`daily` 来自同 Ticket 的已有工程基线，`governed` 来自批准的配置）；不因普通路径跳过源码检查。缺失、错配或漂移返回 `blocked`；不跨代回退，不在业务实现中升级、降级或替换组件。只读分诊可继续，但须标注未完成源码核验，不能据此宣称跨 Boot/JDK 兼容。
-
 ## 接入决策
 
 1. 核对实际组件 GAV、平台线、依赖树及当前源码，再确定已有主键策略、注入模式和数据库约束。保持既有 Long 主键及调用方类型，策略变更单独评估数据和 API 影响。
@@ -29,7 +21,3 @@ description: "接入或排查 YSS 分布式 ID 的 Segment、Snowflake、主键�
 - 行为修改使用组件父 reactor 的根 `./mvnw` 验证启动、单条/批量主键、迁移边界和目标数据库方言；H2 不能证明生产方言。只读故障分诊与已执行验证分别记录。
 
 当前源码入口与平台差异见 [能力与迁移说明](references/README.md)。不要从 Skill 的历史示例或旧资产复制生产源码；精确类名、配置和默认值以选定平台线的当前源码为准。
-
-## 执行证据与新增影响
-
-`daily` 将命中的组件来源、技术约束和真实测试/命令/退出码回填同 Ticket，接受独立审查；`governed` 保留原合同与正式结果协议。缺平台/源码事实、测试失败或超出当前范围的影响时停止受影响动作并回生命周期调查，未知或排除风险升级；不从本技能取得迁移、升级或新生产接入授权。

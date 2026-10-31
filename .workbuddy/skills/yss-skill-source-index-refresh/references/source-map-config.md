@@ -9,8 +9,6 @@ The refresh script maps component source path hints to two generated skill refer
 | `boot2-java8` | `YSS_SOURCE_ROOT_BOOT2_JAVA8` | `source-index.boot2-java8.md` |
 | `boot3-java17` | `YSS_SOURCE_ROOT_BOOT3_JAVA17` | `source-index.boot3-java17.md` |
 
-`references/source-index.md` only routes to these tracks. Refresh and freshness checks must keep the platform line and source root paired.
-
 | Skill | Backend source path hints |
 | --- | --- |
 | `yss-cache` | `yss-microservice-components/yss-component-cache-parent` |

@@ -17,7 +17,6 @@
 - `brand`、`modules: [{id,label}]`、`groups: [{id,label,moduleId}]`。
 - `pages: [{id,title,moduleId,groupId,component,icon?,sceneKey?,mapScene?}]` 和 `defaultPage`。ID 为唯一 kebab-case；未知模块、分组、默认页及无页面模块拒绝初始化。
 - `sceneMode` 默认 `pages`，从共同场景的 `initial_data.pages[sceneKey || id]` 取原始场景；兼容单页使用 `direct`。`mapScene(scene)` 可显式选择已有来源，但必须返回 ID、状态来源和数据，不能静默回退 primary。
-- `appearance` 默认 `standard`；`glass` 为可选外观。密度仍由现有 CLI/config 规则选择。
 
 构建配置仍为 schema 1 的 title、entry、scenarios、可选 density；入口导入 mountWorkspace 和明确页面定义。原有 `mount(page,title,appearance)` 继续生成单页应用壳，默认页 ID 为 main。无配置 starter 仍为查询任务；多页演练使用 `workspace-standard.config.json`，玻璃使用 `workspace-glass.config.json`。
 
@@ -47,7 +46,3 @@
 - empty：查询、审批、分析使用 empty；表单和冲突保持 primary。
 
 组合是教学任务集合，不声明页面之间共享业务存储或建立新联动。导出器同时输出五类单页、企业工作区和组件状态页。比较候选仍共用场景 JSON；比较 v2、Prototype Evidence v4、Visual Baseline v1 不增加批准字段。
-
-## 六轴 QA
-
-核对导航一致、页签键盘/关闭回退、草稿取消/确认、重新打开、非法入口、反复重置、浮层清理、详情退出和焦点返回；复验五类原有主流程与失败恢复。检查计算样式、窄屏任务、缩放、滚动、对比度及 console。构建和模型单测不能代替浏览器检查；受环境限制时逐项记未执行并保留原因，不宣布 implementation-ready。

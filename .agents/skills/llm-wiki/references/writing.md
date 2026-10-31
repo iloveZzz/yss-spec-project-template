@@ -5,7 +5,7 @@
 - `# H1` immediately followed by a summary paragraph.
 - `[[ArticleId]]` only; no relative `[[../other-wiki]]` inside a Karpathy wiki (cross-wiki use markdown links).
 - Close with nonempty `## 来源` listing raw/live paths and line ranges actually read. Record factual article dependencies in dependsOnArticles; ordinary links are navigation.
-- Optional `## Status` only when cited sources conflict or live disagrees with old raw. See [schema.md](schema.md). Missing Status is not a defect.
+- Optional `## Status` only when cited sources conflict or live disagrees with old raw. See schema.md. Missing Status is not a defect.
 - Do not invent enum values, table names, or endpoints. If unread, write「见源码」.
 
 ## Fact order

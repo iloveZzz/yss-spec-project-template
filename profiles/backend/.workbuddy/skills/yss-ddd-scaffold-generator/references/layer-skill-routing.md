@@ -1,7 +1,5 @@
 # DDD 分层实现路由
 
-本文件只记录脚手架完成后的分层实现路由，不作为独立 Skill 被发现。实际实现必须回到已批准的 Slice Implementation Contract，并加载对应的顶层权威 Skill。
-
 | 分层或适配器 | 权威 Skill | 边界 |
 |---|---|---|
 | Application | `yss-application` | 编排用例与事务，不复制领域规则。 |

@@ -13,8 +13,6 @@ Because it's one file with nothing to install, you can hand it to a non-develope
 
 产品视觉问题回到当前生命周期产品设计阶段，本试验只验证逻辑与状态。
 
-## Process
-
 ### 1. State the question
 
 Before writing code, write down what state model and what question you're prototyping. One paragraph, at the top of the demo (in a visible intro, not just a comment). A logic prototype that answers the wrong question is pure waste — make the question explicit so it can be checked later, whether the user is watching now or returning to it AFK.

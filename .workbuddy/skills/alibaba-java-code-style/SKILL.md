@@ -5,8 +5,6 @@ description: 应用阿里巴巴 Java 手册审查或实现 Java 代码；按当�
 
 # 阿里巴巴 Java 规范
 
-执行路线消费当前 Profile 主控合同的 `request_triage.delivery_path` 与固定 CLI 的 `route` / `verify-daily` 结果。仅已启用且合格的 Spec、Backend、Frontend `daily` 使用同一 Ticket 的范围、验收、工程基线、实际测试与独立审查；本端写范围不扩大。缺政策或能力时保持正式路径，已有正式任务不得降级；本技能不授予执行授权。
-
 本 Skill 从用户提供的《阿里巴巴 Java 开发手册》1.4.0 提炼适用规范。`mandatory` 违规阻断审查，除非仓库 `AGENTS.md`、安全约束或现有框架约定明确要求不同模式；例外须有依据。`recommended` / `reference` 保留建议等级，不因进入下文检查提要变为强制规则。
 
 ## 工作流
@@ -41,9 +39,3 @@ description: 应用阿里巴巴 Java 手册审查或实现 Java 代码；按当�
 ## 来源
 
 用户提供的《阿里巴巴 Java 开发手册》1.4.0，阿里巴巴集团技术团队，更新于 2018-05-20；具体条款等级保留在对应 references 中。
-
-## 阶段 7 执行结果
-
-- 消费当前合同版本、changed files 和 verification results，只审查合同允许范围。
-- 适用 mandatory violation 返回 `violation`，附文件/位置/规则证据；高风险项仅在当前合同确有未满足人工决定或批准要求时保留 `TODO-HUMAN-REVIEW`。
-- `daily` 将适用规则、审查证据、实际测试与偏离写入同 Ticket；`governed` 按正式 `YSS Skill Execution Result` 返回。新增安全/SQL/公共 API 风险按当前路线回生命周期调查，不得仅输出“符合规范”。

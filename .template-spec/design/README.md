@@ -40,8 +40,6 @@ Token 或组件视觉变体变更必须先修改 `DESIGN.md`，再更新派生�
 - `.template-spec/design/templates/examples/`：已填示例仅说明填写方式，不构成项目需求或批准结论。
 - `.template-spec/design/templates/prototype-review-checklist.md`：进入 Spec 校准 / API 影响分析 / 契约草案前的原型评审门禁。
 - `.template-spec/design/templates/prototype-confirmation-template.md`：原型交付物验证后的用户确认记录。
-- `.template-spec/design/templates/prototype-evidence-template.yaml`：Prototype Evidence schema v4 原型档位、浏览器、统一 Design QA、Visual Baseline 引用、条件组件事实、评审和确认的机器可读证据清单。
-- `.template-spec/design/templates/visual-baseline-template.yaml`：Visual Baseline schema v1 页面语义、视口、状态、图片、mask、来源和采集环境的可移植清单。
 
 技能导航：
 

@@ -25,12 +25,6 @@
 
 比较问题、差异轴、事前标准、保持项与选择代价写在 comparison_ref 中。scenario 引用 JSON 的既有场景 ID，case.id 只是比较入口，不重新定义 Visual Baseline case_id。
 
-```bash
-node .agents/skills/yss-prototype-stage/scripts/prototype-comparison.mjs prepare --project-root <项目根> --feature demo --input <比较输入.json>
-node .agents/skills/yss-prototype-stage/scripts/prototype-comparison.mjs validate --root <比较包> --project-root <项目根>
-node .agents/skills/yss-prototype-stage/scripts/prototype-comparison.mjs seal --root <未批准的v2比较包>
-```
-
 输出位于配置的功能包根（示例 `.work/<feature>/design/comparisons/<comparison-id>/`）。prepare 检查 ID 存在、各候选共同数据及派生脚本一致、Token 和资源完整；非空目录拒绝覆盖，失败删除临时包。manifest v2 只保存来源、入口、场景与摘要，不保存批准。
 
 ## 初始化与实际评审
