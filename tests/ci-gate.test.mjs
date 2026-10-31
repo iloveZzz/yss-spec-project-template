@@ -234,7 +234,7 @@ test("AC-004：推送模式全部通过，报告在仓外，仓内没有新增�
   assert.equal(run.report.head, sh(run.root, "rev-parse", "HEAD"));
   const parent = sh(run.root, "rev-parse", "HEAD^");
   assert.equal(run.report.scope_base, parent);
-  assert.ok(run.calls.some((line) => line.startsWith("verify-template-fast ") && line.includes(`--base ${parent} --report-dir ${path.join(run.reportDir, "verification")}`)));
+  assert.ok(run.calls.some((line) => line.startsWith("verify-template-fast ") && line.includes(`--base ${parent} --ci-offline --report-dir ${path.join(run.reportDir, "verification")}`)));
   assert.ok(!run.calls.some((line) => line.startsWith("verify-template-candidate")));
 });
 
@@ -338,7 +338,9 @@ test("选项校验：模式、base 与报告目录", (t) => {
   assert.throws(() => validateOptions({ ...ok, base: "main" }), /40 位/);
   assert.throws(() => validateOptions({ ...ok, base: f.base.slice(0, 12) }), /40 位/);
   assert.throws(() => validateOptions({ ...ok, base: "0".repeat(40) }), /找不到 base 提交/);
-  assert.throws(() => validateOptions({ ...ok, mode: "push" }), /只用于 PR/);
+  assert.doesNotThrow(() => validateOptions({ ...ok, mode: "push" }));
+  assert.doesNotThrow(() => validateOptions({ ...ok, mode: "push", base: "0".repeat(40) }));
+  assert.throws(() => validateOptions({ ...ok, mode: "slow" }), /只用于 PR 或推送/);
   assert.throws(() => validateOptions({ ...ok, reportDir: "relative/dir" }), /绝对路径/);
   assert.throws(() => validateOptions({ ...ok, reportDir: path.join(f.root, "reports") }), /必须在仓库外/);
   fs.mkdirSync(f.reportDir, { recursive: true });
@@ -596,13 +598,41 @@ test('输入观察拒绝同一已有脏文件在守卫阶段再次变化',async 
 });
 
 test('输入观察仅在准备阶段允许忽略且未跟踪的 tooling 安装产物',async t=>{
+ // Exercise the preparation boundary with an explicit non-offline task; ordinary push defers tooling.
+ const steps=STEPS.map(step=>step.id==='verify-template'?{...step,command:context=>['scripts/verify-template-fast',...(context.scopeBase?['--base',context.scopeBase]:[]),'--report-dir',path.join(context.reportDir,'verification')]}:step);
  const execute=async({tooling=true,trackedOutput=false,gitlink=false,write='.template-source/tooling/node/node_modules/installed',after=false,extra={}}={})=>{
   const f=fixture(t,{tooling,trackedOutput,gitlink}),file=path.join(f.root,write),out=sink(),err=sink();
-  const result=await runGate({verification,root:f.root,mode:'push',reportDir:f.reportDir,prepareTools:true,env:{...process.env,...f.env,STUB_LOG:f.stubLog,SETUP_WRITE:file,...after?{FAST_WRITE:file}:{},...Object.fromEntries(Object.entries(extra).map(([key,value])=>[key,value==='FILE'?file:value]))},stdout:out,stderr:err});
+  const result=await runGate({verification,root:f.root,mode:'push',reportDir:f.reportDir,steps,prepareTools:true,env:{...process.env,...f.env,STUB_LOG:f.stubLog,SETUP_WRITE:file,...after?{FAST_WRITE:file}:{},...Object.fromEntries(Object.entries(extra).map(([key,value])=>[key,value==='FILE'?file:value]))},stdout:out,stderr:err});
   return {...result,calls:fs.readFileSync(f.stubLog,'utf8'),err:err.text};
  };
  const good=await execute();assert.equal(good.exitCode,0,good.err);assert.equal(good.report.steps.filter(x=>x.id==='prepare-tools').length,1);assert.equal(good.calls.split('\n').filter(x=>x.startsWith('ci-setup ')).length,1);
  for(const options of [{tooling:false},{write:'README.md'},{write:'ignored-state/unrelated'},{trackedOutput:true},{after:true},{write:'README.md',extra:{SETUP_CHMOD:'FILE'}},{write:'README.md',extra:{SETUP_STAGE:'FILE'}},{extra:{SETUP_COMMIT:'1'}},{gitlink:true,extra:{SETUP_SUBCOMMIT:'1'}},{extra:{SETUP_FAIL:'1'}}]){const bad=await execute(options);assert.equal(bad.exitCode,1,JSON.stringify(options));if(!options.after)assert.equal(bad.calls.includes('verify-template-fast '),false,JSON.stringify(options));}
+});
+
+test('推送以事件 before 覆盖多个提交，全零 before 选择所有已跟踪文件',async t=>{
+ const f=fixture(t,{scopedGuards:true});
+ fs.mkdirSync(path.join(f.root,'docs'),{recursive:true});fs.writeFileSync(path.join(f.root,'docs/new.md'),'new');sh(f.root,'add','docs/new.md');sh(f.root,'commit','-qm','third');
+ const out=sink(),err=sink();
+ const result=await runGate({verification,root:f.root,mode:'push',base:f.base,reportDir:f.reportDir,env:{...process.env,STUB_LOG:f.stubLog},stdout:out,stderr:err});
+ assert.equal(result.exitCode,0,err.text);assert.equal(result.report.scope_base,f.base);
+ assert.ok(JSON.parse(fs.readFileSync(result.report.verification.report_file)).plan.commands.some(row=>row.id==='check.fixture-docs'));
+ const command=STEPS.find(step=>step.id==='verify-template').command({scopeBase:null,mode:'push',reportDir:f.reportDir,initialFiles:['README.md','docs/new.md']});
+ assert.deepEqual(command.slice(1,5),['--changed-file','README.md','--changed-file','docs/new.md']);
+ assert.ok(command.includes('--ci-offline'));
+ const first=fixture(t,{commits:1}),tracked=sh(first.root,'ls-files').split('\n').sort();
+ const probe={id:'first-push',title:'首推范围',run:context=>{assert.deepEqual([...context.initialFiles].sort(),tracked);return {ok:true,lines:[]};}};
+ const initial=await runGate({verification,root:first.root,mode:'push',base:'0'.repeat(40),reportDir:first.reportDir,steps:[probe],stdout:sink(),stderr:sink()});
+ assert.equal(initial.exitCode,0);assert.equal(initial.report.scope_base,null);
+ const initialFixture=fixture(t,{commits:1,scopedGuards:true}),policyFile=path.join(initialFixture.root,'.template-source/process/template-verification-profiles.yaml');
+ const policy=JSON.parse(fs.readFileSync(policyFile));policy.routing=[{patterns:['**'],groups:['guards']}];
+ for(const row of policy.profiles.fast.checks)row.input_patterns=['**'];
+ for(const row of policy.groups.guards.commands)row.input_patterns=['**'];
+ fs.writeFileSync(policyFile,JSON.stringify(policy));sh(initialFixture.root,'add','-A');sh(initialFixture.root,'commit','-qm','initial policy');
+ const firstOut=sink(),firstErr=sink();
+ const selected=await runGate({verification,root:initialFixture.root,mode:'push',base:'0'.repeat(40),reportDir:initialFixture.reportDir,env:{...process.env,STUB_LOG:initialFixture.stubLog},stdout:firstOut,stderr:firstErr});
+ assert.equal(selected.exitCode,0,firstErr.text);
+ const inner=JSON.parse(fs.readFileSync(selected.report.verification.report_file));
+ assert.ok(inner.plan.changed_files.includes('scripts/ci-setup'));
 });
 
 
@@ -643,15 +673,20 @@ test('slow 准备不消耗验证本身1000秒预算，超时保留实际退出',
  assert.deepEqual(run.report.verification.guard_task_ids,[]);
  });
 
-test('PR 离线检查明确延后原生及其消费者，push 不改变范围',async t=>{
+test('PR 与主分支推送离线检查均明确延后原生及其消费者',async t=>{
  const pr=await gate(t,{mode:'pr',fixture:{scopedGuards:true,offlineDeps:true},prepareTools:true});
  assert.equal(pr.exitCode,0,pr.err);
  assert.ok(pr.calls.some(line=>line.startsWith('verify-template-fast ')&&line.includes('--ci-offline')));
  assert.equal(pr.report.tool_requirements.native_cli,false);
  assert.deepEqual(pr.report.verification.deferred.map(row=>row.id).sort(),['check.fixture-dependent','check.fixture-native']);
  assert.match(pr.out,/离线.*延后|延后.*原生/);
- const push=await gate(t,{mode:'push',fixture:{scopedGuards:true}});
- assert.ok(push.calls.some(line=>line.startsWith('verify-template-fast ')&&!line.includes('--ci-offline')));
+ const push=await gate(t,{mode:'push',fixture:{scopedGuards:true,offlineDeps:true},prepareTools:true});
+ assert.equal(push.exitCode,0,push.err);
+ assert.ok(push.calls.some(line=>line.startsWith('verify-template-fast ')&&line.includes('--ci-offline')));
+ assert.equal(push.report.tool_requirements.native_cli,false);
+ assert.equal(push.report.verification.scope,'push-offline');
+ assert.deepEqual(push.report.verification.deferred.map(row=>row.id).sort(),['check.fixture-dependent','check.fixture-native']);
+ assert.match(push.out,/离线.*延后|延后.*原生/);
 });
 
 test('设计原型准备拒绝未切换到 packageManager 指定版本的 pnpm', t => {

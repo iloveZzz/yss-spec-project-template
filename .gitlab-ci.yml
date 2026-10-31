@@ -17,7 +17,7 @@ template-gate:
       if [ "$CI_PIPELINE_SOURCE" = "merge_request_event" ]; then
         scripts/ci-gate --mode pr --base "$CI_MERGE_REQUEST_DIFF_BASE_SHA" --report-dir /tmp/ci-gate --prepare-tools
       else
-        scripts/ci-gate --mode push --report-dir /tmp/ci-gate --prepare-tools
+        scripts/ci-gate --mode push --report-dir /tmp/ci-gate --prepare-tools --base "$CI_COMMIT_BEFORE_SHA"
       fi
   after_script:
     # 报告必须写在仓外；GitLab 只收集项目目录内的 artifact，ci-gate 结束后再复制。

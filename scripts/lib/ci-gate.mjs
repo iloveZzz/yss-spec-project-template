@@ -11,6 +11,7 @@ import { resolveMaintenanceOutput } from "./maintenance-storage.mjs";
 const MODES = ["pr", "push", "slow"];
 const SLOW_VERIFICATION_TIMEOUT_MS = 1000 * 1000;
 const FULL_SHA = /^[0-9a-f]{40}$/;
+const INITIAL_PUSH = '0'.repeat(40);
 /** 重步骤在任一前置步骤失败时跳过：先把便宜的失败原因交给作者，不在已知失败的候选上空耗数分钟。 */
 const SKIPPED_AFTER_FAILURE = "前置步骤失败，已跳过";
 
@@ -22,7 +23,7 @@ const SKIPPED_AFTER_FAILURE = "前置步骤失败，已跳过";
  * - modes：只在列出的模式下执行，缺省为 pr 与 push 都执行；slow 模式只执行显式声明 slow 的步骤。
  * - env：该步骤附加的环境变量。
  * - blocking：false 时失败只记录、不影响退出码。
- * - context.scopeBase：fast 的变更范围基准。PR 模式是目标分支 SHA；推送模式是 HEAD^（合并提交的第一亲本即上一个主分支顶点）。
+ * - context.scopeBase：fast 的变更范围基准。PR 模式是目标分支 SHA；推送模式优先使用事件的 before SHA，本地无输入时回退 HEAD^。
  *   干净检出且不带 --base 时 fast 的变更文件数为 0，只会空过，所以必须带基准。
  */
 export const STEPS = [
@@ -82,7 +83,7 @@ export const STEPS = [
     id: "verify-template",
     title: "模板验证（fast，按变更范围）",
     heavy: true,
-    command: (context) => ["scripts/verify-template-fast", ...(context.scopeBase ? ["--base", context.scopeBase] : []), ...(context.mode === 'pr' ? ['--ci-offline'] : []), "--report-dir", path.join(context.reportDir, "verification")],
+    command: (context) => ["scripts/verify-template-fast", ...(context.scopeBase ? ["--base", context.scopeBase] : []), ...(context.initialFiles || []).flatMap(file=>['--changed-file',file]), '--ci-offline', "--report-dir", path.join(context.reportDir, "verification")],
     fix: "查看该步骤日志与 verification 报告中第一个失败的检查；本地用同一命令复现",
   },
   {
@@ -219,14 +220,14 @@ function git(root, args) {
 
 export function validateOptions({ root, mode, base, reportDir }) {
   if (!MODES.includes(mode)) throw new TypeError("必须用 --mode pr、--mode push 或 --mode slow 指定模式");
-  if (mode === "pr") {
+  if (mode === "pr" || (mode === "push" && base)) {
     if (!base) throw new TypeError("PR 模式需要 --base <目标分支的完整提交 SHA>");
     if (!FULL_SHA.test(base)) throw new TypeError("--base 必须是 40 位小写十六进制的完整提交 SHA，不接受分支名或缩写");
-    if (git(root, ["cat-file", "-e", `${base}^{commit}`]).status !== 0) {
+    if (!(mode === 'push' && base === INITIAL_PUSH) && git(root, ["cat-file", "-e", `${base}^{commit}`]).status !== 0) {
       throw new TypeError(`本地找不到 base 提交 ${base}；CI 检出需包含目标分支历史（GitHub 用 fetch-depth: 0，GitLab 设 GIT_DEPTH: 0）`);
     }
   } else if (base) {
-    throw new TypeError("--base 只用于 PR 模式");
+    throw new TypeError("--base 只用于 PR 或推送模式");
   }
   if (reportDir !== undefined) {
     if (!path.isAbsolute(reportDir)) throw new TypeError("--report-dir 必须是绝对路径");
@@ -325,8 +326,12 @@ export async function runGate({ root, mode, base, reportDir, steps: allSteps = S
   }
   const head = git(root, ["rev-parse", "HEAD"]).stdout.trim();
   const parent = git(root, ["rev-parse", "--verify", "--quiet", "HEAD^"]);
-  const scopeBase = mode === "pr" ? base : (parent.status === 0 ? parent.stdout.trim() : null);
-  const context = { root, mode, base, scopeBase, reportDir: directory };
+  const initialPush=mode==='push'&&base===INITIAL_PUSH;
+  const tracked=initialPush?git(root,['ls-files','-z']):null;
+  if(tracked && tracked.status!==0)throw new TypeError('无法读取首次推送的已跟踪文件');
+  const initialFiles=tracked?tracked.stdout.split('\0').filter(Boolean):[];
+  const scopeBase = mode === "pr" ? base : initialPush ? null : base || (parent.status === 0 ? parent.stdout.trim() : null);
+  const context = { root, mode, base, scopeBase, initialFiles, reportDir: directory };
   const report = { mode, base: base ?? null, scope_base: scopeBase, head, started_at: new Date().toISOString(), report_dir: directory, status: "running", duration_ms: null, steps: [] };
   const reportPath = path.join(directory, "report.json");
   const save = () => writeFileSync(reportPath, `${JSON.stringify(report, null, 2)}\n`);
@@ -396,9 +401,10 @@ export async function runGate({ root, mode, base, reportDir, steps: allSteps = S
             const reportFile=path.join(reportDirectory,'report.json');
             const verificationReport=JSON.parse(readFileSync(reportFile,'utf8'));
             validateVerificationReport(verificationReport,{root,expectedPlan,reportDirectory,expectedInvocation:{command:path.join(root,'scripts/run-template-verification'),args},currentInputDigest:verificationInputDigest(root),observedExitCode:entry.exit_code,requireRelease:false});
-            const deferred=mode==='pr'?(expectedPlan.selection?.omitted||[]).filter(item=>item.reason==='deferred-ci-offline').map(({id,reason,deferred_reason,selection_reason})=>({id,reason,deferred_reason,selection_reason})):[];
-            report.verification={report_file:reportFile,guard_task_ids:mode==='slow'?[]:ciVerificationCheckIds().filter(id=>expectedPlan.commands.some(item=>item.id===id)),...(mode==='pr'?{scope:'pr-offline',deferred}: {})};
-            if(mode==='pr')stdout.write(`PR 离线检查范围有限；延后 ${deferred.length} 项，合并前或发行时须执行：${deferred.map(item=>item.id).join(', ')||'无'}\n`);
+            const offline=expectedPlan.selection?.ci_offline===true;
+            const deferred=offline?(expectedPlan.selection?.omitted||[]).filter(item=>item.reason==='deferred-ci-offline').map(({id,reason,deferred_reason,selection_reason})=>({id,reason,deferred_reason,selection_reason})):[];
+            report.verification={report_file:reportFile,guard_task_ids:mode==='slow'?[]:ciVerificationCheckIds().filter(id=>expectedPlan.commands.some(item=>item.id===id)),...(offline?{scope:`${mode}-offline`,deferred}: {})};
+            if(offline)stdout.write(`${mode === 'pr' ? 'PR' : '推送'}离线检查范围有限；延后 ${deferred.length} 项，合并前或发行时须执行：${deferred.map(item=>item.id).join(', ')||'无'}\n`);
           }
         }
       } catch(error){
@@ -432,6 +438,6 @@ export async function runGate({ root, mode, base, reportDir, steps: allSteps = S
   const names = report.steps.filter((entry) => entry.status === "failed").map((entry) => entry.id);
   stdout.write(failed
     ? `ci-gate 失败：${names.join("、")}（${seconds(report.duration_ms)}）；报告 ${reportPath}\n`
-    : `ci-gate 通过${mode==='pr'?'（PR 离线 limited）':''}：${report.steps.length} 步（${seconds(report.duration_ms)}）；报告 ${reportPath}\n`);
+    : `ci-gate 通过${mode!=='slow'?`（${mode} 离线 limited）`:''}：${report.steps.length} 步（${seconds(report.duration_ms)}）；报告 ${reportPath}\n`);
   return { status: report.status, exitCode: failed ? 1 : 0, report, reportPath };
 }

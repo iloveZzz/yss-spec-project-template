@@ -22,18 +22,19 @@ jobs:
       - uses: ./.github/actions/setup-template
         with:
           runtime-only: 'true'
-          candidate-go: ${{ github.event_name != 'pull_request' }}
+          candidate-go: 'false'
       - name: scripts/ci-gate
         shell: bash
         env:
           EVENT_NAME: ${{ github.event_name }}
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          BEFORE_SHA: ${{ github.event.before }}
           REPORT_DIR: /tmp/ci-gate
         run: |
           if [[ "$EVENT_NAME" == pull_request ]]; then
             scripts/ci-gate --mode pr --base "$BASE_SHA" --report-dir "$REPORT_DIR" --prepare-tools
           else
-            scripts/ci-gate --mode push --report-dir "$REPORT_DIR" --prepare-tools
+            scripts/ci-gate --mode push --report-dir "$REPORT_DIR" --prepare-tools --base "$BEFORE_SHA"
           fi
       - uses: actions/upload-artifact@v4
         if: always()

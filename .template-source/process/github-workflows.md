@@ -7,7 +7,7 @@
 | 入口 | 行为 | 结果边界 |
 |---|---|---|
 | 日常交付：`scripts/verify-template-fast` | 先看 `--plan`；按检查输入、变化行为及消费者选择必要集合，缺映射或非法依赖先修正，不自动运行全量 | `implementation-ready`，报告 `limited`，记录实际覆盖及未覆盖边界 |
-| 合入检查：`scripts/ci-gate --mode pr --base <完整 SHA>` / `--mode push` | PR / MR 运行受影响的离线检查，主分支推送运行完整选中的 fast；详见下文“合入检查” | PR 报告列出延后项；原生检查须在合并前或发行门禁执行，不替代发布验证 |
+| 合入检查：`scripts/ci-gate --mode pr --base <完整 SHA>` / `--mode push` | PR / MR 与主分支推送均运行受影响的离线检查；详见下文“合入检查” | 报告列出延后项；原生检查须在合并前或发行门禁执行，不替代发布验证 |
 | main 集成验证与正式发布：`scripts/verify-template` | 按当前策略执行全部适用检查、前后置与固定来源准备；要求已提交来源 | 检查完整候选；当前分支为 main 不单独触发 |
 | 固定版本：`verify-template-release.mjs` | 输入完整 40 位模板 commit，执行上述验证与指定 CLI 家族集成 | 产出证据，不打 tag、不创建 Release、不发布包 |
 
@@ -37,11 +37,11 @@
 |---|---|---|
 | GitHub `pull_request` | `--mode pr` | `github.event.pull_request.base.sha` |
 | GitLab `merge_request_event` | `--mode pr` | `CI_MERGE_REQUEST_DIFF_BASE_SHA` |
-| 主分支推送 | `--mode push` | 脚本取 `HEAD^`（合并提交的第一亲本即上一个主分支顶点） |
+| 主分支推送 | `--mode push` | 事件中的推送前完整 SHA；首次推送全零时选择全部已跟踪文件 |
 
-两个平台都用完整历史检出。PR / MR 以完整 base SHA 执行 `verify-template-fast --ci-offline`，只运行受影响且无需额外构建工具的检查；需要原生 CLI、插件候选或需另行准备的工具链及依赖这些检查的消费者列为延后，不能视作通过。受影响的原生、安全、审批、安装、同步和用户数据保护检查须在合并前或发行门禁实际通过。推送使用 `HEAD^` 执行完整选中的 fast，仅首个提交没有上一提交时不带 `--base`。普通 fast、slow 和 release 不受离线裁剪影响。
+两个平台都用完整历史检出。PR / MR 以完整 base SHA 执行 `verify-template-fast --ci-offline`，只运行受影响且无需额外构建工具的检查；需要原生 CLI、插件候选或需另行准备的工具链及依赖这些检查的消费者列为延后，不能视作通过。受影响的原生、安全、审批、安装、同步和用户数据保护检查须在合并前或发行门禁实际通过。推送按事件中推送前的完整 SHA 执行同样的离线选择；首次推送的全零 SHA 选择全部已跟踪文件，本地省略 `--base` 时回退 `HEAD^`。普通 fast、slow 和 release 不受离线裁剪影响。
 
-重依赖由实际选中的计划计算：完整 fast 需要原生 CLI 时，通过 `ensure-native-yss` 固定可信正式来源并构建；CI 不接受 `YSS_NATIVE_BINARY_OVERRIDE`。PR 离线范围不准备已延后的原生 CLI 或工具链，报告列出延后原因与任务。基础 Node、Python 和报告校验依赖仍由 runner 提供或安装，因此不承诺执行环境完全断网。获取、摘要或来源校验失败仍按各自范围拒绝，不能回退不受信来源。
+重依赖由实际选中的计划计算：完整 fast 需要原生 CLI 时，通过 `ensure-native-yss` 固定可信正式来源并构建；CI 不接受 `YSS_NATIVE_BINARY_OVERRIDE`。PR 和推送离线范围不准备已延后的原生 CLI 或工具链，报告列出延后原因与任务。基础 Node、Python 和报告校验依赖仍由 runner 提供或安装，因此不承诺执行环境完全断网。获取、摘要或来源校验失败仍按各自范围拒绝，不能回退不受信来源。
 
 `ci-setup --requirements-file <绝对JSON文件>` 严格校验共用需求，不能混用旧准备参数。导出仅写本轮报告目录的 `setup.env`；gate 按允许字段、绝对路径和摘要读取数据，不执行文件内容。准备前后对照原始计划和完整输入；仅本轮明确请求的、Git 忽略且未跟踪的模板 `node_modules` 安装产物可在准备阶段变化，随后恢复完整观察。源码、锁、模式、Git 状态或无关忽略文件漂移均拒绝。获取、构建或安装失败使 gate 非零退出，保留日志。yss-cli 不再是 submodule。
 

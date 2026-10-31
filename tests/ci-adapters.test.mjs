@@ -36,8 +36,9 @@ test("GitHub：PR 与 main 推送触发，只读权限，完整历史，base 经
   assert.match(text, /fetch-depth: 0/);
   assert.match(text, /persist-credentials: false/);
   assert.match(text, /BASE_SHA: \$\{\{ github\.event\.pull_request\.base\.sha \}\}/);
+  assert.match(text, /BEFORE_SHA: \$\{\{ github\.event\.before \}\}/);
   assert.match(text, /scripts\/ci-gate --mode pr --base "\$BASE_SHA" --report-dir "\$REPORT_DIR"/);
-  assert.match(text, /scripts\/ci-gate --mode push --report-dir "\$REPORT_DIR"/);
+  assert.match(text, /scripts\/ci-gate --mode push --report-dir "\$REPORT_DIR" --prepare-tools --base "\$BEFORE_SHA"/);
 });
 
 test("GitHub：run 脚本里不内联表达式，避免把事件字段拼进 shell", { skip: !YAML }, () => {
@@ -57,7 +58,7 @@ test("GitLab：MR 与默认分支推送触发，完整历史，MR 模式用目�
   assert.match(text, /^template-gate:$/m);
   assert.match(text, /GIT_DEPTH: "0"/);
   assert.match(text, /scripts\/ci-gate --mode pr --base "\$CI_MERGE_REQUEST_DIFF_BASE_SHA" --report-dir \/tmp\/ci-gate/);
-  assert.match(text, /scripts\/ci-gate --mode push --report-dir \/tmp\/ci-gate/);
+  assert.match(text, /scripts\/ci-gate --mode push --report-dir \/tmp\/ci-gate --prepare-tools --base "\$CI_COMMIT_BEFORE_SHA"/);
   assert.match(text, /when: always/);
 });
 
@@ -159,9 +160,9 @@ test('适配器仅供给基础运行时，按需准备统一交给 gate',()=>{
  assert.doesNotMatch(read('scripts/ci-setup'),/submodule update|sync-profile-skills/);
 });
 
-test('PR 不强制准备固定 Go，主分支仍准备候选工具链',()=>{
+test('PR 和主分支推送均不强制准备固定 Go',()=>{
  const setup=parsed(WORKFLOW).jobs['template-gate'].steps.find(step=>step.uses==='./.github/actions/setup-template');
- assert.equal(setup.with['candidate-go'],"${{ github.event_name != 'pull_request' }}");
+ assert.equal(setup.with['candidate-go'],'false');
 });
 
 test("GitLab 适配器与 CI 用的环境文件不进仓库，并排除出实例分发", () => {
