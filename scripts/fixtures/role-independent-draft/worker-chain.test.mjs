@@ -8,6 +8,9 @@ import {technicalDigest} from '../../../.agents/skills/yss-technical-design/scri
 import {buildDecisionFixture} from '../../lib/testing/user-decision-fixture.mjs';
 import {compileSliceTaskPackage} from '../../lib/slice-task-package.mjs';
 import {prepareSliceImplementationContract,persistSliceDraft} from '../../lib/slice-contract-preparation.mjs';
+import {readSliceContract} from '../../lib/slice-contract.mjs';
+import {renderSliceContractView} from '../../lib/slice-contract-views.mjs';
+import {viewContract as renderNodeContract} from '../../lib/contract-views.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -81,6 +84,16 @@ for(const [cmd,args]of [['javac',['-d',dir,...walk('src/main/java'),main]],['jav
   const prepared=prepareSliceImplementationContract({root,ticket_ref:ticket,sources,refinements});
   assert.deepEqual(prepared.report.blockers,[]);write('slice.json',prepared.slice_contract);
   run('current-backend-slice4-draft',['contract','verify','--kind','slice-draft','--file','slice.json']);
+  const loaded=readSliceContract('slice.json',{root}),rendered=renderSliceContractView('slice.json',{root});
+  assert.equal(loaded.sources.ticket.digest,prepared.slice_contract.basis.ticket.digest);
+  assert.match(rendered.acceptance['AC-1'],/输入2返回3.*拒绝/);
+  for(const profile of ['review','task','full']) {
+   const nodeView=renderNodeContract('slice.json',{root,kind:'slice',profile,unit_id:profile==='task'?prepared.slice_contract.work_units[0].id:undefined,task_layout:'focused'});
+   assert.match(nodeView.markdown,/输入2返回3.*拒绝/);
+   assert.equal(nodeView.read_only,true);assert.equal(nodeView.execution_allowed,false);
+  }
+  const ticketBytes=read(ticket);write(ticket,'changed source');
+  assert.throws(()=>readSliceContract('slice.json',{root}),/stale|来源|摘要|原始字节/i);write(ticket,ticketBytes);
   const viewContract=structuredClone(prepared.slice_contract),selectedUnit=viewContract.work_units[0].id;
   const secondUnit=structuredClone(viewContract.work_units[0]);secondUnit.id='work-unit.second';viewContract.work_units.push(secondUnit);write('slice-views.json',viewContract);
   for(const view of ['review','task','full']){
