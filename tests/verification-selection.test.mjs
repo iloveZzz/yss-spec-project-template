@@ -27,14 +27,19 @@ test('CI 离线计划保留独立检查并明确延后工具和传递消费者',
  for(const options of [{profile:'release'},{includeSlow:true},{includeSlow:'only'},{ciGuards:true},{selection:'legacy'},{selection:'shadow'}])assert.throws(()=>planTemplateVerification({config,changedFiles:['change.txt'],ciOffline:true,...options}),/CI_OFFLINE_FAST_ONLY/);
  assert.throws(()=>planTemplateVerification({config,changedFiles:['unknown.txt'],ciOffline:true}),/UNKNOWN_VERIFICATION_PATH|INCOMPLETE_VERIFICATION_INPUTS/);
 });
-test('离线选项由执行器与报告消费者独立重建并拒绝扩大范围',async()=>{
+test('离线选项由执行器与报告消费者独立重建并拒绝扩大范围',async t=>{
  const {selectVerificationInputs}=await import('../.template-source/scripts/lib/template-verification-worker.mjs');
  const {compileExpectedVerificationPlan}=await import('../.template-source/scripts/lib/verification-report-validator.mjs');
  const {verificationToolRequirements}=await import('../.template-source/scripts/lib/verification-preflight.mjs');
- const head=spawnSync('git',['rev-parse','HEAD'],{cwd:ROOT,encoding:'utf8'}).stdout.trim();
- const args=['--profile','fast','--base',head,'--ci-offline'];
- const selected=await selectVerificationInputs(args,ROOT,{environment:{...process.env,YSS_VERIFY_SLOW:''}});
- const rebuilt=compileExpectedVerificationPlan({root:ROOT,args,environment:{...process.env,YSS_VERIFY_SLOW:''}});
+ const root=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'offline-plan-')));t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ fs.mkdirSync(path.join(root,'.template-source/process'),{recursive:true});
+ fs.copyFileSync(path.join(ROOT,'.template-source/process/template-verification-profiles.yaml'),path.join(root,'.template-source/process/template-verification-profiles.yaml'));
+ fs.writeFileSync(path.join(root,'yss-project.yaml'),'schema_version: 1\nrepository_mode: template-source\n');
+ const git=(...args)=>{const r=spawnSync('git',['-c','user.name=test','-c','user.email=test@example.invalid','-c','commit.gpgsign=false',...args],{cwd:root,encoding:'utf8'});assert.equal(r.status,0,r.stderr);return r.stdout.trim();};
+ git('init','-q');git('add','.');git('commit','-qm','base');const head=git('rev-parse','HEAD');
+ const args=['--profile','fast','--base',head,'--changed-file','tests/scenarios/verify-user-decision-scenarios.mjs','--ci-offline'];
+ const selected=await selectVerificationInputs(args,root,{environment:{...process.env,YSS_VERIFY_SLOW:''}});
+ const rebuilt=compileExpectedVerificationPlan({root,args,environment:{...process.env,YSS_VERIFY_SLOW:''}});
  assert.deepEqual(selected.plan.selection.omitted,rebuilt.selection.omitted);
  assert.deepEqual(selected.plan.selection.candidate.map(row=>row.id),rebuilt.selection.candidate.map(row=>row.id));
  assert.equal(selected.plan.selection.ci_offline,true);
@@ -42,12 +47,12 @@ test('离线选项由执行器与报告消费者独立重建并拒绝扩大范�
  const needs=verificationToolRequirements(selected.plan);
  for(const key of ['native_cli','plugin_candidate','go','tooling','vue','design_vue'])assert.ok(!needs[key],key);
  for(const extra of [['--checkpoint','x'],['--task-package','x']]){
-  await assert.rejects(selectVerificationInputs([...args,...extra],ROOT),/CI_OFFLINE_EXPLICIT_INPUTS_REFUSED/);
-  assert.throws(()=>compileExpectedVerificationPlan({root:ROOT,args:[...args,...extra]}),/CI_OFFLINE_EXPLICIT_INPUTS_REFUSED/);
+  await assert.rejects(selectVerificationInputs([...args,...extra],root),/CI_OFFLINE_EXPLICIT_INPUTS_REFUSED/);
+  assert.throws(()=>compileExpectedVerificationPlan({root,args:[...args,...extra]}),/CI_OFFLINE_EXPLICIT_INPUTS_REFUSED/);
  }
- await assert.rejects(selectVerificationInputs(['--profile','release','--base',head,'--ci-offline'],ROOT),/CI_OFFLINE_FAST_ONLY/);
- assert.throws(()=>compileExpectedVerificationPlan({root:ROOT,args:['--profile','release','--base',head,'--ci-offline']}),/CI_OFFLINE_FAST_ONLY/);
- await assert.rejects(selectVerificationInputs(args,ROOT,{environment:{...process.env,YSS_VERIFY_SLOW:'only'}}),/CI_OFFLINE_FAST_ONLY/);
+ await assert.rejects(selectVerificationInputs(['--profile','release','--base',head,'--ci-offline'],root),/CI_OFFLINE_FAST_ONLY/);
+ assert.throws(()=>compileExpectedVerificationPlan({root,args:['--profile','release','--base',head,'--ci-offline']}),/CI_OFFLINE_FAST_ONLY/);
+ await assert.rejects(selectVerificationInputs(args,root,{environment:{...process.env,YSS_VERIFY_SLOW:'only'}}),/CI_OFFLINE_FAST_ONLY/);
 });
 test('退役覆盖率测试的真实删除差异选择发行消费者并拒绝未知相邻路径',async t=>{
  const {selectVerificationInputs}=await import('../.template-source/scripts/lib/template-verification-worker.mjs');
