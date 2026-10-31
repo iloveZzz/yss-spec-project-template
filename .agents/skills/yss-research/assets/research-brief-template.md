@@ -3,7 +3,6 @@
 ## Research Scope
 
 - Profile: `technical-evidence` or `strategy-evidence`
-- Mode: `evidence-audited`
 - Decision informed:
 - Audience:
 - Time horizon:

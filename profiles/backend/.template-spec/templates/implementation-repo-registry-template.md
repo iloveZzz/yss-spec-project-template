@@ -27,7 +27,6 @@ owner: ai
 | git_entry_mode | `160000`；仅 `git-submodule` |
 | superproject_git_url | 父仓远端；必须与 `git_url` 不同 |
 | checkout_state | attached-branch / detached-head / uninitialized / empty-gitlink / 不适用 |
-| scaffold_status | existing / required / initialized |
 | scaffold_architecture | `domain-driven` / `layered-mvc` / frontend / none |
 | scaffold_decision_ref | `scaffold-architecture-decisions.yaml#<decision_id>` / none |
 | scaffold_skill | `yss-ddd-scaffold-generator` / `yss-layered-mvc-scaffold-generator` / none |
@@ -84,5 +83,4 @@ Harness 内项目路径约束：`apps/backend/`、`apps/frontend/` 只能作为�
 
 - 关联 Harness change：
 - 关联垂直切片：
-- 关联阶段 checkpoint：
 - fresh verification 命令：

@@ -4,20 +4,7 @@ description: "实现或排查 MapStruct DTO、PO、Domain 映射及 Lombok 集�
 ---
 # MapStruct Object Mapping
 
-执行路线消费当前 Profile 主控合同的 `request_triage.delivery_path` 与固定 CLI 的 `route` / `verify-daily` 结果。仅已启用且合格的 Spec、Backend、Frontend `daily` 使用同一 Ticket 的范围、验收、工程基线、实际测试与独立审查；本端写范围不扩大。缺政策或能力时保持正式路径，已有正式任务不得降级；本技能不授予执行授权。
-
-只读排障先核验实际对象、工程基线和处理器配置。`governed` 写入消费批准且当前的 Slice/work unit；合格 `daily` 写入消费同 Ticket 的对象、验收、已有工程处理器基线与实际 `scope.paths`，不因缺 Slice 补造正式资产。
-
-## YSS 阶段 7 执行结果
-
-- Java、依赖与处理器版本来自工程基线，不从下面通用示例推断。Java 语法、API、处理器与测试工具均消费当前路线已核验的精确平台事实（`daily` 为同 Ticket 的已有工程基线，`governed` 为批准配置）；MVC 的 wire/internal 转换在 server，core/service 不依赖 client，Repository 不依赖上层 DTO。采用 Spring Bean 和构造器注入，显式映射或忽略字段；禁止通过全局 IGNORE 掩盖合同字段遗漏。
-- `governed` 消费批准后的 Slice Contract/work unit；合格 `daily` 消费同 Ticket 已确认的对象与 seam，只在实际允许路径内调整 DTO/VO/PO/Domain 转换。
-- 受控生成必须记录 source/target、忽略字段、更新语义、Lombok processor 配置和 mapper 行为测试。
-- `daily` 在同 Ticket 返回实际文件、适用注解/转换约束、真实编译/测试命令与退出码，接受当前候选的独立审查；`governed` 按 `yss-implementation-contract-compiler` 的正式 Execution Result 返回。未映射字段、反射/BeanUtils 退化或越界路径返回 `violation`。
-
 ## 按需读取
-
-先确认当前任务涉及的对象与有效输入（`daily` 同 Ticket/已有工程基线，`governed` 批准合同），只读取对应参考段落：
 
 | 任务 | 参考 |
 |---|---|

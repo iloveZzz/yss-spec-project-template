@@ -20,7 +20,6 @@
 | AntD CLI 校验证据 | `.work/<feature>/design/<feature>-prototype-confirmation.md` 或评审记录 | 有 UI 时必需；记录 design.md / info / demo / token / semantic 查询 |
 | 用户确认记录 | `.work/<feature>/design/<feature>-prototype-confirmation.md` | 有 UI 时必需；未确认前不得进入 OpenAPI Draft 评审 |
 | YSS 工程基线 | `.agents/skills/yss-ddd-scaffold-generator/references/engineering-baseline.md` |  |
-| YSS DTO wire profile | `.agents/skills/yss-dto/references/openapi-wire-profile.yaml`；`scripts/verify-yss-dto-openapi-profile` |  |
 
 ## P0 追踪矩阵
 
@@ -28,7 +27,7 @@
 |---|---|---|---|---|---|---|---|---|
 |  |  |  |  |  |  |  |  |  |
 
-## 门禁检查
+## 参考检查
 
 | Gate | Pass 条件 | 结论 | 备注 |
 |---|---|---|---|

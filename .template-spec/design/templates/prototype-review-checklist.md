@@ -15,9 +15,8 @@
 | 原型验证清单 | `.work/<feature>/verification/prototype-evidence.yaml` | 档位确定后补齐 schema v4 共同与档位证据，并引用 Visual Baseline Bundle v1 |
 | 现有 API 草案 | `.work/<feature>/api/<feature>.yaml` | 可选 |
 
-## 门禁清单
+## 参考清单
 
-| 门禁项 | 是否通过 | 发现的问题 |
 |---|---|---|
 | 页面地图覆盖所有入口、出口和主要页面 |  |  |
 | 主流程从开始到完成是清楚的 |  |  |
@@ -55,19 +54,6 @@
 | 字段级校验错误 |  |  |
 | 权限 / 能力标识 |  |  |
 | 冲突 / 版本 token |  |  |
-
-## 评审结论
-
-```text
-结论：通过 / 阻断
-内部独立审查：`check.prototype-reviewed` 通过 / 不通过
-阻断项：
--
-非阻断建议：
--
-下一步：
-- yss-prototype-stage 计算档位并进入对应适配器 / 回到产品设计补齐状态与风险 / 进入原型交付物构建
-```
 
 ## 条件比较与内容复核
 

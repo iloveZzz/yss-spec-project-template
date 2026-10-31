@@ -68,4 +68,3 @@
 - 是否允许进入 OpenAPI Freeze / no API impact 记录：
 - 是否允许进入 `to-tickets`：
 - 必须带入垂直切片的约束：
-- Git checkpoint 状态：

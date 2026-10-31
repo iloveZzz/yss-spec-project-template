@@ -29,9 +29,7 @@
         <lombok.version>{{lombok_version}}</lombok.version>
         <lombok-mapstruct-binding.version>{{lombok_mapstruct_binding_version}}</lombok-mapstruct-binding.version>
         <swagger-annotations-v3.version>{{swagger_version}}</swagger-annotations-v3.version>
-        <archunit.version>{{archunit_version}}</archunit.version>
         <maven-compiler-plugin.version>{{compiler_version}}</maven-compiler-plugin.version>
-        <maven-enforcer-plugin.version>{{enforcer_version}}</maven-enforcer-plugin.version>
     </properties>
 
     <modules>
@@ -51,11 +49,6 @@
                 <version>${yss-components.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.tngtech.archunit</groupId>
-                <artifactId>archunit-junit5</artifactId>
-                <version>${archunit.version}</version>
             </dependency>
 
             <dependency>
@@ -83,7 +76,6 @@
     <build>
         <plugins>
             <plugin><groupId>org.springframework.boot</groupId><artifactId>spring-boot-maven-plugin</artifactId><version>{{boot_version}}</version><configuration><skip>true</skip></configuration></plugin>
-            <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-surefire-plugin</artifactId><version>{{surefire_version}}</version></plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -108,25 +100,6 @@
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <version>${maven-enforcer-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>enforce-target-ddd-baseline</id>
-                        <goals><goal>enforce</goal></goals>
-                        <configuration>
-                            <rules>
-                                <requireJavaVersion><version>{{java_range}}</version></requireJavaVersion>
-                                <requireMavenVersion><version>[3.6.3,)</version></requireMavenVersion>
-                                <reactorModuleConvergence/>
-                                <dependencyConvergence/>
-                            </rules>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

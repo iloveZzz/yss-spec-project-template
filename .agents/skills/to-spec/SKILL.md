@@ -10,6 +10,4 @@ disable-model-invocation: true
 
 新 Spec 使用 life 持有的 [共享规格方法](../yss-product-lifecycle/references/spec-workflow.md) 与 [tracker 约定](../yss-product-lifecycle/references/spec-tracker.md)，没有独立模板或批准体系。普通未治理草稿可复用内容方法，缺 tracker 不阻断只读分析或授权草稿，实际发布前补明确配置。
 
-规格包含用户问题、目标、场景、规则、边界、异常、验收与适用设计，不包含技术设计、API、实现任务或测试工程。没有 Plan、Context、checkpoint、业务票集合也可综合已确认材料；已有词汇和约束应复用，不补造。
-
 在已授权范围保存或发布，返回实际引用、自检结果、未决项及适用审批情况。不自动批准、设置实施资格、创建 Git PR 或启动下游。来源与 Matt 适配信息沿锁文件记录保留。

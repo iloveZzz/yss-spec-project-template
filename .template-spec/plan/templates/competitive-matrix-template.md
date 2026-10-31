@@ -8,7 +8,6 @@
 | 项 | 内容 |
 |---|---|
 | 调研主题与读者 | [主题 / 读者] |
-| Profile / 模式 | [`strategy-evidence` 或 `technical-evidence`] / [`quick` 或 `evidence-audited`] |
 | 研究简报 / 证据 | [`<slug>-research-brief.md`] / [`<slug>-evidence.yaml`] |
 | 关联深度报告 | [选定报告时填写同目录链接；仅矩阵时写不适用及原因] |
 | 审核与限制 | [审核人 / 审核范围 / 未覆盖事项；普通探索明确未审计] |

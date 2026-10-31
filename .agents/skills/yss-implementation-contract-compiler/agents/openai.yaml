@@ -1,6 +1,6 @@
 interface:
-  display_name: "YSS Implementation Contract Compiler"
-  short_description: "Compile capabilities into a minimal implementation contract"
-  default_prompt: "Use yss-implementation-contract-compiler to compile the approved slice capabilities, deterministic skill closure, evidence plan, and v3 contract draft."
+  display_name: YSS Implementation Contract Compiler
+  short_description: 编译或重验 YSS Slice Implementation Contract、最小 Skill 集与证据计划；判定偏离及重新路
+  default_prompt: 使用 $yss-implementation-contract-compiler 按当前用户目标和已有工程资料完成任务，保留用户文件并如实说明实际结果。
 policy:
   allow_implicit_invocation: false

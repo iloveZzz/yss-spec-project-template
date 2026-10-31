@@ -1,4 +1,4 @@
 interface:
-  display_name: "YSS Product Lifecycle"
-  short_description: "编排 YSS 产品全生命周期、门禁、状态与专项技能"
-  default_prompt: "使用 $yss-product-lifecycle，判断模式并有界推进这个需求。"
+  display_name: YSS Product Lifecycle
+  short_description: 路由 Spec 需求澄清、事实研究、业务词汇、非技术规格与适用产品设计，并在所选 Issue tracker 发布结果。
+  default_prompt: 使用 $yss-product-lifecycle 按当前用户目标和已有工程资料完成任务，保留用户文件并如实说明实际结果。

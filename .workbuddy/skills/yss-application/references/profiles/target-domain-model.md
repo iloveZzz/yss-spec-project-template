@@ -1,3 +1,3 @@
 # target-domain-model
 
-只用于 `domain-driven`；完整执行规则见 `../application-layer-guide.md`。Application 调用 Domain/Gateway 或 Query Port；领域不变量归 Domain，事务归 Application，HTTP DTO 转换归 Web。禁止把本分支套给 MVC。
+DDD 用例由 Application 协调 Domain 与 Gateway；Web 负责协议适配，Infrastructure 负责持久化和外部实现。按当前需求维护接口、事务和错误语义，不要求额外合同或登记。

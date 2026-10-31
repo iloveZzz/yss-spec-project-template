@@ -8,7 +8,6 @@ owner: <负责人>
 
 # <功能名称> Plan（战略规划）
 
-> 生命周期身份：`stage.plan` / `artifact.plan-record`。按影响面填写，不制造未命中项的空产物。进入 Spec 的退出条件以 `.template-spec/process/lifecycle-registry.yaml` 为准。
 
 填写前读取[中文写作规范](../../process/document-writing.md)和 [Plan 对照](../../templates/examples/lifecycle-writing-examples.md#1-plan让业务问题和取舍可见)。先说明问题和本期取舍，假设与事实分开；以下各项按实际影响填写。
 
@@ -64,7 +63,6 @@ owner: <负责人>
 
 ## 5. 下游影响与交接
 
-| 下游阶段 / 接收方 | 输入引用 | 责任人 | 待细化内容 | 命中门禁 |
 |---|---|---|---|---|
 
 详细页面、API、技术模型和实现切片在后续阶段细化；此处只登记影响与交接责任。
@@ -84,9 +82,6 @@ owner: <负责人>
 - [ ] 非关键未决项有依据、责任人、解决时点及接收方；无 runnable blocker。
 - [ ] 澄清材料和前置条件已就绪：目标、MVP、非目标、关键规则、验收例子、逐项未决结论与解决证据、剩余不确定性可审阅；命中审查和根词汇对账证据当前。
 - 当前资产版本、拟确认范围及各轮原始决策回复引用：
-- 结论：ready-for-human / blocked（说明缺口及解除证据）。
 - 下一工作单元：
 
 完整审阅包固定后，最终共同理解与 Plan 批准合并一次真实回复。当前 `plan_user_decision_ref` 与批准记录单独保存，不在回复后回写本 Plan 或审阅包 `basis`；本页的材料就绪不等于已批准。完整 `grill_exit` 和进入 Spec 的条件由入口结合当前决定及 `verify-plan-spec-entry` 结果判定，引用外部状态与证据。
-
-表达约定与只读诊断见 [Plan / Spec 内容诊断](../../process/plan-spec-quality.md)。`content_profile` 可选，仅声明创作格式；检查结果不改变既有门禁或批准。

@@ -76,7 +76,7 @@ owner: ai
 - [ ] 数据迁移、原生 SQL 等风险影响、验证证据和责任人已记录。
 - [ ] 可进入 Design Review / OpenAPI Freeze，或阻断项已列出。
 
-## 10. 下一步门禁
+## 10. 下一步参考
 
 - 结论：Approved / Blocked
 - 下一步：Design Review / 回到系统概要设计 / 回改契约草案 / OpenAPI Draft

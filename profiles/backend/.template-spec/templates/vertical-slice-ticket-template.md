@@ -1,6 +1,5 @@
 ---
 kind: vertical-slice-ticket
-status: ready-for-human
 business_ticket_set_ref: <current-business-ticket-set-ref>
 business_ticket_refs: [BT-001]
 acceptance_refs: [AC-001]
@@ -26,7 +25,7 @@ requirement_version: v1
 ## OpenAPI 影响
 
 - [ ] 无
-- [ ] 基于冻结 OpenAPI：`.work/<feature>/api/<feature>.yaml`
+- [ ] 基于当前 OpenAPI：`.work/<feature>/api/<feature>.yaml`
 
 受影响端点：
 
@@ -49,8 +48,6 @@ requirement_version: v1
   - [ ] UI / 组件测试
   - [ ] E2E 测试
 
-## Slice Implementation Contract
-
 | 字段 | 内容 |
 |---|---|
 | contract_id |  |
@@ -58,18 +55,11 @@ requirement_version: v1
 | contract_ref |  |
 | 实现合同编译器 状态 | draft / blocked / ready-for-lifecycle-review |
 | 生命周期批准状态 | pending / approved / rejected |
-| 编译与批准记录 | 在当前 checkpoint / 任务包中维护，按当前合同选择实际技能和执行上下文 |
-| Build Architecture Checklist | <已批准清单资产引用；编写结构见[系统概要设计](../architecture/templates/system-overview-design-template.md#工程基线与准入清单)> |
-
-> 实现合同编译器 不得自行将合同批准或将本 Ticket 推进为 `ready-for-agent`。只有生命周期编排器核验并持久化当前版本合同、清除阻塞边后，才能推进状态。
 
 ### 工作单元
 
 | work_unit_id | 验收行为 / 目标 | primary_skill | supporting_skills | tdd_mode | allowed_write_paths | expected_evidence | verification_commands | Execution Result 引用 | 状态 |
 |---|---|---|---|---|---|---|---|---|---|
-|  |  |  |  | behavior-tdd / controlled-generation |  |  |  |  | pending / running / blocked / completed / stale |
-
-`controlled-generation` 仅允许机械脚手架、样板、冻结客户端或配置，并记录 exception reason、生成器输入和生成后行为测试；业务规则、状态机、事务、权限、错误映射、复杂查询和用户可见交互必须使用 `behavior-tdd`。只有需求明确包含权限业务行为时才把它写入工作单元，不另设安全 / 权限姿态。
 
 ## YSS 技能与后端实现合同
 
@@ -86,7 +76,6 @@ requirement_version: v1
 
 ### 后端阻断规则
 
-- [ ] 未填写 `Backend Slice Implementation Contract` 时不得写后端业务代码。
 - [ ] `CMD` / `Query` / `VO` / `SingleResult` / `MultiResult` / `PageResult` 按 `yss-dto` 定义或复用；不私自新建 / 混用响应包装。
 - [ ] Controller 不用内部类或非约定包临时承载主要 DTO / VO；写操作参数继承 `CommandDTO`，读操作参数继承 `QueryDTO` 或 `PageQuery`，分页查询优先继承 `PageQuery`。
 - [ ] Controller 不手工分页主要业务集合，不穿透 Repository / Mapper / PO。
@@ -115,15 +104,7 @@ requirement_version: v1
 
 ## 批准记录
 
-| 门禁 | 记录路径 | 审查 / 批准依据 | 状态 |
 |---|---|---|---|
-|  | `.work/<feature>/gates/<gate-id>-approval.yaml` | 当前 Profile 的门禁政策、适用检查和真实用户决定 | pending / approved / blocked / not-applicable |
-
-## 状态
-
-`ready-for-agent`
-
-> 仅当阻塞关系为“无”且必要门禁已通过时填写 `ready-for-agent`；否则写明被哪个 Ticket 阻塞。
 
 ## AI / 人工审查点
 
@@ -133,12 +114,10 @@ requirement_version: v1
 
 ## 完成定义
 
-- [ ] 如有需要，已基于冻结 OpenAPI Spec 拆分切片
+- [ ] 如有需要，已基于当前 OpenAPI Spec 拆分切片
 - [ ] 实现完成
 - [ ] 已新增测试且测试通过
 - [ ] 已移除调试 / 原型代码
-- [ ] 已在任务包核验 `Backend Slice Implementation Contract` 和 `Build Architecture Checklist`
-- [ ] 已在任务包核验当前 `contract_id` / `contract_version`、全部工作单元和对应 `YSS Skill Execution Result`
 - [ ] 实际 changed files 均在合同允许路径内，预期证据齐全，验证结果包含执行时间
 - [ ] `new_impacts`、`drift`、`violation` 和重路由状态均有明确结论，合同未处于 `stale`
 - [ ] 如领域或架构决策变化，已更新 `CONTEXT.md` / ADR；新增业务术语含 PascalCase `英文标识`，代码与契约字段能追溯到该词干

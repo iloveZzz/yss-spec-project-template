@@ -64,7 +64,7 @@ owner: ai
 - [ ] Spec 回填项已分清阻断项和非阻断项。
 - [ ] 可进入产品设计 / Spec 校准。
 
-## 9. 下一步门禁
+## 9. 下一步参考
 
 - 结论：Approved / Blocked
 - 下一步：产品设计 / Spec 校准 / OpenAPI 无影响记录

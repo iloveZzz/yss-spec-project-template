@@ -1,1 +1,1 @@
-Read AGENTS.md for the project instructions. Use installed skills by description and the current task.
+Read AGENTS.md and use the installed skills relevant to the current task.

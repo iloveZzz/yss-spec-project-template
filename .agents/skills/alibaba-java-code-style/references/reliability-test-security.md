@@ -2,8 +2,6 @@
 
 Use this reference for exception handling, logging, unit testing, and security-sensitive Java work.
 
-YSS 适配先消费 `.template-spec/agents/backend-architecture-profiles.md` 的“对象命名与外部规范适配”：错误类型与翻译按 `yss-exception` 和当前 Profile；日志语言/留存、覆盖率按已采纳工程基线。保留原条款等级，不把建议值升为门禁；安全与防数据损坏规则不因适配豁免。
-
 ## Exception Handling
 
 Mandatory:
@@ -57,7 +55,7 @@ Mandatory:
 - Tests must not call each other or depend on execution order.
 - Tests must be repeatable and isolated from external environments such as network, remote services, or middleware. Inject local or mock dependencies.
 - Unit test granularity should be small: usually method-level, at most class-level.
-- Incremental code for core businesses, core applications, and core modules must pass unit tests.
+- For core business changes, choose behavior checks appropriate to the task; unit tests are an available technique, not a universal prerequisite.
 - Test code belongs under `src/test/java`, not production source directories.
 
 Recommended/reference:

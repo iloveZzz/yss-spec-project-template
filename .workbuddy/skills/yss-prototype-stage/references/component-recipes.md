@@ -37,5 +37,3 @@
 ## 可运行教学与证据
 
 原五类模式、新增两个变体与组件状态展示见 [Vue 集成](shadcn-vue-integration.md)，`export-vue-patterns.mjs` 或兼容命令 `export-business-patterns.mjs` 均构建 Vue。组件展示使用 `component-states-standard.config.json`，默认、禁用、错误、加载、选中、浮层均可复现。
-
-所有检查并入六轴 QA：记录场景、来源、步骤、实际结果和适用视口；行为缺陷、视觉观察与偏好建议分别报告。沿用 Prototype Evidence v4、Visual Baseline v1 与比较 v2，不新增批准字段或生命周期门禁。

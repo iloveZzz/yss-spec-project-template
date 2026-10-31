@@ -49,10 +49,5 @@
             <version>${swagger-annotations-v3.version}</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>{{web_test_starter}}</artifactId>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 </project>

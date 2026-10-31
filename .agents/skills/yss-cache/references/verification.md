@@ -8,10 +8,6 @@
 
 跨模块测试使用父 reactor 的 `-pl <module> -am`，避免解析本地旧 SNAPSHOT。也可运行：
 
-```bash
-scripts/verify-cache-component.sh --platform-line boot3-java17 --source-root /path/to/boot3/yss-cloud-microservice
-```
-
 运行前将 `JAVA_HOME` 与 `PATH` 设为所选平台的 JDK（Boot 2 为 Java 8，Boot 3 为 Java 17）；脚本从 `clean verify` 后的每个 cache class 检查 major，无法读取任一 class 即失败。
 
 ## 消费项目

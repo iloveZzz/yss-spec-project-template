@@ -1,128 +1,24 @@
-# YSS 综合研发主控模板（Spec Profile）
+# YSS Skills 与项目模板
 
-English overview: [README.en.md](README.en.md).
+面向中文研发团队的业务分析、规格、产品设计和 Java 后端技能集合。按当前任务选择必要技能与技术参考，由 Agent 直接完成实现和资料整理。
 
-> 可版本化的研发治理系统：Matt Pocock Engineering Skills × YSS × OpenAPI，把产品研发从需求澄清连接到实现、审查、发布与复盘。
+## 使用
 
-## 定位
+先读 [AGENTS.md](AGENTS.md)。共享技能位于 [.agents/skills](.agents/skills)，Backend 专有内容位于 [profiles/backend](profiles/backend)。需求、设计和技术资料按需读取，不要求生命周期路由、阶段批准、检查计划或测试报告。
 
-当前候选定位：面向采用 AI Agent 的中文企业后端团队，通过按风险裁剪流程，关联规格、API 合同、实现与交付证据。团队适配性仍待真实任务验证；[隔离工程机制样例](.template-spec/user-guide/cases/contract-governance-validation.md)给出本轮正常、拒绝、恢复及操作成本的实际记录，不承诺业务提效比例。
+本仓已移除全部脚本目录、测试套件、CI 工作流和自动钩子。生成工程、同步技能、整理导出和准备发布由 Agent 直接操作保留的资产；安装或发布也可使用现有 CLI 的实际能力。后端工程命令优先 ./mvnw，前端优先 pnpm；是否运行构建、测试或审查由当前任务决定。
 
-完整治理安装将本模板用作 Harness / 研发管理仓库，保留流程文档、契约模板、Agent skills 和协作约定。后端源码默认位于明确登记的实现仓库；前端实现由独立规格与 CLI 维护，不在本模板。
+## 内容与维护
 
-治理安装默认一名 Agent 在 Spec 内连续完成需求、必要产品设计及适用后端工作，按显式目标推进；新建使用 Spec、Backend Profile，定义见 [Profile 注册](scripts/lib/profile-tree.mjs)。产品设计职责由 Spec 承担。Spec 文档批准、产品设计完成、后端可交付和业务验收是可选的本次终点；终点改变保留当前批准和后续路线。专职 Profile 继续按自身职责结束，主控通过显式同功能 checkpoint 与当前接收证据汇总。见[本次推进目标与专职协作](.template-spec/process/lifecycle-progression.md)。
+- `.agents/skills/`：共享技能内容源、参考资料和模板资产。
+- `.claude/skills/`：共享技能链接；`.workbuddy/skills/`：普通文件副本。
+- `profiles/backend/`：Backend 技能与资料覆盖层。
+- `.template-spec/`：业务、设计和工程参考。
+- `.template-source/distribution/`：分发清单与客户端入口。
+- `skills-lock.json`：技能来源和安装目录信息；`yss-public-skills.json`：公开技能清单。
 
-## 项目结构
+修改内容源后同步受影响副本和清单，具体操作见 [Skills 维护](.template-source/agents/skills-maintenance.md)。公开技能仓为 [yss-spec-dev-skills](https://github.com/iloveZzz/yss-spec-dev-skills)，仅在用户要求发布时更新。
 
-```text
-├── .agents/skills/          ← 共享技能权威内容
-├── .claude/skills/          ← Claude Code 技能入口（指向 .agents/skills 的生成链接）
-├── AGENTS.md                ← Agent 入口规则
-├── CONTEXT.md               ← 唯一业务词汇表
-├── yss-project.yaml         ← 仓库身份
-├── .template-spec/          ← 可复用流程、门禁、契约与文档模板
-├── .template-source/        ← 现行模板维护资产与分发工具（不进入实例；运行历史存仓外）
-├── docs/                    ← 项目实例按需创建的 Plan、Spec、设计、Ticket 与交付证据；模板源不跟踪 docs/superpowers 技能输出
-└── scripts/                 ← 合同与流程验证工具
-```
+业务权限、输入校验、错误处理和用户文件保护仍属于实现职责。提交、推送、部署、发行使用对应授权，实际结果如实报告。
 
-项目需要生成度量、外部实现仓库记录或其他临时产物时再按需创建对应目录。前后端实现仓库接入规则见 `.template-spec/process/implementation-repo-integration.md`。
-
-## Quickstart
-
-只需后端开发脚手架时，可直接使用 `yss-layered-mvc-scaffold-generator`（MVC）或 `yss-ddd-scaffold-generator`（DDD），无需先准备需求合同、原型、设计审批或初始化治理实例。提供工程信息即可生成，命令与参数见[直接生成开发脚手架](.agents/skills/yss-ddd-scaffold-generator/references/standalone-generation.md)。
-
-- **项目使用者**：从[从这里开始](.template-spec/user-guide/用户手册索引.md)完成第一个日常任务。Agent 的入口与硬门禁只在 `AGENTS.md`。
-- **模板维护者**：按 `.template-source/process/maintenance-intensity.yaml` 判定 L1 / L2，先看 `scripts/verify-template-fast --plan`，日常执行受影响依赖的定向检查达到 `implementation-ready`；投影、锁和分发在 canonical 稳定后同步。
-
-YSS skills 的公开发布投影维护在 [iloveZzz/yss-spec-dev-skills](https://github.com/iloveZzz/yss-spec-dev-skills)，发布清单和导出命令见 [skills 维护说明](./.template-source/agents/skills-maintenance.md)。
-
-前端实现技能（YSS UI、Formily、表格/树组件、前端脚手架等）已从本模板退役，改由独立的前端规格与 CLI 维护；退役 ID 与迁移说明见 [技能迁移说明](./.template-spec/agents/skill-migrations.md)。
-
-## 模板初始化 CLI
-
-新实例 Profile（spec、backend）使用 [yss-cli](https://github.com/iloveZzz/yss-cli) 的原生 `yss` 入口，本仓的内核与 Backend 覆盖层共同维护。初始化、预演、事务、迁移及 Bundle 导出消费版本化协议：
-
-- [YSS 用户手册：CLI 能力与写入方式](./.template-spec/user-guide/用户手册.md#cli-能力与写入方式)
-- [YSS 用户手册：接管、同步与恢复](./.template-spec/user-guide/用户手册.md#接管同步与恢复)
-
-新建和接管默认采用治理安装（`governed`）；仅需独立技能时显式选择 `--installation skills`。以下治理安装入口先保存计划，再应用同一计划；安装治理能力不创建生命周期记录或授予批准。已有项目 `sync` 保持安装方式，显式转换见[安装方式与迁移](.template-spec/process/installation-migration.md)。
-
-`--profile` 选择 Spec / Backend，`--installation` 选择独立技能 / 治理工程，`--full` 仅扩大所选方式的资源集合。显式 skills 安装中，Spec 默认包含 `yss-product-lifecycle`（life）、`grilling`、`yss-research`、`domain-modeling`、`to-spec`、`i-have-adhd`、`code-review`、`implement`，支持普通需求澄清、事实研究、词汇、规格草稿与审查；Backend 默认仍为 `implement`、`code-review`；其显式 `to-spec` 保留后端正式合同入口，使用本端中文规范依赖。life 直接起草普通需求，`to-spec`、`implement` 保持用户显式调用。普通任务不要求 Context、Tracker 或治理 CLI；正式任务与治理输入异常仍按原合同处理。已有独立项目通过显式 `sync --plan` 审阅后采纳新默认能力，仅升级 CLI 不修改项目。
-
-Spec 治理初始根为 `yss-product-lifecycle`、`setup-yss-harness`、`yss-research`、`grilling`、`domain-modeling`、`yss-stage-decision`、`i-have-adhd`、`code-review`；实际分发可随既有依赖闭包增加。专业技能按阶段和当前任务条件补齐。`yss-stage-decision` 等 draft 技能保持原调用与批准边界；文件完整、技能就绪和实际工作流验收分别核验，初始化成功不证明完整 Spec 流程或宿主发现已验证。
-
-```bash
-yss init --profile spec --root /absolute/path/project --plan --out /absolute/path/init-plan.json --json
-yss init --profile spec --root /absolute/path/project --apply --plan-file /absolute/path/init-plan.json --json
-```
-
-`init` 默认直接初始化；上述 `--plan` 路线先生成可审阅计划。使用已固定版本和 SHA-256 的二进制；稳定版发行状态以发行清单为准。旧格式保持明确的读取范围；受支持的旧统一 Spec/Backend 实例通过 `yss migrate --plan --out <新文件>` 同 Profile 显式迁移；旧 Design 保留原版本与原始资产，当前不提供转为 Spec 的迁移。更早或未知格式保留原件并报告不支持。完整安装、补装、恢复及退役边界见 [统一 CLI 操作说明](.template-spec/user-guide/unified-cli.md)。
-
-## 模板配置取舍
-
-`.agents/skills` 是共享技能的权威内容；模板源生成 `.claude/skills` 链接供 Claude Code 发现，以及 `.workbuddy/skills` 普通文件投影供 WorkBuddy 使用；Codex、Cursor、Pi 直接读取 `.agents/skills`；实例平台投影由实例锁声明。共享技能只能在权威目录修改，随后运行：
-
-```bash
-scripts/sync-skills
-scripts/update-skill-lock
-```
-
-Matt skills 的上游来源与固定 revision 见 [`skills-lock.json`](skills-lock.json)，说明文档不复述。
-
-主研发流程使用 `skills/engineering`；`skills-lock.json` 同时记录本次安装的关联 `productivity`、`in-progress`、`deprecated`、`misc` 和 `personal` skill 路径。
-
-## 模板校验
-
-```bash
-scripts/verify-template-fast
-```
-
-快速入口先用 `--plan` 按 Git 影响面选择当前变化及直接/传递消费者的必要检查；未映射路径、缺输入映射或非法依赖先修正计划，不自动运行全量。来源为当前工作树，日常交付记录 `limited` 范围，必要检查通过后用于 `implementation-ready`。发布入口要求已提交来源，必须以 `--base <上一正式发行完整 SHA>` 覆盖完整发行差异，选择受影响检查与依赖并保留来源、安装与恢复验证。两个入口按适用范围检查：
-
-- `yss-project.yaml`、权威流程资产和模板是否完整。
-- 共享技能唯一 canonical 来源及 `skills-lock.json` 是否一致。
-- 过时技能、路径和规范用语是否已清理。
-- 五类流程压力场景是否符合条件门禁和仓库身份路由。
-- Markdown 相对链接是否指向现有文件。
-- 示例 OpenAPI YAML 是否可解析。
-- Git diff 是否存在空白错误。
-
-PR 执行 `scripts/verify-template-fast --base <完整 SHA>`；显式 main 集成与正式发布任务执行 `scripts/verify-template --base <上一正式发行完整 SHA>` 的必要检查集合，未映射路径不能静默省略。默认自检；用户明确要求或已知外部规则要求独立复核时，核验真实独立上下文、相同冻结候选及只读轨迹。
-
-## 关键文档
-
-业务方可从[用户手册](./.template-spec/user-guide/用户手册.md)了解工作入口；阶段、条件门禁和完成证据以生命周期注册表及流程裁剪规则为准。
-
-| 文档 | 内容 |
-|------|------|
-| [AGENTS.md](./AGENTS.md) | 全局 AI 指令 + 工程基线入口 + Agent 协作 |
-| [.template-spec/user-guide/用户手册.md](./.template-spec/user-guide/用户手册.md) | 从首次只读检查到需求、开发、审查、发布和 CLI 操作的统一用户手册 |
-| [阶段接入与产物复用使用手册](./.template-spec/user-guide/阶段接入与产物复用使用手册.md) | 复用上游资产，从指定入口继续；含后端交付后前端开发操作 |
-| [.template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md](./.template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md) | Matt Pocock Engineering Skills 集成与使用 |
-| [.template-spec/process/lifecycle-registry.yaml](./.template-spec/process/lifecycle-registry.yaml) | 生命周期结构事实源：主阶段、门禁、产物、工作单元、证据与稳定 ID |
-| [.template-spec/process/harness-process-tailoring.md](./.template-spec/process/harness-process-tailoring.md) | 小改动 / 中等变更 / 新模块的流程裁剪指南 |
-| [.template-source/process/template-engineering-overview.md](./.template-source/process/template-engineering-overview.md) | 模板工程定位、产品线、控制平面、分发边界与维护工作流 |
-| [.template-spec/process/implementation-repo-integration.md](./.template-spec/process/implementation-repo-integration.md) | 外部前端 / 后端实现仓库接入与跨仓库切片绑定 |
-| [.template-spec/agents/README.md](./.template-spec/agents/README.md) | Agent 协作文档目录说明 |
-| [.template-source/agents/skills-maintenance.md](./.template-source/agents/skills-maintenance.md) | Agent skills 安装与维护 |
-| [.template-spec/architecture/README.md](./.template-spec/architecture/README.md) | 架构设计 + 审查清单 |
-
-## 核心模板
-
-| 模板 | 用途 |
-|------|------|
-| [.template-spec/templates/spec-template.md](./.template-spec/templates/spec-template.md) | Spec，包含 OpenAPI 影响、测试决策、AI / 人工审查点 |
-| [.template-spec/templates/local-parent-ticket-template.md](./.template-spec/templates/local-parent-ticket-template.md) | Local Markdown 功能父 Ticket 与生命周期索引 |
-| [.template-spec/templates/vertical-slice-ticket-template.md](./.template-spec/templates/vertical-slice-ticket-template.md) | 垂直切片 Ticket |
-| [.template-spec/templates/implementation-repo-registry-template.md](./.template-spec/templates/implementation-repo-registry-template.md) | 外部实现仓库登记 |
-| [.template-spec/templates/cross-repo-slice-template.md](./.template-spec/templates/cross-repo-slice-template.md) | 跨仓库垂直切片记录 |
-| [.template-spec/architecture/templates/architecture-deepening-template.md](./.template-spec/architecture/templates/architecture-deepening-template.md) | 架构 deepening 候选与 seam 设计 |
-
-## 按职责使用与升级
-
-[现行家族用户手册](.template-spec/user-guide/用户手册.md)提供选型、初始化及升级；[设备借用贯穿案例](.template-spec/user-guide/设备借用贯穿案例.md)演示战略、后端、前端与统一验收。[全部手册](.template-spec/user-guide/用户手册索引.md)给出本体和子项目入口。GitHub 当前源码能力、原生 CLI 正式 Release 与实例模板快照分别核对。
-
-## WorkBuddy 接入
-
-WorkBuddy 项目级技能适配使用 `.workbuddy/skills` 普通文件投影，由 `.agents/skills` 统一生成。Spec 只为已安装技能及依赖分发投影；Backend 保持全量 Profile 语义。已有实例通过支持该适配的 CLI 显式 `sync`，查询不会自动迁移或补装平台。首次会话显式要求读取根 `AGENTS.md` 和 `CONTEXT.md`；调用前用 `yss skills resolve <id> --agent-runtime workbuddy --root <项目根> --json` 核验文件。桌面入口、发现与刷新行为尚需实机验证，不能因文件 ready 声明已验收。
+既有 yss CLI 的安装包和内置行为独立于本仓，本次目录变化不会改写已安装的二进制。新模板与具体 CLI 版本的安装、同步兼容性须以实际使用结果为准。

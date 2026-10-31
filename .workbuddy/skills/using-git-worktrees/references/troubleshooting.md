@@ -19,8 +19,6 @@
 | Tests fail during baseline | Record failures; continue authorized diagnosis |
 | No package.json/Cargo.toml | Skip dependency install |
 
-## Common Mistakes
-
 ### Fighting the harness
 
 - **Problem:** Using `git worktree add` when the platform already provides isolation

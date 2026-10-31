@@ -1,3 +1,3 @@
 # mvc-data-analysis-v1
 
-先读仓库 `.template-spec/agents/backend-architecture-profiles.md` 的 MVC 约定。写入 `core` 的 command/query/result/service 包；core 是薄应用层，拥有事务与内部模型，不依赖 client/server。读取/计算/导出编排不能自动扩大 SQL 或 API 合同；数据行为采用 behavior-tdd。不要套用 DDD application-layer-guide。
+旧 MVC 数据分析工程按现有 service/core/repository 职责增量维护，不自动迁移结构或重新生成。新工程使用通用分层 MVC 方案。

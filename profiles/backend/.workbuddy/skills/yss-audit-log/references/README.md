@@ -1,9 +1,5 @@
 # Boot 2 历史审计资料
 
-本文件说明 `assets/` 中的 `boot2-java8` 历史快照，仅用于旧工程比对与迁移诊断，不作为当前 Boot 3 实现模板或 freshness 证据。当前平台任务从 [平台索引](source-index.md) 定位匹配源码并执行共享门禁；[入口](../SKILL.md) 中的身份、SpEL 和异步边界同样须与所选平台当前源码核对。
-
-## 核心类 (Core Classes)
-
 ### 1. AuditLogAspect.java
 
 **位置**: `../assets/AuditLogAspect.java`
@@ -34,8 +30,6 @@
 - 启动固定线程池（10个线程）作为消费者，不断从队列中获取消息。
 - 将消息分发给所有注册的 `YssAuditSubscriber` 实现类。
 
-### 3. Subscriber 实现
-
 #### YssAuditLogPrintSubscriberImpl.java
 
 **位置**: `../assets/YssAuditLogPrintSubscriberImpl.java`
@@ -49,8 +43,6 @@
 
 - **功能**: 调用 `YssDmSystemManageFeign` 将审计日志发送到系统管理服务进行持久化存储。
 - **配置核验**: 历史订阅器快照自身不检查 `sendSysManageEnabled`。按实际工程核验配置装配及投递；当前平台行为不由这份快照证明。
-
-## 关键注解
 
 ### @AuditLog
 

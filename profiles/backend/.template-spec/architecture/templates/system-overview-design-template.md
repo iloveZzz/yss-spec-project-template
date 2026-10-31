@@ -82,8 +82,6 @@ owner: ai
 - [ ] OpenAPI schema 不直接暴露内部聚合或持久化表结构。
 - [ ] 领域行为测试、Application 用例测试、契约测试 seam 已明确。
 
-### 工程基线与准入清单
-
 工程基线在原有资产中定义一次，本设计引用其 `baseline_id`、`baseline_version`、版本和摘要；后续 Slice、审查与验证只引用同一来源。具体规则消费[后端架构 Profile](../../agents/backend-architecture-profiles.md)、[平台清单说明](../../engineering/backend-platforms.md)及适用专业 Skill，不另抄一套通用检查。
 
 | 依据 | 当前引用与结论 |

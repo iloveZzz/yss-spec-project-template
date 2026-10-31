@@ -1,3 +1,3 @@
 # mvc-data-analysis-v1
 
-遵守 `layered-mvc-service.md`，但用例接口位于 core，公开 DTO 位于 client。server 同时依赖 core 与 client 并持有转换；core 不得为了复用 HTTP DTO 而依赖 client。
+旧 MVC 数据分析工程按现有 service/core/repository 职责增量维护，不自动迁移结构或重新生成。新工程使用通用分层 MVC 方案。

@@ -6,11 +6,6 @@ H1/H2 表示验证深度，不表示低/高保真。统一消费 Prototype Evide
 
 在项目实例中，低保真和状态矩阵评审通过后，优先按 [shadcn 集成](shadcn-vue-integration.md) 构建高保真；以下为保留的原生轻量路线。模板源仅在临时 fixture 测试生成器：
 
-```bash
-node .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs prepare-flow \
-  --project-root <project-root> --root <project-root>/.work/<feature>/design/prototypes --feature <feature>
-```
-
 H1 将 `prepare-flow` 换成 `prepare-static`。两者输出 `index.html`、`styles.css`、`tokens.css`、`scenarios.js`、`app.js` 和 `yss-prototype-adapter.json`。初始交互仅为模板示例，必须按已评审的 Spec、页面与状态替换。已有非空目录拒绝覆盖；旧批准版本保持只读，新工作版本使用新的工作目录标识并保留业务 feature 的追踪关系。
 
 制作时可以使用必要工具，交付包不携带 package、lockfile、node_modules，不要求接收方运行 Node。使用普通 script、本地相对路径和随包数据；模块与工具源需先转换成可离线执行的脚本。场景状态默认在内存中，不以 file:// 下不确定的 localStorage 行为作为正确性前提。无需为简单流程建设路由或状态框架。
@@ -18,11 +13,6 @@ H1 将 `prepare-flow` 换成 `prepare-static`。两者输出 `index.html`、`sty
 所有运行资源收在交付目录内，Token 从 `DESIGN.md` 的项目派生 CSS 复制并保存来源摘要。静态扫描拒绝远程资源、越出目录、符号链接、缺失文件和常见网络依赖；动态构造资源及浏览器差异仍由真实离线复验发现。
 
 完成编辑后执行：
-
-```bash
-node .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs seal-project --root <prototype-root> --profile H2
-node .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs validate-project --root <prototype-root> --profile H2
-```
 
 `seal-project` 更新资源清单和摘要，不表示设计通过；修改批准原型前先建立新版本。封存后资源变化会使验证失败。规范或 Token 变化时先由设计系统重新派生，再更新包内副本与对应来源摘要，重新验证受影响场景并取得当前版本确认。
 
@@ -46,12 +36,6 @@ node .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs validate-
 
 默认视口 desktop `1440x900`、narrow `390x844`；按影响追加。Visual Baseline 捕获固定数据、浏览器及版本、操作系统、字体、时区、locale、sRGB、DPR 1，关闭动画与光标，等待字体就绪；复验前重置场景。长页面按固定滚动位置分段。
 
-```bash
-node .agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs seal \
-  .work/<feature>/handoff/visual-baseline-v1/visual-baseline.yaml \
-  --bundle-root .work/<feature>/handoff/visual-baseline-v1
-```
-
 从 manifest 的 `case_id` 读取语义与截图，不依赖 glob；视觉回归按风险采用，首次生成基线不声称已有回归通过。六轴 QA、独立评审、用户确认和生产实现隔离保持原合同。
 
 ## shadcn 主要路线
@@ -61,5 +45,3 @@ node .agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs sea
 ## 候选比较
 
 已有本地候选需要原尺寸切换时使用 [独立比较工具](comparison-tool.md)。比较包属于评审辅助，不属于已批准原型；其 manifest 不取代 Prototype Evidence v4 或 Visual Baseline v1。按项目设计基线和实际风险检查高保真页面层级与状态表达，同批查看桌面/窄屏，统一修整后复验。关键 finding 未关闭时保持阻塞。
-
-React 作者依赖、组件源码和生成入口已退役，历史批准包仅显式 `--allow-legacy` 只读核验，不重新封存。见 [历史路线](shadcn-integration.md)。

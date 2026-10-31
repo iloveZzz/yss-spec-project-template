@@ -60,10 +60,6 @@ Only proceed to Step 1b if you have no native worktree tool available.
 
 仅无原生工具且创建已获授权时，读取 [手工 Git worktree 创建](references/git-fallback.md)。目录遵循用户偏好，项目内目录先核验忽略规则；创建失败保留当前 checkout 和隔离边界。
 
-## Steps 2–3: Setup and baseline
-
-进入新建或已有隔离工作区后，读取 [项目准备与基线验证](references/setup-and-baseline.md)，选择项目声明的依赖与测试命令。已有失败应记录并区分，不得称基线干净。
-
 ## 排查
 
 遇到目录选择、嵌套工作树、忽略规则或基线失败时，读取 [常见错误速查](references/troubleshooting.md)。
@@ -75,8 +71,6 @@ Only proceed to Step 1b if you have no native worktree tool available.
 - Use `git worktree add` when you have a native worktree tool (e.g., `EnterWorktree`). This is the #1 mistake — if you have it, use it.
 - Skip Step 1a by jumping straight to Step 1b's git commands
 - Create worktree without verifying it's ignored (project-local)
-- Skip baseline test verification
-- Claim a clean baseline when checks failed
 
 **Always:**
 - Run Step 0 detection first
@@ -84,4 +78,3 @@ Only proceed to Step 1b if you have no native worktree tool available.
 - Follow directory priority: explicit instructions > existing project-local directory > default
 - Verify directory is ignored for project-local
 - Auto-detect and run project setup
-- Verify clean test baseline

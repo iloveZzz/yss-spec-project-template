@@ -1,19 +1,9 @@
-# YSS Source Location Policy
+# 源码定位
 
-YSS skill references may mention paths such as `yss-microservice-components/yss-component-dto`. Treat these as source path hints, not guaranteed filesystem locations.
+索引中的组件路径是搜索线索，不保证对应本机固定目录。先从当前工作区、CodeGraph、Git worktree 或 Maven 坐标定位真实源码；已有 .codegraph 时优先查询索引，不自动重建索引。
 
-## Lookup Order
+按目标工程的实际 POM 和依赖区分 Boot 2 / Java 8 与 Boot 3 / Java 17 平台线。环境已提供 YSS_SOURCE_ROOT_BOOT2_JAVA8 或 YSS_SOURCE_ROOT_BOOT3_JAVA17 时可用它们定位，仍以读到的源码为准。
 
-1. Check the current workspace first. If `.codegraph/` exists, use `codegraph explore "<class, module, or path hint>"` before text search.
-2. Resolve the platform line under the shared platform/source gate: for the Spec daily path use the current engineering baseline and observed POM / effective POM / dependency tree referenced by the same Ticket / PR; for the governed path use the approved `platform_configuration.component_platform_line`. If the existing line cannot be proved or an upgrade is requested, stop the affected implementation and return to governance. Then use `YSS_SOURCE_ROOT_BOOT2_JAVA8` or `YSS_SOURCE_ROOT_BOOT3_JAVA17`. Each variable points to a different generation-specific repository root containing `yss-microservice-components`.
-   Compare every indexed `Component tree` in the selected platform file with `git -C "$MATCHING_SOURCE_ROOT" rev-parse HEAD:<component-path>` and check `git status --porcelain -- <component-path>`. A line/root mismatch, tree mismatch or component-local dirty state is `stale` and blocks exact implementation guidance until refresh. `Source commit` is trace metadata only; unrelated monorepo changes do not stale an unchanged component tree.
-3. If the required generation-specific variable is absent, locate a clean checkout using CodeGraph, Git worktree inventory, Maven coordinates or repository search, then set the explicit variable. Do not use an arbitrary checkout discovered first.
-4. If the source still cannot be found, use the generated `references/source-index.md` as a stale-but-useful map of module names, package names, class names, and Maven artifacts. Do not assume listed files exist locally.
+读取相关类、配置和行为；不要求干净 checkout、tree hash、一致性证明或来源门禁。工作区差异影响结论时说明具体差异，索引过时则直接按真实源码修正相关项。
 
-## For Skill Authors
-
-- Say "source path hints" instead of "source root" unless you have verified the directory in the current environment.
-- Keep generated indexes useful for search, but do not require agents to open those exact paths.
-- Prefer symbols, package names, Maven artifact names, and annotations in instructions; they survive repository relocation better than absolute paths.
-- Keep full production source out of skill `assets/`; generate concise signatures, activation conditions and file hashes instead.
-- When refreshing indexes, export both generation-specific variables; targeted skill refresh still regenerates both tracks for the selected Skill.
+源码无法访问时可使用索引定位候选，但明确未知内容，不猜类名、签名或可用性。记录可重定位的模块、包、类与版本信息，避免把本机绝对路径变成所有用户的前置。

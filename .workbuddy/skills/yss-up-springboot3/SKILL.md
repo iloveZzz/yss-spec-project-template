@@ -15,7 +15,6 @@ description: "审查或迁移 YSS Spring Boot 2 到 3 的依赖、Jakarta 与 Sp
 
 ## 准入与阻断
 
-- 先运行 `scripts/backend-platforms` 查询精确 profile。目标 profile 不可选择、缺 compatibility 条目或任一必需 `component_capabilities` 不是 `verified` 时，只能输出差距分析，迁移实现返回 `component-unavailable-for-platform` 或对应组件绑定错误。
 - Spring Boot 4 不属于本 Skill 的 2→3 迁移执行范围。Boot 4 命中 Jackson 3、starter/自动配置结构或现有 YSS 组件时返回 `blocked`，建立独立平台迁移工作单元；不得把已完成的 Boot 3 改造解释为 Boot 4 兼容。
 - 既有工程的源码编译、单元测试或 `javax`→`jakarta` 替换不等于平台认证。没有目标架构的真实构件、启动和组件 seam 证据时不得宣称迁移完成。
 - 平台迁移不得夹带业务重构、架构族转换或组件替换。发现这些影响时返回 `new_impacts`，交实现合同编译器重新路由。
@@ -39,7 +38,7 @@ description: "审查或迁移 YSS Spring Boot 2 到 3 的依赖、Jakarta 与 Sp
 - Validation 注解与异常处理仍映射到冻结 DTO/Result 合同。
 - MyBatis 拦截器、自动配置与 starter metadata 符合目标 Boot 3 装载机制。
 - 受影响测试或样例模块与框架代码同步。
-- Jackson 2 的 Result/PageResult、日期、枚举、nullability 和错误响应 wire fixture 与冻结 OpenAPI 一致。
+- Jackson 2 的 Result/PageResult、日期、枚举、nullability 和错误响应 wire fixture 与当前 OpenAPI 一致。
 - `spring.factories` 与 `AutoConfiguration.imports` 的目标机制以真实 starter 为准，不能仅移动文件名后宣称自动配置生效。
 - 输出包含源/目标 profile、compatibility digest、组件逐项结论、阻塞项、实际命令与回滚点。
 

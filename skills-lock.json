@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "generatedBy": "scripts/update-skill-lock",
+  "generatedBy": "agent",
   "canonicalRoot": ".agents/skills",
   "projectionRoots": [
     ".claude/skills",

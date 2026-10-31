@@ -10,7 +10,6 @@
 |---|---|---|
 | API 影响记录 / 契约草案 | issue note / design note / `.work/<feature>/api/<feature>.yaml` |  |
 | OpenAPI Draft | `.work/<feature>/api/<feature>.yaml` |  |
-| Draft validation record | `.work/<feature>/api/<feature>-validation.yaml`；`scripts/verify-openapi-draft-validation-record` | 必须绑定当前 YAML SHA-256 与锁定 Redocly lint |
 | Spec / 需求冻结 |  |  |
 | 产品总体设计 / 功能架构 |  |  |
 | 交互说明 / 页面清单 | `.work/<feature>/design/<feature>-interaction-spec.md` |  |
@@ -21,7 +20,6 @@
 | 条件 AntD 事实 | `prototype-evidence.yaml` 的档位证据 | H1 不适用；H2 使用 AntD 时引用新鲜 fact pack 或增量 CLI；不得作为生产 YSS/AntDV 组件事实 |
 | 用户确认记录 | `.work/<feature>/design/<feature>-prototype-confirmation.md` | 有 UI 时必需；未确认前不得进入 OpenAPI Draft 评审 |
 | YSS 工程基线 | `.agents/skills/yss-ddd-scaffold-generator/references/engineering-baseline.md` |  |
-| YSS DTO wire profile | `.agents/skills/yss-dto/references/openapi-wire-profile.yaml`；`scripts/verify-yss-dto-openapi-profile` |  |
 
 ## P0 追踪矩阵
 
@@ -37,7 +35,7 @@
 |---|---|---|---|---|---|---|---|---|
 |  |  |  |  |  |  |  |  |  |
 
-## 门禁检查
+## 参考检查
 
 | Gate | Pass 条件 | 结论 | 备注 |
 |---|---|---|---|

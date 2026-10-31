@@ -24,8 +24,6 @@ Ideation 不等同于  Matt skills `需求澄清`：
 
 ---
 
-## AI 在机会构想中的四种角色
-
 ### 1. 发散者 — 产生大量想法
 
 ```python
@@ -67,8 +65,6 @@ delegate_task(
 ```
 
 ---
-
-## 方法库
 
 ### How Might We (HMW)
 ```

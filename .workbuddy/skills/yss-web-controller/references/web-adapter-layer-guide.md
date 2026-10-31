@@ -18,7 +18,7 @@ DTO 固定属于 Web module。独立 client module 与把 client DTO 放进 Doma
 
 ## 2. Wire 合同
 
-- Request/Response 字段必须来自冻结 OpenAPI 和批准 allowlist。
+- Request/Response 字段必须来自当前 OpenAPI 和批准 allowlist。
 - 数据库 metadata 只补充 Java 类型候选，不能自行扩大公开字段。
 - Web Page Request 不继承含内部协作字段的 `PageQuery`；分页字段、默认值、枚举和禁用字段全部来自合同绑定且 digest 匹配的 `yss-dto` wire profile，再与 `fields.<table>.pagination` allowlist 取交集。Web Adapter 不维护第二份分页协议。
 - `orderBy` / `groupBy` 必须在 Application/Infrastructure 映射到数据库列白名单。
@@ -64,18 +64,16 @@ public interface QualityRuleWebConvertor {
 ## 5. Exception Translator
 
 - Domain/Application 错误经专门 Translator 映射为冻结 API 的 HTTP status、YSS error code 和消毒后的公开消息。
-- known business、known system、unknown/runtime 三类都必须有 MockMvc/HTTP contract test。
+- known business、known system、unknown/runtime 三类分别保持明确的 HTTP 状态、业务错误与脱敏策略。
 - unknown/runtime 保留内部 cause/stack 用于日志，但公开响应禁止返回 `getLocalizedMessage()`。
 - 复用 YSS global handler 前必须实测 auto-configuration 和 precedence；未经验证不能仅凭依赖存在宣称生效。
 
-## 6. 生成门禁
+## 6. 生成参考
 
 - `generate_controller.mjs` 只消费 `schema_version=2`、`status=approved` 且 `current_version=contract_version` 的 Web generation contract；schema v1 为 `unsupported`。
 - `references/web-generation-contract.schema.json` 是 Web generation contract v2 的机器可读结构合同；生成器仍执行跨字段、文件系统与 Manifest 语义校验。
-- 合同必须声明 Slice `contract_id/contract_version/slice_id`、`integration_mode`、`implementation_project_root`、`allowed_write_paths`、预期证据、验证命令、`base_package`、`module_name`、`domain_segment`、Application Service package、`target-domain-model`、平台/validation Profile、`dto_placement=web`、`dto_wire_profile_ref/digest`、OpenAPI Freeze 引用和每张表的 create/update/query/pagination/response allowlist；CLI 身份必须逐项匹配。
 - `scaffold-v2` 模式必须绑定已达 `empty-scaffold-verified` 或 `first-slice-verified` 的 Manifest，并校验标准 Web module 路径和所有 Profile；`existing-project` 模式不得伪造 scaffold manifest。
 - 生成器是 initialize-only，必须在写入前规划全部目标并校验每个目标位于批准写路径；任一文件已存在或传入 `--force` 时整体阻断。落盘使用排他创建，任一步失败都回滚本次已创建文件，不允许部分成功。
-- 权限、校验语义、异常行为和复杂查询仍使用 `behavior-tdd`，不能由 metadata 猜测。
 
 ## 7. 验证
 
@@ -87,7 +85,7 @@ public interface QualityRuleWebConvertor {
 
 ## 非 CRUD 适配
 
-认证、OAuth 回调、Cookie、流式响应及协议端点可以手工实现，不强行套 CRUD metadata；仍消费批准的 wire 合同、Application seam 和平台配置。Controller 不直连 Domain Gateway，也不自行编排登录、撤销或持久化。
+认证、OAuth 回调、Cookie、流式响应及协议端点可以手工实现，不强行套 CRUD metadata；仍消费当前 wire 约定、Application seam 和平台配置。Controller 不直连 Domain Gateway，也不自行编排登录、撤销或持久化。
 
 协议转换、Cookie/Header 处理归 Web；业务决策归 Application/Domain。异常翻译器可以依赖领域错误类型，不能据此允许 Controller 调用领域端口。MapStruct 处理机械字段映射，协议编码及显式领域工厂适配使用有测试的自定义方法。
 

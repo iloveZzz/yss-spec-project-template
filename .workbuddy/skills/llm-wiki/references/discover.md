@@ -39,4 +39,4 @@ If the candidate `document` count would exceed 40, list the candidates and stop.
 
 ## After the list is confirmed
 
-Write raw copies or extracts, then fill manifest `sources` per [compile.md](compile.md). Derived sources need `extract`. Code surfaces are not copies.
+Write raw copies or extracts, then fill manifest `sources` per compile.md. Derived sources need `extract`. Code surfaces are not copies.

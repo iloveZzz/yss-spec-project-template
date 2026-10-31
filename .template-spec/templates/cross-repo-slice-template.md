@@ -52,8 +52,6 @@ owner: ai
 | frontend_project_root | `apps/frontend/<project>/` 或外部真实路径 |
 | frontend_status | pending / ready / blocked / not-applicable |
 
-## 5. Fresh Verification
-
 | 字段 | 值 |
 |---|---|
 | fresh_verification |  |

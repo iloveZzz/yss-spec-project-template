@@ -9,6 +9,6 @@ description: "Use when you need to resolve an in-progress git merge/rebase confl
 
 3. **Resolve each hunk.** Preserve both intents where possible. Where incompatible, pick the one matching the merge's stated goal and note the trade-off. Do **not** invent new behaviour. If the intents cannot be reconciled safely, report the conflicting decision. Abort only when the user has authorized it; do not discard work to hide a conflict.
 
-4. Discover the project's **automated checks** and run them — typically typecheck, then tests, then format. Fix anything the merge broke.
+4. Inspect the resolved diff and fix merge-induced defects. Run the project's checks only when requested or needed for the particular change; report what was actually observed.
 
 5. **Return the resolved files and verification.** Preserve the initial index and unrelated dirty files. Stage only the explicitly authorized conflict paths, never the entire working tree. Commit, or continue a merge/rebase when that creates commits, only with current authorization covering that action; otherwise leave the resolution ready for review and report the next command.

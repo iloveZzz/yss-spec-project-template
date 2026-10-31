@@ -4,8 +4,6 @@
 
 ## `archify` 技能退役（2026-10-30）
 
-因完整上游包过重，按用户要求硬退役 `archify`。模板不再分发或路由该技能，不保留兼容目录、运行时 alias、活跃 Registry 条目或 lock 条目；新请求命中旧 ID 返回 `skill-retired`，不自动绑定替代工具或增加门禁。
-
 架构图仍按用户或当前设计合同的要求提供，从当前设计与代码证据派生，不替代事实源、设计合同或批准。已有图示、来源输入、交付收据与冻结证据原样保留。
 
 存量实例先预览 `yss sync` 计划：从安装选择中移除退役技能，不因目标 Bundle 缺少它而失败；本地已有技能文件按 `retired-preserved` 原样保留，由使用者决定是否删除。不卸载用户自行安装的工具，也不改写历史审批或快照。
@@ -18,8 +16,6 @@
 - `yss-formily`、`yss-formily-schema-generator`、`formily-foundation`、`formily-linkage-effects`、`formily-mode-slot-detail`、`formily-step-flow`。
 - `ytable-usage`、`ytree-usage`、`yedit-table-usage`。
 - `yss-frontend-scaffold-generator`（含 `scaffold.frontend-vue3` 能力与 `frontend.vue3-scaffold` recipe）、`frontend-commit`。
-
-同时移除：`iloveZzz/yss-ui` 上游清单 `.agents/skills/.yss-skills-manifest.json`、`.agents/rules/yss-ai-skills.md`、YSS UI MCP 项目配置（`.agents/mcp_config.json`、`.cursor/mcp.json`、`.vscode/mcp.json`）与接入指南、`work-unit.slice-implementation` 的 `frontend_route`。`role.frontend-engineer` 保留为 OpenAPI 客户端适配与原型可行性的审查角色，不再携带前端实现技能。
 
 - 新请求命中旧 ID 返回 `skill-retired`；前端实现到独立的前端规格与 CLI 中进行。
 - 设计阶段技能 `yss-design-system`、`yss-prototype-stage`、`prototype-review` 保留，原型阶段不得调用生产组件库。
@@ -52,7 +48,6 @@ Codex、Cursor、Pi、Claude Code 都直接读取 `.agents/skills`，不再需�
 
 后端组件 Skill 的单一 `references/source-index.md` 已迁移为平台线选择页。生成证据分别保存在 `source-index.boot2-java8.md` 与 `source-index.boot3-java17.md`，来源根分别由 `YSS_SOURCE_ROOT_BOOT2_JAVA8` 与 `YSS_SOURCE_ROOT_BOOT3_JAVA17` 显式提供。
 
-- 精确接入、代码生成和配置指导必须从批准的 `platform_configuration.component_platform_line` 选择索引，并以相同 `--platform-line` 和匹配源码根运行 freshness 检查。
 - 平台线缺失、源码根错配、组件 tree 漂移或组件子树 dirty 均返回 `blocked`；禁止退回另一代索引，也不能用源码可编译替代构件兼容认证。
 - 历史提交中的单轨索引只作只读证据；当前刷新不得覆盖另一平台线或把两个变量指向同一代源码。
 
@@ -121,7 +116,6 @@ DDD 脚手架的 Parent 工程约束由 `yss-ddd-scaffold-generator/references/e
 
 同步升级内容：
 
-- 技能注册表和调用者使用新 canonical ID；Registry、编译器合同、Slice Implementation Contract 与 YSS Skill Execution Result 使用 schema v2。
 - Recipe 只引用 dotted capability；类型化依赖只由 `.template-spec/agents/yss-skill-registry.yaml` 持有。
 - 旧 schema v1 输入明确拒绝并返回迁移提示，不自动升级。
 - 历史冻结证据和不可变候选快照不改写。旧 ID 仅可继续出现在本迁移记录、`OBSOLETE` 阻断集合及负向测试中。
@@ -139,8 +133,6 @@ DDD 脚手架的 Parent 工程约束由 `yss-ddd-scaffold-generator/references/e
 - 真实组件核验：不属于原型档位；进入已批准切片后由 `yss-ui` 基于目标 lockfile 执行，并写入前端实现验证
 - 独立低保真评审：`prototype-review`
 
-已关闭的 Prototype Evidence schema v1/v2/v3、旧 artifact ID、AntD CLI、浏览器验证和确认记录只读保留。在途 UI 工作迁移到 Prototype Evidence schema v4、Visual Baseline schema v1 与 `artifact.prototype-deliverable` 后再关闭门禁；无 UI 影响不创建空包。不得创建同名兼容目录或删除历史证据。
-
 ## 2026-09-28 入口收敛
 
 以下旧 Skill ID 已硬退役：新调用返回 `skill-retired` 和迁移提示，不能自动执行替代入口或改变阶段状态。历史证据只读保留。
@@ -148,7 +140,6 @@ DDD 脚手架的 Parent 工程约束由 `yss-ddd-scaffold-generator/references/e
 | 旧入口 | 承接位置 |
 |---|---|
 | wait-what | 普通解释对话，按文档写作规范或 i-have-adhd 调整表达 |
-| grill-with-docs | 当前生命周期的 work-unit.plan-requirements，保留 Context 校验、对账和退出判定 |
 | to-questionnaire | 当前生命周期外部输入问卷，保留 external-input-required 与答案回流合同 |
 | improve-codebase-architecture | codebase-design 显式架构审计模式及可选 HTML 报告 |
 

@@ -5,17 +5,10 @@ description: 核验、接入或排查 YSS MyBatis/MyBatis-Plus 的 Mapper/Reposi
 
 # yss-mybatis
 
-执行路线消费当前 Profile 主控合同的 `request_triage.delivery_path` 与固定 CLI 的 `route` / `verify-daily` 结果。仅已启用且合格的 Spec、Backend、Frontend `daily` 使用同一 Ticket 的范围、验收、工程基线、实际测试与独立审查；本端写范围不扩大。缺政策或能力时保持正式路径，已有正式任务不得降级；本技能不授予执行授权。
-
 本 Skill 只维护 `yss-component-persistence` 的组件能力、选择条件和排障顺序。PO、Repository、Convertor、Gateway/Query Adapter 的结构与生成边界由 `yss-repository` 负责。
-
-## 平台与源码门禁
-
-接入、修改、代码生成或提供精确类名/配置前，必须读取并执行 [共享平台与源码门禁](../yss-skill-source-index-refresh/references/backend-component-platform-compatibility.md)，以 `--skill yss-mybatis` 校验当前路线已核验的精确平台线及匹配源码根（`daily` 来自同 Ticket 的已有工程基线，`governed` 来自批准的配置）；不因普通路径跳过源码检查。缺失、错配或漂移返回 `blocked`；不跨代回退，不在业务实现中升级、降级或替换组件。只读分诊可继续，但须标注未完成源码核验，不能据此宣称跨 Boot/JDK 兼容。
 
 ## 入口与前置
 
-1. `governed` 读取批准且当前的 `architecture_identity`、`persistence_profile`、实现仓登记和 Slice Implementation Contract；合格 `daily` 从同 Ticket 的验收/范围与已有工程基线取得已确认架构、持久化模式和真实单仓根。缺事实可只读调查，不据此生成或改变架构。
 2. 精确类名、方法签名、配置 key、默认值或启用条件必须先读 [source-index.md](references/source-index.md)，并按 `yss-skill-source-index-refresh/references/source-location.md` 核验组件 tree 与组件子树 clean 状态。
 3. 组件 tree 不匹配或 persistence 子树为 dirty 时，路径提示只能用于定位；精确实现或审查结论返回 `stale` / `missing_evidence`，刷新索引后再继续。
 4. 新 DDD / MVC scaffold 只支持批准的 `mybatis-plus` Profile。普通 MyBatis 仅用于既有工程维护、兼容与排障；新增支持必须有独立 Profile 和 fixture，不自动猜测或混用。
@@ -23,20 +16,15 @@ description: 核验、接入或排查 YSS MyBatis/MyBatis-Plus 的 Mapper/Reposi
 ## 稳定决策规则
 
 <a id="mybatis.binding"></a>
-<!-- yss-rule {"id":"mybatis.binding","when":"mybatis","level":"mandatory","evidence":"code-and-verification"} -->
-- 基类、Mapper 注解、XML 位置和扫描范围以批准 Profile、当前工程基线及当前组件源码共同决定；不得在既有体系外再造 Mapper 抽象。
+- 基类、Mapper 注解、XML 位置和扫描范围以当前工程配置、当前工程基线及当前组件源码共同决定；不得在既有体系外再造 Mapper 抽象。
 <a id="mybatis.pagination"></a>
-<!-- yss-rule {"id":"mybatis.pagination","when":"pagination","level":"mandatory","evidence":"code-and-verification"} -->
 - 一条查询 seam 只能有一个分页责任模型。核对实际插件/切面开关、拦截范围、参数绑定条件和返回 total 的责任，不以“依赖已引入”代替行为验证。
 <a id="mybatis.batch"></a>
-<!-- yss-rule {"id":"mybatis.batch","when":"batch","level":"mandatory","evidence":"code-and-verification"} -->
 - 批量写入必须证明是组件当前支持的 SQL 级批量能力，并验证分批大小、字段填充、主键和数据库方言；循环单条写入不能冒充批量 SQL。
 - 多数据源实例创建不等于动态路由、线程上下文切换或事务传播。先做 capability check；组件未提供的路由能力必须由批准的上层适配承担。
 <a id="mybatis.mapping"></a>
-<!-- yss-rule {"id":"mybatis.mapping","when":"mybatis","level":"mandatory","evidence":"code-and-verification"} -->
 - Mapper/XML、逻辑删除、审计字段、主键策略、动态排序/分组白名单和参数绑定必须与数据合同一致；任何 SQL/DDL/索引新影响返回 `new_impacts`。
 <a id="mybatis.transaction"></a>
-<!-- yss-rule {"id":"mybatis.transaction","when":"mybatis","level":"mandatory","evidence":"code-and-verification"} -->
 - 事务边界归批准的 Application 用例或 MVC service/core；Repository 不临时声明新的业务事务。
 
 ## 能力选择记录
@@ -49,14 +37,13 @@ description: 核验、接入或排查 YSS MyBatis/MyBatis-Plus 的 Mapper/Reposi
 | SQL 级批量写入 | 核对公开入口、分片大小、目标方言生成的单批 SQL、审计填充和 ID；多个分片整体回滚由上层用例事务保证。若 batch size 存在进程级可变状态，多 Spring Context 不得据此宣称配置隔离。 |
 | 命名数据源 | Holder 中有多个 DataSource 不证明动态路由；记录实际 Mapper 的 `SqlSessionFactory`/DataSource、主池与自建池所有权，以及事务绑定。 |
 
-以上仅对命中的能力记录，不改变两套分页插件的当前默认注册行为；选择由批准 Profile、消费工程配置和运行测试共同证明。
+以上仅对命中的能力记录，不改变两套分页插件的当前默认注册行为；选择由当前工程配置、消费工程配置和运行测试共同证明。
 
 ## 任务分流
 
 | 请求 | 本 Skill 动作 | 后续路由 |
 |---|---|---|
 | 组件接入、基类选择、配置核验 | 读取当前 Profile 和源码能力矩阵，给出来源可追踪的选择 | 需要结构实现时转 `yss-repository` |
-| 分页、批量、扫描、XML、数据源故障 | 按下列顺序定位并保留实际证据 | 超出当前输入的数据/架构影响回生命周期调查；正式合同漂移回编译器 |
 | 生成 PO / Repository / Convertor / GatewayImpl | 不生成 | `yss-repository` |
 | 普通 MyBatis 新工程生成 | `unsupported` | 新 Profile / fixture 获批后再进入 |
 
@@ -70,15 +57,10 @@ description: 核验、接入或排查 YSS MyBatis/MyBatis-Plus 的 Mapper/Reposi
 6. 数据源：先确认组件只提供了什么，再检查 Mapper 实际绑定的会话工厂、上层路由与事务进入顺序；不得假设存在当前线程数据源上下文。
 7. 最后检查 SQL、绑定参数、数据库方言与执行计划。
 
-## Review 输入
-
-仅审查本体项目、`governed` 合同/实现仓登记项目及 `daily` 同 Ticket 已核验的单一后端实现根。命中 Mapper、Repository、SQL、分页、批量、扫描配置或数据源能力时，`code-review` Standards 轴必须读取本 Skill 和当前 source index；无持久化影响时显式记录带原因的 `not-applicable`。
-
 ## 结果与验证
 
-- 行为变更使用 `behavior-tdd`；纯 Mapper/XML 骨架仅在批准合同明确为 `controlled-generation` 时允许。
 - 使用项目根 `./mvnw ...` 记录实际命令、退出码和时间；H2 只证明本地/测试行为，不证明生产方言。
-- `daily` 在同 Ticket 返回组件来源、分页/批量/映射约束及真实测试/命令/退出码，交独立 Reviewer 绑定当前候选；`governed` 按 [YSS Skill Execution Result v2](../yss-implementation-contract-compiler/references/yss-skill-execution-result.md) 返回证据、`seam_deferred`、`deviations`、`new_impacts`、`drift` 和 `violation`。
+- `daily` 在同 Ticket 返回组件来源、分页/批量/映射约束及真实测试/命令/退出码，交独立 Reviewer 绑定当前候选；`governed` 按 YSS Skill Execution Result v2 返回证据、`seam_deferred`、`deviations`、`new_impacts`、`drift` 和 `violation`。
 
 ## 持久化选择记录
 

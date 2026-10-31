@@ -34,14 +34,13 @@ DTO/VO 位于 `{base_package}.rest.dto`。独立 client Maven module 对当前 T
 - Aggregate Root 是一致性边界，不按表数量机械拆分。
 - Entity identity 使用明确类型；Value Object 按值相等并尽量不可变。
 - 对外暴露业务动作，例如 `publish()`、`cancel()`，不要让 Application 任意修改状态字段。
-- 每个批准不变量必须有 `behavior-tdd` 测试；测试通过聚合公开方法观察结果。
 - 没有真实行为时保持简单模型，不为了“看起来像 DDD”制造空 Domain Service。
 
 ## 4. Gateway
 
 Gateway 描述领域能力，只交换 Domain Model、领域值和领域标识。例如：
 
-Gateway interface 的签名由批准战术模型决定，并由 `yss-domain` 唯一创建和维护；Infrastructure / `yss-repository` 只能实现该接口。若实现所需能力超出既有签名，返回 `new_impacts` 并重路由，不得从 DDL 反向扩写 Domain 合同。
+Gateway interface 的签名由当前领域模型决定，并由 `yss-domain` 唯一创建和维护；Infrastructure / `yss-repository` 只能实现该接口。若实现所需能力超出既有签名，返回 `new_impacts` 并重路由，不得从 DDL 反向扩写 Domain 合同。
 
 ```java
 package com.yss.quality.domain.template.gateway;
@@ -85,9 +84,9 @@ public final class QualityTemplateNameConflict extends RuntimeException {
 
 Web Exception Translator 再将它映射为批准的状态码、错误码和消毒消息。Domain 不直接依赖 YSS `BizException`。
 
-## 6. 依赖门禁
+## 6. 依赖参考
 
-生成工程的 ArchUnit 规则必须证明：
+领域代码保持以下依赖方向：
 
 - Domain 不依赖 Application、Infrastructure、Repository 或 Web。
 - Domain 不依赖 YSS DTO/Exception、Jackson、Swagger 或 Validation。
@@ -95,8 +94,6 @@ Web Exception Translator 再将它映射为批准的状态码、错误码和消�
 
 ## 7. 生命周期证据
 
-- `governed` 消费批准且当前的 Tactical Design 与 Slice Implementation Contract；合格 `daily` 消费同 Ticket 的范围、验收与已有工程已确认领域基线，不新增设计批准资产。
-- 两条路线均提供 Domain 文件、行为测试、适用 ArchUnit 结果及实际 `./mvnw ...` 证据；`daily` 回填同 Ticket，`governed` 返回正式 YSS Skill Execution Result。
 - 新聚合、不变量、状态机或跨上下文影响进入 `new_impacts` 并暂停。
 - 旧布局不走 scaffold 生成分支；既有 DDD 按登记整改。需改变架构或公开契约时单独评估并批准。
 

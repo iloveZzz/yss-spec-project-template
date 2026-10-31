@@ -4,7 +4,7 @@
 
 ## 选择算法
 
-先读取已批准 Spec、交互说明、低保真、状态矩阵和独立 `prototype-review`。按下列确定性规则选择，最高命中档位优先；无命中或证据不充分时使用 H2。人工可以直接升级，降级必须写明已关闭的触发风险与证据。
+先读取当前 Spec、交互说明、低保真、状态矩阵和独立 `prototype-review`。按下列确定性规则选择，最高命中档位优先；无命中或证据不充分时使用 H2。人工可以直接升级，降级必须写明已关闭的触发风险与证据。
 
 | 档位 | 名称 | 命中条件 | 默认适配器 |
 |---|---|---|---|
@@ -21,17 +21,11 @@
 - 浏览器入口、产物 digest、desktop/narrow 非空渲染、console 结果，以及由 `case_id` 定位的 Visual Baseline Bundle。
 - 统一 Design QA 六轴：visual、layout、interaction、content、accessibility、cross-platform。
 - 独立原型评审引用、用户确认、blockers 和 gaps。
-- `implementation_handoff`：只记录生产组件假设、待验证事项和目标阶段，不提前执行生产组件核验。
 
 机器优先采集版本、digest、视口、截图、console 与扫描结果；人只填写决策、风险解释、允许差异和用户确认。PNG 基准图统一使用 sRGB、DPR 1，关闭动画并隐藏光标；长页面使用固定滚动分段，full-page 只可作总览。每张图不超过 5 MiB，整包不超过 100 MiB。不得把同一事实复制到多个段落。
 
-`visual-baseline.yaml` 是模型与实现验证的唯一图片索引。每个 case 必须绑定 route、page、state、viewport、theme、locale、data scenario、PNG digest、语义引用和允许差异；至少覆盖 1440x900 与 390x844。原型用户确认时冻结版本，后续变更创建新版本并使依赖的实现计划与 Slice Contract `stale`，禁止覆盖旧版本。
-
-## 档位证据
-
 ### H1
 
-- 浏览器不依赖 Node/runtime build；原型目录不得伪造 `package.json`、lockfile 或空组件查询段。
 - 至少验证一个或少量关键交互，以及基础键盘、焦点和对比度。
 - 200% zoom 与 reduced motion 只在影响面命中时要求；视觉回归和真实组件 story 不强制。
 
@@ -47,11 +41,8 @@
 
 - 若原型结论依赖真实 YSS/AntDV 组件能力，在 `implementation_handoff.production_component_assumptions` 中记录假设，在 `verification_targets` 中写明待验证行为。
 - 这些事项随原型交付交给独立维护的前端规格与 CLI；真实组件事实由其基于目标 lockfile 核验，本模板不编入前端实现计划。
-- 原型门禁只证明设计决策、流程与状态可验证，不得声称已证明生产组件兼容性。
 
 ## 条件 ideation
-
-信息架构或交互存在实质不确定性时，在独立低保真评审之前按 [方案比较方法](concept-comparison.md) 比较三个候选并取得用户选择。通过评审后，只有视觉方向仍未确定时比较高保真候选；保持已批准行为，行为变化返回受影响评审。候选保持同一任务、数据、保真度与制作深度，比较前明确硬约束与取舍标准；换色不算交互方案。记录选择代价、落选理由及重新考虑条件，沿用现有用户决定协议，不另立批准门禁。
 
 可用语义草图、HTML 或按需 `product-design:ideate`；离线比较用 [评审工具](comparison-tool.md)，不把 ImageGen 当作所有原型的前置依赖。已批准模式或当前设计规范足以约束页面时，记录 `not-applicable`、来源与理由；已解决的问题不重复探索。
 
@@ -71,14 +62,9 @@
 
 - 新证据只生成 schema v4、Visual Baseline schema v1 与 `artifact.prototype-deliverable`。
 - prototype evidence schema v1/v2/v3 和 `artifact.high-fidelity-html-prototype` 只读兼容；已经关闭的历史证据保持有效，不补造图片。
-- 在途 UI 证据必须迁移到 v4 并产生 Visual Baseline 后才能关闭 `check.prototype-verified`；非 UI 功能不生成空包。
 
 ### HTML 路线迁移
-
-两个原型组件 Provider 已从当前技能与生成路线退役。历史 Vue/React 原型、fact pack 与批准证据保留原字节；`--allow-legacy` 只读校验不代表通过当前门禁。在途原型继续演进时生成新的 HTML 工作版本、补离线与场景证据并重新确认，禁止覆盖旧版本。
 
 采纳的外部方法与适用边界见 [HTML 原型实践](html-prototype-practices.md)；不安装上游整包或引入第二套状态、QA、交接体系。
 
 React AntD 预构建也已退役；旧证据与资源仅显式 legacy 只读校验，不封存新版本。高保真主要路线与迁移说明见 [shadcn 集成](shadcn-vue-integration.md)。
-
-React 作者依赖、组件源码和生成入口已退役，历史批准包仅显式 `--allow-legacy` 只读核验，不重新封存。见 [历史路线](shadcn-integration.md)。

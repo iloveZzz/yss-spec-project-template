@@ -60,13 +60,9 @@ Local 主 tracker 的完整功能包结构如下：
 └── issues/01-<slug>.md
 ```
 
-- `parent-ticket.md` 汇总 Spec、设计、契约、门禁、阻塞边和阶段证据。
 - `issues/01-<slug>.md` 等文件是垂直切片或 Wayfinder 子 Ticket；不得把多个 Ticket 合并成一个文件。
-- 每个 Ticket 在顶部附近使用 `Status:` 记录 Matt 五态之一：`needs-triage`、`needs-info`、`ready-for-agent`、`ready-for-human`、`wontfix`。
 - 评论和对话追加在 `## Comments` 下；状态变化必须保留原因、证据引用和下一步。
 - Wayfinder 的临时子问题可以沿用 Matt 的 `Status: claimed/resolved` 工作状态；它不是交付 Ticket 的五态角色，进入正式切片前必须转换为上述五态之一。
-- Local 主 tracker 不要求远程 Ticket 存在；`ready-for-agent` 仍必须满足生命周期门禁、阻塞边关闭、实现上下文和 Slice Implementation Contract 要求。
-- YSS active 调用 `to-tickets` 时，新建垂直切片的初始 `Status:` 固定为 `ready-for-human`；只有生命周期编排器核验完整就绪公式后才能改为 `ready-for-agent`。
 - GitHub / GitLab 可以作为显式开启的镜像，在功能包中记录 URL、编号和最近同步时间；镜像失败不改变 Local 主 tracker 的权威性。
 - 当前写入位置只由 `tracker.root` 决定；历史扫描命中不改变配置根。历史根与当前根之间出现重复或引用冲突时，按 [历史兼容边界](../process/work-layout.md#历史兼容边界) 诊断，不静默覆盖或合并。
 
@@ -78,13 +74,7 @@ Spec、生命周期和交付任务状态必须同步到当前主 tracker：
 - `github`：使用 GitHub Issues，并在本地功能包记录 URL / 编号和最近同步时间；平台不可用时保留 `tracker: github`、`publication: pending`、`pending_publication_to: github`。
 - `gitlab`：使用 GitLab Issues，并在本地功能包记录 URL / IID 和最近同步时间；平台不可用时保留 `tracker: gitlab`、`publication: pending`、`pending_publication_to: gitlab`。
 
-所有平台都保留相同的父 Ticket、垂直切片、阻塞关系、验收标准、测试 seam、人工审查点和 `ready-for-agent` 语义。平台差异只影响存储和操作方式，不改变生命周期阶段或门禁。
-
-Git checkpoint 必须说明主 tracker、同步状态、验证命令、剩余风险和下一步。Local 主 tracker 的“已同步”表示本地功能包已更新；远程镜像只有明确启用时才需要同步。
-
 ## GitLab Issues
-
-当平台为 GitLab 时，优先使用 `glab` 或项目快捷入口 `scripts/gitworks`。
 
 常用命令：
 
@@ -92,7 +82,6 @@ Git checkpoint 必须说明主 tracker、同步状态、验证命令、剩余风
 - Read an issue: `glab issue view <iid> --comments`
 - List issues: `glab issue list --state opened`
 - Comment on an issue: `glab issue note <iid> --message "..."`
-- Apply labels: `glab issue update <iid> --label "ready-for-agent"`
 - Close an issue: `glab issue close <iid>`
 
 GitLab 相关配置和 MR / CI 工作流见 `.template-spec/agents/gitlab-workflow-skills.md`。
@@ -154,8 +143,6 @@ Ticket 是默认 triage surface。MR / PR 是否纳入 triage 取决于当前平
 ## 阶段工作追踪
 
 新初始化默认启用 `tracker.lifecycle_tracking_version: 1`。已有项目的 attach / sync 保留原配置；缺省保持旧模式，按 [阶段工作追踪](../process/stage-tracking.md) 执行 check → plan → apply。
-
-Plan / Spec / Design 的小工作记录在 checkpoint.stage_tracking；独立工作项使用 `work-items/<id>.md`，不占用业务票 / 实现切片的 `issues/`。执行进度只由 checkpoint 保存，父票和 map 引用；阶段工作项不得设置 `ready-for-agent`。
 
 ## 业务拆分版本
 

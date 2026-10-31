@@ -2,12 +2,6 @@
 
 DDD 和 Layered MVC 共同消费 `backend-platforms.json`。平台定义是候选配方，`compatibility` 是 YSS 父 POM、BOM、组件能力与证据的同一组合清单。`blocked` 条目只表达已经定位的坐标和缺口，不表示组合已获认证；没有 `verified` 条目表示尚无可开放组合，不表示官方框架不支持这些版本。
 
-## 用户选择
-
-运行 `scripts/backend-platforms` 展示 Boot 精确补丁、Java、YSS 父 POM/BOM、逐组件状态、构件证据和阻塞原因。`scripts/backend-platforms --require-profile <profile-id>` 只校验指定 Profile 的平台基础组合；缺条目或组合阻断时输出 JSON 诊断并返回非 0。组件状态独立展示，是否可用由编译器针对实际请求的 capability 调用组件解析器判定，单个组件阻断不会降级一个已经验证的平台基础组合。新建后端在进入 DDD / MVC 分支设计前必须通过 `gate.backend-architecture-platform-approved`；生命周期编排器将平台与架构放在同一次用户决定中。缺少选择时询问；已有批准且当前的选择只展示摘要并复用。既有工程核验并复用登记的 `architecture_identity` 与固定工程基线/POM 中的实际 Spring Boot 版本，该门禁记录为 `not-applicable`，不重复询问；平台升级另行立项。独立子项目可继承或覆盖，也可一次确认明确列出的多个项目。同一 Maven Reactor 不混用平台。
-
-候选为 2.7.18 / Java 8、3.5.16 / Java 17 或 21、4.1.1 / Java 17 或 21。3.5 和 4.1 推荐 Java 17。新增补丁必须先通过组合验证，生成合同不接受 `x`、版本范围或 `latest`。
-
 ## 配置与一致性
 
 Project Scaffold Contract v4 新增 `platform_configuration` v2，两个脚手架的新生成必须提供；前端及数据分析初始化器保持原边界。架构决策保存同一对象，参与原用户决定快照和 digest。Manifest 顶层及 `architecture_identity` 传递同一配置。
@@ -22,10 +16,6 @@ Project Scaffold Contract v4 新增 `platform_configuration` v2，两个脚手�
 | `parent` / `bom` | `group_id`、`artifact_id`、`version` |
 | `compatibility_id` | 清单组合 ID |
 | `compatibility_digest` | `platformRecipeDigest(profile, entry)`，排除证据列表、支持状态和展示提示 |
-
-配置可由 `platformBinding(profile, entry)` 机械构造；该函数把 Profile 中规范化的 `component_platform_line` 持久化到 v2 binding，并由 schema、解析器、架构身份摘要和 Slice 组件绑定摘要共同校验。组件平台线表示可消费的双平台源码索引，不承载 `maintenance`、`candidate` 或 `blocked` 生命周期；生命周期继续由 compatibility 与 capability 状态表达。当前 Boot 2 与 Boot 3 分别固定为 `boot2-java8`、`boot3-java17`。Boot 4 没有现有组件平台线，不生成可批准的 v2 `platform_configuration`，继续在选择阶段阻断。该函数不批准用户选择或开放支持。修改平台、YSS 坐标或依赖配方会使绑定失效；仅更新同配方证据不改变用户选择摘要。历史 Manifest 继续只读验证，不自动补字段或重写批准。仅继承架构不等于继承平台批准。
-
-`resolveBackendPlatform(binding, { root })` 在未显式传入 catalog 时读取该 `root` 下的 `.template-spec/engineering/backend-platforms.json`；未传 `root` 时读取模板仓目录。这样 Slice freshness 与隔离 fixture 使用各自的目录事实，不会意外回退到模板工作区。
 
 ## 组件能力绑定
 
@@ -62,17 +52,9 @@ Boot 4 使用对应 MVC / MVC 测试 starter、Jackson 3 默认栈与新的模�
 
 ## 维护候选与开放组合
 
-`scripts/verify-backend-platform-matrix --evidence-dir <目录> --inputs <输入.json>` 是维护入口；没有输入或环境时输出十组 `blocked` 及原因，不伪造 Maven 结果。输入结构：
-
 - `catalog_ref`：相对输入文件的候选清单；保留官方平台定义，补充实际待验证的 YSS 组合。
 - `java_homes`：以 `8`、`17`、`21` 为键的实际 JDK 根目录。
 - `combinations`：每项有 `profile_id`、`spring_boot_version`、`architecture_family`、`contract_ref`，合同须真实批准、当前且指向不存在的输出目录。
-
-兼容条目包含 `id`、`profile_id`、`spring_boot_version`、`parent`、`bom`、`status`、`capabilities`、`component_capabilities` 和 `evidence`。未验证时使用 `candidate` 或 `blocked`。每条证据绑定架构、可读取报告的 `ref` 与原始字节 `digest`。报告须匹配 Boot、Java、父 POM/BOM，三条 Maven 命令真实成功，并通过依赖、Surefire 实际用例和启动检查；跳过测试不通过。报告的 `verified_capabilities` 逐架构覆盖所选能力。`evidence_artifacts` 绑定日志、effective POM、依赖树和 `platform-tests.xml` 的相对路径与字节摘要，缺失或漂移即阻断。
-
-候选工程始终标记 `platform_verification=candidate`，不能进入普通验证完成升级、业务生成或首切片验证。维护者将真实证据及相关日志保存为可分发的相对路径包，审阅全部适用能力后才可把对应组合登记为 `verified`。候选晋级或替换同配方证据不改变配置摘要；真正的依赖配方变化才重新确认。矩阵命令不自动修改兼容清单、不批准合同、不发布版本。
-
-`scripts/fixtures/backend-scaffold/` 下的合成合同仅测试机制，绝不作为兼容证据。标准生成 CLI 无候选参数或环境变量后门。
 
 ## 官方依据
 
@@ -96,14 +78,9 @@ Boot 4 使用对应 MVC / MVC 测试 starter、Jackson 3 默认栈与新的模�
 
 依赖核验以启动模块 compile/runtime 树为准，不用其他模块或 test/provided 依赖凑齐能力；从独立解析的所选 Boot BOM 获取精确托管版本进行比较，非 Boot 管理的内部兼容版本可通过组合 `components` 映射约束。随后检查实际可执行 Jar 的 BOOT-INF/lib。Maven effective-pom 的 artifact 参数及 dependency tree JSON 行为依据 [Maven Help Plugin](https://maven.apache.org/plugins/maven-help-plugin/effective-pom-mojo.html) 和 [Dependency Plugin](https://maven.apache.org/plugins/maven-dependency-plugin/tree-mojo.html)。
 
-首次生成成功而 Maven 验证失败时，使用原输入加 `--resume`。恢复前重新验证当前合同、架构决定与工程批准，并核对 Manifest、生成文件、文件清单和生成器/验证器摘要；任一漂移即阻断，绝不覆盖用户修改或再次生成。每次验证写入新的证据目录，旧日志保留。Surefire 报告必须来自本次命令执行，旧报告或跳过测试不能补足证据。发生源码或模板变化时，请使用新候选输出目录和对应合同，不通过恢复模式覆盖旧工程。
-
-空脚手架验证的证据目录必须位于生成工程外部，避免证据文件被误认为新增源码。首切片验证在批准的切片合同通过既有门禁后复用构建检查，但记录 `verification_scope=first-slice`；其证据不能用于开放平台组合，也不要求业务代码保持空脚手架摘要。
-
 通用运行时依赖仍由真实依赖树和 Boot BOM 核验。YSS 组件能力的精确构件绑定只读取同一兼容条目内的 `component_capabilities`，不得再从 catalog 顶层列表或平行 `components` 目录推断。
 
 Jar 核验拒绝未登记或版本不符的额外库；仅允许 Boot 对应版本的 jarmode 工具以及已选配方中的 provided Lombok 随包出现。原因是 [Boot repackage 默认包含 provided 依赖](https://docs.spring.io/spring-boot/maven-plugin/packaging.html)；这些打包例外不能补足必须存在于 compile/runtime 树的 Web、Servlet、JSON 等能力。
-
 
 ## 双平台专项认证
 
@@ -116,7 +93,6 @@ Jar 核验拒绝未登记或版本不符的额外库；仅允许 Boot 对应版�
 HTTP JSON/Validation 错误响应、MapStruct 编译与字段映射、MyBatis 持久化往返/分页、事务失败回滚。
 夹具在 test scope 使用 H2、标准 MyBatis RowBounds 和 TransactionTemplate；它不证明生产方言、YSS 自动分页切面、业务 Service 代理事务或特定
 组件能力。对应能力仍须读取所选平台的源码索引、验证实际组件并绑定独立证据。新增用例必须出现在本次
-Surefire XML 中，空测试、跳过或旧报告不可通过。没有凭据、构件、真实批准合同或组件兼容证据时保持阻断。
 
 ## 本次 3.2.0-SNAPSHOT 定向验证
 
@@ -127,7 +103,5 @@ Surefire XML 中，空测试、跳过或旧报告不可通过。没有凭据、�
 精确配方按实际 Parent 声明使用 SnakeYAML 2.5，覆盖 Boot BOM 的默认 2.4；不改变 Boot/JDK/YSS 版本。打包检查依据真实 starter 清单中的 `Spring-Boot-Jar-Type: dependencies-starter` 识别 Boot 省略的空 starter，其他运行 JAR 继续核验。DDD 启动探测使用现有 `/actuator/health` 并要求 HTTP 200/UP，通用 MVC 空工程要求未声明根路由返回 404。已知异常组件对未定义静态资源返回 500 的行为保留记录，不属于本次参考接口认证；未修改或发布组件。
 
 源码证据逐字节核对远端 POM、sources JAR 与本地组件源码，再以隔离 Git tree 保存源归档/POM 的内容身份，不冒充上游提交。来源状态为 working-tree；正式固定提交及发布资格另行闭合。未认证缓存、Excel、生产数据库、其他平台或组件全部 API。真实报告与日志位于 `evidence/scaffold-3.2.0/{ddd,mvc}/`。
-
-2026-10-30 因生成器字节变化重新认证上述两个架构：使用当前生成器重新生成空工程及独立参考工程，真实执行 validate/test/package、平台与参考集成测试、依赖和打包检查、启动与六项 HTTP 请求。`qualification.json` 和日志已更新；报告保留 `standalone-generation` / `unverified` 作为原始生成路径事实，维护认证由补充检查结果与 `qualification_origin` 说明。`artifact-binding-check.json` 核对实际使用的 POM/JAR、参考工程内嵌 JAR、已登记私服的唯一 SNAPSHOT 元数据及保留的原始构件字节。构件绑定和能力范围不变；未重新解析远端版本或重新认证上游源码，也不授予产品生命周期批准。
 
 参考工程的大型依赖报告以 gzip 保存，`evidence_artifacts` 同时登记压缩字节摘要与 `uncompressed_digest`；解压后与原始运行报告逐字节一致。

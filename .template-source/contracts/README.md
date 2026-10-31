@@ -1,3 +1,7 @@
+# 历史设计记录
+
+本目录保存历史设计与决策，不作为当前操作要求。文中旧脚本、测试、阶段门禁和批准流程已退役；当前工作入口为根 AGENTS.md。历史记录保留原文，不据此要求恢复旧工具。
+
 # 模板源合同索引
 
 本目录保存模板源的现行集成合同、设计结论与维护策略。历史快照类文档记录当时基线与结论；当前门禁数量、检查清单与发行状态分别以 `.template-source/process/template-verification-profiles.yaml`、`.template-spec/process/lifecycle-registry.yaml` 与当前提交为准。

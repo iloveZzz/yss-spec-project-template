@@ -6,7 +6,6 @@ license: MIT
 
 已核验 `matt-spec-v1` 的 Spec 工作不因 installation=governed 强制阶段政策、Context、ADR、研究包或批准套件。仅主动术语归档需要时维护已有 Context；缺失时可在规格整理候选，不自动建文件。当前任务使用技能内方法，真实审批由 life 消费决定，技术/API/实施资格留给下游。其他 Profile 保留各自实际合同。
 
-
 # i-have-adhd · YSS 适配
 
 先为当前产物读取 [中文文档共用规范](references/document-writing.md)，这是共用中文写法的唯一正文来源，随技能分发。普通文档不要求治理目录；治理已启用且当前产物涉及阶段或批准时，再读 `.template-spec/process/document-writing.md` 的对应指引；需要治理写作例子时读取 `.template-spec/templates/examples/lifecycle-writing-examples.md`。本技能是原资产所有者的配套技能，不持有业务决定、批准或生命周期状态。

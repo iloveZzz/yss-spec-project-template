@@ -5,8 +5,6 @@ description: "审查、迁移或排查既有 YSS 加解密、JWT/JWK、密码编
 
 # yss-security-algorithm
 
-执行路线消费当前 Profile 主控合同的 `request_triage.delivery_path` 与固定 CLI 的 `route` / `verify-daily` 结果。仅已启用且合格的 Spec、Backend、Frontend `daily` 使用同一 Ticket 的范围、验收、工程基线、实际测试与独立审查；本端写范围不扩大。缺政策或能力时保持正式路径，已有正式任务不得降级；本技能不授予执行授权。
-
 作为既有 YSS 安全算法组件的盘点、分诊、风险收敛和迁移入口。当前组件禁止新生产接入；准入结论不因源码可读或可编译而改变。
 
 ## 当前准入结论
@@ -16,10 +14,6 @@ description: "审查、迁移或排查既有 YSS 加解密、JWT/JWK、密码编
 - 硬编码私钥、固定 key id、进程启动时临时生成密钥以及 `noop` password encoder 均不构成生产密钥管理。组件源码可定位或可编译也不能解除该结论。
 - 只有平台目录中的 `component.security-algorithm` 对目标架构为 `verified`，精确构件绑定仍有效，并且外部 KMS / Secret Manager、轮换撤销、兼容迁移、行为测试和安全责任人审查全部闭合后，才能通过独立决策重新开放新接入；本 Skill 不自行修改该状态。
 - 新接入请求返回 `component-new-adoption-forbidden` / `blocked-for-production`，并给出迁移或外部密钥服务方案；不得生成基于遗留工具类的生产代码。
-
-## 平台与源码门禁
-
-接入、修改、代码生成或提供精确类名/配置前，必须读取并执行 [共享平台与源码门禁](../yss-skill-source-index-refresh/references/backend-component-platform-compatibility.md)，以 `--skill yss-security-algorithm` 校验当前路线已核验的精确平台线及匹配源码根（`daily` 来自同 Ticket 的已有工程基线，`governed` 来自批准的配置）；不因普通路径跳过源码检查。缺失、错配或漂移返回 `blocked`；不跨代回退，不在业务实现中升级、降级或替换组件。只读分诊可继续，但须标注未完成源码核验，不能据此宣称跨 Boot/JDK 兼容。
 
 ## 源码定位
 
@@ -44,7 +38,6 @@ description: "审查、迁移或排查既有 YSS 加解密、JWT/JWK、密码编
 - Boot 2 历史实现中的硬编码 RSA 私钥、固定 key id、临时 JWK 与 noop 默认值必须视为已暴露风险并进入轮换/撤销盘点；不得把这些历史事实误写成 Boot 3 当前实现。
 - Boot 3 `Jwks` fail closed，`DefaultJwtConfiguration` 只提供 `PasswordEncoderFactories` 的 delegating encoder；JWT/JWK 必须由应用安全层或外部 KMS 提供。
 - 兼容适配器只保留公开类型和方法契约，不恢复旧密钥、旧密文解密或隐式 provider。存量兼容仍需代表性 ciphertext/JWT/password fixtures、回滚点和安全责任人审查。
-- 区分存储加密、传输、签名与兼容需要，再按批准合同选择算法和密钥生命周期。
 - 可部署实现消费批准的受控密钥服务和 key reference，不从示例推导密钥来源。
 - API 合同明确明文/密文、编码格式和密钥类型。
 
@@ -70,7 +63,3 @@ description: "审查、迁移或排查既有 YSS 加解密、JWT/JWK、密码编
 - 保持当前组件任务范围；扩展到其他组件须有用户要求或重新路由依据。
 - 组件编译、索引 fresh 或既有工程依赖不解除新接入禁令。
 - Agent 输出不得复制、打印、就地轮换或重新签发密钥材料。
-
-## 执行证据与新增影响
-
-`daily` 将允许的既有工程盘点/分诊事实、组件来源和风险回填同 Ticket；风险收敛或迁移命中正式边界时走 `governed`，保留原合同、生产前提和安全审查。缺平台/源码事实或超出范围的影响时停止受影响动作并回生命周期调查，不从本技能取得迁移、升级或新生产接入授权。

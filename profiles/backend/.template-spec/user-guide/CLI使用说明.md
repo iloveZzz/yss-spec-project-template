@@ -6,12 +6,6 @@
 
 本 Profile 完成后端交付，由 Spec 综合主控汇总同一业务范围的整体验收。支持 `lifecycle-target-v1` 的实例在只读状态中显示 `profile-terminal`，这是本端职责终点，不是可写目标枚举；本端不使用 `lifecycle target --plan/--apply` 写综合目标。
 
-```sh
-yss lifecycle status --root ./new-project --checkpoint "<本端当前已登记checkpoint>" --json
-```
-
-原始 checkpoint 引用按本端真实登记替换。只有当前输入、适用批准和交付证据闭合才可报告本端完成；接收成功、文件存在或历史完成标签不能替代。Spec 主控若要消费本端结果，应显式绑定本工程绝对根、同功能 checkpoint 及当前接收／交付依据。旧实例缺政策时先核对固定程序能力，另行审阅模板同步计划，不静默启用。
-
 本次目标、停止与续推、消费者绑定及恢复步骤见[统一 CLI 操作说明](unified-cli.md#正式功能的可续推目标)。
 
 ## 创建与接入
