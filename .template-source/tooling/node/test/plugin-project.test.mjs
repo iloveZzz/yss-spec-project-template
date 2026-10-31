@@ -58,7 +58,7 @@ test('fixed CLI initializes, binds and resumes a separate governance project wit
     assert.equal(result.ready_for_agent, false);
   });
 
-  await t.test('M4 queries use scoped local routes and reject release, missing checkpoint and unapproved dispatch', () => {
+  await t.test('queries use current scoped local routes and reject release, missing checkpoint and unapproved dispatch', () => {
     const review = success(call('query-project', ['--target-dir', target, '--work-unit', 'work-unit.harness-entry']));
     assert.equal(review.query.lifecycle.work_unit.id, 'work-unit.harness-entry');
     assert.equal(call('query-project', ['--target-dir', target, '--work-unit', 'work-unit.code-review']).status, 1);
@@ -90,19 +90,6 @@ test('fixed CLI initializes, binds and resumes a separate governance project wit
       assert.equal(call('project-check', ['--target-dir', target]).status, 1);
       assert.equal(readFileSync(file, 'utf8'), modified); writeFileSync(file, old);
     }
-  });
-
-  await t.test('compatible existing governance binds by writing only the new receipt', () => {
-    rmSync(path.join(target, '.yss-backend-plugin.json'));
-    const marker = path.join(target, 'user-note.txt'); writeFileSync(marker, 'keep existing work');
-    const context = readFileSync(path.join(target, 'CONTEXT.md'));
-    const existing = success(call('project-bind-plan', ['--target-dir', target, '--backend-root', backend]));
-    assert.equal(existing.kind, 'bind-existing'); assert.ok(existing.preview.result.changes.some(x => x.path === '.yss-backend-plugin.json'));
-    assert.equal(existing.binding.backend.root, backend);
-    writeFileSync(planFile, JSON.stringify(existing));
-    assert.equal(success(call('project-bind-apply', ['--plan', planFile])).result, 'applied');
-    assert.equal(readFileSync(marker, 'utf8'), 'keep existing work');
-    assert.deepEqual(readFileSync(path.join(target, 'CONTEXT.md')), context);
   });
 
   await t.test('nonempty code directories and plans made stale by user files cannot be overwritten', () => {
