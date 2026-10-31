@@ -30,7 +30,7 @@ build-check:
       export GIT_CONFIG_KEY_1=http.sslCAInfo GIT_CONFIG_VALUE_1="$YSS_GITLAB_CA_FILE"
       export GIT_CONFIG_KEY_2=http.followRedirects GIT_CONFIG_VALUE_2=false
       export GIT_CONFIG_KEY_3=credential.useHttpPath GIT_CONFIG_VALUE_3=true
-      python3 - <<'PYCODE'
+      python3 -I - <<'PYCODE'
       import json, os, ssl, urllib.request
       origin = "https://gitlab.yss.test:9443"
       project = "yss/yss-cli"
@@ -43,21 +43,27 @@ build-check:
           req = urllib.request.Request(origin + "/api/v4/projects/" + project.replace("/", "%2F"), headers={"JOB-TOKEN": os.environ["CI_JOB_TOKEN"]})
           with opener.open(req, timeout=30) as response:
               raw = response.read(262145)
-          assert len(raw) <= 262144
+          if len(raw) > 262144:
+              raise ValueError("project metadata too large")
           record = json.loads(raw)
-          assert type(record["id"]) is int and record["id"] > 0 and record["id"] not in (37, 38)
-          assert record["path_with_namespace"] == project and record["web_url"] == origin + "/" + project
+          if type(record["id"]) is not int or record["id"] <= 0 or record["id"] in (37, 38):
+              raise ValueError("project ID mismatch")
+          if record["path_with_namespace"] != project or record["web_url"] != origin + "/" + project:
+              raise ValueError("project identity mismatch")
       except Exception:
           raise SystemExit("Fixed GitLab source identity/CA/auth not ready; no fallback") from None
       PYCODE
-      git clone --depth 1 --single-branch --branch main https://gitlab.yss.test:9443/yss/yss-cli.git "$work/source"
+      git init "$work/source"
+      git -C "$work/source" remote add origin https://gitlab.yss.test:9443/yss/yss-cli.git
+      git -C "$work/source" fetch --depth 1 origin refs/heads/main
+      git -C "$work/source" checkout --detach FETCH_HEAD
       git -C "$work/source" rev-parse HEAD > "$work/source-commit.txt"
       cmp .agents/skills/setup-yss-harness/SKILL.md .workbuddy/skills/setup-yss-harness/SKILL.md
       cmp .agents/skills/release-yss-cli/SKILL.md .workbuddy/skills/release-yss-cli/SKILL.md
       cmp .agents/skills/setup-yss-harness/SKILL.md profiles/backend/.workbuddy/skills/setup-yss-harness/SKILL.md
       test "$(readlink .claude/skills/setup-yss-harness)" = ../../.agents/skills/setup-yss-harness
       test "$(readlink .claude/skills/release-yss-cli)" = ../../.agents/skills/release-yss-cli
-      python3 - <<'PYCODE'
+      python3 -I - <<'PYCODE'
       import hashlib, json, pathlib
       root = pathlib.Path(".agents/skills/setup-yss-harness")
       digest = hashlib.sha256()
