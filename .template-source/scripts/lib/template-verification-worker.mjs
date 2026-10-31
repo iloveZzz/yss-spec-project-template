@@ -28,9 +28,10 @@ function changedFiles(root,base) {
   for(const args of [['diff','--name-only','-z','--no-renames','--diff-filter=ACDMRTUXB'],['diff','--cached','--name-only','-z','--no-renames','--diff-filter=ACDMRTUXB'],['ls-files','-z','--others','--exclude-standard']])collect(git(root,args));
   return [...files];
 }
-const options={'ci-guards':{type:'boolean',default:false},help:{type:'boolean',default:false},profile:{type:'string',default:'fast'},base:{type:'string'},'changed-file':{type:'string',multiple:true},selection:{type:'string'},'report-dir':{type:'string'},'baseline-report':{type:'string'},'baseline-report-sha256':{type:'string'},'qualification-report':{type:'string'},'qualification-report-sha256':{type:'string'},'runtime-store':{type:'string',default:'off'},'fresh-inputs':{type:'boolean',default:false},plan:{type:'boolean',default:false},json:{type:'boolean',default:false},concurrency:{type:'string'},'tooling-mode':{type:'string'},checkpoint:{type:'string',multiple:true},'task-package':{type:'string',multiple:true}};
+const options={'ci-guards':{type:'boolean',default:false},'ci-offline':{type:'boolean',default:false},help:{type:'boolean',default:false},profile:{type:'string',default:'fast'},base:{type:'string'},'changed-file':{type:'string',multiple:true},selection:{type:'string'},'report-dir':{type:'string'},'baseline-report':{type:'string'},'baseline-report-sha256':{type:'string'},'qualification-report':{type:'string'},'qualification-report-sha256':{type:'string'},'runtime-store':{type:'string',default:'off'},'fresh-inputs':{type:'boolean',default:false},plan:{type:'boolean',default:false},json:{type:'boolean',default:false},concurrency:{type:'string'},'tooling-mode':{type:'string'},checkpoint:{type:'string',multiple:true},'task-package':{type:'string',multiple:true}};
 export function validateVerificationArguments(values) {
   if(values.profile!==undefined&&!['fast','release'].includes(values.profile))throw new TypeError(`未知核验 profile: ${values.profile}`);
+  if(values['ci-offline']&&((values.checkpoint||[]).length||(values['task-package']||[]).length))throw new TypeError('CI_OFFLINE_EXPLICIT_INPUTS_REFUSED');
   if(values['qualification-report']!==undefined||values['qualification-report-sha256']!==undefined)throw new TypeError('QUALIFICATION_RETIRED');
   if(values.profile==='release'&&!values.help&&!values.base)throw new TypeError('RELEASE_BASE_REQUIRED: --base 必须绑定上一正式发行完整 SHA');
   if(values.base!==undefined&&!/^[a-f0-9]{40}$/.test(values.base))throw new TypeError('--base 必须为完整 40 位 SHA');
@@ -58,7 +59,7 @@ export async function selectVerificationInputs(argv,root,{environment=process.en
     const {validateBaselineReport}=await import('./verification-report-validator.mjs');
     assessment=validateBaselineReport({root,base:values.base,reportFile:values['baseline-report'],expectedDigest:values['baseline-report-sha256']});
   }
-  let plan=planTemplateVerification({config:loadVerificationProfiles(fs.readFileSync(path.join(root,'.template-source/process/template-verification-profiles.yaml'),'utf8')),ciGuards:values['ci-guards'],includeSlow:environment.YSS_VERIFY_SLOW==='only'?'only':environment.YSS_VERIFY_SLOW==='1',profile:requested,changedFiles:scope.files,root,base:values.base,baselineReport:values['baseline-report'],baselineReportDigest:values['baseline-report-sha256'],baselineAssessment:assessment,...(values.selection?{selection:values.selection}:{})});
+  let plan=planTemplateVerification({config:loadVerificationProfiles(fs.readFileSync(path.join(root,'.template-source/process/template-verification-profiles.yaml'),'utf8')),ciGuards:values['ci-guards'],ciOffline:values['ci-offline'],includeSlow:environment.YSS_VERIFY_SLOW==='only'?'only':environment.YSS_VERIFY_SLOW==='1',profile:requested,changedFiles:scope.files,root,base:values.base,baselineReport:values['baseline-report'],baselineReportDigest:values['baseline-report-sha256'],baselineAssessment:assessment,...(values.selection?{selection:values.selection}:{})});
   plan.scope=scope;
   const requestedConcurrency=Number(values.concurrency||plan.max_concurrency||1);if(!Number.isInteger(requestedConcurrency)||requestedConcurrency<1||requestedConcurrency>8)throw new TypeError('concurrency 必须为 1..8');
   const release=plan.effective_profile==='release',concurrency=release?1:requestedConcurrency,requestedMode=values['tooling-mode']||'legacy';
@@ -213,7 +214,7 @@ if(process.argv[1]&&path.resolve(process.argv[1])===workerFile) {
   } else {
     try {
       const input=await prepare(process.argv.slice(2),process.cwd());
-      if(input.help)process.stdout.write('用法: scripts/run-template-verification --profile fast|release [--base <完整SHA>] [--baseline-report <文件> --baseline-report-sha256 <摘要>] [--plan --json] [--report-dir <仓库外新目录>] [--concurrency 1..8] [--selection legacy|shadow|allowlist] [--fresh-inputs] [--ci-guards]\n--ci-guards 仅用于普通 fast，添加 CI 常驻守卫。\nfast 默认按检查选择必要集合，报告范围 limited；legacy / shadow 显式使用原组范围。\n--fresh-inputs 禁用本次运行内的文件摘要复用；release 始终完整读取字节。\nrelease 必须提供上一正式发行 --base，覆盖全部真实变化并选择受影响检查，来源、安装与恢复要求保留；历史策略仅用于独立报告读取。\n');
+      if(input.help)process.stdout.write('用法: scripts/run-template-verification --profile fast|release [--base <完整SHA>] [--baseline-report <文件> --baseline-report-sha256 <摘要>] [--plan --json] [--report-dir <仓库外新目录>] [--concurrency 1..8] [--selection legacy|shadow|allowlist] [--fresh-inputs] [--ci-guards] [--ci-offline]\n--ci-guards 仅用于普通 fast，添加 CI 常驻守卫。\n--ci-offline 仅用于普通 fast，延后需要原生 CLI 或外部工具准备的检查及其消费者；结果不能代替完整验证。\nfast 默认按检查选择必要集合，报告范围 limited；legacy / shadow 显式使用原组范围。\n--fresh-inputs 禁用本次运行内的文件摘要复用；release 始终完整读取字节。\nrelease 必须提供上一正式发行 --base，覆盖全部真实变化并选择受影响检查，来源、安装与恢复要求保留；历史策略仅用于独立报告读取。\n');
       else if(input.values.plan)process.stdout.write(`${JSON.stringify(input.plan,null,input.values.json?2:0)}\n`);
       else await runPrepared(input);
     }catch(error){process.stderr.write(`模板核验失败: ${error.message}\n`);process.exitCode=1;}

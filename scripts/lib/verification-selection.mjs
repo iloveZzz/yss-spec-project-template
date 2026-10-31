@@ -1,6 +1,23 @@
 import path from 'node:path';
 import {verificationCheckId,verificationPatternMatches as patternMatches,compileVerificationCheck} from '../../.template-source/scripts/lib/verification-gates.mjs';
+import {verificationToolRequirements} from '../../.template-source/scripts/lib/verification-preflight.mjs';
 export {verificationCheckId,patternMatches};
+
+export function selectCiOffline(plan) {
+  const byId=new Map(plan.commands.map(item=>[item.id,item])), deferred=new Map();
+  function reason(item) {
+    if(deferred.has(item.id))return deferred.get(item.id);
+    const needs=verificationToolRequirements({strategy:'daily-necessary',commands:[item]});
+    const resources=['native_cli','plugin_candidate','go','tooling','vue','design_vue'].filter(name=>needs[name]);
+    if(item.resources?.includes('plugin-committed'))resources.push('plugin-committed');
+    let why=resources.length?`tools:${resources.join(',')}`:null;
+    if(!why)for(const id of item.depends_on||[]){const dependency=byId.get(id);if(dependency&&reason(dependency)){why=`dependency:${id}`;break;}}
+    deferred.set(item.id,why);return why;
+  }
+  const kept=plan.commands.filter(item=>!reason(item));
+  const omitted=plan.commands.filter(item=>reason(item)).map(item=>({...item,reason:'deferred-ci-offline',deferred_reason:reason(item)}));
+  return {...plan,commands:kept,groups:[...new Set(kept.map(item=>item.group))],selection:{...plan.selection,ci_offline:true,candidate:kept,omitted:[...plan.selection.omitted,...omitted]}};
+}
 // tier: slow 的日常检查在 fast 中延后：命中也不执行，记入 selection.omitted（报告列为未执行）；includeSlow 或 release 时照常执行。
 export function applyDailyVerificationSelection(plan,{selection='allowlist',config,profile='fast',mandatoryChecks=[],mandatoryReason='release-required',includeSlow=false}) {
   if(!['legacy','shadow','allowlist'].includes(selection))throw new TypeError(`未知 selection: ${selection}`);

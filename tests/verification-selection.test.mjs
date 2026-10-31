@@ -13,6 +13,42 @@ delete process.env.YSS_VERIFY_SLOW;
 test.after(()=>{if(inheritedSlow!==undefined)process.env.YSS_VERIFY_SLOW=inheritedSlow;});
 const pilot='.agents/skills/yss-research/SKILL.md';
 const pilotConfig=()=>loadVerificationProfiles();
+test('CI 离线计划保留独立检查并明确延后工具和传递消费者',()=>{
+ const mk=(name,run,resources=[],depends_on=[])=>({id:`check.${name}`,run,resources,depends_on,inputs_complete:true,input_patterns:['change.txt'],failure_mode:`${name} failure`,group:'test'});
+ const checks=[mk('native','node native.mjs',['native-cli']),mk('plugin','node plugin.mjs',['plugin-candidate']),mk('committed','node committed.mjs',['plugin-committed']),mk('pnpm','pnpm test'),mk('go','go test ./...'),mk('vue','node tests/design-prototype-animation.test.mjs'),mk('dependent','node dependent.mjs',[],['check.native']),mk('transitive','node downstream.mjs',[],['check.dependent']),mk('offline','node offline.mjs')];
+ const config={schema_version:1,profiles:{fast:{checks},release:{}},groups:{test:{commands:checks}},routing:[{patterns:['change.txt'],groups:['test']}],gates:[],syntax_files:[],required_files:[]};
+ const plan=planTemplateVerification({config,changedFiles:['change.txt'],ciOffline:true});
+ assert.deepEqual(plan.commands.map(x=>x.id),['check.offline']);
+ const omitted=Object.fromEntries(plan.selection.omitted.filter(x=>x.reason==='deferred-ci-offline').map(x=>[x.id,x.deferred_reason]));
+ for(const id of checks.slice(0,-1).map(x=>x.id))assert.ok(omitted[id],id);
+ assert.match(omitted['check.dependent'],/check.native/);assert.match(omitted['check.transitive'],/check.dependent/);
+ assert.equal(plan.selection.ci_offline,true);assert.equal(plan.selection.qualified,false);
+ const normal=planTemplateVerification({config,changedFiles:['change.txt']});assert.equal(normal.commands.length,checks.length);
+ for(const options of [{profile:'release'},{includeSlow:true},{includeSlow:'only'},{ciGuards:true},{selection:'legacy'},{selection:'shadow'}])assert.throws(()=>planTemplateVerification({config,changedFiles:['change.txt'],ciOffline:true,...options}),/CI_OFFLINE_FAST_ONLY/);
+ assert.throws(()=>planTemplateVerification({config,changedFiles:['unknown.txt'],ciOffline:true}),/UNKNOWN_VERIFICATION_PATH|INCOMPLETE_VERIFICATION_INPUTS/);
+});
+test('离线选项由执行器与报告消费者独立重建并拒绝扩大范围',async()=>{
+ const {selectVerificationInputs}=await import('../.template-source/scripts/lib/template-verification-worker.mjs');
+ const {compileExpectedVerificationPlan}=await import('../.template-source/scripts/lib/verification-report-validator.mjs');
+ const {verificationToolRequirements}=await import('../.template-source/scripts/lib/verification-preflight.mjs');
+ const head=spawnSync('git',['rev-parse','HEAD'],{cwd:ROOT,encoding:'utf8'}).stdout.trim();
+ const args=['--profile','fast','--base',head,'--ci-offline'];
+ const selected=await selectVerificationInputs(args,ROOT,{environment:{...process.env,YSS_VERIFY_SLOW:''}});
+ const rebuilt=compileExpectedVerificationPlan({root:ROOT,args,environment:{...process.env,YSS_VERIFY_SLOW:''}});
+ assert.deepEqual(selected.plan.selection.omitted,rebuilt.selection.omitted);
+ assert.deepEqual(selected.plan.selection.candidate.map(row=>row.id),rebuilt.selection.candidate.map(row=>row.id));
+ assert.equal(selected.plan.selection.ci_offline,true);
+ assert.ok(selected.plan.selection.omitted.some(row=>row.reason==='deferred-ci-offline'));
+ const needs=verificationToolRequirements(selected.plan);
+ for(const key of ['native_cli','plugin_candidate','go','tooling','vue','design_vue'])assert.ok(!needs[key],key);
+ for(const extra of [['--checkpoint','x'],['--task-package','x']]){
+  await assert.rejects(selectVerificationInputs([...args,...extra],ROOT),/CI_OFFLINE_EXPLICIT_INPUTS_REFUSED/);
+  assert.throws(()=>compileExpectedVerificationPlan({root:ROOT,args:[...args,...extra]}),/CI_OFFLINE_EXPLICIT_INPUTS_REFUSED/);
+ }
+ await assert.rejects(selectVerificationInputs(['--profile','release','--base',head,'--ci-offline'],ROOT),/CI_OFFLINE_FAST_ONLY/);
+ assert.throws(()=>compileExpectedVerificationPlan({root:ROOT,args:['--profile','release','--base',head,'--ci-offline']}),/CI_OFFLINE_FAST_ONLY/);
+ await assert.rejects(selectVerificationInputs(args,ROOT,{environment:{...process.env,YSS_VERIFY_SLOW:'only'}}),/CI_OFFLINE_FAST_ONLY/);
+});
 test('退役覆盖率测试的真实删除差异选择发行消费者并拒绝未知相邻路径',async t=>{
  const {selectVerificationInputs}=await import('../.template-source/scripts/lib/template-verification-worker.mjs');
  const directory=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'retired-coverage-selection-')));t.after(()=>fs.rmSync(directory,{recursive:true,force:true}));
@@ -204,6 +240,14 @@ test('授权延续变化选择真实 Backend 安装实例验证',()=>{
   assert.equal(checks.length,1,file);
   assert.ok(checks[0].command.includes('scripts/fixtures/role-independent-draft/approval.test.mjs'),file);
   assert.ok(checks[0].gate_ids.includes('check.verification-approval'),file);
+ }
+});
+test('PR 离线计划延后真实依赖原生 CLI 的用户决定与脚手架检查',()=>{
+ const files=['tests/scenarios/verify-user-decision-scenarios.mjs','scripts/fixtures/contract-efficiency/api-v2.test.mjs','tests/project-ci.test.mjs','scripts/fixtures/backend-scaffold/platform-scenarios.test.mjs','.agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs','scripts/fixtures/lifecycle-core/views.test.mjs','tests/contract-review-preparation.test.mjs'];
+ const plan=planTemplateVerification({changedFiles:files,ciOffline:true});
+ for(const id of ['check.user-decision-scenarios','check.work-layout-api','check.work-layout-project-ci','check.backend-platform-mechanisms','check.backend-scaffold-direct-generation','check.mvc-data-analysis-retirement','check.lifecycle-core-views','check.contract-review-preparation']){
+  assert.ok(plan.selection.omitted.some(row=>row.id===id&&row.reason==='deferred-ci-offline'),id);
+  assert.ok(!plan.commands.some(row=>row.id===id),id);
  }
 });
 test('Backend 查询快照只由实际执行的消费者测试覆盖',()=>{

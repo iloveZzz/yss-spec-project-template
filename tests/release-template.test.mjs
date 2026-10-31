@@ -79,6 +79,11 @@ test('模板发行说明独立于 CLI 版本，验证范围仍由通过的证据
   assert.doesNotMatch(notes, /CLI|v2\.2\.0|yss-cli-pin/);
   assert.doesNotMatch(notes, /(Mac|Windows|Linux).*(通过|已验收)/);
   assert.throws(() => buildNotes({ ...input, report: { status: 'failed' } }), /未通过/);
+  for(const report of [
+    {...input.report,plan:{selection:{ci_offline:true}}},
+    {...input.report,invocation:{args:['--ci-offline']}},
+    {...input.report,plan:{selection:{omitted:[{reason:'deferred-ci-offline'}]}}},
+  ])assert.throws(()=>buildNotes({...input,report}),/离线.*不能/);
   assert.throws(() => buildNotes({ ...input, summary: '  ' }), /摘要/);
 });
 

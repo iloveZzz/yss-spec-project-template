@@ -7,7 +7,7 @@
 | 入口 | 行为 | 结果边界 |
 |---|---|---|
 | 日常交付：`scripts/verify-template-fast` | 先看 `--plan`；按检查输入、变化行为及消费者选择必要集合，缺映射或非法依赖先修正，不自动运行全量 | `implementation-ready`，报告 `limited`，记录实际覆盖及未覆盖边界 |
-| 合入检查：`scripts/ci-gate --mode pr --base <完整 SHA>` / `--mode push` | 平台无关；PR、MR 与主分支推送由 `template-gate` 调用，详见下文“合入检查” | 合并前机器检查，不替代发布验证 |
+| 合入检查：`scripts/ci-gate --mode pr --base <完整 SHA>` / `--mode push` | PR / MR 运行受影响的离线检查，主分支推送运行完整选中的 fast；详见下文“合入检查” | PR 报告列出延后项；原生检查须在合并前或发行门禁执行，不替代发布验证 |
 | main 集成验证与正式发布：`scripts/verify-template` | 按当前策略执行全部适用检查、前后置与固定来源准备；要求已提交来源 | 检查完整候选；当前分支为 main 不单独触发 |
 | 固定版本：`verify-template-release.mjs` | 输入完整 40 位模板 commit，执行上述验证与指定 CLI 家族集成 | 产出证据，不打 tag、不创建 Release、不发布包 |
 
@@ -31,7 +31,7 @@
 
 `template-gate` 的两个适配器供给基础运行时、选择模式并调用 `scripts/ci-gate --prepare-tools`；检查与重依赖需求统一由公共入口决定。GitHub 的 `setup-template` 开启 `runtime-only` 后只供给 Node、Python、Go；默认调用兼容既有全量准备。环境版本由 `scripts/ci-setup --print-versions` 与现有 CLI pin 提供，GitLab 镜像主版本由测试与之核对。
 
-公共入口先运行配置安全、文档事实、上下文预算与 Node 声明检查，失败则不得跳过阻断并报告通过，也不会启动依赖安装或 fast。技能投影、技能锁及注册表由 fast 的 `--ci-guards` 必跑集合真实执行一次，hook 沿用原有名称和命令。即使无变化，也不能省略这些 CI 守卫。行为回归继续按实际输入及依赖选择。
+公共入口先运行配置安全、文档事实、上下文预算与 Node 声明检查，失败则不得跳过阻断并报告通过，也不会启动依赖安装或 fast。技能投影、技能锁及注册表按其实际输入变化选择，选中后只执行一次；未知输入继续拒绝。行为回归按实际输入及依赖选择。
 
 | 事件 | 模式 | base |
 |---|---|---|
@@ -39,9 +39,9 @@
 | GitLab `merge_request_event` | `--mode pr` | `CI_MERGE_REQUEST_DIFF_BASE_SHA` |
 | 主分支推送 | `--mode push` | 脚本取 `HEAD^`（合并提交的第一亲本即上一个主分支顶点） |
 
-两个平台都用完整历史检出，PR / MR 与主分支推送均执行阻断的 `verify-template-fast`。PR / MR 传入完整 base SHA；推送使用 `HEAD^`，仅首个提交没有上一提交时不带 `--base`。独立 fast 在干净检出且不带范围基准时没有行为变化；CI 仍执行必跑守卫。candidate 验证入口已退役；正式发布继续消费完整发布证据。
+两个平台都用完整历史检出。PR / MR 以完整 base SHA 执行 `verify-template-fast --ci-offline`，只运行受影响且无需额外构建工具的检查；需要原生 CLI、插件候选或需另行准备的工具链及依赖这些检查的消费者列为延后，不能视作通过。受影响的原生、安全、审批、安装、同步和用户数据保护检查须在合并前或发行门禁实际通过。推送使用 `HEAD^` 执行完整选中的 fast，仅首个提交没有上一提交时不带 `--base`。普通 fast、slow 和 release 不受离线裁剪影响。
 
-重依赖由原始选择的计划计算：需要原生 CLI 时才通过同一 `ensure-native-yss` 入口固定最新正式 Release，使用提交内的 `tools/build-candidate.mjs` 构建并固定本批 SHA-256；CI 不接受 `YSS_NATIVE_BINARY_OVERRIDE`。模板 pnpm frozen 依赖和 Vue 作者工具链分别按所选需求安装。生命周期注册表在 CI 必跑，因此文档场景仍准备 Python / jsonschema。基础运行时供给与上述准备分别计时，不承诺消除运行时供给成本。
+重依赖由实际选中的计划计算：完整 fast 需要原生 CLI 时，通过 `ensure-native-yss` 固定可信正式来源并构建；CI 不接受 `YSS_NATIVE_BINARY_OVERRIDE`。PR 离线范围不准备已延后的原生 CLI 或工具链，报告列出延后原因与任务。基础 Node、Python 和报告校验依赖仍由 runner 提供或安装，因此不承诺执行环境完全断网。获取、摘要或来源校验失败仍按各自范围拒绝，不能回退不受信来源。
 
 `ci-setup --requirements-file <绝对JSON文件>` 严格校验共用需求，不能混用旧准备参数。导出仅写本轮报告目录的 `setup.env`；gate 按允许字段、绝对路径和摘要读取数据，不执行文件内容。准备前后对照原始计划和完整输入；仅本轮明确请求的、Git 忽略且未跟踪的模板 `node_modules` 安装产物可在准备阶段变化，随后恢复完整观察。源码、锁、模式、Git 状态或无关忽略文件漂移均拒绝。获取、构建或安装失败使 gate 非零退出，保留日志。yss-cli 不再是 submodule。
 

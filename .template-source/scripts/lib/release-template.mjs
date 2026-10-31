@@ -78,6 +78,7 @@ export function checkPreconditions({ root, version, base, run = defaultRun, fetc
 export function buildNotes({ version, commit, base, summary, report }) {
   if (typeof summary !== "string" || !summary.trim()) fail("缺少维护者摘要");
   if (report?.status !== "passed") fail("fast 报告未通过，不能生成发行说明");
+  if (report.plan?.selection?.ci_offline || report.invocation?.args?.includes('--ci-offline') || report.plan?.selection?.omitted?.some(item=>item.reason==='deferred-ci-offline')) fail('PR 离线报告不能作为模板发行验证');
   const scope = report.scope?.kind ?? "unknown";
   return `${summary.trim()}
 

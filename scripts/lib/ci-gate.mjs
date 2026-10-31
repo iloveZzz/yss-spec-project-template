@@ -82,7 +82,7 @@ export const STEPS = [
     id: "verify-template",
     title: "模板验证（fast，按变更范围）",
     heavy: true,
-    command: (context) => ["scripts/verify-template-fast", ...(context.scopeBase ? ["--base", context.scopeBase] : []), "--report-dir", path.join(context.reportDir, "verification")],
+    command: (context) => ["scripts/verify-template-fast", ...(context.scopeBase ? ["--base", context.scopeBase] : []), ...(context.mode === 'pr' ? ['--ci-offline'] : []), "--report-dir", path.join(context.reportDir, "verification")],
     fix: "查看该步骤日志与 verification 报告中第一个失败的检查；本地用同一命令复现",
   },
   {
@@ -396,7 +396,9 @@ export async function runGate({ root, mode, base, reportDir, steps: allSteps = S
             const reportFile=path.join(reportDirectory,'report.json');
             const verificationReport=JSON.parse(readFileSync(reportFile,'utf8'));
             validateVerificationReport(verificationReport,{root,expectedPlan,reportDirectory,expectedInvocation:{command:path.join(root,'scripts/run-template-verification'),args},currentInputDigest:verificationInputDigest(root),observedExitCode:entry.exit_code,requireRelease:false});
-            report.verification={report_file:reportFile,guard_task_ids:mode==='slow'?[]:ciVerificationCheckIds().filter(id=>expectedPlan.commands.some(item=>item.id===id))};
+            const deferred=mode==='pr'?(expectedPlan.selection?.omitted||[]).filter(item=>item.reason==='deferred-ci-offline').map(({id,reason,deferred_reason,selection_reason})=>({id,reason,deferred_reason,selection_reason})):[];
+            report.verification={report_file:reportFile,guard_task_ids:mode==='slow'?[]:ciVerificationCheckIds().filter(id=>expectedPlan.commands.some(item=>item.id===id)),...(mode==='pr'?{scope:'pr-offline',deferred}: {})};
+            if(mode==='pr')stdout.write(`PR 离线检查范围有限；延后 ${deferred.length} 项，合并前或发行时须执行：${deferred.map(item=>item.id).join(', ')||'无'}\n`);
           }
         }
       } catch(error){
@@ -430,6 +432,6 @@ export async function runGate({ root, mode, base, reportDir, steps: allSteps = S
   const names = report.steps.filter((entry) => entry.status === "failed").map((entry) => entry.id);
   stdout.write(failed
     ? `ci-gate 失败：${names.join("、")}（${seconds(report.duration_ms)}）；报告 ${reportPath}\n`
-    : `ci-gate 通过：${report.steps.length} 步（${seconds(report.duration_ms)}）；报告 ${reportPath}\n`);
+    : `ci-gate 通过${mode==='pr'?'（PR 离线 limited）':''}：${report.steps.length} 步（${seconds(report.duration_ms)}）；报告 ${reportPath}\n`);
   return { status: report.status, exitCode: failed ? 1 : 0, report, reportPath };
 }

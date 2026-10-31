@@ -83,6 +83,16 @@ test('日常 limited 报告不能成为正式发布证据',t=>{
  assert.equal(daily.scope.kind,'limited');f.report.scope.kind=daily.scope.kind;
  assert.throws(()=>validateVerificationReport(f.report,f.options),/验证范围不是完整候选/);
 });
+test('离线报告保留延后任务，篡改延后清单或冒充 release 均拒绝',t=>{
+ const f=fixture(t);
+ Object.assign(f.plan,{requested_profile:'fast',effective_profile:'fast',source_requirement:'current',strategy:'daily-necessary',selection:{effective:'allowlist',ci_offline:true,qualified:false,omitted:[{id:'check.native',reason:'deferred-ci-offline',deferred_reason:'tools:native_cli'}]}});
+ f.report.plan=structuredClone(f.plan);f.report.scope.kind='limited';
+ f.options.requireRelease=false;f.options.expectedPlan=f.plan;
+ assert.equal(validateVerificationReport(f.report,f.options).status,'passed');
+ const falsified=structuredClone(f.report);falsified.plan.selection.omitted=[];
+ assert.throws(()=>validateVerificationReport(falsified,f.options),/选择|不匹配/);
+ assert.throws(()=>validateVerificationReport(f.report,{...f.options,requireRelease:true}),/验证范围|release/);
+});
 
 test('当前报告拒绝挂靠退役源码回执与任务',t=>{
   const f=fixture(t);

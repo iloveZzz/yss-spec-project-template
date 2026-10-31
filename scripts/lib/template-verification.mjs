@@ -1,4 +1,4 @@
-import { applyDailyVerificationSelection, verificationCheckId } from './verification-selection.mjs';
+import { applyDailyVerificationSelection, selectCiOffline, verificationCheckId } from './verification-selection.mjs';
 import {buildReleasePlan, compileVerificationCheck, verificationPolicyDigest} from '../../.template-source/scripts/lib/verification-gates.mjs';
 import {assertBaselineParameters,validateBaseline} from '../../.template-source/scripts/lib/verification-baseline.mjs';
 import {assertVerificationSources,verificationSourceIdentities} from '../../.template-source/scripts/lib/verification-execution-plan.mjs';
@@ -84,9 +84,10 @@ function matchedGroups(config, changedFiles) {
   return { groups, unknown };
 }
 
-export function planTemplateVerification({ profile = "fast", changedFiles = [], config = loadVerificationProfiles(), selection, root = ROOT, base, baselineReport, baselineReportDigest, baselineAssessment, baselineValidator, qualificationReport, qualificationReportDigest, qualificationAssessment, ciGuards = false, includeSlow } = {}) {
+export function planTemplateVerification({ profile = "fast", changedFiles = [], config = loadVerificationProfiles(), selection, root = ROOT, base, baselineReport, baselineReportDigest, baselineAssessment, baselineValidator, qualificationReport, qualificationReportDigest, qualificationAssessment, ciGuards = false, ciOffline = false, includeSlow } = {}) {
   includeSlow??=process.env.YSS_VERIFY_SLOW==='only'?'only':process.env.YSS_VERIFY_SLOW==='1';
   ensure(!ciGuards||(profile==='fast'&&includeSlow!=='only'&&(!selection||selection==='allowlist')),'CI_GUARDS_FAST_ONLY');
+  ensure(!ciOffline||(profile==='fast'&&includeSlow===false&&!ciGuards&&(!selection||selection==='allowlist')),'CI_OFFLINE_FAST_ONLY');
   ensure([false,true,'only'].includes(includeSlow),'includeSlow 无效');
   ensure(['fast','release'].includes(profile)&&Object.hasOwn(config.profiles, profile), `未知核验 profile: ${profile}`);
   assertBaselineParameters({root,base,baselineReport,baselineReportDigest});
@@ -126,7 +127,7 @@ export function planTemplateVerification({ profile = "fast", changedFiles = [], 
     const definition=Object.values(config.groups).flatMap(group=>group.commands).find(item=>verificationCheckId(typeof item==='string'?{run:item}:item)===step.verification_check_id);
     ensure(raw&&compileVerificationCheck({...definition,...raw},{profile}).command===step.command.join(' '),`CI_GUARD_BINDING: ${step.id}`);
   }
-  if(daily)return {...applyDailyVerificationSelection(plan,{selection,config,includeSlow,mandatoryChecks:ciGuards?ciVerificationCheckIds():[],mandatoryReason:'ci-required'}),compatibility_required:false,policy_digest:verificationPolicyDigest(config),fallback_reasons:[]};
+  if(daily){const selected=applyDailyVerificationSelection(plan,{selection,config,includeSlow,mandatoryChecks:ciGuards?ciVerificationCheckIds():[],mandatoryReason:'ci-required'});return {...(ciOffline?selectCiOffline(selected):selected),compatibility_required:false,policy_digest:verificationPolicyDigest(config),fallback_reasons:[]};}
   const required=Object.hasOwn(config.profiles.release,'required_checks')?config.profiles.release.required_checks:[];
   const known=new Set([...config.profiles.fast.checks.map(check=>check.id),...Object.values(config.groups).flatMap(group=>group.commands.map(verificationCheckId))]);
   ensure(Array.isArray(required)&&required.every(id=>typeof id==='string'&&known.has(id))&&new Set(required).size===required.length,'RELEASE_REQUIRED_CHECKS_INVALID');

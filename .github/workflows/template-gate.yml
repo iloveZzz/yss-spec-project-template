@@ -22,7 +22,7 @@ jobs:
       - uses: ./.github/actions/setup-template
         with:
           runtime-only: 'true'
-          candidate-go: 'true'
+          candidate-go: ${{ github.event_name != 'pull_request' }}
       - name: scripts/ci-gate
         shell: bash
         env:

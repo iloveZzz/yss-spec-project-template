@@ -159,6 +159,11 @@ test('适配器仅供给基础运行时，按需准备统一交给 gate',()=>{
  assert.doesNotMatch(read('scripts/ci-setup'),/submodule update|sync-profile-skills/);
 });
 
+test('PR 不强制准备固定 Go，主分支仍准备候选工具链',()=>{
+ const setup=parsed(WORKFLOW).jobs['template-gate'].steps.find(step=>step.uses==='./.github/actions/setup-template');
+ assert.equal(setup.with['candidate-go'],"${{ github.event_name != 'pull_request' }}");
+});
+
 test("GitLab 适配器与 CI 用的环境文件不进仓库，并排除出实例分发", () => {
   const profile = JSON.parse(read(".template-source/distribution/bundle-profile.json"));
   assert.ok(profile.manifest.excludeRootFiles.includes(".gitlab-ci.yml"));

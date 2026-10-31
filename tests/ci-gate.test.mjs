@@ -37,7 +37,7 @@ function sh(cwd, ...args) {
 }
 
 /** 带桩脚本的最小仓库：每个 STEPS 命令都是只记录参数的 bash 桩，真实检查由各自的测试覆盖。 */
-function fixture(t, { engines = ">=22", nvmrc = "22", write, commits = 2, tooling = false, trackedOutput = false, gitlink = false, scopedGuards = false } = {}) {
+function fixture(t, { engines = ">=22", nvmrc = "22", write, commits = 2, tooling = false, trackedOutput = false, gitlink = false, scopedGuards = false, offlineDeps = false } = {}) {
   const directory = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), "yss-ci-gate-")));
   t.after(() => fs.rmSync(directory, { recursive: true, force: true }));
   const root = path.join(directory, "repo");
@@ -69,6 +69,10 @@ if [ -n "\${SETUP_ENV:-}" ]; then printf '%s\\n' "$SETUP_ENV" > "$YSS_CI_ENV_FIL
   if(scopedGuards){
     for(const check of checks)check.input_patterns=['.agents/skills/**'];
     checks.push({...checks[0],id:'check.fixture-docs',run:'node -e "process.exit(0)"',input_patterns:['README.md','docs/**']});
+  }
+  if(offlineDeps){
+    checks.push({...checks[0],id:'check.fixture-native',run:'node -e "process.exit(1)"',input_patterns:['README.md'],resources:['native-cli'],depends_on:[]});
+    checks.push({...checks[0],id:'check.fixture-dependent',run:'node -e "process.exit(1)"',input_patterns:['README.md'],resources:[],depends_on:['check.fixture-native']});
   }
   const config={schema_version:1,groups:{guards:{commands:checks}},profiles:{fast:{checks},release:{}},routing:[{patterns:['README.md','docs/**'],groups:['guards']}],gates:[],syntax_files:[],required_files:[]};
   const fixtureEnv={};
@@ -249,7 +253,7 @@ test("PR 模式只执行 fast 阻断验证并传递完整 base SHA", async (t) =
   assert.equal(run.report.scope_base, run.base);
   const fast = run.calls.filter((line) => line.startsWith("verify-template-fast "));
   assert.equal(fast.length, 1);
-  assert.match(fast[0], new RegExp(`--base ${run.base} --report-dir ${path.join(run.reportDir, "verification").replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`));
+  assert.match(fast[0], new RegExp(`--base ${run.base} --ci-offline --report-dir ${path.join(run.reportDir, "verification").replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`));
   const candidate = run.calls.filter((line) => line.startsWith("verify-template-candidate "));
   assert.equal(candidate.length, 0);
   assert.ok(!run.report.steps.some((step) => step.id === "verify-candidate"));
@@ -624,6 +628,17 @@ test('slow 准备不消耗验证本身1000秒预算，超时保留实际退出',
  for(const name of ['sync-skills','update-skill-lock','verify-lifecycle-registry','verify-skill-registry'])assert.equal(run.calls.filter(x=>x.split(' ')[0]===name).length,0,name);
  assert.deepEqual(run.report.verification.guard_task_ids,[]);
  });
+
+test('PR 离线检查明确延后原生及其消费者，push 不改变范围',async t=>{
+ const pr=await gate(t,{mode:'pr',fixture:{scopedGuards:true,offlineDeps:true},prepareTools:true});
+ assert.equal(pr.exitCode,0,pr.err);
+ assert.ok(pr.calls.some(line=>line.startsWith('verify-template-fast ')&&line.includes('--ci-offline')));
+ assert.equal(pr.report.tool_requirements.native_cli,false);
+ assert.deepEqual(pr.report.verification.deferred.map(row=>row.id).sort(),['check.fixture-dependent','check.fixture-native']);
+ assert.match(pr.out,/离线.*延后|延后.*原生/);
+ const push=await gate(t,{mode:'push',fixture:{scopedGuards:true}});
+ assert.ok(push.calls.some(line=>line.startsWith('verify-template-fast ')&&!line.includes('--ci-offline')));
+});
 
 test('设计原型准备拒绝未切换到 packageManager 指定版本的 pnpm', t => {
  const directory=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'design-pnpm-version-')));
