@@ -1,35 +1,17 @@
-# Writing
+# Wiki 写作
 
-## Page shape
+沿用已有页面结构和链接风格，新页面通常用标题、简短结论、必要正文与 `## 来源`。普通 Markdown 相对链接即可，既有 wikilink 可保留；目标应可读。不要求新的 ID、schema 或状态枚举。
 
-- `# H1` immediately followed by a summary paragraph.
-- `[[ArticleId]]` only; no relative `[[../other-wiki]]` inside a Karpathy wiki (cross-wiki use markdown links).
-- Close with nonempty `## 来源` listing raw/live paths and line ranges actually read. Record factual article dependencies in dependsOnArticles; ordinary links are navigation.
-- Optional `## Status` only when cited sources conflict or live disagrees with old raw. See schema.md. Missing Status is not a defect.
-- Do not invent enum values, table names, or endpoints. If unread, write「见源码」.
+依据实际问题核对调用代码、配置/API 定义与原始资料。表默认值不证明运行时用了它，OpenAPI 也不证明所有 Controller 行为；缺失证据标未知，不能编造类型、表名或端点。
 
-## Fact order
+易变事实标注来源和有效时点：代码引用仓库/commit；未提交内容记录路径、工作树状态与读取时间。新事实替代旧结论时说明替代原因并保留来源；不机械给每句常识加时间戳。
 
-1. Called implementation (application service, domain method, mapper SQL).
-2. Table comments / OpenAPI / config defaults.
-3. Stale raw copies.
+## 人工内容与并发
 
-A column default is not proof the runtime uses it. A freeze OpenAPI is not the full controller surface.
+有 `human-owned: true`、既有 manifest 的 `humanOwned: true` 或明确人工所有约定时，普通刷新/重建保留正文；任一保护标记为真就保护，冲突先说明。只有用户明确授权对应人工段落或链接修正才改；不能借添加 Status 重写正文。其他用户编辑也应保留，不因缺少标记就视为可整页覆盖。
 
-## Coverage
+写前复读并对照已读内容，协调并发修改；只更新授权页面和必要导航，已有日志/manifest 不自动删除或转换。来源含敏感信息时只引用必要脱敏事实。
 
-Core pages: deep (state machines, HTTP semantics, transactions). Extension pages: overview (models, enums, tables, links). Match the user's coverage choice from init.
+## 可选分工
 
-## Subagents
-
-When 2+ article groups have no shared files:
-
-- Each prompt lists exact write paths. Those agents must not touch `index.md`, `log.md`, `.wiki-manifest.json`, or `CLAUDE.md`.
-- Return candidate contents + paths + consumed source versions + claim evidence. Write only isolated staging, never published articles.
-- Orchestrator checks evidence and uses the unified transaction to publish index, articles, manifest and log.
-
-When article groups share no files, dispatch parallel subagents with disjoint write scopes.
-
-## Human-owned
-
-Frontmatter `human-owned: true` or manifest `humanOwned: true`. Refresh/rebuild leave the body; only explicitly authorized link repairs may change `[[wikilink]]` targets. Conflicting flags are reported; neither side overrides a true flag. Do not add or rewrite `## Status` on these pages.
+只有已授权、确有独立任务且宿主支持时才委派。给出独立上下文、准确负责路径和可读来源/版本；写入者知道其他人同时工作，不覆盖他人内容。共享 index 由一个整合者维护。指针不可读时补最小原文或顺序完成，不设强制代理数量或发布事务。

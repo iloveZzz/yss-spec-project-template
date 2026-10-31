@@ -77,8 +77,8 @@ During triage (Step 1: Gather context), read all files in `.out-of-scope/`. When
 
 The maintainer may:
 
-- **Confirm** — the new issue gets added to the existing file's "Prior requests" list, then closed
-- **Reconsider** — the out-of-scope file gets deleted or updated, and the issue proceeds through normal triage
+- **Confirm** — propose adding the reference and closing; perform each only with its corresponding authorization
+- **Reconsider** — preserve the old decision as history and mark it superseded in an authorized update; proceed with normal triage
 - **Disagree** — the issues are related but distinct, proceed with normal triage
 
 ## When to write to `.out-of-scope/`
@@ -87,7 +87,7 @@ Only when an **enhancement** (not a bug) is *rejected* as `wontfix`. This applie
 
 Do **not** write here when something is closed as `wontfix` because it's **already implemented**. That's a built feature, not a rejected one; recording it would poison the dedup checks with false rejections. Instead, the closing comment points to where the feature already lives.
 
-The flow:
+When recording, commenting and closing are all authorized, the flow is:
 
 1. Maintainer decides a feature request is out of scope
 2. Check if a matching `.out-of-scope/` file already exists
@@ -100,6 +100,8 @@ The flow:
 
 If the maintainer changes their mind about a previously rejected concept:
 
-- Delete the `.out-of-scope/` file
+- Prefer marking the old decision superseded and retaining its sources; deletion needs explicit scope and must preserve unrelated human content
 - The skill does not need to reopen old issues — they're historical records
 - The new issue that triggered the reconsideration proceeds through normal triage
+
+Only a confirmed rejection supports a rejection record. Read-only analysis returns proposed actions. Re-read before updating a shared file or tracker entry; unknown remote results must be resolved before retry. Historical rejection is evidence to revisit, not automatic authority to reject a new request.

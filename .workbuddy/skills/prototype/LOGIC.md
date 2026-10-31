@@ -11,7 +11,7 @@ Because it's one file with nothing to install, you can hand it to a non-develope
 - "I want to feel out what the API should look like before writing it."
 - Anything where someone wants to **press buttons and watch state change**.
 
-产品视觉问题回到当前生命周期产品设计阶段，本试验只验证逻辑与状态。
+产品视觉问题使用适用产品设计技能，本试验只验证逻辑与状态。
 
 ### 1. State the question
 
@@ -53,11 +53,11 @@ Send them the file, or open it for them. They'll click through the walkthroughs 
 
 ### 5. Capture the answer and the prototype
 
-Once the prototype has answered its question, capture the answer, then capture the prototype the way the [SKILL](SKILL.md) describes. The logic-specific mapping: the validated reducer / machine / function set lifts into the real module (the decision, absorbed); the HTML shell rides along to the throwaway branch that keeps the prototype as a primary source — and being one self-contained file, it stays trivially re-runnable there.
+Record the question, actual observations and remaining limits. Save the prototype only in the authorized location; do not automatically create a throwaway branch, send files, or promote the logic into production. Reuse in a real module requires the corresponding implementation scope and verification.
 
 ## Anti-patterns
 
-- **Don't add tests.** A prototype that needs tests is no longer a prototype.
+- **Keep validation proportional.** Use representative interactions or a small check when the question needs it; do not build a new test framework for a temporary experiment.
 - **Don't wire it to the real database.** Use in-memory state unless the question is specifically about persistence.
 - **Don't generalise.** No "what if we wanted to support X later." The prototype answers one question.
 - **Don't blur the logic and the page together.** If the pure module references the DOM, `document`, or button handlers, it's no longer liftable. Keep the page as a thin shell over a pure module.

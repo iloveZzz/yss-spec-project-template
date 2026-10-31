@@ -1,6 +1,6 @@
 # Backend 项目与脚手架
 
-本文描述正在整理的新 CLI 接口，尚未作为正式发行发布。先运行已安装程序的 `yss version` 和 `yss help`，仅使用该版本实际支持的命令；旧发行版不因模板更新而获得新接口。
+命令支持以所装版本帮助为准。先运行 `yss version` 和 `yss help`，仅使用该版本实际支持的命令；模板更新不改变旧二进制能力，也不代表当前程序是最新发行。
 
 项目入口使用 `init` 或 `attach --profile backend`，技能补装使用 `skills list`、`skills ensure`。先查看所用命令的实际帮助。
 

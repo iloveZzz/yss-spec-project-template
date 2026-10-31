@@ -1,6 +1,6 @@
 # Triage 标签
 
-本文定义 Agent 分诊时使用的五种 **Ticket 状态**，以及它们在当前 Ticket tracker 中对应的标签。不要把它们叫做数字人角色。
+本文定义 Agent 分诊时使用的三种默认 **分诊分类**，以及它们在当前 Ticket tracker 中对应的标签。不要把它们叫做数字人角色。
 
 | Ticket 状态 | Tracker 标签 | 含义 |
 | --- | --- | --- |
@@ -10,4 +10,4 @@
 
 当 skill 提及某个 Ticket 状态时，使用表中对应的 Tracker 标签。批准来源与审查方式由当前 Profile 政策和用户决定确定，不由本表指定。
 
-Local Markdown 主 tracker 不调用远程标签：在 Ticket 文件顶部使用同名 `Status:` 值记录 Ticket 状态。Wayfinder 的 `claimed` / `resolved` 仅是临时工作状态，不属于本表五态；进入交付 Ticket 前必须转换为标准 `Status:`。
+Local Markdown 主 tracker 不调用远程标签：在 Ticket 文件顶部使用同名 `Status:` 值记录 Ticket 状态。Wayfinder 的 `claimed` / `resolved` 仅是临时工作状态，不属于本表三种分类；不据此推断实现或交付状态。

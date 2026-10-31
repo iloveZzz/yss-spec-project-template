@@ -1,11 +1,6 @@
 # Fowler smell baseline
 
-仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。仓库脚本与 pnpm 命令从当前登记的项目根目录执行。
-
-On top of whatever the repo documents, the Standards axis always carries the **smell baseline** below — a fixed set of Fowler code smells (_Refactoring_, ch.3) that applies even when a repo documents nothing. Two rules bind it:
-
-- **The repo overrides.** A documented repo standard always wins; where it endorses something the baseline would flag, suppress the smell.
-- **Always a judgement call.** Each smell is a labelled heuristic ("possible Feature Envy"), never a hard violation — and, like any standard here, skip anything tooling already enforces.
+Use these heuristics when structural maintainability matters to the requested change. A repository convention takes precedence. Each smell needs a concrete maintenance consequence and remains a judgement call, not an automatic violation or a requirement to refactor. Do not duplicate checks whose relevant result is already known.
 
 Each smell reads *what it is* → *how to fix*; match it against the diff:
 

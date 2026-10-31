@@ -16,13 +16,11 @@
     "yss-exception",
     "yss-layered-mvc-scaffold-generator",
     "yss-mybatis",
-    "yss-openapi-draft-review",
     "yss-openapi-governance",
     "yss-product-lifecycle",
     "yss-prototype-stage",
     "yss-repository",
     "yss-resilience4j",
-    "yss-implementation-contract-compiler",
     "yss-security-algorithm",
     "yss-skill-source-index-refresh",
     "yss-up-springboot3",
@@ -38,7 +36,6 @@
       "skills": [
         "setup-yss-harness",
         "yss-product-lifecycle",
-        "yss-implementation-contract-compiler",
         "yss-skill-source-index-refresh"
       ]
     },
@@ -69,7 +66,6 @@
       "title": "OpenAPI",
       "description": "用于 YSS API 设计、审查、治理和生成集成的技能。",
       "skills": [
-        "yss-openapi-draft-review",
         "yss-openapi-governance"
       ]
     },

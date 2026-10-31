@@ -1,18 +1,11 @@
-### 1. Pin the fixed point and candidate
+# 审查候选范围
 
-Whatever the user said is the fixed point — a commit SHA, branch name, tag, `main`, `HEAD~5`, etc. If they didn't specify one, ask for it.
+按用户目标解析真实仓库与基线。明确给定 commit、分支、PR 或现有上下文能无歧义确定时直接采用；只有真实歧义才问。先确认引用可读、目标正确，不修改分支、暂存区或工作树来方便审查。
 
-Choose one candidate mode from the request or an upstream review contract:
+- **Committed**：分支/PR 审查使用实际 base 与 head；本地 head 为 HEAD 时，`git diff --no-ext-diff BASE...HEAD` 与 `git log BASE..HEAD --oneline` 表示相应范围。远程 PR 未检出时使用真实 PR head，不能混用本地 HEAD。
+- **Worktree**：当前未提交改动通常以 HEAD 为基线；包含分支累计改动时用 `git merge-base BASE HEAD`。`git diff --no-ext-diff --binary --full-index MERGE_BASE` 覆盖当前已暂存/未暂存的受跟踪内容；用 `git diff --cached` 和 `git diff` 按需分辨暂存状态。
+- 另用 `git ls-files -z --others --exclude-standard` 读取相关未跟踪文件，NUL 分隔路径。需要 diff 表示时使用 `git diff --no-index --no-ext-diff --binary --full-index -- /dev/null PATH`，退出 1 表示发现差异。不要用只看 HEAD 的方式遗漏新文件。
 
-- **Committed candidate** — review committed branch/PR state. Capture `git diff <fixed-point>...HEAD` and `git log <fixed-point>..HEAD --oneline`.
-- **Worktree candidate** — review work in progress without requiring a commit. Resolve `<merge-base>` with `git merge-base <fixed-point> HEAD`, then capture:
-  - `git diff --no-ext-diff --binary --full-index <merge-base>` for committed, staged and unstaged tracked content as it exists in the working tree;
-  - `git ls-files -z --others --exclude-standard` for NUL-delimited raw untracked paths;
-  - each untracked file's content, using `git diff --no-index --no-ext-diff --binary --full-index -- /dev/null <path>` when a diff representation is useful. Exit code `1` from this command means a difference was found, not that review failed;
-  - `git log <fixed-point>..HEAD --oneline` for the committed portion of the candidate.
+范围以当前任务为准；二进制、不可读内容和明确排除项说明限制，避免把无关日志/凭据纳入报告。大文件按相关内容读取，子模块作为独立仓库引用处理，不当普通目录递归修改。
 
-Record one **candidate manifest** before review:
-
-For a Committed candidate, resolve `HEAD` to an immutable commit and tree before review. Its manifest must include `merge_base`, `tracked_diff_command` and `commit_list_command`. For a Worktree candidate, the manifest must additionally include `untracked_inventory_command`, `untracked_diff_command` and the exact `untracked_files` inventory.
-
-Before going further, confirm the fixed point and merge-base resolve. A committed candidate must have a non-empty committed diff. A Worktree candidate is non-empty when either its tracked diff or untracked inventory is non-empty. A bad ref, missing candidate part or empty candidate should fail here — not during professional review. Do not silently downgrade Worktree review to `HEAD`-only review.
+在报告说明实际 base/head 或工作树时点、覆盖文件及限制即可，无需候选 manifest、冻结包或额外提交。空范围报告无可审内容；引用无效只暂停依赖它的判断。审查期间变化时重读受影响部分，不拿旧快照对新内容作结论。

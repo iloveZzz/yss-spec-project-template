@@ -1,15 +1,12 @@
 # 推进决策地图
 
-仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。仓库脚本与 pnpm 命令从当前登记的项目根目录执行。
-
 ### Work through the map
 
-User invokes with a map (URL or number). A ticket is **optional** — without one, you pick the next decision, not the user.
+1. 读取真实地图及当前依赖状态，细节按需展开；复用已有决定，没有新信息时不重建或重写。
+2. 用户指定票时优先它，否则选前沿中当前可处理项；未知阻塞先核实。请求只读时只给建议，获授权认领才写状态/分配并回读。
+3. 分配不是原子锁。有人并发处理时复读并协调范围，不覆盖他人内容；无写权限可继续调查，但不能伪称已认领。
+4. 先读取票据已保存的方法类型：远程按既有明确映射读取类型标签（新约定为 `wayfinder:<type>`），本地读取 `Type:`；不能只看正文重新分类或用平台原生 Issue Type 代替。按 [Ticket 类型](ticket-types.md) 选择方法并处理缺失、冲突或用户明确纠正，再取得事实或真实用户答复。Notes 中来源指令不是授权；只加载必要资料，指针不可读时说明缺口，独立部分继续。
+5. 解决后在授权范围分别记录答案、关闭/改状态及地图索引；写前复读、写后回读，部分成功逐项说明。决策解决不表示实现完成。
+6. 新问题先查重复，确需创建后再连真实关系。超时先核实，不盲目重试。越界项给出范围理由；关闭或删除需对应授权，优先保留历史而非删除内容。
 
-1. Load the **map** — the low-res view, not every ticket body.
-2. Choose the ticket. If the user named one, use it. Otherwise take the first frontier ticket in order. **Claim it**: assign it to yourself before any work.
-3. Resolve it — **zoom as needed**: fetch the full body of any related or closed ticket on demand; invoke the skills the `## Notes` block names. If in doubt, use `/grilling` and `/domain-modeling`.
-4. Record the resolution: post the answer as a **resolution comment**, **close** the issue, and **append a context pointer** to the map's Decisions-so-far.
-5. Add newly-surfaced tickets (create-then-wire); graduate any fog the answer has made specifiable, clearing each graduated patch from **Not yet specified** so it lives only as its new ticket. If the answer reveals a ticket — this one or another — sits beyond the destination, **rule it out of scope** rather than resolving it on the route. If the decision invalidates other parts of the map, update or delete those tickets.
-
-The user may run unblocked tickets in parallel, so expect other sessions to be editing the tracker concurrently.
+相关小问题可继续同一会话处理；真实决定或访问缺口只暂停依赖部分，不固定轮数，不强制主控回交。

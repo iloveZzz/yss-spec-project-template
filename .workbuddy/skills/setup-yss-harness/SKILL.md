@@ -11,7 +11,9 @@ description: 安装或升级 YSS CLI，配置项目或用户级 Skills，初始�
 
 ## 安装或升级程序
 
-从 [官方 Release](https://github.com/iloveZzz/yss-cli/releases) 选择用户指定版本；未指定时查询最新正式版，排除草稿与预发布，并在本次操作中固定版本、源码提交、平台和归档摘要。平台包以该 Release 的实际资产为准：`yss_<版本>_<GOOS>_<GOARCH>.tar.gz`，Windows 使用 `.zip`，不要假定所有平台都有发行包。
+默认从 GitHub [官方 Release](https://github.com/iloveZzz/yss-cli/releases) 选择用户指定版本；未指定时查询最新正式版，排除草稿与预发布，并在本次操作中固定版本、源码提交、平台和归档摘要。平台包以该 Release 的实际资产为准：`yss_<版本>_<GOOS>_<GOARCH>.tar.gz`，Windows 使用 `.zip`，不要假定所有平台都有发行包。
+
+用户明确选择 GitLab 时，使用该 CLI 实际支持的固定次级来源和对应正式 Release。当前源码新增 `upgrade --source github|gitlab`，默认 GitHub；先查 `upgrade --help`，旧发行程序未必支持。GitLab 需显式受信 CA 与对应鉴权；来源不可用时不自动跨平台回退，不能把某平台的凭据发给另一平台。离线 `--artifact` 不与 `--source` 混用。
 
 首次安装或从旧接口切换时，由 Agent 下载匹配的归档及 `SHA256SUMS`，核验实际 SHA-256，在临时目录安全解包。拒绝越界、链接和重复路径，核对包内 `release-manifest.json` 的版本、平台与载荷摘要，再用新程序查看版本和帮助。使用新程序安装到独立工具目录，不调用旧升级器或仅覆盖旧可执行文件：
 

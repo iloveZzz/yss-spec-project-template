@@ -10,3 +10,5 @@ Edit canonical content and the references used by its callers. Keep discovery me
 Update the affected platform copies and distribution lists directly, following the repository's skills maintenance notes. Do not add generators, test suites, verification plans, approval packages or mandatory review steps. Use existing CLI capabilities only when they actually support the requested operation.
 
 Report actual changes and unresolved limitations. Testing or a separate review is optional unless explicitly part of the user's request.
+
+For authoring and invocation boundaries, read [authoring notes](references/authoring.md). In this template source repository, follow `.template-source/agents/skills-maintenance.md` for projection and source-record maintenance; installed skill use does not require that source-only file.

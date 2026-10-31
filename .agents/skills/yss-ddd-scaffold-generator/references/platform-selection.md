@@ -1,13 +1,9 @@
 # DDD 脚手架平台选择
 
-仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。Skill 自带的 bin/scripts 命令从 Skill 根目录执行；明确注明 repository root 的包装命令仍从项目根目录执行。
+生成前核对已有工程或用户给定的精确 Spring Boot、Java、Maven Parent 与 YSS BOM 坐标；同一 Maven Reactor 保持一致的平台组合。独立工程可沿用或明确选择不同组合，不把本机默认 Java 当作项目版本。
 
-## Spring Boot / Java 平台选择
-
-- 独立子项目可继承主项目组合或覆盖，必须逐项目确认（允许一次确认明确列出的项目）；同一 Maven Reactor 使用一个平台。
-- 只开放共享兼容清单中已有真实 YSS 构建、依赖和启动证据的组合。缺少兼容父 POM、BOM、starter 或相应能力证据即 `blocked`；不替换官方组件、不降级回退。
-- 新生成合同必须有 `platform_configuration` v2，与架构决策、Maven 坐标及兼容条目摘要一致。Boot、Java、YSS 坐标或依赖配方变化时回生命周期重新确认并编译合同；仅追加同配置验证记录不重复确认，仍核验证据有效性。
-- Spring MVC、Servlet、Validation、Jackson 和 starter 坐标消费共享平台清单；Java 下限和允许组合由当前平台条目决定。Jakarta 转换不包括 `javax.sql` 等 Java SE API。
-- 平台候选维护验证产物标记 `platform_verification=candidate`，不能交给业务生成、升级完成等级或进入首切片验证。测试夹具不证明 YSS 兼容。
-
-版本清单、合同字段、候选验证和支持晋级规则见 仓库共享合同 `.template-spec/engineering/backend-platforms.md`。
+- 以项目 POM、实际组件源码和解析结果为依据。已有兼容记录可参考 `.template-spec/engineering/backend-platforms.md`，记录缺失只表示尚未证实，不等于官方框架不支持。
+- 缺少关键版本或坐标先查询可信资料，仍不确定时澄清；解析冲突、缺失构件或已知不兼容须如实处理，不擅自替换组件、降级或声称可以运行。
+- 不要求生成平台合同、登记、审批、兼容报告或资格标记。生成后按当前任务需要构建或运行，未执行的检查不声明通过。
+- Spring MVC、Servlet、Validation、Jackson、starter 和处理器使用所选精确版本对应的坐标与命名空间；Jakarta 转换不包括 `javax.sql` 等 Java SE API。
+- 历史样例、H2 或其他架构的记录不证明当前应用、生产数据库或所有 YSS 组件兼容；版本调整需要说明受影响依赖和调用方。

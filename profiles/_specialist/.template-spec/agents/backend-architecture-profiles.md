@@ -1,6 +1,6 @@
 # 后端架构 Profile 执行约定
 
-Profile、模块闭包、生成器、成熟度和 Recipe 的权威映射见 `yss-skill-registry.yaml`。本文件定义分层执行边界及对象命名与外部规范适配，不从目录名推断架构。
+本文件说明 DDD/MVC 的分层职责、对象命名与外部规范适配。以实际工程结构和当前需求选择适用规则，不从目录名、注册状态或历史合同推断架构。
 
 ## MVC 分层
 
@@ -9,18 +9,18 @@ Profile、模块闭包、生成器、成熟度和 Recipe 的权威映射见 `yss
 - Repository 拥有 PO、MyBatis-Plus Repository / XML 及持久化转换；不得反向依赖 service/core/server/client。数据库操作的因果异常应保留，禁止把内部错误原文输出给客户端。
 - Adapter 拥有外部系统适配，Feign client 只承载远程调用契约。不得把 Repository 当作对外集成层。
 - 私有 HTTP DTO 在 server；启用 published-client 时公开 DTO 可在 client；数据分析 Profile 的公开 DTO 固定在 client。client 不依赖 service/core/repository/server。server 用 MapStruct 在 wire DTO 与内部模型之间转换；core 不依赖 client。
-- Bean Validation 在 server/client 的输入边界；业务校验及稳定错误语义在 service/core；HTTP 状态、包装和脱敏在 server。事务回滚、校验失败、已知/未知异常和序列化必须有行为测试。
+- Bean Validation 在 server/client 的输入边界；业务校验及稳定错误语义在 service/core；HTTP 状态、包装和脱敏在 server。按本次影响检查事务回滚、校验失败、已知/未知异常和序列化；运行验证按任务需要选择，报告实际结果。
 
 ## 对象命名与外部规范适配
 
-技术设计、脚手架和后端实现先核验当前 `architecture_identity`、工程基线与合同，再消费对应 YSS 专项技能；阿里 Java 手册和 COLA 示例只补充适用的编码建议，不另选架构、模块或对象协议。工程基线与所选 YSS Profile 冲突时先调查并返回 `drift` / `new_impacts`，不得静默改写基线或择一放行。
+技术设计、脚手架和后端实现先读取当前工程结构、POM、接口与需求，再使用适用 YSS 技能；阿里 Java 手册和 COLA 示例只补充编码建议，不另选架构、模块或对象协议。资料与实际工程冲突时调查来源与影响，不静默改写基线；缺少影响实现的关键决定时澄清。
 
 | 对象职责 | YSS 新工程命名与所有权 | 权威技能 |
 |---|---|---|
 | 数据库映射对象 | 新 YSS 工程的持久化类型使用 `*PO`；DDD 位于 Infrastructure，MVC 位于 repository。手册/COLA 的数据库 `DO`（Data Object）按此职责适配，不表示 Domain Entity。 | `yss-repository` + `yss-mybatis` |
 | DDD 聚合根 / Entity | 默认 `*Entity`，位于 Domain；值对象、事件和具体类型由当前战术设计确定，不带 ORM、Web 或 YSS DTO/Exception 依赖。 | `yss-tactical-design` + `yss-domain` |
 | 内部命令 / 查询 / 结果 | `*Command` / `*Query` / `*Result` 属于用例层：DDD Application、通用 MVC service、数据分析 MVC core；不借用 HTTP DTO。 | `yss-application` |
-| HTTP 请求 / 响应 | 名称及字段来自冻结 API 和工程基线；DDD 在 Web，MVC 按本文件的 server/client 分流，不从 COLA client 示例反推模块。 | `yss-dto` + `yss-web-controller` |
+| HTTP 请求 / 响应 | 名称及字段来自当前 API 和工程约定；DDD 在 Web，MVC 按本文件的 server/client 分流，不从 COLA client 示例反推模块。 | `yss-dto` + `yss-web-controller` |
 
 - 既有工程已确认使用 `*DO` 或其他领域类型名时沿用该基线，不自动改名；新增同职责类型保持工程内一致。改名不能解除跨层依赖或持久化泄漏，也不为同一数据映射同时创建 PO 和 DO。命名例外记录具体职责、类型及依据。
 - 阿里手册的 Service/Manager/DAO 分层按所选 Profile 映射，不新增 Manager 层或把 DAO 对象直接传到 Web。DDD 的领域行为与不变量归 Domain；MVC 的规则和事务归 service/core，不为 MVC 补造 Domain/Gateway。
@@ -30,6 +30,6 @@ Profile、模块闭包、生成器、成熟度和 Recipe 的权威映射见 `yss
 ## 数据库与 Java 基线
 
 - 新脚手架统一 `verification_database=h2`、`production_database=not-bound`。仅测试和显式 `scaffold-local` 使用 H2；普通配置不设置数据库或默认激活 Profile。不另加生产驱动、第三方数据源或 Mock 服务。
-- 生产数据库、DDL、索引和方言在后续批准的存储工作单元接入；H2 测试不能证明生产方言兼容。业务空工程不包含产品 SQL 或 API；独立参考工程包含其专属 H2 脚本及 OAS 3.1。
-- DDD / 通用 MVC 消费批准的 `platform_configuration` v2，平台清单与证据规则见 `.template-spec/engineering/backend-platforms.md`。凡注册表标记 `component_binding: required` 的能力，编译器必须从该配置指向的同一 compatibility 条目解析 `component_capabilities`；未登记、非 `verified`、架构证据缺失或构件摘要漂移均阻断。数据分析初始化器已退役；旧 Profile 仅只读审计，不授予生成或流转资格。组件 Skill 不擅自升级 Java、Boot、处理器或替换 YSS 依赖。MapStruct + Lombok 必须验证 binding 与生成代码编译。
-- 对 SQL 注入、敏感信息、权限和事务的规则不因 H2 或模板而豁免。MySQL 专属语法规则仅适用于批准的 MySQL 存储工作单元；框架命名/返回包装等差异须记录明确的 YSS 基线例外。
+- 生产数据库、DDL、索引和方言按当前需求及真实操作授权接入；H2 测试不能证明生产方言兼容。业务空工程不包含产品 SQL 或 API；独立参考工程包含其专属 H2 脚本及 OAS 3.1。
+- DDD / 通用 MVC 沿用项目实际 Boot、Java、Parent、BOM 和处理器版本；平台事实参考 `.template-spec/engineering/backend-platforms.md`。按相同版本与架构理解组件能力和证据，不把缺失记录当已验证。数据分析初始化器已退役，既有代码仍可按需求维护。组件技能不擅自升级或替换 YSS 依赖；涉及 MapStruct + Lombok 时核对 binding 与生成代码，未编译不宣称通过。
+- 对 SQL 注入、敏感信息、权限和事务的规则不因 H2 或模板而豁免。MySQL 专属语法规则仅适用于实际采用 MySQL 的存储实现；框架命名/返回包装等差异须记录明确的 YSS 基线例外。

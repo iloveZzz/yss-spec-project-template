@@ -137,14 +137,6 @@ capabilities:
   - slice-implementation
   - troubleshooting
   - review-input
-- id: governance.implementation-contract
-  primary_skill: yss-implementation-contract-compiler
-  provider:
-    kind: none
-  task_modes:
-  - contract-compilation
-  - reroute
-  - result-validation
 - id: maintenance.skill-source-index
   primary_skill: yss-skill-source-index-refresh
   provider:
@@ -567,10 +559,6 @@ skill_dependencies:
   - skill: i-have-adhd
     type: context-conditional
     when: lifecycle-document-output
-  yss-implementation-contract-compiler:
-  - skill: i-have-adhd
-    type: context-conditional
-    when: lifecycle-document-output
   yss-openapi-governance:
   - skill: i-have-adhd
     type: context-conditional
@@ -603,7 +591,7 @@ skill_dependencies:
   yss-tactical-design:
   - skill: domain-modeling
     type: coordination-only
-  - skill: yss-openapi-draft-review
+  - skill: yss-openapi-governance
     type: review-only
     when: api-impact
   - skill: yss-repository
@@ -677,8 +665,6 @@ skill_dependencies:
   yss-backend-spec-review:
   - skill: alibaba-java-code-style
     type: context-required
-  - skill: yss-implementation-contract-compiler
-    type: coordination-only
   - skill: code-review
     type: review-only
   setup-yss-harness:
@@ -790,15 +776,7 @@ invocation_contract:
       invocation_mode: user
     yss-tactical-design:
       invocation_mode: user
-    yss-implementation-contract-compiler:
-      invocation_mode: user
-    cross-repo-implementation-routing:
-      invocation_mode: user
-    implementation-repo-onboarding:
-      invocation_mode: user
     yss-backend-spec-review:
-      invocation_mode: user
-    yss-openapi-draft-review:
       invocation_mode: user
 agent_runtime_roots:
   workbuddy: .workbuddy/skills
@@ -853,13 +831,6 @@ skills:
   aliases: []
   impacts:
   - discovery
-- id: cross-repo-implementation-routing
-  layer: specialist
-  maturity: supported
-  instance_default_discoverable: false
-  aliases: []
-  impacts:
-  - lifecycle
 - id: diagnosing-bugs
   layer: core
   maturity: supported
@@ -906,13 +877,6 @@ skills:
   layer: compatibility
   maturity: supported
   instance_default_discoverable: false
-  aliases: []
-  impacts:
-  - lifecycle
-- id: implementation-repo-onboarding
-  layer: core
-  maturity: supported
-  instance_default_discoverable: true
   aliases: []
   impacts:
   - lifecycle
@@ -1099,15 +1063,6 @@ skills:
   aliases: []
   impacts:
   - backend
-- id: yss-implementation-contract-compiler
-  layer: core
-  maturity: supported
-  instance_default_discoverable: true
-  aliases: []
-  impacts:
-  - lifecycle
-  - backend
-  - frontend
 - id: yss-layered-mvc-scaffold-generator
   layer: specialist
   maturity: supported
@@ -1122,13 +1077,6 @@ skills:
   aliases: []
   impacts:
   - backend
-- id: yss-openapi-draft-review
-  layer: core
-  maturity: supported
-  instance_default_discoverable: true
-  aliases: []
-  impacts:
-  - api
 - id: yss-openapi-governance
   layer: core
   maturity: supported
@@ -1285,7 +1233,6 @@ backend_skill_domains:
     yss-repository: layered-implementation
     yss-web-controller: layered-implementation
     yss-layered-mvc-scaffold-generator: engineering-initialization
-    yss-implementation-contract-compiler: platform-governance-migration
     yss-skill-source-index-refresh: platform-governance-migration
     yss-tactical-design: technical-design
     yss-domain: layered-implementation

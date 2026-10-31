@@ -1,12 +1,14 @@
 # 决策 Ticket 类型
 
-仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。仓库脚本与 pnpm 命令从当前登记的项目根目录执行。
-
 ## Ticket Types
 
-Every ticket is either **HITL** — human in the loop, worked _with_ a human who speaks for themselves — or **AFK**, driven by the agent alone. A HITL ticket only resolves through that live exchange; the agent never stands in for the human's side of it (a grilling agent that answers its own questions has broken this).
+恢复既有票时，以明确映射下已保存的唯一方法类型选择分支，不从正文重新猜测。用户已明确本次类型或纠正时用于本次工作，说明与存储值的差异；持久标签/字段更新仍需对应授权。类型缺失、未知或多个冲突且当前请求不能消歧时，只澄清依赖类型的选择，独立事实调查继续；不把原生 Issue Type 或 triage 状态当作方法类型。
 
-- **Research** (AFK): Reading documentation, third-party APIs, or local resources to surface a fact a decision waits on. Route to `yss-research`, delegating independent reading when supported. Use when a decision needs evidence unavailable in the current inputs; local evidence and external sources follow the same source policy.
-- **Prototype** (HITL): Raise the fidelity of the discussion by making a cheap, rough, concrete artifact to react to — an outline, a rough take, a stub, or UI/logic code via the /prototype skill. Links the prototype as an asset. Use when "how should it look" or "how should it behave" is the key question.
-- **Grilling** (HITL): Conversation. The default case. Always invoke the /grilling and /domain-modeling skills.
-- **Task** (HITL or AFK): Manual work that must happen before a _decision_ can be made — nothing to decide, prototype, or research, but the discussion is blocked until it's done. Signing up for a service so its API can be judged, provisioning access, moving data so its shape can be seen. This is the one type that _does_ rather than decides — and it earns its place by unblocking a decision, not by delivering the destination. The agent drives it alone where it can (AFK); otherwise it hands the human a precise checklist (HITL). Resolved when the work is done; the answer records what was done and any resulting facts (credentials location, new URLs, row counts) later tickets depend on.
+- **Research**：事实调查，使用 yss-research；已有资料足够时不重复调研。独立委派仅在授权且宿主支持时使用，否则当前会话完成。
+- **Prototype**：用最小产物回答未决问题。逻辑/状态实验用 prototype；视觉与用户交互采用适用产品设计技能，Backend 不引入前端任务。需要人的取舍时保留真实用户答复。
+- **Grilling**：澄清真实业务决定；术语或关键决定需要记录时才用 domain-modeling。已有决定复用，Agent 不代答用户问题。
+- **Task**：解除决定阻塞的实际动作，例如读取获授权数据。开户、付费、开通访问、搬数据仍需各自权限；类型不是授权。只记录必要事实和安全的凭据位置，不保存密钥值。
+
+Research 实际委派须确有独立任务，并使用独立上下文；Codex 支持时指定 `fork_turns: "none"`，不向其他宿主套用此参数。提供目标、完成条件、权限、负责路径、可读来源/版本、预期输出和待报告限制，不复制完整会话或把已有猜测当事实。指针不可读时补最小原文，无法提供独立上下文时顺序完成。委派不扩大写权限；获准写入者须知道其他人共享工作区，保留他人修改并遵守路径责任。
+
+可独立查明的事实由 Agent 完成；依赖人的决定等待真实答复，其他独立工作继续。任务结束说明回答了什么、依据与限制，不自动开展完整实施。

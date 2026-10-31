@@ -75,3 +75,7 @@ test("calculateTotal sums line items", () => {
   expect(calculateTotal([{ price: 10 }, { price: 5 }])).toBe(15);
 });
 ```
+
+## Boundary and omissions
+
+Choose the public boundary from the requested behavior and existing acceptance criteria. State material omissions once where the boundary matters: a repository integration test covers persistence but may omit HTTP authorization; a mocked payment gateway does not verify the provider's real contract. Existing agreed interfaces need no new approval. Multiple assertions for one behavior are fine; do not add a table per assertion or a new framework for this explanation.

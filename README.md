@@ -2,6 +2,8 @@
 
 面向中文研发团队的业务分析、规格、产品设计和 Java 后端技能集合。按当前任务选择必要技能与技术参考，由 Agent 直接完成实现和资料整理。
 
+源码、Issue 和 PR 默认在 [GitHub](https://github.com/iloveZzz/yss-spec-project-template) 管理；`origin` 为主远端，GitLab 保留为显式选择的次级协作入口。不自动双向同步或双发。新项目优先 GitHub tracker，远程目标需要单独明确，不能把模板源码仓当成业务项目仓；已有项目沿用其已确认配置。
+
 ## 使用
 
 先读 [AGENTS.md](AGENTS.md)。共享技能位于 [.agents/skills](.agents/skills)，Backend 专有内容位于 [profiles/backend](profiles/backend)。需求、设计和技术资料按需读取，不要求生命周期路由、阶段批准、检查计划或测试报告。

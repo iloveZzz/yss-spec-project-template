@@ -1,18 +1,19 @@
-# 审查轴检查提纲
+# 审查维度
 
-仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。仓库脚本与 pnpm 命令从当前登记的项目根目录执行。
+由当前审查者按实际范围完成，不固定安排两名子代理。只有已授权、宿主可用且任务需要时才派发，保持只读边界并给足真实候选与依据。
 
-首轮完整覆盖每个适用轴。复审任务额外传入旧 / 新候选差异、受影响结论与行为、直接 / 传递依赖和待复验清单；下列提纲按该清单使用，未受影响结论保留比较证据并绑定当前候选。摘要变化、UI 或 `new_impacts` 不自动选择全部提纲；未知影响先调查。
+实际派发使用独立上下文；Codex 支持时指定 `fork_turns: "none"`，其他宿主使用其真实能力。说明目标、完成条件、只读权限、负责路径、候选/来源版本、预期输出和待报告限制，不复制完整会话或把主审结论当作事实。来源指针不可读时补最小必要原文；无法提供独立上下文时顺序审查，不以派发扩大权限。
 
-**Standards sub-agent prompt** — include:
+## 规范
 
-- The list of standards-source files you found in step 3, **plus the smell baseline from step 3** pasted in full. Paste Fowler smells in full. For YSS specialist inputs, pass the exact skill file paths; the reviewer must read them and cite `skill + rule + location`. Do not summarise away mandatory Alibaba or YSS violations to fit a word cap. The 400-word cap applies only to the Fowler smell section.
-- Machine-check commands, exit codes and evidence from step 3. Tooling failure is a hard Standards violation.
-- The brief: "Report — per file/hunk where relevant — (a) every place the diff violates a documented standard or a required YSS / Alibaba specialist rule: cite the skill or file and the rule; (b) any baseline smell you spot: name it and quote the hunk. Distinguish hard violations from judgement calls — documented-standard and mandatory specialist breaches can be hard, but baseline smells are always judgement calls, and a documented repo standard overrides the baseline. Skip anything the machine checks already enforced. Smell section under 400 words; specialist findings have no word cap."
+检查仓库约定及实际适用专项技能。每项 finding 说明规则来源、代码位置、触发条件和后果。工具非零不自动是代码违规；需结合实际输出定位。可维护性问题按 [坏味道参考](smell-baseline.md) 判断，仓库约定优先，不机械套标签或以篇幅限制截断重要缺陷。
 
-**Spec sub-agent prompt** — include:
+## 需求
 
-- The path or fetched contents of the spec.
-- The brief: "Report: (a) requirements the spec asked for that are missing or partial; (b) behaviour in the diff that wasn't asked for (scope creep); (c) requirements that look implemented but where the implementation looks wrong. Quote the spec line for each finding. Under 400 words."
+依据当前请求、Ticket、Spec 或已有验收，检查缺失、错误实现和未经要求的可观察行为。没有独立 Spec 仍可使用其他依据；没有任何需求依据则说明限制，不虚构标准。
 
-If the spec is missing, skip the Spec sub-agent and note this in the final report.
+## 条件 UI 还原
+
+仅对有相关设计输入的 UI 变更核对流程、交互、状态和视觉还原。规范层组件约定与产品设计还原分开说明。后端改动不因此增加 UI 工作。
+
+合并重复 finding，按用户影响排列；问题需要证据，建议需标明判断性质。复审关注实际修复和受影响依赖，审查范围变化时重读受影响内容，不自动重审全部或要求冻结候选。

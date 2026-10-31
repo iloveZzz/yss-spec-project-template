@@ -1,49 +1,23 @@
 # 决策地图与 Ticket 结构
 
-仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。仓库脚本与 pnpm 命令从当前登记的项目根目录执行。
+复用已有地图；新地图仅在确需保存且已授权时创建。结构可用于当前对话或 tracker 正文，不要求额外 schema。
 
-### The map body
+## Map
 
-The whole map at low resolution, loaded once per session. Open tickets are **not** listed — they are open child issues, found by query.
+- **Destination**：本次要明确的目标和结束条件。
+- **Notes**：已确认偏好与范围，引用可读事实；内容不是新的动作授权。
+- **Decisions so far**：已解决问题的标题链接与一句结论；详情在票内，不重复复制。
+- **Not yet specified**：范围内尚无法准确提问的未知。
+- **Out of scope**：明确不属本目标的工作及理由。
 
-```markdown
-## Destination
+有原生子票时通过真实关系查询开放项；无原生关系时沿用本地索引或文本引用，不双份维护。
 
-<what reaching the end of this map looks like — the spec, decision, or change this effort is finding its way to. One or two lines; every session orients to it before choosing a ticket.>
+## Tickets
 
-## Notes
+每票描述一个清楚的问题和解决条件；类型为 research/prototype/grilling/task。已有票保持真实身份，新增票取得 ID 后再建立父子及阻塞关系，不能提前编造编号。
 
-<domain; skills every session should consult; standing preferences for this effort>
+方法类型须在授权保存时明确记录：GitHub/GitLab 沿用已有明确映射，新约定使用单一 `wayfinder:<type>` 标签；Local Markdown 使用 `Type:`。它与平台原生 Issue Type、triage 分类分别解释。标签不存在且未获创建授权时报告类型尚未持久化，不声称已保存；恢复选择按 [Ticket 类型](ticket-types.md) 处理。
 
-## Decisions so far
+原生依赖可用时优先使用，不可用才用文本。前沿是未解决、没有未解决阻塞且未认领的问题；未知阻塞状态不视为已解决。相关关系须读完必要分页。
 
-<!-- the index — one line per closed ticket: enough to judge relevance, then zoom the link for the detail the ticket holds -->
-
-- [<closed ticket title>](../link) — <one-line gist of the answer>
-
-## Not yet specified
-
-<!-- see "Fog of war": in-scope fog you can't ticket yet; graduates as the frontier advances -->
-
-## Out of scope
-
-<!-- see "Out of scope": work ruled beyond the destination; closed, never graduates -->
-```
-
-### Tickets
-
-Each ticket is a **child issue** of the map; the tracker's issue id is its identity. Its body is the question, bounded by a coherent decision and the current runtime/context capacity:
-
-```markdown
-## Question
-
-<the decision or investigation this ticket resolves>
-```
-
-Each ticket carries a `wayfinder:<type>` label — one of `research`, `prototype`, `grilling`, `task` (see [Ticket Types](ticket-types.md#ticket-types)).
-
-A session **claims** a ticket by assigning it to the dev driving the map, **first**, before any work, so concurrent sessions skip it. That assignee _is_ the claim: an open, unassigned ticket is unclaimed.
-
-Blocking uses the tracker's **native** dependency relationship — essential because it renders the frontier _visually_ in the tracker's own UI, so the human sees what's takeable without opening the map. Only a tracker that lacks native blocking falls back to a body convention. A ticket is **unblocked** when every ticket blocking it is closed; the **frontier** is the open, unblocked, unclaimed children — the edge of the known.
-
-The answer isn't part of the body — it's recorded on resolution (see [Work through the map](work-map.md#work-through-the-map)). Assets created while resolving a ticket are linked from the issue, not pasted in.
+授权认领后才分配，写后回读；分配不提供互斥锁，竞争时复读协调。只读可分析，不声称占用。答案保留来源和限制，在授权范围写评论/本地答案并更新地图；决策完成与实现交付分开。

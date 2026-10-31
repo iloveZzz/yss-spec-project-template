@@ -1,40 +1,11 @@
-# 工程技能配置决定
+# 配置决定
 
-仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。仓库脚本与 pnpm 命令从当前登记的项目根目录执行。
+只问当前写入所需、且用户或已有配置尚未确定的内容。推荐项放在问题前，肯定回答表示接受推荐；已有决定不再询问。
 
-### 2. Present findings and ask
+- 平台支持 `local-markdown`、`github`、`gitlab`。当前请求未明确目标时沿用已有配置；用户要初始化但无偏好时默认推荐 GitHub，GitLab 为显式选择的次级平台，Local Markdown 仍可明确选择（新项目根 `.work`）。GitHub repository 未配置时只补齐本次必需目标，不把模板仓、fork 或登录默认仓当成业务仓；Git remote 不自动改写已有 tracker。
+- GitHub 使用明确 `repository: owner/repo`；GitLab 使用明确 `host: https://实例` 和完整 `project`。用户当前明确的 URL、仓库或实例用于本次动作，与配置不同时说明差异即可，不重复确认或自动改持久配置。只有多个候选确实无法消歧时才问；访问失败不回退到默认目标找同号条目，本次目标选择也不扩大动作授权。
+- local 根缺失且确需保存新资料时使用新项目默认 `.work` 并说明；已有用户根保持不变。远程目标或真实路径有歧义时仅暂停该写入，当前对话分析继续。
+- triage 已安装且需要配置标签时，复用既有表；无表时采用 [三条默认标签](../triage-labels.md)，用户已明确偏好就不另问。不自动创建远程标签。
+- 根 `CONTEXT.md` 是已有业务词汇的唯一位置；ADR 沿用根 `docs/adr/`。仅在用户要求记录稳定词汇/决定时由 domain-modeling 处理。大小写、嵌套或重复词汇文件有冲突时保留原文，只暂停受影响词汇写入；不阻断其他配置。
 
-Summarise what's present and what's missing. Then take the sections in order — one section, one answer, then the next.
-
-Lead each section with the recommended answer so the user can accept it in a word. Give a one-line explainer only when the choice genuinely branches; skip Section B entirely when `triage` isn't installed.
-
-**Section A — Issue tracker.**
-
-> Explainer: The "issue tracker" is where issues live for this repo. Skills like `to-tickets`, `triage`, and `to-spec` read from and write to it — they need to know whether to call `gh issue create`, write a markdown file under `.work/`, or follow some other workflow you describe. Pick the place you actually track work for this repo.
-
-Path resolution is configuration-first: every Local-aware skill must read the
-persisted `tracker.root` from `.template-spec/agents/issue-tracker.md` before resolving an
-artifact path. If the field is absent, use `.work` as the default. Do
-not infer a tracker or replace the configured root from `git remote`; the legacy
-`.scratch/` and `docs/requirements/tickets/` roots are read-only migration
-sources.
-
-The supported tracker choices in this template are exactly `local-markdown`, `github`, and `gitlab`. A `git remote` may be displayed as code-host context only; it must not choose or rank a tracker. Ask for one explicit project choice, with Local Markdown as the template default:
-
-- **Local markdown (recommended)** — issues live as files under `.work/<feature>/` in this repo.
-- **GitHub** — use GitHub Issues and the `gh` CLI only when the user explicitly selects GitHub.
-- **GitLab** — use GitLab Issues and the [`glab`](https://gitlab.com/gitlab-org/cli) CLI only when the user explicitly selects GitLab.
-
-Do not offer an `Other` tracker or write an unsupported platform into the project configuration; extending the YSS tracker contract must happen before adding another platform.
-
-Record the choice in `.template-spec/agents/issue-tracker.md`. The GitHub and GitLab templates carry a "PRs as a request surface" flag, defaulted **off** — leave it off and don't raise it; a user who wants external PRs in the triage queue can flip the flag in the file later.
-
-**Section B — Triage label vocabulary.** Skip this section entirely if the `triage` skill isn't installed (exploration told you) — an uninstalled skill needs no labels.
-
-If it is installed, ask exactly one question:
-
-> Do you want to keep the default triage labels? (recommended: **yes**)
-
-**Section C — Business vocabulary and decisions.** The layout does not branch: every YSS Git repository has exactly one case-sensitive `CONTEXT.md` at its root. Multiple business responsibility areas share that glossary and are distinguished by each business term's `适用业务责任区` and stable `<ContextId>/<EnglishIdentifier>` reference. ADRs live under root `docs/adr/` and are created lazily when the first qualifying decision is accepted.
-
-If the root `CONTEXT.md` is missing, initialize it with `context_schema_version: 1`, the process-term table (`术语 | 含义 | 英文标识 | 避免 / 备注`) and the business-term table (`术语 | 含义 | 英文标识 | 适用业务责任区 | 避免 / 备注`). Do not invent business terms during setup. If a lowercase, nested, duplicate, or mapped context layout exists, stop and report `migration-required`; do not preserve or extend it as a second supported layout.
+不把业务决定变成工具安装调查；可从仓库和工具帮助查明的事实自行读取。unsupported tracker 说明当前能力边界，不写入不支持的平台。

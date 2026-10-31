@@ -22,7 +22,7 @@ Describe **what** the system should do, not **how** to implement it. The agent w
 
 The agent needs to know when it's done. Every agent brief must have concrete, testable acceptance criteria. Each criterion should be independently verifiable.
 
-- **Good:** "Running `gh issue list --label needs-triage` returns issues that have been through initial classification"
+- **Good:** "Running an explicitly targeted tracker query for needs-triage returns issues that have been through initial classification"
 - **Bad:** "Triage should work correctly"
 
 ### Explicit scope boundaries
@@ -123,7 +123,7 @@ checked for matches.
   and match incoming issues against them by concept similarity
 
 **Acceptance criteria:**
-- [ ] Closing a feature as wontfix creates/updates a file in `.out-of-scope/`
+- [ ] When closure and local rejection recording are both authorized, the existing concept file is updated or a new `.out-of-scope/` file is created
 - [ ] The file includes the decision, reasoning, and link to the closed issue
 - [ ] If a matching `.out-of-scope/` file already exists, the new issue is
       appended to its "Prior requests" list rather than creating a duplicate
@@ -196,3 +196,5 @@ This is bad because:
 - No acceptance criteria
 - No scope boundaries
 - No description of current vs desired behavior
+
+A brief is a proposal until the corresponding implementation or write is authorized. Include repository/target, source version or reading time, actual verification limitations and scope. A PR brief works on the existing diff rather than recreating it. A read-only triage request does not authorize posting the brief.
