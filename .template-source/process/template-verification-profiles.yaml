@@ -1237,8 +1237,7 @@ profiles:
         depends_on: []
         failure_mode: "根投影根偏离 Claude/WorkBuddy 声明，或 Skill 派生文件和引用规范化不一致"
       - id: check.1ebcb1124ce67eb1
-        run: "node --test scripts/fixtures/contract-efficiency/api-v2.test.mjs
-          tests/api-contract-decision.test.mjs"
+        run: "node --test tests/api-contract-decision.test.mjs"
         group: implementation
         resources: [ "native-cli" ]
         inputs_complete: true
@@ -2491,6 +2490,9 @@ profiles:
         inputs_complete: true
         input_patterns:
           - "scripts/fixtures/contract-efficiency/api-v2.test.mjs"
+          - "scripts/lib/api-contract-decision.mjs"
+          - "scripts/lib/openapi-draft-validation.mjs"
+          - "tests/api-contract-decision.test.mjs"
         depends_on: []
         failure_mode: "API 决策样例遗漏配置根或 Draft 绑定"
       - id: check.work-layout-lifecycle-transition
@@ -4479,6 +4481,7 @@ gates:
       - check.c860ed22ba605f8d
       - check.fcef5f013dd0e7f4
       - check.1ebcb1124ce67eb1
+      - check.work-layout-api
       - check.d32468f5dd6a4654
       - check.9a4dc0890f5759ad
       - check.7cffb7c441bd4709

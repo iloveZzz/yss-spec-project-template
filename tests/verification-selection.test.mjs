@@ -186,6 +186,18 @@ test('Backend 查询快照只由实际执行的消费者测试覆盖',()=>{
   assert.ok(checks[0].gate_ids.includes('check.verification-distribution'));
  }
 });
+test('API 决定与工作布局各执行一次，两个 Gate 保留职责',()=>{
+ for(const file of ['scripts/lib/api-contract-decision.mjs','scripts/fixtures/contract-efficiency/api-v2.test.mjs']){
+  const plan=planTemplateVerification({profile:'release',changedFiles:[file]});
+  const api=plan.commands.find(row=>row.id==='check.1ebcb1124ce67eb1');
+  const layout=plan.commands.find(row=>row.id==='check.work-layout-api');
+  assert.ok(api&&layout,file);
+  assert.ok(!api.command.includes('api-v2.test.mjs'));
+  assert.ok(layout.command.includes('api-v2.test.mjs'));
+  assert.ok(layout.gate_ids.includes('check.verification-implementation'));
+  assert.ok(layout.gate_ids.includes('check.verification-governance-syntax'));
+ }
+});
 test('选择测试忽略外部慢档环境但保留显式 slow',()=>{
  for(const value of ['1','only']){
   const env={...process.env,YSS_VERIFY_SLOW:value};delete env.NODE_TEST_CONTEXT;
