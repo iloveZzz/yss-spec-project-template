@@ -9,14 +9,11 @@ import {contextBinary} from '../scripts/lib/native-context.mjs';
 import {nativeEvidenceVerify, nativeContractVerify, nativeLifecycleVerify, assertNativeCapabilities, NEEDS, missingCapabilities} from '../scripts/lib/native-evidence.mjs';
 import {generateTaskPackageDefaults, validateTaskPackage} from '../scripts/lib/task-package.mjs';
 import {parse as parseYamlText} from '../scripts/vendor/yaml.mjs';
-import {fixture as handoffFixture, context as handoffContext} from '../scripts/fixtures/strategic-handoff/fixture.mjs';
-import {exportBundle, openBundle, importBundle} from './helpers/legacy-strategic-handoff-fixture.mjs';
 import {verifyConsumption} from '../scripts/lib/strategic-handoff-consumption.mjs';
 import {verifyContextReconciliation} from '../scripts/lib/context-reconciliation.mjs';
 import {readWorkLayout} from '../scripts/lib/work-layout.mjs';
 import {attachScaffoldDecisionFixture} from '../scripts/fixtures/user-decision/build-fixture.mjs';
 import {read as readHandoff, json as handoffJson} from '../scripts/lib/strategic-handoff-io.mjs';
-import {makeRoot} from './helpers/yss-instance.mjs';
 import {readdirSync, cpSync, unlinkSync, appendFileSync} from 'node:fs';
 import {buildDecisionFixture} from '../scripts/lib/testing/user-decision-fixture.mjs';
 import {validateUserDecision, assertUserDecisionRequirement} from '../scripts/lib/native-user-decision.mjs';
@@ -151,27 +148,5 @@ test('能力协商：旧 yss 拒绝并提示升级；新 yss 放行', {skip}, ()
 });
 
 let consumptionBuilt;
-async function consumptionCase() {
-  consumptionBuilt ??= buildConsumption(); // 导出、导入一次，各用例只改各自的战术合同副本
-  const built = await consumptionBuilt;
-  return {target: built.target, tactical: structuredClone(built.tactical), snapshot: built.snapshot};
-}
-async function buildConsumption() {
-  const base = realpathSync(mkdtempSync(path.join(os.tmpdir(), 'yss-consume-replay-')));
-  cleanupDirs.add(base);
-  const source = path.join(base, 'source');
-  mkdirSync(source);
-  const f = await handoffFixture(source, {handoffVersion: 4});
-  const out = path.join(base, 'package');
-  await exportBundle({sourceRoot: source, handoffRef: 'handoff.yaml', output: out});
-  const target = makeRoot('yss-consume-', 'backend');
-  writeFileSync(path.join(target, 'CONTEXT.md'), handoffContext);
-  const imported = await importBundle({bundle: out, targetRoot: target});
-  const draft = readHandoff(path.join(target, imported.traceability_ref));
-  const tactical = {schema_version: 1, status: 'approved', strategic_handoff: {...draft, context_reconciliation_ref: 'reconciliation.yaml'}, behavior_catalog: [{behavior_id: 'behavior.submit'}], test_seams: [{seam_id: 'test-seam.submit', subject_ref: 'behavior.submit'}]};
-  writeFileSync(path.join(target, 'reconciliation.yaml'), handoffJson({schema_version: 1, repository_mode: 'project-instance', stage: 'stage.system-data-engineering', work_unit: 'work-unit.technical-analysis', status: 'reconciled', context_snapshot: f.snapshot, changes: {added: ['Global/Supplier'], updated: [], deprecated: []}, unresolved_terms: [], evidence_refs: ['CONTEXT.md']}));
-  for (const row of tactical.strategic_handoff.rows) Object.assign(row, {disposition: 'implemented', tactical_refs: ['behavior.submit'], test_seam_refs: ['test-seam.submit'], scenario_tests: [{outcome: 'success', seam_ref: 'test-seam.submit'}, {outcome: 'failure', seam_ref: 'test-seam.submit'}], evidence_refs: ['CONTEXT.md'], dependency_status: 'known', dependent_slice_refs: ['slice.submit']});
-  return {target, tactical, snapshot: f.snapshot};
-}
 
 const sha256 = (text) => `sha256:${createHash('sha256').update(text).digest('hex')}`;

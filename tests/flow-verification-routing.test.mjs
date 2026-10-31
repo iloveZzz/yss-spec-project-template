@@ -15,7 +15,7 @@ test('Plan/Spec、编排与 checkpoint 变更选择实际行为检查', () => {
     for (const file of ['.template-spec/process/orchestration-contract.yaml', '.template-spec/process/schemas/lifecycle-checkpoint.schema.json', 'scripts/verify-lifecycle-checkpoint']) {
       const plan = planTemplateVerification({ profile, changedFiles: [file] });
       assert.ok(plan.groups.includes('lifecycle'), `${profile}: ${file}`);
-      assert.ok(plan.commands.some(x => x.command.includes('checkpoint-boundary.test.mjs')));
+      assert.ok(plan.commands.some(x => x.id==='check.backend-governance-contract' && x.command.includes('scripts/fixtures/role-independent-draft/approval.test.mjs')));
     }
   }
   const combined = planTemplateVerification({ changedFiles: ['.template-spec/templates/spec-template.md', '.template-spec/process/orchestration-contract.yaml'] });

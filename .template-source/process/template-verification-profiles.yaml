@@ -37,16 +37,6 @@ profiles:
           - ".agents/skills/yss-product-lifecycle/references/request-triage*"
         depends_on: []
         failure_mode: "baseline 和 candidate 合同部件混用、摘要遗漏，或缺失和非法分片仍启动模型"
-      - id: check.lifecycle-core-views
-        run: "node --test scripts/fixtures/lifecycle-core/views.test.mjs"
-        group: lifecycle
-        resources: [ native-cli ]
-        inputs_complete: true
-        input_patterns:
-          - "scripts/fixtures/lifecycle-core/views.test.mjs"
-          - "scripts/lib/contract-views.mjs"
-        depends_on: []
-        failure_mode: "任务与恢复视图丢失约束或只读边界"
       - id: check.repository-scope-scenarios
         when: template-source
         run: "node tests/scenarios/verify-repository-scope-scenarios.mjs"
@@ -85,8 +75,7 @@ profiles:
         depends_on: []
         failure_mode: "维护技能层级或调用元数据的接受与拒绝语义回归"
       - id: check.lifecycle-controls-unit
-        run: "node --test
-          .template-source/tooling/node/test/lifecycle-controls.test.mjs"
+        run: "node --test .template-source/tooling/node/test/lifecycle-controls.test.mjs"
         group: lifecycle
         inputs_complete: true
         input_patterns:
@@ -125,8 +114,7 @@ profiles:
           - ".template-spec/agents/*.md"
           - ".template-source/contracts/harness-hardening-v1*.md"
           - ".template-source/contracts/architecture-iteration-v1*.md"
-          - ".template-source/contracts/spec-backend-direct-consumption-design.\
-            md"
+          - ".template-source/contracts/spec-backend-direct-consumption-design.md"
           - ".template-source/contracts/README.md"
           - ".template-source/contracts/2026-10-22-matt-method-optimization-design.md"
           - ".template-source/contracts/2026-10-22-matt-method-optimization-plan.md"
@@ -218,15 +206,13 @@ profiles:
           - ".template-spec/process/orchestration/entry/request-triage.yaml"
           - ".template-spec/process/agent-entry-policy.md"
           - ".agents/skills/yss-product-lifecycle/SKILL.md"
-          - ".agents/skills/yss-product-lifecycle/references/conditional-guidan\
-            ce.md"
+          - ".agents/skills/yss-product-lifecycle/references/conditional-guidance.md"
           - "scripts/lib/profile-tree.mjs"
           - "profiles/**"
         depends_on: []
         failure_mode: "专职 Profile 的 Plan/Spec 本地路线偏离上游的唯一日常政策，业务分析角色被允许当 Worker，或专职角色被允许写另一端"
       - id: check.plugin-preparation
-        run: "node --test
-          .template-source/tooling/node/test/plugin-preparation.test.mjs"
+        run: "node --test .template-source/tooling/node/test/plugin-preparation.test.mjs"
         group: feature-assets
         resources: [ native-cli ]
         inputs_complete: true
@@ -236,14 +222,12 @@ profiles:
         depends_on: []
         failure_mode: "插件准备遗漏合同分片或来源绑定"
       - id: check.lifecycle-status-feedback
-        run: "node --test
-          .template-source/tooling/node/test/lifecycle-status-feedback.test.mjs"
+        run: "node --test .template-source/tooling/node/test/lifecycle-status-feedback.test.mjs"
         group: feature-assets
         resources: [ native-cli ]
         inputs_complete: true
         input_patterns:
-          - ".template-source/tooling/node/test/lifecycle-status-feedback.test.\
-            mjs"
+          - ".template-source/tooling/node/test/lifecycle-status-feedback.test.mjs"
           - "scripts/lib/lifecycle-status.mjs"
           - "scripts/lib/lifecycle-presentation.mjs"
           - "scripts/lib/orchestration-contract.mjs"
@@ -258,14 +242,12 @@ profiles:
         failure_mode: "状态反馈与合同摘要不一致"
       - id: check.plugin-scope-terminal
         tier: slow # 完整成功路径实测 164s；fast 明确延后，release 保留。
-        run: "node --test .template-source/tooling/node/test/plugin-scope.test.mjs
-          .template-source/tooling/node/test/plugin-terminal.test.mjs"
+        run: "node --test .template-source/tooling/node/test/plugin-scope.test.mjs"
         group: feature-assets
         resources: [ native-cli, "repo-root-evidence" ]
         inputs_complete: true
         input_patterns:
           - ".template-source/tooling/node/test/plugin-scope.test.mjs"
-          - ".template-source/tooling/node/test/plugin-terminal.test.mjs"
           - "scripts/lib/lifecycle-execution-scope.mjs"
         depends_on: []
         failure_mode: "插件职责范围或交付终点漂移"
@@ -282,129 +264,54 @@ profiles:
       - id: check.profile-consumers-efficiency-distribution
         resources: [ native-cli ]
         lane: pc-efficiency-distribution
-        run: "node --test --test-skip-pattern='^backend plugin receives'
-          tests/efficiency-distribution.test.mjs"
+        run: "node --test --test-skip-pattern='^backend plugin receives' tests/efficiency-distribution.test.mjs"
         group: feature-assets
         inputs_complete: true
         input_patterns:
           - "tests/efficiency-distribution.test.mjs"
-          - "scripts/fixtures/user-decision/plan-fixture.mjs"
-          - "tests/helpers/yss-instance.mjs"
-          - "tests/helpers/fixtures/native-legacy.json.gz"
-          - "tests/helpers/fixtures/native-legacy.provenance.json"
-          - "scripts/fixtures/spec-baseline/fixture.mjs"
           - ".template-source/tooling/node/test/design-preview-browser.mjs"
           - "scripts/lib/profile-tree.mjs"
           - "scripts/lib/lifecycle-context-query-core.mjs"
           - "profiles/*/scripts/lib/lifecycle-context-query.mjs"
           - "profiles/**"
+          - scripts/fixtures/existing-backend/fixture.mjs
+          - scripts/fixtures/contract-efficiency/distribution.test.mjs
+          - scripts/fixtures/user-decision/plan-fixture.mjs
+          - tests/helpers/yss-instance.mjs
+          - tests/helpers/fixtures/native-legacy.json.gz
+          - tests/helpers/fixtures/native-legacy.provenance.json
+          - scripts/fixtures/spec-baseline/fixture.mjs
         depends_on: []
         failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile，或 Backend 查询读取期间漂移未被拒绝"
       - id: check.profile-consumers-native-context-retirement
         resources: [ native-cli ]
         lane: pc-native-context-retirement
-        run: "node --test
-          tests/native-context-retirement.test.mjs"
+        run: "node --test tests/native-context-retirement.test.mjs"
         group: feature-assets
         inputs_complete: true
         input_patterns:
           - "tests/native-context-retirement.test.mjs"
-          - "scripts/fixtures/user-decision/plan-fixture.mjs"
-          - "tests/helpers/yss-instance.mjs"
-          - "tests/helpers/fixtures/native-legacy.json.gz"
-          - "tests/helpers/fixtures/native-legacy.provenance.json"
-          - "scripts/fixtures/spec-baseline/fixture.mjs"
           - ".template-source/tooling/node/test/design-preview-browser.mjs"
           - "scripts/lib/profile-tree.mjs"
           - "profiles/**"
         depends_on: []
-        failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各
-          Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
-      - id: check.profile-consumers-contract-efficiency-distribution
-        resources: [ native-cli ]
-        lane: pc-contract-efficiency-distribution
-        run: "node --test --test-skip-pattern='^backend plugin receives'
-          scripts/fixtures/contract-efficiency/distribution.test.mjs"
-        group: feature-assets
-        inputs_complete: true
-        input_patterns:
-          - "scripts/fixtures/existing-backend/fixture.mjs"
-          - "scripts/fixtures/contract-efficiency/distribution.test.mjs"
-          - "scripts/fixtures/user-decision/plan-fixture.mjs"
-          - "tests/helpers/yss-instance.mjs"
-          - "tests/helpers/fixtures/native-legacy.json.gz"
-          - "tests/helpers/fixtures/native-legacy.provenance.json"
-          - "scripts/fixtures/spec-baseline/fixture.mjs"
-          - ".template-source/tooling/node/test/design-preview-browser.mjs"
-          - "scripts/lib/profile-tree.mjs"
-          - "profiles/**"
-        depends_on: []
-        failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各
-          Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
+        failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
       - id: check.profile-consumers-reading-views-bundle
         tier: slow # 实测约 63s；fast 中延后，按需（YSS_VERIFY_SLOW=1）或定时执行
         resources: [ native-cli ]
         lane: pc-reading-views-bundle
-        run: "node --test --test-skip-pattern='^backend plugin receives'
-          scripts/fixtures/reading-views/bundle.test.mjs"
+        run: "node --test --test-skip-pattern='^backend plugin receives' scripts/fixtures/reading-views/bundle.test.mjs"
         group: feature-assets
         inputs_complete: true
         input_patterns:
           - "scripts/fixtures/reading-views/bundle.test.mjs"
-          - "scripts/fixtures/user-decision/plan-fixture.mjs"
-          - "tests/helpers/yss-instance.mjs"
-          - "tests/helpers/fixtures/native-legacy.json.gz"
-          - "tests/helpers/fixtures/native-legacy.provenance.json"
-          - "scripts/fixtures/spec-baseline/fixture.mjs"
           - ".template-source/tooling/node/test/design-preview-browser.mjs"
           - "scripts/lib/profile-tree.mjs"
           - "profiles/**"
+          - scripts/fixtures/lifecycle-core/views.test.mjs
+          - scripts/lib/contract-views.mjs
         depends_on: []
-        failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各
-          Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
-      - id: check.profile-consumers-slice-contract-v3-round2-xrepo
-        tier: slow # 实测约 128s；fast 中延后，按需（YSS_VERIFY_SLOW=1）或定时执行
-        resources: [ native-cli ]
-        lane: pc-slice-contract-v3-round2-xrepo
-        run: "node --test --test-name-pattern='^cross-repo execution result rejects'
-          scripts/fixtures/slice-contract-v3/round2.test.mjs"
-        group: feature-assets
-        inputs_complete: true
-        input_patterns:
-          - "scripts/fixtures/slice-contract-v3/round2.test.mjs"
-          - "scripts/fixtures/user-decision/plan-fixture.mjs"
-          - "tests/helpers/yss-instance.mjs"
-          - "tests/helpers/fixtures/native-legacy.json.gz"
-          - "tests/helpers/fixtures/native-legacy.provenance.json"
-          - "scripts/fixtures/spec-baseline/fixture.mjs"
-          - ".template-source/tooling/node/test/design-preview-browser.mjs"
-          - "scripts/lib/profile-tree.mjs"
-          - "profiles/**"
-        depends_on: []
-        failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各
-          Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
-      - id: check.profile-consumers-slice-contract-v3-round2-rest
-        tier: slow # 实测约 98s；fast 中延后，按需（YSS_VERIFY_SLOW=1）或定时执行
-        resources: [ native-cli ]
-        lane: pc-slice-contract-v3-round2-rest
-        run: "node --test --test-skip-pattern='^backend plugin receives'
-          --test-skip-pattern='^cross-repo execution result rejects'
-          scripts/fixtures/slice-contract-v3/round2.test.mjs"
-        group: feature-assets
-        inputs_complete: true
-        input_patterns:
-          - "scripts/fixtures/slice-contract-v3/round2.test.mjs"
-          - "scripts/fixtures/user-decision/plan-fixture.mjs"
-          - "tests/helpers/yss-instance.mjs"
-          - "tests/helpers/fixtures/native-legacy.json.gz"
-          - "tests/helpers/fixtures/native-legacy.provenance.json"
-          - "scripts/fixtures/spec-baseline/fixture.mjs"
-          - ".template-source/tooling/node/test/design-preview-browser.mjs"
-          - "scripts/lib/profile-tree.mjs"
-          - "profiles/**"
-        depends_on: []
-        failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各
-          Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
+        failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
       - id: check.role-independent-draft
         resources: [ native-cli ]
         run: "node --test scripts/fixtures/role-independent-draft/scenarios.test.mjs"
@@ -420,73 +327,33 @@ profiles:
           - "scripts/lib/slice-contract-views.mjs"
           - ".template-spec/process/orchestration/**"
           - "profiles/backend/.template-spec/process/orchestration/**"
-          - ".template-spec/process/schemas/digital-human-task-package.schema.j\
-            son"
-          - ".template-spec/process/schemas/slice-implementation-contract-v4.sc\
-            hema.json"
+          - ".template-spec/process/schemas/digital-human-task-package.schema.json"
+          - ".template-spec/process/schemas/slice-implementation-contract-v4.schema.json"
+          - scripts/fixtures/slice-contract-v3/round2.test.mjs
+          - scripts/fixtures/user-decision/plan-fixture.mjs
+          - tests/helpers/yss-instance.mjs
+          - tests/helpers/fixtures/native-legacy.json.gz
+          - tests/helpers/fixtures/native-legacy.provenance.json
+          - scripts/fixtures/spec-baseline/fixture.mjs
+          - .template-source/tooling/node/test/design-preview-browser.mjs
+          - scripts/lib/profile-tree.mjs
+          - profiles/**
         depends_on: []
         failure_mode: "新政策草稿派发或Slice4读视图错误，检查映射遗漏当前Profile约束，或草稿绕过未就绪的执行/写入边界"
       - id: check.profile-consumers-slice-contract-v3-scenarios
         tier: slow # 实测约 113s；fast 中延后，按需（YSS_VERIFY_SLOW=1）或定时执行
         resources: [ native-cli ]
         lane: pc-slice-contract-v3-scenarios
-        run: "node --test --test-skip-pattern='^backend plugin receives'
-          scripts/fixtures/slice-contract-v3/scenarios.test.mjs"
+        run: "node --test --test-skip-pattern='^backend plugin receives' scripts/fixtures/slice-contract-v3/scenarios.test.mjs"
         group: feature-assets
         inputs_complete: true
         input_patterns:
           - "scripts/fixtures/slice-contract-v3/scenarios.test.mjs"
-          - "scripts/fixtures/user-decision/plan-fixture.mjs"
-          - "tests/helpers/yss-instance.mjs"
-          - "tests/helpers/fixtures/native-legacy.json.gz"
-          - "tests/helpers/fixtures/native-legacy.provenance.json"
-          - "scripts/fixtures/spec-baseline/fixture.mjs"
           - ".template-source/tooling/node/test/design-preview-browser.mjs"
           - "scripts/lib/profile-tree.mjs"
           - "profiles/**"
         depends_on: []
-        failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各
-          Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
-      - id: check.profile-consumers-approval-current
-        resources: [ native-cli, "repo-root-evidence" ]
-        lane: pc-approval-current
-        run: "node --test --test-skip-pattern='^backend plugin receives'
-          .template-source/tooling/node/test/approval-current.test.mjs"
-        group: feature-assets
-        inputs_complete: true
-        input_patterns:
-          - ".template-source/tooling/node/test/approval-current.test.mjs"
-          - "scripts/fixtures/user-decision/plan-fixture.mjs"
-          - "tests/helpers/yss-instance.mjs"
-          - "tests/helpers/fixtures/native-legacy.json.gz"
-          - "tests/helpers/fixtures/native-legacy.provenance.json"
-          - "scripts/fixtures/spec-baseline/fixture.mjs"
-          - ".template-source/tooling/node/test/design-preview-browser.mjs"
-          - "scripts/lib/profile-tree.mjs"
-          - "profiles/**"
-        depends_on: []
-        failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各
-          Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
-      - id: check.profile-consumers-decision-continuation
-        resources: [ native-cli ]
-        lane: pc-decision-continuation
-        run: "node --test --test-skip-pattern='^backend plugin receives'
-          .template-source/tooling/node/test/decision-continuation.test.mjs"
-        group: feature-assets
-        inputs_complete: true
-        input_patterns:
-          - ".template-source/tooling/node/test/decision-continuation.test.mjs"
-          - "scripts/fixtures/user-decision/plan-fixture.mjs"
-          - "tests/helpers/yss-instance.mjs"
-          - "tests/helpers/fixtures/native-legacy.json.gz"
-          - "tests/helpers/fixtures/native-legacy.provenance.json"
-          - "scripts/fixtures/spec-baseline/fixture.mjs"
-          - ".template-source/tooling/node/test/design-preview-browser.mjs"
-          - "scripts/lib/profile-tree.mjs"
-          - "profiles/**"
-        depends_on: []
-        failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各
-          Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
+        failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
       - id: check.profile-consumers-lifecycle-progression
         resources: [ native-cli ]
         lane: pc-lifecycle-progression
@@ -497,17 +364,15 @@ profiles:
         input_patterns:
           - "scripts/fixtures/existing-backend/fixture.mjs"
           - ".template-source/tooling/node/test/lifecycle-progression.test.mjs"
-          - "scripts/fixtures/user-decision/plan-fixture.mjs"
-          - "tests/helpers/yss-instance.mjs"
-          - "tests/helpers/fixtures/native-legacy.json.gz"
-          - "tests/helpers/fixtures/native-legacy.provenance.json"
-          - "scripts/fixtures/spec-baseline/fixture.mjs"
           - ".template-source/tooling/node/test/design-preview-browser.mjs"
           - "scripts/lib/profile-tree.mjs"
           - "profiles/**"
+          - tests/progression-target-evidence.test.mjs
+          - scripts/fixtures/strategic-handoff/fixture.mjs
+          - scripts/lib/strategic-handoff.mjs
+          - scripts/lib/strategic-handoff-io.mjs
         depends_on: []
-        failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各
-          Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
+        failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
       - id: check.profile-consumers-plugin-design-consumption
         resources: [ native-cli ]
         lane: pc-plugin-design-consumption
@@ -516,45 +381,12 @@ profiles:
         group: feature-assets
         inputs_complete: true
         input_patterns:
-          - ".template-source/tooling/node/test/plugin-design-consumption.test.\
-            mjs"
-          - "scripts/fixtures/user-decision/plan-fixture.mjs"
-          - "tests/helpers/yss-instance.mjs"
-          - "tests/helpers/fixtures/native-legacy.json.gz"
-          - "tests/helpers/fixtures/native-legacy.provenance.json"
-          - "scripts/fixtures/spec-baseline/fixture.mjs"
+          - ".template-source/tooling/node/test/plugin-design-consumption.test.mjs"
           - ".template-source/tooling/node/test/design-preview-browser.mjs"
           - "scripts/lib/profile-tree.mjs"
           - "profiles/**"
         depends_on: []
-        failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各
-          Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
-      - id: check.profile-consumers-review-capabilities
-        tier: slow # 实测约 99s；fast 中延后，按需（YSS_VERIFY_SLOW=1）或定时执行
-        resources: [ native-cli, python-jsonschema ]
-        lane: pc-review-capabilities
-        run: "node --test --test-skip-pattern='^backend plugin receives'
-          .template-source/tooling/node/test/review-capabilities.test.mjs"
-        group: feature-assets
-        inputs_complete: true
-        input_patterns:
-          - ".template-source/tooling/node/test/review-capabilities.test.mjs"
-          - "scripts/fixtures/user-decision/plan-fixture.mjs"
-          - "tests/helpers/yss-instance.mjs"
-          - "tests/helpers/fixtures/native-legacy.json.gz"
-          - "tests/helpers/fixtures/native-legacy.provenance.json"
-          - "scripts/fixtures/spec-baseline/fixture.mjs"
-          - ".template-source/tooling/node/test/design-preview-browser.mjs"
-          - "scripts/lib/profile-tree.mjs"
-          - "profiles/**"
-          - "scripts/lib/plan-review-control.mjs"
-          - "scripts/lib/review-package.mjs"
-          - "scripts/lib/work-layout.mjs"
-          - "scripts/fixtures/plan-review-control/**"
-          - ".template-source/tooling/node/test/plan-review-control.test.mjs"
-        depends_on: []
-        failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各
-          Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
+        failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各 Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
       - id: check.harness-upgrade-generated
         run: "node .template-source/scripts/sync-harness-upgrade.mjs --check"
         group: skills
@@ -578,8 +410,7 @@ profiles:
           - .template-source/process/node-core-layer.json
           - .template-source/scripts/lib/*.mjs
         depends_on: []
-        failure_mode: "scripts/lib 与 .template-source/scripts/lib 的完整相对导入图出现环，或 core
-          层模块反向导入上层"
+        failure_mode: "scripts/lib 与 .template-source/scripts/lib 的完整相对导入图出现环，或 core 层模块反向导入上层"
       - id: check.go-validator-replay
         run: "node --test tests/go-validator-replay.test.mjs"
         group: feature-assets
@@ -601,7 +432,6 @@ profiles:
           - "scripts/lib/openapi-draft-validation.mjs"
           - "scripts/verify-scaffold-architecture-decisions"
           - "scripts/lib/strategic-handoff-consumption.mjs"
-          - "scripts/fixtures/strategic-handoff/fixture.mjs"
           - "scripts/lib/native-evidence.mjs"
           - "scripts/lib/native-context.mjs"
           - "scripts/lib/user-decision.mjs"
@@ -613,51 +443,8 @@ profiles:
           - ".template-source/distribution/yss-cli-pin.json"
         depends_on: []
         failure_mode: "用户决定、批准记录与薄适配的固定通过/拒绝预期、独立期望绑定、返回字段或能力拒绝回归"
-      - id: check.artifact-analysis
-        run: "node --test tests/artifact-analysis.test.mjs"
-        group: feature-assets
-        resources: [ native-cli ]
-        inputs_complete: true
-        input_patterns:
-          - "scripts/analyze-artifacts"
-          - "scripts/lib/artifact-analysis.mjs"
-          - "tests/artifact-analysis.test.mjs"
-          - "scripts/lib/plan-spec-quality.mjs"
-          - "scripts/lib/business-tickets.mjs"
-          - "scripts/lib/plan-stage-coverage.mjs"
-        depends_on: []
-        failure_mode: "一致性分析漏掉某项诊断的发现、把未评估当作一致，或功能包资产识别错误"
-      - id: check.business-ticket-native-report
-        tier: slow # 实测约 74s；fast 中延后，按需（YSS_VERIFY_SLOW=1）或定时执行
-        run: "node --test tests/business-ticket-native-report.test.mjs"
-        group: feature-assets
-        resources: [ "native-cli", "repo-root-evidence" ]
-        inputs_complete: true
-        input_patterns:
-          - "scripts/fixtures/existing-backend/fixture.mjs"
-          - "tests/business-ticket-native-report.test.mjs"
-          - "tests/helpers/yss-instance.mjs"
-          - "tests/helpers/fixtures/native-legacy.json.gz"
-          - "tests/helpers/fixtures/native-legacy.provenance.json"
-          - "scripts/lib/business-tickets.mjs"
-          - "scripts/fixtures/business-tickets/business-tickets.test.mjs"
-          - "scripts/fixtures/strategic-handoff/fixture.mjs"
-          - "scripts/lib/strategic-handoff.mjs"
-          - "scripts/lib/strategic-handoff-io.mjs"
-          - "scripts/vendor/yaml.mjs"
-          - "scripts/fixtures/spec-baseline/fixture.mjs"
-          - "scripts/fixtures/slice-contract-v3/pilot-fixture.mjs"
-          - "scripts/lib/native-evidence.mjs"
-          - "scripts/lib/native-context.mjs"
-          - ".template-source/distribution/yss-cli-pin.json"
-          - scripts/fixtures/spec-baseline/local-implementation-fixture.mjs
-          - scripts/fixtures/spec-baseline/package.mjs
-          - scripts/fixtures/spec-baseline/scenarios.mjs
-        depends_on: []
-        failure_mode: "业务票原生报告字段、多诊断、draft/formal 拒绝、业务读集或导入快照与既有合同不一致"
       - id: check.ar12b-retirement
-        run: "node --test tests/ar12b-retirement.test.mjs
-          .template-source/tooling/node/test/retirement.test.mjs"
+        run: "node --test tests/ar12b-retirement.test.mjs .template-source/tooling/node/test/retirement.test.mjs"
         group: feature-assets
         inputs_complete: true
         input_patterns:
@@ -673,33 +460,17 @@ profiles:
           - "scripts/lib/decision-continuation.mjs"
           - "scripts/lib/native-approval.mjs"
           - "scripts/lib/native-user-decision.mjs"
-          - ".agents/skills/yss-stage-decision/scripts/validate-stage-decision-\
-            package.mjs"
-          - ".agents/skills/yss-stage-decision/scripts/validate-domain-strategy\
-            .mjs"
-          - ".agents/skills/yss-ddd-scaffold-generator/scripts/generate_scaffol\
-            d.mjs"
-          - ".agents/skills/yss-layered-mvc-scaffold-generator/scripts/generate\
-            _scaffold.mjs"
-          - ".agents/skills/yss-technical-design/scripts/validate-technical-des\
-            ign.mjs"
+          - ".agents/skills/yss-stage-decision/scripts/validate-stage-decision-package.mjs"
+          - ".agents/skills/yss-stage-decision/scripts/validate-domain-strategy.mjs"
+          - ".agents/skills/yss-ddd-scaffold-generator/scripts/generate_scaffold.mjs"
+          - ".agents/skills/yss-layered-mvc-scaffold-generator/scripts/generate_scaffold.mjs"
+          - ".agents/skills/yss-technical-design/scripts/validate-technical-design.mjs"
           - ".agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs"
-          - "profiles/backend/.agents/skills/yss-ddd-scaffold-generator/scripts\
-            /generate_scaffold.mjs"
+          - "profiles/backend/.agents/skills/yss-ddd-scaffold-generator/scripts/generate_scaffold.mjs"
           - ".template-source/distribution/bundle-profile.json"
           - "profiles/*/.template-source/distribution/bundle-profile.json"
         depends_on: []
         failure_mode: "退役校验器或生产回退复活、调用方仍引用旧路径，或删除规则失去精确 Profile/提交/快照/Bundle 来源约束"
-      - id: check.user-decision-scenarios
-        run: "node tests/scenarios/verify-user-decision-scenarios.mjs"
-        group: feature-assets
-        resources: [ native-cli ]
-        inputs_complete: true
-        input_patterns:
-          - "scripts/verify-user-decision-scenarios"
-          - "tests/scenarios/verify-user-decision-scenarios.mjs"
-        depends_on: []
-        failure_mode: "用户决定原生调用的来源、展示、范围、撤回或会签绑定被放行或误拒"
       - id: check.b5ec80cdc570194f
         group: lifecycle
         resources: [ native-cli ]
@@ -794,70 +565,20 @@ profiles:
         depends_on: []
         failure_mode: "生命周期入口、注册表或推进前置约束失效"
       - id: check.digital-human-native-consumers
-        run: "node --test --test-concurrency=1
-          .template-source/tooling/node/test/digital-human-roles.test.mjs
-          tests/scenarios/verify-digital-human-roles-scenarios.mjs"
+        run: "node --test --test-concurrency=1 .template-source/tooling/node/test/digital-human-roles.test.mjs"
         group: collaboration
         resources: [ "native-cli" ]
         inputs_complete: true
         input_patterns:
           - ".template-source/tooling/node/test/digital-human-roles.test.mjs"
-          - "tests/scenarios/verify-digital-human-roles-scenarios.mjs"
           - "scripts/verify-digital-human-roles-scenarios"
           - "scripts/lib/digital-human-roles.mjs"
           - "scripts/lib/native-approval.mjs"
         depends_on: []
         failure_mode: "角色会签消费迁移后错误放行无权角色、缺失批准或失效门禁，或拒绝合法原生身份"
-      - id: check.plan-spec-entry-scenarios
-        tier: slow # cbe04769 发布差异检查实测 110s；fast 延后，release 保留。
-        run: "node tests/scenarios/verify-plan-spec-entry-scenarios.mjs"
-        group: feature-assets
-        resources: [ "native-cli" ]
-        inputs_complete: true
-        input_patterns:
-          - "scripts/verify-plan-spec-entry-scenarios"
-          - "scripts/verify-plan-spec-entry"
-          - "tests/scenarios/verify-plan-spec-entry-scenarios.mjs"
-          - "scripts/lib/plan-spec-entry.mjs"
-          - "scripts/fixtures/user-decision/plan-fixture.mjs"
-          - "tests/helpers/yss-instance.mjs"
-          - "tests/helpers/fixtures/native-legacy.json.gz"
-          - "tests/helpers/fixtures/native-legacy.provenance.json"
-        depends_on: []
-        failure_mode: "Plan→Spec 入口的批准、用户决定与上下文调和在真实实例根上被放行或误拒"
-      - id: check.openapi-validation-scenarios
-        run: "node tests/scenarios/verify-openapi-draft-validation-scenarios.mjs"
-        group: feature-assets
-        resources: [ "native-cli" ]
-        inputs_complete: true
-        input_patterns:
-          - "scripts/verify-openapi-draft-validation-record"
-          - "scripts/verify-openapi-draft-validation-scenarios"
-          - "tests/scenarios/verify-openapi-draft-validation-scenarios.mjs"
-          - ".template-spec/process/schemas/openapi-draft-validation-record.sch\
-            ema.json"
-        depends_on: []
-        failure_mode: "OpenAPI Draft validation record 的薄壳不再把正式记录交给 yss
-          校验，或放行摘要过期、命令指向别的 Draft、锁文件未绑定版本、$ref 无法解析的记录"
-      - id: check.scaffold-decisions-scenarios
-        run: "node tests/scenarios/verify-scaffold-architecture-decision-scenarios.mjs"
-        group: feature-assets
-        resources: [ "native-cli" ]
-        inputs_complete: true
-        input_patterns:
-          - "scripts/verify-scaffold-architecture-decisions"
-          - "scripts/verify-scaffold-architecture-decision-scenarios"
-          - "tests/scenarios/verify-scaffold-architecture-decision-scenarios.mjs"
-          - "scripts/fixtures/user-decision/build-fixture.mjs"
-          - ".template-spec/process/schemas/scaffold-architecture-decisions.sch\
-            ema.json"
-        depends_on: []
-        failure_mode: "脚手架架构选择记录的薄壳不再把正式记录交给 yss 校验，或放行缺用户确认、模块闭包缺失、继承值与父项目不一致的记录"
       - id: check.release-profile-consumers
-        run: "node --test tests/verification-gates.test.mjs
-          tests/verification-baseline.test.mjs
-          tests/verification-qualification.test.mjs
-          tests/verification-delivery-run.test.mjs
+        run: "node --test tests/verification-gates.test.mjs tests/verification-baseline.test.mjs
+          tests/verification-qualification.test.mjs tests/verification-delivery-run.test.mjs
           tests/legacy-verification.test.mjs"
         group: candidate-integrity
         resources: [ "native-cli" ]
@@ -887,8 +608,7 @@ profiles:
           - scripts/verify-strategic-context-import-scenarios
           - scripts/verify-template-verification-scenarios
         depends_on: []
-        failure_mode: "两档入口接受已退役 profile 或资格材料、release 遗漏当前检查或 Gate 绑定、历史基线来源与报告字节不匹配、三
-          Profile 制品准备任务缺失"
+        failure_mode: "两档入口接受已退役 profile 或资格材料、release 遗漏当前检查或 Gate 绑定、历史基线来源与报告字节不匹配、三 Profile 制品准备任务缺失"
       - id: check.frontend-removed
         run: "node --test tests/frontend-removed.test.mjs"
         group: feature-assets
@@ -902,8 +622,7 @@ profiles:
           - ".agents/mcp_config.json"
           - ".cursor/mcp.json"
           - ".vscode/mcp.json"
-          - ".template-source/tooling/node/test/yss-ui-skill-integration.test.m\
-            js"
+          - ".template-source/tooling/node/test/yss-ui-skill-integration.test.mjs"
           - "scripts/verify-yss-ui-scenarios"
           - "scripts/verify-frontend-scaffold-generator-scenarios"
           - "scripts/verify-retired-skill-ids"
@@ -914,8 +633,7 @@ profiles:
           - "scripts/verify-frontend-delivery-scenarios"
           - "scripts/verify-frontend-implementation-evidence-scenarios"
           - "tests/scenarios/verify-frontend-delivery-scenarios.mjs"
-          - "tests/scenarios/verify-frontend-implementation-evidence-scenarios.\
-            mjs"
+          - "tests/scenarios/verify-frontend-implementation-evidence-scenarios.mjs"
           - "scripts/fixtures/frontend-delivery/**"
           - "scripts/lib/frontend-delivery.mjs"
           - "scripts/lib/frontend-delivery-boundary.mjs"
@@ -927,8 +645,7 @@ profiles:
           - ".template-spec/process/schemas/progression-target.schema.json"
           - ".template-spec/process/orchestration/**"
           - ".template-spec/process/orchestration-contract.yaml"
-          - ".agents/skills/yss-product-lifecycle/references/orchestration-cont\
-            ract.yaml"
+          - ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml"
         depends_on: []
         failure_mode: "已移除的前端 Profile、前端移交验证入口、前端生命周期稳定 ID 或 frontend-accepted 推进目标重新出现"
       - id: check.strategic-handoff-retirement
@@ -945,67 +662,16 @@ profiles:
           - "scripts/lib/backend-delivery.mjs"
         depends_on: []
         failure_mode: "旧交接或外部验收未明确拒绝，或历史材料被改写"
-      - id: check.backend-delivery-terminal
-        tier: slow # 基础终点场景与业务目标场景分别计时，保留单项 300s 上限。
-        resources: [ native-cli, python-jsonschema ]
-        run: "node --test --test-concurrency=1 tests/backend-delivery-terminal.test.mjs"
-        group: feature-assets
-        inputs_complete: true
-        input_patterns:
-          - ".template-spec/process/orchestration/entry/request-triage.yaml"
-          - ".template-spec/process/orchestration/domain/progression.yaml"
-          - ".template-spec/process/orchestration/workflow/work-units/work-unit\
-            .backend-delivery.yaml"
-          - "scripts/lib/backend-delivery.mjs"
-          - "tests/backend-delivery-terminal.test.mjs"
-          - "tests/backend-delivery-business-terminal.test.mjs"
-          - "scripts/fixtures/backend-delivery/local-terminal-fixture.mjs"
-          - "scripts/lib/slice-contract.mjs"
-          - "scripts/lib/backend-delivery-terminal.mjs"
-        depends_on: []
-        failure_mode: "本地后端终点复用批准 Slice 的证据被错放行或误拒，或 Slice 合同仍接受前端子合同"
-      - id: check.backend-delivery-business-terminal
-        tier: slow # 基础终点场景与业务目标场景分别计时，保留单项 300s 上限。
-        resources: [ native-cli, python-jsonschema ]
-        run: "node --test --test-concurrency=1 tests/backend-delivery-business-terminal.test.mjs"
-        group: feature-assets
-        inputs_complete: true
-        input_patterns:
-          - ".template-spec/process/orchestration/entry/request-triage.yaml"
-          - ".template-spec/process/orchestration/domain/progression.yaml"
-          - ".template-spec/process/orchestration/workflow/work-units/work-unit\
-            .backend-delivery.yaml"
-          - "scripts/lib/backend-delivery.mjs"
-          - "tests/backend-delivery-terminal.test.mjs"
-          - "tests/backend-delivery-business-terminal.test.mjs"
-          - "scripts/fixtures/backend-delivery/local-terminal-fixture.mjs"
-          - "scripts/lib/slice-contract.mjs"
-          - "scripts/lib/backend-delivery-terminal.mjs"
-        depends_on: []
-        failure_mode: "默认与显式 business 目标未消费当前后端 Slice 证据，或改变目标后错误扩大批准"
-      - id: check.existing-ui-baseline-scenarios
-        resources: [ native-cli, "repo-root-evidence" ]
-        run: "node tests/scenarios/verify-existing-ui-baseline-scenarios.mjs"
-        group: feature-assets
-        inputs_complete: true
-        input_patterns:
-          - "tests/scenarios/verify-existing-ui-baseline-scenarios.mjs"
-          - "scripts/verify-existing-ui-baseline-scenarios"
-          - "scripts/lib/strategic-handoff.mjs"
-          - "scripts/lib/strategic-handoff-consumption.mjs"
-        depends_on: []
-        failure_mode: "既有 UI 基线的交接导出、验包与导入被错放行或误拒，或导入重新生成前端草案"
       - id: check.strategic-handoff-distribution
         run: "node .template-source/scripts/verify-strategic-handoff-distribution.mjs"
         group: strategic-handoff-package
-        resources: [native-cli, repo-root-evidence]
+        resources: [ native-cli, repo-root-evidence ]
         inputs_complete: true
         input_patterns:
           - ".template-source/scripts/verify-strategic-handoff-distribution.mjs"
           - ".template-source/scripts/lib/native-yss.mjs"
           - ".template-source/distribution/yss-cli-pin.json"
           - "scripts/fixtures/strategic-handoff/**"
-          - "tests/helpers/yss-instance.mjs"
           - "tests/helpers/fixtures/native-legacy.*"
           - "scripts/strategic-handoff"
           - "scripts/lib/strategic-handoff*.mjs"
@@ -1020,25 +686,12 @@ profiles:
         inputs_complete: true
         input_patterns:
           - "tests/scenarios/verify-strategic-handoff-package-scenarios.mjs"
-          - "tests/helpers/legacy-strategic-handoff-fixture.mjs"
           - "scripts/verify-strategic-handoff-package-scenarios"
         depends_on: []
         failure_mode: "战略交接包的导出、验包、导入仍生成或消费前端草案，或后端消费者草案缺失"
-      - id: check.progression-target-evidence
-        group: strategic-handoff-package
-        resources: [ native-cli, "repo-root-evidence" ]
-        inputs_complete: true
-        input_patterns:
-          - "tests/progression-target-evidence.test.mjs"
-          - "scripts/fixtures/strategic-handoff/fixture.mjs"
-          - "scripts/lib/strategic-handoff.mjs"
-          - "scripts/lib/strategic-handoff-io.mjs"
-        depends_on: []
-        failure_mode: "推进意图被当作冻结战略包的批准或交付证据"
       - id: check.role-independent-formal-current
         tier: slow # Backend 完整交付链在 fast 延后，release 保留。
-        run: "node --test --test-concurrency=1
-          scripts/fixtures/role-independent-draft/worker-chain.test.mjs"
+        run: "node --test --test-concurrency=1 scripts/fixtures/role-independent-draft/worker-chain.test.mjs"
         group: implementation
         resources: [ native-cli, "repo-root-evidence" ]
         inputs_complete: true
@@ -1048,10 +701,8 @@ profiles:
           - ".template-source/tooling/node/test/lifecycle-progression.test.mjs"
           - "scripts/fixtures/existing-backend/fixture.mjs"
           - "scripts/fixtures/role-independent-draft/**"
-          - ".agents/skills/yss-stage-decision/references/domain-strategy.schem\
-            a.json"
-          - ".agents/skills/yss-stage-decision/references/stage-decision-packag\
-            e.schema.json"
+          - ".agents/skills/yss-stage-decision/references/domain-strategy.schema.json"
+          - ".agents/skills/yss-stage-decision/references/stage-decision-package.schema.json"
           - "scripts/lib/task-package.mjs"
           - "scripts/lib/review-package.mjs"
           - "scripts/lib/lifecycle-controls.mjs"
@@ -1062,6 +713,78 @@ profiles:
           - "scripts/lib/slice-contract-preparation.mjs"
           - ".template-spec/process/schemas/**"
           - ".template-spec/process/orchestration/**"
+          - .agents/skills/yss-ddd-scaffold-generator/scripts/first-slice-compatibility.test.mjs
+          - .agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs
+          - .template-source/scripts/diagnose-python-schema.mjs
+          - .template-source/scripts/lib/schema-diagnostic-fixture.mjs
+          - .template-source/tooling/node/test/approval-current.test.mjs
+          - .template-source/tooling/node/test/decision-continuation.test.mjs
+          - .template-source/tooling/node/test/plugin-terminal.test.mjs
+          - .template-source/tooling/node/test/review-capabilities.test.mjs
+          - .template-source/tooling/node/test/schema-diagnostic.test.mjs
+          - scripts/fixtures/backend-delivery/backend-profile-terminal-fixture.mjs
+          - scripts/fixtures/backend-delivery/backend-profile-terminal-scenarios.mjs
+          - scripts/fixtures/backend-delivery/local-terminal-fixture.mjs
+          - scripts/fixtures/backend-scaffold/attach-design-prerequisites.mjs
+          - scripts/fixtures/backend-scaffold/design-prerequisites.mjs
+          - scripts/fixtures/backend-standards/preflight.test.mjs
+          - scripts/fixtures/backend-standards/terminal-fixture.mjs
+          - scripts/fixtures/contract-efficiency/api-v2.test.mjs
+          - scripts/fixtures/contract-efficiency/distribution.test.mjs
+          - scripts/fixtures/contract-efficiency/security.test.mjs
+          - scripts/fixtures/contract-efficiency/views.test.mjs
+          - scripts/fixtures/contract-efficiency/worker.mjs
+          - scripts/fixtures/delivery-preflight/approved-execution-fixture.mjs
+          - scripts/fixtures/delivery-preflight/approved-execution.test.mjs
+          - scripts/fixtures/existing-ui-baseline/fixture.mjs
+          - scripts/fixtures/lifecycle-core/evidence.test.mjs
+          - scripts/fixtures/lifecycle-core/views.test.mjs
+          - scripts/fixtures/plan-review-control/build-fixture.mjs
+          - scripts/fixtures/plan-review-control/legacy-source-fixture.mjs
+          - scripts/fixtures/reading-views/instance.mjs
+          - scripts/fixtures/role-independent-draft/legacy-checkpoint-template.yaml
+          - scripts/fixtures/role-independent-draft/legacy-spec-policy.json
+          - scripts/fixtures/slice-contract-v3/cross-repo-fixture.mjs
+          - scripts/fixtures/slice-contract-v3/measure.mjs
+          - scripts/fixtures/slice-contract-v3/pilot-fixture.mjs
+          - scripts/fixtures/slice-contract-v3/round2.test.mjs
+          - scripts/fixtures/spec-baseline/fixture.mjs
+          - scripts/fixtures/spec-baseline/local-implementation-fixture.mjs
+          - scripts/fixtures/strategic-handoff/fixture.mjs
+          - scripts/fixtures/user-decision/plan-fixture.mjs
+          - scripts/lib/testing/legacy-spec-policy.mjs
+          - tests/artifact-analysis.test.mjs
+          - tests/backend-delivery-business-terminal.test.mjs
+          - tests/backend-delivery-terminal.test.mjs
+          - tests/business-ticket-native-report.test.mjs
+          - tests/checkpoint-boundary.test.mjs
+          - tests/helpers/fixtures/native-legacy.json.gz
+          - tests/helpers/fixtures/native-legacy.provenance.json
+          - tests/helpers/legacy-strategic-handoff-fixture.mjs
+          - tests/helpers/yss-instance.mjs
+          - tests/progression-target-evidence.test.mjs
+          - tests/scenarios/verify-delivery-preflight-scenarios.mjs
+          - tests/scenarios/verify-digital-human-roles-scenarios.mjs
+          - tests/scenarios/verify-existing-ui-baseline-scenarios.mjs
+          - tests/scenarios/verify-lifecycle-transition-scenarios.mjs
+          - tests/scenarios/verify-matt-yss-integration-scenarios.mjs
+          - tests/scenarios/verify-openapi-draft-validation-scenarios.mjs
+          - tests/scenarios/verify-plan-spec-entry-scenarios.mjs
+          - tests/scenarios/verify-scaffold-architecture-decision-scenarios.mjs
+          - tests/scenarios/verify-user-decision-scenarios.mjs
+          - .template-source/tooling/node/test/design-preview-browser.mjs
+          - scripts/lib/profile-tree.mjs
+          - profiles/**
+          - .template-source/scripts/diagnose-python-schema.md
+          - scripts/verify-delivery-preflight-scenarios
+          - scripts/verify-digital-human-roles-scenarios
+          - scripts/verify-existing-ui-baseline-scenarios
+          - scripts/verify-lifecycle-transition-scenarios
+          - scripts/verify-matt-yss-integration-scenarios
+          - scripts/verify-openapi-draft-validation-scenarios
+          - scripts/verify-plan-spec-entry-scenarios
+          - scripts/verify-scaffold-architecture-decision-scenarios
+          - scripts/verify-user-decision-scenarios
         depends_on: []
         failure_mode: "Backend 实际安装、连续准备、适用自检、原始用户决定或当前实现证据链未闭合"
       - id: check.validation-native-transport
@@ -1098,8 +821,7 @@ profiles:
         failure_mode: "合同审查准备放过过期的阅读视图、前后资产身份冲突，或把原决定当成已批准"
       - id: check.plan-review-control-unit
         tier: slow # Backend 四项事务单独实测 252s；并发运行曾超过 300s。
-        run: "node --test
-          .template-source/tooling/node/test/plan-review-control.test.mjs"
+        run: "node --test .template-source/tooling/node/test/plan-review-control.test.mjs"
         group: feature-assets
         resources: [ native-cli, python-jsonschema ]
         timeout_ms: 1800000
@@ -1112,13 +834,20 @@ profiles:
           - "scripts/lib/work-layout.mjs"
           - "scripts/fixtures/plan-review-control/**"
           - "scripts/fixtures/role-independent-draft/installed-fixture.mjs"
-          - "scripts/fixtures/role-independent-draft/professional-plan-fixture.\
-            mjs"
+          - "scripts/fixtures/role-independent-draft/professional-plan-fixture.mjs"
+          - .template-source/tooling/node/test/review-capabilities.test.mjs
+          - scripts/fixtures/user-decision/plan-fixture.mjs
+          - tests/helpers/yss-instance.mjs
+          - tests/helpers/fixtures/native-legacy.json.gz
+          - tests/helpers/fixtures/native-legacy.provenance.json
+          - scripts/fixtures/spec-baseline/fixture.mjs
+          - .template-source/tooling/node/test/design-preview-browser.mjs
+          - scripts/lib/profile-tree.mjs
+          - profiles/**
         depends_on: []
         failure_mode: "Plan 审查周期的绑定、派发或完成校验放过未绑定的证据"
       - id: check.profile-tree
-        run: "node --test tests/profile-tree.test.mjs
-          tests/advance-maintenance-root.test.mjs"
+        run: "node --test tests/profile-tree.test.mjs tests/advance-maintenance-root.test.mjs"
         group: hygiene
         inputs_complete: true
         input_patterns:
@@ -1130,10 +859,10 @@ profiles:
           - "tests/advance-maintenance-root.test.mjs"
           - "profiles/**"
         depends_on: []
-        failure_mode: "Profile 的组合目录没有按「内核 < _specialist < Profile
-          覆盖层」取值、技能投影复活、锁或注册表仍依赖投影，或 checkpoint 仍接受已不存在的专职仓 --root"
+        failure_mode: "Profile 的组合目录没有按「内核 < _specialist < Profile 覆盖层」取值、技能投影复活、锁或注册表仍依赖投影，或 checkpoint 仍接受已不存在的专职仓 --root"
       - id: check.workbuddy-skills
-        run: "node --test .template-source/tooling/node/test/workbuddy-projection.test.mjs tests/workbuddy-entry.test.mjs tests/skill-sync-efficiency.test.mjs .template-source/tooling/node/test/skill-discovery.test.mjs"
+        run: "node --test .template-source/tooling/node/test/workbuddy-projection.test.mjs tests/workbuddy-entry.test.mjs
+          tests/skill-sync-efficiency.test.mjs .template-source/tooling/node/test/skill-discovery.test.mjs"
         group: skills
         inputs_complete: true
         input_patterns:
@@ -1166,8 +895,7 @@ profiles:
         depends_on: []
         failure_mode: "WorkBuddy 普通投影缺失、冲突覆盖、Profile 或受管元数据与锁不一致"
       - id: check.skill-supply-chain-unit
-        run: "node --test
-          .template-source/tooling/node/test/skill-supply-chain.test.mjs"
+        run: "node --test .template-source/tooling/node/test/skill-supply-chain.test.mjs"
         group: skills
         inputs_complete: true
         input_patterns:
@@ -1186,8 +914,12 @@ profiles:
         input_patterns:
           - "scripts/lib/api-contract-decision.mjs"
           - "scripts/lib/openapi-draft-validation.mjs"
-          - "scripts/fixtures/contract-efficiency/api-v2.test.mjs"
           - "tests/api-contract-decision.test.mjs"
+          - scripts/verify-openapi-draft-validation-record
+          - scripts/verify-openapi-draft-validation-scenarios
+          - tests/scenarios/verify-openapi-draft-validation-scenarios.mjs
+          - .template-spec/process/schemas/openapi-draft-validation-record.schema.json
+          - scripts/fixtures/contract-efficiency/api-v2.test.mjs
         depends_on: []
         failure_mode: "API 决定接受缺失原生能力，丢失 Go 读取输入的漂移观察，或破坏 v1/v2 校验与迁移"
       - id: check.profile-distribution
@@ -1222,18 +954,15 @@ profiles:
           - ".template-source/scripts/prepare-profile-skills.mjs"
           - ".template-source/scripts/lib/profile-skills-preparation.mjs"
           - ".template-source/tooling/node/test/profile-skill-sync.test.mjs"
-          - ".template-source/tooling/node/test/profile-skills-preparation.test\
-            .mjs"
-          - ".template-source/tooling/node/test/profile-skills-standalone.test.\
-            mjs"
+          - ".template-source/tooling/node/test/profile-skills-preparation.test.mjs"
+          - ".template-source/tooling/node/test/profile-skills-standalone.test.mjs"
           - ".template-source/distribution/strategic-handoff-tools.lock.json"
           - ".template-source/distribution/profile-variants.json"
           - ".agents/skills/.strategic-design-skills-manifest.json"
           - ".template-source/agents/strategic-design-skills-integration.md"
           - "tests/fixtures/specialist-source-fixtures.py"
         depends_on: []
-        failure_mode: "backend / design 实例分发了仅模板源脚本，使用后缀规则批量移除旧实例已登记的 Skill 文件，Profile
-          子模块或同步机制复活，或 profiles/ 覆盖层缺少分发清单"
+        failure_mode: "backend / design 实例分发了仅模板源脚本，使用后缀规则批量移除旧实例已登记的 Skill 文件，Profile 子模块或同步机制复活，或 profiles/ 覆盖层缺少分发清单"
       - id: check.template-wiki-untracked
         run: "node --test tests/template-wiki-untracked.test.mjs"
         group: hygiene
@@ -1347,8 +1076,7 @@ profiles:
           - ".codex/settings.local.json"
           - ".template-source/distribution/bundle-profile.json"
         depends_on: []
-        failure_mode: "Stop hook 对相关路径漏检、对无关路径误检或误阻断、阻断协议与 Claude Code / Codex 不一致，或
-          hook 文件进入实例分发"
+        failure_mode: "Stop hook 对相关路径漏检、对无关路径误检或误阻断、阻断协议与 Claude Code / Codex 不一致，或 hook 文件进入实例分发"
       - id: check.edit-hook
         run: "node --test tests/edit-hook.test.mjs"
         group: feature-assets
@@ -1381,8 +1109,8 @@ profiles:
           - "scripts/fixtures/contract-efficiency/distribution-smoke.mjs"
           - ".template-source/distribution/bundle-profile.json"
         depends_on: []
-        failure_mode: "Claude Code 入口复制了 AGENTS.md 的内容、.claude/skills 投影缺失或与 canonical
-          不一致、.codex/.cursor/.pi 投影复活、注册表与锁的 claude 运行时不一致，或 hook 设置进入实例分发"
+        failure_mode: "Claude Code 入口复制了 AGENTS.md 的内容、.claude/skills 投影缺失或与 canonical 不一致、.codex/.cursor/.pi 投影复活、注册表与锁的 claude
+          运行时不一致，或 hook 设置进入实例分发"
       - id: check.explicit-invocation
         run: "node --test tests/explicit-invocation.test.mjs"
         group: feature-assets
@@ -1391,8 +1119,7 @@ profiles:
           - ".template-spec/agents/yss-skill-registry.yaml"
           - ".template-spec/process/orchestration/**"
           - ".template-spec/process/orchestration-contract.yaml"
-          - ".agents/skills/yss-product-lifecycle/references/orchestration-cont\
-            ract.yaml"
+          - ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml"
           - "scripts/lib/skill-registry.mjs"
           - "scripts/lib/skill-retirement-contract.mjs"
           - "scripts/lib/skill-retirement-projection.mjs"
@@ -1400,8 +1127,7 @@ profiles:
         depends_on: []
         failure_mode: "被生命周期编排器路由或合同声明为模型调用的技能被设为显式，或显式集合被无意改动"
       - id: check.process-glossary
-        run: "node --test tests/process-glossary.test.mjs
-          tests/digital-human-roles-docs.test.mjs"
+        run: "node --test tests/process-glossary.test.mjs tests/digital-human-roles-docs.test.mjs"
         group: feature-assets
         inputs_complete: true
         input_patterns:
@@ -1420,9 +1146,7 @@ profiles:
           - "tests/process-glossary.test.mjs"
           - "tests/digital-human-roles-docs.test.mjs"
         depends_on: []
-        failure_mode: "流程术语回流到根
-          CONTEXT.md、术语表违反英文标识或重复规则、入口链接断开、运行时平台细节混入流程术语，常驻读取超过预算，或角色说明 /
-          术语表与数字人角色注册表漂移"
+        failure_mode: "流程术语回流到根 CONTEXT.md、术语表违反英文标识或重复规则、入口链接断开、运行时平台细节混入流程术语，常驻读取超过预算，或角色说明 / 术语表与数字人角色注册表漂移"
       - id: check.design-prototype-animation
         run: "node --test tests/design-prototype-animation.test.mjs"
         group: feature-assets
@@ -1440,7 +1164,8 @@ profiles:
         depends_on: []
         failure_mode: "原型声明的动画依赖或使用指南无法生成组件所需的 CSS 动画"
       - id: check.initialization-reference-boundaries
-        run: "node --test tests/spec-initial-entry.test.mjs tests/backend-decision-distribution.test.mjs tests/backend-handoff-reference.test.mjs tests/skills-reference-imports.test.mjs"
+        run: "node --test tests/spec-initial-entry.test.mjs tests/backend-decision-distribution.test.mjs
+          tests/backend-handoff-reference.test.mjs tests/skills-reference-imports.test.mjs"
         group: feature-assets
         inputs_complete: true
         input_patterns:
@@ -1530,10 +1255,8 @@ profiles:
           - ".template-spec/user-guide/用户手册.md"
           - ".template-spec/api/templates/openapi-freeze-record-template.md"
           - "profiles/_specialist/.template-spec/agents/triage-labels.md"
-          - "profiles/_specialist/.template-spec/process/templates/stage-checkp\
-            oint-template.md"
-          - "profiles/backend/.template-spec/process/orchestration/entry/execut\
-            ion.yaml"
+          - "profiles/_specialist/.template-spec/process/templates/stage-checkpoint-template.md"
+          - "profiles/backend/.template-spec/process/orchestration/entry/execution.yaml"
           - ".agents/skills/yss-product-lifecycle/references/orchestration.md"
           - ".agents/skills/yss-product-lifecycle/references/user-decisions.md"
           - ".agents/skills/yss-product-lifecycle/references/state-model.md"
@@ -1541,8 +1264,7 @@ profiles:
           - ".agents/skills/triage/SKILL.md"
           - ".agents/skills/i-have-adhd/SKILL.md"
           - ".agents/skills/yss-implementation-contract-compiler/SKILL.md"
-          - ".agents/skills/yss-implementation-contract-compiler/references/sli\
-            ce-implementation-contract.md"
+          - ".agents/skills/yss-implementation-contract-compiler/references/slice-implementation-contract.md"
           - "scripts/lib/business-ticket-lifecycle.mjs"
           - "scripts/lib/profile-distribution.mjs"
           - "scripts/lib/lifecycle-registry.mjs"
@@ -1550,8 +1272,7 @@ profiles:
         depends_on: []
         failure_mode: "Spec 分发重新要求数字人多角色会签、引用未分发的历史角色表，或在移除会签措辞时误删门禁批准记录证据"
       - id: check.instance-metadata
-        run: "node --test --test-concurrency=1 tests/instance-metadata.test.mjs
-          tests/native-instance-drift.test.mjs"
+        run: "node --test --test-concurrency=1 tests/instance-metadata.test.mjs tests/native-instance-drift.test.mjs"
         resources: [ native-cli ]
         group: drift-identity
         inputs_complete: true
@@ -1601,8 +1322,8 @@ profiles:
           - "AGENTS.md"
           - "CONTEXT.md"
         depends_on: []
-        failure_mode: "度量口径（管道提交占比、daily 起步必读、隐式技能 description
-          字符数、常驻上下文）计算错误，阶段基线与复测不可比，当前注册投影漏计或将未知当零，或上下文超出 context-budget.json 预算"
+        failure_mode: "度量口径（管道提交占比、daily 起步必读、隐式技能 description 字符数、常驻上下文）计算错误，阶段基线与复测不可比，当前注册投影漏计或将未知当零，或上下文超出
+          context-budget.json 预算"
       - id: check.release-template
         run: "node --test tests/release-template.test.mjs"
         group: feature-assets
@@ -1612,8 +1333,7 @@ profiles:
           - ".template-source/scripts/lib/release-template.mjs"
           - "tests/release-template.test.mjs"
         depends_on: []
-        failure_mode: "轻量模板发布在脏树、非 main、与 origin 不一致、tag 或版本冲突时仍放行，发行说明声称未执行的验证或平台验收，或
-          tag/Release 回读校验被跳过"
+        failure_mode: "轻量模板发布在脏树、非 main、与 origin 不一致、tag 或版本冲突时仍放行，发行说明声称未执行的验证或平台验收，或 tag/Release 回读校验被跳过"
       - id: check.ensure-native-yss
         run: "node --test tests/ensure-native-yss.test.mjs"
         group: feature-assets
@@ -1647,8 +1367,7 @@ profiles:
           - ".template-source/distribution/yss-cli-pin.json"
           - ".template-source/scripts/lib/native-yss.mjs"
         depends_on: []
-        failure_mode: "固定的 yss 二进制在当前平台上无法完成初始化、只读查询、整体回退或重复回退幂等（CI 在 ubuntu 上原生构建，同时是
-          Linux 运行证据）"
+        failure_mode: "固定的 yss 二进制在当前平台上无法完成初始化、只读查询、整体回退或重复回退幂等（CI 在 ubuntu 上原生构建，同时是 Linux 运行证据）"
       - id: check.delivery-metrics
         run: "node --test tests/delivery-metrics.test.mjs"
         group: feature-assets
@@ -1705,8 +1424,7 @@ profiles:
         inputs_complete: true
         input_patterns:
           - ".template-source/process/maintenance-intensity*.yaml"
-          - ".template-source/process/templates/maintenance-checkpoint-template\
-            .yaml"
+          - ".template-source/process/templates/maintenance-checkpoint-template.yaml"
           - "scripts/lib/maintenance-intensity.mjs"
           - "scripts/verify-maintenance-checkpoint"
           - "scripts/verify-maintenance-intensity-scenarios"
@@ -1746,12 +1464,8 @@ profiles:
         failure_mode: "当前来源缺失、重复或倒序标记被历史兼容路径静默接受"
       - id: "check.backend-scaffold-direct-generation"
         tier: slow # cbe04769 发布差异检查实测 121s；fast 延后，release 保留。
-        run: "node --test
-          .agents/skills/yss-ddd-scaffold-generator/scripts/standalone.test.mjs
-          .agents/skills/yss-ddd-scaffold-generator/scripts/scaffold-generator.\
-          test.mjs
-          .agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-ge\
-          nerator.test.mjs"
+        run: "node --test .agents/skills/yss-ddd-scaffold-generator/scripts/standalone.test.mjs
+          .agents/skills/yss-ddd-scaffold-generator/scripts/scaffold-generator.test.mjs"
         group: "implementation"
         resources: [ native-cli ]
         inputs_complete: true
@@ -1763,11 +1477,12 @@ profiles:
           - ".codex/skills/yss-ddd-scaffold-generator/assets/**"
           - ".agents/skills/yss-ddd-scaffold-generator/scripts/**"
           - ".agents/skills/yss-layered-mvc-scaffold-generator/scripts/**"
+          - AGENTS.md
+          - .agents/skills/yss-layered-mvc-scaffold-generator/tests/scaffold-generator.test.mjs
         depends_on: []
         failure_mode: "MVC/DDD 无合同默认生成失败、参考工程遗漏或未纳入来源和所有权、显式合同错误回退、验证报告模式错误或目录保护失效"
       - id: check.backend-platform-mechanisms
-        run: "node --test scripts/fixtures/backend-scaffold/platform-scenarios.test.mjs
-          tests/scenarios/verify-scaffold-architecture-decision-scenarios.mjs"
+        run: "node --test scripts/fixtures/backend-scaffold/platform-scenarios.test.mjs"
         group: implementation
         resources: [ native-cli ]
         inputs_complete: true
@@ -1784,10 +1499,8 @@ profiles:
         failure_mode: "精确平台绑定、运行证据或退役架构决策接受错误；真实平台证据另按选定两个组合执行"
       - id: check.scaffold-contract-consumers
         tier: slow # 保留对 121s 生成检查的依赖；避免 fast 再次拉入慢前置。
-        run: "node --test
-          .agents/skills/yss-implementation-contract-compiler/tests/backend-pro\
-          files.test.mjs tests/legacy-backend-scaffold-audit.test.mjs
-          tests/yss-backend-skill-governance.test.mjs"
+        run: "node --test .agents/skills/yss-implementation-contract-compiler/tests/backend-profiles.test.mjs
+          tests/legacy-backend-scaffold-audit.test.mjs tests/yss-backend-skill-governance.test.mjs"
         group: implementation
         inputs_complete: true
         input_patterns:
@@ -1796,26 +1509,17 @@ profiles:
           - "scripts/lib/legacy-backend-scaffold-audit.mjs"
           - "scripts/lib/lifecycle-transition.mjs"
           - "scripts/lib/backend-platform.mjs"
-          - ".agents/skills/yss-implementation-contract-compiler/references/com\
-            piler-contract.yaml"
-          - ".agents/skills/yss-implementation-contract-compiler/tests/backend-\
-            profiles.test.mjs"
+          - ".agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml"
+          - ".agents/skills/yss-implementation-contract-compiler/tests/backend-profiles.test.mjs"
           - "tests/legacy-backend-scaffold-audit.test.mjs"
           - "tests/yss-backend-skill-governance.test.mjs"
+          - scripts/verify-scaffold-architecture-decisions
+          - scripts/verify-scaffold-architecture-decision-scenarios
+          - tests/scenarios/verify-scaffold-architecture-decision-scenarios.mjs
+          - scripts/fixtures/user-decision/build-fixture.mjs
+          - .template-spec/process/schemas/scaffold-architecture-decisions.schema.json
         depends_on: [ check.backend-scaffold-direct-generation ]
         failure_mode: "v5 前置或退役路由漂移，历史架构审计被误当新生成或恢复批准"
-      - id: "check.mvc-data-analysis-retirement"
-        run: "node --test --test-name-pattern='退役|历史'
-          .agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-ge\
-          nerator.test.mjs"
-        group: "implementation"
-        resources: [ native-cli ]
-        inputs_complete: true
-        input_patterns:
-          - "AGENTS.md"
-          - ".agents/skills/yss-layered-mvc-scaffold-generator/scripts/**"
-        depends_on: []
-        failure_mode: "退役数据分析入口仍创建目录、Git 或 skillUtils，历史 Schema 或只读审计失效"
       - id: "check.skill-projection-identity"
         inputs_complete: true
         input_patterns:
@@ -1870,8 +1574,7 @@ profiles:
           - "profiles/*/scripts/lib/lifecycle-context-query.mjs"
           - "profiles/*/scripts/lib/skill-supply-chain.mjs"
         depends_on: []
-        failure_mode: "根锁重新带回本地树哈希，没有运行时登记的实例被要求 --agent-runtime，读取方把没有 effectiveHash
-          的模板锁判成漂移，或对带 effectiveHash 的实例锁放过哈希不符、未登记的技能"
+        failure_mode: "根锁重新带回本地树哈希，没有运行时登记的实例被要求 --agent-runtime，读取方把没有 effectiveHash 的模板锁判成漂移，或对带 effectiveHash 的实例锁放过哈希不符、未登记的技能"
       - id: check.cca7321527c13629
         run: "node tests/scenarios/verify-lifecycle-context-query-scenarios.mjs"
         group: lifecycle
@@ -2076,31 +1779,6 @@ profiles:
           - "tests/plan-spec-template-contract.test.mjs"
         depends_on: []
         failure_mode: "Plan/Spec 必需业务内容或模板边界错误"
-      - id: "check.daily-checkpoint"
-        resources: [ "python-jsonschema", "native-cli" ]
-        run: "node --test tests/checkpoint-boundary.test.mjs"
-        group: "lifecycle"
-        inputs_complete: true
-        input_patterns:
-          - ".template-spec/process/orchestration/**"
-          - ".template-spec/process/orchestration-contract.yaml"
-          - ".agents/skills/yss-product-lifecycle/references/orchestration-cont\
-            ract.yaml"
-          - ".template-spec/process/schemas/lifecycle-checkpoint.schema.json"
-          - "scripts/verify-lifecycle-checkpoint"
-          - "scripts/lib/checkpoint-boundary.mjs"
-          - "tests/checkpoint-boundary.test.mjs"
-          - "tests/helpers/scenario-checks.mjs"
-          - ".template-spec/process/harness-process-tailoring.md"
-          - ".template-spec/process/lifecycle-progression.md"
-          - ".agents/skills/handoff/SKILL.md"
-          - ".agents/skills/yss-product-lifecycle/references/orchestration.md"
-          - ".agents/skills/yss-product-lifecycle/references/matt-yss-adapter.md"
-          - ".agents/skills/yss-product-lifecycle/references/progression-target\
-            .md"
-          - ".template-spec/process/orchestration-policy-consumers.md"
-        depends_on: []
-        failure_mode: "阶段 checkpoint 越界接受或编排合同错误"
       - id: "check.daily-selection"
         resources: [ "python-jsonschema" ]
         run: "node --test tests/verification-selection.test.mjs"
@@ -2181,8 +1859,7 @@ profiles:
           - ".template-source/scripts/lib/verification-execution-plan.mjs"
           - ".template-source/process/template-verification-profiles.yaml"
           - ".template-source/scripts/lib/verification-report-validator.mjs"
-          - ".template-source/process/schemas/template-verification-report.sche\
-            ma.json"
+          - ".template-source/process/schemas/template-verification-report.schema.json"
           - "tests/verification-report.test.mjs"
           - "tests/verification-selection.test.mjs"
           - "tests/verification-report-v2.test.mjs"
@@ -2204,8 +1881,7 @@ profiles:
           - ".template-source/scripts/lib/verification-execution-plan.mjs"
           - ".template-source/process/template-verification-profiles.yaml"
           - ".template-source/scripts/lib/verification-report-validator.mjs"
-          - ".template-source/process/schemas/template-verification-report.sche\
-            ma.json"
+          - ".template-source/process/schemas/template-verification-report.schema.json"
           - "tests/verification-report.test.mjs"
           - "tests/verification-report-v2.test.mjs"
         depends_on: []
@@ -2228,8 +1904,7 @@ profiles:
         failure_mode: "公开快检入口、范围或输出错误"
       - id: "check.daily-benchmark-syntax"
         run: "python3 -c 'import ast,pathlib;
-          ast.parse(pathlib.Path(\".template-source/scripts/benchmark-tooling.py\
-          \").read_text())'"
+          ast.parse(pathlib.Path(\".template-source/scripts/benchmark-tooling.py\").read_text())'"
         group: "candidate-integrity"
         inputs_complete: true
         input_patterns:
@@ -2304,8 +1979,7 @@ profiles:
           - "profiles/**"
           - ".template-spec/process/orchestration/**"
           - ".template-spec/process/orchestration-contract.yaml"
-          - ".agents/skills/yss-product-lifecycle/references/orchestration-cont\
-            ract.yaml"
+          - ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml"
           - ".agents/skills/yss-prototype-stage/tests/browser-smoke.mjs"
           - ".agents/skills/yss-prototype-stage/tests/compact-theme-browser.mjs"
           - ".agents/skills/yss-prototype-stage/tests/comparison-fixture.mjs"
@@ -2315,14 +1989,10 @@ profiles:
           - ".agents/skills/yss-prototype-stage/tests/work-layout-fixture.mjs"
           - ".agents/skills/yss-prototype-stage/tests/workbench-smoke.mjs"
           - ".agents/skills/yss-prototype-stage/tests/workspace.test.mjs"
-          - ".agents/skills/yss-stage-decision/tests/fixtures/invalid-stage-dec\
-            ision-blocker.yaml"
-          - ".agents/skills/yss-stage-decision/tests/fixtures/valid-stage-decis\
-            ion-package.yaml"
-          - ".agents/skills/yss-stage-decision/tests/fixtures/valid-supplier-do\
-            main.yaml"
-          - ".agents/skills/yss-tactical-design/tests/fixtures/valid-tactical-d\
-            esign.yaml"
+          - ".agents/skills/yss-stage-decision/tests/fixtures/invalid-stage-decision-blocker.yaml"
+          - ".agents/skills/yss-stage-decision/tests/fixtures/valid-stage-decision-package.yaml"
+          - ".agents/skills/yss-stage-decision/tests/fixtures/valid-supplier-domain.yaml"
+          - ".agents/skills/yss-tactical-design/tests/fixtures/valid-tactical-design.yaml"
           - ".template-source/cli-core/work-layout.mjs"
           - ".template-source/distribution/strategic-handoff-tools.lock.json"
           - ".template-source/process/work-layout-exceptions.json"
@@ -2331,22 +2001,16 @@ profiles:
           - ".template-source/scripts/run-lifecycle-cross-repo-pilot"
           - ".template-source/scripts/sync-native-work-layout.mjs"
           - ".template-source/tooling/node/test/plan-review-control.test.mjs"
-          - ".template-source/tooling/node/test/review-capabilities.test.mjs"
           - ".template-spec/agents/issue-tracker.md"
           - ".template-spec/process/work-layout.md"
-          - "scripts/fixtures/backend-scaffold/design-prerequisites.mjs"
           - "scripts/fixtures/business-tickets/business-tickets.test.mjs"
-          - "scripts/fixtures/contract-efficiency/api-v2.test.mjs"
-          - "scripts/fixtures/plan-review-control/build-fixture.mjs"
           - "scripts/fixtures/reading-views/bundle.test.mjs"
           - "scripts/fixtures/reading-views/fixture.mjs"
           - "scripts/fixtures/reading-views/reading.test.mjs"
-          - "scripts/fixtures/spec-baseline/fixture.mjs"
           - "scripts/fixtures/stage-tracking/tracking.test.mjs"
           - "scripts/fixtures/strategic-handoff/base-stage.json"
           - "scripts/fixtures/strategic-handoff/base-strategy.json"
           - "scripts/fixtures/structured-assets/assets.test.mjs"
-          - "scripts/fixtures/user-decision/plan-fixture.mjs"
           - "scripts/lib/plan-review-control.mjs"
           - "scripts/lib/review-package.mjs"
           - "scripts/lib/work-layout.mjs"
@@ -2362,16 +2026,12 @@ profiles:
           - "tests/scenarios/verify-digital-human-task-package-scenarios.mjs"
           - "scripts/verify-digital-human-task-package-scenarios"
           - "scripts/verify-subagent-task-package-scenarios"
-          - "tests/scenarios/verify-frontend-implementation-evidence-scenarios.\
-            mjs"
+          - "tests/scenarios/verify-frontend-implementation-evidence-scenarios.mjs"
           - "scripts/verify-frontend-implementation-evidence-scenarios"
           - "tests/scenarios/verify-lifecycle-operator-scenarios.mjs"
           - "scripts/verify-lifecycle-operator-scenarios"
-          - "tests/scenarios/verify-lifecycle-transition-scenarios.mjs"
           - "scripts/verify-lifecycle-transition-scenarios"
-          - "tests/scenarios/verify-openapi-draft-validation-scenarios.mjs"
           - "scripts/verify-openapi-draft-validation-scenarios"
-          - "tests/scenarios/verify-user-decision-scenarios.mjs"
           - "scripts/verify-user-decision-scenarios"
           - "tests/strategic-handoff-sealed-owner.test.mjs"
           - "tests/work-layout.test.mjs"
@@ -2431,11 +2091,6 @@ profiles:
           - ".template-spec/process/schemas/lifecycle-checkpoint.schema.json"
           - ".template-spec/process/templates/lifecycle-checkpoint-template.yaml"
           - ".template-spec/process/lifecycle-registry.yaml"
-          - "scripts/fixtures/user-decision/plan-fixture.mjs"
-          - "tests/helpers/yss-instance.mjs"
-          - "tests/helpers/fixtures/native-legacy.json.gz"
-          - "tests/helpers/fixtures/native-legacy.provenance.json"
-          - "scripts/fixtures/spec-baseline/fixture.mjs"
           - ".template-source/tooling/node/test/design-preview-browser.mjs"
           - "scripts/lib/profile-tree.mjs"
           - "profiles/**"
@@ -2450,32 +2105,31 @@ profiles:
           - "scripts/lib/business-tickets.mjs"
           - "scripts/fixtures/business-tickets/**"
           - "scripts/fixtures/strategic-handoff/base-*.json"
+          - scripts/analyze-artifacts
+          - scripts/lib/artifact-analysis.mjs
+          - tests/artifact-analysis.test.mjs
+          - scripts/lib/plan-spec-quality.mjs
+          - scripts/lib/plan-stage-coverage.mjs
+          - scripts/fixtures/existing-backend/fixture.mjs
+          - tests/business-ticket-native-report.test.mjs
+          - tests/helpers/yss-instance.mjs
+          - tests/helpers/fixtures/native-legacy.json.gz
+          - tests/helpers/fixtures/native-legacy.provenance.json
+          - scripts/fixtures/business-tickets/business-tickets.test.mjs
+          - scripts/fixtures/strategic-handoff/fixture.mjs
+          - scripts/lib/strategic-handoff.mjs
+          - scripts/lib/strategic-handoff-io.mjs
+          - scripts/vendor/yaml.mjs
+          - scripts/fixtures/spec-baseline/fixture.mjs
+          - scripts/fixtures/slice-contract-v3/pilot-fixture.mjs
+          - scripts/lib/native-evidence.mjs
+          - scripts/lib/native-context.mjs
+          - .template-source/distribution/yss-cli-pin.json
+          - scripts/fixtures/spec-baseline/local-implementation-fixture.mjs
+          - scripts/fixtures/spec-baseline/package.mjs
+          - scripts/fixtures/spec-baseline/scenarios.mjs
         depends_on: []
         failure_mode: "业务 Ticket 在默认根下引用或 formalize 失败"
-      - id: check.work-layout-api
-        run: "node --test scripts/fixtures/contract-efficiency/api-v2.test.mjs"
-        group: work-layout
-        resources: [ native-cli ]
-        inputs_complete: true
-        input_patterns:
-          - "scripts/fixtures/contract-efficiency/api-v2.test.mjs"
-          - "scripts/lib/api-contract-decision.mjs"
-          - "scripts/lib/openapi-draft-validation.mjs"
-          - "tests/api-contract-decision.test.mjs"
-        depends_on: []
-        failure_mode: "API 决策样例遗漏配置根或 Draft 绑定"
-      - id: check.work-layout-lifecycle-transition
-        run: "node tests/scenarios/verify-lifecycle-transition-scenarios.mjs"
-        group: work-layout
-        resources: [ native-cli ]
-        inputs_complete: true
-        input_patterns:
-          - "tests/scenarios/verify-lifecycle-transition-scenarios.mjs"
-          - "scripts/verify-lifecycle-transition-scenarios"
-          - "scripts/fixtures/user-decision/plan-fixture.mjs"
-          - "scripts/lib/lifecycle-readiness.mjs"
-        depends_on: []
-        failure_mode: "目录修正后对应生命周期或证据消费者接受错误引用或拒绝当前有效引用"
       - id: check.work-layout-lifecycle-operator
         run: "node tests/scenarios/verify-lifecycle-operator-scenarios.mjs"
         group: work-layout
@@ -2497,8 +2151,7 @@ profiles:
         depends_on: []
         failure_mode: "目录修正后对应生命周期或证据消费者接受错误引用或拒绝当前有效引用"
       - id: check.work-layout-design-fixtures
-        run: "node --test
-          .agents/skills/yss-stage-decision/tests/approval-records.test.mjs
+        run: "node --test .agents/skills/yss-stage-decision/tests/approval-records.test.mjs
           .agents/skills/yss-tactical-design/tests/run-scenarios.mjs"
         group: work-layout
         inputs_complete: true
@@ -2507,10 +2160,8 @@ profiles:
           - ".agents/skills/yss-stage-decision/scripts/**"
           - ".agents/skills/yss-stage-decision/SKILL.md"
           - ".agents/skills/yss-stage-decision/references/*contract.md"
-          - ".agents/skills/yss-stage-decision/references/domain-strategy.schem\
-            a.json"
-          - ".agents/skills/yss-stage-decision/references/stage-decision-packag\
-            e.schema.json"
+          - ".agents/skills/yss-stage-decision/references/domain-strategy.schema.json"
+          - ".agents/skills/yss-stage-decision/references/stage-decision-package.schema.json"
           - ".agents/skills/yss-tactical-design/tests/**"
         depends_on: []
         failure_mode: "默认工作包样例在阶段决策或战术设计中产生失效引用"
@@ -2657,7 +2308,8 @@ profiles:
         depends_on: []
         failure_mode: "验证策略静默删除 required checks、Gate 或 CI 守卫"
       - id: check.plugin-pr-entry
-        run: node --test .template-source/tooling/node/test/plugin-pr-entry.test.mjs .template-source/tooling/node/test/plugin-candidate-ci.test.mjs
+        run: node --test .template-source/tooling/node/test/plugin-pr-entry.test.mjs
+          .template-source/tooling/node/test/plugin-candidate-ci.test.mjs
         group: feature-assets
         inputs_complete: true
         input_patterns:
@@ -2670,9 +2322,10 @@ profiles:
         depends_on: []
         failure_mode: PR/MR 定位输入越界或被错误当作已验证
       - id: check.plugin-entry-migration
-        run: node .template-source/scripts/plugin-candidate.mjs run --tooling scripts/test-with-plugin-clis.mjs test/plugin-entry-migration.test.mjs test/plugin-project.test.mjs
+        run: node .template-source/scripts/plugin-candidate.mjs run --tooling scripts/test-with-plugin-clis.mjs
+          test/plugin-entry-migration.test.mjs test/plugin-project.test.mjs
         timeout_ms: 600000
-        resources: [native-cli, plugin-candidate]
+        resources: [ native-cli, plugin-candidate ]
         group: feature-assets
         inputs_complete: true
         input_patterns:
@@ -2685,9 +2338,11 @@ profiles:
         depends_on: []
         failure_mode: 原生入口无法透传或错误授权 PR/MR 定位
       - id: check.plugin-backend-profile
-        run: node .template-source/scripts/plugin-candidate.mjs run --test .template-source/tooling/node/test/backend-plugin-profile.test.mjs .template-source/tooling/node/test/plugin-build.test.mjs
+        run: node .template-source/scripts/plugin-candidate.mjs run --test
+          .template-source/tooling/node/test/backend-plugin-profile.test.mjs
+          .template-source/tooling/node/test/plugin-build.test.mjs
         timeout_ms: 600000
-        resources: [native-cli, plugin-candidate]
+        resources: [ native-cli, plugin-candidate ]
         group: feature-assets
         inputs_complete: true
         input_patterns:
@@ -2702,7 +2357,7 @@ profiles:
         run: node .template-source/scripts/plugin-candidate.mjs run --test --test-skip-pattern='当前主机真实公开打包'
           .template-source/plugins/yss-backend-delivery/tests/permissions.test.mjs
           .template-source/tooling/node/test/plugin-native-schema.test.mjs
-        resources: [native-cli, plugin-candidate]
+        resources: [ native-cli, plugin-candidate ]
         group: feature-assets
         inputs_complete: true
         input_patterns:
@@ -2716,14 +2371,13 @@ profiles:
         depends_on: []
         failure_mode: 已移除插件 Profile 仍被接受，或权限与固定可执行路径的支持边界回退
       - id: check.backend-governance-contract
-        run: node --test --test-concurrency=1 tests/backend-governance-contract.test.mjs
-          tests/backend-stage-routing.test.mjs scripts/fixtures/role-independent-draft/approval.test.mjs
-        resources: [native-cli]
+        run: node --test --test-concurrency=1 tests/backend-governance-contract.test.mjs tests/backend-stage-routing.test.mjs
+          scripts/fixtures/role-independent-draft/approval.test.mjs
+        resources: [ native-cli ]
         group: lifecycle
         inputs_complete: true
         input_patterns:
           - .template-source/tooling/node/test/approval-consumption.test.mjs
-          - .template-source/tooling/node/test/approval-current.test.mjs
           - .template-source/tooling/node/test/lifecycle-controls.test.mjs
           - .agents/skills/yss-stage-decision/references/*-v4.schema.json
           - .template-source/contracts/2026-10-21-stage-gates-*.md
@@ -2759,15 +2413,126 @@ profiles:
           - .template-spec/process/orchestration/domain/stage-gates.yaml
           - .template-spec/process/schemas/stage-result.schema.json
           - .template-spec/process/schemas/lifecycle-checkpoint-v2.schema.json
+          - .agents/skills/yss-ddd-scaffold-generator/scripts/first-slice-compatibility.test.mjs
+          - .agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs
+          - .template-source/scripts/diagnose-python-schema.mjs
+          - .template-source/scripts/lib/schema-diagnostic-fixture.mjs
+          - .template-source/tooling/node/test/approval-current.test.mjs
+          - .template-source/tooling/node/test/decision-continuation.test.mjs
+          - .template-source/tooling/node/test/plugin-terminal.test.mjs
+          - .template-source/tooling/node/test/review-capabilities.test.mjs
+          - .template-source/tooling/node/test/schema-diagnostic.test.mjs
+          - scripts/fixtures/backend-delivery/backend-profile-terminal-fixture.mjs
+          - scripts/fixtures/backend-delivery/backend-profile-terminal-scenarios.mjs
+          - scripts/fixtures/backend-delivery/local-terminal-fixture.mjs
+          - scripts/fixtures/backend-scaffold/attach-design-prerequisites.mjs
+          - scripts/fixtures/backend-scaffold/design-prerequisites.mjs
+          - scripts/fixtures/backend-standards/preflight.test.mjs
+          - scripts/fixtures/backend-standards/terminal-fixture.mjs
+          - scripts/fixtures/contract-efficiency/api-v2.test.mjs
+          - scripts/fixtures/contract-efficiency/distribution.test.mjs
+          - scripts/fixtures/contract-efficiency/security.test.mjs
+          - scripts/fixtures/contract-efficiency/views.test.mjs
+          - scripts/fixtures/contract-efficiency/worker.mjs
+          - scripts/fixtures/delivery-preflight/approved-execution-fixture.mjs
+          - scripts/fixtures/delivery-preflight/approved-execution.test.mjs
+          - scripts/fixtures/existing-ui-baseline/fixture.mjs
+          - scripts/fixtures/lifecycle-core/evidence.test.mjs
+          - scripts/fixtures/lifecycle-core/views.test.mjs
+          - scripts/fixtures/plan-review-control/build-fixture.mjs
+          - scripts/fixtures/plan-review-control/legacy-source-fixture.mjs
+          - scripts/fixtures/reading-views/instance.mjs
+          - scripts/fixtures/role-independent-draft/legacy-checkpoint-template.yaml
+          - scripts/fixtures/role-independent-draft/legacy-spec-policy.json
+          - scripts/fixtures/slice-contract-v3/cross-repo-fixture.mjs
+          - scripts/fixtures/slice-contract-v3/measure.mjs
+          - scripts/fixtures/slice-contract-v3/pilot-fixture.mjs
+          - scripts/fixtures/slice-contract-v3/round2.test.mjs
+          - scripts/fixtures/spec-baseline/fixture.mjs
+          - scripts/fixtures/spec-baseline/local-implementation-fixture.mjs
+          - scripts/fixtures/strategic-handoff/fixture.mjs
+          - scripts/fixtures/user-decision/plan-fixture.mjs
+          - scripts/lib/testing/legacy-spec-policy.mjs
+          - tests/artifact-analysis.test.mjs
+          - tests/backend-delivery-business-terminal.test.mjs
+          - tests/backend-delivery-terminal.test.mjs
+          - tests/business-ticket-native-report.test.mjs
+          - tests/checkpoint-boundary.test.mjs
+          - tests/helpers/fixtures/native-legacy.json.gz
+          - tests/helpers/fixtures/native-legacy.provenance.json
+          - tests/helpers/legacy-strategic-handoff-fixture.mjs
+          - tests/helpers/yss-instance.mjs
+          - tests/progression-target-evidence.test.mjs
+          - tests/scenarios/verify-delivery-preflight-scenarios.mjs
+          - tests/scenarios/verify-digital-human-roles-scenarios.mjs
+          - tests/scenarios/verify-existing-ui-baseline-scenarios.mjs
+          - tests/scenarios/verify-lifecycle-transition-scenarios.mjs
+          - tests/scenarios/verify-matt-yss-integration-scenarios.mjs
+          - tests/scenarios/verify-openapi-draft-validation-scenarios.mjs
+          - tests/scenarios/verify-plan-spec-entry-scenarios.mjs
+          - tests/scenarios/verify-scaffold-architecture-decision-scenarios.mjs
+          - tests/scenarios/verify-user-decision-scenarios.mjs
+          - .template-source/tooling/node/test/design-preview-browser.mjs
+          - scripts/lib/profile-tree.mjs
+          - profiles/**
+          - scripts/verify-user-decision-scenarios
+          - .template-spec/process/orchestration/entry/request-triage.yaml
+          - .template-spec/process/orchestration/domain/progression.yaml
+          - .template-spec/process/orchestration/workflow/work-units/work-unit.backend-delivery.yaml
+          - scripts/lib/backend-delivery.mjs
+          - scripts/lib/slice-contract.mjs
+          - scripts/lib/backend-delivery-terminal.mjs
+          - scripts/verify-existing-ui-baseline-scenarios
+          - scripts/lib/strategic-handoff.mjs
+          - scripts/lib/strategic-handoff-consumption.mjs
+          - .template-spec/process/orchestration/**
+          - .template-spec/process/orchestration-contract.yaml
+          - .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml
+          - .template-spec/process/schemas/lifecycle-checkpoint.schema.json
+          - scripts/verify-lifecycle-checkpoint
+          - scripts/lib/checkpoint-boundary.mjs
+          - tests/helpers/scenario-checks.mjs
+          - .template-spec/process/harness-process-tailoring.md
+          - .template-spec/process/lifecycle-progression.md
+          - .agents/skills/handoff/SKILL.md
+          - .agents/skills/yss-product-lifecycle/references/orchestration.md
+          - .agents/skills/yss-product-lifecycle/references/matt-yss-adapter.md
+          - .agents/skills/yss-product-lifecycle/references/progression-target.md
+          - .template-spec/process/orchestration-policy-consumers.md
+          - scripts/verify-lifecycle-transition-scenarios
+          - scripts/lib/lifecycle-readiness.mjs
+          - .template-source/scripts/diagnose-python-schema.md
+          - scripts/verify-delivery-preflight-scenarios
+          - scripts/verify-digital-human-roles-scenarios
+          - scripts/verify-matt-yss-integration-scenarios
+          - scripts/verify-openapi-draft-validation-scenarios
+          - scripts/verify-plan-spec-entry-scenarios
+          - scripts/verify-scaffold-architecture-decision-scenarios
         depends_on: []
         failure_mode: 当前 Backend 治理合同、阶段路由或共享校验器的拒绝保护失效
       - id: check.spec-stage-installed
         run: node --test --test-concurrency=1 scripts/fixtures/role-independent-draft/spec-v3-installed.test.mjs
-        resources: [native-cli]
+        resources: [ native-cli ]
         group: lifecycle
         inputs_complete: true
         timeout_ms: 600000
-        input_patterns: ["scripts/fixtures/role-independent-draft/spec-v3-installed.test.mjs", "scripts/fixtures/role-independent-draft/stage-gates-installed.test.mjs", "scripts/fixtures/role-independent-draft/stage-gates-worker.test.mjs", "scripts/fixtures/role-independent-draft/installed-fixture.mjs", ".template-source/distribution/bundle-profile.json", ".template-source/distribution/yss-cli-pin.json"]
+        input_patterns:
+          [
+            "scripts/fixtures/role-independent-draft/spec-v3-installed.test.mjs",
+            "scripts/fixtures/role-independent-draft/stage-gates-installed.test.mjs",
+            "scripts/fixtures/role-independent-draft/stage-gates-worker.test.mjs",
+            "scripts/fixtures/role-independent-draft/installed-fixture.mjs",
+            ".template-source/distribution/bundle-profile.json",
+            ".template-source/distribution/yss-cli-pin.json",
+            scripts/verify-plan-spec-entry-scenarios,
+            scripts/verify-plan-spec-entry,
+            tests/scenarios/verify-plan-spec-entry-scenarios.mjs,
+            scripts/lib/plan-spec-entry.mjs,
+            scripts/fixtures/user-decision/plan-fixture.mjs,
+            tests/helpers/yss-instance.mjs,
+            tests/helpers/fixtures/native-legacy.json.gz,
+            tests/helpers/fixtures/native-legacy.provenance.json
+          ]
         depends_on: []
         failure_mode: 最新 CLI 的新 Spec 安装身份、旧阶段拒绝或设计技能按需补装失效
   release:
@@ -2871,7 +2636,6 @@ required_files:
   - .agents/skills/yss-layered-mvc-scaffold-generator/scripts/generate_scaffold.mjs
   - .agents/skills/yss-layered-mvc-scaffold-generator/scripts/run_scaffold_verification.mjs
   - .agents/skills/yss-layered-mvc-scaffold-generator/scripts/generate_and_verify_scaffold.mjs
-  - .agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs
   - .agents/skills/yss-prototype-stage/references/product-design-adapter.md
   - .agents/skills/yss-prototype-stage/references/prototype-profile-routing.md
   - .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs
@@ -2933,7 +2697,6 @@ syntax_files:
   - scripts/lib/native-user-decision.mjs
   - scripts/lib/user-decision-core.mjs
   - scripts/verify-user-decision
-  - tests/scenarios/verify-user-decision-scenarios.mjs
   - scripts/sync-skills
   - scripts/update-skill-lock
   - .template-source/scripts/manage-profile-skills.mjs
@@ -2956,7 +2719,6 @@ syntax_files:
   - tests/scenarios/verify-context-reconciliation-scenarios.mjs
   - tests/scenarios/verify-plan-requirements-context-scenarios.mjs
   - scripts/verify-scaffold-architecture-decisions
-  - tests/scenarios/verify-scaffold-architecture-decision-scenarios.mjs
   - scripts/lib/task-package-schema.mjs
   - scripts/lib/json-schema.mjs
   - scripts/lib/task-package.mjs
@@ -2977,8 +2739,6 @@ syntax_files:
   - scripts/lib/legacy-backend-scaffold-audit.mjs
   - tests/legacy-backend-scaffold-audit.test.mjs
   - scripts/audit-legacy-backend-scaffold
-  - scripts/fixtures/backend-scaffold/design-prerequisites.mjs
-  - scripts/fixtures/backend-scaffold/attach-design-prerequisites.mjs
   - scripts/generate-yss-skill-boundaries
   - scripts/audit-yss-backend-skills
   - scripts/verify-retired-skill-ids
@@ -2986,12 +2746,9 @@ syntax_files:
   - scripts/verify-yss-dto-openapi-profile
   - tests/scenarios/verify-yss-dto-openapi-scenarios.mjs
   - scripts/verify-digital-human-roles
-  - tests/scenarios/verify-digital-human-roles-scenarios.mjs
   - scripts/verify-approval-record
   - scripts/lib/lifecycle-transition.mjs
   - tests/scenarios/verify-lifecycle-scenarios.mjs
-  - tests/scenarios/verify-lifecycle-transition-scenarios.mjs
-  - tests/scenarios/verify-matt-yss-integration-scenarios.mjs
   - tests/scenarios/verify-prototype-backend-scaffold-scenarios.mjs
   - tests/scenarios/verify-yss-implementation-contract-compiler-scenarios.mjs
   - tests/scenarios/verify-yss-prototype-contract-scenarios.mjs
@@ -3049,9 +2806,9 @@ routing:
       - .template-source/scripts/lib/committed-plugin-commands.mjs
       - .template-source/scripts/committed-plugin-run.mjs
       - tests/committed-plugin-source.test.mjs
-    groups: [candidate-integrity]
-  - patterns: [".template-source/process/trusted-verification-releases.json"]
-    groups: [candidate-integrity]
+    groups: [ candidate-integrity ]
+  - patterns: [ ".template-source/process/trusted-verification-releases.json" ]
+    groups: [ candidate-integrity ]
   - patterns:
       - scripts/verify-context-contract-scenarios
       - scripts/verify-business-language-scenarios
@@ -3059,21 +2816,45 @@ routing:
       - scripts/verify-script-performance-scenarios
       - scripts/verify-plan-requirements-context-scenarios
       - scripts/verify-lifecycle-scenarios
-    groups: [lifecycle]
-  - patterns: ["scripts/lib/daily-test-evidence.mjs", "tests/daily-test-evidence.test.mjs", "scripts/fixtures/role-independent-draft/daily.test.mjs"]
-    groups: [feature-assets]
-  - patterns: [".template-source/scripts/manage-profile-skills.mjs"]
-    groups: [skills]
-  - patterns: [".gitattributes", ".codebuddy/skills/**", ".workbuddy/skills/**", "tests/workbuddy-entry.test.mjs", ".template-source/tooling/node/test/workbuddy-projection.test.mjs"]
-    groups: [skills]
+    groups: [ lifecycle ]
+  - patterns:
+      [
+        "scripts/lib/daily-test-evidence.mjs",
+        "tests/daily-test-evidence.test.mjs",
+        "scripts/fixtures/role-independent-draft/daily.test.mjs"
+      ]
+    groups: [ feature-assets ]
+  - patterns: [ ".template-source/scripts/manage-profile-skills.mjs" ]
+    groups: [ skills ]
+  - patterns:
+      [
+        ".gitattributes",
+        ".codebuddy/skills/**",
+        ".workbuddy/skills/**",
+        "tests/workbuddy-entry.test.mjs",
+        ".template-source/tooling/node/test/workbuddy-projection.test.mjs"
+      ]
+    groups: [ skills ]
   - patterns:
       - .template-source/scripts/replay-lifecycle-triage
       - tests/lifecycle-triage-replay.test.mjs
-    groups: [lifecycle]
-  - patterns: ["tests/stage-gates-contract.test.mjs", "tests/stage-result-native.test.mjs", "tests/backend-governance-contract.test.mjs", "tests/backend-stage-routing.test.mjs"]
-    groups: [lifecycle]
+    groups: [ lifecycle ]
+  - patterns:
+      [
+        "tests/stage-gates-contract.test.mjs",
+        "tests/stage-result-native.test.mjs",
+        "tests/backend-governance-contract.test.mjs",
+        "tests/backend-stage-routing.test.mjs"
+      ]
+    groups: [ lifecycle ]
 
-  - patterns: [ "tests/spec-initial-entry.test.mjs", "tests/backend-decision-distribution.test.mjs", "tests/backend-handoff-reference.test.mjs", "tests/skills-reference-imports.test.mjs" ]
+  - patterns:
+      [
+        "tests/spec-initial-entry.test.mjs",
+        "tests/backend-decision-distribution.test.mjs",
+        "tests/backend-handoff-reference.test.mjs",
+        "tests/skills-reference-imports.test.mjs"
+      ]
     groups: [ feature-assets ]
   - patterns: [ "scripts/fixtures/initialization-reference-closure/verify-candidate.mjs" ]
     groups: [ candidate-integrity ]
@@ -3695,19 +3476,22 @@ routing:
       - candidate-integrity
   - patterns: [ "tests/matt-integration-fixture.test.mjs", ".template-source/scripts/matt-integration-scenarios.json" ]
     groups: [ "skills" ]
-  - patterns: [ "tests/public-skill-export.test.mjs", "tests/retired-skill-ids.test.mjs", "tests/fixtures/retired-skill-ids-v1.json", "tests/skill-retirement-contract.test.mjs", "tests/spec-standalone-fixture.test.mjs", "tests/fixtures/spec-standalone/**" ]
+  - patterns:
+      [
+        "tests/public-skill-export.test.mjs",
+        "tests/retired-skill-ids.test.mjs",
+        "tests/fixtures/retired-skill-ids-v1.json",
+        "tests/skill-retirement-contract.test.mjs",
+        "tests/spec-standalone-fixture.test.mjs",
+        "tests/fixtures/spec-standalone/**"
+      ]
     groups: [ "skills" ]
   # 已移除的 Superpowers 输出与退役维护文档测试只保留删除 diff 的路由墓碑，不恢复内容检查
   - patterns:
       - "docs/superpowers/**"
       - "tests/maintenance-docs.test.mjs"
     groups: [ "hygiene" ]
-  - patterns:
-      [
-        "tests/profile-consistency.test.mjs",
-        "tests/lib-coverage-ledger.test.mjs",
-        "tests/distribution-hygiene.test.mjs"
-      ]
+  - patterns: [ "tests/profile-consistency.test.mjs", "tests/lib-coverage-ledger.test.mjs", "tests/distribution-hygiene.test.mjs" ]
     groups: [ "hygiene" ]
   - patterns: [ "tests/verification-policy-baseline.test.mjs" ]
     groups: [ "candidate-integrity" ]
@@ -3721,25 +3505,20 @@ groups:
         resources: [ native-cli ]
   drift-identity:
     commands:
-      - run: node --test tests/content-identity.test.mjs tests/drift-report.test.mjs
-          tests/maintenance-iteration.test.mjs
+      - run: node --test tests/content-identity.test.mjs tests/drift-report.test.mjs tests/maintenance-iteration.test.mjs
         when: template-source
         id: check.drift-identity
-      - run: "node --test --test-name-pattern='^(按需安装两个后端脚手架|公开 Bundle 导出|已移除前端
-          Profile)' tests/cli-retirement.test.mjs"
+      - run: "node --test --test-name-pattern='^(按需安装两个后端脚手架|公开 Bundle 导出|已移除前端 Profile)' tests/cli-retirement.test.mjs"
         when: template-source
         id: check.cli-content-identity
-      - run: "node --test --test-name-pattern='^(Spec 3[.]0 按需补装设计技能|现役 yss-research)'
-          tests/cli-retirement.test.mjs"
+      - run: "node --test --test-name-pattern='^(Spec 3[.]0 按需补装设计技能|现役 yss-research)' tests/cli-retirement.test.mjs"
         when: template-source
         id: check.cli-content-identity-install
-      - run: "node --test --test-name-pattern='^backend: 内容来源'
-          tests/cli-retirement.test.mjs"
+      - run: "node --test --test-name-pattern='^backend: 内容来源' tests/cli-retirement.test.mjs"
         when: template-source
         id: check.cli-content-identity-sync
-      - run: "node --test --test-skip-pattern='^(按需安装两个后端脚手架|公开 Bundle 导出|已移除前端
-          Profile)' --test-skip-pattern='^(Spec 3[.]0 按需补装设计技能|现役 yss-research)'
-          --test-skip-pattern='^backend: 内容来源' tests/cli-retirement.test.mjs"
+      - run: "node --test --test-skip-pattern='^(按需安装两个后端脚手架|公开 Bundle 导出|已移除前端 Profile)' --test-skip-pattern='^(Spec 3[.]0
+          按需补装设计技能|现役 yss-research)' --test-skip-pattern='^backend: 内容来源' tests/cli-retirement.test.mjs"
         when: template-source
         id: check.cli-content-identity-rest
       - run: scripts/sync-skills --check
@@ -3753,7 +3532,6 @@ groups:
       - run: node --test scripts/fixtures/structured-assets/*.test.mjs
         id: check.structured-assets
       - run: node --test scripts/fixtures/contract-efficiency/schema-rejection.test.mjs
-          scripts/fixtures/contract-efficiency/security.test.mjs
           scripts/fixtures/contract-efficiency/phase.test.mjs
           scripts/fixtures/delivery-preflight/json-schema-framing.test.mjs
         id: check.schema-runtime
@@ -3761,7 +3539,8 @@ groups:
     commands:
       - run: node --test tests/design-prototype-animation.test.mjs
         id: check.design-prototype-animation
-      - run: node --test tests/spec-initial-entry.test.mjs tests/backend-decision-distribution.test.mjs tests/backend-handoff-reference.test.mjs tests/skills-reference-imports.test.mjs
+      - run: node --test tests/spec-initial-entry.test.mjs tests/backend-decision-distribution.test.mjs
+          tests/backend-handoff-reference.test.mjs tests/skills-reference-imports.test.mjs
         id: check.initialization-reference-boundaries
       - run: node --test tests/daily-test-evidence.test.mjs
         id: check.daily-test-evidence
@@ -3792,21 +3571,17 @@ groups:
       - run: node --test --test-concurrency=1 tests/native-consumer-routing.test.mjs
         when: template-source
         id: check.native-consumer-routing
-      - run: "node --test --test-name-pattern='^(按需安装两个后端脚手架|公开 Bundle 导出|已移除前端
-          Profile)' tests/cli-retirement.test.mjs"
+      - run: "node --test --test-name-pattern='^(按需安装两个后端脚手架|公开 Bundle 导出|已移除前端 Profile)' tests/cli-retirement.test.mjs"
         when: template-source
         id: check.cli-content-identity
-      - run: "node --test --test-name-pattern='^(Spec 3[.]0 按需补装设计技能|现役 yss-research)'
-          tests/cli-retirement.test.mjs"
+      - run: "node --test --test-name-pattern='^(Spec 3[.]0 按需补装设计技能|现役 yss-research)' tests/cli-retirement.test.mjs"
         when: template-source
         id: check.cli-content-identity-install
-      - run: "node --test --test-name-pattern='^backend: 内容来源'
-          tests/cli-retirement.test.mjs"
+      - run: "node --test --test-name-pattern='^backend: 内容来源' tests/cli-retirement.test.mjs"
         when: template-source
         id: check.cli-content-identity-sync
-      - run: "node --test --test-skip-pattern='^(按需安装两个后端脚手架|公开 Bundle 导出|已移除前端
-          Profile)' --test-skip-pattern='^(Spec 3[.]0 按需补装设计技能|现役 yss-research)'
-          --test-skip-pattern='^backend: 内容来源' tests/cli-retirement.test.mjs"
+      - run: "node --test --test-skip-pattern='^(按需安装两个后端脚手架|公开 Bundle 导出|已移除前端 Profile)' --test-skip-pattern='^(Spec 3[.]0
+          按需补装设计技能|现役 yss-research)' --test-skip-pattern='^backend: 内容来源' tests/cli-retirement.test.mjs"
         when: template-source
         id: check.cli-content-identity-rest
       - run: node tests/scenarios/verify-repository-scope-scenarios.mjs
@@ -3822,14 +3597,6 @@ groups:
       - run: node --test tests/implementation-candidate-current.test.mjs
         when: template-source
         id: check.implementation-candidate-current
-      - run: node --test tests/backend-delivery-terminal.test.mjs
-        when: template-source
-        id: check.backend-delivery-terminal
-        resources: [ native-cli, python-jsonschema ]
-      - run: node --test tests/backend-delivery-business-terminal.test.mjs
-        when: template-source
-        id: check.backend-delivery-business-terminal
-        resources: [ native-cli, python-jsonschema ]
       - run: node .template-source/scripts/verify-delivery-harness-distribution.mjs
         when: template-source
         lane: generated-distribution
@@ -3840,9 +3607,6 @@ groups:
         id: check.629b3c9ec897593f
   strategic-handoff-package:
     commands:
-      - run: node --test tests/progression-target-evidence.test.mjs
-        when: template-source
-        id: check.progression-target-evidence
       - run: node --check scripts/lib/strategic-handoff.mjs
         id: check.ba0fad1faed81f06
       - run: node tests/scenarios/verify-strategic-handoff-package-scenarios.mjs
@@ -3864,8 +3628,7 @@ groups:
         id: check.8cd499a929b8a5a4
   tooling:
     commands:
-      - run: python3 -m unittest discover -s .template-source/scripts/tests -p
-          'test_skills_agent_eval.py' -v
+      - run: python3 -m unittest discover -s .template-source/scripts/tests -p 'test_skills_agent_eval.py' -v
         when: template-source
         id: check.44ea73f718bcecec
       - run: pnpm --dir .template-source/tooling/node test
@@ -3893,8 +3656,7 @@ groups:
         id: check.93d2af5732ccdd96
       - run: node --test tests/skill-governance.test.mjs
         id: check.spec-skill-governance
-      - run: node --test
-          .agents/skills/yss-skill-source-index-refresh/scripts/refresh-yss-skill-index.test.mjs
+      - run: node --test .agents/skills/yss-skill-source-index-refresh/scripts/refresh-yss-skill-index.test.mjs
         id: check.208c7eedeff4e6e9
         inputs_complete: true
         input_patterns:
@@ -3914,16 +3676,13 @@ groups:
         depends_on: []
   tactical-design:
     commands:
-      - run: node .agents/skills/yss-technical-design/scripts/generate-schema.mjs
-          --check
+      - run: node .agents/skills/yss-technical-design/scripts/generate-schema.mjs --check
         id: check.3d61dc45c4a35922
       - run: node .agents/skills/yss-technical-design/tests/run-scenarios.mjs
         id: check.4bade53d828a7468
-      - run: node --test
-          .agents/skills/yss-technical-design/tests/engineering-scenarios.mjs
+      - run: node --test .agents/skills/yss-technical-design/tests/engineering-scenarios.mjs
         id: check.f03591c3ea92405b
-      - run: node --check
-          .agents/skills/yss-tactical-design/scripts/validate-tactical-design.mjs
+      - run: node --check .agents/skills/yss-tactical-design/scripts/validate-tactical-design.mjs
         id: check.0eda9c9e0a08adf6
       - run: node --check .agents/skills/yss-tactical-design/tests/run-scenarios.mjs
         id: check.9c058e5d7cf873aa
@@ -3944,16 +3703,9 @@ groups:
       - run: node tests/scenarios/verify-plan-review-control-scenarios.mjs
         when: template-source
         id: check.plan-review-control-convergence
-      - run: node --test .template-source/tooling/node/test/approval-current.test.mjs
-          .template-source/tooling/node/test/review-capabilities.test.mjs
-        when: template-source
-        id: check.role-gates-current-capability
       - run: scripts/verify-digital-human-roles
         id: check.a3cc57f168071cc8
-      - run: node tests/scenarios/verify-digital-human-roles-scenarios.mjs
-        id: check.fa7fc43e32417857
-      - run: scripts/verify-approval-record --history
-          .template-spec/templates/approval-record-template.yaml
+      - run: scripts/verify-approval-record --history .template-spec/templates/approval-record-template.yaml
         id: check.aab6b1527f8c70f0
       - run: node tests/scenarios/verify-digital-human-task-package-scenarios.mjs
         id: check.ffe328872703d3c0
@@ -3968,21 +3720,14 @@ groups:
     commands:
       - run: node --test tests/plan-clarification-replay.test.mjs
         when: template-source
-      - run: node --test tests/checkpoint-boundary.test.mjs
-          tests/flow-verification-routing.test.mjs tests/project-ci.test.mjs
+      - run: node --test tests/flow-verification-routing.test.mjs tests/project-ci.test.mjs
+        id: check.657837436fa3e2f8
       - run: node --test scripts/fixtures/reading-views/*.test.mjs
         when: template-source
         id: check.document-reading-views
       - run: node --test scripts/fixtures/stage-tracking/tracking.test.mjs
         when: template-source
         id: check.92a3623cf3550ba8
-      - run: node --test
-          .template-source/tooling/node/test/decision-continuation.test.mjs
-        when: template-source
-        id: check.c17b4b0ba6c92cfc
-      - run: node tests/scenarios/verify-user-decision-scenarios.mjs
-        id: check.user-decision-scenarios
-        resources: [ native-cli ]
       - run: yss context check --root . --json
         id: check.1451647ba2722b30
       - run: node tests/scenarios/verify-context-contract-scenarios.mjs
@@ -4003,23 +3748,14 @@ groups:
         id: check.cca7321527c13629
       - run: node tests/scenarios/verify-lifecycle-operator-scenarios.mjs
         id: check.aafa7bdc8a88bf84
-      - run: scripts/verify-lifecycle-checkpoint
-          .template-spec/process/templates/lifecycle-checkpoint-template.yaml
+      - run: scripts/verify-lifecycle-checkpoint .template-spec/process/templates/lifecycle-checkpoint-template.yaml
         id: check.56ea690765beec6f
       - run: scripts/verify-scaffold-architecture-decisions --allow-template
           .template-spec/process/templates/scaffold-architecture-decisions-template.yaml
         id: check.bbef469ead80be51
-      - run: node tests/scenarios/verify-scaffold-architecture-decision-scenarios.mjs
-        resources: [ native-cli ]
-        id: check.scaffold-decisions-scenarios
       - run: node tests/scenarios/verify-lifecycle-scenarios.mjs
         id: check.0c8201229a241875
         resources: [ python-jsonschema ]
-      - run: node tests/scenarios/verify-lifecycle-transition-scenarios.mjs
-        id: check.84142f2eab38b8a4
-      - run: node tests/scenarios/verify-plan-spec-entry-scenarios.mjs
-        resources: [ native-cli ]
-        id: check.plan-spec-entry-scenarios
       - run: node --test tests/lifecycle-query-freshness.test.mjs
         when: template-source
         id: check.lifecycle-query-freshness
@@ -4041,10 +3777,6 @@ groups:
     commands:
       - run: node tests/scenarios/verify-existing-backend-architecture-scenarios.mjs
         id: check.f74a919c8173a935
-      - run: node tests/scenarios/verify-delivery-preflight-scenarios.mjs
-        id: check.9ceb4a3839391bb6
-      - run: node tests/scenarios/verify-existing-ui-baseline-scenarios.mjs
-        id: check.a7f4f092f5b64b8d
   implementation:
     commands:
       - run: node tests/scenarios/verify-implementation-path-scenarios.mjs
@@ -4056,12 +3788,8 @@ groups:
         id: check.a156e5fff5a8dfdd
       - run: node --test scripts/fixtures/backend-scaffold/platform-scenarios.test.mjs
         id: check.a53e61d79c3befc1
-      - run: node --test
-          .agents/skills/yss-ddd-scaffold-generator/scripts/scaffold-generator.test.mjs
+      - run: node --test .agents/skills/yss-ddd-scaffold-generator/scripts/scaffold-generator.test.mjs
         id: check.edf25d8db265d921
-      - run: node --test
-          .agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs
-        id: check.c860ed22ba605f8d
       - run: node --test tests/legacy-backend-scaffold-audit.test.mjs
         id: check.fcef5f013dd0e7f4
       - run: node --test tests/api-contract-decision.test.mjs
@@ -4070,8 +3798,6 @@ groups:
         id: check.3851a250b368d3ae
       - run: node --test tests/matt-integration-fixture.test.mjs
         id: check.matt-integration-fixture
-      - run: node tests/scenarios/verify-matt-yss-integration-scenarios.mjs
-        id: check.d32468f5dd6a4654
       - run: node tests/scenarios/verify-yss-implementation-contract-compiler-scenarios.mjs
         id: check.9a4dc0890f5759ad
       - run: scripts/generate-yss-skill-boundaries --check
@@ -4082,18 +3808,13 @@ groups:
         id: check.156d8dea8b8d6810
       - run: node tests/scenarios/verify-yss-prototype-contract-scenarios.mjs
         id: check.2c43904888dff190
-      - run: node --test
-          .agents/skills/yss-prototype-stage/tests/verification-entry.test.mjs
+      - run: node --test .agents/skills/yss-prototype-stage/tests/verification-entry.test.mjs
         id: check.3a2236d542e47171
-      - run: node .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs
-          validate-evidence
-          .template-spec/design/templates/prototype-evidence-template.yaml
-          --allow-template
+      - run: node .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs validate-evidence
+          .template-spec/design/templates/prototype-evidence-template.yaml --allow-template
         id: check.7126152a480689b5
-      - run: node
-          .agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs
-          validate .template-spec/design/templates/visual-baseline-template.yaml
-          --allow-template
+      - run: node .agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs validate
+          .template-spec/design/templates/visual-baseline-template.yaml --allow-template
         id: check.f96c759bbc30d99e
       - run: node --test tests/contract-review-preparation.test.mjs
         when: template-source
@@ -4101,8 +3822,7 @@ groups:
         resources: [ native-cli ]
   runtime-storage:
     commands:
-      - run: node --test --test-concurrency=1 tests/runtime-store.test.mjs
-          tests/runtime-store-integration.test.mjs
+      - run: node --test --test-concurrency=1 tests/runtime-store.test.mjs tests/runtime-store-integration.test.mjs
           tests/runtime-store-distribution.test.mjs
         when: template-source
         id: check.runtime-storage
@@ -4122,10 +3842,8 @@ groups:
       - run: node --test tests/verification-selection.test.mjs
         when: template-source
         id: check.verification-selection
-      - run: node --test tests/verification-gates.test.mjs
-          tests/verification-baseline.test.mjs
-          tests/verification-qualification.test.mjs
-          tests/verification-delivery-run.test.mjs
+      - run: node --test tests/verification-gates.test.mjs tests/verification-baseline.test.mjs
+          tests/verification-qualification.test.mjs tests/verification-delivery-run.test.mjs
           tests/legacy-verification.test.mjs
         id: check.release-profile-consumers
         resources: [ native-cli ]
@@ -4136,8 +3854,7 @@ groups:
     commands:
       - run: node .agents/skills/yss-research/tests/run-scenarios.mjs
         id: check.research-evidence-scenarios
-      - run: node --test
-          .agents/skills/yss-research/tests/competitive-scenarios.test.mjs
+      - run: node --test .agents/skills/yss-research/tests/competitive-scenarios.test.mjs
         id: check.competitive-evidence-scenarios
       - run: node --test scripts/fixtures/lifecycle-core/research-competitive.test.mjs
         id: check.competitive-completion-scenarios
@@ -4167,8 +3884,7 @@ gates:
       - check.instance-metadata
     audit_status: conservative-complete
     display_id: G01
-    audit_basis: Every registered changed path retains this risk; no narrowing or
-      retirement.
+    audit_basis: Every registered changed path retains this risk; no narrowing or retirement.
   - id: check.verification-environment
     title: 环境预检
     trigger: always
@@ -4182,8 +3898,7 @@ gates:
     check_ids: []
     audit_status: conservative-complete
     display_id: G02
-    audit_basis: Every registered changed path retains this risk; no narrowing or
-      retirement.
+    audit_basis: Every registered changed path retains this risk; no narrowing or retirement.
   - id: check.verification-skills
     title: Skill 投影与锁
     trigger: always
@@ -4217,8 +3932,7 @@ gates:
       - check.profile-consistency
     audit_status: conservative-complete
     display_id: G03
-    audit_basis: Every registered changed path retains this risk; no narrowing or
-      retirement.
+    audit_basis: Every registered changed path retains this risk; no narrowing or retirement.
   - id: check.verification-governance-syntax
     title: 语法、Schema 与治理布局
     trigger: always
@@ -4246,18 +3960,15 @@ gates:
       - check.work-layout-reading
       - check.work-layout-stage-tracking
       - check.work-layout-tickets
-      - check.work-layout-api
-      - check.work-layout-lifecycle-transition
       - check.work-layout-lifecycle-operator
-      - check.openapi-validation-scenarios
       - check.work-layout-digital-human-task-package
       - check.work-layout-design-fixtures
       - check.work-layout-stage-native
       - check.lib-coverage-ledger
+      - check.1ebcb1124ce67eb1
     audit_status: conservative-complete
     display_id: G04
-    audit_basis: Every registered changed path retains this risk; no narrowing or
-      retirement.
+    audit_basis: Every registered changed path retains this risk; no narrowing or retirement.
   - id: check.verification-tooling-dependencies
     title: 工具依赖与 vendor
     trigger: always
@@ -4275,8 +3986,7 @@ gates:
       - check.runtime-storage
     audit_status: conservative-complete
     display_id: G05
-    audit_basis: Every registered changed path retains this risk; no narrowing or
-      retirement.
+    audit_basis: Every registered changed path retains this risk; no narrowing or retirement.
   - id: check.verification-plan-spec
     title: Plan、Spec 与业务票据
     trigger: impact
@@ -4296,13 +4006,12 @@ gates:
       - check.document-writing-integration
       - check.292502d15942f4de
       - check.57446ae09b82f3cd
-      - check.business-ticket-native-report
-      - check.plan-spec-entry-scenarios
       - check.daily-plan-spec
+      - check.work-layout-tickets
+      - check.spec-stage-installed
     audit_status: conservative-complete
     display_id: G06
-    audit_basis: Every registered changed path retains this risk; no narrowing or
-      retirement.
+    audit_basis: Every registered changed path retains this risk; no narrowing or retirement.
   - id: check.verification-lifecycle
     title: Context 与生命周期
     trigger: impact
@@ -4333,14 +4042,11 @@ gates:
       - check.aafa7bdc8a88bf84
       - check.56ea690765beec6f
       - check.bbef469ead80be51
-      - check.scaffold-decisions-scenarios
       - check.0c8201229a241875
-      - check.84142f2eab38b8a4
       - check.lifecycle-query-freshness
       - check.e9c24c657e0a67e7
       - check.657837436fa3e2f8
       - check.doc-facts
-      - check.openapi-validation-scenarios
       - check.frontend-removed
       - check.ci-gate
       - check.ci-adapters
@@ -4354,12 +4060,12 @@ gates:
       - check.native-smoke
       - check.release-template
       - check.ensure-native-yss
-      - check.daily-checkpoint
       - check.lifecycle-triage-replay
+      - check.1ebcb1124ce67eb1
+      - check.scaffold-contract-consumers
     audit_status: conservative-complete
     display_id: G07
-    audit_basis: Every registered changed path retains this risk; no narrowing or
-      retirement.
+    audit_basis: Every registered changed path retains this risk; no narrowing or retirement.
   - id: check.verification-approval
     title: 审批、能力与用户决定
     trigger: impact
@@ -4376,14 +4082,11 @@ gates:
       - check.spec-role-free-guidance
       - check.role-independent-contracts
       - check.plan-review-control-convergence
-      - check.role-gates-current-capability
       - check.a3cc57f168071cc8
-      - check.fa7fc43e32417857
       - check.aab6b1527f8c70f0
       - check.ffe328872703d3c0
       - check.b593997f977be2c5
       - check.read-only-intake
-      - check.c17b4b0ba6c92cfc
       - check.maintenance-storage
       - check.evidence-archive-fixtures
       - check.maintenance-counterexample
@@ -4392,13 +4095,10 @@ gates:
       - check.go-validator-replay
       - check.ar12b-retirement
       - check.digital-human-native-consumers
-      - check.user-decision-scenarios
       - check.plan-review-control-unit
-      - check.profile-consumers-review-capabilities
     audit_status: conservative-complete
     display_id: G08
-    audit_basis: Every registered changed path retains this risk; no narrowing or
-      retirement.
+    audit_basis: Every registered changed path retains this risk; no narrowing or retirement.
   - id: check.verification-strategic-contract
     title: 战略交接与技术设计
     trigger: impact
@@ -4419,13 +4119,12 @@ gates:
       - check.0eda9c9e0a08adf6
       - check.9c058e5d7cf873aa
       - check.0b0ff4c1ba24fa6e
-      - check.progression-target-evidence
       - check.strategic-handoff-package-scenarios
       - check.strategic-handoff-distribution
+      - check.profile-consumers-lifecycle-progression
     audit_status: conservative-complete
     display_id: G09
-    audit_basis: Every registered changed path retains this risk; no narrowing or
-      retirement.
+    audit_basis: Every registered changed path retains this risk; no narrowing or retirement.
   - id: check.verification-design-ui
     title: 设计系统与 UI 基线
     trigger: impact
@@ -4441,18 +4140,16 @@ gates:
       - check.5178854477253978
       - check.a27805ecf41a23e5
       - check.design-md-instance-identity
-      - check.a7f4f092f5b64b8d
       - check.3851a250b368d3ae
       - check.2c43904888dff190
       - check.3a2236d542e47171
       - check.7126152a480689b5
       - check.f96c759bbc30d99e
-      - check.existing-ui-baseline-scenarios
       - check.design-docs
+      - check.backend-governance-contract
     audit_status: conservative-complete
     display_id: G10
-    audit_basis: Every registered changed path retains this risk; no narrowing or
-      retirement.
+    audit_basis: Every registered changed path retains this risk; no narrowing or retirement.
   - id: check.verification-implementation
     title: 实现合同与仓库边界
     trigger: impact
@@ -4469,34 +4166,26 @@ gates:
       - check.d3535102c1a26a7d
       - check.b636f17f4fdfecf1
       - check.f74a919c8173a935
-      - check.9ceb4a3839391bb6
       - check.7ea1e4340f4611ee
       - check.repository-scope-scenarios
       - check.a156e5fff5a8dfdd
       - check.a53e61d79c3befc1
       - check.edf25d8db265d921
-      - check.c860ed22ba605f8d
       - check.fcef5f013dd0e7f4
       - check.1ebcb1124ce67eb1
-      - check.work-layout-api
-      - check.d32468f5dd6a4654
       - check.9a4dc0890f5759ad
       - check.7cffb7c441bd4709
       - check.e8232d4ab54fc999
       - check.156d8dea8b8d6810
       - check.contract-review-preparation
       - check.implementation-candidate-current
-      - check.backend-delivery-terminal
-      - check.backend-delivery-business-terminal
-      - check.scaffold-decisions-scenarios
       - check.backend-scaffold-direct-generation
       - check.backend-platform-mechanisms
       - check.scaffold-contract-consumers
-      - check.mvc-data-analysis-retirement
+      - check.backend-governance-contract
     audit_status: conservative-complete
     display_id: G11
-    audit_basis: Every registered changed path retains this risk; no narrowing or
-      retirement.
+    audit_basis: Every registered changed path retains this risk; no narrowing or retirement.
   - id: check.verification-cli-core
     title: 共享 CLI core
     trigger: always
@@ -4516,8 +4205,7 @@ gates:
       - check.371da192d6338e6d
     audit_status: conservative-complete
     display_id: G12
-    audit_basis: Every registered changed path retains this risk; no narrowing or
-      retirement.
+    audit_basis: Every registered changed path retains this risk; no narrowing or retirement.
   - id: check.verification-spec-cli
     title: Spec CLI 包与真实入口
     trigger: always
@@ -4541,8 +4229,7 @@ gates:
       - check.repository-scope-scenarios
     audit_status: conservative-complete
     display_id: G13
-    audit_basis: Every registered changed path retains this risk; no narrowing or
-      retirement.
+    audit_basis: Every registered changed path retains this risk; no narrowing or retirement.
     release_families:
       - spec
   - id: check.verification-backend-cli
@@ -4591,29 +4278,23 @@ gates:
       - check.specialist-business-inputs
       - check.profile-consumers-efficiency-distribution
       - check.profile-consumers-native-context-retirement
-      - check.profile-consumers-contract-efficiency-distribution
       - check.profile-consumers-reading-views-bundle
-      - check.profile-consumers-slice-contract-v3-round2-xrepo
-      - check.profile-consumers-slice-contract-v3-round2-rest
       - check.profile-consumers-slice-contract-v3-scenarios
       - check.role-independent-draft
       - check.work-layout-stage-tracking
       - check.backend-governance-contract
       - check.role-independent-formal-current
-      - check.profile-consumers-approval-current
-      - check.profile-consumers-decision-continuation
       - check.profile-consumers-lifecycle-progression
       - check.profile-consumers-plugin-design-consumption
-      - check.profile-consumers-review-capabilities
       - check.release-profile-consumers
       - check.profile-tree
       - check.profile-distribution
       - check.profile-distribution-gate
       - check.distribution-hygiene
+      - check.plan-review-control-unit
     audit_status: conservative-complete
     display_id: G18
-    audit_basis: Every registered changed path retains this risk; no narrowing or
-      retirement.
+    audit_basis: Every registered changed path retains this risk; no narrowing or retirement.
   - id: check.verification-platform
     title: Node 与平台兼容窗口
     trigger: impact
@@ -4657,8 +4338,7 @@ gates:
       - check.verification-policy-baseline
     audit_status: conservative-complete
     display_id: G20
-    audit_basis: Every registered changed path retains this risk; no narrowing or
-      retirement.
+    audit_basis: Every registered changed path retains this risk; no narrowing or retirement.
 supplemental_checks:
   - id: check.work-layout-supplemental
     run: node --test tests/work-layout.test.mjs
@@ -4789,8 +4469,7 @@ supplemental_checks:
     task_id: supplemental.explicit-invocation
     source_requirement: committed
   - id: check.process-glossary-supplemental
-    run: node --test tests/process-glossary.test.mjs
-      tests/digital-human-roles-docs.test.mjs
+    run: node --test tests/process-glossary.test.mjs tests/digital-human-roles-docs.test.mjs
     group: feature-assets
     gate_ids: [ check.verification-lifecycle ]
     depends_on: []
@@ -4822,8 +4501,7 @@ supplemental_checks:
     source_requirement: committed
     task_id: supplemental.native-context-retirement
   - id: check.native-instance-drift
-    run: node --test --test-concurrency=1 tests/instance-metadata.test.mjs
-      tests/native-instance-drift.test.mjs
+    run: node --test --test-concurrency=1 tests/instance-metadata.test.mjs tests/native-instance-drift.test.mjs
     group: drift-identity
     gate_ids:
       - check.verification-fixed-source

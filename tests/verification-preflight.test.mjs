@@ -145,11 +145,11 @@ test('报告 v2 的 CI 路由声明冻结计划编译所需原生 CLI',async t=>
  }
 });
 
-test('后端终点 slow 检查单独准备原生 CLI 和 Python schema 校验器',async()=>{
+test('现役 Backend 审阅 slow 检查单独准备原生 CLI 和 Python schema 校验器',async()=>{
  const {verificationToolRequirements}=await import('../.template-source/scripts/lib/verification-preflight.mjs');
  const {planTemplateVerification}=await import('../scripts/lib/template-verification.mjs');
- const selected=planTemplateVerification({changedFiles:['tests/backend-delivery-terminal.test.mjs'],includeSlow:true});
- for(const id of ['check.backend-delivery-terminal','check.backend-delivery-business-terminal']) {
+ const selected=planTemplateVerification({changedFiles:['.template-source/tooling/node/test/plan-review-control.test.mjs'],includeSlow:true});
+ for(const id of ['check.plan-review-control-unit']) {
   const commands=selected.commands.filter(row=>row.id===id);
   assert.equal(commands.length,1);
   const plan={...selected,commands};
@@ -164,8 +164,8 @@ test('仅实施编排文档变化也准备 checkpoint 的原生依赖',async t=>
  const {verificationToolRequirements}=await import('../.template-source/scripts/lib/verification-preflight.mjs');
  const {planTemplateVerification}=await import('../scripts/lib/template-verification.mjs');
  const plan=planTemplateVerification({changedFiles:['.template-spec/process/subagent-collaboration.md','.agents/skills/yss-product-lifecycle/references/orchestration.md'],ciGuards:true});
- assert.equal(plan.commands.filter(row=>row.id==='check.daily-checkpoint').length,1);
- assert.deepEqual(plan.commands.filter(row=>row.id!=='check.daily-checkpoint'&&row.resources?.includes('native-cli')),[],'不得由其他原生消费者掩盖 checkpoint 的缺失声明');
+ assert.equal(plan.commands.filter(row=>row.id==='check.backend-governance-contract').length,1);
+ assert.deepEqual(plan.commands.filter(row=>row.id!=='check.backend-governance-contract'&&row.resources?.includes('native-cli')),[],'不得由其他原生消费者掩盖当前批准检查的缺失声明');
  await t.test('CI 工具准备选择原生 CLI',()=>{
   assert.deepEqual(verificationToolRequirements(plan,{reportValidation:true}),{schema_version:1,python:'jsonschema',go:false,native_cli:true,tooling:false,vue:false,design_vue:false});
  });
@@ -201,7 +201,7 @@ test('slow 检查本身声明 schema 前置',async()=>{
  const {planTemplateVerification}=await import('../scripts/lib/template-verification.mjs');
  const slow=planTemplateVerification({includeSlow:'only'});
  assert.equal(verificationToolRequirements(slow).python,'jsonschema');
- assert.equal(slow.commands.find(x=>x.id==='check.profile-consumers-review-capabilities').resources.includes('python-jsonschema'),true);
+ assert.equal(slow.commands.find(x=>x.id==='check.plan-review-control-unit').resources.includes('python-jsonschema'),true);
 });
 
 test('维护审查的实际场景输入声明 Go',async()=>{

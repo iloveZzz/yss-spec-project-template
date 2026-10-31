@@ -1,5 +1,4 @@
 import { loadOrchestrationContract } from '../../../../scripts/lib/orchestration-contract.mjs';
-import { makeRoot } from '../../../../tests/helpers/yss-instance.mjs';
 import { contextBinary } from '../../../../scripts/lib/native-context.mjs';
 import { composeProfileTree } from '../../../../scripts/lib/profile-tree.mjs';
 import test from 'node:test';
@@ -334,68 +333,6 @@ test('native Spec已声明非法目标政策不能按legacy跳过正式准入', 
     const {progression_target,...legacy}=original;f.write(ref,JSON.stringify(legacy));
     assert.equal(assertProgressionEntry('work-unit.slice-implementation',{root:f.root,checkpointRef:f.checkpointRef,env:{PATH:''}}),null);
   }
-});
-
-
-function approvedSpecFixture(approvedFixture) {
-  const nativeSeed = makeRoot('yss-approved-spec-');
-  // Backend compiler mechanism tests need tool sources that are intentionally absent from Spec distribution.
-  for (const skill of ['yss-layered-mvc-scaffold-generator', 'yss-ddd-scaffold-generator', 'yss-dto']) {
-    const ref = `.agents/skills/${skill}`;
-    fs.cpSync(path.join(ROOT, ref), path.join(nativeSeed, ref), {recursive: true});
-  }
-  const xmlRef = 'scripts/vendor/xml.mjs';
-  fs.mkdirSync(path.dirname(path.join(nativeSeed, xmlRef)), {recursive: true});
-  fs.copyFileSync(path.join(ROOT, xmlRef), path.join(nativeSeed, xmlRef));
-  const tracker = path.join(nativeSeed, '.template-spec/agents/issue-tracker.md');
-  // This test retains the existing supported v2 Slice protocol with a real Spec identity.
-  fs.writeFileSync(tracker, fs.readFileSync(tracker, 'utf8').replace(/^\s*business_ticket_version:\s*1\s*$/m, ''));
-  return approvedFixture('layered-mvc', {nativeSeed});
-}
-
-test('Slice 批准 checkpoint 与活动推进 checkpoint 分别核验，目标续推不改原批准', async t => {
-  const {approvedFixture}=await import('../../../../scripts/fixtures/delivery-preflight/approved-execution-fixture.mjs');
-  const {createApprovedExecutionContext,createApprovedRecompilationContext,assertApprovedExecutionContext}=await import('../../../../scripts/lib/approved-execution-context.mjs');
-  const f=approvedSpecFixture(approvedFixture),checkpointRef='.work/current/checkpoint.json';
-  t.after(()=>f.cleanup());
-  const policyRef='.template-spec/process/orchestration-contract.yaml';
-  const originalPolicy=loadOrchestrationContract(ref=>fs.readFileSync(path.join(f.root,ref)),policyRef).value;
-  const {progression_target}=loadOrchestrationContract(ref=>fs.readFileSync(path.join(ROOT,ref)),policyRef).value;
-  f.write(policyRef,JSON.stringify({...originalPolicy,progression_target}));
-  f.write('.template-spec/agents/issue-tracker.md','---\ntracker:\n  platform: local-markdown\n  root: .work\n---\n');
-  f.write(checkpointRef,{...f.checkpoint,feature_id:'feature.current'});
-  f.write('.work/current/map.md',`---\ncheckpoint_ref: ${checkpointRef}\n---\n`);
-  const configRef='.work/current/progression-target.json',config={schema_version:1,kind:'lifecycle-progression-target',feature_id:'feature.current',checkpoint_ref:checkpointRef,target:'spec-approved',intent_source:'synthetic.transport-test',consumers:[]};
-  f.write(configRef,config);
-  const originalApproval=fs.readFileSync(path.join(f.root,f.binding.approval_ref)),originalCheckpoint=fs.readFileSync(path.join(f.root,checkpointRef));
-  const binaryBefore=process.env.YSS_NATIVE_BINARY,digestBefore=process.env.YSS_NATIVE_BINARY_SHA256;
-  t.after(()=>{if(binaryBefore===undefined)delete process.env.YSS_NATIVE_BINARY;else process.env.YSS_NATIVE_BINARY=binaryBefore;if(digestBefore===undefined)delete process.env.YSS_NATIVE_BINARY_SHA256;else process.env.YSS_NATIVE_BINARY_SHA256=digestBefore;});
-  const nativeBinary = contextBinary().binary;
-  const project=status=>{process.env.YSS_NATIVE_BINARY=nativeProjection({...f,checkpointRef},{status},nativeBinary).YSS_NATIVE_BINARY;process.env.YSS_NATIVE_BINARY_SHA256=createHash('sha256').update(fs.readFileSync(process.env.YSS_NATIVE_BINARY)).digest('hex');};
-  project('pending');
-  const execution=createApprovedExecutionContext(f.binding,{root:f.root,readOnly:true});
-  const entry=()=>assertProgressionEntry('work-unit.slice-implementation',{root:f.root,assetRef:f.binding.ref});
-  assert.doesNotThrow(entry);
-  assert.doesNotThrow(()=>createApprovedRecompilationContext(f.binding,{root:f.root,readOnly:true}));
-  assert.doesNotThrow(()=>assertApprovedExecutionContext(execution,{root:f.root,readOnly:true}));
-  for(const create of [createApprovedExecutionContext,createApprovedRecompilationContext])assert.throws(()=>create(f.binding,{root:f.root}),/GOVERNANCE_MIGRATION_REQUIRED/);
-  assert.throws(()=>assertApprovedExecutionContext(execution,{root:f.root}),/EXECUTION_CONTEXT_READ_ONLY/);
-  project('reached');
-  assert.throws(entry,/已达到.*保留 next/);
-  assert.doesNotThrow(()=>assertApprovedExecutionContext(execution,{root:f.root,readOnly:true}));
-  f.write(configRef,{...config,target:'business-accepted'});project('pending');
-  assert.doesNotThrow(entry);
-  assert.doesNotThrow(()=>assertApprovedExecutionContext(execution,{root:f.root,readOnly:true}));
-  assert.deepEqual(fs.readFileSync(path.join(f.root,f.binding.approval_ref)),originalApproval);
-  assert.deepEqual(fs.readFileSync(path.join(f.root,checkpointRef)),originalCheckpoint);
-  f.write('.work/duplicate/map.md',`---\ncheckpoint_ref: ${checkpointRef}\n---\n`);
-  assert.throws(entry,/多重登记/);
-  fs.rmSync(path.join(f.root,'.work/duplicate'),{recursive:true});
-  f.write(checkpointRef,{schema_version:1,repository_mode:'project-instance',feature_id:'feature.current',artifacts:{},gates:{}});
-  assert.throws(entry,/登记资产引用|活动 map.*绑定/);
-  fs.writeFileSync(path.join(f.root,checkpointRef),originalCheckpoint);
-  f.write(f.binding.approval_ref,{...f.checkpoint,gates:{}});
-  assert.throws(()=>createApprovedExecutionContext(f.binding,{root:f.root,readOnly:true}),/EXECUTION_APPROVAL_SCOPE/);
 });
 
 
