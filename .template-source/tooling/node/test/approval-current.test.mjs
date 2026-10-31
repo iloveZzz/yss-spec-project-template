@@ -6,7 +6,7 @@ import {tmpdir} from 'node:os';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {validateApprovalRecordFile, validateApprovalRecord, assertApprovedGateHasValidApproval, assertCheckpointApprovals} from '../../../../scripts/lib/native-approval.mjs';
-import {assertCurrentApproval, approvalExpectationFromSubject} from '../../../../scripts/lib/native-approval.mjs';
+import {assertCurrentApproval} from '../../../../scripts/lib/native-approval.mjs';
 import {loadDigitalHumanRoles} from '../../../../scripts/lib/digital-human-roles.mjs';
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
@@ -41,12 +41,6 @@ function fixture(run) {
   run({root,save,asset,record,expected,file:path.join(root,'approval.json')});
  } finally {rmSync(root,{recursive:true,force:true});}
 }
-test('current approval without consumer context is rejected; explicit history cannot authorize execution',()=>fixture(f=>{
- assert.throws(()=>validateApprovalRecordFile(f.file,{root:f.root,requireApproved:true}),/APPROVAL_CONTEXT_REQUIRED/);
- const history=validateApprovalRecordFile(f.file,{root:f.root,history:true});
- assert.equal(history.execution_authorization,'not-evaluated');
-}));
-
 test('current approval refuses extra target intent as evidence while pure history remains readable',()=>fixture(f=>{
  assert.doesNotThrow(()=>assertCurrentApproval(f.record,f.expected,{root:f.root}));
  for(const ref of ['progression-target.json','nested/PROGRESSION-TARGET.JSON']) {
@@ -83,10 +77,6 @@ test('current gate assertion cannot opt into history or a non-approved validatio
     assert.throws(()=>assertApprovedGateHasValidApproval(f.record.gate_id,state,{...options,...mode}),/APPROVAL_CURRENT_INVALID/);
     f.save('approval.json',f.record);
   }
-}));
-
-test('approval cannot substitute a subject different from the consumer frozen digest',()=>fixture(f=>{
- assert.throws(()=>validateApprovalRecordFile(f.file,{root:f.root,expected:{...f.expected,subject_digest:'0'.repeat(64)}}),/当前主体摘要|消费.*摘要/);
 }));
 
 test('single, bundle, helper and checkpoint consume the same strict current binding',()=>fixture(f=>{
@@ -143,14 +133,6 @@ test('current expected author must come from the consumer, never only from the a
 
 test('current validation rechecks the input snapshot before returning success',()=>fixture(f=>{
  assert.throws(()=>withValidationPhase({root:f.root,purpose:'approval-readset'},()=>{validateApprovalRecordFile(f.file,{root:f.root,expected:f.expected});writeFileSync(path.join(f.root,'evidence.txt'),'drift after native read before phase finish');}),/VALIDATION_INPUT_CHANGED/);
-}));
-
-test('derived current expectation freezes the subject version used for scope and author',()=>fixture(f=>{
- f.save('subject.json',{approval_scope:['slice.current'],basis:f.expected.basis,drafter_principal_ref:'synthetic.drafter'});
- const expected=approvalExpectationFromSubject(f.record.gate_id,'subject.json',{root:f.root});
- f.save('subject.json',{approval_scope:['slice.changed'],basis:f.expected.basis,drafter_principal_ref:'synthetic.changed-author'});
- f.record.subject_digest=f.asset('subject.json').digest;
- assert.throws(()=>validateApprovalRecord(f.record,{root:f.root,expected}),/APPROVAL_CURRENT_INVALID:.*摘要/);
 }));
 
 test('one v2 capability task strictly binds different per-check subjects across single, bundle, helper, checkpoint, source and CLI',async t=>{
@@ -248,12 +230,6 @@ test('Plan helper refuses a same-approval state whose subject differs from the c
  const current={status:'approved',approval_ref:'plan-approval.json',subject_ref:'subject.json',approval_scope:['slice.current'],basis:f.expected.basis};
  const changed={...current,subject_ref:'another-subject.json'};
  assert.throws(()=>assertApprovedGateHasValidApproval('gate.plan-approved',changed,{root:f.root,checkpoint:{gates:{'gate.plan-approved':current}}}),error=>error.code==='APPROVAL_CURRENT_INVALID'&&error.message.includes('checkpoint'));
-}));
-
-test('a requested Spec gate cannot route through a Plan approval record',()=>fixture(f=>{
- const record={...f.record,gate_id:'gate.plan-approved'};f.save('plan-approval.json',record);
- const state={status:'approved',approval_ref:'plan-approval.json',subject_ref:'subject.json',approval_scope:['slice.current'],basis:f.expected.basis};
- assert.throws(()=>assertApprovedGateHasValidApproval('gate.spec-baseline-approved',state,{root:f.root,checkpoint:{gates:{'gate.plan-approved':state}}}),error=>error.code==='APPROVAL_CURRENT_INVALID'&&error.message.includes('门禁'));
 }));
 
 test('backend technical design and engineering contract share one prepared review task and one bundle',async t=>{

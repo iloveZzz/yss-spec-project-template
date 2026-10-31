@@ -135,6 +135,32 @@ for(const [cmd,args]of [['javac',['-d',dir,...walk('src/main/java'),main]],['jav
   user.present();user.record.responses=[];user.respond();user.record.request.presented_source.ref=relative(user.record.request.presented_source.ref);user.record.responses[0].source.ref=relative(user.record.responses[0].source.ref);user.save();
   cp.human_review={implementation:{slice_contract_ref:sliceRef,vertical_slice_ticket_ref:ticket},user_decisions:[{...user.requirement,subject_ref:'implementation-scope.json',user_decision_ref:relative(user.ref)}]};write(cpRef,cp);
   run('actual-approved-slice4',['contract','verify','--kind','slice','--file',sliceRef,'--approval-ref',cpRef]);
+  const gateCaseDir='gate-control-cases',gate='gate.slice-contract-approved',check='check.design-reviewed';
+  fs.mkdirSync(path.join(root,gateCaseDir));
+  try {
+   const base=structuredClone(cp),row=base.checks[check];
+   Object.assign(row,{applicable:true,basis:[...technical.input_bindings,asset(sliceRef),asset('slice-review.json')],evidence:{'evidence.contract-approval':[sliceRef],'evidence.approval-record':['slice-review.json']}});
+   Object.assign(base.gates[gate],{basis:structuredClone(row.basis),evidence:{'evidence.contract-approval':['slice-review.json']}});
+   const verifyGate=(label,mutate,code)=>{const partial=structuredClone(base);mutate(partial);write(`${gateCaseDir}/partial.json`,partial);return run(label,['contract','verify','--kind','gate-checks','--file',`${gateCaseDir}/partial.json`,'--gate',gate],code);};
+   verifyGate('slice-gate-current',()=>{},'OK');
+   verifyGate('slice-check-na-current',p=>{Object.assign(p.checks[check],{status:'not-applicable',applicable:false,reason:'synthetic no impact'});},'OK');
+   for(const status of ['pending','failed','stale'])verifyGate(`slice-check-${status}`,p=>{p.checks[check].status=status;},'GATE_CHECK_BLOCKED');
+   verifyGate('slice-check-missing',p=>{delete p.checks[check];},'EVIDENCE_REQUIRED');
+   verifyGate('slice-check-na-without-reason',p=>{Object.assign(p.checks[check],{status:'not-applicable',applicable:false,reason:''});},'GATE_APPLICABILITY');
+   verifyGate('slice-check-empty-basis',p=>{p.checks[check].basis=[];},'EVIDENCE_REQUIRED');
+   verifyGate('slice-gate-empty-basis',p=>{p.gates[gate].basis=[];},'EVIDENCE_REQUIRED');
+   verifyGate('slice-check-stale-basis',p=>{p.checks[check].basis[0].digest='0'.repeat(64);},'EVIDENCE_DRIFT');
+   verifyGate('slice-gate-stale-basis',p=>{p.gates[gate].basis[0].digest='0'.repeat(64);},'EVIDENCE_DRIFT');
+   verifyGate('slice-check-missing-evidence',p=>{delete p.checks[check].evidence['evidence.approval-record'];},'GATE_EVIDENCE');
+   verifyGate('slice-check-unbound-evidence',p=>{p.checks[check].evidence['evidence.approval-record']=['input.json'];},'GATE_EVIDENCE');
+   const changed=`${gateCaseDir}/changed-evidence.json`;write(changed,{status:'revised'});
+   const staleApproval=verifyGate('slice-check-new-basis-old-approval',p=>{p.checks[check].basis.push(asset(changed));p.gates[gate].basis.push(asset(changed));},'APPROVAL_CURRENT_INVALID');
+   assert.match(staleApproval.diagnostics[0].message,/批准遗漏当前必需依据/);
+   verifyGate('slice-gate-omits-check-basis',p=>{p.gates[gate].basis=p.gates[gate].basis.filter(item=>item.ref!=='slice-prepare.json');},'GATE_COVERAGE');
+   const intent=`${gateCaseDir}/PROGRESSION-TARGET.JSON`;write(intent,{target:'business-accepted'});
+   verifyGate('slice-check-intent-evidence',p=>{p.checks[check].basis.push(asset(intent));},'PROGRESSION_EVIDENCE');
+   verifyGate('slice-gate-intent-evidence',p=>{Object.assign(p.checks[check],{status:'not-applicable',applicable:false,reason:'synthetic no impact'});p.gates[gate].basis=[asset(intent)];},'PROGRESSION_EVIDENCE');
+  } finally {fs.rmSync(path.join(root,gateCaseDir),{recursive:true,force:true});}
   if(process.env.YSS_CHAIN_STOP_AFTER_SLICE_APPROVAL==='1'){
    write('worker-stage.json',{project,sliceRef,sliceBinding,cpRef,feature,changed:'src/main/java/application/Boundary.java',completed:{slice_approval:true}});
    return;

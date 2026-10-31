@@ -108,10 +108,6 @@ test('conflicting direct decision and continuation references are rejected', () 
   f.requirement.user_decision_ref = f.source.ref;
   assert.throws(f.verify, /user-decision-proof-conflict/);
 }));
-test('no reply and revoked source authorization cannot continue', () => fixture(f => {
-  f.source.record.responses = []; f.source.save(); assert.throws(f.verify, /response-required/);
-  f.source.respond({ decision: 'revoked', text: '撤回同意' }); f.source.save(); assert.throws(f.verify, /not-approved/);
-}));
 test('new scope, new target and side effects cannot inherit authorization', () => fixture(f => {
   f.requirement.scope.push('new.scope'); assert.throws(f.verify, /范围不匹配/); f.requirement.scope.pop();
   f.requirement.boundary = 'release'; assert.throws(f.verify, /延续边界/);
@@ -150,10 +146,6 @@ test('formatting refresh requires new current review but not another source repl
   assert.throws(f.verify, /过期/);
   f.proof.subject = f.asset(f.subject.ref); f.review.subject = f.proof.subject; f.review.comparison.after = f.proof.subject; f.review.classification = 'presentation-only'; f.refresh();
   assert.equal(f.verify().continued, true); assert.equal(JSON.stringify(f.source.record.responses), originalReply);
-}));
-test('older receivers without continuation capability reject rather than silently approve', () => fixture(f => {
-  const rolesDoc=loadDigitalHumanRoles(path.join(f.root,'.template-spec/agents/digital-human-roles.yaml'));delete rolesDoc.user_decision_policy.continuation;f.save('.template-spec/agents/digital-human-roles.yaml',rolesDoc);
-  assert.throws(()=>assertUserDecisionRequirement(f.requirement,{root:f.root}),/延续边界/);
 }));
 test('one review bundle retains explicit per-check outcomes and rejects duplicates', () => fixture(f => {
   const record = id => ({ schema_version: 1, gate_id: id, decision: 'approved', actor_kind: 'digital-human', role_id: 'role.test-engineer', runtime_id: 'runtime.generic', principal_ref: 'synthetic.reviewer', drafter_principal_ref: 'synthetic.worker', subject_ref: f.subject.ref, subject_digest: f.subject.digest.slice(7), approval_scope: ['feature.continuation'], evidence_refs: [f.subject.ref] });

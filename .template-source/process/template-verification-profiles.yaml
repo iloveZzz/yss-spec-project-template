@@ -87,17 +87,17 @@ profiles:
         run: "node --test
           .template-source/tooling/node/test/lifecycle-controls.test.mjs"
         group: lifecycle
-        resources: [ "native-cli" ]
         inputs_complete: true
         input_patterns:
           - ".template-source/tooling/node/test/lifecycle-controls.test.mjs"
           - ".template-spec/process/lifecycle-registry.yaml"
           - ".template-spec/process/lifecycle-registry-baseline.json"
-          - ".template-spec/agents/digital-human-roles.yaml"
-          - "scripts/lib/lifecycle-controls.mjs"
+          - ".template-spec/process/orchestration-contract.yaml"
+          - ".template-spec/process/orchestration/**"
+          - "scripts/lib/orchestration-contract.mjs"
           - "scripts/lib/lifecycle-registry.mjs"
         depends_on: []
-        failure_mode: "门禁、检查数量、交接门禁依赖或检查点用户决定的接受与拒绝语义回归"
+        failure_mode: "当前阶段门禁、注册表语义或依赖环校验回归"
       - id: check.doc-facts
         run: "node --test tests/doc-facts.test.mjs"
         group: feature-assets
@@ -288,7 +288,6 @@ profiles:
         input_patterns:
           - "tests/efficiency-distribution.test.mjs"
           - "scripts/fixtures/user-decision/plan-fixture.mjs"
-          - ".template-source/tooling/node/test/approval-consumption.test.mjs"
           - "tests/helpers/yss-instance.mjs"
           - "tests/helpers/fixtures/native-legacy.json.gz"
           - "tests/helpers/fixtures/native-legacy.provenance.json"
@@ -310,7 +309,6 @@ profiles:
         input_patterns:
           - "tests/native-context-retirement.test.mjs"
           - "scripts/fixtures/user-decision/plan-fixture.mjs"
-          - ".template-source/tooling/node/test/approval-consumption.test.mjs"
           - "tests/helpers/yss-instance.mjs"
           - "tests/helpers/fixtures/native-legacy.json.gz"
           - "tests/helpers/fixtures/native-legacy.provenance.json"
@@ -332,7 +330,6 @@ profiles:
           - "scripts/fixtures/existing-backend/fixture.mjs"
           - "scripts/fixtures/contract-efficiency/distribution.test.mjs"
           - "scripts/fixtures/user-decision/plan-fixture.mjs"
-          - ".template-source/tooling/node/test/approval-consumption.test.mjs"
           - "tests/helpers/yss-instance.mjs"
           - "tests/helpers/fixtures/native-legacy.json.gz"
           - "tests/helpers/fixtures/native-legacy.provenance.json"
@@ -354,7 +351,6 @@ profiles:
         input_patterns:
           - "scripts/fixtures/reading-views/bundle.test.mjs"
           - "scripts/fixtures/user-decision/plan-fixture.mjs"
-          - ".template-source/tooling/node/test/approval-consumption.test.mjs"
           - "tests/helpers/yss-instance.mjs"
           - "tests/helpers/fixtures/native-legacy.json.gz"
           - "tests/helpers/fixtures/native-legacy.provenance.json"
@@ -376,7 +372,6 @@ profiles:
         input_patterns:
           - "scripts/fixtures/slice-contract-v3/round2.test.mjs"
           - "scripts/fixtures/user-decision/plan-fixture.mjs"
-          - ".template-source/tooling/node/test/approval-consumption.test.mjs"
           - "tests/helpers/yss-instance.mjs"
           - "tests/helpers/fixtures/native-legacy.json.gz"
           - "tests/helpers/fixtures/native-legacy.provenance.json"
@@ -399,7 +394,6 @@ profiles:
         input_patterns:
           - "scripts/fixtures/slice-contract-v3/round2.test.mjs"
           - "scripts/fixtures/user-decision/plan-fixture.mjs"
-          - ".template-source/tooling/node/test/approval-consumption.test.mjs"
           - "tests/helpers/yss-instance.mjs"
           - "tests/helpers/fixtures/native-legacy.json.gz"
           - "tests/helpers/fixtures/native-legacy.provenance.json"
@@ -442,27 +436,6 @@ profiles:
         input_patterns:
           - "scripts/fixtures/slice-contract-v3/scenarios.test.mjs"
           - "scripts/fixtures/user-decision/plan-fixture.mjs"
-          - ".template-source/tooling/node/test/approval-consumption.test.mjs"
-          - "tests/helpers/yss-instance.mjs"
-          - "tests/helpers/fixtures/native-legacy.json.gz"
-          - "tests/helpers/fixtures/native-legacy.provenance.json"
-          - "scripts/fixtures/spec-baseline/fixture.mjs"
-          - ".template-source/tooling/node/test/design-preview-browser.mjs"
-          - "scripts/lib/profile-tree.mjs"
-          - "profiles/**"
-        depends_on: []
-        failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各
-          Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
-      - id: check.profile-consumers-approval-consumption
-        resources: [ native-cli ]
-        lane: pc-approval-consumption
-        run: "node --test --test-skip-pattern='^backend plugin receives'
-          .template-source/tooling/node/test/approval-consumption.test.mjs"
-        group: feature-assets
-        inputs_complete: true
-        input_patterns:
-          - ".template-source/tooling/node/test/approval-consumption.test.mjs"
-          - "scripts/fixtures/user-decision/plan-fixture.mjs"
           - "tests/helpers/yss-instance.mjs"
           - "tests/helpers/fixtures/native-legacy.json.gz"
           - "tests/helpers/fixtures/native-legacy.provenance.json"
@@ -483,7 +456,6 @@ profiles:
         input_patterns:
           - ".template-source/tooling/node/test/approval-current.test.mjs"
           - "scripts/fixtures/user-decision/plan-fixture.mjs"
-          - ".template-source/tooling/node/test/approval-consumption.test.mjs"
           - "tests/helpers/yss-instance.mjs"
           - "tests/helpers/fixtures/native-legacy.json.gz"
           - "tests/helpers/fixtures/native-legacy.provenance.json"
@@ -504,7 +476,6 @@ profiles:
         input_patterns:
           - ".template-source/tooling/node/test/decision-continuation.test.mjs"
           - "scripts/fixtures/user-decision/plan-fixture.mjs"
-          - ".template-source/tooling/node/test/approval-consumption.test.mjs"
           - "tests/helpers/yss-instance.mjs"
           - "tests/helpers/fixtures/native-legacy.json.gz"
           - "tests/helpers/fixtures/native-legacy.provenance.json"
@@ -526,7 +497,6 @@ profiles:
           - "scripts/fixtures/existing-backend/fixture.mjs"
           - ".template-source/tooling/node/test/lifecycle-progression.test.mjs"
           - "scripts/fixtures/user-decision/plan-fixture.mjs"
-          - ".template-source/tooling/node/test/approval-consumption.test.mjs"
           - "tests/helpers/yss-instance.mjs"
           - "tests/helpers/fixtures/native-legacy.json.gz"
           - "tests/helpers/fixtures/native-legacy.provenance.json"
@@ -548,7 +518,6 @@ profiles:
           - ".template-source/tooling/node/test/plugin-design-consumption.test.\
             mjs"
           - "scripts/fixtures/user-decision/plan-fixture.mjs"
-          - ".template-source/tooling/node/test/approval-consumption.test.mjs"
           - "tests/helpers/yss-instance.mjs"
           - "tests/helpers/fixtures/native-legacy.json.gz"
           - "tests/helpers/fixtures/native-legacy.provenance.json"
@@ -570,7 +539,6 @@ profiles:
         input_patterns:
           - ".template-source/tooling/node/test/review-capabilities.test.mjs"
           - "scripts/fixtures/user-decision/plan-fixture.mjs"
-          - ".template-source/tooling/node/test/approval-consumption.test.mjs"
           - "tests/helpers/yss-instance.mjs"
           - "tests/helpers/fixtures/native-legacy.json.gz"
           - "tests/helpers/fixtures/native-legacy.provenance.json"
@@ -1073,6 +1041,9 @@ profiles:
         resources: [ native-cli, "repo-root-evidence" ]
         inputs_complete: true
         input_patterns:
+          - ".template-source/tooling/node/test/approval-consumption.test.mjs"
+          - ".template-source/tooling/node/test/lifecycle-controls.test.mjs"
+          - ".template-source/tooling/node/test/lifecycle-progression.test.mjs"
           - "scripts/fixtures/existing-backend/fixture.mjs"
           - "scripts/fixtures/role-independent-draft/**"
           - ".agents/skills/yss-stage-decision/references/domain-strategy.schem\
@@ -1081,6 +1052,7 @@ profiles:
             e.schema.json"
           - "scripts/lib/task-package.mjs"
           - "scripts/lib/review-package.mjs"
+          - "scripts/lib/lifecycle-controls.mjs"
           - "scripts/lib/plan-review-control.mjs"
           - "scripts/lib/slice-task-package.mjs"
           - "scripts/lib/existing-backend-architecture.mjs"
@@ -2439,7 +2411,6 @@ profiles:
           - ".template-spec/process/templates/lifecycle-checkpoint-template.yaml"
           - ".template-spec/process/lifecycle-registry.yaml"
           - "scripts/fixtures/user-decision/plan-fixture.mjs"
-          - ".template-source/tooling/node/test/approval-consumption.test.mjs"
           - "tests/helpers/yss-instance.mjs"
           - "tests/helpers/fixtures/native-legacy.json.gz"
           - "tests/helpers/fixtures/native-legacy.provenance.json"
@@ -2713,15 +2684,19 @@ profiles:
         failure_mode: 已移除插件 Profile 仍被接受，或权限与固定可执行路径的支持边界回退
       - id: check.backend-governance-contract
         run: node --test --test-concurrency=1 tests/backend-governance-contract.test.mjs
-          tests/backend-stage-routing.test.mjs
+          tests/backend-stage-routing.test.mjs scripts/fixtures/role-independent-draft/approval.test.mjs
         resources: [native-cli]
         group: lifecycle
         inputs_complete: true
         input_patterns:
+          - .template-source/tooling/node/test/approval-consumption.test.mjs
+          - .template-source/tooling/node/test/approval-current.test.mjs
+          - .template-source/tooling/node/test/lifecycle-controls.test.mjs
           - .agents/skills/yss-stage-decision/references/*-v4.schema.json
           - .template-source/contracts/2026-10-21-stage-gates-*.md
           - scripts/lib/stage-result.mjs
           - scripts/lib/native-evidence.mjs
+          - scripts/lib/native-approval.mjs
           - scripts/lib/structured-assets.mjs
           - scripts/lib/json-schema.mjs
           - .template-source/distribution/bundle-profile.json
@@ -2729,6 +2704,9 @@ profiles:
           - scripts/lib/testing/stage-gates-fixture.mjs
           - scripts/lib/testing/stage-content-fixture.mjs
           - scripts/fixtures/role-independent-draft/installed-fixture.mjs
+          - scripts/fixtures/role-independent-draft/approval.test.mjs
+          - scripts/lib/native-user-decision.mjs
+          - scripts/lib/testing/user-decision-fixture.mjs
           - tests/stage-gates-contract.test.mjs
           - tests/stage-result-native.test.mjs
           - tests/backend-governance-contract.test.mjs
@@ -3927,7 +3905,6 @@ groups:
         id: check.plan-review-control-convergence
       - run: node --test .template-source/tooling/node/test/approval-current.test.mjs
           .template-source/tooling/node/test/review-capabilities.test.mjs
-          .template-source/tooling/node/test/approval-consumption.test.mjs
         when: template-source
         id: check.role-gates-current-capability
       - run: scripts/verify-digital-human-roles
@@ -4576,7 +4553,8 @@ gates:
       - check.profile-consumers-slice-contract-v3-scenarios
       - check.role-independent-draft
       - check.work-layout-stage-tracking
-      - check.profile-consumers-approval-consumption
+      - check.backend-governance-contract
+      - check.role-independent-formal-current
       - check.profile-consumers-approval-current
       - check.profile-consumers-decision-continuation
       - check.profile-consumers-lifecycle-progression

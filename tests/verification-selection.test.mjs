@@ -176,6 +176,36 @@ test('退役旧切片视图夹具后仍选择真实 Backend 切片覆盖',()=>{
  assert.equal(plan.commands.filter(row=>row.id==='check.role-independent-formal-current').length,1);
  assert.ok(plan.commands.some(row=>row.id==='check.role-independent-draft'));
 });
+test('退役旧审批消费测试后仍选择当前绑定与门禁检查',()=>{
+ for(const file of ['.template-source/tooling/node/test/approval-consumption.test.mjs','.template-source/tooling/node/test/approval-current.test.mjs']){
+  const plan=planTemplateVerification({profile:'release',changedFiles:[file]});
+  assert.deepEqual(plan.unknown_files,[]);
+  const ids=['check.backend-governance-contract',...(file.endsWith('approval-consumption.test.mjs')?['check.role-independent-formal-current']:[])];
+  for(const id of ids){
+   const checks=plan.commands.filter(row=>row.id===id);
+   assert.equal(checks.length,1,id);
+   assert.ok(checks[0].gate_ids.includes('check.verification-distribution'),id);
+  }
+  assert.ok(!plan.commands.some(row=>row.id==='check.profile-consumers-approval-consumption'));
+ }
+});
+test('迁移生命周期门禁反例后仍选择真实 Backend 验证',()=>{
+ for(const file of ['.template-source/tooling/node/test/lifecycle-controls.test.mjs','.template-source/tooling/node/test/lifecycle-progression.test.mjs']){
+  const plan=planTemplateVerification({profile:'release',changedFiles:[file]});
+  assert.deepEqual(plan.unknown_files,[]);
+  assert.equal(plan.commands.filter(row=>row.id==='check.role-independent-formal-current').length,1,file);
+  if(file.endsWith('lifecycle-controls.test.mjs'))assert.equal(plan.commands.filter(row=>row.id==='check.backend-governance-contract').length,1,file);
+ }
+});
+test('授权延续变化选择真实 Backend 安装实例验证',()=>{
+ for(const file of ['scripts/fixtures/role-independent-draft/approval.test.mjs','scripts/lib/native-user-decision.mjs']){
+  const plan=planTemplateVerification({profile:'release',changedFiles:[file]});
+  const checks=plan.commands.filter(row=>row.id==='check.backend-governance-contract');
+  assert.equal(checks.length,1,file);
+  assert.ok(checks[0].command.includes('scripts/fixtures/role-independent-draft/approval.test.mjs'),file);
+  assert.ok(checks[0].gate_ids.includes('check.verification-approval'),file);
+ }
+});
 test('Backend 查询快照只由实际执行的消费者测试覆盖',()=>{
  for(const file of ['scripts/lib/lifecycle-context-query-core.mjs','profiles/backend/scripts/lib/lifecycle-context-query.mjs']){
   const plan=planTemplateVerification({profile:'release',changedFiles:[file]});

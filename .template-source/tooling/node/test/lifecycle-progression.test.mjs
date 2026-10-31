@@ -8,12 +8,10 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
-import {parseDocument} from '../../../../scripts/vendor/yaml.mjs';
 import {readProgressionTarget, assertProgressionEntry} from '../../../../scripts/lib/lifecycle-progression.mjs';
 import {lifecycleStatus} from '../../../../scripts/lib/lifecycle-status.mjs';
 import {ROOT} from '../../../../scripts/lib/lifecycle-registry.mjs';
 import {authorizeBackendDelivery} from '../../../../scripts/lib/lifecycle-execution-scope.mjs';
-import {assertCheckpointUserDecisions} from '../../../../scripts/lib/native-approval.mjs';
 
 function fixture(t) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'yss-progression-'));
@@ -249,20 +247,6 @@ test('已登记Backend本端目标达到或不适用时停止同feature写入，
     assert.equal(assertProgressionEntry('work-unit.slice-implementation', {root: f.root, checkpointRef: f.checkpointRef, env: {PATH: ''}}), null);
   }
 });
-
-test('Spec条件战略交接门禁的注册不会把整体完成门禁降为战略交接', t => {
-  const root = makeRoot('yss-spec-completion-');
-  t.after(() => fs.rmSync(root, {recursive: true, force: true}));
-  const f = {root};
-  const registry = parseDocument(fs.readFileSync(path.join(root, '.template-spec/process/lifecycle-registry.yaml'), 'utf8')).toJS();
-  assert.ok(registry.gates.some(gate => gate.id === 'gate.strategic-design-handoff-approved'));
-  const checkpoint = {repository_mode: 'project-instance', status: 'completed', blockers: [], gates: {'gate.strategic-design-handoff-approved': {status: 'approved'}}};
-  assert.throws(() => assertCheckpointUserDecisions(checkpoint, {root: f.root}), /当前交付或战略交接验收/);
-  checkpoint.gates['gate.delivery-accepted'] = {status: 'approved'};
-  assert.doesNotThrow(() => assertCheckpointUserDecisions(checkpoint, {root: f.root}));
-
-});
-
 
 test('当前无UI影响证据核验为不适用时正常停止，保留next和批准bytes', t => {
   const f=fixture(t);

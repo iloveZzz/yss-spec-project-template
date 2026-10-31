@@ -37,5 +37,19 @@ export async function backendTerminalFixture(f) {
   const terminalRef='.work/engineering/backend-delivery.json';write(terminalRef,{schema_version:1,kind:'backend-delivery-terminal',delivery_mode:'local-evidence',checkpoint_ref:cpRef,delivery:versioned('local-delivery.json'),review_state:versioned('backend-state.json'),business_completed:false,release_authorized:false,downstream:{owner:'synthetic-fixture',ticket_ref:'test-only:unified-acceptance',verification_plan:'真实项目另行完成业务与部署验收',target_version:'v1'}});
   const terminal=run('actual-backend-local-terminal',['contract','verify','--kind','backend-delivery-terminal','--file',terminalRef,'--checkpoint',cpRef]);assert.equal(terminal.coverage.result,'backend-delivered');assert.equal(terminal.coverage.business_completed,false);assert.equal(terminal.coverage.release_authorized,false);
   assert.equal((await verifyBackendDeliveryTerminal(root,{checkpointRef:cpRef,assetRef:terminalRef})).result,'backend-delivered');
+  if(!stageMode){
+   const gate='gate.fresh-verification-passed',partial={profile_id:'harness.backend-delivery',gates:{[gate]:structuredClone(cp.gates[gate])}};
+   write('partial-gate.json',partial);
+   run('partial-current-gate',['contract','verify','--kind','gate-checks','--file','partial-gate.json','--gate',gate]);
+   run('partial-is-not-checkpoint',['evidence','verify','--kind','approval','--file','fresh-approval.json','--checkpoint','partial-gate.json','--gate',gate,'--require-approved'],'SCHEMA');
+   partial.gates[gate].approval_scope=['other'];write('partial-gate.json',partial);
+   run('partial-gate-wrong-scope',['contract','verify','--kind','gate-checks','--file','partial-gate.json','--gate',gate],'APPROVAL_CURRENT_INVALID');
+   const completed={repository_mode:'project-instance',status:'completed',gates:{[gate]:{status:'approved'}}};
+   const checkDecisions=(label,state,code='OK')=>{write('completed-decisions.json',state);run(label,['contract','verify','--kind','checkpoint-user-decisions','--file','completed-decisions.json'],code);};
+   checkDecisions('completed-current-terminal',completed);
+   checkDecisions('completed-pending-terminal',{...completed,gates:{[gate]:{status:'pending'}}},'LIFECYCLE_CONTROL');
+   checkDecisions('completed-missing-terminal',{...completed,gates:{}},'LIFECYCLE_CONTROL');
+   checkDecisions('completed-stale-gate',{...completed,gates:{...completed.gates,'gate.slice-contract-approved':{status:'stale'}}},'LIFECYCLE_CONTROL');
+  }
 
 }
