@@ -176,6 +176,16 @@ test('退役旧切片视图夹具后仍选择真实 Backend 切片覆盖',()=>{
  assert.equal(plan.commands.filter(row=>row.id==='check.role-independent-formal-current').length,1);
  assert.ok(plan.commands.some(row=>row.id==='check.role-independent-draft'));
 });
+test('Backend 查询快照只由实际执行的消费者测试覆盖',()=>{
+ for(const file of ['scripts/lib/lifecycle-context-query-core.mjs','profiles/backend/scripts/lib/lifecycle-context-query.mjs']){
+  const plan=planTemplateVerification({profile:'release',changedFiles:[file]});
+  const checks=plan.commands.filter(row=>row.id==='check.profile-consumers-efficiency-distribution');
+  assert.equal(checks.length,1,file);
+  assert.ok(checks[0].command.includes('tests/efficiency-distribution.test.mjs'));
+  assert.ok(!plan.commands.some(row=>row.id==='check.lifecycle-query-profile-snapshot'));
+  assert.ok(checks[0].gate_ids.includes('check.verification-distribution'));
+ }
+});
 test('选择测试忽略外部慢档环境但保留显式 slow',()=>{
  for(const value of ['1','only']){
   const env={...process.env,YSS_VERIFY_SLOW:value};delete env.NODE_TEST_CONTEXT;

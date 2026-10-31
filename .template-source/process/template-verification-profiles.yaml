@@ -295,10 +295,11 @@ profiles:
           - "scripts/fixtures/spec-baseline/fixture.mjs"
           - ".template-source/tooling/node/test/design-preview-browser.mjs"
           - "scripts/lib/profile-tree.mjs"
+          - "scripts/lib/lifecycle-context-query-core.mjs"
+          - "profiles/*/scripts/lib/lifecycle-context-query.mjs"
           - "profiles/**"
         depends_on: []
-        failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile（内核 + _specialist + 覆盖层），或各
-          Profile 与根仓共享的任务包、交接、审查、切片合同行为不一致"
+        failure_mode: "消费 Profile 完整目录的测试与夹具读不到组合后的 Profile，或 Backend 查询读取期间漂移未被拒绝"
       - id: check.profile-consumers-native-context-retirement
         resources: [ native-cli ]
         lane: pc-native-context-retirement
@@ -1951,17 +1952,6 @@ profiles:
           - "tests/lifecycle-query-freshness.test.mjs"
         depends_on: []
         failure_mode: "查询摘要未绑定当前输入、重复查询不确定、读取期间漂移或非法项目身份被接受"
-      - id: check.lifecycle-query-profile-snapshot
-        run: "node --test --test-name-pattern='^design query parsing and binding'
-          tests/efficiency-distribution.test.mjs"
-        group: lifecycle
-        inputs_complete: true
-        input_patterns:
-          - "scripts/lib/lifecycle-context-query-core.mjs"
-          - "profiles/*/scripts/lib/lifecycle-context-query.mjs"
-          - "tests/efficiency-distribution.test.mjs"
-        depends_on: []
-        failure_mode: "专职 Profile 查询解析与摘要绑定读取了不同输入快照，未拒绝读取期间漂移"
       - id: "check.93d2af5732ccdd96"
         inputs_complete: true
         input_patterns:
@@ -4618,7 +4608,6 @@ gates:
       - check.profile-tree
       - check.profile-distribution
       - check.profile-distribution-gate
-      - check.lifecycle-query-profile-snapshot
       - check.distribution-hygiene
     audit_status: conservative-complete
     display_id: G18

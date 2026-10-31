@@ -9,14 +9,31 @@ import {createHash} from 'node:crypto';
 const binary = process.env.YSS_NATIVE_BINARY;
 assert.ok(binary && path.isAbsolute(binary), 'YSS_NATIVE_BINARY must name the real candidate');
 const digest = bytes => 'sha256:' + createHash('sha256').update(bytes).digest('hex');
+const seeds = new Map();
+process.on('exit', () => { for (const seed of seeds.values()) fs.rmSync(seed.temp, {recursive: true, force: true}); });
+
+function installedSeed(profile) {
+  if (seeds.has(profile)) return seeds.get(profile).root;
+  const temp = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'daily-seed-'))), root = path.join(temp, 'instance');
+  seeds.set(profile, {temp, root});
+  const installed = spawnSync(binary, ['init', '--profile', profile, '--root', root, '--project-name', 'Daily Fixture', '--json'], {encoding: 'utf8', maxBuffer: 16 * 1024 * 1024});
+  assert.equal(installed.status, 0, `current CLI init failed: ${installed.stderr || installed.stdout}`);
+  const inspected = spawnSync(binary, ['bundle', 'inspect', '--profile', profile, '--json'], {encoding: 'utf8', maxBuffer: 16 * 1024 * 1024});
+  assert.equal(inspected.status, 0, inspected.stderr);
+  const bundle = JSON.parse(inspected.stdout).result, metadata = JSON.parse(fs.readFileSync(path.join(root, '.yss.json')));
+  assert.equal(metadata.profile, profile);
+  assert.equal(metadata.templateCommit, bundle.templateCommit);
+  assert.equal(metadata.bundleHash, bundle.bundleHash);
+  return root;
+}
 
 function dailyFixture(t, {profile = 'backend'} = {}) {
   const temp = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'daily-inputs-')));
   t.after(() => fs.rmSync(temp, {recursive: true, force: true}));
   const root = path.join(temp, 'governance'), repo = path.join(temp, 'implementation');
   fs.mkdirSync(repo);
-  const installed = spawnSync(binary, ['init', '--profile', profile, '--root', root, '--project-name', 'Daily Fixture', '--json'], {encoding: 'utf8', maxBuffer: 16 * 1024 * 1024});
-  assert.equal(installed.status, 0, `current CLI init failed: ${installed.stderr || installed.stdout}`);
+  fs.cpSync(installedSeed(profile), root, {recursive: true, verbatimSymlinks: true});
+  fs.rmSync(path.join(root, '.yss', 'transactions'), {recursive: true, force: true});
   const write = (ref, value) => {
     const file = path.join(root, ref);
     fs.mkdirSync(path.dirname(file), {recursive: true});
