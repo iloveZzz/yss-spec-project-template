@@ -16,7 +16,7 @@
 
 程序已经成功而项目失败时保留已验证 CLI；同步失败由用户手动还原，分别报告安装、项目和处理结果。整体 setup 仅在全部适用操作与验收通过时完成，部分成功报告未完成。
 
-技能支持用户级独立安装，其必需说明和协议参考由 canonical 来源生成并随包携带。协议的可安装参考由 `.template-source/scripts/sync-harness-upgrade.mjs` 从本文件生成；生成副本不成为新事实源。项目分发和独立包使用同一技能身份。源码更名不改变已发布 Bundle，读取旧 Bundle 时以实际能力与标识为准；历史包和既有实例按明确升级或迁移更新。
+技能支持用户级独立安装，其必需说明和协议参考由 canonical 来源生成并随包携带。协议的可安装参考由 `.template-source/scripts/sync-harness-upgrade.mjs` 从本文件生成；生成副本不成为新事实源。项目分发和独立包使用同一技能身份。只处理重发后已登记的受信来源；重发前来源不作为兼容升级或迁移目标。
 
 ## 程序来源与安装
 
@@ -24,7 +24,7 @@
 
 技能随包 `scripts/bootstrap.py` 使用 Python 3.11+ 标准库：`inspect` 只读检查平台与 PATH 候选，不执行候选或证明其可信；`prepare --work-dir <仓外全新绝对目录> [--version <具体版本>]` 查询并固定一次 Release，核验后提供执行器和归档，不安装、不改 PATH、不操作项目。成功需退出 0、JSON `status=ok`，消费 result 中的 executor、archive、archiveSha256、version、cliCommit、platform、releaseUrl；失败消费 stage/code/message 和非零退出。缺 Python 时报告缺口，不自动安装；可信离线包仍按下文合同处理。
 
-程序安装不要求已有项目的身份与 Context。确认实际二进制绝对路径、入口链接和工具根；`version --json`、`update status --tool-root <工具根> --json`、安装收据、manifest、受管文件摘要及权限必须相符。旧版本缺安装诊断字段时逐项核验，不能将缺字段或版本查询成功当一致性通过。默认复用合法受管目录；首次安装采用用户级独立目录（Unix `~/.local/share/yss`，Windows `%LOCALAPPDATA%\yss`，展开绝对路径），不得覆盖未受管文件。工具根不能是 Git 仓库根或治理项目根。
+程序安装不要求已有项目的身份与 Context。确认实际二进制绝对路径、入口链接和工具根；`version --json`、`update status --tool-root <工具根> --json`、安装收据、manifest、受管文件摘要及权限必须相符。缺少必要安装诊断字段时停止，不能将版本查询成功当一致性通过。默认复用合法受管目录；首次安装采用用户级独立目录（Unix `~/.local/share/yss`，Windows `%LOCALAPPDATA%\yss`，展开绝对路径），不得覆盖未受管文件。工具根不能是 Git 仓库根或治理项目根。
 
 | 程序操作 | 接口与写入语义 |
 |---|---|
@@ -33,7 +33,7 @@
 | 固定包安装/离线升级 | `update plan --tool-root <工具根> --artifact <本机包> --sha256 <包摘要> --out <工具根外新计划>`，再 `update apply --tool-root <工具根> --plan-file <计划>` |
 | 状态与失败处理 | `update status` 只读；升级失败后保留原目录，在全新工具目录重新安装 |
 
-没有 CLI 时在仓外新临时目录安全展开已校验发行包，拒绝越界、链接与非预期成员，核对包内 manifest 文件摘要和权限后使用引导二进制。旧 CLI 缺在线入口或不能读取新包合同，同样可使用固定新引导执行器；不能先复制裸二进制到工具根绕过安装事务。计划和应用使用同一固定执行器，核对范围与来源后在已有授权内执行。
+没有 CLI 时在仓外新临时目录安全展开已校验发行包，拒绝越界、链接与非预期成员，核对包内 manifest 文件摘要和权限后使用引导二进制。CLI 3.0.0 之前的程序不作为兼容升级目标，使用固定新引导执行器在新目录重新安装；不能先复制裸二进制到工具根绕过安装事务。计划和应用使用同一固定执行器，核对范围与来源后在已有授权内执行。
 
 在线 `--to` 固定版本，CLI 会重新查询该 tag 清单，并在一次执行内核验下载与包内来源；它没有预期摘要参数。需要严格绑定查询时已审阅的包摘要或保存计划时，采用下载固定产物后的 `update plan/apply`，不声称在线两次调用锁住同 tag 的原摘要。在线回执与先前来源记录不符时停止后续项目操作并保留程序事务证据；已下载固定包后出现更晚 Release 不改变本批次。已最新且受管来源一致时返回 `unchanged`，不重复下载或创建事务。
 
@@ -67,9 +67,9 @@
 
 安装方式转换只接受受信重发后来源；活动或无法核验的正式工作返回 `MIGRATION_ACTIVE_TASK`/`MIGRATION_INPUT`，同方式返回 `INSTALLATION_UNCHANGED`，工作资产漂移要求重新规划。原任务、批准、checkpoint 和用户文件保留。重发前及更早实例不支持迁移或同步，保留原件。历史批准不授予新资格；治理语义变化须由已有授权覆盖。
 
-`--bind-cli` 仅用于 init/attach 的 `--plan --out`；保存 `kind=installation-plan/schemaVersion=5` 的原文件和 digest，核对 CLI 版本/提交/文件 SHA、完整 Bundle、模板提交及快照。应用使用同一执行器并传 `--expected-digest <原摘要>`；缺摘要为 `PLAN_REQUIRED`，不匹配为 `INPUT_DRIFT`。回执 planDigest 是内部事务摘要，不替换原计划 digest。普通 v4 计划仍按原合同消费；旧执行器缺绑定能力时核验来源，不伪造新计划。apply 不另加 installation 改写选择。
+`--bind-cli` 仅用于 init/attach 的 `--plan --out`；保存 `kind=installation-plan/schemaVersion=5` 的原文件和 digest，核对 CLI 版本/提交/文件 SHA、完整 Bundle、模板提交及快照。应用使用同一执行器并传 `--expected-digest <原摘要>`；缺摘要为 `PLAN_REQUIRED`，不匹配为 `INPUT_DRIFT`。回执 planDigest 是内部事务摘要，不替换原计划 digest。普通 v4 计划仍按当前合同消费；缺少当前绑定能力时停止，不伪造新计划。apply 不另加 installation 改写选择。
 
-`attach` 先识别身份，再选择资源。无 metadata 的普通工程生成首次接管计划；原生实例返回 `SYNC_REQUIRED` 并给出 `sync` 命令，可识别旧实例返回 `MIGRATION_REQUIRED`。身份矛盾、未知 schema 或未完成事务须先诊断或恢复，不能以 `--full` 重新接管。
+`attach` 先识别身份，再选择资源。无 metadata 的普通工程生成首次接管计划；受信原生实例返回 `SYNC_REQUIRED` 并给出 `sync` 命令，不受支持的旧实例保留原件并停止写入。身份矛盾、未知 schema 或未完成事务须先诊断或恢复，不能以 `--full` 重新接管。
 
 计划推荐保存到项目外全新普通文件；原生也允许专用 `.yss/plans/`。业务目录、Git 内部目录、链接别名及已有输出文件不能用作计划覆盖目标。目标模板来自固定二进制内的 Bundle，不另拉模板 main；项目 apply 不查询 `latest` 或执行计划提供的外部脚本。`bundle export --profile <Profile> --out <项目外新目录> --json` 可独立读取完整资产与 manifest。治理工程初始化及资源补装不授予产品阶段批准或生产脚手架权限，工程接入与生成仍消费相应生命周期合同。
 
@@ -111,7 +111,7 @@ yss sync --root ./project --apply --plan-file /review/resolved.json
 
 原生事务位于项目专用 `.yss/transactions/`，保存事务计划、持久日志、原字节及权限备份；回执给出 `transactionId`、状态和 `backupPath`。需要仓外长期恢复材料时，按归档清单保存固定二进制、Bundle、来源锁、插件包和完整事务材料，不能把旧执行器的默认外部归档路径写成原生行为。
 
-输入、受管文件、metadata 与 binding 在互斥锁下作为同一事务处理。同步失败及中断由用户按回执和计划核对新增路径并用 Git 人工还原；其他事务按其持久状态处理。恢复前核验身份、范围、日志和备份，不删除损坏或未完成状态制造成功。旧未完成事务由下一节的对应固定旧执行器处理，不交由原生执行器猜测旧日志。
+输入、受管文件、metadata 与 binding 在互斥锁下作为同一事务处理。同步失败及中断由用户按回执和计划核对新增路径并用 Git 人工还原；其他事务按其持久状态处理。恢复前核验身份、范围、日志和备份，不删除损坏或未完成状态制造成功。重发前的历史事务不受支持，保留现场并停止受影响操作。
 
 提交完成前运行原生校验，检查计划后置描述、身份、Profile、安装方式、资源闭包、来源锁、投影及 binding；仅 governed 要求治理 Context。同步校验失败不自动还原，保留现场并报告可能新增路径；其他事务沿用其保护规则。不自动运行业务测试或创建批准。回执 fileApplication 与 verification 分别报告文件应用和校验。
 
@@ -119,13 +119,9 @@ yss sync --root ./project --apply --plan-file /review/resolved.json
 
 当前没有 `migrate status/recover/rollback` 子命令。项目状态以不带 `--apply` 的 `recover/rollback` 查询，写入使用相应 `--apply`。未完成治理迁移可 `recover --apply`；已完成治理迁移不支持降级并返回 `DOWNGRADE_UNSUPPORTED`。普通项目回退仅针对最近成功的适用事务。恢复原件前先预检全部当前状态及备份；apply 后、首次 rollback 前的用户修改返回 `CONCURRENT` 并保持整个现场。备份损坏、身份或范围不符也阻断写入。成功回退后的重复回退保持幂等，不继续回退更早事务。回退不改变程序安装版本；程序升级使用独立工具根的 `update` 合同。
 
-## 历史执行器边界
+## 不受支持的历史来源
 
-历史旧 CLI 的固定 npm 包、完整源码 SHA、包摘要、模板快照、运行时和恢复说明由仓外恢复清单保留。历史版本长期可获取，不执行 unpublish。活跃构建、插件和分发不 require 旧 gitlink 私有模块。
-
-发现历史 journal、lock 或未完成事务时，先保留现场并读取准确诊断。历史事务只能在隔离副本核验匹配的仓外固定旧执行器后，按该版本自身帮助和写入规则恢复。历史恢复成功不说明当前 CLI 支持该身份迁移；仅旧家族 metadata 的实例仍不提供迁移。旧 `--target-dir`、`--output`、外部归档和决议协议只属于这些历史版本，不与上面的原生命令互换。
-
-旧恢复、原生迁移、整体回退和恢复后的旧执行器维护均留真实公共入口日志与包、二进制摘要。不能用手造 metadata 或 synthetic CI fixture 替代历史实例验收。
+重发前的 CLI、模板、实例和事务不属于当前兼容范围。发现历史 journal、lock 或未完成事务时保留现场并停止受影响写入；不承诺旧执行器、包或恢复路径可用。
 
 ## 验证与结论
 

@@ -1,6 +1,6 @@
 # 程序安装与升级
 
-仅在安装、升级、诊断或恢复 CLI 程序时读取。程序来源和事务规则由 [统一协议](operation-contract.md#程序来源与安装) 定义。以下命令在任意工作目录运行，二进制、工具根、归档和计划使用绝对路径；`<固定yss>` 是本轮核验过的实际文件，Windows 使用 `yss.exe`。
+仅在安装、升级、诊断或处理 CLI 程序失败时读取。程序来源和事务规则由 [统一协议](operation-contract.md#程序来源与安装) 定义。以下命令在任意工作目录运行，二进制、工具根、归档和计划使用绝对路径；`<固定yss>` 是本轮核验过的实际文件，Windows 使用 `yss.exe`。
 
 ## 取得最新正式版本并固定来源
 
@@ -28,7 +28,7 @@ macOS 事务要求实际事务目录中的 `objects/<摘要>` 恢复对象与目
 
 ## 选择工具根及检查已有安装
 
-优先解析实际入口的符号链接，找到受管二进制目录；对该目录执行 `<固定yss> update status --tool-root <工具根> --json`。比对 `version --json`、`installation.json`、`release-manifest.json`、实际文件摘要和权限。较新版本提供安装一致性诊断，较旧版本缺诊断字段时从清单逐项核对，不能把缺字段当通过。
+优先解析实际入口的符号链接，找到受管二进制目录；对该目录执行 `<固定yss> update status --tool-root <工具根> --json`。比对 `version --json`、`installation.json`、`release-manifest.json`、实际文件摘要和权限。缺少必要诊断字段时停止，不能把缺字段当通过。
 
 父交互 shell 的入口需在该 shell 内核对，子进程的 PATH 检查不能代替：Bash/Zsh 运行 `type -a yss` 和 `command -v yss`；PowerShell 运行 `Get-Command yss -All`。若 alias/function 遮蔽已核验文件，先使用绝对路径。确认要撤销当前会话的该定义后，Bash 用 `unalias yss` 或 `unset -f yss`，Zsh 用 `unalias yss` 或 `unfunction yss`；只执行实际存在的类型。PATH 调整后分别用 Bash `hash -r` 或 Zsh `rehash` 再核对；持久 shell 配置的修改按实际授权处理。
 

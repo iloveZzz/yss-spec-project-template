@@ -15,7 +15,7 @@ description: 安装或升级 YSS CLI，初始化、接管、同步技能或治�
 
 用户指定工程开展非技术 Spec 工作时，在已有授权内检查并补齐最小配置与当前技能，完成后交回原任务。新建/接管默认 governed，使用支持 matt-spec-v1 的 Bundle/执行器；安装方式不要求旧产品阶段资产。已核验的新流程工程不强制 Context、Plan 或 checkpoint，保留真实身份、来源、路径和事务保护。
 
-旧 Spec 无工作流标识或存在未知/矛盾身份时只诊断，由人工迁移；不自动 sync、migrate 或修改 metadata 开启新流程。Backend 和独立 skills 的操作合同保持各自原义，不应用 Spec 特例。
+旧 Spec 无工作流标识或存在未知/矛盾身份时只诊断并保留现场；不自动 sync、migrate 或修改 metadata 开启新流程。Backend 和独立 skills 的操作合同保持各自原义，不应用 Spec 特例。
 
 tracker 复用已明确选择，读取 issue-tracker.md 的 platform/root/repository/host/project 最小配置；缺真实目标决定才询问，不从 remote 强行切换。只读请求不准备下载、安装或写入。
 
@@ -32,7 +32,7 @@ tracker 复用已明确选择，读取 issue-tracker.md 的 platform/root/reposi
 | 当前 Spec/Backend 原生实例（metadata4/5） | 沿用已登记安装方式，`doctor/diff` 后按需 `sync` |
 | metadata4/5，用户要求转换安装方式 | 显式 `migrate --installation skills\|governed`，核对活动任务限制 |
 | 受支持的旧统一实例（metadata3 / identity1 / policy1） | 显式 `migrate --plan` / `migrate --apply`；不能先 sync |
-| 仅旧 npm 家族 metadata、Design、Frontend、旧 dev 或退役插件 | 当前执行器不提供迁移；保留原件，历史维护按固定旧执行器处理 |
+| 仅旧 npm 家族 metadata、Design、Frontend、旧 dev 或退役插件 | 当前执行器不提供迁移；保留原件并停止受影响写入 |
 | 当前受支持的插件 binding | 核验该插件对当前代际的公开升级或迁移接口后使用 |
 | 同来源资源缺口 | 当前 Profile 的 `skills/assets list` → `ensure` |
 | 模板源、矛盾身份、既有实例缺必需身份、未知 schema | 项目分支只诊断并保留现场 |
@@ -45,7 +45,7 @@ tracker 复用已明确选择，读取 issue-tracker.md 的 platform/root/reposi
 |---|---|
 | 安装、升级 CLI，或缺少平台包时构建 | [程序安装与升级](references/program-installation.md)：远程最新正式 Release → 固定版本及摘要 → 程序事务 |
 | 新建技能或治理工程、接管普通工程 | [项目操作](references/project-operations.md)：显式 installation，支持时绑定 CLI 保存计划后应用 |
-| 当前实例同步、安装方式转换、旧治理迁移或历史身份识别 | [项目操作](references/project-operations.md) 与 [家族适配](references/cli-families.md)：按安装方式及代际选择；binding 另核验插件接口 |
+| 受信实例同步、安装方式转换或身份识别 | [项目操作](references/project-operations.md) 与 [家族适配](references/cli-families.md)：按安装方式及代际选择；binding 另核验插件接口 |
 | 补装技能或阶段资源 | [项目操作](references/project-operations.md)：技能先 `list --details` / `resolve`，缺失时 `ensure` 保存计划后应用并重验；阶段沿用 `assets list/ensure` |
 | 诊断、恢复或回退 | 按程序/项目选择上述参考；先只读查状态，再在已有授权范围使用对应事务写入入口 |
 

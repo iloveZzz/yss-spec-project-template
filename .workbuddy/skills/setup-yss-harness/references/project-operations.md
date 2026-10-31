@@ -1,6 +1,6 @@
 # matt-spec-v1 的项目操作
 
-已核验新 Spec 工作流使用最小 tracker 与技能配置，不继承下文旧 Spec 的 Context、阶段或迁移前置。init/attach 默认 governed，由支持的 Bundle 生成工作流声明和受管政策；sync/补装只用于同一新流程，旧实例留给人工迁移。所有来源、目标、计划、冲突、事务和用户文件保护仍适用。
+已核验新 Spec 工作流使用最小 tracker 与技能配置，不继承下文旧 Spec 的 Context、阶段或迁移前置。init/attach 默认 governed，由支持的 Bundle 生成工作流声明和受管政策；sync/补装只用于同一新流程，旧来源不支持，保留现场并停止受影响写入。所有来源、目标、计划、冲突、事务和用户文件保护仍适用。
 
 新 Spec 的 init/attach 指定远程 tracker 时，同次提供目标：GitHub 使用 `--issue-tracker github --tracker-repository <owner/repo>`；GitLab 使用 `--issue-tracker gitlab --tracker-host <HTTPS实例> --tracker-project <完整项目路径>`。这些参数仅写入配置，不创建远程 Issue。计划阶段先校验目标，缺字段不写入工程；已有完整用户配置保护继续有效，不静默换平台。应用仍使用原保存计划。
 
@@ -36,11 +36,11 @@ Backend、独立 skills 及程序操作继续按实际合同；本特例不全�
 <固定yss> attach --profile <Profile> --root <普通工程根> --apply --plan-file <原计划.json> --expected-digest <原计划摘要> --json
 ```
 
-仅执行对应的一组命令；先核对 `capabilities` 和帮助是否支持 `--bind-cli`。支持时保存 `kind=installation-plan/schemaVersion=5` 的原文件与 `digest`，核对 CLI 文件摘要、完整 Bundle、安装方式、目标与变更，按已有授权应用。缺少 `--expected-digest` 返回 `PLAN_REQUIRED`，不匹配返回 `INPUT_DRIFT`；事务回执 `planDigest` 不代替原安装计划 `digest`。旧执行器缺能力时省略绑定参数，按它支持的普通计划核验固定来源，不伪造 schema5。
+仅执行对应的一组命令；先核对 `capabilities` 和帮助是否支持 `--bind-cli`。支持时保存 `kind=installation-plan/schemaVersion=5` 的原文件与 `digest`，核对 CLI 文件摘要、完整 Bundle、安装方式、目标与变更，按已有授权应用。缺少 `--expected-digest` 返回 `PLAN_REQUIRED`，不匹配返回 `INPUT_DRIFT`；事务回执 `planDigest` 不代替原安装计划 `digest`。缺少当前绑定能力时停止，不伪造 schema5。
 
 `--bind-cli` 只用于 init/attach 的规划，不用于 apply、sync 或 migrate。普通 Bundle5 计划仍为 v4；保存计划固定安装方式，apply 不另加选项改写。`init` 默认直接写入，本技能始终显式保存计划；已有工程用 attach，已登记实例用同步/迁移。
 
-## 同步与旧身份迁移
+## 同步与安装方式转换
 
 同步要求 Git 有提交且工作区干净（包含暂存、未暂存、未跟踪文件及子模块）；忽略目标不得覆盖。计划绑定 HEAD。失败后核对回执 `possibleNewPaths`、`possibleNewControlPaths` 和保存计划，人工处理实际新增文件和目录并用 Git 恢复已跟踪文件；不要自动执行 reset、clean、恢复或回滚。人工处理后确认 Git 干净并重新规划。
 
