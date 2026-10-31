@@ -11,7 +11,7 @@ import (
  "path/filepath"
 )
 var cliCommit, templateCommit, designCommit, backendCommit, frontendCommit string
-const version="1.0.0-fixture.1"
+const version="3.1.0"
 const agents="# Synthetic publication fixture\n"
 func digest(b []byte) string { d:=sha256.Sum256(b);return hex.EncodeToString(d[:]) }
 func jsonBytes(v any) []byte { b,e:=json.Marshal(v);must(e);return b }
@@ -20,7 +20,7 @@ func put(root,ref string,b []byte) { file:=filepath.Join(root,ref);must(os.Mkdir
 func template(profile string) string { switch profile {case "design":return designCommit;case "backend":return backendCommit;case "frontend":return frontendCommit};return templateCommit }
 func assets(profile string) map[string]string { files:=map[string]string{"AGENTS.md":agents,"CONTEXT.md":"# Synthetic context\n","yss-project.yaml":"schema_version: 1\nrepository_mode: project-instance\n",".agents/skills/yss-product-lifecycle/SKILL.md":"# Synthetic managed lifecycle\n"};if profile=="backend" { files["scripts/sync-skills"]="process.exit(0)\n";files["scripts/update-skill-lock"]="process.exit(0)\n" };return files }
 func managedRef(profile string) string { if profile=="spec" { return ".agents/skills/yss-product-lifecycle/SKILL.md" };return "scripts/sync-skills" }
-func inspection(profile string) map[string]any { files:=map[string]any{};for ref,data:=range assets(profile){files[ref]=map[string]any{"digest":digest([]byte(data)),"mode":420,"ownership":"managed","size":len(data)}};return map[string]any{"schemaVersion":2,"profile":profile,"templateCommit":template(profile),"templateVersion":"1.0.0-fixture.1","sourceState":"committed","sourceSnapshotHash":digest([]byte(profile+template(profile))),"manifestHash":digest([]byte("manifest:"+profile)),"bundleHash":digest([]byte("bundle:"+profile)),"files":files,"manifest":map[string]any{},"distribution":map[string]any{},"producer":map[string]any{"version":version,"commit":cliCommit,"sourceState":"committed"}} }
+func inspection(profile string) map[string]any { files:=map[string]any{};for ref,data:=range assets(profile){files[ref]=map[string]any{"digest":digest([]byte(data)),"mode":420,"ownership":"managed","size":len(data)}};return map[string]any{"schemaVersion":2,"profile":profile,"templateCommit":template(profile),"templateVersion":"5.1.0","sourceState":"committed","sourceSnapshotHash":digest([]byte(profile+template(profile))),"manifestHash":digest([]byte("manifest:"+profile)),"bundleHash":digest([]byte("bundle:"+profile)),"files":files,"manifest":map[string]any{},"distribution":map[string]any{},"producer":map[string]any{"version":version,"commit":cliCommit,"sourceState":"committed"}} }
 func metadata(profile string) []byte { ref:=managedRef(profile);baseline:=map[string]any{"type":"file","digest":digest([]byte(assets(profile)[ref])),"mode":420};managed:=map[string]any{ref:map[string]any{"baseline":baseline,"lastApplied":baseline,"ownership":"managed"}};return jsonBytes(map[string]any{"schemaVersion":1,"profile":profile,"templateCommit":template(profile),"managedFiles":managed,"baselineDigest":digest(jsonBytes(managed))}) }
 func main(){values:=map[string]string{};pos:=[]string{};for i:=1;i<len(os.Args);i++{a:=os.Args[i];if len(a)>2&&a[:2]=="--"{key:=a[2:];if key=="json"||key=="plan"||key=="apply"{values[key]="true"}else{i++;values[key]=os.Args[i]}}else{pos=append(pos,a)}};command:=pos[0];profile:=values["profile"];if profile==""{profile="spec"};root:=values["root"];result:=map[string]any{};code:="OK";status:="ok"
  switch command {

@@ -6,7 +6,7 @@ import path from 'node:path';
 import { createVerificationReport, finalizeVerificationReport,saveVerificationReport,verificationInputDigest } from '../scripts/lib/verification-report.mjs';
 import {collectReleaseSources} from '../.template-source/scripts/lib/verification-artifacts.mjs';
 import {platformKey} from '../.template-source/scripts/lib/yss-cli-pin.mjs';
-import { validateVerificationReport,validateLegacyReport,compileExpectedVerificationPlan,validateBaselineReport,assertNativeMigrationCommands } from '../.template-source/scripts/lib/verification-report-validator.mjs';
+import { validateVerificationReport,compileExpectedVerificationPlan,validateBaselineReport,assertNativeMigrationCommands } from '../.template-source/scripts/lib/verification-report-validator.mjs';
 import {addVerificationExecutionTasks,compileTaskExecution} from '../.template-source/scripts/lib/verification-execution-plan.mjs';
 import {validateJsonSchema} from '../scripts/lib/json-schema.mjs';
 import {validateMaintenanceVerificationEvidence} from '../scripts/lib/maintenance-intensity.mjs';
@@ -33,16 +33,20 @@ function fixture(t) {
   return {directory, plan, report, options};
 }
 
-test('原生发行集成消费现役 sync 升级与回滚轨迹，缺任何实际阶段均拒绝',()=>{
+test('原生发行集成消费现役 sync 升级轨迹，不要求同步回滚',()=>{
+ const root='/verification/instance';
  const calls=[
-  {args:['sync','--plan']},{args:['sync','--apply']},
-  {args:['sync','--plan']},{args:['sync','--apply']},
-  {args:['sync','--plan']},{args:['rollback','--apply']},
+  {args:['sync','--root',root,'--plan']},{args:['sync','--root',root,'--apply']},
+  {args:['sync','--root',root,'--plan']},{args:['sync','--root',root,'--apply']},
+  {args:['sync','--root',root,'--plan']},
  ];
- assert.doesNotThrow(()=>assertNativeMigrationCommands(calls));
- for(let index=0;index<calls.length;index++)assert.throws(()=>assertNativeMigrationCommands(calls.filter((_,i)=>i!==index)),/原生迁移/);
- assert.throws(()=>assertNativeMigrationCommands([...calls.slice(0,-1),{args:['rollback','--plan']}]),/原生迁移/);
- assert.throws(()=>assertNativeMigrationCommands([{args:['migrate','plan']},{args:['migrate','plan']},{args:['migrate','apply']},{args:['migrate','rollback']}]),/原生迁移/);
+ const git=[{file:'git',cwd:root,args:['init']},{file:'git',cwd:root,args:['commit']}];
+ assert.doesNotThrow(()=>assertNativeMigrationCommands(calls,git));
+ for(let index=0;index<calls.length;index++)assert.throws(()=>assertNativeMigrationCommands(calls.filter((_,i)=>i!==index),git),/原生迁移/);
+ assert.throws(()=>assertNativeMigrationCommands(calls,[]),/Git/);
+ assert.throws(()=>assertNativeMigrationCommands(calls,git.map(row=>({...row,cwd:'/other'}))),/Git/);
+ assert.throws(()=>assertNativeMigrationCommands([...calls,{args:['rollback','--apply']}],git),/回滚/);
+ assert.throws(()=>assertNativeMigrationCommands([{args:['migrate','plan']},{args:['migrate','plan']},{args:['migrate','apply']},{args:['migrate','rollback']}],git),/原生迁移/);
 });
 
 test('完整 v2 报告按独立期望台账核验', t => {
@@ -53,14 +57,9 @@ test('完整 v2 报告按独立期望台账核验', t => {
   assert.throws(() => validateVerificationReport(f.report, f.options), /任务|task/);
 });
 
-test('历史 v1 日志必须逐项绑定摘要且拒绝篡改',t=>{
- const f=fixture(t),report=structuredClone(f.report);report.schema_version=1;report.plan.syntax_files=[];
- const original=report.results[0];report.results.push({...original,index:1,group:'postchecks',command:JSON.stringify(['git','diff','--check'])});
- const options={directory:f.directory,expectedPlan:{commands:f.plan.commands,syntax_files:[]}};
- assert.doesNotThrow(()=>validateLegacyReport(report,options));
- for(const mutate of [r=>delete r.results[0].log_digests,r=>delete r.results[1].log_digests.stderrFile,r=>r.results[0].log_digests.stdoutFile='f'.repeat(64)]){
-  const changed=structuredClone(report);mutate(changed);assert.throws(()=>validateLegacyReport(changed,options),/摘要/);
- }
+test('旧版 v1 报告被明确拒绝',t=>{
+ const f=fixture(t),report=structuredClone(f.report);report.schema_version=1;
+ assert.throws(()=>validateVerificationReport(report,f.options),/v2 类型或版本不支持/);
 });
 test('必跑责任报告按独立编译任务拒绝漏项、丢 Gate 和执行篡改',t=>{
  const f=fixture(t),head=spawnSync('git',['rev-parse','HEAD'],{cwd:ROOT,encoding:'utf8'}).stdout.trim();
@@ -274,7 +273,7 @@ test('无 gitmodules 的维护证据仍独立核验真实来源、command、invo
  t.after(()=>{for(const key of keys)if(previous[key]===undefined)delete process.env[key];else process.env[key]=previous[key];});for(const key of keys)delete process.env[key];
  Object.assign(process.env,{YSS_NATIVE_BINARY:binary,YSS_NATIVE_BINARY_SHA256:createHash('sha256').update(fs.readFileSync(binary)).digest('hex'),YSS_NATIVE_SOURCE_ROOT:fs.realpathSync(cli)});
  const pinFile=path.join(f.directory,'fixture-pin.json');
- fs.writeFileSync(pinFile,JSON.stringify({schema_version:1,repository:'https://example.invalid/yss-cli.git',version:'1.0.0-fixture.1',commit:cliCommit,go_version:'1.27.1',build:'regression-only:synthetic-fixture',binaries:{[platformKey()]:{sha256:process.env.YSS_NATIVE_BINARY_SHA256}}}));
+ fs.writeFileSync(pinFile,JSON.stringify({schema_version:1,repository:'https://example.invalid/yss-cli.git',version:'3.1.0',commit:cliCommit,go_version:'1.27.1',build:'regression-only:synthetic-fixture',binaries:{[platformKey()]:{sha256:process.env.YSS_NATIVE_BINARY_SHA256}}}));
  Object.assign(process.env,{YSS_NATIVE_PIN_FILE:pinFile,YSS_NATIVE_PIN_SHA256:createHash('sha256').update(fs.readFileSync(pinFile)).digest('hex')});
  const sources=collectReleaseSources({root:source,commit:templateCommit});assert.equal(fs.existsSync(path.join(source,'.gitmodules')),false);
  f.report.root=fs.realpathSync(source);f.report.input_sha256=verificationInputDigest(source);f.report.input_after_sha256=f.report.input_sha256;f.report.sources_manifest=structuredClone(sources);
@@ -374,7 +373,7 @@ test('经登记的真实执行报告可在不同仓根复验，未登记及篡�
  const original=path.join(temporary,'original'),release=path.join(temporary,'original-release'),fullDir=path.join(release,'full-verification');
  fs.mkdirSync(original);fs.mkdirSync(fullDir,{recursive:true});fs.writeFileSync(path.join(original,'sample.mjs'),'console.log("observed");\n');
  const oldNode=path.join(temporary,'node');fs.copyFileSync(process.execPath,oldNode);fs.chmodSync(oldNode,0o755);assert.notEqual(oldNode,process.execPath);
- const commit='1e49127842c358caf552af8ebec58f438a35c5a6',previous='951710a4097d97188545ecfa43a33f7c14c6e91a';
+ const commit=spawnSync('git',['rev-parse','HEAD'],{cwd:ROOT,encoding:'utf8'}).stdout.trim(),previous='1e49127842c358caf552af8ebec58f438a35c5a6';
  const task={id:'check.sample',task_id:'sample',command:'node --test sample.mjs',gate_ids:['G04']};
  const originalTask={...task,execution:compileTaskExecution(task,{root:original,nodePath:oldNode})};
  assert.equal(originalTask.execution.file,oldNode,'历史 Node 路径须参与重编译');
@@ -419,18 +418,10 @@ test('经登记的真实执行报告可在不同仓根复验，未登记及篡�
  assert.equal(verifier.validateBaselineReport(options).valid,false,'日志篡改必须拒绝');
 });
 
-test('Template 5.0 固定策略按原提交重建检查及路径映射',t=>{
+test('重发前的同名 Template 5.0 不作为受信报告来源',t=>{
  const root=path.resolve(import.meta.dirname,'..'),directory=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'current-policy-')));t.after(()=>fs.rmSync(directory,{recursive:true,force:true}));
  const fixedCommit='1e49127842c358caf552af8ebec58f438a35c5a6',base='951710a4097d97188545ecfa43a33f7c14c6e91a';
- const plan=compileExpectedVerificationPlan({root,fixedCommit,args:['--profile','release','--base',base],reportDirectory:path.join(directory,'report')});
- assert.equal(plan.strategy,'release');assert.equal(plan.scope.base,base);
- assert.ok(plan.commands.some(row=>row.execution?.requested_command==='scripts/verify-repository-scope-scenarios'&&row.execution.args.at(-1).endsWith('/tests/scenarios/verify-repository-scope-scenarios.mjs')));
- assert.ok(plan.policy_digest&&plan.selection.omitted.length>0);
- const oldNode=path.join(directory,'node');
- const recompiled=compileExpectedVerificationPlan({root,fixedCommit,args:['--profile','release','--base',base],reportDirectory:path.join(directory,'report'),nodePath:oldNode});
- assert.ok(recompiled.commands.find(row=>row.kind==='preflight').command.startsWith(`'${oldNode}' `));
- assert.ok(recompiled.commands.filter(row=>row.execution?.file===oldNode).length>0);
- assert.ok(recompiled.commands.filter(row=>row.kind==='artifact-prepare').every(row=>row.command.startsWith(`'${oldNode}' `)));
+ assert.throws(()=>compileExpectedVerificationPlan({root,fixedCommit,args:['--profile','release','--base',base],reportDirectory:path.join(directory,'report')}),/REPORT_SOURCE_UNSUPPORTED/);
 });
 
 test('qualified 历史报告不能为当前 release 提供执行许可',t=>{const f=fixture(t);f.plan.strategy='qualified-gates';f.report.plan.strategy='qualified-gates';assert.throws(()=>validateVerificationReport(f.report,f.options),/HISTORICAL_QUALIFIED_BASELINE_REFUSED/);});

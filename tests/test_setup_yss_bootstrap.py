@@ -33,15 +33,15 @@ def sha(value):
 
 
 def fixture(platform="darwin/arm64", change=None, extra=None):
-    version, commit = "2.8.1", "a" * 40
+    version, commit = "3.1.0", "a" * 40
     binary = "yss.exe" if platform.startswith("windows/") else "yss"
     producer = {"version": "bundle-producer-v4", "commit": "b" * 40, "sourceState": "committed"}
     source = {"profile": "spec", "sourcePath": ".", "templateCommit": "c" * 40,
-              "templateVersion": "4.8.0", "templateTag": "v4.8.0", "sourceState": "committed",
+              "templateVersion": "5.1.0", "templateTag": "v5.1.0", "sourceState": "committed",
               "policyPath": ".template-source/distribution/bundle-profile.json", "policyHash": "d" * 64,
               "legacy": {"version": "3.5.10", "cliCommit": "e" * 40}}
     lock = {"schemaVersion": 5, "producer": producer, "profiles": {"spec": source}}
-    bundle = {"schemaVersion": 4, "profile": "spec", "templateVersion": "4.8.0",
+    bundle = {"schemaVersion": 4, "profile": "spec", "templateVersion": "5.1.0",
               "templateCommit": source["templateCommit"], "sourceState": "committed", "producer": producer,
               "legacy": source["legacy"], "legacyVersion": "3.5.10", "legacyCLICommit": "e" * 40,
               "sourceSnapshotHash": "f" * 64, "manifestHash": "1" * 64, "bundleHash": "2" * 64,
@@ -81,7 +81,7 @@ def fixture(platform="darwin/arm64", change=None, extra=None):
             if extra:
                 extra(archive)
     data = out.getvalue()
-    name = "yss_2.8.1_" + platform.replace("/", "_") + (".zip" if platform.startswith("windows/") else ".tar.gz")
+    name = "yss_3.1.0_" + platform.replace("/", "_") + (".zip" if platform.startswith("windows/") else ".tar.gz")
     artifact = {"platform": platform, "archive": name, "sha256": sha(data), "bytes": len(data),
                 "compiled": False, "nativeRuntimeVerified": True, "binarySha256": sha(files[binary]), "nativeReceiptSha256": "3" * 64}
     proof = {"schemaVersion": 2, "version": version, "cliCommit": commit, "sourceState": "committed",
@@ -91,9 +91,9 @@ def fixture(platform="darwin/arm64", change=None, extra=None):
              "supportedPlatforms": sorted(bootstrap.PLATFORMS),
              "bundles": {profile: {key: item[key] for key in ("templateVersion", "templateCommit", "sourceState", "sourceSnapshotHash", "manifestHash", "bundleHash")} for profile, item in bundles.items()},
              "artifacts": [artifact]}
-    release = {"tag_name": "v2.8.1", "draft": False, "prerelease": False,
-               "html_url": bootstrap.RELEASE_BASE + "tag/v2.8.1", "assets": [
-                   {"name": asset, "browser_download_url": bootstrap.RELEASE_BASE + "download/v2.8.1/" + asset,
+    release = {"tag_name": "v3.1.0", "draft": False, "prerelease": False,
+               "html_url": bootstrap.RELEASE_BASE + "tag/v3.1.0", "assets": [
+                   {"name": asset, "browser_download_url": bootstrap.RELEASE_BASE + "download/v3.1.0/" + asset,
                     "size": size} for asset, size in [("checksums.json", len(encoded(proof))), (name, len(data))]]}
     return release, proof, data
 
@@ -114,7 +114,7 @@ class BootstrapTests(unittest.TestCase):
         self.assertEqual(set(result["binaries"]), {"darwin-arm64"})
         self.assertEqual(fetch.call_count, 2)
         self.assertTrue(fetch.call_args_list[0].args[0].endswith("/latest"))
-        self.assertIn("/download/v2.8.1/", fetch.call_args_list[1].args[0])
+        self.assertIn("/download/v3.1.0/", fetch.call_args_list[1].args[0])
 
     def test_regression_resolver_rejects_unknown_proof_and_fixes_explicit_tag(self):
         resolver = self.release_resolver()
@@ -122,8 +122,8 @@ class BootstrapTests(unittest.TestCase):
         proof["schemaVersion"] = 99
         with patch.object(resolver.bootstrap, "fetch_bytes", side_effect=[encoded(release), encoded(proof)]) as fetch:
             with self.assertRaises(resolver.bootstrap.BootstrapError):
-                resolver.resolve_release("2.8.1")
-        self.assertTrue(fetch.call_args_list[0].args[0].endswith("/tags/v2.8.1"))
+                resolver.resolve_release("3.1.0")
+        self.assertTrue(fetch.call_args_list[0].args[0].endswith("/tags/v3.1.0"))
 
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
@@ -142,15 +142,15 @@ class BootstrapTests(unittest.TestCase):
         result, fetch = self.prepare()
         self.assertEqual(fetch.call_count, 3)
         self.assertTrue(fetch.call_args_list[0].args[0].endswith("/latest"))
-        self.assertTrue(all("/download/v2.8.1/" in call.args[0] for call in fetch.call_args_list[1:]))
+        self.assertTrue(all("/download/v3.1.0/" in call.args[0] for call in fetch.call_args_list[1:]))
         self.assertEqual(Path(result["executor"]).read_bytes(), b"must never execute this downloaded file")
         self.assertEqual(stat.S_IMODE(Path(result["executor"]).stat().st_mode), 0o755)
         self.assertFalse((self.root / "new" / "docs").exists())
         self.assertEqual(result["archiveSha256"], sha(Path(result["archive"]).read_bytes()))
 
     def test_fixed_version_does_not_query_latest(self):
-        _, fetch = self.prepare(version="v2.8.1")
-        self.assertTrue(fetch.call_args_list[0].args[0].endswith("/tags/v2.8.1"))
+        _, fetch = self.prepare(version="v3.1.0")
+        self.assertTrue(fetch.call_args_list[0].args[0].endswith("/tags/v3.1.0"))
 
     def test_existing_directory_and_symlink_parent_refused_before_network(self):
         target = self.root / "keep"
@@ -191,7 +191,7 @@ class BootstrapTests(unittest.TestCase):
                        lambda f, m, j: j.update(protocolVersion=True)):
             release, proof, data = fixture(change=change)
             with self.subTest(change=change), self.assertRaises(bootstrap.BootstrapError):
-                bootstrap.validate_archive(data, proof["artifacts"][0], proof, "2.8.1", "darwin/arm64")
+                bootstrap.validate_archive(data, proof["artifacts"][0], proof, "3.1.0", "darwin/arm64")
 
     def test_unknown_duplicate_traversal_and_link_members_rejected(self):
         for name, kind in (("../escape", tarfile.REGTYPE), ("yss", tarfile.REGTYPE),
@@ -202,18 +202,18 @@ class BootstrapTests(unittest.TestCase):
                 archive.addfile(info, io.BytesIO())
             _, proof, data = fixture(extra=extra)
             with self.subTest(name=name), self.assertRaises(bootstrap.BootstrapError):
-                bootstrap.validate_archive(data, proof["artifacts"][0], proof, "2.8.1", "darwin/arm64")
+                bootstrap.validate_archive(data, proof["artifacts"][0], proof, "3.1.0", "darwin/arm64")
 
     def test_trailing_gzip_stream_rejected(self):
         _, proof, data = fixture()
         data += data
         proof["artifacts"][0].update(sha256=sha(data), bytes=len(data))
         with self.assertRaises(bootstrap.BootstrapError):
-            bootstrap.validate_archive(data, proof["artifacts"][0], proof, "2.8.1", "darwin/arm64")
+            bootstrap.validate_archive(data, proof["artifacts"][0], proof, "3.1.0", "darwin/arm64")
 
     def test_qualified_zip_parsing_is_independent_of_native_execution(self):
         _, proof, data = fixture(platform="windows/amd64")
-        binary, _ = bootstrap.validate_archive(data, proof["artifacts"][0], proof, "2.8.1", "windows/amd64")
+        binary, _ = bootstrap.validate_archive(data, proof["artifacts"][0], proof, "3.1.0", "windows/amd64")
         self.assertEqual(binary, b"must never execute this downloaded file")
 
     def test_json_duplicate_keys_and_nonfinite_numbers_rejected(self):
@@ -221,17 +221,64 @@ class BootstrapTests(unittest.TestCase):
             with self.subTest(data=data), self.assertRaises(bootstrap.BootstrapError):
                 bootstrap.read_json(data, "test")
 
+    def test_retired_cli_releases_are_rejected(self):
+        _, proof, _ = fixture()
+        proof["version"] = "2.8.1"
+        proof["artifacts"][0]["archive"] = proof["artifacts"][0]["archive"].replace("3.1.0", "2.8.1")
+        with self.assertRaises(bootstrap.BootstrapError):
+            bootstrap.validate_proof(proof, "2.8.1", "darwin/arm64")
+        proof["version"] = "3.0.0"
+        proof["cliCommit"] = "d67bc777198174a92cc3f58e4f26ce9f0daef2d9"
+        proof["artifacts"][0]["archive"] = proof["artifacts"][0]["archive"].replace("2.8.1", "3.0.0")
+        with self.assertRaises(bootstrap.BootstrapError):
+            bootstrap.validate_proof(proof, "3.0.0", "darwin/arm64")
+
+    def test_retired_cli_version_is_rejected_before_network_or_work_directory(self):
+        with tempfile.TemporaryDirectory() as directory:
+            work = Path(directory) / "new-work"
+            with patch.object(bootstrap, "fetch_bytes") as fetch, self.assertRaises(bootstrap.BootstrapError):
+                bootstrap.prepare(str(work), "2.8.1")
+            fetch.assert_not_called()
+            self.assertFalse(work.exists())
+
+    def test_retired_template_release_is_rejected_even_with_matching_metadata(self):
+        _, _, data = fixture()
+        with tarfile.open(fileobj=io.BytesIO(data)) as archive:
+            lock = json.load(archive.extractfile("docs/source-lock.json"))
+            manifest = json.load(archive.extractfile("release-manifest.json"))
+        for name in ("spec", "backend"):
+            lock["profiles"][name].update(templateCommit="1e49127842c358caf552af8ebec58f438a35c5a6", templateVersion="5.0.0", templateTag="v5.0.0")
+            manifest["bundles"][name].update(templateCommit="1e49127842c358caf552af8ebec58f438a35c5a6", templateVersion="5.0.0")
+        with self.assertRaises(bootstrap.BootstrapError):
+            bootstrap.source_lock_matches(encoded(lock), manifest["bundles"])
+
+    def test_supported_template_versions_require_current_source_identity(self):
+        _, _, data = fixture()
+        with tarfile.open(fileobj=io.BytesIO(data)) as archive:
+            lock = json.load(archive.extractfile("docs/source-lock.json"))
+            manifest = json.load(archive.extractfile("release-manifest.json"))
+        for version in ("4.9.0", "5.0.0", "5.1.0", "5.2.0"):
+            with self.subTest(version=version):
+                for name in ("spec", "backend"):
+                    lock["profiles"][name].update(templateVersion=version, templateTag="v" + version)
+                    manifest["bundles"][name]["templateVersion"] = version
+                if version == "4.9.0":
+                    with self.assertRaises(bootstrap.BootstrapError):
+                        bootstrap.source_lock_matches(encoded(lock), manifest["bundles"])
+                else:
+                    bootstrap.source_lock_matches(encoded(lock), manifest["bundles"])
+
     def test_unknown_proof_schema_and_boolean_schema_rejected(self):
         for value in (3, True):
             _, proof, _ = fixture()
             proof["schemaVersion"] = value
             with self.subTest(value=value), self.assertRaises(bootstrap.BootstrapError):
-                bootstrap.validate_proof(proof, "2.8.1", "darwin/arm64")
+                bootstrap.validate_proof(proof, "3.1.0", "darwin/arm64")
 
     def test_expanded_archive_limit_precedes_member_extraction(self):
         _, proof, data = fixture()
         with patch.object(bootstrap, "MAX_ARCHIVE", len(data) + 1), self.assertRaises(bootstrap.BootstrapError):
-            bootstrap.validate_archive(data, proof["artifacts"][0], proof, "2.8.1", "darwin/arm64")
+            bootstrap.validate_archive(data, proof["artifacts"][0], proof, "3.1.0", "darwin/arm64")
 
     def test_source_lock_profile_commit_mismatch_rejected(self):
         def change(files, modes, manifest):
@@ -242,7 +289,7 @@ class BootstrapTests(unittest.TestCase):
             manifest["files"]["docs/source-lock.json"]["digest"] = manifest["sourceLockSha256"]
         _, proof, data = fixture(change=change)
         with self.assertRaises(bootstrap.BootstrapError) as caught:
-            bootstrap.validate_archive(data, proof["artifacts"][0], proof, "2.8.1", "darwin/arm64")
+            bootstrap.validate_archive(data, proof["artifacts"][0], proof, "3.1.0", "darwin/arm64")
         self.assertEqual(caught.exception.stage, "source-lock")
 
     def test_source_lock_paths_and_profile_contract_rejected(self):
@@ -305,7 +352,7 @@ class BootstrapTests(unittest.TestCase):
         executable = tool / "yss"
         executable.write_text("#!/bin/sh\ntouch SHOULD_NOT_EXIST\n")
         executable.chmod(0o755)
-        (tool / "installation.json").write_text(json.dumps({"cliVersion": "2.8.1", "secret": "do-not-show"}))
+        (tool / "installation.json").write_text(json.dumps({"cliVersion": "3.1.0", "secret": "do-not-show"}))
         (bindir / "yss").symlink_to(executable)
         with patch.dict(os.environ, {"PATH": str(bindir), "HTTPS_PROXY": "http://secret"}):
             result = bootstrap.inspect_environment()

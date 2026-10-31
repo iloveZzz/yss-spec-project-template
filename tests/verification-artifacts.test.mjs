@@ -4,10 +4,16 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
-import {collectReleaseSources,createArtifactCoordinator,sourceTuple,validateArtifact,installedTreeDigest,produceCliArtifact,verifyInstalledCliMigration} from '../.template-source/scripts/lib/verification-artifacts.mjs';
+import {assertSupportedReleaseIdentity,collectReleaseSources,createArtifactCoordinator,sourceTuple,validateArtifact,installedTreeDigest,produceCliArtifact,verifyInstalledCliMigration} from '../.template-source/scripts/lib/verification-artifacts.mjs';
 import {NATIVE_PROFILES,nativeBinary,nativeDigest as hash,inspectNative,runNative} from '../.template-source/scripts/lib/native-yss.mjs';
 const temporary=t=>{const dir=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'native-artifacts-')));t.after(()=>fs.rmSync(dir,{recursive:true,force:true}));return dir;};
 const source=(binarySha)=>({namespace:'candidate-release',family:'spec',cli_commit:'1'.repeat(40),template_commit:'2'.repeat(40),core_commit:'3'.repeat(40),package_name:'yss',version:'1.0.0-alpha.3',template_version:'git:'+'2'.repeat(40),source_contract_version:2,protocol_version:1,snapshot_hash:'4'.repeat(64),manifest_hash:'5'.repeat(64),bundle_hash:'6'.repeat(64),binary_sha256:binarySha});
+
+test('正式来源拒绝旧版本及重发前同名提交',()=>{
+ const cli={version:'3.0.0',cliCommit:'a'.repeat(40)},bundle={templateVersion:'5.0.0',templateCommit:'b'.repeat(40)};
+ assert.doesNotThrow(()=>assertSupportedReleaseIdentity(cli,bundle));
+ for(const [c,b] of [[{...cli,version:'2.9.0'},bundle],[{...cli,cliCommit:'d67bc777198174a92cc3f58e4f26ce9f0daef2d9'},bundle],[cli,{...bundle,templateVersion:'4.9.0'}],[cli,{...bundle,templateCommit:'1e49127842c358caf552af8ebec58f438a35c5a6'}]])assert.throws(()=>assertSupportedReleaseIdentity(c,b),/来源|版本/);
+});
 
 test('同轮精确来源只生产一次，plugin-pinned 与候选产物分槽',t=>{
  const directory=temporary(t),tarball=path.join(directory,'yss');fs.writeFileSync(tarball,'exact binary bytes');const tuple=source(hash(fs.readFileSync(tarball)));let count=0;
@@ -42,7 +48,7 @@ test('固定原生消费保留完整 Bundle 并绑定二进制 bytes',t=>{
  fs.writeFileSync(path.join(artifact.installed_root,'bundle/scripts/runtime-store'),'tampered governance tool');assert.throws(()=>validateArtifact(artifact,tuple),/安装树/);
 });
 
-test('Spec 与 Backend 真实原生受管升级执行非空事务、重新规划幂等并整体回退',t=>{
+test('Spec 与 Backend 在已提交 Git 工作区同步并保留用户文件',t=>{
  const base=temporary(t),root=path.join(base,'source');fs.mkdirSync(root);const pinned=nativeBinary(),version=runNative(['version']).result;
  for(const family of NATIVE_PROFILES){
   const inspection=inspectNative(family),tuple={...source(pinned.digest),family,version:version.version,template_version:inspection.templateVersion,cli_commit:version.cliCommit,template_commit:inspection.templateCommit,snapshot_hash:inspection.sourceSnapshotHash,manifest_hash:inspection.manifestHash,bundle_hash:inspection.bundleHash};
@@ -54,13 +60,13 @@ test('Spec 与 Backend 真实原生受管升级执行非空事务、重新规划
   const managedRef=family==='spec'?'.agents/skills/yss-product-lifecycle/SKILL.md':'scripts/sync-skills';
   const plan=JSON.parse(fs.readFileSync(path.join(upgradeRoot,'migration-plan.json')));
   assert.ok(plan.changes.some(change=>change.path===managedRef),`${family}: 必须有真实受管升级`);
-  assert.equal(fs.readFileSync(path.join(target,managedRef),'utf8'),'// previous managed tool\n',`${family}: rollback 恢复受管输入`);
-  assert.equal(fs.readFileSync(path.join(target,'src/user.txt'),'utf8'),'uncommitted work',`${family}: rollback 保留用户文件`);
+  assert.notEqual(fs.readFileSync(path.join(target,managedRef),'utf8'),'// previous managed tool\n',`${family}: 同步应更新受管输入`);
+  assert.equal(fs.readFileSync(path.join(target,'src/user.txt'),'utf8'),'user data',`${family}: 同步保留用户文件`);
   assert.ok(fs.readFileSync(path.join(target,'CONTEXT.md')).length>0,`${family}: 保留用户上下文`);
-  // yss 2.3 起没有 migrate：升级是 sync 的计划与应用，回退是 rollback --apply。
   const sync=commands.filter(row=>row.file===artifact.binary&&row.args[0]==='sync');
   assert.ok(sync.some(row=>row.args.includes('--apply')),`${family}: sync apply`);
-  assert.ok(commands.some(row=>row.file===artifact.binary&&row.args[0]==='rollback'&&row.args.includes('--apply')),`${family}: rollback`);
+  assert.ok(!commands.some(row=>row.file===artifact.binary&&['recover','rollback'].includes(row.args[0])),`${family}: 不执行同步恢复或回滚`);
+  assert.ok(commands.some(row=>row.file==='git'&&row.args.includes('commit')),`${family}: 同步前提交 Git 基线`);
   assert.ok(!commands.some(row=>row.args[0]==='migrate'),`${family}: migrate 已移除`);
  }
 });
@@ -78,13 +84,13 @@ test('发行来源收集：固定二进制与源码提交必须与固定文件�
  put(cli,'main.go',fs.readFileSync(new URL('../.template-source/scripts/tests/fixtures/native-release.go',import.meta.url)));
 
  const cliCommit=commit(cli),pinCommit='f'.repeat(40),platform=`${process.platform==='win32'?'windows':process.platform}/${process.arch==='x64'?'amd64':process.arch}`;
- const pinFile=put(root,'.template-source/distribution/yss-cli-pin.json',JSON.stringify({schema_version:1,repository:'https://example.test/yss-cli.git',version:'1.0.0-fixture.1',commit:pinCommit,go_version:'1.27.1',build:'regression-only:synthetic-fixture',binaries:{[platform.replace('/','-')]:{sha256:'0'.repeat(64)}}}));
+ const pinFile=put(root,'.template-source/distribution/yss-cli-pin.json',JSON.stringify({schema_version:1,repository:'https://example.test/yss-cli.git',version:'3.1.0',commit:pinCommit,go_version:'1.27.1',build:'regression-only:synthetic-fixture',binaries:{[platform.replace('/','-')]:{sha256:'0'.repeat(64)}}}));
  const templateCommit=commit(root),binary=path.join(base,'yss-fixture'),built=spawnSync('go',['build','-trimpath','-ldflags',`-X main.cliCommit=${cliCommit} -X main.templateCommit=${templateCommit} -X main.designCommit=${templateCommit} -X main.backendCommit=${templateCommit}`,'-o',binary,'.'],{cwd:cli,env:{...process.env,CGO_ENABLED:'0'},encoding:'utf8'});assert.equal(built.status,0,built.stderr);
  const environment={...process.env,YSS_NATIVE_BINARY:binary,YSS_NATIVE_BINARY_SHA256:hash(fs.readFileSync(binary)),YSS_NATIVE_SOURCE_ROOT:cli,YSS_NATIVE_PIN_FILE:pinFile,YSS_NATIVE_PIN_SHA256:hash(fs.readFileSync(pinFile))};delete environment.YSS_NATIVE_BINARY_OVERRIDE;
  for(const key of Object.keys(environment))if(key.startsWith('YSS_RELEASE_'))delete environment[key];
  assert.throws(()=>collectReleaseSources({root,commit:templateCommit,environment}),/与固定版本不符/,'没有装配证据不能越过 P');
  const digest=hash(fs.readFileSync(binary)),key=platform.replace('/','-');
- const writePin=(commitValue,sha)=>{fs.writeFileSync(pinFile,JSON.stringify({schema_version:1,repository:'https://example.test/yss-cli.git',version:'1.0.0-fixture.1',commit:commitValue,go_version:'1.27.1',build:'regression-only:synthetic-fixture',binaries:{[key]:{sha256:sha}}}));environment.YSS_NATIVE_PIN_SHA256=hash(fs.readFileSync(pinFile));};
+ const writePin=(commitValue,sha)=>{fs.writeFileSync(pinFile,JSON.stringify({schema_version:1,repository:'https://example.test/yss-cli.git',version:'3.1.0',commit:commitValue,go_version:'1.27.1',build:'regression-only:synthetic-fixture',binaries:{[key]:{sha256:sha}}}));environment.YSS_NATIVE_PIN_SHA256=hash(fs.readFileSync(pinFile));};
  writePin(cliCommit,digest);
  const accepted=collectReleaseSources({root,commit:templateCommit,environment});
  assert.equal(accepted.source_authority,undefined,'发布门禁不再产生原生装配来源认证');

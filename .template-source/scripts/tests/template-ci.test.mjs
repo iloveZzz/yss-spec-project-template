@@ -213,7 +213,7 @@ test('固定发行拒绝缺失、脏树、错误身份或实际提交错配的�
 
 test('发行验证在有 yss-cli 固定文件时只接受固定的二进制与固定的源码提交，本地覆盖不能通过',t=>{
   const f=fixture(t),digest=hash(readFileSync(process.env.YSS_NATIVE_BINARY)),cliCommit=git(f.cli,'rev-parse','HEAD');
-  const writePin=(overrides={})=>{put(f.repo,PIN_FILE,JSON.stringify({schema_version:1,repository:'https://example.test/yss-cli.git',version:'1.3.5',commit:cliCommit,go_version:'1.27.1',build:'go build',binaries:{[platformKey()]:{sha256:digest}},...overrides}));process.env.YSS_NATIVE_PIN_FILE=path.join(f.repo,PIN_FILE);process.env.YSS_NATIVE_PIN_SHA256=hash(readFileSync(process.env.YSS_NATIVE_PIN_FILE));};
+  const writePin=(overrides={})=>{put(f.repo,PIN_FILE,JSON.stringify({schema_version:1,repository:'https://example.test/yss-cli.git',version:'3.1.0',commit:cliCommit,go_version:'1.27.1',build:'go build',binaries:{[platformKey()]:{sha256:digest}},...overrides}));process.env.YSS_NATIVE_PIN_FILE=path.join(f.repo,PIN_FILE);process.env.YSS_NATIVE_PIN_SHA256=hash(readFileSync(process.env.YSS_NATIVE_PIN_FILE));};
   const previous=process.env.YSS_NATIVE_BINARY_OVERRIDE;t.after(()=>{if(previous===undefined)delete process.env.YSS_NATIVE_BINARY_OVERRIDE;else process.env.YSS_NATIVE_BINARY_OVERRIDE=previous;});
   delete process.env.YSS_NATIVE_BINARY_OVERRIDE;
   writePin();

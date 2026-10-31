@@ -1,10 +1,4 @@
 {
   "schema_version": 1,
-  "releases": [
-    {
-      "version": "5.0.0",
-      "commit": "1e49127842c358caf552af8ebec58f438a35c5a6",
-      "reports": []
-    }
-  ]
+  "releases": []
 }

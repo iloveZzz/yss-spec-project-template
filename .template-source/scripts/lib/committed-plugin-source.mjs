@@ -64,6 +64,18 @@ function sourceFile(root, commit, name) {
   return bytes;
 }
 
+function generatedInputRefs(receipt) {
+  const current='internal/bundle/assets/bundles.json.gz';
+  if(receipt.trustedSources===undefined)return [current,'internal/bundle/assets/baseline-5.0.0.json.gz','internal/bundle/assets/baseline-delta.json.gz'];
+  ensure(Array.isArray(receipt.trustedSources),'trusted source receipt invalid');
+  const refs=receipt.trustedSources.map(row=>{
+    ensure(row&&typeof row.path==='string'&&/^internal\/bundle\/assets\/trusted\/(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.delta\.gz$/.test(row.path)&&sha256.test(row.sha256||''),'trusted source receipt path invalid');
+    return row.path;
+  });
+  ensure(new Set(refs).size===refs.length,'trusted source receipt contains duplicates');
+  return [current,...refs];
+}
+
 export function observeCommittedPluginSource(options) {
   const o=options;
   for (const name of ['templateRoot','cliRoot','binary','buildReceipt','go']) ensure(typeof o[name]==='string'&&path.isAbsolute(o[name])&&path.normalize(o[name])===o[name],`${name} path invalid`);
@@ -109,7 +121,7 @@ export function observeCommittedPluginSource(options) {
   ensure(path.isAbsolute(goRoot||'')&&path.isAbsolute(toolDir||'')&&fs.realpathSync(goRoot)===goRoot&&fs.realpathSync(toolDir)===toolDir,'go root invalid');
   ensure(path.join(goRoot,'bin',process.platform==='win32'?'go.exe':'go')===o.go&&!path.relative(goRoot,toolDir).startsWith('..'),'go root or tool path mismatch');
   const goTools=Object.fromEntries(['compile','link'].map(name=>{const file=path.join(toolDir,`${name}${process.platform==='win32'?'.exe':''}`),stat=fs.lstatSync(file);ensure(stat.isFile()&&!stat.isSymbolicLink()&&fs.realpathSync(file)===file,`go ${name} invalid`);return [name,digest(fs.readFileSync(file))];}));
-  const extras=['internal/bundle/assets/bundles.json.gz','internal/bundle/assets/baseline-5.0.0.json.gz','internal/bundle/assets/baseline-delta.json.gz'];
+  const extras=generatedInputRefs(receipt);
   const refs=git(o.cliRoot,['ls-files','--cached','--others','--exclude-standard','-z'],{encoding:null}).toString().split('\0').filter(Boolean);
   const inputs=Object.fromEntries([...new Set([...refs,...extras])].sort().map(ref=>{
     ensure(!path.isAbsolute(ref)&&!ref.split('/').includes('..'),'unsafe input path');
@@ -118,6 +130,7 @@ export function observeCommittedPluginSource(options) {
   }));
   const inputDigest=digest(JSON.stringify(inputs));
   ensure(receipt.inputDigest===inputDigest&&JSON.stringify(receipt.inputs)===JSON.stringify(inputs),'build input digest mismatch');
+  for(const row of receipt.trustedSources||[])ensure(inputs[row.path]?.sha256===row.sha256,'trusted source receipt digest mismatch');
   ensure(gitFile()===gitPath&&digest(fs.readFileSync(gitPath))===gitSha256,'git executable drifted');
   return {templateRoot:o.templateRoot,templateCommit:o.templateCommit,templateTree,cliRoot:o.cliRoot,cliCommit:o.cliCommit,cliTree,cliRemote:o.cliRemote,cliRef:o.cliRef,
     sourceLockSha256:digest(lockBytes),binary:o.binary,binarySha256:binary.sha256,buildReceipt:o.buildReceipt,buildReceiptSha256:receiptFile.sha256,
@@ -153,7 +166,7 @@ export function verifyCommittedPluginRebuild(options,{evidenceDir}={}) {
   run('checkout',before.git,['-C',isolated,'checkout','--detach',o.cliCommit],o.cliRoot);
   ensure(git(isolated,['rev-parse','HEAD'])===o.cliCommit&&!git(isolated,['status','--porcelain','--untracked-files=all','--ignore-submodules=none']),'isolated CLI checkout mismatch');
   run('generate',process.execPath,[path.join(isolated,'tools/fetch-bundle.mjs'),'--force','--source-root',o.templateRoot],isolated);
-  for(const ref of ['internal/bundle/assets/bundles.json.gz','internal/bundle/assets/baseline-5.0.0.json.gz','internal/bundle/assets/baseline-delta.json.gz']) {
+  for(const ref of generatedInputRefs(original)) {
     const oldFile=path.join(o.cliRoot,ref),generated=path.join(isolated,ref),stat=fs.lstatSync(generated);
     ensure(stat.isFile()&&!stat.isSymbolicLink()&&fs.realpathSync(generated)===generated,`generated ${ref} invalid`);
     ensure(fs.readFileSync(generated).equals(fs.readFileSync(oldFile)),`generated ${ref} differs from committed source`);
@@ -163,7 +176,7 @@ export function verifyCommittedPluginRebuild(options,{evidenceDir}={}) {
   const file=path.join(evidenceDir,'rebuilt','build-receipt.json');ensure(fs.existsSync(file),'rebuild receipt missing');
   const rebuilt=JSON.parse(fs.readFileSync(file));
   ensure(rebuilt.root===isolated,'rebuild root mismatch');
-  for(const key of ['schemaVersion','kind','status','commit','sourceState','builderSha256','environmentHelperSha256','inputDigest','inputs','goVersion','goEnvironment','platform','cgoEnabled','inputDrift','embeddedArchive','baselineArchive','baselineDelta'])ensure(JSON.stringify(original[key])===JSON.stringify(rebuilt[key]),`rebuild ${key} mismatch`);
+  for(const key of ['schemaVersion','kind','status','commit','sourceState','builderSha256','environmentHelperSha256','inputDigest','inputs','goVersion','goEnvironment','platform','cgoEnabled','inputDrift','embeddedArchive','baselineArchive','baselineDelta','trustedSources'])ensure(JSON.stringify(original[key])===JSON.stringify(rebuilt[key]),`rebuild ${key} mismatch`);
   const binary=path.join(evidenceDir,'rebuilt',process.platform==='win32'?'yss.exe':'yss');
   ensure(rebuilt.binary?.path===binary&&rebuilt.binary?.sha256===o.binarySha256&&rebuilt.binary?.bytes===original.binary.bytes,'rebuild binary receipt mismatch');
   regular(binary,o.binarySha256,'rebuilt binary');
@@ -205,14 +218,15 @@ export function validateCommittedPluginProof(options,{evidenceDir,expectedProofS
     for(const stream of ['stdout','stderr']){const name=`${label}.${stream}`,expectedHash=proof.logs[name];ensure(sha256.test(expectedHash||'')&&record[`${stream}Sha256`]===expectedHash,`proof ${name} digest missing`);const item=regular(path.join(evidenceDir,name),expectedHash,`proof ${name}`);if(stream==='stdout')outputs[label]=item.bytes;}
   }
   ensure(repository(isolated,options.cliCommit,'proof isolated CLI')===snapshot.cliTree,'proof isolated CLI tree mismatch');
-  for(const ref of ['internal/bundle/assets/bundles.json.gz','internal/bundle/assets/baseline-5.0.0.json.gz','internal/bundle/assets/baseline-delta.json.gz']){
+  const original=JSON.parse(fs.readFileSync(options.buildReceipt));
+  for(const ref of generatedInputRefs(original)){
     const file=path.join(isolated,ref),stat=fs.lstatSync(file);ensure(stat.isFile()&&!stat.isSymbolicLink()&&fs.realpathSync(file)===file,`proof generated ${ref} invalid`);
     ensure(fs.readFileSync(file).equals(fs.readFileSync(path.join(options.cliRoot,ref))),`proof generated ${ref} mismatch`);
   }
   const builtFile=path.join(rebuiltDir,'build-receipt.json');ensure(sha256.test(proof.rebuiltReceiptSha256||''),'proof rebuild receipt digest missing');
-  const rebuilt=JSON.parse(regular(builtFile,proof.rebuiltReceiptSha256,'proof rebuild receipt').bytes),original=JSON.parse(fs.readFileSync(options.buildReceipt));
+  const rebuilt=JSON.parse(regular(builtFile,proof.rebuiltReceiptSha256,'proof rebuild receipt').bytes);
   ensure(rebuilt.root===isolated,'proof rebuild root mismatch');
-  for(const key of ['schemaVersion','kind','status','commit','sourceState','builderSha256','environmentHelperSha256','inputDigest','inputs','goVersion','goEnvironment','platform','cgoEnabled','inputDrift','embeddedArchive','baselineArchive','baselineDelta'])ensure(JSON.stringify(original[key])===JSON.stringify(rebuilt[key]),`proof rebuild ${key} mismatch`);
+  for(const key of ['schemaVersion','kind','status','commit','sourceState','builderSha256','environmentHelperSha256','inputDigest','inputs','goVersion','goEnvironment','platform','cgoEnabled','inputDrift','embeddedArchive','baselineArchive','baselineDelta','trustedSources'])ensure(JSON.stringify(original[key])===JSON.stringify(rebuilt[key]),`proof rebuild ${key} mismatch`);
   ensure(rebuilt.binary?.path===rebuiltBinary&&rebuilt.binary?.sha256===options.binarySha256&&rebuilt.binary?.bytes===original.binary.bytes,'proof rebuilt binary identity mismatch');regular(rebuiltBinary,options.binarySha256,'proof rebuilt binary');
   const buildOutput=JSON.parse(outputs.rebuild),version=JSON.parse(outputs.version),lock=JSON.parse(fs.readFileSync(path.join(options.cliRoot,'docs/source-lock.json')));
   ensure(buildOutput.status==='built'&&buildOutput.platform===rebuilt.platform&&buildOutput.binary?.path===rebuiltBinary&&buildOutput.binary?.sha256===options.binarySha256,'proof build output mismatch');

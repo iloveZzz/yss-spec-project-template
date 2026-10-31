@@ -16,17 +16,16 @@ Backend、独立 skills 及程序操作继续按实际合同；本特例不全�
 |---|---|
 | 不存在或空目录，用户要求新建 | 显式选择安装方式，`init` 保存计划 |
 | 普通工程，无 YSS 实例 metadata 或身份，用户要求接管 | `attach` 保存计划；保护既有 Context、Git 与业务资产 |
-| 当前 `.yss.json` metadata4/5 的 Spec、Backend | 读取 Profile、installation、受管基线及 binding 后 `sync`；仅 governed 校验治理身份及 Context |
-| metadata4/5，用户明确转换安装方式 | `migrate --installation skills\|governed` 保存计划；不通过 sync 转换 |
-| 旧统一 metadata3 / identity1 / policy1 的 Spec、Backend | 按 [家族适配](cli-families.md) 显式治理迁移；不能先 sync 或补装资源 |
-| 仅旧 npm 家族 metadata、Design、Frontend、旧 dev 或退役插件 | 当前执行器不提供迁移；保留原件，历史维护用匹配的固定旧执行器 |
+| 受信重发后来源的 Spec、Backend | 读取 Profile、installation、受管基线及 binding 后 `sync`；仅 governed 校验治理身份及 Context |
+| 受信当前实例，用户明确转换安装方式 | `migrate --installation skills\|governed` 保存计划；不通过 sync 转换 |
+| 重发前同名版本、更早版本或来源不受信 | 停止受影响写入，保留原文件 |
 | 模板源、多个矛盾身份、既有实例缺必需身份、未知 schema 或来源 | 只诊断；不能重新 init、attach 或删 metadata 绕过 |
 
 新建/接管需明确 Profile、目标与工程范围；未指定安装方式时采用 governed，仅需独立技能时显式选择 skills。skills 安装包含技能及必要参考资产，不要求治理身份、Context、Ticket 或 checkpoint。CLI 新建和接管默认 governed，示例始终传入选择，`--full` 只扩大所选方式的资源。初始化治理资源不授予产品阶段批准或生产脚手架权限。
 
 支持时先运行 `<固定yss> project inspect --root <目标根> --json`，消费 `identityState`、`installation`、`transactionState` 与 `notices`：只有已核验身份才提供可信 Profile/安装方式，invalid/unsupported 不进入写入，pending/blocked 先诊断。退出 0 只表示查询完成，absent 不代替 init/attach 的最终保护。缺此能力时按家族参考读取身份与事务材料。
 
-对可读原生实例再 `doctor/diff` 并记录已有失败、dirty/untracked、HEAD/index/gitlink 和定制。用 `bundle inspect --profile <Profile> --json` 核对固定来源；真实业务工程先在隔离副本验证。当前 Bundle5/metadata5 使用普通项目计划 v4，绑定 CLI 的 init/attach 计划为 v5；治理安装仍为 identity2/Profile3/governance2，envelope 与运行协议为 v1。历史 Bundle4/metadata4 仍是治理安装，按实际能力与原计划版本处理。旧未完成事务由对应固定执行器处理。仅检查时不生成应用或恢复写入。
+对可读原生实例再 `doctor/diff` 并记录已有失败、dirty/untracked、HEAD/index/gitlink 和定制。用 `bundle inspect --profile <Profile> --json` 核对固定来源；真实业务工程先在隔离副本验证。当前 Bundle5/metadata5 使用普通项目计划 v4，绑定 CLI 的 init/attach 计划为 v5；治理安装仍为 identity2/Profile3/governance2，envelope 与运行协议为 v1。更早来源不作为受支持的写入目标。仅检查时不生成应用或恢复写入。
 
 ## 新建与接管
 
@@ -43,6 +42,8 @@ Backend、独立 skills 及程序操作继续按实际合同；本特例不全�
 
 ## 同步与旧身份迁移
 
+同步要求 Git 有提交且工作区干净（包含暂存、未暂存、未跟踪文件及子模块）；忽略目标不得覆盖。计划绑定 HEAD。失败后核对回执 `possibleNewPaths`、`possibleNewControlPaths` 和保存计划，人工处理实际新增文件和目录并用 Git 恢复已跟踪文件；不要自动执行 reset、clean、恢复或回滚。人工处理后确认 Git 干净并重新规划。
+
 ```text
 <固定yss> sync --root <原生实例根> --plan --out <项目外新计划.json> --json
 <固定yss> sync --root <原生实例根> --apply --plan-file <计划.json> --json
@@ -52,13 +53,13 @@ Backend、独立 skills 及程序操作继续按实际合同；本特例不全�
 <固定yss> migrate --root <旧统一实例根> --profile <Profile> --apply --plan-file <计划.json> --json
 ```
 
-选择实际需要的一组。sync 保持已有安装方式，不接受 `--installation`。metadata4/5 的安装方式转换必须显式 migrate，保留原任务、批准、checkpoint 和用户文件；活动或无法核验完成的正式工作阻断，按 `MIGRATION_ACTIVE_TASK`/`MIGRATION_INPUT` 诊断处理，不能删除记录绕过。同方式返回 `INSTALLATION_UNCHANGED`；规划后工作资产变化需重新规划。
+选择实际需要的一组。sync 保持已有安装方式，不接受 `--installation`。受信当前实例的安装方式转换必须显式 migrate，保留原任务、批准、checkpoint 和用户文件；活动或无法核验完成的正式工作阻断，按 `MIGRATION_ACTIVE_TASK`/`MIGRATION_INPUT` 诊断处理，不能删除记录绕过。同方式返回 `INSTALLATION_UNCHANGED`；规划后工作资产变化需重新规划。
 
-不传 `--installation` 的 migrate 保留旧治理迁移语义，仅接受已核验的 metadata3/identity1/policy1 Spec、Backend；这类实例直接 sync 返回 `GOVERNANCE_MIGRATION_REQUIRED`，如需转换安装方式先完成原治理迁移并重新检查。迁移封存原政策、身份及记录；历史批准不授予新资格。治理语义变化由已有授权覆盖，缺实质决定时展示影响。旧 npm、Design、跨家族及未知格式仍不支持，保留 `MIGRATION_UNSUPPORTED` 或实际身份错误，不改 metadata 绕过。
+重发前同名版本及更早实例不支持自动迁移或同步；保留身份和用户文件。
 
 当前受支持的后端交付插件 binding，先证明该插件提供匹配当前代际的公开接口；来源升级使用其 `project-upgrade-plan/apply`，只有明确支持当前治理迁移时才使用迁移接口。接口不可证明时停止该分支；不能把旧插件命令套用到新代际。直接同步缺新 binding 的 `BINDING_REQUIRED`，或既有失配的 `BINDING_CONFLICT`，均不能手改绑定绕过。
 
-`attach` 仅用于没有 YSS metadata 的普通工程。原生实例返回 `SYNC_REQUIRED`，旧实例返回 `MIGRATION_REQUIRED`；先识别身份再选择 `--full`。未知 schema、矛盾身份或未完成事务阻断写入，按诊断进入恢复。
+`attach` 仅用于没有 YSS metadata 的普通工程。原生实例返回 `SYNC_REQUIRED`，旧实例停止受影响写入；先识别身份再选择 `--full`。未知 schema、矛盾身份或未完成事务阻断写入，按诊断进入恢复。
 
 冲突处理使用同一固定二进制：
 
@@ -99,8 +100,8 @@ yss sync --root ./project --apply --plan-file /review/resolved.json
 
 ## 恢复、回退与验收
 
-项目 `recover/rollback --root <目标> --json` 默认只读，明确恢复授权内增加 `--apply` 写入。当前没有 `migrate status/recover/rollback` 子命令；未完成治理迁移使用 `recover --apply`，已完成治理迁移拒绝降级并返回 `DOWNGRADE_UNSUPPORTED`。程序 `update` 的事务不能作为项目恢复入口。
+项目 `recover/rollback --root <目标> --json` 默认只读，明确恢复授权内增加 `--apply` 写入；同步事务不支持这两个写入入口。当前没有 `migrate status/recover/rollback` 子命令；未完成治理迁移使用 `recover --apply`，已完成治理迁移拒绝降级并返回 `DOWNGRADE_UNSUPPORTED`。程序 `update` 的事务不能作为项目恢复入口。
 
-支持时运行 `<固定yss> project verify --plan-file <原计划.json> --json`，核对 `outcome`、`missing`、`mismatched` 和 `notices`。complete 仅证明原计划拥有的产物，not-applied/incomplete/unknown 均不报告完成；退出 0 不是完成判据。取消、异常或 `CANCELLED` 后也用原计划检查，不能推定零写入、自动回滚或直接重跑 apply；再按事务状态决定恢复。
+支持时运行 `<固定yss> project verify --plan-file <原计划.json> --json`，核对 `outcome`、`missing`、`mismatched` 和 `notices`。complete 仅证明原计划拥有的产物，not-applied/incomplete/unknown 均不报告完成；退出 0 不是完成判据。取消、异常或 `CANCELLED` 后也用原计划检查，不能推定零写入、自动回滚或直接重跑 apply；同步失败时人工处理新增文件并用 Git 恢复已跟踪文件；其他项目事务按状态处理。
 
 操作后再检查回执、doctor/diff、安装方式、受管基线、锁/适用投影与 binding；仅 governed 核验治理身份、Context 和适用治理。同步/补装同来源同选项重规划应无重复变更，迁移后按新身份做只读 sync 计划。doctor 的文件、技能就绪与 workflow 状态分开报告，not-evaluated/unknown 不算工作流或宿主通过。核对业务文件、Git 状态和权限，分别报告原失败、新增失败、计划/备份/回执及未覆盖项。普通回退前检查用户后续修改；重复回退不退到更早事务，不改变程序版本或历史批准。

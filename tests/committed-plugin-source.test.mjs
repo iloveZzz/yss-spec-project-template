@@ -34,6 +34,13 @@ test('来源观测拒绝源码漂移、错误锁与被替换的二进制', t => 
   const oldPath=process.env.PATH;process.env.PATH=`${fakeBin}${path.delimiter}${oldPath}`;t.after(()=>{process.env.PATH=oldPath;});
   const options={templateRoot,templateCommit,cliRoot,cliCommit,cliRemote:'https://github.com/iloveZzz/yss-cli.git',cliRef,binary,binarySha256:hash(binary),buildReceipt,buildReceiptSha256:hash(buildReceipt),go,goSha256:hash(go)};
   const first=observeCommittedPluginSource(options);assert.equal(first.cliCommit,cliCommit);assert.equal(first.templateCommit,templateCommit);
+  const resetInputs=Object.fromEntries(Object.entries(inputs).filter(([ref])=>!extra.slice(1).includes(ref)));
+  const resetReceipt={...receipt,trustedSources:[],inputs:resetInputs,inputDigest:createHash('sha256').update(JSON.stringify(resetInputs)).digest('hex')};
+  fs.writeFileSync(buildReceipt,JSON.stringify(resetReceipt));
+  assert.doesNotThrow(()=>observeCommittedPluginSource({...options,buildReceiptSha256:hash(buildReceipt)}));
+  fs.writeFileSync(buildReceipt,JSON.stringify({...resetReceipt,trustedSources:[{path:'../../unsafe',sha256:'a'.repeat(64)}]}));
+  assert.throws(()=>observeCommittedPluginSource({...options,buildReceiptSha256:hash(buildReceipt)}),/trusted source receipt path/);
+  fs.writeFileSync(buildReceipt,JSON.stringify(receipt));
   const redirectKey=`url.file://${localRemote}.insteadOf`;
   git(cliRoot,'config',redirectKey,options.cliRemote);
   const originalGitWrapper=fs.readFileSync(path.join(fakeBin,'git'));

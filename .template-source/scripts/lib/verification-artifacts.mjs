@@ -1,11 +1,11 @@
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import assert from 'node:assert/strict';
 import {spawnSync} from 'node:child_process';
 import {NATIVE_PROFILES, nativeBinary, nativeDigest as hash, inspectNative, initializeNative, runNative, applyNative} from './native-yss.mjs';
 import {readNativeYssPin, verifyPinnedBinary} from './yss-cli-pin.mjs';
 const ensure=(ok,message)=>{if(!ok)throw new TypeError(message);};
-const historicalPackages={spec:'create-yss-spec',backend:'create-yss-harness-backend'};
 function git(root,args){const result=spawnSync('git',args,{cwd:root,encoding:'utf8'});ensure(result.status===0,result.stderr||'无法核验固定 Git 来源');return result.stdout.trim();}
 function treeEntries(directory){
  ensure(fs.lstatSync(directory).isDirectory()&&!fs.lstatSync(directory).isSymbolicLink(),'安装目录必须是普通目录');const entries=[];
@@ -21,12 +21,17 @@ export function sourceTuple(source){
  ensure(NATIVE_PROFILES.includes(source.family),'未知 Profile');
  for(const field of ['cli_commit','template_commit','core_commit'])ensure(/^[a-f0-9]{40}$/.test(source[field]),`来源 ${field} 必须为完整 SHA`);
  const native=source.package_name==='yss';
- ensure(native||source.package_name===historicalPackages[source.family],'来源包身份不匹配');
+ ensure(native,'来源包身份不匹配');
  ensure(typeof source.version==='string'&&source.version.length>0,'来源版本缺失');
  for(const field of ['snapshot_hash','manifest_hash','core_digest','core_lock_hash','bundle_hash','binary_sha256'])if(source[field]!==undefined)ensure(/^[a-f0-9]{64}$/.test(source[field]),`来源 ${field} 必须为 SHA-256`);
  if(native){ensure(source.protocol_version===1&&source.source_contract_version===2,'原生来源合同或协议版本不支持');ensure(typeof source.template_version==='string'&&source.template_version.length>0,'原生来源缺少 template_version');for(const field of ['snapshot_hash','manifest_hash','bundle_hash','binary_sha256'])ensure(/^[a-f0-9]{64}$/.test(source[field]||''),`原生来源缺少 ${field}`);}
  const fields=['namespace','family','cli_commit','template_commit','core_commit','package_name','version','snapshot_hash','manifest_hash','core_digest','core_lock_hash',...(native?['source_contract_version','protocol_version','template_version','bundle_hash','binary_sha256']:[])];
  return Object.fromEntries(fields.filter(key=>source[key]!==undefined).map(key=>[key,source[key]]));
+}
+export function assertSupportedReleaseIdentity(cli,bundle){
+ const supported=(value,min)=>{const m=/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/.exec(value||'');return !!m&&BigInt(m[1])>=BigInt(min);};
+ ensure(supported(cli?.version,3)&&/^[a-f0-9]{40}$/.test(cli?.cliCommit||'')&&cli.cliCommit!=='d67bc777198174a92cc3f58e4f26ce9f0daef2d9','CLI 版本或来源不受支持');
+ ensure(supported(bundle?.templateVersion,5)&&/^[a-f0-9]{40}$/.test(bundle?.templateCommit||'')&&bundle.templateCommit!=='1e49127842c358caf552af8ebec58f438a35c5a6','模板版本或来源不受支持');
 }
 export function collectReleaseSources({root,commit,families=NATIVE_PROFILES,environment=process.env,onSourceVerification}={}){
  ensure(/^[a-f0-9]{40}$/.test(commit),'模板来源必须为完整 SHA');ensure(families.length&&new Set(families).size===families.length,'发布 Profile 集合非法');
@@ -48,6 +53,7 @@ export function collectReleaseSources({root,commit,families=NATIVE_PROFILES,envi
  const entries=families.map(family=>{
   ensure(NATIVE_PROFILES.includes(family),'未知发布 Profile');const template_commit=inspections[family].templateCommit;
   const bundle=inspections[family];
+  assertSupportedReleaseIdentity(version,bundle);
   ensure([2,3,4,5].includes(bundle.schemaVersion)&&bundle.sourceState==='committed'&&/^[a-f0-9]{40}$/.test(bundle.templateCommit||''),'Bundle 必须来自已提交的模板来源');
   const cli_commit=version.cliCommit||version.commit||bundle.cliCommit;
   ensure((version.sourceState||bundle.cliSourceState)==='committed','发行二进制必须来自已提交的 yss 源码');
@@ -78,20 +84,24 @@ export function produceCliArtifact({root,source,directory,run,environment=proces
 export function verifyInstalledCliMigration({artifact,directory,run}={}){
  validateArtifact(artifact,artifact.source_tuple);const family=artifact.source_tuple.family;fs.mkdirSync(directory,{recursive:true});const target=path.join(directory,'instance');const environment={...process.env,YSS_NATIVE_BINARY:artifact.binary,YSS_NATIVE_BINARY_SHA256:artifact.source_tuple.binary_sha256},options={environment,run,cwd:artifact.installed_root};
  initializeNative(family,target,options);runNative(['doctor','--root',target],options);runNative(['diff','--root',target],options);
+ const gitEnvironment={...Object.fromEntries(Object.entries(environment).filter(([name])=>!name.startsWith('GIT_'))),GIT_CONFIG_NOSYSTEM:'1',GIT_CONFIG_GLOBAL:os.devNull,GIT_TERMINAL_PROMPT:'0'};
+ const git=(...args)=>{const argv=['-c','user.name=YSS verification','-c','user.email=verification@example.invalid','-c','commit.gpgsign=false',...args],result=run?run('git',argv,target,gitEnvironment):spawnSync('git',argv,{cwd:target,env:gitEnvironment,encoding:'utf8'});ensure(result.status===0&&!result.error&&!result.signal,`Git fixture 失败: ${result.stderr||result.error||result.signal}`);};
  const metadata=path.join(target,'.yss.json'),contextPath=path.join(target,'CONTEXT.md');
  if(!fs.existsSync(contextPath))fs.writeFileSync(contextPath,'# 用户上下文\n这是受管升级测试中的用户资料。\n');
- const context=fs.readFileSync(contextPath),user=path.join(target,'src/user.txt');fs.mkdirSync(path.dirname(user),{recursive:true});fs.writeFileSync(user,'uncommitted work');
- const plan=path.join(directory,'plan.json');applyNative('sync',family,target,plan,[],options);assert.deepEqual(fs.readFileSync(contextPath),context);assert.equal(fs.readFileSync(user,'utf8'),'uncommitted work');
+ const context=fs.readFileSync(contextPath),user=path.join(target,'src/user.txt');fs.mkdirSync(path.dirname(user),{recursive:true});fs.writeFileSync(user,'user data');
+ git('init','-q');git('add','-A');git('commit','-qm','initial fixture');
+ const plan=path.join(directory,'plan.json');applyNative('sync',family,target,plan,[],options);assert.deepEqual(fs.readFileSync(contextPath),context);assert.equal(fs.readFileSync(user,'utf8'),'user data');
  // A bounded native upgrade fixture exercises an actual nonempty transaction.
  // Historical metadata and interrupted journals remain a separate required matrix.
  const managedRef=family==='spec'?'.agents/skills/yss-product-lifecycle/SKILL.md':'scripts/sync-skills';
  const meta=JSON.parse(fs.readFileSync(metadata)),managed=path.join(target,managedRef),oldBytes='// previous managed tool\n',record=meta.managedFiles?.[managedRef];ensure(record?.ownership==='managed','原生升级 fixture 缺少真实 managed baseline');
  fs.writeFileSync(managed,oldBytes);record.baseline.digest=hash(oldBytes);record.lastApplied.digest=hash(oldBytes);meta.baselineDigest=hash(JSON.stringify(meta.managedFiles));fs.writeFileSync(metadata,JSON.stringify(meta,null,2)+'\n');const before=fs.readFileSync(metadata);
- // yss 2.3 起升级只有 sync（计划 → 应用）与 rollback，没有独立的 migrate 命令；同一个有真实受管工具差异的事务夹具走这条路径。
+ git('add','-A');git('commit','-qm','previous managed source');
  const migrationPlan=path.join(directory,'migration-plan.json');const upgrade=runNative(['sync','--root',target,'--profile',family,'--plan','--out',migrationPlan],options).result;assert.deepEqual(fs.readFileSync(metadata),before,'升级计划必须只读');ensure(upgrade.changes.some(row=>row.path===managedRef),'升级计划没有声明受管工具更新');runNative(['sync','--root',target,'--profile',family,'--apply','--plan-file',migrationPlan],options);ensure(fs.readFileSync(managed,'utf8')!==oldBytes,'原生升级没有更新受管资产');
+ git('add','-A');git('commit','-qm','completed sync');
  const noop=runNative(['sync','--root',target,'--profile',family,'--plan','--out',path.join(directory,'noop.json')],options).result;ensure(noop.changes.length===0&&!(noop.conflicts?.length),'升级后重新规划不幂等');
- runNative(['rollback','--root',target,'--apply'],options);assert.deepEqual(fs.readFileSync(metadata),before,'整体回退没有恢复 metadata');assert.deepEqual(fs.readFileSync(contextPath),context,'整体回退没有保留用户上下文');ensure(fs.readFileSync(managed,'utf8')===oldBytes&&fs.readFileSync(user,'utf8')==='uncommitted work','回退破坏用户资产');
- return {family,status:'passed',cases:['init','doctor','diff','sync-dry-run','sync-apply','migration-plan-read-only','migration-apply','idempotency','rollback','user-file-preservation'],migration_fixture:'native-managed-upgrade'};
+ assert.deepEqual(fs.readFileSync(contextPath),context,'同步没有保留用户上下文');ensure(fs.readFileSync(user,'utf8')==='user data','同步破坏用户资产');
+ return {family,status:'passed',cases:['init','doctor','diff','sync-dry-run','sync-apply','migration-plan-read-only','migration-apply','idempotency','git-baseline','user-file-preservation'],migration_fixture:'native-managed-upgrade'};
 }
 export function prepareArtifactConsumers({artifacts,directory,run}={}){
  ensure(artifacts?.length&&typeof run==='function','共享准备缺少产物或实际命令');ensure(path.isAbsolute(directory)&&!fs.existsSync(directory),'共享准备必须使用新绝对目录');const cli_root=path.join(directory,'cli'),instance_root=path.join(directory,'instances');fs.mkdirSync(cli_root,{recursive:true});fs.mkdirSync(instance_root);const first=artifacts[0];

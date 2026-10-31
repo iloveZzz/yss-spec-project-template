@@ -7,7 +7,7 @@ import { spawnSync } from 'node:child_process';
 import { verificationInputDigest } from '../../../scripts/lib/verification-report.mjs';
 import {loadVerificationProfiles,planTemplateVerification} from '../../../scripts/lib/template-verification.mjs';
 import {addVerificationExecutionTasks,compileTaskExecution} from './verification-execution-plan.mjs';
-import {readHistoricalProfiles,compileHistoricalVerificationPlan,assertSupportedReportCommit,trustedReportSource} from './legacy-verification.mjs';
+import {readHistoricalProfiles,assertSupportedReportCommit,trustedReportSource} from './legacy-verification.mjs';
 import {sourceTuple,collectReleaseSources,validateArtifact} from './verification-artifacts.mjs';
 import {parseArgs} from 'node:util';
 import {validateJsonSchema} from '../../../scripts/lib/json-schema.mjs';
@@ -171,37 +171,6 @@ export function validateVerificationReport(report, {root,expectedPlan,reportDire
   return {status:'passed',schema_version:2,tasks:expectedTasks.length,gates:expectedGates.length,input_sha256:report.input_sha256};
 }
 
-export function validateLegacyReport(report,{directory,expectedPlan,requireObserved=true,extraValidators=[]}={}) {
-  ensure(report?.schema_version===1 && report.kind==='template-verification-report' && report.status==='passed','历史全量报告未通过或版本不支持');
-  ensure(report.scope?.kind==='complete-candidate' && report.plan?.effective_profile==='release' && report.plan.selection?.effective!=='allowlist' && report.plan.selection?.omitted?.length===0,'历史报告不是完整发布集合');
-  ensure(report.input_drift===false && /^[a-f0-9]{64}$/.test(report.input_sha256) && report.input_after_sha256===report.input_sha256,'历史报告输入漂移');
-  ensure(Number.isFinite(Date.parse(report.started_at))&&Number.isFinite(Date.parse(report.finished_at)),'历史报告尚未完成');
-  ensure(Array.isArray(report.unexecuted)&&report.unexecuted.every(row=>row.reason==='repository-mode'),'历史报告存在未执行命令');
-  ensure(report.plan.commands?.length>0&&Array.isArray(report.results),'历史报告执行记录缺失');
-  ensure(expectedPlan?.commands?.length>0,'历史报告缺少独立期望全量集合');
-  assert.deepEqual(report.plan.commands.map(row=>row.command),expectedPlan.commands.map(row=>row.command),'历史期望全量任务不匹配');
-  for(const [index,command] of report.plan.commands.entries()) {
-    if(command.when&&command.when!=='template-source')continue;
-    const rows=report.results.filter(result=>result.index===index&&result.group!=='postchecks');ensure(rows.length===1,'历史任务结果缺失或重复');const row=rows[0];
-    ensure(row&&row.command===command.command&&row.code===0&&!row.skipped&&!row.storageError,'历史任务执行不完整');
-    if(requireObserved)ensure(row.actual_exit_code_observed===true&&row.actual_exit_code===0&&!row.actual_exit_signal,'历史实际退出未观察');
-    for(const name of ['stdoutFile','stderrFile']){const digest=row.log_digests?.[name];ensure(/^[a-f0-9]{64}$/.test(digest||''),'历史日志摘要缺失');assertEvidenceFile(row[name],directory,digest);}
-  }
-  assert.deepEqual(report.plan.syntax_files||[],expectedPlan.syntax_files||[],'历史 syntax 清单不完整');
-  const post=report.results.filter(row=>row.group==='postchecks');
-  const expectedPost=[...(expectedPlan.syntax_files||[]).map(file=>({command:'node',args:['--check',file]})),...extraValidators,{command:'git',args:['diff','--check']}];
-  ensure(post.length===expectedPost.length,'历史 syntax 或终检执行结果不完整');
-  ensure(report.results.length===expectedPlan.commands.filter(command=>!command.when||command.when==='template-source').length+expectedPost.length,'历史报告包含未知任务');
-  for(const [index,expected] of expectedPost.entries()){
-    const row=post[index];let argv;try{argv=JSON.parse(row.command);}catch{throw new TypeError('历史终检命令格式无效');}
-    ensure(Array.isArray(argv)&&path.basename(argv[0]).replace(/\.exe$/,'')===expected.command&&row.code===0&&!row.storageError&&!row.skipped,'历史终检没有真实通过');
-    assert.deepEqual(argv.slice(1),expected.args,'历史终检参数或顺序不匹配');
-    ensure(row.actual_exit_code_observed===true&&row.actual_exit_code===0&&!row.actual_exit_signal,'历史终检实际退出未观察');
-    for(const name of ['stdoutFile','stderrFile']){const digest=row.log_digests?.[name];ensure(/^[a-f0-9]{64}$/.test(digest||''),'历史终检日志摘要缺失');assertEvidenceFile(row[name],directory,digest);}
-  }
-  return report;
-}
-
 export function validateBaselineReport({root,base,reportFile,expectedDigest,expectedPlan}={}) {
   try {
     root=fs.realpathSync(root);
@@ -223,7 +192,7 @@ export function validateBaselineReport({root,base,reportFile,expectedDigest,expe
       ensure(originalDirectory!==path.parse(originalDirectory).root,'登记报告的原证据目录无效');
       outer=relocateRegistered(outer,[[originalDirectory,directory]]);
     }
-    ensure([1,2].includes(outer.schema_version)&&(outer.schema_version===1||outer.kind==='template-release-verification')&&outer.purpose!=='qualification','baseline 不是受支持的 verification 发布报告');
+    ensure(outer.schema_version===2&&outer.kind==='template-release-verification'&&outer.purpose!=='qualification','REPORT_VERSION_UNSUPPORTED: baseline 不是受支持的 v2 发布报告');
     ensure(outer.status==='passed'&&!outer.error&&outer.requested_commit===base&&outer.template_commit===base,'baseline 提交未绑定通过报告或存在外层失败');
     ensure(outer.commands?.length>0&&outer.commands.every(row=>row.exit_code===0),'baseline 外层实际命令未通过');
     for(const command of outer.commands){if(outer.schema_version===2)ensure(command.actual_exit_code_observed===true&&command.actual_exit_code===0&&!command.actual_exit_signal,'baseline 外层实际退出未观察');ensure(/^[a-f0-9]{64}$/.test(command.log_sha256||''),'登记报告外层日志摘要缺失');assertEvidenceFile(command.log,directory,command.log_sha256);}
@@ -248,16 +217,8 @@ export function validateBaselineReport({root,base,reportFile,expectedDigest,expe
     ensure(invocation&&Array.isArray(invocation.args),'baseline 原始 invocation 缺失');
     const previousIndex=invocation.args.indexOf('--base');
     if(previousIndex!==-1){const previous=invocation.args[previousIndex+1];ensure(/^[a-f0-9]{40}$/.test(previous)&&previous!==base,'baseline 链必须指向更早的完整 SHA');const lineage=spawnSync('git',['merge-base','--is-ancestor',previous,base],{cwd:root});ensure(lineage.status===0,'baseline 链不是固定报告提交的祖先');}
-    if(full.schema_version===1){
-      if(!expectedPlan)expectedPlan=compileHistoricalVerificationPlan({root,commit:base,profile:'release'});
-      const extraValidators=[];
-      for(let index=0;index<invocation.args.length;index++)if(['--checkpoint','--task-package'].includes(invocation.args[index])){
-        const flag=invocation.args[index],file=invocation.args[++index];ensure(typeof file==='string'&&!file.startsWith('--'),'历史终检参数缺失');
-        extraValidators.push({command:flag==='--checkpoint'?'verify-maintenance-checkpoint':'verify-digital-human-task-package',args:[file]});
-      }
-      validateLegacyReport(full,{directory:path.dirname(fullFile),expectedPlan,extraValidators});
-    }
-    else {
+    ensure(full.schema_version===2,'REPORT_VERSION_UNSUPPORTED: 不支持旧版完整验证报告');
+    {
       const nodePath=originalDirectory?registeredNodePath(full):process.execPath;
       expectedPlan??=compileExpectedVerificationPlan({root,args:invocation.args,fixedCommit:base,reportDirectory:path.dirname(fullFile),nodePath});
       // Registration approves the exact outer report and its separately hashed full report.
@@ -291,10 +252,14 @@ export function validateBaselineReport({root,base,reportFile,expectedDigest,expe
   } catch(error) {return {valid:false,reasons:[error.message],bindings:null};}
 }
 
-export function assertNativeMigrationCommands(calls){
- // Native delivery performs the initial sync, a nonempty managed upgrade,
- // an idempotent replan, and an applied rollback; it has no migrate command.
- ensure(calls.filter(row=>row.args[0]==='sync'&&row.args.includes('--plan')).length>=3&&calls.filter(row=>row.args[0]==='sync'&&row.args.includes('--apply')).length>=2&&calls.some(row=>row.args[0]==='rollback'&&row.args.includes('--apply')),'integration 缺少原生迁移重规划或整体回滚真实命令');
+export function assertNativeMigrationCommands(calls,commands=[]){
+ // Delivery verifies both sync applications and the final idempotent plan.
+ ensure(calls.filter(row=>row.args[0]==='sync'&&row.args.includes('--plan')).length>=3&&calls.filter(row=>row.args[0]==='sync'&&row.args.includes('--apply')).length>=2,'integration 缺少原生迁移重规划或同步真实命令');
+ ensure(!calls.some(row=>row.args[0]==='rollback'||row.args[0]==='recover'),'integration 不应执行同步恢复或回滚');
+ const roots=new Set(calls.filter(row=>row.args[0]==='sync').map(row=>row.args[row.args.indexOf('--root')+1]));
+ ensure(roots.size===1&&path.isAbsolute([...roots][0]||''),'integration 同步 Git 根不一致');
+ const root=[...roots][0],git=commands.filter(row=>(row.command||row.file)==='git'&&row.cwd===root&&Array.isArray(row.args));
+ ensure(git.some(row=>row.args.includes('init'))&&git.some(row=>row.args.includes('commit')),'integration 缺少同步 Git 初始化或提交的真实命令');
 }
 
 function validateReleaseIntegrationContents({report,directory,commit,expected,reportDigest,registered=false}){
@@ -310,7 +275,7 @@ function validateReleaseIntegrationContents({report,directory,commit,expected,re
    if(row.log){if(registered)ensure(/^[a-f0-9]{64}$/.test(row.log_sha256||''),'登记报告集成日志摘要缺失');assertEvidenceFile(row.log,directory,row.log_sha256);}
    else for(const [field,digestField] of [['stdoutFile','stdout_sha256'],['stderrFile','stderr_sha256']]){const digest=row[digestField]||row.log_digests?.[field];if(registered)ensure(/^[a-f0-9]{64}$/.test(digest||''),'登记报告集成日志摘要缺失');assertEvidenceFile(row[field],directory,digest);}
   }
-  const requiredCases=['init','doctor','diff','sync-dry-run','sync-apply','migration-plan-read-only','migration-apply','idempotency','rollback','user-file-preservation'];
+  const requiredCases=['init','doctor','diff','sync-dry-run','sync-apply','migration-plan-read-only','migration-apply','idempotency','git-baseline','user-file-preservation'];
   for(const source of expected.entries){
    const artifacts=report.artifacts.filter(row=>row.source_tuple?.family===source.family);ensure(artifacts.length===1,'integration 包家族重复或缺失');
    if(registered){
@@ -328,7 +293,7 @@ function validateReleaseIntegrationContents({report,directory,commit,expected,re
    if(source.package_name==='yss'){
     const calls=commands.filter(row=>Array.isArray(row.args)&&(row.command||row.file)===artifacts[0].binary);
     ensure(calls.some(row=>row.args[0]==='init'&&row.args.includes('--plan'))&&calls.some(row=>row.args[0]==='init'&&row.args.includes('--apply'))&&['doctor','diff','sync'].every(value=>calls.some(row=>row.args[0]===value)),'integration 缺少实际原生安装入口验收');
-    assertNativeMigrationCommands(calls);
+    assertNativeMigrationCommands(calls,commands);
     ensure(calls.filter(row=>row.args[0]==='bundle'&&row.args[1]==='export').length===1,'integration 同精确来源必须恰好一次公开 Bundle export');
    }else{
     const entry=path.join(artifacts[0].installed_root,'bin',`${source.package_name}.js`);

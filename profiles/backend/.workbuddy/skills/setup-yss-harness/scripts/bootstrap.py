@@ -90,6 +90,12 @@ def stable_version(value):
     return value
 
 
+def supported_cli_version(value):
+    version = stable_version(value)
+    require(tuple(map(int, version.split("."))) >= (3, 0, 0), "release", "CLI 3.0.0 之前的版本不受支持", "VERSION")
+    return version
+
+
 def current_platform():
     system = {"Darwin": "darwin", "Linux": "linux", "Windows": "windows"}.get(platform.system(), platform.system().lower())
     machine = platform.machine().lower()
@@ -168,11 +174,12 @@ def platform_sets(value, target, stage):
 
 def validate_proof(proof, version, target):
     stage = "checksums"
+    supported_cli_version(version)
     fields(proof, PROOF_FIELDS, stage)
     require(type(proof.get("schemaVersion")) is int and proof["schemaVersion"] == 2, stage, "仅支持 checksums schema 2")
     require(proof.get("version") == version and proof.get("sourceState") == "committed"
             and proof.get("stableReady") is True and proof.get("pending") == [], stage, "未满足固定稳定发行资格")
-    require(matches(COMMIT, proof.get("cliCommit")), stage, "缺少完整源码 SHA")
+    require(matches(COMMIT, proof.get("cliCommit")) and proof["cliCommit"] != "d67bc777198174a92cc3f58e4f26ce9f0daef2d9", stage, "CLI 来源缺失或属于已退役版本")
     for key in ("sourceLockSha256", "releaseGateSha256", "inputManifestSha256"):
         require(matches(SHA, proof.get(key)), stage, "发行证明摘要不完整")
     platform_sets(proof, target, stage)
@@ -216,6 +223,9 @@ def source_lock_matches(data, bundles):
                 stage, "不支持的 Bundle 来源合同")
         tag = source.get("templateTag")
         version = stable_version(tag) if tag else "git:" + str(source.get("templateCommit"))
+        require(tag and tuple(map(int, version.split("."))) >= (5, 0, 0)
+                and source.get("templateCommit") != "1e49127842c358caf552af8ebec58f438a35c5a6",
+                stage, "模板来源属于不受支持的历史版本")
         require(source.get("profile") == profile_name and source.get("sourceState", "committed") == "committed"
                 and not source.get("sourceTree") and matches(COMMIT, source.get("templateCommit"))
                 and (source.get("sourcePath") == "." or relative_ref(source.get("sourcePath")))
@@ -354,13 +364,13 @@ def write_new(root, name, data, mode=0o600):
 
 
 def prepare(work_dir, version=None):
-    requested = stable_version(version) if version is not None else None
+    requested = supported_cli_version(version) if version is not None else None
     target = current_platform()
     require(target in PLATFORMS, "platform", "当前平台没有受支持的发行合同", "PLATFORM")
     root = new_work_directory(work_dir)
     release_data = fetch_bytes(API_BASE + ("tags/v" + requested if requested else "latest"), MAX_METADATA, "release")
     release = read_json(release_data, "release")
-    version = stable_version(release.get("tag_name"))
+    version = supported_cli_version(release.get("tag_name"))
     require(release.get("tag_name") == "v" + version and release.get("draft") is False and release.get("prerelease") is False
             and release.get("html_url") == RELEASE_BASE + "tag/v" + version and (requested is None or version == requested),
             "release", "Release 版本、来源或稳定状态不符")

@@ -63,7 +63,7 @@ Spec 规格模板独立发布，只声明模板自身版本；发行说明和维
 
 1. 变更经 PR 合入 main，`template-gate` 必须通过。
 2. 在合入后的 main 提交上执行 `scripts/verify-template-fast --base <上一正式发行完整 SHA> --report-dir <仓库外新目录>`，保存 `limited` 范围的报告。
-3. 平台验收由维护者人工完成并自行记录（Mac、Windows、Linux 各自的安装、初始化与回滚）；发行说明写明「平台验收：人工，不在 CI 或发布门禁内」，不声称任何平台已验收。
+3. 平台验收由维护者人工完成并自行记录（Mac、Windows、Linux 各自的安装、初始化、同步及失败处理）；发行说明写明「平台验收：人工，不在 CI 或发布门禁内」，不声称任何平台已验收。
 4. 在有授权且可访问公开技能仓的环境执行 `scripts/export-yss-skills --check --output <公开仓路径>`，保存输出与退出码；该步骤不进入普通 CI，未执行时在发布说明中明确列出。
 5. 在该提交上打 `vX.Y.Z` tag 并创建 GitHub Release，附上 fast 报告与 `SHA256SUMS`。发行说明列出模板变更及本次未覆盖的范围。
 
@@ -88,7 +88,7 @@ node .template-source/scripts/release-template.mjs --version X.Y.Z --base <上�
 
 **发布可重试。** tag 已推送但 Release 创建失败时，重新执行发布步骤即可续做：已有的本地 tag、远端 tag 只在指向发布提交时复用，不重建、不移动；Release 已存在则只做回读校验。tag 指向其他提交时拒绝。
 
-需要核对固定 CLI 的初始化、迁移、回滚集成时，才使用下文的 `verify-template-release.mjs`；它同样不要求恢复矩阵、原生装配或 Bundle 绑定本次模板。
+需要核对固定 CLI 的初始化和同步集成时，才使用下文的 `verify-template-release.mjs`；它同样不要求恢复矩阵、原生装配或 Bundle 绑定本次模板。
 
 ## 发布版本与证据
 
@@ -110,9 +110,9 @@ Go 生产用固定 Spec/Backend 来源提交和 `bundle-profile.json` 声明政�
 
 candidate、legacy-full 执行入口、legacy_coverage 记账、资格配对计时与策略激活层已退役。base 或 baseline 报告不能缩小 release 集合；显式提供报告时仍检查完整 SHA、祖先关系、报告摘要、来源与真实执行证据。参数不完整、错误摘要、非祖先 baseline、未知路径或依赖配置错误在昂贵任务前失败。
 
-报告从其绑定提交读取策略与清单，只读编译期望台账；不运行历史执行器，不让 qualified-gates 自述恢复当前资格或缩减检查。可信 5.x 正式提交及经审阅的精确报告 SHA-256 登记在 `trusted-verification-releases.json`；新增记录前应审查固定提交、报告、执行环境、来源及证据，不能按本地 tag、自报版本或祖先关系猜测。所有历史报告均须登记精确摘要，v1 报告的外层命令及每项 stdout/stderr 日志也须分别具有可核验的摘要。仅经登记的精确 v2 报告允许跨仓根和证据目录重定位，仍独立核验执行台账、实际退出、内外来源与全部日志摘要；未知来源或不匹配的执行环境明确拒绝。当前仅登记官方 Template v5.0.0 提交，没有登记已审阅报告。旧发行提交仍可只作差异 base。受支持报告保留原策略和命令映射，核对选择、来源和证据；报告 Schema 号不能单独证明产品代际。无法独立验证的记录不能作为当前有效 baseline；原始文件不因验证档退役而删除。
+报告从其绑定提交读取策略与清单，只读编译期望台账；不运行历史执行器，不让 qualified-gates 自述恢复当前资格或缩减检查。本次重发的 Template 5.0.0 及后续受支持正式提交与经审阅的精确报告 SHA-256 登记在 `trusted-verification-releases.json`；重发前的同名提交、旧产品报告及 v1 报告不再受支持。仅经登记的精确 v2 报告允许跨仓根和证据目录重定位，仍独立核验执行台账、实际退出、内外来源与全部日志摘要；未知来源或不匹配的执行环境明确拒绝。登记当前为空，须待新版本完成验证后才登记；旧发行提交仍可只作 Git 差异 base。无法独立验证的记录不能作为当前有效 baseline；旧报告原始文件保留。
 
-Spec/Backend 的固定二进制、Bundle 导出和安装副本属于可见准备任务。旧两项源码检查的稳定覆盖 ID 映射 `tests/cli-retirement.test.mjs` 的公开行为检查，不继续 require 退役 gitlink。检查覆盖版本化 envelope、真实退出码、bytes/mode 来源、Spec/Backend 初始化/同步、预演无写入、幂等、保护路径和预期错误码。旧实例恢复矩阵单独执行仓外固定旧执行器，不将原生新建实例冒充旧实例迁移。
+Spec/Backend 的固定二进制、Bundle 导出和安装副本属于可见准备任务。检查覆盖版本化 envelope、真实退出码、bytes/mode 来源、Spec/Backend 初始化及 Git 干净状态下的同步、预演无写入、幂等、保护路径和预期错误码。旧实例及旧执行器不再属于支持范围。
 
 固定来源本机报告使用 `verification_scope: local-template-and-cli` 与 `release_readiness: not-evaluated`。本机通过只闭合本机源码和 CLI 风险；整体可发布结论还须核验既有适用 Node / 平台合同及当前 SHA 的真实证据，缺项保持未就绪。
 
