@@ -2499,7 +2499,6 @@ profiles:
       - id: check.work-layout-design-fixtures
         run: "node --test
           .agents/skills/yss-stage-decision/tests/approval-records.test.mjs
-          .agents/skills/yss-stage-decision/tests/run-scenarios.mjs
           .agents/skills/yss-tactical-design/tests/run-scenarios.mjs"
         group: work-layout
         inputs_complete: true
@@ -2515,6 +2514,18 @@ profiles:
           - ".agents/skills/yss-tactical-design/tests/**"
         depends_on: []
         failure_mode: "默认工作包样例在阶段决策或战术设计中产生失效引用"
+      - id: check.work-layout-stage-native
+        run: "node --test .agents/skills/yss-stage-decision/tests/run-scenarios.mjs"
+        group: work-layout
+        resources: [ native-cli ]
+        inputs_complete: true
+        input_patterns:
+          - ".agents/skills/yss-stage-decision/tests/**"
+          - ".agents/skills/yss-stage-decision/scripts/**"
+          - ".agents/skills/yss-stage-decision/references/**"
+          - "scripts/lib/native-context.mjs"
+        depends_on: []
+        failure_mode: "阶段决策真实上下文或资产引用不符合现行合同"
       - id: check.setup-yss-bootstrap
         run: "python3 -B -m unittest discover -s tests -p test_setup_yss_bootstrap.py"
         group: skills
@@ -4241,6 +4252,7 @@ gates:
       - check.openapi-validation-scenarios
       - check.work-layout-digital-human-task-package
       - check.work-layout-design-fixtures
+      - check.work-layout-stage-native
       - check.lib-coverage-ledger
     audit_status: conservative-complete
     display_id: G04
