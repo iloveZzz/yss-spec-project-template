@@ -10,4 +10,4 @@
 
 发生中断先保留现场，用 `doctor` 和 `recover --help` 识别未完成事务并按实际支持范围恢复。冲突或来源不符时保留用户文件，不能删除状态、改身份或强制覆盖来伪造成功。旧实例和旧插件没有自动兼容承诺；先检查实际帮助与错误，再决定在副本或新目录处理。
 
-当前源码的在线升级默认 GitHub `iloveZzz/yss-cli`，GitLab 为次级选择：先确认 `upgrade --help` 支持 `--source`，再用 `upgrade --source gitlab --to <版本> --tool-root <目录>` 显式选择，并提供该来源要求的 CA 与鉴权。来源失败不自动切换；离线归档不与 `--source` 混用。旧程序不会随模板文档自动获得这些行为。
+CLI 3.0.3 起，在线升级默认 GitHub `iloveZzz/yss-cli`，GitLab 为次级选择：先确认 `upgrade --help` 支持 `--source`，再用 `upgrade --source gitlab --to <版本> --tool-root <目录>` 显式选择，并提供该来源要求的 CA 与鉴权。来源失败不自动切换；离线归档不与 `--source` 混用。旧程序不会随模板文档自动获得这些行为。
