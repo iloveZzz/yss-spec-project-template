@@ -255,6 +255,14 @@ test('PR 离线计划延后真实依赖原生 CLI 的用户决定与脚手架检
   assert.ok(!plan.commands.some(row=>row.id===id),id);
  }
 });
+test('结构化资产离线检查保留，原生实例检查延后至发行',()=>{
+ const changedFiles=['scripts/fixtures/structured-assets/assets-native.integration.mjs'];
+ const offline=planTemplateVerification({changedFiles,ciOffline:true});
+ assert.ok(offline.commands.some(row=>row.id==='check.structured-assets'));
+ assert.ok(offline.selection.omitted.some(row=>row.id==='check.structured-assets-native'&&row.reason==='deferred-ci-offline'));
+ const release=planTemplateVerification({profile:'release',changedFiles});
+ assert.ok(release.commands.some(row=>row.id==='check.structured-assets-native'));
+});
 test('Backend 查询快照只由实际执行的消费者测试覆盖',()=>{
  for(const file of ['scripts/lib/lifecycle-context-query-core.mjs','profiles/backend/scripts/lib/lifecycle-context-query.mjs']){
   const plan=planTemplateVerification({profile:'release',changedFiles:[file]});

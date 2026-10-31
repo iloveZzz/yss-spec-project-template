@@ -54,6 +54,11 @@ test('write preflight rejects invalid schema without touching source',t=>{
   assert.throws(()=>planAssetWrite(root,[candidate],{schemaRoot:root,verify}));
   assert.equal(fs.existsSync(path.join(root,candidate.ref)),false);
 });
+test('unverified multi-file candidates remain blocked',t=>{
+  const root=fixture(t);
+  assert.throws(()=>planAssetWrite(root,[spec(),spec('docs/other.json')],{schemaRoot:root}),/MULTI_CANDIDATE_UNSUPPORTED/);
+  assert.equal(fs.existsSync(path.join(root,'docs/checkpoint.json')),false);
+});
 test('write checks fresh input and creates a deterministic JSON receipt',t=>{
   const root=fixture(t), candidate=spec(), plan=planAssetWrite(root,[candidate],{schemaRoot:root,verify});
   const result=applyAssetWrite(root,plan,{verify});

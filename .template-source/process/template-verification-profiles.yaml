@@ -2036,6 +2036,20 @@ profiles:
           - "scripts/fixtures/structured-assets/**"
         depends_on: []
         failure_mode: "结构化资产解析或 Schema 拒绝错误"
+      - id: "check.structured-assets-native"
+        run: "node --test scripts/fixtures/structured-assets/assets-native.integration.mjs"
+        group: "schema-runtime"
+        resources: [ "python-jsonschema", "native-cli" ]
+        inputs_complete: true
+        input_patterns:
+          - "scripts/fixtures/structured-assets/**"
+          - "scripts/lib/asset-transactions.mjs"
+          - "scripts/lib/native-evidence.mjs"
+          - "scripts/lib/validation-phase.mjs"
+          - ".agents/skills/yss-stage-decision/scripts/**"
+          - ".template-spec/process/schemas/**"
+        depends_on: []
+        failure_mode: "真实实例资产写入、审批绑定或输入漂移保护错误"
       - id: "check.schema-runtime"
         resources: [ "python-jsonschema" ]
         inputs_complete: true
@@ -4208,6 +4222,7 @@ gates:
       - check.schema-generations
       - check.backend-governance-contract
       - check.structured-assets
+      - check.structured-assets-native
       - check.schema-runtime
       - check.8cd499a929b8a5a4
       - check.import-direction

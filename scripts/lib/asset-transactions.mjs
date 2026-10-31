@@ -7,6 +7,8 @@ import { spawnSync } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
 import { safeFile } from './governance-io.mjs';
 import { parseAsset, readAsset, serializeAsset, byteDigest, semanticDigest, validateAssetStructure, TOOL_ROOT } from './structured-assets.mjs';
+import { nativeContractVerify, nativeEvidenceVerify, NEEDS } from './native-evidence.mjs';
+import { withValidationPhase, validationDependencies, verifyValidationDependencies } from './validation-phase.mjs';
 
 const TX = '.yss/asset-transactions';
 const ensure = (ok, message) => { if (!ok) throw new Error(message); };
@@ -118,9 +120,54 @@ function overlayVerification(root, observed, changes, { verify = validateAssetSe
   } finally { fs.rmSync(staging, { recursive: true, force: true }); }
 }
 
+// shortcut: path-sensitive non-draft assets use the existing validator until native candidate transport supports them.
+function verifyNativeCandidate(root, change) {
+  const value = parseAsset(change.after, change.ref);
+  if (change.kind === 'task-package' && (value.schema_version !== 3 || value.workflow_status !== 'not-started')) return null;
+  if (change.kind === 'approval-record' && value.schema_version !== 3) return null;
+  if (!['task-package', 'approval-record'].includes(change.kind)) return null;
+  return withValidationPhase({root, purpose:'asset-native-candidate', readOnly:true}, () => {
+    const result = change.kind === 'task-package'
+      ? nativeContractVerify({root,kind:'task',document:value,extra:['--task-ref',change.ref],needs:NEEDS.task})
+      : nativeEvidenceVerify({root,kind:'approval',document:value,extra:['--require-approved','--checkpoint',findApprovalCheckpoint(root,change.ref)],needs:NEEDS.approval});
+    ensure(result.exitCode === 0, `ASSET_SEMANTIC: ${change.ref}: ${result.message}`);
+    return {ref:change.ref,kind:change.kind,exit_code:0,dependencies:validationDependencies(),git_inputs:result.envelope.result.git_inputs};
+  });
+}
+
+function verifyStageCandidate(root, change) {
+  if (!['domain-strategy','stage-decision-package'].includes(change.kind)) return null;
+  if (parseAsset(change.after,change.ref).status === 'approved') return null;
+  const directory=fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()),'yss-asset-input-'));
+  try {
+    const file=path.join(directory,'candidate.json');fs.writeFileSync(file,change.after,{flag:'wx'});
+    const tool=safeFile(root,`.agents/skills/yss-stage-decision/scripts/validate-${change.kind}.mjs`);
+    const run=spawnSync(process.execPath,[tool,file,'--root',root,'--candidate-ref',change.ref,'--validation-dependencies'],{cwd:root,encoding:'utf8',timeout:60000,maxBuffer:64*1024*1024});
+    ensure(!run.error&&run.status===0,`ASSET_SEMANTIC: ${change.ref}: ${run.error?.message||run.stderr||run.stdout}`);
+    const result=JSON.parse(run.stdout), receipt=result.validation_dependencies;
+    ensure(result.result==='completed'&&receipt?.schema_version===1&&Array.isArray(receipt.files)&&Array.isArray(receipt.observations),'ASSET_VALIDATION_DEPENDENCIES_REQUIRED');
+    const temporary=ref=>ref===directory||ref.startsWith(directory+path.sep);
+    receipt.files=receipt.files.filter(row=>!temporary(row.file));
+    receipt.observations=receipt.observations.filter(row=>!temporary(row.file));
+    verifyValidationDependencies(receipt);
+    return {ref:change.ref,kind:change.kind,exit_code:0,dependencies:receipt};
+  } finally {fs.rmSync(directory,{recursive:true,force:true});}
+}
+
+function verifyPlannedDependencies(root, verification) {
+  for (const item of verification) if (item.dependencies) {
+    const receipt = structuredClone(item.dependencies);
+    const ownDirectory = path.join(root,TX);
+    for (const row of receipt.observations) if (row.kind === 'directory' && row.file === ownDirectory) row.value = [...row.value, 'lock'].sort();
+    verifyValidationDependencies(receipt);
+  }
+}
+
 export function planAssetWrite(root, specs, { schemaRoot = TOOL_ROOT, verify, migration } = {}) {
   root = fs.realpathSync(root); assertAssetTransactionIdle(root);
   ensure(Array.isArray(specs) && specs.length, 'ASSET_EMPTY_PLAN');
+  if (!verify && specs.length > 1) throw new Error('ASSET_MULTI_CANDIDATE_UNSUPPORTED: 多文件候选尚不支持安全验证');
+  if (!verify) fs.mkdirSync(safeFile(root, TX), {recursive:true});
   const observed = observeAssetInputs(root), seen = new Set();
   const changes = specs.map(({ ref, kind, value }) => {
     ensure(!seen.has(ref), `ASSET_DUPLICATE_TARGET: ${ref}`); seen.add(ref);
@@ -134,7 +181,8 @@ export function planAssetWrite(root, specs, { schemaRoot = TOOL_ROOT, verify, mi
     return { ref, kind, before, after, after_digest: byteDigest(after), semantic_digest: semanticDigest(value) };
   }).filter(change => change.before?.digest !== change.after_digest);
   for (const change of changes) if (!Object.hasOwn(observed, change.ref)) observed[change.ref] = change.before;
-  const verification = changes.length ? overlayVerification(root, Object.fromEntries(Object.entries(observed).filter(([,v]) => v)), changes, { verify }) : [];
+  const native = !verify && changes.length === 1 ? verifyNativeCandidate(root,changes[0]) || verifyStageCandidate(root,changes[0]) : null;
+  const verification = changes.length ? native ? [native] : overlayVerification(root, Object.fromEntries(Object.entries(observed).filter(([,v]) => v)), changes, { verify }) : [];
   const payload = { schema_version: 1, kind: 'asset-write-plan', root, observed, changes, verification, ...(migration ? {migration} : {}), execution_authorization: 'not-granted' };
   return { ...payload, plan_id: byteDigest(serializeAsset(payload)).slice(7) };
 }
@@ -159,6 +207,7 @@ export function applyAssetWrite(root, plan, { verify, afterWrite } = {}) {
   let transaction;
   try {
     ensure(!exists(safeFile(root, `${TX}/recovery.lock`)), 'ASSET_RECOVERY_LOCKED');
+    verifyPlannedDependencies(root,plan.verification);
     const current = observeAssetInputs(root);
     for (const [ref, before] of Object.entries(plan.observed)) ensure(same(descriptor(safeFile(root, ref)), before), `ASSET_INPUT_DRIFT: ${ref}`);
     ensure(Object.keys(current).every(ref => Object.hasOwn(plan.observed, ref)), 'ASSET_INPUT_DRIFT: new dependency files');
@@ -167,6 +216,7 @@ export function applyAssetWrite(root, plan, { verify, afterWrite } = {}) {
     if(plan.migration) for(const [ref,digest] of Object.entries(plan.migration.sources)) ensure(byteDigest(fs.readFileSync(safeFile(root,ref)))===digest,`ASSET_MIGRATION_DRIFT: ${ref}`);
     const fresh = planAssetWrite(root, plan.changes.map(c => ({ ref: c.ref, kind: c.kind, value: parseAsset(c.after, c.ref) })), { schemaRoot: root, verify, migration:plan.migration });
     ensure(same(fresh.changes, plan.changes), 'ASSET_PLAN_CHANGED');
+    for (let i=0;i<plan.verification.length;i++) if (plan.verification[i].dependencies) ensure(same(fresh.verification[i]?.git_inputs,plan.verification[i].git_inputs), 'ASSET_INPUT_DRIFT: Git inputs');
     const journalRef = `${TX}/${plan_id}.json`, journalFile = safeFile(root, journalRef);
     ensure(!exists(journalFile), 'ASSET_ALREADY_APPLIED: inspect the existing receipt');
     transaction = { schema_version: 1, plan_id, root, status: 'applying', ...(plan.migration?{migration:plan.migration}:{}), changes: plan.changes, backups: Object.fromEntries(plan.changes.map(c => [c.ref, c.before ? fs.readFileSync(safeFile(root, c.ref)).toString('base64') : null])) };
