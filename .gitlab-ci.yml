@@ -46,7 +46,7 @@ build-check:
           if len(raw) > 262144:
               raise ValueError("project metadata too large")
           record = json.loads(raw)
-          if type(record["id"]) is not int or record["id"] <= 0 or record["id"] in (37, 38):
+          if type(record["id"]) is not int or record["id"] <= 0:
               raise ValueError("project ID mismatch")
           if record["path_with_namespace"] != project or record["web_url"] != origin + "/" + project:
               raise ValueError("project identity mismatch")

@@ -304,7 +304,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/setup-yss-harness/SKILL.md",
-        "effectiveHash": "2b6e0a0ff5f43a1594ccf398a1d2f8b1a2f82eea9b74e01000c28372557611f4",
+        "effectiveHash": "ab6539f8c46f8d19e23d3abe269b8a67b92c298d71ff4b442c3fef068460b439",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"
