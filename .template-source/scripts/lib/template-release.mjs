@@ -126,6 +126,9 @@ export function verifyTemplateRelease({ root, commit, output, runtimeStore = 'of
     const userWorkflow = path.join(instance, '.github/workflows/user.yml');
     const userBytes = 'name: User owned workflow\non: workflow_dispatch\njobs: {}\n';
     writeFileSync(userWorkflow, userBytes);
+    const gitEnvironment={...Object.fromEntries(Object.entries(process.env).filter(([name])=>!name.startsWith('GIT_'))),GIT_CONFIG_NOSYSTEM:'1',GIT_CONFIG_GLOBAL:os.devNull,GIT_TERMINAL_PROMPT:'0'};
+    const fixtureGit=(...args)=>run('git',['-c','user.name=YSS verification','-c','user.email=verification@example.invalid','-c','commit.gpgsign=false',...args],instance,gitEnvironment);
+    fixtureGit('init','-q');fixtureGit('add','-A');fixtureGit('commit','-qm','release integration baseline');
     runNative(['sync','--root',instance],nativeOptions);
     assert.equal(readFileSync(userWorkflow, 'utf8'), userBytes);
     applyNative('sync','spec',instance,path.join(scratch,'sync-plan.json'),[],nativeOptions);

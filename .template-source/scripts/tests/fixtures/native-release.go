@@ -8,7 +8,9 @@ import (
  "encoding/json"
  "fmt"
  "os"
+ "os/exec"
  "path/filepath"
+ "strings"
 )
 var cliCommit, templateCommit, designCommit, backendCommit, frontendCommit string
 const version="3.1.0"
@@ -34,6 +36,8 @@ func main(){values:=map[string]string{};pos:=[]string{};for i:=1;i<len(os.Args);
   result=map[string]any{"command":command,"stats":map[string]any{"changed":0,"conflicts":conflicts},"readiness":map[string]any{"files":"aligned","skills":map[string]any{"status":"ready"}}};if out:=values["out"];out!=""{must(os.WriteFile(out,jsonBytes(result),0644))}
  case "sync":
   // Match the public sync plan/apply contract; an unchanged plan has no changes.
+  head,e:=exec.Command("git","-C",root,"rev-parse","--verify","HEAD").CombinedOutput();if e!=nil||len(strings.TrimSpace(string(head)))!=40{code="BASELINE";status="error";break}
+  work,e:=exec.Command("git","-C",root,"status","--porcelain","--untracked-files=all").CombinedOutput();if e!=nil||strings.TrimSpace(string(work))!=""{code="CONFLICT";status="error";break}
   ref:=managedRef(profile);current,e:=os.ReadFile(filepath.Join(root,ref));must(e);changes:=[]any{}
   if string(current)!=assets(profile)[ref]{changes=append(changes,map[string]any{"path":ref})}
   if values["apply"]=="true"{
