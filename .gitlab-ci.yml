@@ -1,0 +1,122 @@
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS && $CI_PIPELINE_SOURCE == "push"'
+      when: never
+    - when: always
+
+default:
+  image: docker.io/library/golang:1.27.1-trixie@sha256:8f58fd67ea075142d947a60e0caa4317746a55118d312f027793d382c7741734
+  tags: [yss-linux]
+
+variables:
+  GIT_DEPTH: "0"
+  YSS_GITLAB_CA_FILE: /etc/gitlab-runner/certs/gitlab.yss.test.crt
+  YSS_GITLAB_CI_AUTH: "1"
+
+build-check:
+  script:
+    - |
+      set -eu
+      test "$CI_SERVER_URL" = https://gitlab.yss.test:9443
+      test "$YSS_GITLAB_CI_AUTH" = 1
+      test "$YSS_GITLAB_CA_FILE" = /etc/gitlab-runner/certs/gitlab.yss.test.crt
+      test -s "$YSS_GITLAB_CA_FILE"
+      test -n "$CI_JOB_TOKEN"
+      go version
+      git --version
+      test "$(go env GOVERSION)" = go1.27.1
+      git_version=$(git --version | cut -d ' ' -f 3)
+      test "$(printf '%s\n' 2.44.0 "$git_version" | sort -V | head -n 1)" = 2.44.0
+      work=$(mktemp -d)
+      trap 'rm -rf "$work"' EXIT
+      export GIT_CONFIG_NOSYSTEM=1 GIT_CONFIG_GLOBAL=/dev/null GIT_TERMINAL_PROMPT=0
+      export GIT_CONFIG_COUNT=5
+      export GIT_CONFIG_KEY_0=credential.https://gitlab.yss.test:9443/yss/yss-cli.git.helper
+      export GIT_CONFIG_VALUE_0='!f() { test "$1" != get || printf "%s\n" "username=gitlab-ci-token" "password=$CI_JOB_TOKEN"; }; f'
+      export GIT_CONFIG_KEY_1=http.https://gitlab.yss.test:9443/.sslCAInfo GIT_CONFIG_VALUE_1="$YSS_GITLAB_CA_FILE"
+      export GIT_CONFIG_KEY_2=http.https://gitlab.yss.test:9443/.followRedirects GIT_CONFIG_VALUE_2=false
+      export GIT_CONFIG_KEY_3=credential.useHttpPath GIT_CONFIG_VALUE_3=true
+      export GIT_CONFIG_KEY_4=http.https://gitlab.yss.test:9443/.proxy GIT_CONFIG_VALUE_4=
+      python3 -I - <<'PYCODE'
+      import json, os, re, ssl, urllib.request
+      origin = "https://gitlab.yss.test:9443"
+      project = "yss/yss-spec-project-template"
+      class NoRedirect(urllib.request.HTTPRedirectHandler):
+          def redirect_request(self, *args, **kwargs):
+              return None
+      def unique_fields(pairs):
+          result = {}
+          for key, value in pairs:
+              if key in result:
+                  raise ValueError("duplicate job metadata field")
+              result[key] = value
+          return result
+      try:
+          job_id = os.environ["CI_JOB_ID"]
+          commit = os.environ["CI_COMMIT_SHA"]
+          if not re.fullmatch(r"[1-9][0-9]*", job_id) or not re.fullmatch(r"[0-9a-f]{40}", commit):
+              raise ValueError("invalid tested job identity")
+          context = ssl.create_default_context(cafile=os.environ["YSS_GITLAB_CA_FILE"])
+          opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedirect(), urllib.request.HTTPSHandler(context=context))
+          endpoint = origin + "/api/v4/job"
+          req = urllib.request.Request(endpoint, headers={"JOB-TOKEN": os.environ["CI_JOB_TOKEN"]})
+          with opener.open(req, timeout=30) as response:
+              if response.status != 200 or response.geturl() != endpoint:
+                  raise ValueError("unexpected job response")
+              raw = response.read(262145)
+          if len(raw) > 262144:
+              raise ValueError("job metadata too large")
+          record = json.loads(raw, object_pairs_hook=unique_fields)
+          if type(record["id"]) is not int or record["id"] != int(job_id):
+              raise ValueError("job ID mismatch")
+          if record["web_url"] != origin + "/" + project + "/-/jobs/" + job_id:
+              raise ValueError("job project URL mismatch")
+          pipeline = record["pipeline"]
+          if type(pipeline["project_id"]) is not int or pipeline["project_id"] <= 0 or pipeline["sha"] != commit:
+              raise ValueError("tested pipeline identity mismatch")
+      except Exception:
+          raise SystemExit("Fixed GitLab job identity/CA/auth not ready; no fallback") from None
+      PYCODE
+      git init "$work/source"
+      git -C "$work/source" remote add origin https://gitlab.yss.test:9443/yss/yss-cli.git
+      git -C "$work/source" fetch --depth 1 origin refs/heads/main
+      git -C "$work/source" checkout --detach FETCH_HEAD
+      git -C "$work/source" rev-parse HEAD > "$work/source-commit.txt"
+      cmp .agents/skills/setup-yss-harness/SKILL.md .workbuddy/skills/setup-yss-harness/SKILL.md
+      cmp .agents/skills/release-yss-cli/SKILL.md .workbuddy/skills/release-yss-cli/SKILL.md
+      cmp .agents/skills/setup-yss-harness/SKILL.md profiles/backend/.workbuddy/skills/setup-yss-harness/SKILL.md
+      test "$(readlink .claude/skills/setup-yss-harness)" = ../../.agents/skills/setup-yss-harness
+      test "$(readlink .claude/skills/release-yss-cli)" = ../../.agents/skills/release-yss-cli
+      python3 -I - <<'PYCODE'
+      import hashlib, json, pathlib
+      root = pathlib.Path(".agents/skills/setup-yss-harness")
+      digest = hashlib.sha256()
+      for item in sorted(root.rglob("*")):
+          if item.is_file():
+              digest.update(item.relative_to(root).as_posix().encode() + b"\0" + item.read_bytes().replace(b"\r\n", b"\n") + b"\0")
+      lock = json.loads(pathlib.Path("profiles/backend/skills-lock.json").read_text())
+      assert lock["skills"]["shared"]["setup-yss-harness"]["effectiveHash"] == digest.hexdigest()
+      PYCODE
+      template_root=$PWD
+      cd "$work/source"
+      go run -tags yss_nobundle ./tools/bundle --source-root "$template_root" --out internal/bundle/assets > "$work/bundle.json"
+      CGO_ENABLED=0 go build -trimpath -o "$work/yss" ./cmd/yss
+      "$work/yss" version
+      "$work/yss" help > "$work/help.txt"
+      "$work/yss" scaffold catalog > "$work/catalog.json"
+      "$work/yss" init --root "$work/preview" --profile spec --installation skills --dry-run > "$work/preview.json"
+      test ! -e "$work/preview"
+      "$work/yss" init --root "$work/project" --profile spec --installation skills > "$work/init.json"
+      "$work/yss" skills list --root "$work/project" > "$work/skills.json"
+      "$work/yss" sync --root "$work/project" --dry-run > "$work/sync.json"
+      "$work/yss" doctor --root "$work/project" > "$work/doctor.json"
+      "$work/yss" init --root "$work/backend" --profile backend --installation skills --dry-run > "$work/backend-preview.json"
+      test ! -e "$work/backend"
+      mkdir -p "$CI_PROJECT_DIR/ci-report"
+      cp "$work/source-commit.txt" "$work/bundle.json" "$work/help.txt" "$work/catalog.json" "$work/preview.json" "$work/init.json" "$work/skills.json" "$work/sync.json" "$work/doctor.json" "$work/backend-preview.json" "$CI_PROJECT_DIR/ci-report/"
+      printf '%s\n' 'build + actual Linux CLI paths only; no persistent tests, native Windows or formal release verified' > "$CI_PROJECT_DIR/ci-report/scope.txt"
+  artifacts:
+    when: always
+    paths: [ci-report/]
+    expire_in: 7 days
