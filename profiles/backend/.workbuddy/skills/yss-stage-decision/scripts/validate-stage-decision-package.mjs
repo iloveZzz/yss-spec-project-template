@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 import {verifyStageResult} from "../../../../scripts/lib/stage-result.mjs";
 import {nativeEvidenceVerify,nativeCoverage,NEEDS} from "../../../../scripts/lib/native-evidence.mjs";
-import { readFile } from "node:fs/promises";
+import { readFile, withValidationPhase, validationDependencies } from "../../../../scripts/lib/validation-phase.mjs";
+import { safeFile } from "../../../../scripts/lib/governance-io.mjs";
 import path from "node:path";
 import { assertAssetTransactionIdle, assertCurrentAssetReference } from "../../../../scripts/lib/asset-transactions.mjs";
 import { createHash } from "node:crypto";
@@ -156,23 +157,25 @@ async function validate(data, contextRoot, currentRef) {
   return errors;
 }
 
-const { values, positionals } = parseArgs({ options: { root: { type: "string", default: process.cwd() }, mode: {type:"string",default:"content"}, checkpoint:{type:"string"} }, allowPositionals: true, strict: true });
+const { values, positionals } = parseArgs({ options: { root: { type: "string", default: process.cwd() }, mode: {type:"string",default:"content"}, checkpoint:{type:"string"}, 'candidate-ref':{type:'string'}, 'validation-dependencies':{type:'boolean'} }, allowPositionals: true, strict: true });
 const file = positionals[0];
 if (!file) fail(["用法: validate-stage-decision-package.mjs <package.yaml> [--root <project-root>]"]);
 else {
   try {
     if(!["content","stage"].includes(values.mode))throw new TypeError("mode 必须为 content 或 stage");
     if(values.mode==="stage"&&!values.checkpoint)throw new TypeError("stage 模式必须提供 --checkpoint");
-    assertAssetTransactionIdle(values.root);
-    assertCurrentAssetReference(values.root, path.relative(path.resolve(values.root), path.resolve(file)));
-    const source = await readFile(file, "utf8");
-    {
-      const errors = await validate(parseAsset(source, file), values.root, path.resolve(file));
-      if (errors.length) fail(errors);
-      else {
-       if(values.mode==="stage")verifyStageResult({root:values.root,checkpointRef:values.checkpoint,gateId:"gate.plan-approved",assetRef:path.relative(path.resolve(values.root),path.resolve(file))});
-       process.stdout.write(JSON.stringify({ result: "completed", contract: file }, null, 2) + "\n");
-      }
-    }
+    if(values['candidate-ref']&&(!values['validation-dependencies']||values.mode!=='content'))throw new TypeError('候选引用仅用于有依赖回执的内容验证');
+    const currentRef=values['candidate-ref']?safeFile(values.root,values['candidate-ref']):path.resolve(file);
+    const output=await withValidationPhase({root:values.root,purpose:'stage-decision-package',readOnly:true},async()=>{
+      assertAssetTransactionIdle(values.root);
+      assertCurrentAssetReference(values.root, path.relative(path.resolve(values.root),currentRef));
+      const source=await readFile(file,'utf8'),data=parseAsset(source,file);
+      if(values['candidate-ref']&&data.status==='approved')throw new TypeError('已批准候选需要真实目标路径验证');
+      const errors=await validate(data,values.root,currentRef);
+      if(errors.length)return {errors};
+      if(values.mode==='stage')verifyStageResult({root:values.root,checkpointRef:values.checkpoint,gateId:'gate.plan-approved',assetRef:path.relative(path.resolve(values.root),currentRef)});
+      return {result:'completed',contract:file,...(values['validation-dependencies']?{validation_dependencies:validationDependencies()}:{})};
+    });
+    if(output.errors)fail(output.errors);else process.stdout.write(JSON.stringify(output,null,2)+'\n');
   } catch (error) { fail([error.message]); }
 }
