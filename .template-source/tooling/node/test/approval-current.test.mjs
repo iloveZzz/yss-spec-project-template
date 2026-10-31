@@ -14,7 +14,6 @@ import {ROOT, loadRegistry} from '../../../../scripts/lib/lifecycle-registry.mjs
 import {buildReviewPackage,prepareReviewPackage} from '../../../../scripts/lib/review-package.mjs';
 import {approvalExpectedFromTask} from '../../../../scripts/lib/review-capabilities.mjs';
 import {parseDocument, stringify as stringifyYaml} from '../../../../scripts/vendor/yaml.mjs';
-import {readFileSync as snapshotRead,withValidationPhase} from '../../../../scripts/lib/validation-phase.mjs';
 import {sourceApproval} from '../../../../scripts/lib/strategic-handoff.mjs';
 import {makeRoot} from '../../../../tests/helpers/yss-instance.mjs';
 
@@ -41,44 +40,6 @@ function fixture(run) {
   run({root,save,asset,record,expected,file:path.join(root,'approval.json')});
  } finally {rmSync(root,{recursive:true,force:true});}
 }
-test('current approval refuses extra target intent as evidence while pure history remains readable',()=>fixture(f=>{
- assert.doesNotThrow(()=>assertCurrentApproval(f.record,f.expected,{root:f.root}));
- for(const ref of ['progression-target.json','nested/PROGRESSION-TARGET.JSON']) {
-  mkdirSync(path.dirname(path.join(f.root,ref)),{recursive:true});
-  f.save(ref,{schema_version:1,kind:'lifecycle-progression-target',target:'spec-approved'});
-  const contaminated={...f.record,basis:[...f.record.basis,f.asset(ref)]};
-  assert.throws(()=>assertCurrentApproval(contaminated,f.expected,{root:f.root}),/PROGRESSION_EVIDENCE|推进目标.*不能作为批准或交付证据/);
-  assert.throws(()=>assertCurrentApproval(f.record,{...f.expected,basis:[...f.expected.basis,f.asset(ref)]},{root:f.root}),/PROGRESSION_EVIDENCE|推进目标.*不能作为批准或交付证据/);
-  assert.equal(validateApprovalRecord(contaminated,{root:f.root,history:true}).execution_authorization,'not-evaluated');
- }
-}));
-
-test('current subject and approval aliases cannot masquerade as target configuration; history is separate',()=>fixture(f=>{
- for(const ref of ['progression-target.json','nested/PROGRESSION-TARGET.JSON']) {
-  mkdirSync(path.dirname(path.join(f.root,ref)),{recursive:true});
-  f.save(ref,f.record);
-  assert.throws(()=>validateApprovalRecordFile(path.join(f.root,ref),{root:f.root,expected:f.expected}),/PROGRESSION_EVIDENCE|推进目标.*不能作为批准或交付证据/);
-  assert.equal(validateApprovalRecordFile(path.join(f.root,ref),{root:f.root,history:true}).execution_authorization,'not-evaluated');
-  const state={status:'approved',subject_ref:f.record.subject_ref,approval_ref:ref,approval_scope:f.record.approval_scope,basis:f.record.basis,drafter_principal_ref:f.record.drafter_principal_ref};
-  assert.throws(()=>assertApprovedGateHasValidApproval(f.record.gate_id,state,{root:f.root}),/PROGRESSION_EVIDENCE|推进目标.*不能作为批准或交付证据/);
-  assert.throws(()=>assertApprovedGateHasValidApproval('gate.plan-approved',state,{root:f.root,checkpoint:{gates:{'gate.plan-approved':state}}}),/PROGRESSION_EVIDENCE|推进目标.*不能作为批准或交付证据/);
-  f.save(ref,{gate_id:f.record.gate_id,basis:f.record.basis,drafter_principal_ref:f.record.drafter_principal_ref});
-  const record={...f.record,subject_ref:ref,subject_digest:f.asset(ref).digest},expected={...f.expected,subject_ref:ref};
-  assert.throws(()=>assertCurrentApproval(record,expected,{root:f.root}),/PROGRESSION_EVIDENCE|推进目标.*不能作为批准或交付证据/);
- }
-}));
-
-test('current gate assertion cannot opt into history or a non-approved validation mode',()=>fixture(f=>{
-  const state={status:'approved',subject_ref:f.record.subject_ref,approval_ref:'approval.json',approval_scope:f.record.approval_scope,basis:f.record.basis,drafter_principal_ref:f.record.drafter_principal_ref};
-  const options={root:f.root,rolesDoc:loadDigitalHumanRoles()};
-  for(const mode of [{history:true},{requireApproved:false}]) {
-    assert.doesNotThrow(()=>assertApprovedGateHasValidApproval(f.record.gate_id,state,{...options,...mode}));
-    f.save('approval.json',{...f.record,subject_digest:'0'.repeat(64)});
-    assert.throws(()=>assertApprovedGateHasValidApproval(f.record.gate_id,state,{...options,...mode}),/APPROVAL_CURRENT_INVALID/);
-    f.save('approval.json',f.record);
-  }
-}));
-
 test('single, bundle, helper and checkpoint consume the same strict current binding',()=>fixture(f=>{
  const rolesDoc=loadDigitalHumanRoles(),checkId=f.expected.boundary,gateId='gate.slice-contract-approved';
  const registry={gates:[{id:gateId,requires_checks:[checkId],evidence:['evidence.contract-approval']}],checks:[{id:checkId,evidence:['evidence.fresh-verification']}]};
@@ -129,10 +90,6 @@ test('history CLI reads an incomplete v2 draft, current CLI cannot grant approva
 test('current expected author must come from the consumer, never only from the approval record',()=>fixture(f=>{
  const expected={...f.expected};delete expected.drafter_principal_ref;
  assert.throws(()=>validateApprovalRecord(f.record,{root:f.root,expected}),/APPROVAL_CONTEXT_REQUIRED/);
-}));
-
-test('current validation rechecks the input snapshot before returning success',()=>fixture(f=>{
- assert.throws(()=>withValidationPhase({root:f.root,purpose:'approval-readset'},()=>{validateApprovalRecordFile(f.file,{root:f.root,expected:f.expected});writeFileSync(path.join(f.root,'evidence.txt'),'drift after native read before phase finish');}),/VALIDATION_INPUT_CHANGED/);
 }));
 
 test('one v2 capability task strictly binds different per-check subjects across single, bundle, helper, checkpoint, source and CLI',async t=>{

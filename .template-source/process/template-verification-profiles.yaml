@@ -2697,6 +2697,7 @@ profiles:
           - scripts/lib/stage-result.mjs
           - scripts/lib/native-evidence.mjs
           - scripts/lib/native-approval.mjs
+          - scripts/lib/validation-phase.mjs
           - scripts/lib/structured-assets.mjs
           - scripts/lib/json-schema.mjs
           - .template-source/distribution/bundle-profile.json
@@ -2705,8 +2706,15 @@ profiles:
           - scripts/lib/testing/stage-content-fixture.mjs
           - scripts/fixtures/role-independent-draft/installed-fixture.mjs
           - scripts/fixtures/role-independent-draft/approval.test.mjs
+          - scripts/fixtures/role-independent-draft/professional-plan-fixture.mjs
           - scripts/lib/native-user-decision.mjs
           - scripts/lib/testing/user-decision-fixture.mjs
+          - scripts/lib/context-contract.mjs
+          - scripts/lib/plan-spec-entry-view.mjs
+          - scripts/lib/plan-spec-entry.mjs
+          - scripts/lib/plan-review-control.mjs
+          - scripts/lib/review-capabilities.mjs
+          - scripts/lib/review-package.mjs
           - tests/stage-gates-contract.test.mjs
           - tests/stage-result-native.test.mjs
           - tests/backend-governance-contract.test.mjs

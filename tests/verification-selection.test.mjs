@@ -198,7 +198,7 @@ test('迁移生命周期门禁反例后仍选择真实 Backend 验证',()=>{
  }
 });
 test('授权延续变化选择真实 Backend 安装实例验证',()=>{
- for(const file of ['scripts/fixtures/role-independent-draft/approval.test.mjs','scripts/lib/native-user-decision.mjs']){
+ for(const file of ['scripts/fixtures/role-independent-draft/approval.test.mjs','scripts/fixtures/role-independent-draft/professional-plan-fixture.mjs','scripts/lib/native-user-decision.mjs','scripts/lib/review-package.mjs']){
   const plan=planTemplateVerification({profile:'release',changedFiles:[file]});
   const checks=plan.commands.filter(row=>row.id==='check.backend-governance-contract');
   assert.equal(checks.length,1,file);

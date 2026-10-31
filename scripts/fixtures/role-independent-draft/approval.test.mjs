@@ -5,6 +5,7 @@ import childProcess, {spawnSync} from 'node:child_process';
 import {syncBuiltinESMExports} from 'node:module';
 import {createHash} from 'node:crypto';
 import {installedFixture} from './installed-fixture.mjs';
+import {professionalPlanFixture} from './professional-plan-fixture.mjs';
 import {buildDecisionFixture} from '../../lib/testing/user-decision-fixture.mjs';
 import {validateApprovalRecordFile} from '../../lib/native-approval.mjs';
 import {assertUserDecisionRequirement,assertWorkUnitUserDecision,compareContinuationAssets} from '../../lib/native-user-decision.mjs';
@@ -66,6 +67,39 @@ try{
  fs.writeFileSync(path.join(root,'delta.json'),originalDelta);proof.comparison.differences[0].digest=asset('delta.json').digest;write('continuation.json',proof);
  user.respond({text:'撤回批准',decision:'revoked',time:'2026-09-05T01:04:00Z'});user.save();
  run('revoked-source',['evidence','verify','--kind','user-decision','--file','continuation.json','--requirements','requirements.json','--continuation'],'user-decision-not-approved');
+ fs.rmSync(path.join(root,'drafts/design.json'));
+ write('bundle-input/domain.json',{title:'domain strategy'});write('bundle-input/stage.json',{title:'stage decision'});
+ const subjects={'check.domain-strategy-approved':'bundle-input/domain.json','check.stage-decision-package-approved':'bundle-input/stage.json'};
+ const professional=professionalPlanFixture(fixture,{subjects});
+ const validated=fixture.run('current-multi-subject-bundle',['evidence','verify','--kind','approval','--file','professional/bundle.json','--checkpoint',professional.cpRef,'--require-approved']);
+ assert.deepEqual(Object.fromEntries(professional.bundle.reviews.map(row=>[row.gate_id,row.subject_ref])),subjects);
+ for(const [id,ref] of Object.entries(subjects))assert.equal(professional.current.checks[id].subject_ref,ref);
+ assert.deepEqual(validated.coverage.approval_validated.map(row=>row.gate_id).sort(),Object.keys(subjects).sort());
+ const bundleBytes=fixture.read('professional/bundle.json'),checkpointBytes=fixture.read(professional.cpRef);
+ for(const [label,mutate,code] of [
+  ['rejected',b=>{b.reviews[0].decision='rejected';},'APPROVAL_CURRENT_INVALID'],
+  ['duplicate',b=>{b.reviews[1].gate_id=b.reviews[0].gate_id;},'APPROVAL_BUNDLE_INVALID'],
+  ['scope',b=>{b.reviews[0].approval_scope=['elsewhere'];},'APPROVAL_CURRENT_INVALID'],
+  ['subject',b=>{b.reviews[0].subject_ref=b.reviews[1].subject_ref;b.reviews[0].subject_digest=b.reviews[1].subject_digest;},'APPROVAL_CURRENT_INVALID'],
+  ['task-digest',b=>{b.reviews[0].review_task_digest='0'.repeat(64);},'APPROVAL_BUNDLE_INVALID'],
+  ['missing-evidence',b=>{b.reviews[0].evidence_refs=[];},'SCHEMA'],
+  ['empty',b=>{b.reviews=[];},'SCHEMA'],
+ ]){
+  const altered=structuredClone(professional.bundle);mutate(altered);const ref=`bundle-probe/${label}.json`;write(ref,altered);
+  fixture.run(`bundle-${label}`,['evidence','verify','--kind','approval','--file',ref,'--checkpoint',professional.cpRef,'--require-approved'],code);
+ }
+ const missing=structuredClone(professional.bundle);missing.reviews.pop();const missingRef='bundle-probe/missing.json';write(missingRef,missing);
+ const subset=fixture.run('bundle-present-row-only',['evidence','verify','--kind','approval','--file',missingRef,'--checkpoint',professional.cpRef,'--require-approved']);
+ assert.deepEqual(subset.coverage.approval_validated.map(row=>row.gate_id),[missing.reviews[0].gate_id]);assert.equal(subset.execution_authorization,'not-evaluated');
+ fixture.run('bundle-missing-required-boundary',['evidence','verify','--kind','approval','--file',missingRef,'--checkpoint',professional.cpRef,'--gate',professional.bundle.reviews[1].gate_id,'--require-approved'],'APPROVAL_BUNDLE_INVALID');
+ const partialEntry=structuredClone(professional.entry);
+ for(const item of partialEntry.basis)if(item.ref==='professional/bundle.json'){item.ref=missingRef;item.digest=asset(missingRef).digest;}
+ for(const check of Object.values(partialEntry.internal_checks))if(check.approval_ref==='professional/bundle.json')check.approval_ref=missingRef;
+ const entryRef='bundle-probe/plan-entry.json';write(entryRef,partialEntry);
+ const partialCheckpoint=structuredClone(professional.current);partialCheckpoint.plan_review_ref=entryRef;const cpRef='bundle-probe/checkpoint.json';write(cpRef,partialCheckpoint);
+ const partial=spawnSync(bin,['contract','verify','--kind','plan-entry','--file',cpRef,'--root',root,'--json'],{encoding:'utf8',maxBuffer:64*1024*1024});
+ const partialResult=JSON.parse(partial.stdout);assert.equal(partial.status,1);assert.ok(['PLAN_REVIEW_COVERAGE_REQUIRED','APPROVAL_BUNDLE_INVALID'].includes(partialResult.code),JSON.stringify(partialResult.result?.diagnostics));
+ assert.deepEqual(fixture.read('professional/bundle.json'),bundleBytes);assert.deepEqual(fixture.read(professional.cpRef),checkpointBytes);
  console.log('Native approval3 and real-source continuation2 plus Node transport passed');
 }finally{
  childProcess.spawnSync=originalSpawn;syncBuiltinESMExports();

@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import {installedFixture} from '../scripts/fixtures/role-independent-draft/installed-fixture.mjs';
 import {usesStageGates,verifyStageResult} from '../scripts/lib/stage-result.mjs';
 import {assertNativeCapabilities} from '../scripts/lib/native-evidence.mjs';
-import {approvalExpectationForBoundAsset,assertApprovedGateHasValidApproval,validateApprovalRecord} from '../scripts/lib/native-approval.mjs';
+import {withValidationPhase} from '../scripts/lib/validation-phase.mjs';
+import {approvalExpectationForBoundAsset,assertApprovedGateHasValidApproval,assertCurrentApproval,validateApprovalRecord} from '../scripts/lib/native-approval.mjs';
 import {spawnSync} from 'node:child_process';
 
 test('Backend 3.0 uses its own policy and refuses missing stage authority',()=>{
@@ -38,6 +39,24 @@ test('Backend 3.0 uses its own policy and refuses missing stage authority',()=>{
   const verify=()=>spawnSync(process.env.YSS_NATIVE_BINARY,['evidence','verify','--kind','approval','--root',f.root,'--file','approval.json','--expected','expected.json','--require-approved','--json'],{encoding:'utf8',maxBuffer:64*1024*1024});
   const current=verify();assert.equal(current.status,0,current.stderr||current.error?.message);
   const rejected=(result,reason,code,message)=>{assert.equal(result.status,1,`${reason}: ${result.error?.message||result.stderr}`);const body=JSON.parse(result.stdout);assert.equal(body.status,'error');assert.equal(body.code,code);assert.ok(body.result.diagnostics.some(row=>row.code===code&&message.test(row.message)),reason);};
+  const state={status:'approved',subject_ref:candidate.ref,subject_digest:candidate.digest,approval_ref:'approval.json',approval_scope:['drafts'],basis:[...record.basis,f.asset(candidate.ref),f.asset('approval.json')]};
+  for(const mode of [{history:true},{requireApproved:false}]){
+   assert.doesNotThrow(()=>assertApprovedGateHasValidApproval(record.gate_id,state,{root:f.root,...mode}));
+   f.write('approval.json',{...record,subject_digest:'0'.repeat(64)});
+   assert.throws(()=>assertApprovedGateHasValidApproval(record.gate_id,state,{root:f.root,...mode}),/EVIDENCE_BINDING|APPROVAL_CURRENT_INVALID/);
+   f.write('approval.json',record);
+  }
+  for(const ref of ['progression-target.json','nested/PROGRESSION-TARGET.JSON']){
+   f.write(ref,record);
+   assert.throws(()=>assertCurrentApproval({...record,basis:[...record.basis,f.asset(ref)]},expected,{root:f.root}),/PROGRESSION_EVIDENCE/);
+   assert.throws(()=>assertCurrentApproval(record,{...expected,basis:[...expected.basis,f.asset(ref)]},{root:f.root}),/APPROVAL_CURRENT_INVALID/);
+   assert.throws(()=>assertApprovedGateHasValidApproval(record.gate_id,{...state,approval_ref:ref},{root:f.root}),/推进目标.*不能作为批准或交付证据/);
+   assert.throws(()=>assertCurrentApproval({...record,subject_ref:ref,subject_digest:f.asset(ref).digest},{...expected,subject_ref:ref},{root:f.root}),/PROGRESSION_EVIDENCE/);
+  }
+  const inputBefore=f.read('input.json');
+  try {
+   assert.throws(()=>withValidationPhase({root:f.root,purpose:'approval-readset'},()=>{validateApprovalRecord(record,{root:f.root,requireApproved:true,expected});f.write('input.json','changed after approval validation');}),/VALIDATION_INPUT_CHANGED/);
+  } finally {f.write('input.json',inputBefore);}
   const structuredBinding={ref:candidate.ref,digest:candidate.digest};
   const structuredExpected=approvalExpectationForBoundAsset(record.gate_id,structuredBinding,{root:f.root,scope:['drafts']});
   assert.equal(structuredExpected.subject_digest,candidate.digest);
