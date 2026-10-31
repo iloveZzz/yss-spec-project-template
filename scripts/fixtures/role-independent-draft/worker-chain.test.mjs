@@ -87,6 +87,7 @@ for(const [cmd,args]of [['javac',['-d',dir,...walk('src/main/java'),main]],['jav
    const result=run(`current-backend-slice4-${view}`,['contract','view','--kind','slice','--file','slice-views.json','--view',view,...(view==='task'?['--unit',selectedUnit]:[]),'--profile','backend']);
    assert.equal(result.view,view);assert.equal(result.execution_allowed,false);
    assert.deepEqual(result.content.work_units.map(unit=>unit.id),view==='task'?[selectedUnit]:[selectedUnit,secondUnit.id]);
+   assert.match(result.content.acceptance['AC-1'].text,/输入2返回3.*非法|输入2返回3.*拒绝/);
   }
   const escaped=structuredClone(prepared.slice_contract);escaped.work_units[0].allowed_write_paths=['outside'];write('slice-escape.json',escaped);
   run('slice4-scope-escape-refused',['contract','verify','--kind','slice-draft','--file','slice-escape.json'],'PATH');
