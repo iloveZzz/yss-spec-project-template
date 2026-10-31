@@ -94,6 +94,7 @@
   "installations": {
     "project": {
       "skills": [
+        "setup-yss-harness",
         "implement",
         "code-review",
         "handoff"
@@ -212,6 +213,7 @@
     },
     "skills": {
       "skills": [
+        "setup-yss-harness",
         "implement",
         "code-review",
         "handoff"

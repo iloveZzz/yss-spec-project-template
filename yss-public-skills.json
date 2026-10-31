@@ -33,8 +33,8 @@
   ],
   "groupings": [
     {
-      "title": "生命周期",
-      "description": "用于 YSS 产品生命周期、路由和跨仓库协作的技能。",
+      "title": "安装与任务协作",
+      "description": "用于 CLI、Skills 安装、规格任务整理与技能来源维护。",
       "skills": [
         "setup-yss-harness",
         "yss-product-lifecycle",
@@ -89,8 +89,8 @@
       ]
     },
     {
-      "title": "质量治理",
-      "description": "用于审计、质量门禁和工程治理的技能。",
+      "title": "审计日志",
+      "description": "用于应用审计日志的接入与排查。",
       "skills": [
         "yss-audit-log"
       ]
