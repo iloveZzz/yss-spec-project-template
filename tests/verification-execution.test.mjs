@@ -529,6 +529,7 @@ test('正式插件进程在 Node 启动前清除注入环境',async t=>{
  const {committedPluginEnvironment}=await import('../.template-source/scripts/lib/committed-plugin-commands.mjs');
  const directory=temporary(t),marker=path.join(directory,'ran');
  const input=Object.fromEntries(['TEMPLATE_SHA','CLI_ROOT','CLI_SHA','CLI_REMOTE','CLI_REF','BINARY','BINARY_SHA256','RECEIPT','RECEIPT_SHA256','GO','GO_SHA256'].map(key=>[`YSS_PLUGIN_COMMITTED_${key}`,'fixture']));
+ input.YSS_SOURCE_SNAPSHOT=path.join(directory,'source-snapshot.json');
  const env={...process.env,NODE_OPTIONS:'--import=data:text/javascript,process.exit(0)',NODE_PATH:directory,...committedPluginEnvironment(input)};
  execFileSync(process.execPath,['-e',`require('node:fs').writeFileSync(${JSON.stringify(marker)},'ran')`],{env});
  assert.equal(fs.readFileSync(marker,'utf8'),'ran');

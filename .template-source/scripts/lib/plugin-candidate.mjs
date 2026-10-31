@@ -4,7 +4,6 @@ import { spawnSync } from 'node:child_process';
 import path from 'node:path';
 
 export const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');
-export const candidateCliCommit = 'bc8d2a45b69d88eefa5638b92df436a7b9899770';
 const commitPattern = /^[a-f0-9]{40}$/;
 const digestPattern = /^[a-f0-9]{64}$/;
 
@@ -12,11 +11,13 @@ export function candidateLock(base, template, cli, policyHash) {
   if (!commitPattern.test(template) || !commitPattern.test(cli)) throw new Error('candidate commits must be full SHA-1');
   const lock = structuredClone(base);
   if (!lock.producer || Object.keys(lock.profiles || {}).sort().join(',') !== 'backend,spec') throw new Error('candidate source lock profiles invalid');
+  const version=lock.profiles.spec.templateVersion;
+  if (!/^(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)$/.test(version||'') || lock.profiles.backend.templateVersion!==version) throw new Error('candidate template version invalid');
   Object.assign(lock.producer, { commit: cli, sourceState: 'committed' });
   for (const profile of Object.values(lock.profiles)) {
     const digest = policyHash(profile.policyPath);
     if (!digestPattern.test(digest)) throw new Error('candidate policy digest invalid');
-    Object.assign(profile, {templateCommit:template, templateVersion:`git:${template}`, sourceState:'committed', policyHash:digest});
+    Object.assign(profile, {templateCommit:template, sourceState:'committed', policyHash:digest});
     delete profile.templateTag;
   }
   return lock;
@@ -51,7 +52,7 @@ export function candidateFromEnvironment(root, environment = process.env) {
   const template = call('git',['rev-parse','HEAD']);
   if (receipt.template_tree !== call('git',['rev-parse','HEAD^{tree}'])) throw new Error('candidate template tree mismatch');
   if (call('git',['status','--porcelain'])) throw new Error('candidate template worktree changed');
-  if (!path.isAbsolute(receipt.cli_root || '') || call('git',['-C',receipt.cli_root,'rev-parse','HEAD']) !== candidateCliCommit
+  if (!commitPattern.test(receipt.cli_commit||'') || !path.isAbsolute(receipt.cli_root || '') || call('git',['-C',receipt.cli_root,'rev-parse','HEAD']) !== receipt.cli_commit
       || call('git',['-C',receipt.cli_root,'rev-parse','HEAD^{tree}']) !== receipt.cli_tree
       || call('git',['-C',receipt.cli_root,'status','--porcelain'])) throw new Error('candidate CLI source mismatch');
   const requiredGo = readFileSync(path.join(receipt.cli_root,'go.mod'),'utf8').match(/^go ([0-9.]+)$/m)?.[1];
@@ -66,10 +67,10 @@ export function candidateFromEnvironment(root, environment = process.env) {
     if (envelope.status !== 'ok' || envelope.code !== 'OK') throw new Error('candidate inspection failed');
     return envelope.result;
   };
-  const candidate = validateCandidate(receipt, {template, cli:candidateCliCommit, inspect});
+  const candidate = validateCandidate(receipt, {template, cli:receipt.cli_commit, inspect});
   const version = JSON.parse(call(candidate.binary,['version','--json']));
-  if (version.status !== 'ok' || version.code !== 'OK' || version.result?.cliCommit !== candidateCliCommit || version.result?.sourceState !== 'working-tree') throw new Error('candidate binary provenance mismatch');
-  return {...candidate, template_commit:template, template_tree:receipt.template_tree, cli_commit:candidateCliCommit,
+  if (version.status !== 'ok' || version.code !== 'OK' || version.result?.cliCommit !== receipt.cli_commit || version.result?.sourceState !== 'working-tree') throw new Error('candidate binary provenance mismatch');
+  return {...candidate, template_commit:template, template_tree:receipt.template_tree, cli_commit:receipt.cli_commit,
     cli_tree:receipt.cli_tree, bundle_sha256:receipt.bundle_sha256, lock_sha256:receipt.lock_sha256,
     receipt_sha256:expected, go_version:receipt.go_version, binary_source_state:'working-tree', release_evidence:false};
 }

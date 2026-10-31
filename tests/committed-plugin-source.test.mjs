@@ -18,9 +18,11 @@ test('来源观测拒绝源码漂移、错误锁与被替换的二进制', t => 
   const hash = p => createHash('sha256').update(fs.readFileSync(p)).digest('hex');
   const templateRoot = path.join(dir,'template'); fs.mkdirSync(templateRoot); git(templateRoot,'init','-q'); fs.writeFileSync(path.join(templateRoot,'file'),'template');fs.writeFileSync(path.join(templateRoot,'policy.json'),'policy'); git(templateRoot,'add','.'); git(templateRoot,'commit','-qm','base'); const templateCommit=git(templateRoot,'rev-parse','HEAD'); git(templateRoot,'tag','v5.0.0');
   const cliRoot=path.join(dir,'cli');fs.mkdirSync(cliRoot);git(cliRoot,'init','-q');fs.mkdirSync(path.join(cliRoot,'tools'));fs.mkdirSync(path.join(cliRoot,'docs'));fs.mkdirSync(path.join(cliRoot,'internal/bundle/assets'),{recursive:true});
-  fs.writeFileSync(path.join(cliRoot,'go.mod'),'module github.com/iloveZzz/yss-cli\n\ngo 1.27.1\n');fs.writeFileSync(path.join(cliRoot,'.gitignore'),'internal/bundle/assets/*.gz\n');fs.writeFileSync(path.join(cliRoot,'tools/build-candidate.mjs'),'// fixed builder\n');fs.writeFileSync(path.join(cliRoot,'tools/go-environment.mjs'),'// fixed environment\n');git(cliRoot,'add','.');git(cliRoot,'commit','-qm','producer');const producer=git(cliRoot,'rev-parse','HEAD');
-  fs.writeFileSync(path.join(cliRoot,'docs/source-lock.json'),JSON.stringify({schemaVersion:5,producer:{commit:producer,sourceState:'committed'},profiles:Object.fromEntries(['spec','backend'].map(name=>[name,{profile:name,templateCommit,templateTag:'v5.0.0',templateVersion:'5.0.0',policyPath:'policy.json',policyHash:hash(path.join(templateRoot,'policy.json')),sourceState:'committed'}]))}));
-  git(cliRoot,'add','.');git(cliRoot,'commit','-qm','lock');const cliCommit=git(cliRoot,'rev-parse','HEAD');
+  fs.writeFileSync(path.join(cliRoot,'go.mod'),'module github.com/iloveZzz/yss-cli\n\ngo 1.27.1\n');fs.writeFileSync(path.join(cliRoot,'.gitignore'),'internal/bundle/assets/*.gz\n');fs.writeFileSync(path.join(cliRoot,'internal/bundle/producer.go'),'// fixed producer\n');fs.writeFileSync(path.join(cliRoot,'tools/build-candidate.mjs'),'// fixed builder\n');fs.writeFileSync(path.join(cliRoot,'tools/go-environment.mjs'),'// fixed environment\n');git(cliRoot,'add','.');git(cliRoot,'commit','-qm','producer');const producer=git(cliRoot,'rev-parse','HEAD');
+  fs.writeFileSync(path.join(cliRoot,'docs/template-release.json'),JSON.stringify({tag:'v5.0.0'}));
+  git(cliRoot,'add','.');git(cliRoot,'commit','-qm','release');const cliCommit=git(cliRoot,'rev-parse','HEAD');
+  const sourceSnapshot=path.join(dir,'source-snapshot.json');
+  fs.writeFileSync(sourceSnapshot,JSON.stringify({schemaVersion:5,producer:{commit:producer,sourceState:'committed'},profiles:Object.fromEntries(['spec','backend'].map(name=>[name,{profile:name,sourcePath:'.',...(name==='backend'?{overlayPaths:['profiles/_specialist','profiles/backend']} : {}),templateCommit,templateVersion:'5.0.0',policyPath:'policy.json',policyHash:hash(path.join(templateRoot,'policy.json')),sourceState:'committed'}]))}));
   const extra=['internal/bundle/assets/bundles.json.gz','internal/bundle/assets/baseline-5.0.0.json.gz','internal/bundle/assets/baseline-delta.json.gz']; for(const name of extra)fs.writeFileSync(path.join(cliRoot,name),name);
   const refs=[...new Set([...git(cliRoot,'ls-files').split('\n'),...extra])].sort();const inputs=Object.fromEntries(refs.map(ref=>{const file=path.join(cliRoot,ref);return [ref,{sha256:hash(file),executable:!!(fs.lstatSync(file).mode&0o111)}];}));
   const goRoot=path.join(dir,'goroot'),go=path.join(goRoot,'bin/go'),toolDir=path.join(goRoot,'pkg/tool/native');fs.mkdirSync(path.dirname(go),{recursive:true});fs.mkdirSync(toolDir,{recursive:true});
@@ -32,8 +34,20 @@ test('来源观测拒绝源码漂移、错误锁与被替换的二进制', t => 
   const realGit=spawnSync('which',['git'],{encoding:'utf8'}).stdout.trim(),fakeBin=path.join(dir,'bin');fs.mkdirSync(fakeBin);
   fs.writeFileSync(path.join(fakeBin,'git'),`#!/bin/sh\nif [ "$1" = ls-remote ]; then GIT_ALLOW_PROTOCOL=file exec '${realGit}' ls-remote --refs --exit-code '${localRemote}' "$5"; fi\nexec '${realGit}' "$@"\n`);fs.chmodSync(path.join(fakeBin,'git'),0o755);
   const oldPath=process.env.PATH;process.env.PATH=`${fakeBin}${path.delimiter}${oldPath}`;t.after(()=>{process.env.PATH=oldPath;});
-  const options={templateRoot,templateCommit,cliRoot,cliCommit,cliRemote:'https://github.com/iloveZzz/yss-cli.git',cliRef,binary,binarySha256:hash(binary),buildReceipt,buildReceiptSha256:hash(buildReceipt),go,goSha256:hash(go)};
+  const options={templateRoot,templateCommit,cliRoot,cliCommit,cliRemote:'https://github.com/iloveZzz/yss-cli.git',cliRef,binary,binarySha256:hash(binary),buildReceipt,buildReceiptSha256:hash(buildReceipt),go,goSha256:hash(go),sourceSnapshot,sourceSnapshotSha256:hash(sourceSnapshot)};
   const first=observeCommittedPluginSource(options);assert.equal(first.cliCommit,cliCommit);assert.equal(first.templateCommit,templateCommit);
+  assert.equal(first.sourceLockSha256,hash(sourceSnapshot));assert.equal(first.sourceMode,'candidate-commit');
+  const originalSnapshot=fs.readFileSync(sourceSnapshot);fs.appendFileSync(sourceSnapshot,' ');
+  assert.throws(()=>observeCommittedPluginSource(options),/snapshot.*digest/);fs.writeFileSync(sourceSnapshot,originalSnapshot);
+  for(const change of [lock=>{lock.profiles.backend.templateCommit='0'.repeat(40);},lock=>{lock.profiles.spec.templateVersion='4.0.0';},lock=>{lock.profiles.backend.overlayPaths=[];},lock=>{lock.producer.commit=cliCommit;}]) {
+    const changed=JSON.parse(originalSnapshot);change(changed);fs.writeFileSync(sourceSnapshot,JSON.stringify(changed));
+    assert.throws(()=>observeCommittedPluginSource({...options,sourceSnapshotSha256:hash(sourceSnapshot)}),/mismatch/);
+  }
+  const tagged=JSON.parse(originalSnapshot);for(const profile of Object.values(tagged.profiles))profile.templateTag='v5.0.0';
+  fs.writeFileSync(sourceSnapshot,JSON.stringify(tagged));assert.equal(observeCommittedPluginSource({...options,sourceSnapshotSha256:hash(sourceSnapshot)}).sourceMode,'local-tag');
+  tagged.profiles.backend.templateTag='v4.0.0';fs.writeFileSync(sourceSnapshot,JSON.stringify(tagged));
+  assert.throws(()=>observeCommittedPluginSource({...options,sourceSnapshotSha256:hash(sourceSnapshot)}),/template tag invalid/);
+  fs.writeFileSync(sourceSnapshot,originalSnapshot);
   const resetInputs=Object.fromEntries(Object.entries(inputs).filter(([ref])=>!extra.slice(1).includes(ref)));
   const resetReceipt={...receipt,trustedSources:[],inputs:resetInputs,inputDigest:createHash('sha256').update(JSON.stringify(resetInputs)).digest('hex')};
   fs.writeFileSync(buildReceipt,JSON.stringify(resetReceipt));
@@ -63,7 +77,6 @@ test('来源观测拒绝源码漂移、错误锁与被替换的二进制', t => 
   assert.notEqual(JSON.parse(fs.readFileSync(path.join(evidenceDir,'generate.json'))).actualExitCode,0);
   const proof=path.join(evidenceDir,'proof.json');fs.writeFileSync(proof,JSON.stringify({kind:'forged'}));
   assert.throws(()=>validateCommittedPluginProof(options,{evidenceDir,expectedProofSha256:hash(proof)}),/proof/);
-  const lockFile=path.join(cliRoot,'docs/source-lock.json'),badLock=JSON.parse(fs.readFileSync(lockFile));badLock.profiles.spec.policyHash='0'.repeat(64);fs.writeFileSync(lockFile,JSON.stringify(badLock));git(cliRoot,'add','docs/source-lock.json');git(cliRoot,'commit','-qm','bad policy');const badCommit=git(cliRoot,'rev-parse','HEAD');
-  assert.throws(()=>observeCommittedPluginSource({...options,cliCommit:badCommit}),/remote ref commit mismatch/);git(cliRoot,'push','-q',localRemote,`HEAD:${cliRef}`);
-  assert.throws(()=>observeCommittedPluginSource({...options,cliCommit:badCommit}),/template policy digest mismatch/);
+  const badLock=JSON.parse(originalSnapshot);badLock.profiles.spec.policyHash='0'.repeat(64);fs.writeFileSync(sourceSnapshot,JSON.stringify(badLock));
+  assert.throws(()=>observeCommittedPluginSource({...options,sourceSnapshotSha256:hash(sourceSnapshot)}),/template policy digest mismatch/);
 });

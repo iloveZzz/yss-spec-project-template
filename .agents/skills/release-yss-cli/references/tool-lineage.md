@@ -6,7 +6,7 @@
 
 | 用途 | 已核验来源与入口 |
 | --- | --- |
-| 生产构建、来源刷新、装配合同 | `iloveZzz/yss-cli` 的 `c398eb50336283aacad6342e26176777a4e16c46`：`tools/build-candidate.mjs`、`tools/refresh-source-lock.mjs`、`tools/artifacts.mjs`、`tools/release/README.md`、`tools/package` |
+| 生产构建、来源刷新、装配合同 | `iloveZzz/yss-cli` 当前发行源码：`tools/build-candidate.mjs`、`tools/resolve-template.mjs`、`tools/artifacts.mjs`、`tools/release/README.md`、`tools/package` |
 | 双平台装配与 Windows runner | 同仓工具提交 `760c16dc1110587f2737301aae11f976bf8ce734`：`.release-tools/package-windows-candidate.py`、`.release-tools/windows-installation.py`、`.release-tools/release_qualification.py`、`.github/workflows/windows-release-1.3.7.yml` |
 | 被移除的原生验收入口 | 同仓 `c1ea5abdd53315e06449296e9ab0d57fb9966f10`：`tools/native-smoke/`、`tools/native-recovery/`、`tools/plugin-native-smoke.mjs`；仅作为检查当前兼容性后的工具恢复来源 |
 | 发行资格与真实公开资产 | [v1.3.6 Release](https://github.com/iloveZzz/yss-cli/releases/tag/v1.3.6)、[v1.3.7 Release](https://github.com/iloveZzz/yss-cli/releases/tag/v1.3.7) 的 checksums、逐平台原生收据、release-qualification、构建及安装证据 |

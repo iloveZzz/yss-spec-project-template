@@ -116,6 +116,18 @@ class BootstrapTests(unittest.TestCase):
         self.assertTrue(fetch.call_args_list[0].args[0].endswith("/latest"))
         self.assertIn("/download/v3.1.0/", fetch.call_args_list[1].args[0])
 
+    def test_regression_resolver_extracts_record_from_verified_release_package(self):
+        resolver = self.release_resolver()
+        release, proof, archive = fixture()
+        with patch.object(resolver.bootstrap, "fetch_bytes", side_effect=[encoded(release), encoded(proof)]):
+            result = resolver.resolve_release()
+        with patch.object(resolver.bootstrap, "fetch_bytes", return_value=archive):
+            record = resolver.extract_source_snapshot(result["sourceSnapshotArtifact"])
+        self.assertEqual(bootstrap.digest(record), proof["sourceLockSha256"])
+        with patch.object(resolver.bootstrap, "fetch_bytes", return_value=archive + b"tampered"):
+            with self.assertRaises(resolver.bootstrap.BootstrapError):
+                resolver.extract_source_snapshot(result["sourceSnapshotArtifact"])
+
     def test_regression_resolver_rejects_unknown_proof_and_fixes_explicit_tag(self):
         resolver = self.release_resolver()
         release, proof, _ = fixture()

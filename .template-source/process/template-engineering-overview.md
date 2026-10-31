@@ -81,7 +81,7 @@ YSS 模板工程是一套可版本化的研发治理系统。它用仓库身份�
 | 同步共享 skill 投影 | `scripts/sync-skills` |
 | 校验 skills lock | `scripts/update-skill-lock --check` |
 | 校验生命周期注册表 | `scripts/verify-lifecycle-registry` |
-| 固定的 yss 二进制（版本号、构建提交、Go 版本、各平台 SHA-256） | `ensure-native-yss` 默认查询最新正式 Release 后生成本批 pin，预检及用例只读固定结果；`.template-source/distribution/yss-cli-pin.json` 仅作显式历史复现。`tests/yss-cli-pin.test.mjs` 校验结构与批次摘要，预检与 `tests/cli-retirement.test.mjs` 核对实际二进制；无本机官方安装资格的构建标记 regression-only；发布验证只接受固定的二进制与源码提交；本地联调自己构建的二进制设 `YSS_NATIVE_BINARY_OVERRIDE=1`（CI 不接受）。yss-cli 不是 submodule，也没有「落后多少」的检查：模板的普通提交不需要刷新它，发布 CLI 时才用 `tools/refresh-source-lock.mjs --tag vX.Y.Z` 钉到模板 tag |
+| 固定的 yss 二进制（版本号、构建提交、Go 版本、各平台 SHA-256） | `ensure-native-yss` 默认查询最新正式 Release 后生成本批 pin，预检及用例只读固定结果；`.template-source/distribution/yss-cli-pin.json` 仅作显式历史复现。`tests/yss-cli-pin.test.mjs` 校验结构与批次摘要，预检与 `tests/cli-retirement.test.mjs` 核对实际二进制；无本机官方安装资格的构建标记 regression-only；发布验证只接受固定的二进制与源码提交；本地联调自己构建的二进制设 `YSS_NATIVE_BINARY_OVERRIDE=1`（CI 不接受）。yss-cli 不是 submodule，也没有「落后多少」的检查：模板的普通提交不需要刷新它，发布 CLI 时根据 `docs/template-release.json` 指定的模板标签生成本次来源记录 |
 | 校验维护 checkpoint | `scripts/verify-maintenance-checkpoint <file>` |
 
 ### 工具链测试执行模式

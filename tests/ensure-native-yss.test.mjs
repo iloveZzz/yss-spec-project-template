@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import { lookupCache, buildPinned, ensureNativeYss, shellExports } from '../.template-source/scripts/lib/ensure-native-yss.mjs';
+import { lookupCache, buildPinned, ensureNativeYss, shellExports, prepareExplicitSourceSnapshot } from '../.template-source/scripts/lib/ensure-native-yss.mjs';
 import { PIN_FILE } from '../.template-source/scripts/lib/yss-cli-pin.mjs';
 
 const sha = (text) => crypto.createHash('sha256').update(text).digest('hex');
@@ -25,20 +25,21 @@ function seedCache(cacheRoot, binaryText) {
   fs.writeFileSync(path.join(dir, 'build/yss'), binaryText);
 }
 /** 替身 run：git 命令按脚本回答，构建命令写出指定的二进制。 */
-function fakeRun({ goVersion = 'go version go1.27.1 darwin/arm64', head = COMMIT, dirty = '', built = 'good-binary', calls = [], sourceLock = SOURCE_LOCK, release = releaseFor(), resolution } = {}) {
+function fakeRun({ goVersion = 'go version go1.27.1 darwin/arm64', head = COMMIT, dirty = '', built = 'good-binary', calls = [], sourceLock = SOURCE_LOCK, release = releaseFor(), resolution, expectSnapshot = false, returnedSnapshot = SOURCE_LOCK } = {}) {
   const run = (command, args, options = {}) => {
     calls.push([command, ...args]);
-    if (command === 'python3') return resolution ?? { status: 0, stdout: JSON.stringify({ status: 'ok', result: release }), stderr: '' };
+    if (command === 'python3') return args.includes('--source-snapshot') ? {status:0,stdout:JSON.stringify({status:'ok',snapshot:Buffer.from(returnedSnapshot).toString('base64')}),stderr:''} : resolution ?? { status: 0, stdout: JSON.stringify({ status: 'ok', result: release }), stderr: '' };
     if (command === 'go') return { status: 0, stdout: goVersion, stderr: '' };
     if (command === 'git' && args[0] === 'rev-parse') return { status: 0, stdout: head, stderr: '' };
     if (command === 'git' && args[0] === 'status') return { status: 0, stdout: dirty, stderr: '' };
     if (command === 'git' && args[0] === 'checkout') {
       fs.writeFileSync(path.join(options.cwd, 'go.mod'), 'module x\n\ngo 1.27.1\n');
       fs.mkdirSync(path.join(options.cwd, 'docs'), { recursive: true });
-      fs.writeFileSync(path.join(options.cwd, 'docs/source-lock.json'), sourceLock);
+      if (sourceLock !== null) fs.writeFileSync(path.join(options.cwd, 'docs/source-lock.json'), sourceLock);
+      if (expectSnapshot) {fs.mkdirSync(path.join(options.cwd,'tools'));fs.writeFileSync(path.join(options.cwd,'tools/fetch-bundle.mjs'),'');}
       return { status: 0, stdout: '', stderr: '' };
     }
-    if (command === 'node') { const out = args[args.indexOf('--out') + 1]; fs.mkdirSync(out, { recursive: true }); fs.writeFileSync(path.join(out, 'yss'), built); return { status: 0, stdout: '', stderr: '' }; }
+    if (command === 'node') { if (args[0].endsWith('fetch-bundle.mjs')) {assert.equal(fs.readFileSync(options.env.YSS_SOURCE_SNAPSHOT,'utf8'),SOURCE_LOCK);return {status:0,stdout:'',stderr:''};} const out = args[args.indexOf('--out') + 1]; fs.mkdirSync(out, { recursive: true }); fs.writeFileSync(path.join(out, 'yss'), built); return { status: 0, stdout: '', stderr: '' }; }
     return { status: 0, stdout: '', stderr: '' };
   };
   return run;
@@ -50,6 +51,39 @@ test('缓存命中：摘要等于固定值、源码目录干净且提交等于�
   assert.equal(hit.cached, true);
   assert.equal(hit.binary, path.join(cacheRoot, COMMIT, 'build/yss'));
   assert.ok(calls.every(([command, sub]) => command === 'git' && ['rev-parse', 'status'].includes(sub)), '命中只做只读核对');
+});
+
+test('新 CLI 无源码锁时只从正式发行包取得并缓存校验过的兼容来源记录', t => {
+  const root=sandbox(t),cacheRoot=path.join(root,'cache'),calls=[];
+  const release={...releaseFor(),sourceSnapshotArtifact:{fixture:true}};
+  const result=ensureNativeYss({root,cacheRoot,platform:PLATFORM,run:fakeRun({calls,sourceLock:null,release,expectSnapshot:true})});
+  assert.equal(fs.readFileSync(path.join(cacheRoot,COMMIT,'source-snapshot.json'),'utf8'),SOURCE_LOCK);
+  assert.equal(result.sha256,sha('good-binary'));
+  assert.equal(calls.filter(([command,...args])=>command==='python3'&&args.includes('--source-snapshot')).length,1);
+  const again=[];
+  assert.equal(ensureNativeYss({root,cacheRoot,platform:PLATFORM,run:fakeRun({calls:again,release})}).cached,true);
+  assert.equal(again.some(([command,...args])=>command==='python3'&&args.includes('--source-snapshot')),false);
+  const bad=path.join(root,'bad');
+  assert.throws(()=>ensureNativeYss({root,cacheRoot:bad,platform:PLATFORM,run:fakeRun({sourceLock:null,release,returnedSnapshot:'tampered'})}),/摘要或合同不符/);
+  assert.equal(fs.existsSync(path.join(bad,COMMIT,'source-snapshot.json')),false);
+});
+
+test('显式新版 CLI 自动解析发行标签并补足浅克隆历史，不改源码锁', t => {
+  const root=sandbox(t),source=path.join(root,'cli'),calls=[];
+  fs.mkdirSync(path.join(source,'docs'),{recursive:true});fs.mkdirSync(path.join(source,'tools'));
+  fs.writeFileSync(path.join(source,'docs/template-release.json'),JSON.stringify({tag:'v5.0.0'}));
+  fs.writeFileSync(path.join(source,'tools/resolve-template.mjs'),'');
+  const run=(command,args)=>{
+    calls.push([command,...args]);
+    if(command==='git'&&args[0]==='rev-parse') return {status:0,stdout:'true',stderr:''};
+    if(command==='node') fs.writeFileSync(args[args.indexOf('--out')+1],SOURCE_LOCK);
+    return {status:0,stdout:'',stderr:''};
+  };
+  const snapshot=prepareExplicitSourceSnapshot({source,run,environment:{}});
+  assert.equal(fs.readFileSync(snapshot,'utf8'),SOURCE_LOCK);
+  assert.ok(calls.some(row=>row.includes('--unshallow')));
+  assert.ok(calls.some(row=>row.includes('--branch')&&row.includes('v5.0.0')));
+  assert.equal(fs.existsSync(path.join(source,'docs/source-lock.json')),false);
 });
 
 test('缓存失效：二进制被改、源码脏、提交漂移、平台未登记都不得命中', t => {

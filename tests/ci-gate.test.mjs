@@ -465,6 +465,20 @@ test("ci-setup：固定 Go 构建提交内资产，不在 bootstrap 重生成 Bu
   assert.equal(fs.readFileSync(path.join(result.checkout, "internal/bundle/assets/bundles.json.gz"), "utf8"), "committed bundle bytes\n");
 });
 
+test('ci-setup 显式新版 CLI 自动生成本次来源记录并传给 Bundle 构建', t => {
+  const f=setupFixture(t);
+  fs.mkdirSync(path.join(f.cli,'docs'),{recursive:true});
+  fs.writeFileSync(path.join(f.cli,'tools/resolve-template.mjs'),`import fs from 'node:fs';fs.writeFileSync(process.argv[process.argv.indexOf('--out')+1],'{"schemaVersion":5}');`);
+  fs.writeFileSync(path.join(f.cli,'tools/fetch-bundle.mjs'),`import fs from 'node:fs';if(!process.env.YSS_SOURCE_SNAPSHOT||!fs.existsSync(process.env.YSS_SOURCE_SNAPSHOT))process.exit(43);`);
+  fs.writeFileSync(path.join(f.cli,'docs/template-release.json'),'{"tag":"v5.0.0"}');
+  fs.writeFileSync(path.join(f.bin,'git'),`#!/usr/bin/env bash\nif [[ "$*" == "rev-parse --is-shallow-repository" ]]; then echo true; exit; fi\nif [[ "$*" == "fetch --unshallow origin" || "$1" == clone ]]; then exit 0; fi\nexec /usr/bin/git "$@"\n`,{mode:0o755});
+  sh(f.cli,'add','-A');sh(f.cli,'commit','-qm','new source entry');f.pin.commit=sh(f.cli,'rev-parse','HEAD');
+  fs.writeFileSync(path.join(f.root,'.template-source/distribution/yss-cli-pin.json'),JSON.stringify(f.pin));
+  fs.copyFileSync(path.join(ROOT,'.template-source/scripts/lib/ensure-native-yss.mjs'),path.join(f.root,'.template-source/scripts/lib/ensure-native-yss.mjs'));
+  const result=f.run(f.pin.go_version,{YSS_SOURCE_SNAPSHOT:''});
+  assert.equal(result.status,42,result.stderr);assert.match(result.stderr,/candidate-entry-reached/);
+});
+
 test('ci-setup latest：历史 pin Go A 不限制新源码 Go B，已有 B 不降级且构建子进程使用精确工具链', t => {
   const f = setupFixture(t), target = '1.28.2', toolchain = path.join(f.directory, 'go-toolchain');
   assert.notEqual(f.pin.go_version, target);

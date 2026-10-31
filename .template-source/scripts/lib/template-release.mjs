@@ -10,7 +10,7 @@ import {compileExpectedVerificationPlan,validateVerificationReport,validateRelea
 import {collectReleaseSources,createArtifactCoordinator,produceCliArtifact,verifyInstalledCliMigration,validateArtifact} from './verification-artifacts.mjs';
 import {validateReceipt} from './verification-delivery-run.mjs';
 import {initializeNative, runNative, applyNative} from './native-yss.mjs';
-import {committedPluginOptionsFromEnvironment,verifyCommittedPluginRebuild} from './committed-plugin-source.mjs';
+import {committedPluginOptionsFromEnvironment,observeCommittedPluginSource} from './committed-plugin-source.mjs';
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 
 function git(root, args) {
@@ -81,20 +81,16 @@ export function verifyTemplateRelease({ root, commit, output, runtimeStore = 'of
     const pluginTasks=independentPlan.commands.filter(task=>task.execution?.args?.[0]===path.join(root,'.template-source/scripts/committed-plugin-run.mjs'));
     let independentPlugin;
     if(pluginTasks.length){
-      const options=committedPluginOptionsFromEnvironment(root,process.env),directory=path.join(output,'committed-plugin-independent-before');
-      independentPlugin=verifyCommittedPluginRebuild(options,{evidenceDir:directory});
-      report.committed_plugin_independent_before={directory,proof_sha256:hash(readFileSync(path.join(directory,'proof.json')))};
+      independentPlugin=observeCommittedPluginSource(committedPluginOptionsFromEnvironment(root,process.env));
     }
     const fullExit=run('scripts/verify-template',fullArgs,root,{...process.env,NODE_OPTIONS:'',NODE_PATH:''});
     const fullFile=assertEvidenceFile(path.join(fullDirectory,'report.json'),output);
     const full=JSON.parse(readFileSync(fullFile,'utf8'));
     if(independentPlugin){
-      const directory=path.join(output,'committed-plugin-independent-after');
-      const after=verifyCommittedPluginRebuild(committedPluginOptionsFromEnvironment(root,process.env),{evidenceDir:directory});
-      assert.deepEqual(after.source,independentPlugin.source,'独立插件输入在完整验证期间漂移');
-      report.committed_plugin_independent_after={directory,proof_sha256:hash(readFileSync(path.join(directory,'proof.json')))};
+      const after=observeCommittedPluginSource(committedPluginOptionsFromEnvironment(root,process.env));
+      assert.deepEqual(after,independentPlugin,'独立插件输入在完整验证期间漂移');
     }
-    validateVerificationReport(full,{root,expectedPlan:independentPlan,reportDirectory:fullDirectory,expectedInvocation:{command:path.join(root,'scripts/run-template-verification'),args:['--profile','release',...fullArgs]},observedExitCode:fullExit.status,expectedSourcesManifest:allSources,...independentPlugin?{expectedCommittedPluginSnapshot:independentPlugin.source}:{}});
+    validateVerificationReport(full,{root,expectedPlan:independentPlan,reportDirectory:fullDirectory,expectedInvocation:{command:path.join(root,'scripts/run-template-verification'),args:['--profile','release',...fullArgs]},observedExitCode:fullExit.status,expectedSourcesManifest:allSources,...independentPlugin?{expectedCommittedPluginSnapshot:independentPlugin}:{}});
     report.execution={requested_concurrency:concurrency,requested_tooling_mode:toolingMode,actual_concurrency:full.environment.concurrency,actual_tooling_mode:full.environment.tooling_mode||'legacy',strategy:full.plan.strategy};
     report.full_verification={report:fullFile,report_sha256:hash(readFileSync(fullFile)),input_sha256:full.input_sha256,status:full.status};
     report.sources_manifest=collectReleaseSources({...sourceOptions,families});

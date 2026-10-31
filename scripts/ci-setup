@@ -224,7 +224,17 @@ elif [[ -n "$yss_commit" ]]; then
     fi
     # pin 的摘要绑定已提交资产；Bundle 在发行阶段由 artifacts 工具生成并校验，bootstrap 不重生成。
     test -z "$(git -C "$yss_source" status --porcelain --untracked-files=normal)"
-    # 内嵌 Bundle 归档自 yss-cli 78cf81a 起不入库（被忽略，不影响上面的干净检查）：构建前按其来源锁生成，并核对入库摘要。
+    # 新版 CLI 从正式标签生成本次仓外来源记录；历史版本继续读取提交内记录。
+    if [[ -f "$yss_source/tools/resolve-template.mjs" ]]; then
+      yss_snapshot="$(node --input-type=module - "$ROOT_DIR" "$yss_source" <<'JS'
+import path from 'node:path';import {pathToFileURL} from 'node:url';
+const module=await import(pathToFileURL(path.join(process.argv[2],'.template-source/scripts/lib/ensure-native-yss.mjs')));
+console.log(module.prepareExplicitSourceSnapshot({source:process.argv[3]}));
+JS
+)" || fail "无法准备标签来源记录"
+      export YSS_SOURCE_SNAPSHOT="$yss_snapshot"
+      export_var YSS_SOURCE_SNAPSHOT "$yss_snapshot"
+    fi
     if [[ -f "$yss_source/tools/fetch-bundle.mjs" ]]; then
       node "$yss_source/tools/fetch-bundle.mjs"
     fi

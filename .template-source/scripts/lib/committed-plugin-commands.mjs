@@ -11,5 +11,7 @@ export function committedPluginEnvironment(environment) {
     if(!environment[name])throw new TypeError(`committed plugin input missing: ${name}`);
     bound[name]=environment[name];
   }
+  if(!environment.YSS_SOURCE_SNAPSHOT)throw new TypeError('committed plugin input missing: YSS_SOURCE_SNAPSHOT');
+  bound.YSS_SOURCE_SNAPSHOT=environment.YSS_SOURCE_SNAPSHOT;
   return {...bound,NODE_OPTIONS:'',NODE_PATH:''};
 }

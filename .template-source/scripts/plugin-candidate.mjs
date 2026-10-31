@@ -3,7 +3,7 @@ import { appendFileSync, existsSync, mkdirSync, readFileSync, realpathSync, writ
 import { spawnSync } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { candidateCliCommit as cliCommit, candidateFromEnvironment, candidateLock, sha256, validateCandidate } from './lib/plugin-candidate.mjs';
+import { candidateFromEnvironment, candidateLock, sha256, validateCandidate } from './lib/plugin-candidate.mjs';
 
 const root = realpathSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..'));
 function run(file, args, cwd, env = process.env) {
@@ -21,14 +21,16 @@ const inspect = (binary, profile) => {
 function prepare(cliRoot, output) {
   cliRoot = realpathSync(cliRoot); output = path.resolve(output);
   if (existsSync(output) || !path.isAbsolute(output) || output.startsWith(root + path.sep) || output.startsWith(cliRoot + path.sep)) throw new Error('candidate output must be new and outside both repositories');
-  const template = git(root, 'rev-parse', 'HEAD'), actualCli = git(cliRoot, 'rev-parse', 'HEAD');
-  if (actualCli !== cliCommit || git(root, 'status', '--porcelain') || git(cliRoot, 'status', '--porcelain')) throw new Error('candidate source commit or cleanliness mismatch');
+  const template = git(root, 'rev-parse', 'HEAD'), cliCommit = git(cliRoot, 'rev-parse', 'HEAD');
+  if (!/^[a-f0-9]{40}$/.test(cliCommit) || git(root, 'status', '--porcelain') || git(cliRoot, 'status', '--porcelain')) throw new Error('candidate source commit or cleanliness mismatch');
   const templateTree = git(root, 'rev-parse', 'HEAD^{tree}'), cliTree = git(cliRoot, 'rev-parse', 'HEAD^{tree}');
   const requiredGo = readFileSync(path.join(cliRoot, 'go.mod'), 'utf8').match(/^go ([0-9.]+)$/m)?.[1];
   const observedGo = run('go', ['env','GOVERSION'], cliRoot).trim();
   if (!requiredGo || observedGo !== `go${requiredGo}`) throw new Error('candidate Go version mismatch');
   mkdirSync(output, {recursive:false});
-  const original = JSON.parse(readFileSync(path.join(cliRoot, 'docs/source-lock.json')));
+  const snapshotFile=path.join(output,'source-snapshot.json');
+  run(process.execPath,[path.join(cliRoot,'tools/resolve-template.mjs'),'--source-root',root,'--out',snapshotFile,'--candidate-commit',template],cliRoot);
+  const original = JSON.parse(readFileSync(snapshotFile));
   const lock = candidateLock(original, template, cliCommit, ref => sha256(Buffer.from(run('git', ['-C',root,'show',`${template}:${ref}`], root))));
   const lockFile = path.join(output, 'candidate-lock.json'); writeFileSync(lockFile, json(lock), {flag:'wx'});
   const archiveDir = path.join(output, 'bundle');
@@ -55,7 +57,7 @@ function execute(args) {
   if (args.length === 0) throw new Error('candidate test command required');
   let cwd = root;
   if (args[0] === '--tooling') { cwd = path.join(root, '.template-source/tooling/node'); args = args.slice(1); }
-  console.log(`plugin candidate template=${candidate.template_commit} cli=${cliCommit} binary_sha256=${candidate.digest}; not release evidence`);
+  console.log(`plugin candidate template=${candidate.template_commit} cli=${candidate.cli_commit} binary_sha256=${candidate.digest}; not release evidence`);
   const result = spawnSync(process.execPath, args, {cwd, env:{...process.env, YSS_NATIVE_BINARY:candidate.binary, YSS_NATIVE_BINARY_SHA256:candidate.digest, YSS_PLUGIN_TEST_BINARY:candidate.binary, YSS_PLUGIN_BINARY:candidate.binary}, stdio:'inherit'});
   if (result.error || result.signal || !Number.isInteger(result.status)) throw new Error('candidate test did not exit normally');
   process.exitCode = result.status;
