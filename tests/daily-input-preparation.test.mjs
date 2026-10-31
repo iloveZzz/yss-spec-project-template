@@ -6,26 +6,22 @@ import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 
-const source = path.resolve(import.meta.dirname, '..');
 const binary = process.env.YSS_NATIVE_BINARY;
 assert.ok(binary && path.isAbsolute(binary), 'YSS_NATIVE_BINARY must name the real candidate');
 const digest = bytes => 'sha256:' + createHash('sha256').update(bytes).digest('hex');
 
-function dailyFixture(t, {profile = 'spec'} = {}) {
+function dailyFixture(t, {profile = 'backend'} = {}) {
   const temp = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'daily-inputs-')));
   t.after(() => fs.rmSync(temp, {recursive: true, force: true}));
   const root = path.join(temp, 'governance'), repo = path.join(temp, 'implementation');
-  fs.mkdirSync(root); fs.mkdirSync(repo);
+  fs.mkdirSync(repo);
+  const installed = spawnSync(binary, ['init', '--profile', profile, '--root', root, '--project-name', 'Daily Fixture', '--json'], {encoding: 'utf8', maxBuffer: 16 * 1024 * 1024});
+  assert.equal(installed.status, 0, `current CLI init failed: ${installed.stderr || installed.stdout}`);
   const write = (ref, value) => {
     const file = path.join(root, ref);
     fs.mkdirSync(path.dirname(file), {recursive: true});
     fs.writeFileSync(file, typeof value === 'string' ? value : JSON.stringify(value));
   };
-  fs.cpSync(path.join(source, '.template-spec/process'), path.join(root, '.template-spec/process'), {recursive: true});
-  if (profile === 'backend') fs.cpSync(path.join(source, 'profiles/backend/.template-spec/process'), path.join(root, '.template-spec/process'), {recursive: true});
-  for (const ref of ['CONTEXT.md', 'AGENTS.md', '.template-spec/agents/issue-tracker.md']) write(ref, fs.readFileSync(path.join(source, ref), 'utf8'));
-  write('yss-project.yaml', {schema_version: 2, repository_mode: 'project-instance'});
-  write('.template-spec/process/harness-profile.yaml', {schema_version: 3, profile_id: profile === 'spec' ? 'harness.spec-template' : 'harness.backend-delivery', status: 'active', required_capabilities: ['role-independent-governance-v1', ...(profile === 'spec' ? ['stage-gates-v1'] : [])], lifecycle: {}, execution: {}});
   write('facts.md', '目标、验收、工程基线、回滚和风险。\n');
   write('skill.md', '本次适用检查\n'); write('资料.md', '已有规则\n');
   fs.mkdirSync(path.join(repo, 'src'));

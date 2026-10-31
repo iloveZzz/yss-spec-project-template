@@ -8,7 +8,7 @@ import {runCommandSync} from '../../lib/command-runner.mjs';
 import {byteDigest,parseAsset} from '../../lib/structured-assets.mjs';
 import {formatObservedTest,prepareTaskTestEdit} from '../../lib/daily-test-evidence.mjs';
 import {buildDecisionFixture} from '../../lib/testing/user-decision-fixture.mjs';
-const source=path.resolve(import.meta.dirname,'../../..'),bin=process.env.YSS_NATIVE_BINARY;
+const bin=process.env.YSS_NATIVE_BINARY;
 assert.ok(bin&&path.isAbsolute(bin));
 const temp=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'daily2-native-'))),root=path.join(temp,'governance'),repo=path.join(temp,'implementation'),results=[];
 const hash=x=>createHash('sha256').update(x).digest('hex');
@@ -16,16 +16,14 @@ const put=(dir,ref,value)=>{const file=path.join(dir,ref);fs.mkdirSync(path.dirn
 const write=(ref,value)=>put(root,ref,value),digest=ref=>'sha256:'+hash(fs.readFileSync(path.join(root,ref)));
 const exec=(label,file,args,cwd)=>{const started_at=new Date().toISOString(),r=spawnSync(file,args,{cwd,encoding:'utf8'});results.push({label,argv:[file,...args],cwd,started_at,exit:r.status,stdout:r.stdout,stderr:r.stderr});return r;};
 try{
- fs.mkdirSync(root,{recursive:true});fs.mkdirSync(repo,{recursive:true});
- fs.cpSync(path.join(source,'.template-spec/process'),path.join(root,'.template-spec/process'),{recursive:true});
- for(const ref of ['CONTEXT.md','AGENTS.md','.template-spec/agents/issue-tracker.md'])write(ref,fs.readFileSync(path.join(source,ref),'utf8'));
- write('yss-project.yaml',{schema_version:2,repository_mode:'project-instance'});
- write('.template-spec/process/harness-profile.yaml',{schema_version:3,profile_id:'harness.spec-template',status:'active',required_capabilities:['role-independent-governance-v1','stage-gates-v1'],lifecycle:{},execution:{}});
+ fs.mkdirSync(repo,{recursive:true});
+ const installed=exec('actual-install',bin,['init','--profile','backend','--root',root,'--project-name','Daily Fixture','--json'],temp);
+ assert.equal(installed.status,0,installed.stderr||installed.stdout);
  write('facts.md','目标、验收、工程基线、可回滚范围和风险。\n');write('skill.md','本次适用检查\n');
  put(repo,'src/server.mjs','export const enabled=false;\n');
  const git=args=>{const r=exec('fixture-git','git',['-c','user.name=test','-c','user.email=test@example.invalid','-c','commit.gpgsign=false',...args],repo);assert.equal(r.status,0,r.stderr);return r.stdout.trim();};
  git(['init','-q']);git(['add','.']);git(['commit','-qm','baseline']);const base=git(['rev-parse','HEAD']);put(repo,'src/server.mjs','export const enabled=true;\n');
- const record={schema_version:2,policy_version:2,task_id:'DAILY-2',delivery_path:'daily',formal_bindings:[],goal_ref:'facts.md',acceptance_ref:'facts.md',repository:{root:repo,baseline_sha:base,baseline_ref:'facts.md',rollback_ref:'facts.md'},scope:{paths:['src'],impacts:['backend','no-api'],risk_ref:'facts.md'},skills:[{ref:'skill.md',digest:digest('skill.md')}],inputs:[],commands:[{argv:[process.execPath,'--check','src/server.mjs'],cwd:'.'}],api:{mode:'none',reason:'没有API变化'}};
+ const record={schema_version:2,policy_version:2,task_id:'DAILY-2',delivery_path:'daily',formal_bindings:[],goal_ref:'facts.md',acceptance_ref:'facts.md',repository:{root:repo,baseline_sha:base,baseline_ref:'facts.md',rollback_ref:'facts.md'},scope:{paths:['src'],impacts:['backend','no-api'],risk_ref:'facts.md'},skills:[{ref:'skill.md',digest:digest('skill.md')}],inputs:[],commands:[{argv:[process.execPath,'--check','src/server.mjs'],cwd:'.'}],api:{mode:'none',reason:'没有API变化'},business_input:{mode:'standalone',side:'backend',ref:'facts.md',digest:digest('facts.md'),conflicts:[]}};
  let sections='',testSequence=0;const task=()=>write('task.md',`# 日常任务\n${sections}<!-- yss-task-evidence -->\n\`\`\`json\n${JSON.stringify(record).replaceAll('<','\\u003c')}\n\`\`\`\n`);
  const run=(label,action='verify-daily',expected='OK')=>{task();const args=['lifecycle',action,'--root',root,'--task','task.md','--implementation-root',repo,'--base',base,'--json'];const r=exec(label,bin,args,root),p=JSON.parse(r.stdout);assert.equal(p.code,expected,`${label}: ${JSON.stringify(p.result?.diagnostics)}`);return p.result;};
  const human=label=>{task();const args=['lifecycle','route','--root',root,'--task','task.md','--implementation-root',repo,'--base',base,'--human'];const r=exec(label,bin,args,root);assert.equal(r.status,0,r.stderr);assert.ok(r.stdout.includes('测试 → 适用复核（默认真实自检，按当前要求提供独立或外部复核）'),r.stdout);assert.ok(r.stdout.includes('本路由只读，不授予实现、批准或发布资格'),r.stdout);};
@@ -117,7 +115,6 @@ try{
  assert.deepEqual(fs.readFileSync(path.join(root,'spec-lite.md')),standardBytes);assert.deepEqual(fs.readFileSync(path.join(root,'decision/decision.json')),decisionBytes);
  user.respond({text:'撤回批准',decision:'rejected',time:'2026-09-05T01:04:00Z'});user.save();record.standard_decision.response_digest=digest('decision/decision.json');run('standard-revoked','route','user-decision-not-approved');
  // Backend uses its real current Profile policies and still requires actual business input.
- fs.cpSync(path.join(source,'profiles/backend/.template-spec/process'),path.join(root,'.template-spec/process'),{recursive:true});
  for(const key of Object.keys(record))delete record[key];Object.assign(record,structuredClone(originalRecord));
  record.business_input={mode:'standalone',side:'backend',ref:'facts.md',digest:digest('facts.md'),conflicts:[]};
  populate();run('backend-current-standalone-selfcheck');
