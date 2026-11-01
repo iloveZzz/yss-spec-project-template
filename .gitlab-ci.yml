@@ -75,7 +75,7 @@ build-check:
       PYCODE
       git init "$work/source"
       git -C "$work/source" remote add origin https://github.com/iloveZzz/yss-cli.git
-      git -C "$work/source" fetch --depth 1 origin refs/tags/v3.0.3
+      git -C "$work/source" fetch --depth 1 origin refs/tags/v3.0.4
       git -C "$work/source" checkout --detach FETCH_HEAD
       git -C "$work/source" rev-parse HEAD > "$work/source-commit.txt"
       cmp .agents/skills/setup-yss-harness/SKILL.md .workbuddy/skills/setup-yss-harness/SKILL.md
