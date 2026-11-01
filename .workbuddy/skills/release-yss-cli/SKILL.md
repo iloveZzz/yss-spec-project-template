@@ -19,7 +19,7 @@ cargo run --locked --bin yss-bundle -- package --binary <实际程序> --version
 
 Bundle 必须先生成。只分发 `yss`/`yss.exe`；内部 `yss-bundle` 不分发。打包器从实际程序的构建记录读取来源，并核对版本和目标架构；不手写来源、不执行外平台程序取版本。用实际归档生成 `SHA256SUMS`，再用同平台新程序执行离线 `upgrade --dry-run` 验证。
 
-归档名为 `yss_<版本>_<完整Rust target>.tar.gz`，Windows 为 `.zip`；包内只有程序和 `release-manifest.json`。发行清单使用 `format: yss.release`、`formatVersion: 1`，工具收据 `.yss/tool.json` 由安装器生成。六个设计目标是 macOS ARM64/x86_64、Linux musl ARM64/x86_64、Windows MSVC ARM64/x86_64；分别报告构建与原生运行证据，不能将交叉编译或模拟器结果称为原生验证。
+归档名为 `yss_<版本>_<完整Rust target>.tar.gz`，Windows 为 `.zip`；包内只有程序和 `release-manifest.json`。发行清单使用 `format: yss.release`、`formatVersion: 1`，工具收据 `.yss/tool.json` 由安装器生成。发行目标仅为 macOS ARM64（`aarch64-apple-darwin`）和 Windows x86_64（`x86_64-pc-windows-msvc`）。分别报告构建与原生运行证据，不能将交叉编译或模拟器结果称为原生验证。
 
 Rust 在线默认 GitHub 固定仓库 `iloveZzz/yss-cli`；公开读取不携带鉴权。`--source gitlab` 显式选择固定次级来源 `https://gitlab.yss.test:9443/yss/yss-cli`，使用显式 `YSS_GITLAB_CA_FILE` 与受限 PAT `YSS_GITLAB_TOKEN`；动态核验项目 ID、完整路径、Web URL、Release 和同项目资产，资产 HEAD 必须返回真实 Content-Length。保留 TLS 主机校验，不关闭验证或发送凭据到其他来源。离线 `--artifact` 不与 `--source` 混用；不自动跨来源回退。CI Job Token 只用于受支持的 CI 身份通道；模板源码从 GitHub 固定仓库读取真实提交，不向 CI 注入 PAT。
 

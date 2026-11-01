@@ -5,6 +5,8 @@ workflow:
       when: never
     - when: always
 
+stages: [build, verify]
+
 default:
   image: docker.io/library/rust:1.99.1-trixie@sha256:09027f873d45b8ecd1dc86f1fa13b7a62b875c961f017a0e331267b350430137
   tags: [yss-linux]
@@ -14,7 +16,10 @@ variables:
   YSS_GITLAB_CA_FILE: /etc/gitlab-runner/certs/gitlab.yss.test.crt
   YSS_GITLAB_CI_AUTH: "1"
 
-build-check:
+build-cli:
+  stage: build
+  rules:
+    - when: on_success
   script:
     - |
       set -eu
@@ -77,6 +82,7 @@ build-check:
       git -C "$work/source" remote add origin https://github.com/iloveZzz/yss-cli.git
       git -C "$work/source" fetch --depth 1 origin refs/tags/v3.1.0
       git -C "$work/source" checkout --detach FETCH_HEAD
+      test "$(git -C "$work/source" rev-parse HEAD)" = 55df5179e79572bfa0b7b6a72f541c511eb80030
       git -C "$work/source" rev-parse HEAD > "$work/source-commit.txt"
       cmp .agents/skills/setup-yss-harness/SKILL.md .workbuddy/skills/setup-yss-harness/SKILL.md
       cmp .agents/skills/release-yss-cli/SKILL.md .workbuddy/skills/release-yss-cli/SKILL.md
@@ -96,23 +102,111 @@ build-check:
       template_root=$PWD
       cd "$work/source"
       cargo run --locked --bin yss-bundle -- --source-root "$template_root" --out assets/bundle.tar.gz > "$work/bundle.json"
+      mkdir -p "$CI_PROJECT_DIR/ci-build" "$CI_PROJECT_DIR/ci-report/build"
+      cp "$work/source-commit.txt" "$work/bundle.json" "$CI_PROJECT_DIR/ci-report/build/"
       cargo build --locked --release --bin yss
-      cp target/release/yss "$work/yss"
-      "$work/yss" version --json > "$work/version.json"
-      "$work/yss" help > "$work/help.txt"
-      "$work/yss" scaffold catalog --json > "$work/catalog.json"
-      "$work/yss" init --root "$work/preview" --profile spec --installation skills --dry-run --json > "$work/preview.json"
-      test ! -e "$work/preview"
-      "$work/yss" init --root "$work/project" --profile spec --installation skills --json > "$work/init.json"
-      "$work/yss" skills list --root "$work/project" --json > "$work/skills.json"
-      "$work/yss" sync --root "$work/project" --dry-run --json > "$work/sync.json"
-      "$work/yss" doctor --root "$work/project" --json > "$work/doctor.json"
-      "$work/yss" init --root "$work/backend" --profile backend --installation skills --dry-run --json > "$work/backend-preview.json"
-      test ! -e "$work/backend"
-      mkdir -p "$CI_PROJECT_DIR/ci-report"
-      cp "$work/source-commit.txt" "$work/bundle.json" "$work/version.json" "$work/help.txt" "$work/catalog.json" "$work/preview.json" "$work/init.json" "$work/skills.json" "$work/sync.json" "$work/doctor.json" "$work/backend-preview.json" "$CI_PROJECT_DIR/ci-report/"
-      printf '%s\n' 'build + actual Linux CLI paths only; no persistent tests, native Windows or formal release verified' > "$CI_PROJECT_DIR/ci-report/scope.txt"
+      cp target/release/yss "$CI_PROJECT_DIR/ci-build/yss"
+      uname -m > "$CI_PROJECT_DIR/ci-build/architecture"
+      "$CI_PROJECT_DIR/ci-build/yss" version --json > "$CI_PROJECT_DIR/ci-report/build/version.json"
+      "$CI_PROJECT_DIR/ci-build/yss" help > "$CI_PROJECT_DIR/ci-report/build/help.txt"
+      python3 -I - <<'PYCODE'
+      import json, os, pathlib
+      report = pathlib.Path(os.environ["CI_PROJECT_DIR"]) / "ci-report/build"
+      bundle = json.loads((report / "bundle.json").read_text())
+      version = json.loads((report / "version.json").read_text())
+      assert bundle["source"]["commit"] == os.environ["CI_COMMIT_SHA"]
+      assert version["status"] == "ok" and version["result"]["version"] == "3.1.0"
+      assert version["result"]["source"]["commit"] == "55df5179e79572bfa0b7b6a72f541c511eb80030"
+      assert version["result"]["bundleDigest"] == bundle["sha256"]
+      PYCODE
   artifacts:
     when: always
-    paths: [ci-report/]
+    paths: [ci-build/, ci-report/build/]
+    expire_in: 7 days
+
+verify-projects:
+  stage: verify
+  needs: [build-cli]
+  rules:
+    - when: on_success
+  script:
+    - |
+      set -eu
+      work=$(mktemp -d)
+      work=$(realpath "$work")
+      trap 'rm -rf "$work"' EXIT
+      yss="$CI_PROJECT_DIR/ci-build/yss"
+      test "$(uname -m)" = "$(cat "$CI_PROJECT_DIR/ci-build/architecture")" || { echo 'Runner architecture differs from build-cli' >&2; exit 1; }
+      report="$CI_PROJECT_DIR/ci-report/projects"
+      mkdir -p "$report"
+      for profile in spec backend; do
+        for installation in skills project; do
+          name="$profile-$installation"
+          root="$work/$name"
+          "$yss" init --root "$root" --profile "$profile" --installation "$installation" --dry-run --json > "$report/$name-preview.json"
+          test ! -e "$root"
+          "$yss" init --root "$root" --profile "$profile" --installation "$installation" --json > "$report/$name-init.json"
+          test -f "$root/.yss/project.json"
+          test -f "$root/.agents/skills/setup-yss-harness/SKILL.md"
+          "$yss" skills list --root "$root" --json > "$report/$name-skills.json"
+          "$yss" sync --root "$root" --dry-run --json > "$report/$name-sync-preview.json"
+          "$yss" sync --root "$root" --json > "$report/$name-sync.json"
+          "$yss" doctor --root "$root" --json > "$report/$name-doctor.json"
+        done
+      done
+      mkdir "$work/existing"
+      printf '%s\n' 'keep my files' > "$work/existing/note.txt"
+      "$yss" attach --root "$work/existing" --profile backend --installation skills --json > "$report/attach.json"
+      "$yss" skills ensure yss-validation --root "$work/existing" --json > "$report/ensure.json"
+      test "$(cat "$work/existing/note.txt")" = 'keep my files'
+      conflict="$work/conflict/.agents/skills/setup-yss-harness/SKILL.md"
+      mkdir -p "$(dirname "$conflict")"
+      printf '%s\n' 'user-owned content' > "$conflict"
+      if "$yss" attach --root "$work/conflict" --profile backend --installation skills --json > "$report/attach-conflict.json"; then
+        echo 'attach unexpectedly replaced an existing file' >&2
+        exit 1
+      fi
+      test "$(cat "$conflict")" = 'user-owned content'
+      test ! -e "$work/conflict/.yss/project.json"
+      python3 -I - "$report/attach-conflict.json" <<'PYCODE'
+      import json, sys
+      result = json.load(open(sys.argv[1]))
+      assert result["status"] == "error" and result["error"]["code"] == "CONFLICT"
+      PYCODE
+  artifacts:
+    when: always
+    paths: [ci-report/projects/]
+    expire_in: 7 days
+
+verify-scaffolds:
+  stage: verify
+  needs: [build-cli]
+  rules:
+    - when: on_success
+  script:
+    - |
+      set -eu
+      work=$(mktemp -d)
+      work=$(realpath "$work")
+      trap 'rm -rf "$work"' EXIT
+      yss="$CI_PROJECT_DIR/ci-build/yss"
+      test "$(uname -m)" = "$(cat "$CI_PROJECT_DIR/ci-build/architecture")" || { echo 'Runner architecture differs from build-cli' >&2; exit 1; }
+      report="$CI_PROJECT_DIR/ci-report/scaffolds"
+      mkdir -p "$report"
+      "$yss" scaffold catalog --json > "$report/catalog.json"
+      for kind in ddd mvc; do
+        set -- --project-name "sample-$kind" --base-package com.example.sample --output-dir "$work" \
+          --platform-profile spring-boot-3.5-jdk17 --spring-boot-version 3.5.16 --java-version 17 \
+          --group-id com.example --project-version 1.0.0-SNAPSHOT --parent-group-id com.yss.cloud \
+          --parent-artifact-id yss-cloud-microservice --parent-version 3.2.0-SNAPSHOT --yss-components-version 3.2.0-SNAPSHOT
+        "$yss" scaffold "$kind" "$@" --dry-run --json > "$report/$kind-preview.json"
+        test ! -e "$work/sample-$kind"
+        "$yss" scaffold "$kind" "$@" --json > "$report/$kind.json"
+        test -f "$work/sample-$kind/pom.xml"
+        test -f "$work/sample-$kind/mvnw"
+        test -f "$work/sample-$kind/.yss/scaffold.json"
+      done
+  artifacts:
+    when: always
+    paths: [ci-report/scaffolds/]
     expire_in: 7 days
