@@ -6,7 +6,9 @@
 
 向 Agent 提供目标、现有需求、业务词汇和允许修改的工程。Agent 先读相关材料，复用有效成果，缺少关键业务决定时询问；无需登记阶段、编制批准包或通过 CLI 资格门禁才开始。
 
-完整产品需求须交付完整规格、原型设计、原型及交互说明。核心操作和状态变化应可操作，纯展示可用静态设计，无 UI 用业务逻辑或状态原型。按风险选择形式与精度，说明查看方法、模拟范围、实际检查与未覆盖项；普通查询和局部修订只处理当前范围。技术架构、API、数据库和实现留给研发。
+完整产品需求只交付业务规格、高保真交互原型及交互说明。核心操作和状态变化应可操作，纯展示可用高保真静态设计，无 UI 用业务逻辑或状态原型；低保真草稿不单独算完整交付。按风险选择覆盖范围与必要状态，说明查看方法、模拟范围、实际检查与未覆盖项；普通查询和局部修订只处理当前范围。
+
+业务票仅按明确拆票请求组织，不是第四类必交付物；Spec 的 to-tickets 不生成 DDL/索引、生产 API 契约或实现切片。业务概念与有来源的技术约束可表达，原型模拟不构成生产承诺。明确技术设计或开发请求按研发任务承接，不强制切换 profile 或增加审批。
 
 `project` 和 `skills` 默认都安装 16 个入口：setup-yss-harness、yss-product-lifecycle、yss-research、yss-stage-decision、grilling、domain-modeling、wayfinder、to-spec、yss-design-system、prototype、prototype-review、to-tickets、triage、llm-wiki、i-have-adhd、handoff。研究归 yss-research，产品设计与 UI 原型归 yss-design-system；implement 和 code-review 保留为按需安装能力。
 

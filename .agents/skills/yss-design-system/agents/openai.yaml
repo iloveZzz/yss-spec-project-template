@@ -1,5 +1,5 @@
 version: 1
 interface:
   display_name: "产品设计与 UI 原型"
-  short_description: "完成产品设计、可操作原型和交互说明"
-  default_prompt: "Use $yss-design-system to design the product and produce the appropriate prototype with interaction notes and actual verification limits."
+  short_description: "完成产品设计，完整有 UI 交付提供高保真原型及说明"
+  default_prompt: "Use $yss-design-system to design the product, with a high-fidelity prototype for complete UI Spec delivery, interaction notes, and actual verification limits. Prototype simulations are not production contracts."
