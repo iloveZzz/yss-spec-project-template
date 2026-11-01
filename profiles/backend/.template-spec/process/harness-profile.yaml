@@ -2,7 +2,7 @@ schema_version: 3
 profile_id: harness.backend-delivery
 status: active
 name: 后端专职交付 Harness
-purpose: 按用户需求直接开展后端分析、设计、实现和交付，使用适用技能与现有工程工具。
+purpose: 承接 Spec 或明确需求，按任务完成拆分、架构/技术/详细设计、脚手架、开发、测试和构建部署手册；部署范围仅为说明，不执行部署。
 handoff:
   consumer_capabilities:
   - backend-technical-design
@@ -57,14 +57,54 @@ skill_scope:
   - ytable-usage
   - ytree-usage
   optional_skills:
-  - id: setup-ts-deep-modules
+  - id: to-spec
     default_distributed: false
     activation: explicit-need
-    reason: 当前 Java 交付流程无调用；有 TypeScript 后端或工具链需要时按需接入。
-  - id: data-analytics
+    reason: 独立业务规格整理；正常研发复用上游结果。
+  - id: yss-stage-decision
     default_distributed: false
     activation: explicit-need
-    reason: 当前主流程无调用；数据质量、SQL 核验或专题分析有需要时按需接入。
+    reason: 业务方案专题；不作为研发前置。
+  - id: triage
+    default_distributed: false
+    activation: explicit-need
+    reason: 工单分诊专项。
+  - id: wayfinder
+    default_distributed: false
+    activation: explicit-need
+    reason: 复杂决策地图专项。
+  - id: llm-wiki
+    default_distributed: false
+    activation: explicit-need
+    reason: 知识库专项。
+  - id: yss-backend-spec-review
+    default_distributed: false
+    activation: explicit-need
+    reason: 既有工程整体规范审查。
+  - id: yss-up-springboot3
+    default_distributed: false
+    activation: explicit-need
+    reason: 平台升级专项。
+  - id: yss-security-algorithm
+    default_distributed: false
+    activation: explicit-need
+    reason: 既有组件审查与迁移；禁止新生产接入。
+  - id: setup-matt-pocock-skills
+    default_distributed: false
+    activation: explicit-need
+    reason: tracker 配置专项。
+  - id: maintaining-skills
+    default_distributed: false
+    activation: explicit-need
+    reason: 技能维护专项。
+  - id: writing-for-agents
+    default_distributed: false
+    activation: explicit-need
+    reason: Agent 指令写作专项。
+  - id: publish-skills-sh
+    default_distributed: false
+    activation: explicit-need
+    reason: 明确授权的技能发布专项。
 business_input:
   modes:
   - standalone

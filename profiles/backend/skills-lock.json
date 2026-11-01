@@ -25,26 +25,6 @@
           ".workbuddy/skills"
         ]
       },
-      "architecture-agent": {
-        "source": "project",
-        "sourceType": "local",
-        "skillPath": ".agents/skills/architecture-agent/SKILL.md",
-        "effectiveHash": "1abb637b0da7ae4a7a7af2dbb740d0d90361a4992f82745778d095c4ad39bf4e",
-        "targets": [
-          ".agents/skills",
-          ".workbuddy/skills"
-        ]
-      },
-      "backend-agent": {
-        "source": "project",
-        "sourceType": "local",
-        "skillPath": ".agents/skills/backend-agent/SKILL.md",
-        "effectiveHash": "d896ff8e4d063656e1a1ee5b1255430e7d004d390aa2d6169dbe1fe3821b912b",
-        "targets": [
-          ".agents/skills",
-          ".workbuddy/skills"
-        ]
-      },
       "code-review": {
         "source": "mattpocock/skills",
         "sourceType": "github",
@@ -128,16 +108,6 @@
         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
         "upstreamHash": "e5a44fccc710f5402deee06beaf5178397885765773375f186aefd179565f23f",
         "adaptationRef": ".template-spec/agents/matt-skills-adaptation.md",
-        "targets": [
-          ".agents/skills",
-          ".workbuddy/skills"
-        ]
-      },
-      "harness-orchestrator": {
-        "source": "project",
-        "sourceType": "local",
-        "skillPath": ".agents/skills/harness-orchestrator/SKILL.md",
-        "effectiveHash": "69f681690465e6829d5b9cf2c73ebb80591923fb09a2b327d49b8f4f45b5ad39",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"
@@ -288,16 +258,6 @@
         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
         "upstreamHash": "28b5e430968370f51b03b88b4b4a046286192733d2f45bd5b8049e16f45fd234",
         "adaptationRef": ".template-spec/agents/matt-skills-adaptation.md",
-        "targets": [
-          ".agents/skills",
-          ".workbuddy/skills"
-        ]
-      },
-      "test-agent": {
-        "source": "project",
-        "sourceType": "local",
-        "skillPath": ".agents/skills/test-agent/SKILL.md",
-        "effectiveHash": "a7fa733e316affdc686478486b14ab7cba573bcd39ade631a80f46e9e3a84ba0",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"
@@ -565,7 +525,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-stage-decision/SKILL.md",
-        "effectiveHash": "c6c4de1da7a49c01bd88fd075ffa307ee48a53d821c865c4ae2517f741e6b617",
+        "effectiveHash": "df47b02ba0978c5926c7d059a064d1fa21afb7ad91e24e99a8a04d2e722a6178",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"
@@ -626,6 +586,16 @@
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-web-controller/SKILL.md",
         "effectiveHash": "1fef22a366225f5d8a53272c58e8083139daa35684cf8bf716e830805dff3ae9",
+        "targets": [
+          ".agents/skills",
+          ".workbuddy/skills"
+        ]
+      },
+      "yss-backend-testing": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-backend-testing/SKILL.md",
+        "effectiveHash": "5068d2b36559c3917e18d8b114fa3afc6112336eca6f704feafd50167a45a009",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"
