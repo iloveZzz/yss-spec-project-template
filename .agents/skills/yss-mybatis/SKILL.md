@@ -7,11 +7,11 @@ description: 核验、接入或排查 YSS MyBatis/MyBatis-Plus 的 Mapper/Reposi
 
 本 Skill 只维护 `yss-component-persistence` 的组件能力、选择条件和排障顺序。PO、Repository、Convertor、Gateway/Query Adapter 的结构与生成边界由 `yss-repository` 负责。
 
-## 入口与前置
+## 来源与适用范围
 
-2. 精确类名、方法签名、配置 key、默认值或启用条件必须先读 [source-index.md](references/source-index.md)，并按 `yss-skill-source-index-refresh/references/source-location.md` 核验组件 tree 与组件子树 clean 状态。
-3. 组件 tree 不匹配或 persistence 子树为 dirty 时，路径提示只能用于定位；精确实现或审查结论返回 `stale` / `missing_evidence`，刷新索引后再继续。
-4. 新 DDD / MVC scaffold 只支持批准的 `mybatis-plus` Profile。普通 MyBatis 仅用于既有工程维护、兼容与排障；新增支持必须有独立 Profile 和 fixture，不自动猜测或混用。
+1. 精确类名、方法签名、配置 key、默认值或启用条件先用 [source-index.md](references/source-index.md) 定位，再按 [源码定位策略](../yss-skill-source-index-refresh/references/source-location.md) 读取当前源码。
+2. 索引与当前源码不同或组件子树有未提交修改时，以可读源码说明事实和差异；源码不可读的精确结论保留未知。调查不要求先清理工作树或刷新索引，索引写入仍需对应授权。
+3. 当前新 DDD / MVC 脚手架只支持 `mybatis-plus` Profile。普通 MyBatis 用于既有工程维护、兼容与排障；不能假定现有脚手架可生成不支持的 Profile。
 
 ## 稳定决策规则
 
@@ -21,11 +21,11 @@ description: 核验、接入或排查 YSS MyBatis/MyBatis-Plus 的 Mapper/Reposi
 - 一条查询 seam 只能有一个分页责任模型。核对实际插件/切面开关、拦截范围、参数绑定条件和返回 total 的责任，不以“依赖已引入”代替行为验证。
 <a id="mybatis.batch"></a>
 - 批量写入必须证明是组件当前支持的 SQL 级批量能力，并验证分批大小、字段填充、主键和数据库方言；循环单条写入不能冒充批量 SQL。
-- 多数据源实例创建不等于动态路由、线程上下文切换或事务传播。先做 capability check；组件未提供的路由能力必须由批准的上层适配承担。
+- 多数据源实例创建不等于动态路由、线程上下文切换或事务传播。先做 capability check；组件未提供的路由能力需在当前任务范围内明确上层适配方案。
 <a id="mybatis.mapping"></a>
-- Mapper/XML、逻辑删除、审计字段、主键策略、动态排序/分组白名单和参数绑定必须与数据合同一致；任何 SQL/DDL/索引新影响返回 `new_impacts`。
+- Mapper/XML、逻辑删除、审计字段、主键策略、动态排序/分组白名单和参数绑定必须与实际数据模型和接口约定一致；说明本次 SQL/DDL/索引影响。
 <a id="mybatis.transaction"></a>
-- 事务边界归批准的 Application 用例或 MVC service/core；Repository 不临时声明新的业务事务。
+- 事务边界归当前 Application 用例或 MVC service/core；Repository 不临时声明新的业务事务。
 
 ## 能力选择记录
 
@@ -45,11 +45,11 @@ description: 核验、接入或排查 YSS MyBatis/MyBatis-Plus 的 Mapper/Reposi
 |---|---|---|
 | 组件接入、基类选择、配置核验 | 读取当前 Profile 和源码能力矩阵，给出来源可追踪的选择 | 需要结构实现时转 `yss-repository` |
 | 生成 PO / Repository / Convertor / GatewayImpl | 不生成 | `yss-repository` |
-| 普通 MyBatis 新工程生成 | `unsupported` | 新 Profile / fixture 获批后再进入 |
+| 普通 MyBatis 新工程生成 | `unsupported` | 按新能力需求另行设计和验证 |
 
 ## 排障顺序
 
-1. 依赖与 Profile：starter、组件版本、MyBatis/MyBatis-Plus 模式是否与合同一致。
+1. 依赖与 Profile：starter、组件版本、MyBatis/MyBatis-Plus 模式是否与当前工程选择一致。
 2. 装配与开关：自动配置、条件属性、Mapper 扫描和 XML location 是否真实生效。
 3. 调用 seam：代理是否命中、分页参数位置/类型、分页插件链和 total 回填责任。
 4. 映射：接口签名、XML namespace、resultMap、字段、逻辑删除和主键策略。
@@ -60,8 +60,8 @@ description: 核验、接入或排查 YSS MyBatis/MyBatis-Plus 的 Mapper/Reposi
 ## 结果与验证
 
 - 使用项目根 `./mvnw ...` 记录实际命令、退出码和时间；H2 只证明本地/测试行为，不证明生产方言。
-- `daily` 在同 Ticket 返回组件来源、分页/批量/映射约束及真实测试/命令/退出码，交独立 Reviewer 绑定当前候选；`governed` 按 YSS Skill Execution Result v2 返回证据、`seam_deferred`、`deviations`、`new_impacts`、`drift` 和 `violation`。
+- 在当前任务中说明来源、实际命中的分页/批量/映射约束、执行结果与未知项；不要求固定结果协议或无条件独立审查。
 
 ## 持久化选择记录
 
-在已有数据合同 / persistence_strategy 中记录：实际 Mapper 基类、组件源码与平台绑定、分页唯一责任者、主键与审计填充，以及命中批量时的 SQL 入口、分批大小和方言证据。`BaseMapper` 与组件扩展基类按所需能力选择，不因命名不同判违规；依赖存在和循环 insert 均不证明批量能力。未命中的能力不强制生成。
+在已有数据设计或当前任务中记录：实际 Mapper 基类、组件源码与平台绑定、分页唯一责任者、主键与审计填充，以及命中批量时的 SQL 入口、分批大小和方言证据。`BaseMapper` 与组件扩展基类按所需能力选择，不因命名不同判违规；依赖存在和循环 insert 均不证明批量能力。未命中的能力不强制生成。

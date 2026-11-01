@@ -9,7 +9,7 @@ description: "接入或排查 YSS QueryCache、UpdateCache、ClearCache、TTL、
 
 ## 工作流
 
-1. 按 `yss-skill-source-index-refresh/references/source-location.md` 定位真实源码。当前工作区有 `.codegraph/` 时先用 CodeGraph；否则读取 [source-index.md](references/source-index.md) 后用符号或 Maven 模块搜索。
+1. 按 [源码定位策略](../yss-skill-source-index-refresh/references/source-location.md) 定位真实源码。当前工作区有 `.codegraph/` 时先用 CodeGraph；否则读取 [source-index.md](references/source-index.md) 后用符号或 Maven 模块搜索。
 2. 识别使用模型：Spring Cache 单后端路由、Redis 故障处理，或独立的 JetCache local + remote。`fail-fast`/`bypass`/`fallback` 是当前 Boot 3 Redis 契约；Boot 2 以其独立源码索引为准，不要混用两代或三种模型的行为假设。
 3. 明确缓存名、key、区域 TTL/容量/空值策略、更新/删除路径、跨节点一致性和序列化兼容要求。
 4. 先检查现有依赖、启动注解、配置和注解用法，再决定修改业务代码、配置还是组件。

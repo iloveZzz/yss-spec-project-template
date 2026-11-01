@@ -27,7 +27,7 @@
 
 **位置**: `../assets/PageQuery.java`
 
-用于 Application/Infrastructure 内部分页协作；是否继承按批准的工程 Profile 决定。公开 HTTP Page Request 默认不继承此类，只声明冻结 OpenAPI 允许的字段，再由 WebConvertor 转换，避免内部协作字段进入绑定面。
+用于 Application/Infrastructure 内部分页协作；是否继承按批准的工程 Profile 决定。公开 HTTP Page Request 默认不继承此类，只声明当前 OpenAPI 允许的字段，再由 WebConvertor 转换，避免内部协作字段进入绑定面。
 
 **核心字段**:
 
@@ -61,5 +61,5 @@
 ## 使用场景
 
 1. **API 响应**: 普通接口已采用 YSS wrapper 时保持 `Result` 或其派生体系。下载、流式和第三方回调按批准协议核验媒体类型、状态、Header、错误与权限边界，不强套 wrapper，也不豁免契约证据。
-2. **分页查询**: `PageQuery` 用于 Application/Infrastructure 内部协作；公开 HTTP Page Request 默认只声明冻结 OpenAPI 允许的字段，再由 WebConvertor 转换，避免内部字段被继承到绑定面。MyBatis 拦截器所需形状以实际 Query Port 与组件行为为准。
+2. **分页查询**: `PageQuery` 用于 Application/Infrastructure 内部协作；公开 HTTP Page Request 默认只声明当前 OpenAPI 允许的字段，再由 WebConvertor 转换，避免内部字段被继承到绑定面。MyBatis 拦截器所需形状以实际 Query Port 与组件行为为准。
 3. **参数封装**: 使用 `CommandDTO` 封装增删改参数，使用 `QueryDTO` 封装查询参数，保持代码语义清晰。

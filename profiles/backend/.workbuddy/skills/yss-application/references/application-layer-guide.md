@@ -42,7 +42,7 @@ public class QualityTemplateService {
 
 - WebConvertor 在 Controller 调用前把 Request 转成 Application Command。
 - 核心规则由 Aggregate 公开方法执行，不复制到 AppService。
-- 一次用例一个明确事务 seam；读操作按合同决定 `readOnly` 和总数策略。
+- 一次用例一个明确事务 seam；读操作按用例需要决定 `readOnly` 和总数策略。
 
 ## 4. 查询用例
 
@@ -73,14 +73,14 @@ public interface QualityTemplateApplicationConvertor {
 
 - Domain error 保留稳定错误标识和参数。
 - Application 不吞掉 unknown exception，不把 `getLocalizedMessage()` 变成公开响应。
-- Web Exception Translator 依据冻结 API 合同映射 YSS error code、HTTP status 和消毒消息。
+- Web Exception Translator 依据现有 API 约定映射 YSS error code、HTTP status 和消毒消息。
 
 ## 7. 验证
 
 - 写用例通过 Application Service seam 测试事务、幂等和领域行为。
 - 查询用例通过 Query Port seam 测试分页和白名单。
 - Application 不依赖 Infrastructure/Web。
-- 实际执行项目根 `./mvnw test/package`。
+- 按实际风险选择工程已有测试命令，优先根 `./mvnw`；区分编译、测试和未验证范围。
 
 ## 8. 旧架构边界
 
@@ -88,6 +88,6 @@ public interface QualityTemplateApplicationConvertor {
 
 ## 事务与外部副作用
 
-- 合同标明需要原子提交的数据库写入及所属用例；事务从 Application 公共代理 seam 进入。无需原子写入的查询或纯计算不强制增加事务注解。
+- 按当前需求明确需要原子提交的数据库写入及所属用例；事务从 Application 公共代理 seam 进入。无需原子写入的查询或纯计算不强制增加事务注解。
 - Repository 参与既有事务，不另行决定业务提交边界。多表聚合保存的回滚测试从用例入口注入中途失败，不能只验证单个 Mapper。
-- 幂等键、重复请求结果、重试范围及失败恢复来自合同；不在技能中默认引入分布式事务或通用重试。测试覆盖回滚不发布、提交后失败及重复消费。
+- 幂等键、重复请求结果、重试范围及失败恢复来自当前业务规则与接口约定；不在技能中默认引入分布式事务或通用重试。测试覆盖回滚不发布、提交后失败及重复消费。

@@ -8,7 +8,7 @@ Component worktree: `clean`
 Component tree `yss-microservice-components/yss-component-cache-parent`: `bc17b39c68a6ad0a96a5fad506f82652a70a461c`
 Indexed source root: resolved at refresh time; set `YSS_SOURCE_ROOT_BOOT2_JAVA8` to reproduce or refresh.
 
-Paths are relocatable source hints. Exact guidance requires a matching component tree and a clean indexed component subtree; the repository commit is trace metadata and may differ when unrelated components change.
+Paths are relocatable source hints. Exact guidance comes from the current readable source; indexed commits, tree hashes and worktree status describe the indexing time, not prerequisites for investigation. Explain relevant local changes without requiring a clean checkout or index refresh.
 
 ## Component Path Hints
 
@@ -18,7 +18,7 @@ Paths are relocatable source hints. Exact guidance requires a matching component
 
 - `yss-microservice-components/yss-component-cache-parent/readme.md`
 
-Component documentation is a discovery aid. For API signatures, conditions and defaults, prefer the indexed source facts below when documentation differs.
+Component documentation and the indexed facts below are discovery aids. Confirm API signatures, conditions and defaults against current source; mark unavailable facts as unknown.
 
 ## Maven Modules
 
@@ -36,7 +36,7 @@ Component documentation is a discovery aid. For API signatures, conditions and d
 - Inherited Spring Boot signals: `2.7.18`.
 - Namespace source signals: `javax.*` in 3 main Java files; `jakarta.*` in 0 main Java files.
 - Auto-configuration metadata: 4 `spring.factories`; 0 `AutoConfiguration.imports` files.
-- These are source observations, not compatibility certification. Use the approved `platform_configuration` and verified compatibility evidence before integration or generation.
+- These are historical source observations, not compatibility certification. Check the actual project platform, current component source and relevant behavior before claiming compatibility.
 
 ## Key Java Entry Points
 
@@ -73,6 +73,6 @@ Component documentation is a discovery aid. For API signatures, conditions and d
 ## Freshness and Use
 
 - Locate the current source root using `YSS_SOURCE_ROOT_BOOT2_JAVA8`, CodeGraph, Maven artifact names or repository search.
-- Compare each indexed `Component tree` with `git rev-parse HEAD:<component-path>` and require the current component subtree to be clean before exact guidance.
-- A repository commit difference alone is not stale when the component tree is unchanged; a component tree mismatch or component-local dirty state is stale.
-- Read only the source entries needed for the current decision or troubleshooting path.
+- Read the relevant current source and local differences. Historical tree hashes can locate differences; a mismatch or dirty subtree does not prevent read-only investigation.
+- State source/version limitations when they affect the conclusion. If source is unavailable, keep precise API claims unknown rather than treating this index as current evidence.
+- Read only the entries needed for the task. Reporting an outdated index does not authorize editing the skill source, managed copies or another repository; refresh only with the corresponding request and write authorization.

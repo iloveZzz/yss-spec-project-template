@@ -145,15 +145,15 @@ capabilities:
   - component-maintenance
   - source-index-refresh
 - id: architecture.system-data
-  primary_skill: architecture-agent
+  primary_skill: yss-technical-design
   task_modes:
   - guidance
-  - contract-compilation
+  - integration
   - review-input
   provider:
     kind: none
 - id: execution.backend-slice
-  primary_skill: backend-agent
+  primary_skill: implement
   task_modes:
   - slice-implementation
   - result-validation
@@ -414,6 +414,14 @@ capabilities:
   - guidance
   - troubleshooting
   - review-input
+- id: testing.backend-behavior
+  primary_skill: yss-backend-testing
+  provider:
+    kind: none
+  task_modes:
+  - guidance
+  - integration
+  - result-validation
 recipes:
 - id: backend.ddd-domain-behavior
   architecture_family: domain-driven
@@ -543,18 +551,6 @@ skill_dependencies:
   java-backend-commit:
   - skill: git-commit-core
     type: context-required
-  test-agent:
-  - skill: i-have-adhd
-    type: context-conditional
-    when: lifecycle-document-output
-  backend-agent:
-  - skill: i-have-adhd
-    type: context-conditional
-    when: lifecycle-document-output
-  architecture-agent:
-  - skill: i-have-adhd
-    type: context-conditional
-    when: lifecycle-document-output
   code-review:
   - skill: i-have-adhd
     type: context-conditional
@@ -563,11 +559,9 @@ skill_dependencies:
   - skill: i-have-adhd
     type: context-conditional
     when: lifecycle-document-output
+  - skill: yss-dto
+    type: context-required
   yss-research:
-  - skill: i-have-adhd
-    type: context-conditional
-    when: lifecycle-document-output
-  harness-orchestrator:
   - skill: i-have-adhd
     type: context-conditional
     when: lifecycle-document-output
@@ -576,6 +570,8 @@ skill_dependencies:
     type: context-required
   yss-layered-mvc-scaffold-generator:
   - skill: alibaba-java-code-style
+    type: context-required
+  - skill: yss-ddd-scaffold-generator
     type: context-required
   yss-domain:
   - skill: alibaba-java-code-style
@@ -608,14 +604,11 @@ skill_dependencies:
     when: pojo
   yss-repository:
   - skill: yss-mybatis
-    type: context-conditional
-    when: mybatis
+    type: context-required
   - skill: mapstruct
-    type: context-conditional
-    when: conversion
+    type: context-required
   - skill: lombok
-    type: context-conditional
-    when: pojo
+    type: context-required
   - skill: alibaba-java-code-style
     type: context-required
   yss-web-controller:
@@ -637,23 +630,33 @@ skill_dependencies:
     type: context-required
   yss-userinfo:
   - skill: yss-dto
-    type: component-dependency
+    type: context-required
   - skill: yss-cache
     type: context-conditional
     when: cache-lookup
+  - skill: yss-skill-source-index-refresh
+    type: context-required
   yss-audit-log:
   - skill: yss-userinfo
-    type: component-dependency
+    type: context-required
   - skill: yss-dto
-    type: component-dependency
+    type: context-required
+  - skill: yss-skill-source-index-refresh
+    type: context-required
   yss-validation:
   - skill: yss-exception
-    type: component-dependency
+    type: context-required
+  - skill: yss-skill-source-index-refresh
+    type: context-required
   yss-security-algorithm:
   - skill: yss-exception
-    type: component-dependency
+    type: context-required
+  - skill: yss-skill-source-index-refresh
+    type: context-required
   yss-exception:
   - skill: yss-dto
+    type: context-required
+  - skill: yss-skill-source-index-refresh
     type: context-required
   yss-technical-design:
   - skill: i-have-adhd
@@ -671,6 +674,32 @@ skill_dependencies:
   - skill: i-have-adhd
     type: context-conditional
     when: lifecycle-document-output
+  implement:
+  - skill: i-have-adhd
+    type: context-conditional
+    when: lifecycle-document-output
+  yss-backend-testing:
+  - skill: i-have-adhd
+    type: context-conditional
+    when: lifecycle-document-output
+  - skill: tdd
+    type: context-conditional
+    when: explicit-test-first-request
+  yss-mybatis:
+  - skill: yss-skill-source-index-refresh
+    type: context-required
+  yss-dto:
+  - skill: yss-skill-source-index-refresh
+    type: context-required
+  yss-cache:
+  - skill: yss-skill-source-index-refresh
+    type: context-required
+  yss-excel-mvc:
+  - skill: yss-skill-source-index-refresh
+    type: context-required
+  yss-resilience4j:
+  - skill: yss-skill-source-index-refresh
+    type: context-required
 invocation_contract:
   schema_version: 2
   runtime_metadata_version: 1
@@ -773,11 +802,60 @@ invocation_contract:
     yss-stage-decision:
       invocation_mode: user
     yss-technical-design:
-      invocation_mode: user
+      invocation_mode: both
+      trigger_conditions:
+      - backend-design-request
+      - implementation-needs-design-decision
+      exclusion_conditions:
+      - product-ui-design
+      - no-design-impact
+      primary_output: backend-architecture-solution-and-detail
     yss-tactical-design:
-      invocation_mode: user
+      invocation_mode: both
+      trigger_conditions:
+      - ddd-aggregate-or-invariant-design
+      exclusion_conditions:
+      - layered-mvc-task
+      - product-ui-design
+      primary_output: ddd-tactical-design
     yss-backend-spec-review:
       invocation_mode: user
+    implement:
+      invocation_mode: both
+      trigger_conditions:
+      - authorized-backend-development
+      - backend-fix-request
+      - complete-backend-delivery
+      exclusion_conditions:
+      - read-only-analysis
+      - outside-authorized-repository
+      primary_output: backend-implementation-and-delivery
+    to-tickets:
+      invocation_mode: both
+      trigger_conditions:
+      - backend-task-decomposition
+      - complete-delivery-needs-slices
+      exclusion_conditions:
+      - small-change-without-decomposition-need
+      - unauthorized-tracker-write
+      primary_output: behavior-based-implementation-slices
+    yss-backend-testing:
+      invocation_mode: both
+      trigger_conditions:
+      - backend-test-request
+      - backend-change-needs-verification
+      exclusion_conditions:
+      - unrelated-test-scope
+      - unauthorized-production-or-paid-service-operation
+      primary_output: backend-test-results-and-limits
+    tdd:
+      invocation_mode: both
+      trigger_conditions:
+      - explicit-test-first-request
+      - explicit-red-green-refactor
+      exclusion_conditions:
+      - ordinary-test-request-without-test-first
+      primary_output: behavior-based-test-first-change
 agent_runtime_roots:
   workbuddy: .workbuddy/skills
 skills:
@@ -790,21 +868,6 @@ skills:
   - template-maintenance
 - id: alibaba-java-code-style
   layer: specialist
-  maturity: supported
-  instance_default_discoverable: false
-  aliases: []
-  impacts:
-  - backend
-- id: architecture-agent
-  layer: core
-  maturity: supported
-  instance_default_discoverable: true
-  aliases: []
-  impacts:
-  - lifecycle
-  - backend
-- id: backend-agent
-  layer: core
   maturity: supported
   instance_default_discoverable: true
   aliases: []
@@ -852,13 +915,6 @@ skills:
   aliases: []
   impacts:
   - lifecycle
-- id: harness-orchestrator
-  layer: core
-  maturity: supported
-  instance_default_discoverable: true
-  aliases: []
-  impacts:
-  - lifecycle
 - id: i-have-adhd
   layer: core
   maturity: supported
@@ -867,58 +923,58 @@ skills:
   impacts:
   - writing
 - id: implement
-  layer: compatibility
+  layer: core
   maturity: supported
-  instance_default_discoverable: false
+  instance_default_discoverable: true
   aliases: []
   impacts:
-  - lifecycle
+  - backend
 - id: java-backend-commit
   layer: maintainer-only
   maturity: supported
-  instance_default_discoverable: false
+  instance_default_discoverable: true
   aliases: []
   impacts:
   - template-maintenance
 - id: llm-wiki
   layer: core
   maturity: verified
-  instance_default_discoverable: true
+  instance_default_discoverable: false
   aliases: []
   impacts:
   - quality
 - id: lombok
   layer: specialist
   maturity: supported
-  instance_default_discoverable: false
+  instance_default_discoverable: true
   aliases: []
   impacts:
   - backend
 - id: maintaining-skills
   layer: core
   maturity: supported
-  instance_default_discoverable: true
+  instance_default_discoverable: false
   aliases: []
   impacts:
   - template-maintenance
 - id: publish-skills-sh
   layer: core
   maturity: verified
-  instance_default_discoverable: true
+  instance_default_discoverable: false
   aliases: []
   impacts:
   - template-maintenance
 - id: mapstruct
   layer: specialist
   maturity: supported
-  instance_default_discoverable: false
+  instance_default_discoverable: true
   aliases: []
   impacts:
   - backend
 - id: prototype
   layer: maintainer-only
   maturity: supported
-  instance_default_discoverable: false
+  instance_default_discoverable: true
   aliases: []
   impacts:
   - prototype
@@ -943,13 +999,6 @@ skills:
   aliases: []
   impacts:
   - quality
-- id: test-agent
-  layer: core
-  maturity: supported
-  instance_default_discoverable: true
-  aliases: []
-  impacts:
-  - quality
 - id: to-spec
   layer: compatibility
   maturity: supported
@@ -958,12 +1007,12 @@ skills:
   impacts:
   - lifecycle
 - id: to-tickets
-  layer: compatibility
+  layer: core
   maturity: supported
-  instance_default_discoverable: false
+  instance_default_discoverable: true
   aliases: []
   impacts:
-  - lifecycle
+  - backend
 - id: triage
   layer: compatibility
   maturity: supported
@@ -974,7 +1023,7 @@ skills:
 - id: using-git-worktrees
   layer: maintainer-only
   maturity: supported
-  instance_default_discoverable: false
+  instance_default_discoverable: true
   aliases: []
   impacts:
   - setup
@@ -995,49 +1044,49 @@ skills:
 - id: yss-application
   layer: specialist
   maturity: supported
-  instance_default_discoverable: false
+  instance_default_discoverable: true
   aliases: []
   impacts:
   - backend
 - id: yss-audit-log
   layer: specialist
   maturity: supported
-  instance_default_discoverable: false
+  instance_default_discoverable: true
   aliases: []
   impacts:
   - backend
 - id: yss-cache
   layer: specialist
   maturity: supported
-  instance_default_discoverable: false
+  instance_default_discoverable: true
   aliases: []
   impacts:
   - backend
 - id: yss-ddd-scaffold-generator
   layer: specialist
   maturity: supported
-  instance_default_discoverable: false
+  instance_default_discoverable: true
   aliases: []
   impacts:
   - backend
 - id: yss-distributed-id
   layer: specialist
   maturity: supported
-  instance_default_discoverable: false
+  instance_default_discoverable: true
   aliases: []
   impacts:
   - backend
 - id: yss-domain
   layer: specialist
   maturity: supported
-  instance_default_discoverable: false
+  instance_default_discoverable: true
   aliases: []
   impacts:
   - backend
 - id: yss-dto
   layer: specialist
   maturity: supported
-  instance_default_discoverable: false
+  instance_default_discoverable: true
   aliases: []
   impacts:
   - backend
@@ -1045,28 +1094,28 @@ skills:
 - id: yss-excel-mvc
   layer: specialist
   maturity: supported
-  instance_default_discoverable: false
+  instance_default_discoverable: true
   aliases: []
   impacts:
   - backend
 - id: yss-exception
   layer: specialist
   maturity: supported
-  instance_default_discoverable: false
+  instance_default_discoverable: true
   aliases: []
   impacts:
   - backend
 - id: yss-layered-mvc-scaffold-generator
   layer: specialist
   maturity: supported
-  instance_default_discoverable: false
+  instance_default_discoverable: true
   aliases: []
   impacts:
   - backend
 - id: yss-mybatis
   layer: specialist
   maturity: supported
-  instance_default_discoverable: false
+  instance_default_discoverable: true
   aliases: []
   impacts:
   - backend
@@ -1080,7 +1129,7 @@ skills:
 - id: yss-repository
   layer: specialist
   maturity: supported
-  instance_default_discoverable: false
+  instance_default_discoverable: true
   aliases: []
   impacts:
   - backend
@@ -1095,7 +1144,7 @@ skills:
 - id: yss-resilience4j
   layer: specialist
   maturity: supported
-  instance_default_discoverable: false
+  instance_default_discoverable: true
   aliases: []
   impacts:
   - backend
@@ -1109,14 +1158,14 @@ skills:
 - id: yss-skill-source-index-refresh
   layer: maintainer-only
   maturity: supported
-  instance_default_discoverable: false
+  instance_default_discoverable: true
   aliases: []
   impacts:
   - template-maintenance
 - id: yss-tactical-design
   layer: specialist
   maturity: draft
-  instance_default_discoverable: false
+  instance_default_discoverable: true
   aliases: []
   impacts:
   - backend
@@ -1139,21 +1188,21 @@ skills:
 - id: yss-userinfo
   layer: specialist
   maturity: supported
-  instance_default_discoverable: false
+  instance_default_discoverable: true
   aliases: []
   impacts:
   - backend
 - id: yss-validation
   layer: specialist
   maturity: supported
-  instance_default_discoverable: false
+  instance_default_discoverable: true
   aliases: []
   impacts:
   - backend
 - id: yss-web-controller
   layer: specialist
   maturity: supported
-  instance_default_discoverable: false
+  instance_default_discoverable: true
   aliases: []
   impacts:
   - backend
@@ -1176,11 +1225,19 @@ skills:
 - id: yss-stage-decision
   layer: core
   maturity: draft
-  instance_default_discoverable: true
+  instance_default_discoverable: false
   aliases: []
   impacts:
   - discovery
   - lifecycle
+- id: yss-backend-testing
+  layer: core
+  maturity: supported
+  instance_default_discoverable: true
+  aliases: []
+  impacts:
+  - backend
+  - quality
 platform_skills: []
 external_skills:
 - id: frontend-agent
@@ -1221,6 +1278,7 @@ backend_skill_domains:
   - component-capability
   - engineering-initialization
   - platform-governance-migration
+  - testing
   assignments:
     yss-application: layered-implementation
     yss-repository: layered-implementation
@@ -1244,6 +1302,7 @@ backend_skill_domains:
     yss-up-springboot3: platform-governance-migration
     yss-technical-design: technical-design
     yss-backend-spec-review: platform-governance-migration
+    yss-backend-testing: testing
   deprecated_skills: []
 backend_source_index_contract:
   schema_version: 1

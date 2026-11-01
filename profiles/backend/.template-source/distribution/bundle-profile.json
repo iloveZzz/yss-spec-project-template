@@ -122,8 +122,45 @@
       "skills": [
         "setup-yss-harness",
         "implement",
+        "to-tickets",
         "code-review",
-        "handoff"
+        "diagnosing-bugs",
+        "yss-backend-testing",
+        "tdd",
+        "java-backend-commit",
+        "git-commit-core",
+        "i-have-adhd",
+        "handoff",
+        "using-git-worktrees",
+        "resolving-merge-conflicts",
+        "yss-technical-design",
+        "yss-tactical-design",
+        "codebase-design",
+        "domain-modeling",
+        "yss-research",
+        "grilling",
+        "prototype",
+        "alibaba-java-code-style",
+        "lombok",
+        "mapstruct",
+        "yss-domain",
+        "yss-application",
+        "yss-repository",
+        "yss-mybatis",
+        "yss-web-controller",
+        "yss-dto",
+        "yss-openapi-governance",
+        "yss-validation",
+        "yss-exception",
+        "yss-ddd-scaffold-generator",
+        "yss-layered-mvc-scaffold-generator",
+        "yss-cache",
+        "yss-userinfo",
+        "yss-audit-log",
+        "yss-distributed-id",
+        "yss-excel-mvc",
+        "yss-resilience4j",
+        "yss-skill-source-index-refresh"
       ],
       "files": [
         ".cursorrules",
@@ -148,6 +185,9 @@
         ".template-spec/user-guide/用户手册索引.md"
       ],
       "skillDependencies": {
+        "java-backend-commit": [
+          "git-commit-core"
+        ],
         "yss-repository": [
           "alibaba-java-code-style",
           "lombok",
@@ -156,6 +196,59 @@
         ],
         "yss-openapi-governance": [
           "yss-dto"
+        ],
+        "yss-web-controller": [
+          "yss-dto",
+          "alibaba-java-code-style"
+        ],
+        "yss-exception": [
+          "yss-dto",
+          "yss-skill-source-index-refresh"
+        ],
+        "yss-validation": [
+          "yss-exception",
+          "yss-skill-source-index-refresh"
+        ],
+        "yss-userinfo": [
+          "yss-dto",
+          "yss-skill-source-index-refresh"
+        ],
+        "yss-audit-log": [
+          "yss-userinfo",
+          "yss-dto",
+          "yss-skill-source-index-refresh"
+        ],
+        "yss-domain": [
+          "alibaba-java-code-style"
+        ],
+        "yss-application": [
+          "alibaba-java-code-style"
+        ],
+        "yss-ddd-scaffold-generator": [
+          "alibaba-java-code-style"
+        ],
+        "yss-layered-mvc-scaffold-generator": [
+          "yss-ddd-scaffold-generator",
+          "alibaba-java-code-style"
+        ],
+        "yss-security-algorithm": [
+          "yss-exception",
+          "yss-skill-source-index-refresh"
+        ],
+        "yss-mybatis": [
+          "yss-skill-source-index-refresh"
+        ],
+        "yss-dto": [
+          "yss-skill-source-index-refresh"
+        ],
+        "yss-cache": [
+          "yss-skill-source-index-refresh"
+        ],
+        "yss-excel-mvc": [
+          "yss-skill-source-index-refresh"
+        ],
+        "yss-resilience4j": [
+          "yss-skill-source-index-refresh"
         ]
       },
       "skillReferences": {
@@ -186,7 +279,8 @@
           ".template-spec/templates/examples/lifecycle-writing-examples.md"
         ],
         "implement": [
-          ".template-spec/agents/matt-skills-adaptation.md"
+          ".template-spec/agents/matt-skills-adaptation.md",
+          ".template-spec/templates/build-deploy-guide-template.md"
         ],
         "java-backend-commit": [],
         "llm-wiki": [],
@@ -267,7 +361,8 @@
         ],
         "yss-userinfo": [],
         "yss-validation": [],
-        "yss-web-controller": []
+        "yss-web-controller": [],
+        "yss-backend-testing": []
       },
       "entries": {
         "AGENTS.md": ".template-source/distribution/entries/project-AGENTS.md",
@@ -280,8 +375,45 @@
       "skills": [
         "setup-yss-harness",
         "implement",
+        "to-tickets",
         "code-review",
-        "handoff"
+        "diagnosing-bugs",
+        "yss-backend-testing",
+        "tdd",
+        "java-backend-commit",
+        "git-commit-core",
+        "i-have-adhd",
+        "handoff",
+        "using-git-worktrees",
+        "resolving-merge-conflicts",
+        "yss-technical-design",
+        "yss-tactical-design",
+        "codebase-design",
+        "domain-modeling",
+        "yss-research",
+        "grilling",
+        "prototype",
+        "alibaba-java-code-style",
+        "lombok",
+        "mapstruct",
+        "yss-domain",
+        "yss-application",
+        "yss-repository",
+        "yss-mybatis",
+        "yss-web-controller",
+        "yss-dto",
+        "yss-openapi-governance",
+        "yss-validation",
+        "yss-exception",
+        "yss-ddd-scaffold-generator",
+        "yss-layered-mvc-scaffold-generator",
+        "yss-cache",
+        "yss-userinfo",
+        "yss-audit-log",
+        "yss-distributed-id",
+        "yss-excel-mvc",
+        "yss-resilience4j",
+        "yss-skill-source-index-refresh"
       ],
       "files": [
         ".gitignore"
@@ -291,6 +423,9 @@
         "CLAUDE.md": ".template-source/distribution/entries/skills-CLAUDE.md"
       },
       "skillDependencies": {
+        "java-backend-commit": [
+          "git-commit-core"
+        ],
         "yss-repository": [
           "alibaba-java-code-style",
           "lombok",
@@ -299,6 +434,59 @@
         ],
         "yss-openapi-governance": [
           "yss-dto"
+        ],
+        "yss-web-controller": [
+          "yss-dto",
+          "alibaba-java-code-style"
+        ],
+        "yss-exception": [
+          "yss-dto",
+          "yss-skill-source-index-refresh"
+        ],
+        "yss-validation": [
+          "yss-exception",
+          "yss-skill-source-index-refresh"
+        ],
+        "yss-userinfo": [
+          "yss-dto",
+          "yss-skill-source-index-refresh"
+        ],
+        "yss-audit-log": [
+          "yss-userinfo",
+          "yss-dto",
+          "yss-skill-source-index-refresh"
+        ],
+        "yss-domain": [
+          "alibaba-java-code-style"
+        ],
+        "yss-application": [
+          "alibaba-java-code-style"
+        ],
+        "yss-ddd-scaffold-generator": [
+          "alibaba-java-code-style"
+        ],
+        "yss-layered-mvc-scaffold-generator": [
+          "yss-ddd-scaffold-generator",
+          "alibaba-java-code-style"
+        ],
+        "yss-security-algorithm": [
+          "yss-exception",
+          "yss-skill-source-index-refresh"
+        ],
+        "yss-mybatis": [
+          "yss-skill-source-index-refresh"
+        ],
+        "yss-dto": [
+          "yss-skill-source-index-refresh"
+        ],
+        "yss-cache": [
+          "yss-skill-source-index-refresh"
+        ],
+        "yss-excel-mvc": [
+          "yss-skill-source-index-refresh"
+        ],
+        "yss-resilience4j": [
+          "yss-skill-source-index-refresh"
         ]
       },
       "skillReferences": {
@@ -329,7 +517,8 @@
           ".template-spec/templates/examples/lifecycle-writing-examples.md"
         ],
         "implement": [
-          ".template-spec/agents/matt-skills-adaptation.md"
+          ".template-spec/agents/matt-skills-adaptation.md",
+          ".template-spec/templates/build-deploy-guide-template.md"
         ],
         "java-backend-commit": [],
         "llm-wiki": [],
@@ -410,7 +599,8 @@
         ],
         "yss-userinfo": [],
         "yss-validation": [],
-        "yss-web-controller": []
+        "yss-web-controller": [],
+        "yss-backend-testing": []
       }
     }
   }

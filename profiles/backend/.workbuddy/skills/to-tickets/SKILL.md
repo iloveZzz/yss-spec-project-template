@@ -1,12 +1,11 @@
 ---
 name: to-tickets
-description: 显式按用户行为与验收拆分业务 Ticket，研发侧承接已有需求细化实现 Slice。
-disable-model-invocation: true
+description: 在用户要求拆分后端研发任务，或完整交付确需细化已有 Spec/Ticket 为实现 Slice 时使用；小改动不强制建票。
 ---
 
 # 按行为拆票
 
-仅显式调用。先确定当前需要业务 Ticket 还是研发实现 Slice；复用已确认讨论、Spec、现有票、稳定 ID 和适用设计，不重新访谈或生成平行票集。
+Backend 承接已有业务需求，优先细化研发实现 Slice。先确定当前输入是业务 Ticket 还是待细化的研发任务；复用已确认讨论、Spec、现有票、稳定 ID 和适用设计，不重新访谈或生成平行票集。
 
 | 范围 | 产出 |
 |---|---|

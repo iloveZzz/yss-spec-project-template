@@ -1,5 +1,0 @@
-version: 1
-interface:
-  display_name: Test Agent
-  short_description: 仅在用户明确要求时设计或执行后端测试，报告实际结果。
-  default_prompt: 使用 $test-agent 按当前用户目标和已有工程资料完成任务，保留用户文件并如实说明实际结果。
