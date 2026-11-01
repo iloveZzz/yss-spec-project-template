@@ -775,6 +775,9 @@ skill_dependencies:
     type: context-conditional
     when: lifecycle-document-output
   yss-design-system:
+  - skill: i-have-adhd
+    type: context-conditional
+    when: lifecycle-document-output
   - skill: prototype-review
     type: context-required
   - skill: prototype
