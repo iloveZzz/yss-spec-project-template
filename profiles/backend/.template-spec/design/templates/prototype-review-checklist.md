@@ -1,5 +1,7 @@
 # <功能名称> 原型评审清单
 
+> 历史模板，不是 Backend 的默认流程或现役技能调用入口。当前任务读取 Spec 已交付的产品设计。
+
 > 适用时机：配合 `prototype-review` 使用。评审采用 记录阻塞原因：有阻断项时必须回到产品设计阶段；产品原型产出以 `product-design:index` 路由到 Product Design focused skill 为主；低保真评审通过后必须产出高保真 HTML 原型，可由系统 / Agent 自动产出；产出后必须获得用户确认，确认前不能直接进入 Spec 校准或 API 影响分析 / 契约草案。
 
 ## 评审输入

@@ -47,9 +47,12 @@
       ".agents/skills/prototype/agents",
       ".agents/skills/yss-design-system",
       ".agents/skills/yss-product-lifecycle",
-      ".agents/skills/yss-prototype-stage",
       ".template-spec/process/process-glossary.md",
-      ".template-spec/agents/digital-human-roles.md"
+      ".template-spec/agents/digital-human-roles.md",
+      ".agents/skills/yss-stage-decision/references/business-analysis.md",
+      ".workbuddy/skills/prototype/LOGIC.md",
+      ".workbuddy/skills/prototype/agents",
+      ".workbuddy/skills/yss-stage-decision/references/business-analysis.md"
     ],
     "excludeRootEntries": [
       ".git",
@@ -119,7 +122,6 @@
         ],
         "code-review": [],
         "codebase-design": [],
-        "competitive-intelligence": [],
         "cross-repo-implementation-routing": [
           ".template-spec/process/implementation-repo-integration.md",
           ".template-spec/templates/cross-repo-slice-template.md"
@@ -129,10 +131,7 @@
         "git-commit-core": [],
         "grilling": [],
         "handoff": [],
-        "i-have-adhd": [
-          ".template-spec/process/document-writing.md",
-          ".template-spec/templates/examples/lifecycle-writing-examples.md"
-        ],
+        "i-have-adhd": [],
         "implement": [],
         "implementation-repo-onboarding": [
           ".template-spec/templates/implementation-repo-registry-template.md"
@@ -231,7 +230,6 @@
         ],
         "code-review": [],
         "codebase-design": [],
-        "competitive-intelligence": [],
         "cross-repo-implementation-routing": [
           ".template-spec/process/implementation-repo-integration.md",
           ".template-spec/templates/cross-repo-slice-template.md"
@@ -241,10 +239,7 @@
         "git-commit-core": [],
         "grilling": [],
         "handoff": [],
-        "i-have-adhd": [
-          ".template-spec/process/document-writing.md",
-          ".template-spec/templates/examples/lifecycle-writing-examples.md"
-        ],
+        "i-have-adhd": [],
         "implement": [],
         "implementation-repo-onboarding": [
           ".template-spec/templates/implementation-repo-registry-template.md"

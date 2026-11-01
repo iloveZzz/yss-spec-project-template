@@ -1,35 +1,7 @@
-# Writing
+# 知识页面写作
 
-## Page shape
+标题后先说明主题和结论，再组织概念、关系、规则与例子；结尾列出实际阅读的来源和适用时间/版本。使用已有 ID、词汇与有效相对链接，不发明枚举、表名、接口或用户决定。
 
-- `# H1` immediately followed by a summary paragraph.
-- `[[ArticleId]]` only; no relative `[[../other-wiki]]` inside a Karpathy wiki (cross-wiki use markdown links).
-- Close with nonempty `## 来源` listing raw/live paths and line ranges actually read. Record factual article dependencies in dependsOnArticles; ordinary links are navigation.
-- Optional `## Status` only when cited sources conflict or live disagrees with old raw. See schema.md. Missing Status is not a defect.
-- Do not invent enum values, table names, or endpoints. If unread, write「见源码」.
+真实实现与当前权威文档优先于陈旧摘要；有冲突列出依据与未知。覆盖范围遵循用户目标，不要求固定深度、manifest、事务包或脚本。
 
-## Fact order
-
-1. Called implementation (application service, domain method, mapper SQL).
-2. Table comments / OpenAPI / config defaults.
-3. Stale raw copies.
-
-A column default is not proof the runtime uses it. A freeze OpenAPI is not the full controller surface.
-
-## Coverage
-
-Core pages: deep (state machines, HTTP semantics, transactions). Extension pages: overview (models, enums, tables, links). Match the user's coverage choice from init.
-
-## Subagents
-
-When 2+ article groups have no shared files:
-
-- Each prompt lists exact write paths. Those agents must not touch `index.md`, `log.md`, `.wiki-manifest.json`, or `CLAUDE.md`.
-- Return candidate contents + paths + consumed source versions + claim evidence. Write only isolated staging, never published articles.
-- Orchestrator checks evidence and uses the unified transaction to publish index, articles, manifest and log.
-
-When article groups share no files, dispatch parallel subagents with disjoint write scopes.
-
-## Human-owned
-
-Frontmatter `human-owned: true` or manifest `humanOwned: true`. Refresh/rebuild leave the body; only explicitly authorized link repairs may change `[[wikilink]]` targets. Conflicting flags are reported; neither side overrides a true flag. Do not add or rewrite `## Status` on these pages.
+增量更新受影响页面与必要索引，保留人工维护正文。标记 human-owned 的页面只在明确授权范围修改；不通过新摘要覆盖原文或删除来源。并行编辑需要实际授权和互不重叠范围，不是默认前置。

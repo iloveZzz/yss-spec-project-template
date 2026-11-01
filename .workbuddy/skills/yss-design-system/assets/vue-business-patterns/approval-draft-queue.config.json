@@ -1,0 +1,6 @@
+{
+  "schema_version": 1,
+  "title": "资料审批草稿 · 引导队列",
+  "entry": "approval-draft-queue.ts",
+  "scenarios": "approval-draft.scenarios.json"
+}

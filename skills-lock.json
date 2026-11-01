@@ -52,16 +52,6 @@
           ".workbuddy/skills"
         ]
       },
-      "competitive-intelligence": {
-        "source": "competitive-intelligence",
-        "sourceType": "local",
-        "skillPath": "sales/skills/competitive-intelligence/SKILL.md",
-        "targets": [
-          ".agents/skills",
-          ".claude/skills",
-          ".workbuddy/skills"
-        ]
-      },
       "cross-repo-implementation-routing": {
         "source": "project",
         "sourceType": "local",
@@ -553,16 +543,6 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-product-lifecycle/SKILL.md",
-        "targets": [
-          ".agents/skills",
-          ".claude/skills",
-          ".workbuddy/skills"
-        ]
-      },
-      "yss-prototype-stage": {
-        "source": "project",
-        "sourceType": "local",
-        "skillPath": ".agents/skills/yss-prototype-stage/SKILL.md",
         "targets": [
           ".agents/skills",
           ".claude/skills",

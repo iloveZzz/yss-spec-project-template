@@ -1,15 +1,7 @@
-# 推进决策地图
+# 推进地图
 
-仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。仓库脚本与 pnpm 命令从当前登记的项目根目录执行。
+先读取地图及最新相关记录。用户指定问题就处理该问题，否则选一个前置已满足的事项；只读必要详情，不重问已确认决定。
 
-### Work through the map
+按问题使用事实调查、业务分析、澄清或适用原型。记录结论、依据、影响和剩余不确定性，更新当前可推进事项与新发现的依赖。涉及用户选择时等待真实回复，其他独立工作继续。
 
-User invokes with a map (URL or number). A ticket is **optional** — without one, you pick the next decision, not the user.
-
-1. Load the **map** — the low-res view, not every ticket body.
-2. Choose the ticket. If the user named one, use it. Otherwise take the first frontier ticket in order. **Claim it**: assign it to yourself before any work.
-3. Resolve it — **zoom as needed**: fetch the full body of any related or closed ticket on demand; invoke the skills the `## Notes` block names. If in doubt, use `/grilling` and `/domain-modeling`.
-4. Record the resolution: post the answer as a **resolution comment**, **close** the issue, and **append a context pointer** to the map's Decisions-so-far.
-5. Add newly-surfaced tickets (create-then-wire); graduate any fog the answer has made specifiable, clearing each graduated patch from **Not yet specified** so it lives only as its new ticket. If the answer reveals a ticket — this one or another — sits beyond the destination, **rule it out of scope** rather than resolving it on the route. If the decision invalidates other parts of the map, update or delete those tickets.
-
-The user may run unblocked tickets in parallel, so expect other sessions to be editing the tracker concurrently.
+在已有授权范围更新记录；无远程写入授权就返回草稿和建议，不自动评论、关闭、分配或删除。并发变更先读取并综合，不用旧稿覆盖新内容。越界事项说明理由并从本次范围排除，远程状态变更另循授权。

@@ -1,0 +1,7 @@
+/* Draft changes presentation only; semantic state and focus tokens remain active. */
+[data-appearance="draft"] .surface,
+[data-appearance="draft"] .material-surface,
+[data-appearance="draft"] .enterprise-sidebar,
+[data-appearance="draft"] .workspace-tagbar {background:var(--brand-color-bg-container);box-shadow:none;backdrop-filter:none}
+[data-appearance="draft"] .surface {border-radius:var(--brand-border-radius-sm)}
+[data-appearance="draft"] .queue>li {box-shadow:none;background:var(--brand-color-bg-container)}

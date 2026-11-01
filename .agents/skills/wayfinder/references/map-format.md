@@ -1,49 +1,7 @@
-# 决策地图与 Ticket 结构
+# 地图与决定结构
 
-仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。仓库脚本与 pnpm 命令从当前登记的项目根目录执行。
+地图写明目标、范围、已有决定索引、当前可明确的问题、尚不清楚的范围和非目标。每项问题有稳定标题、需要的结论、来源、依赖及当前状态；已有 ID/链接复用，不以编号代替标题。
 
-### The map body
+详情只存一处，地图保留一句结论和引用。有 tracker 时可用地图与子 Issue，且仅在已授权范围写入；本地文档或当前对话同样可表达。原生依赖可用则沿用，不可用就明确文字关系，不要求特定标签或平台。
 
-The whole map at low resolution, loaded once per session. Open tickets are **not** listed — they are open child issues, found by query.
-
-```markdown
-## Destination
-
-<what reaching the end of this map looks like — the spec, decision, or change this effort is finding its way to. One or two lines; every session orients to it before choosing a ticket.>
-
-## Notes
-
-<domain; skills every session should consult; standing preferences for this effort>
-
-## Decisions so far
-
-<!-- the index — one line per closed ticket: enough to judge relevance, then zoom the link for the detail the ticket holds -->
-
-- [<closed ticket title>](../link) — <one-line gist of the answer>
-
-## Not yet specified
-
-<!-- see "Fog of war": in-scope fog you can't ticket yet; graduates as the frontier advances -->
-
-## Out of scope
-
-<!-- see "Out of scope": work ruled beyond the destination; closed, never graduates -->
-```
-
-### Tickets
-
-Each ticket is a **child issue** of the map; the tracker's issue id is its identity. Its body is the question, bounded by a coherent decision and the current runtime/context capacity:
-
-```markdown
-## Question
-
-<the decision or investigation this ticket resolves>
-```
-
-Each ticket carries a `wayfinder:<type>` label — one of `research`, `prototype`, `grilling`, `task` (see [Ticket Types](ticket-types.md#ticket-types)).
-
-A session **claims** a ticket by assigning it to the dev driving the map, **first**, before any work, so concurrent sessions skip it. That assignee _is_ the claim: an open, unassigned ticket is unclaimed.
-
-Blocking uses the tracker's **native** dependency relationship — essential because it renders the frontier _visually_ in the tracker's own UI, so the human sees what's takeable without opening the map. Only a tracker that lacks native blocking falls back to a body convention. A ticket is **unblocked** when every ticket blocking it is closed; the **frontier** is the open, unblocked, unclaimed children — the edge of the known.
-
-The answer isn't part of the body — it's recorded on resolution (see [Work through the map](work-map.md#work-through-the-map)). Assets created while resolving a ticket are linked from the issue, not pasted in.
+多人并行时读取最新状态，复用实际认领方式；分配他人需真实授权，未能认领不虚构。只有所有前置已解决的事项才属于可推进范围。业务决定、调查结果和待办工作分别表达。

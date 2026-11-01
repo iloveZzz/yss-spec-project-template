@@ -1,14 +1,7 @@
-# 建立决策地图
+# 建立地图
 
-仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。仓库脚本与 pnpm 命令从当前登记的项目根目录执行。
-
-### Chart the map
-
-User invokes with a loose idea.
-
-1. **Name the destination.** Run a `/grilling` and `/domain-modeling` session to pin down what this map is finding its way to — the spec, decision, or change. The destination fixes the scope, so it's settled first.
-2. **Map the frontier.** Grill again, **breadth-first** this time: fan out across the whole space rather than deep on any one thread, surfacing the open decisions and the first steps takeable now. If no open decision remains and the work fits one session, return the settled destination, scope and evidence to the active orchestrator. Continue within the existing authorization; ask only for a missing real decision or new authorization.
-3. **Create the map** (label `wayfinder:map`): Destination and Notes filled in, Decisions-so-far empty, the fog sketched into **Not yet specified**.
-4. **Create the tickets you can specify now** as child issues of the map — then wire blocking edges in a **second pass** (issues need ids before they can reference each other). Wiring sorts them into the frontier and the blocked; everything you can't yet specify stays in the fog — the **Not yet specified** section.
-5. **Dispatch research.** Route independent research tickets to `yss-research` when the runtime supports delegation; otherwise research in the current session. Follow the registered task-package and evidence contracts, and link the resulting sources from the ticket. Read-only intake uses schema v2 with empty write scope; formal research requires a new owner-issued task package. Template maintenance evidence stays in the registered external maintenance directory. Research does not require creating a Git branch.
-6. Stop — charting is one session's work; it hand-resolves nothing.
+1. 从已有输入确定目标和范围，只有缺真正业务选择时澄清。
+2. 先广度梳理未知，再把现在能明确提问的事项列出；尚不能明确的问题留在未知范围，不预拆实现任务。
+3. 记录问题间依赖、可独立调查的事实、需要用户决定的取舍和已有决定引用。
+4. 在授权位置保存地图；没有 tracker 继续对话或本地草稿，不要求 setup、任务包或登记目录。
+5. 按当前请求继续可独立处理的事项；地图已清楚时交回目标、证据和未决项，不凭地图完成宣布产品交付。

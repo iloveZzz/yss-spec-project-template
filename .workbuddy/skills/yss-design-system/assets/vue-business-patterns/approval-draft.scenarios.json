@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "scenarios": [
+    {
+      "id": "primary",
+      "label": "正常",
+      "state_ref": ".agents/skills/yss-design-system/references/low-fidelity-exercise.md",
+      "initial_data": {
+        "rows": [
+          {
+            "id": "M-001",
+            "name": "季度经营分析资料",
+            "owner": "张明",
+            "status": "已更新"
+          },
+          {
+            "id": "M-002",
+            "name": "跨部门业务协作与异常处理说明（长名称示例）",
+            "owner": "李华",
+            "status": "待核对"
+          },
+          {
+            "id": "M-003",
+            "name": "归档清单",
+            "owner": "王宁",
+            "status": "已更新"
+          }
+        ]
+      }
+    },
+    {
+      "id": "failure",
+      "label": "处理失败",
+      "state_ref": ".agents/skills/yss-design-system/references/low-fidelity-exercise.md",
+      "initial_data": {
+        "rows": [
+          {
+            "id": "M-001",
+            "name": "季度经营分析资料",
+            "owner": "张明",
+            "status": "已更新"
+          },
+          {
+            "id": "M-002",
+            "name": "跨部门业务协作与异常处理说明（长名称示例）",
+            "owner": "李华",
+            "status": "待核对"
+          },
+          {
+            "id": "M-003",
+            "name": "归档清单",
+            "owner": "王宁",
+            "status": "已更新"
+          }
+        ]
+      }
+    }
+  ]
+}

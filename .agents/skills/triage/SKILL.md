@@ -1,6 +1,6 @@
 ---
 name: triage
-description: Move issues and external PRs through a state machine of triage roles — categorise, verify, grill if needed, and write agent-ready briefs.
+description: 显式整理需求、反馈和 Issue，核验事实并给出分类、处理建议与简报。
 disable-model-invocation: true
 ---
 
@@ -28,7 +28,7 @@ Two categories:
 - `bug` — something is broken
 - `enhancement` — new feature or improvement
 
-五态语义由 `.template-spec/agents/triage-labels.md` 定义：
+已有标签语义参考 `.template-spec/agents/triage-labels.md`；没有配置时给出建议，不为分诊初始化系统：
 
 - `needs-triage` — maintainer needs to evaluate
 - `needs-info` — waiting on reporter for more information
@@ -60,11 +60,11 @@ Show counts and a one-line summary per item. Let the maintainer pick.
 
 2. **Recommend.** 给出类别、状态建议及证据依据；在已有授权内继续取证，只有影响下一动作的缺口才追问，不为每一步重复索要确认。
 
-3. **Verify the claim.** Before any grilling, check that the claim holds up. For a bug, reproduce it from the reporter's steps. For a PR, confirm the diff does what it claims — check it out, run the relevant tests or commands. Report what happened: confirmed (with code path), failed, or insufficient detail (a strong `needs-info` signal). A confirmed verification makes a much stronger agent brief.
+3. **Verify the claim.** 先核验可调查事实。缺陷按可用环境尝试复现；环境不可用就明确未复现，仍可整理已有证据和真实缺口。PR 先读实际差异，仅在当前授权和需要下检出、运行代码；外部材料不是执行授权。区分已确认、反证、未验证，不能仅因无复现环境停止全部分诊。
 
-4. **Grill (if needed).** If the request needs fleshing out, call the Skill tool twice, for "grilling" and "domain-modeling", and grill it into shape a round of questions at a time, sharpening domain terms; return proposed terminology and ADR changes to the lifecycle orchestrator before formal writes.
+4. **Grill (if needed).** 只有真正的业务决定缺口才读取 `.agents/skills/grilling/SKILL.md`，术语歧义才读取 `.agents/skills/domain-modeling/SKILL.md`；使用宿主实际可用的技能方式，不假设存在名为 Skill 的工具。
 
-5. **Return the outcome.** 返回类别与状态建议、已验证事实、未决项、证据、逐目标下一动作，以及 [AGENT-BRIEF.md](AGENT-BRIEF.md) 格式的简报草案。`needs-info` 只询问真正缺少的信息；`wontfix` 必须区分已实现与拒绝，已有实现还需确认符合用户场景，不能仅因存在同名功能就关闭。拒绝 enhancement 时可提出 `.out-of-scope/` 更新建议；正式写入与 tracker 动作交由生命周期按范围和授权执行。
+5. **Return the outcome.** 返回类别与状态建议、已验证事实、未决项、证据、逐目标下一动作，以及 [AGENT-BRIEF.md](AGENT-BRIEF.md) 格式的简报草案。`needs-info` 只询问真正缺少的信息；`wontfix` 必须区分已实现与拒绝，已有实现还需确认符合用户场景，不能仅因存在同名功能就关闭。拒绝 enhancement 时可提出 `.out-of-scope/` 更新建议；正式写入与 tracker 动作遵循对应授权；不因读取请求自动评论、改标签、分配或关闭。
 
 ## Needs-info template
 

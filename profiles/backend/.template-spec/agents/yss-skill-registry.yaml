@@ -846,13 +846,6 @@ skills:
   aliases: []
   impacts:
   - quality
-- id: competitive-intelligence
-  layer: core
-  maturity: supported
-  instance_default_discoverable: true
-  aliases: []
-  impacts:
-  - discovery
 - id: cross-repo-implementation-routing
   layer: specialist
   maturity: supported

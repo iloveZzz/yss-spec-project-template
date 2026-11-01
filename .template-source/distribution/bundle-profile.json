@@ -245,9 +245,18 @@
       "skills": [
         "setup-yss-harness",
         "yss-product-lifecycle",
-        "to-spec",
+        "yss-research",
+        "yss-stage-decision",
         "grilling",
         "domain-modeling",
+        "wayfinder",
+        "to-spec",
+        "yss-design-system",
+        "prototype",
+        "prototype-review",
+        "to-tickets",
+        "triage",
+        "llm-wiki",
         "i-have-adhd",
         "handoff"
       ],
@@ -293,7 +302,6 @@
         ],
         "code-review": [],
         "codebase-design": [],
-        "competitive-intelligence": [],
         "cross-repo-implementation-routing": [
           ".template-spec/process/implementation-repo-integration.md",
           ".template-spec/templates/cross-repo-slice-template.md"
@@ -303,10 +311,7 @@
         "git-commit-core": [],
         "grilling": [],
         "handoff": [],
-        "i-have-adhd": [
-          ".template-spec/process/document-writing.md",
-          ".template-spec/templates/examples/lifecycle-writing-examples.md"
-        ],
+        "i-have-adhd": [],
         "implement": [],
         "implementation-repo-onboarding": [
           ".template-spec/templates/implementation-repo-registry-template.md"
@@ -329,8 +334,7 @@
         "tdd": [],
         "to-spec": [],
         "to-tickets": [
-          ".template-spec/templates/business-ticket-template.md",
-          ".template-spec/templates/vertical-slice-ticket-template.md"
+          ".template-spec/templates/business-ticket-template.md"
         ],
         "triage": [
           ".template-spec/agents/triage-labels.md"
@@ -345,7 +349,9 @@
         "yss-ddd-scaffold-generator": [
           ".template-spec/engineering/backend-platforms.md"
         ],
-        "yss-design-system": [],
+        "yss-design-system": [
+          ".template-spec/design/tokens/variables.css"
+        ],
         "yss-distributed-id": [],
         "yss-domain": [],
         "yss-dto": [
@@ -368,7 +374,6 @@
           ".template-spec/agents/issue-tracker.md",
           ".template-spec/templates/spec-template.md"
         ],
-        "yss-prototype-stage": [],
         "yss-repository": [
           ".template-spec/agents/backend-architecture-profiles.md"
         ],
@@ -397,13 +402,19 @@
       "skills": [
         "setup-yss-harness",
         "yss-product-lifecycle",
-        "grilling",
         "yss-research",
+        "yss-stage-decision",
+        "grilling",
         "domain-modeling",
+        "wayfinder",
         "to-spec",
+        "yss-design-system",
+        "prototype",
+        "prototype-review",
+        "to-tickets",
+        "triage",
+        "llm-wiki",
         "i-have-adhd",
-        "code-review",
-        "implement",
         "handoff"
       ],
       "files": [
@@ -419,7 +430,6 @@
         ],
         "code-review": [],
         "codebase-design": [],
-        "competitive-intelligence": [],
         "cross-repo-implementation-routing": [
           ".template-spec/process/implementation-repo-integration.md",
           ".template-spec/templates/cross-repo-slice-template.md"
@@ -429,10 +439,7 @@
         "git-commit-core": [],
         "grilling": [],
         "handoff": [],
-        "i-have-adhd": [
-          ".template-spec/process/document-writing.md",
-          ".template-spec/templates/examples/lifecycle-writing-examples.md"
-        ],
+        "i-have-adhd": [],
         "implement": [],
         "implementation-repo-onboarding": [
           ".template-spec/templates/implementation-repo-registry-template.md"
@@ -455,8 +462,7 @@
         "tdd": [],
         "to-spec": [],
         "to-tickets": [
-          ".template-spec/templates/business-ticket-template.md",
-          ".template-spec/templates/vertical-slice-ticket-template.md"
+          ".template-spec/templates/business-ticket-template.md"
         ],
         "triage": [
           ".template-spec/agents/triage-labels.md"
@@ -471,7 +477,9 @@
         "yss-ddd-scaffold-generator": [
           ".template-spec/engineering/backend-platforms.md"
         ],
-        "yss-design-system": [],
+        "yss-design-system": [
+          ".template-spec/design/tokens/variables.css"
+        ],
         "yss-distributed-id": [],
         "yss-domain": [],
         "yss-dto": [
@@ -494,7 +502,6 @@
           ".template-spec/agents/issue-tracker.md",
           ".template-spec/templates/spec-template.md"
         ],
-        "yss-prototype-stage": [],
         "yss-repository": [
           ".template-spec/agents/backend-architecture-profiles.md"
         ],
