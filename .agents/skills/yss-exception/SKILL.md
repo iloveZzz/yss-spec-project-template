@@ -41,7 +41,7 @@ description: "接入或排查 YSS 统一异常、错误码、异常处理器与 
 - 核验所需依赖或 starter 已进入实际工程。
 - 错误码与消息对 API 消费方有明确含义。
 - 公开消息已脱敏，不暴露原始 RuntimeException 或 localized exception 细节。
-- 对受影响的 `boot3-java17` HTTP seam 验证业务 4xx、未知/runtime 5xx 与 trace header；仅上传限制影响验证 413。Boot 2 使用其独立源码与冻结合同，不引入 Boot 3 断言。
+- 对受影响的 `boot3-java17` HTTP seam 验证业务 4xx、未知/runtime 5xx 与 trace header；仅上传限制影响验证 413。Boot 2 使用其独立源码与既有接口约定，不引入 Boot 3 断言。
 - 业务校验失败不归为未知系统错误。
 - 未知/系统失败的堆栈保留在结构化日志中，不直接打印 stderr 或序列化给客户端。
 - 重试建议与异常类型及实际用例一致。

@@ -12,7 +12,7 @@ description: "实现或核验 YSS Result、PageResult、PageQuery、CommandDTO�
 ## 所有权边界
 
 - 对象命名及阿里/COLA 适配消费 `.template-spec/agents/backend-architecture-profiles.md` 的“对象命名与外部规范适配”；外部 DTO/VO 示例不改变当前 wire profile 的包装、默认值、字段或模块归属。
-- 先消费 `architecture_identity`：DDD 的 HTTP DTO 在 Web；通用 MVC 私有 DTO 在 server、已批准公开 DTO 在 client；数据分析 MVC 公开 DTO 在 client。service/core 自有内部 Command/Query/Result，不依赖 client DTO；server 用 MapStruct 转换。共用 wire profile 不意味着共用模块路径。
+- 先辨认实际工程架构：DDD 的 HTTP DTO 在 Web；通用 MVC 私有 DTO 在 server、已批准公开 DTO 在 client；数据分析 MVC 公开 DTO 在 client。service/core 自有内部 Command/Query/Result，不依赖 client DTO；server 用 MapStruct 转换。共用 wire profile 不意味着共用模块路径。
 - `Result` / `SingleResult` / `MultiResult` / `PageResult`、`CommandDTO` / `QueryDTO` / `PageQuery` 的 canonical package、工厂方法、字段语义、默认值、枚举和禁用字段由本 skill 及 `references/openapi-wire-profile.yaml` 唯一持有。
 - OpenAPI skill 只把该 profile 组合进 endpoint schema；不得从 Java getter 或本地常量反向建立第二份 wire 协议。
 
@@ -33,12 +33,12 @@ description: "实现或核验 YSS Result、PageResult、PageQuery、CommandDTO�
 
 ## 源码索引
 
-- 源码位置不要假设固定目录；先按 `yss-skill-source-index-refresh/references/source-location.md` 定位。
+- 源码位置不要假设固定目录；先按 [源码定位策略](../yss-skill-source-index-refresh/references/source-location.md) 定位。
 - 当前技能索引：`references/source-index.md`
 - OpenAPI wire profile：`references/openapi-wire-profile.yaml`
 - 重点源码入口通常包括 `CommandDTO`、`QueryDTO`、`PageQuery`、`PageRequestFactory`、`Result`、`SingleResult`、`MultiResult`、`PageResult`。
 
-当组件源码变化后，用 `yss-skill-source-index-refresh` 刷新索引；刷新或读取前先按源码定位策略确认真实位置。
+组件源码变化时按真实源码说明差异；只有收到索引维护请求并具备对应写入授权时，才使用 `yss-skill-source-index-refresh` 修改技能源或受管副本。读取或刷新前都先确认真实位置。
 
 ## 使用规则
 
@@ -53,10 +53,10 @@ description: "实现或核验 YSS Result、PageResult、PageQuery、CommandDTO�
 - YSS wrapper 的 wire shape 不是 Java 字段清单：`success` 为 boolean，`dataType` 为 `string|null`，`code` 只允许 `string|integer|null`；不得把该 profile 的全局 `code` 放宽为任意 object。
 - `MultiResult.data` 和 `PageResult.data` 对外是数组，空值按 `[]` 建模；`SingleResult.data` 按 endpoint schema 建模并显式处理 nullability。
 - `PageResult` 当前稳定公共字段为 `totalCount/pageSize/pageIndex/data[]`；`totalPages` 是计算 getter，只有目标 HTTP mapper / contract fixture 证明后才能进入具体契约。
-- 采用 YSS 分页协议的 `PageQuery` 客户端输入只允许 `pageIndex/pageSize/orderBy/orderDirection/groupBy`（后四项按 profile 的 optional / whitelist 规则）；`orderDirection` 只能是 `ASC|DESC`。`offset`、`needTotalCount`、`tempTotalCount` 是计算或内部协作字段，禁止从内部 `PageQuery` 泄露为客户端输入。其他已批准公开分页协议按冻结字段映射，不静默改名或套用该字段表。
+- 采用 YSS 分页协议的 `PageQuery` 客户端输入只允许 `pageIndex/pageSize/orderBy/orderDirection/groupBy`（后四项按 profile 的 optional / whitelist 规则）；`orderDirection` 只能是 `ASC|DESC`。`offset`、`needTotalCount`、`tempTotalCount` 是计算或内部协作字段，禁止从内部 `PageQuery` 泄露为客户端输入。其他已确认公开分页协议按既有字段映射，不静默改名或套用该字段表。
 - `buildSuccess(...)` 各重载设置 code 的行为并不一致；实际使用时注意 `success/code/message/tips/dataType`、nullability 和三种 data shape，不能只看 data。
 <a id="dto.wire-evidence"></a>
-- Java getter、Lombok、`@JsonIgnore` 或默认 Jackson 结果都不是目标 HTTP wire fact；冻结前必须记录 mapper identity、代表性序列化 fixture 和 contract-test / 等价 HTTP 证据。
+- Java getter、Lombok、`@JsonIgnore` 或默认 Jackson 结果都不是目标 HTTP wire fact；精确 wire 结论应由目标 mapper、代表性序列化案例和接口测试或等价 HTTP 观察支持；没有这些观察就说明未验证，不要求先建立冻结记录。
 <a id="dto.boundary"></a>
 - DTO 只表达接口契约，不承载 Repository PO 或领域对象的持久化细节。
 
@@ -70,7 +70,7 @@ description: "实现或核验 YSS Result、PageResult、PageQuery、CommandDTO�
 - 不要新建与 `PageQuery` 含义重叠的分页基类。
 - 不要把 `com.yss.cloud.dto.response` 作为新 API 的 canonical 包，也不要从 Java getter 机械生成 wire schema。
 <a id="dto.no-leak"></a>
-- 采用 YSS 分页协议时，不要把内部 `offset`、`needTotalCount`、`tempTotalCount` 作为客户端输入；其他批准协议按冻结契约核验公开字段。不要无证据把 `totalPages` 写入所有分页响应。
+- 采用 YSS 分页协议时，不要把内部 `offset`、`needTotalCount`、`tempTotalCount` 作为客户端输入；其他已确认协议按既有约定核验公开字段。不要无证据把 `totalPages` 写入所有分页响应。
 - 若项目已有 `SingleResult`、`PageResult`、`MultiResult` 体系，优先保持一致。
 
 ## 按需读取
