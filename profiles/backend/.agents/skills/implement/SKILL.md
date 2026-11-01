@@ -18,6 +18,8 @@ For multiple repositories, submodules or an unclear project root, read [reposito
 - 新建工程才按实际 DDD/MVC 选择对应脚手架，沿用项目 POM、平台和版本；安装了组件技能不等于需要给业务工程添加全部组件。
 - 按验收和风险使用 `yss-backend-testing`，故障根因调查使用 `diagnosing-bugs`；只有明确要求测试优先时使用 `tdd`。没有执行的构建、测试、启动或部署不能写成成功。
 
+完整研发交付或构建部署说明任务按需读取 [构建部署手册方法](references/build-deploy-guide.md)，优先更新已有 README/运维说明；局部修改只更新受影响部分。手册只描述有依据的步骤，不执行部署。
+
 Select the engineering skills needed for the work. Do not require lifecycle routing, a formal contract, TDD, a test report or a review package to start or finish. Run tests or request a review when the user asks or the particular task needs it; report only observed results.
 
 Preserve user changes and error handling. Reuse existing authorization for local work; commit, push, publish and deploy only within the authorization for those actions. On resumption, inspect existing changes and command results before continuing.
