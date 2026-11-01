@@ -51,6 +51,7 @@ button:disabled,[data-slot="button"]:disabled {background:var(--brand-color-bord
 input:hover:not(:disabled),select:hover:not(:disabled),textarea:hover:not(:disabled),[data-slot="select-trigger"]:hover:not(:disabled) {border-color:var(--yss-color-primary-control)}
 [aria-invalid="true"] {border-color:var(--brand-color-error)!important}
 :focus-visible {outline:2px solid var(--yss-color-primary-control);outline-offset:2px}
+:is([data-slot="input"],[data-slot="textarea"],[data-slot="select-trigger"]):focus-visible {border-color:var(--yss-color-primary-control);outline:1px solid var(--yss-color-primary-control);outline-offset:0}
 textarea,[data-slot="textarea"] {display:block;width:100%;min-height:calc(var(--prototype-control-height) * 3);padding:var(--brand-size-xs);font-size:inherit;color:var(--brand-color-text);background:var(--brand-color-bg-container);border:1px solid var(--brand-color-border);border-radius:var(--brand-border-radius);box-shadow:none}
 .table-scroll,[data-slot="table-container"] {overflow-x:auto;max-width:100%;border:1px solid var(--brand-color-border-secondary);border-radius:var(--brand-border-radius)}
 table,[data-slot="table"] {width:100%;min-width:650px;border-collapse:collapse;font-size:inherit}
@@ -69,7 +70,7 @@ dialog {width:min(600px,calc(100vw - 32px))}
 [data-slot="dialog-header"],[data-slot="alert-dialog-header"] {text-align:left;gap:var(--brand-size-xxs)}
 [data-slot="dialog-title"],[data-slot="alert-dialog-title"] {font-size:var(--yss-typography-heading-md-font-size, var(--brand-font-size-lg));line-height:var(--yss-typography-heading-md-line-height, var(--brand-line-height-heading));font-weight:var(--brand-font-weight-strong)}
 [data-slot="dialog-description"],[data-slot="alert-dialog-description"] {font-size:inherit;line-height:inherit;color:var(--brand-color-text-secondary)}
-[data-slot="dialog-close"] {display:grid;place-items:center;top:var(--brand-size-xs);right:var(--brand-size-xs);width:var(--prototype-control-height);padding:0;opacity:1}
+[data-slot="dialog-content"]>[data-slot="dialog-close"].absolute {display:grid;place-items:center;top:var(--brand-size-xs);right:var(--brand-size-xs);width:var(--prototype-control-height);padding:0;opacity:1}
 [data-slot="dialog-header"] {padding-right:var(--prototype-control-height)}
 dd {margin:var(--brand-size-xxs) 0 var(--brand-size-sm);overflow-wrap:anywhere}
 .review-controls {margin-block:var(--brand-size);padding:var(--brand-size-sm);border-top:1px solid var(--brand-color-border);color:var(--brand-color-text-secondary)}

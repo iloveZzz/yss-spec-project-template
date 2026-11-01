@@ -121,8 +121,7 @@ main {max-width:1280px;padding:var(--brand-size-lg) var(--brand-size)}
 @media(prefers-reduced-motion:reduce) {*,*::before,*::after {animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 
 /* Use the registered Select with one project focus ring and an anchored popup. */
-[data-slot="select-trigger"] {font-weight:400;box-shadow:none;outline-offset:2px}
-[data-slot="select-trigger"]:focus-visible {outline:2px solid var(--yss-color-primary-control);border-color:var(--yss-color-primary-control);box-shadow:none}
+[data-slot="select-trigger"] {font-weight:400;box-shadow:none}
 [data-slot="select-trigger"]:focus:not(:focus-visible) {outline:none}
 [data-slot="select-content"] {min-width:var(--reka-select-trigger-width);max-width:calc(100vw - var(--brand-size-lg));border-radius:var(--brand-border-radius);font-size:var(--yss-typography-body-font-size);transform:none}
 [data-slot="select-content"] [role="option"] {border-radius:var(--brand-border-radius-sm);padding-inline:var(--brand-size-xs) var(--brand-size-xl);color:var(--brand-color-text)}

@@ -73,7 +73,7 @@
 [data-slot="field-error"] {font-size:inherit;color:var(--brand-color-error-active)}
 [data-slot="field-separator"] {margin:0;height:var(--brand-size-lg)}
 [data-slot="input-group"] {height:var(--prototype-control-height);min-height:var(--prototype-control-height);border-radius:var(--brand-border-radius);border-color:var(--brand-color-border);background:var(--brand-color-bg-container);box-shadow:none;gap:0}
-[data-slot="input-group"]:focus-within {outline:2px solid var(--yss-color-primary-control);outline-offset:2px}
+[data-slot="input-group"]:has(>:where([data-slot="input-group-control"]):focus-visible) {border-color:var(--yss-color-primary-control);outline:1px solid var(--yss-color-primary-control);outline-offset:0}
 [data-slot="input-group"]:has([aria-invalid="true"]) {border-color:var(--brand-color-error-active)}
 [data-slot="input-group"]>[data-slot="input-group-control"] {border:0!important;border-radius:0;box-shadow:none;outline:none;background:transparent;font-size:inherit;height:100%;min-height:0;min-width:0;padding-inline:var(--brand-size-xs)}
 [data-slot="input-group"]:has(>textarea) {height:auto;min-height:calc(var(--prototype-control-height) * 3)}
