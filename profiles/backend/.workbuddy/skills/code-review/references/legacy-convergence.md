@@ -1,7 +1,5 @@
-# 历史候选两轮收敛合同
+# 历史收敛记录（只读）
 
-仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。仓库脚本与 pnpm 命令从当前登记的项目根目录执行。
+旧版本曾使用固定候选、两轮审查、结构化回执与主控回交。此文件仅帮助理解旧报告中的字段和状态，不提供当前执行步骤；历史审批和报告不改写。
 
-For template-maintenance task packages carrying `review_round`, preserve the frozen scope and apply the two-round convergence contract. A hard requirement added during review must cite a rule that already applied when the candidate was frozen; otherwise report it as `judgement-call` for the backlog. First review covers all applicable checks. After Round 1 repairs, compare the old and new candidates, identify affected conclusions, behavior and dependencies, rereview only that scope, and bind every consumed conclusion to the new digest. Candidate byte changes invalidate the old candidate binding, not every underlying conclusion; reuse requires readable comparison evidence showing unchanged conditions, basis and dependencies. UI impact, `new_impacts` or unknown impact never selects all axes by default or as a fallback; investigate unknown impact before selecting the rereview scope.
-
-For this explicitly selected legacy contract, if Round 2 still has an open `violation`, `drift` or `new_impacts`, the existing evaluator returns `needs-human`; do not silently start Round 3 or rewrite historical states. This compatibility limit is not enabled for ordinary review. Return the unresolved findings and readable evidence to the orchestrator, which separates professional wait, repair / rerouting and missing real decisions, and continues independent authorized work. A new user request still requires a real missing decision or authorization and reviewable assets. No prior approval or report is rewritten.
+当前任务使用 [候选范围](candidate-capture.md) 与 [审查标准](yss-review-standards.md)。不调用已退役 evaluator，不要求 review_round、actor/instance 身份、合同摘要或额外审查轮次。保留旧报告作历史事实，不把其状态当作当前任务资格或授权。

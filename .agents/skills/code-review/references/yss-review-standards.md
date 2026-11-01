@@ -1,68 +1,24 @@
-# YSS 审查标准源与机器检查
+# YSS 审查标准
 
-本文件只服务唯一默认审查技能 `code-review`。Alibaba Java、YSS 前端 / 后端 skill 是 **Standards 轴的专项检查输入**，不是第二个通用审查 skill。
+从实际候选和当前请求选择适用规范；不要求合同、Spec 文件、执行身份或机器结果包。
 
-## 1. 编译标准源
+## 标准来源
 
-按顺序收集，缺项写 `not-applicable` 及原因，不得省略适用项：
+先读实际仓库的 AGENTS、CODING_STANDARDS、CONTRIBUTING 等已有约定，再按影响读取专项技能。普通审查不必创建缺失规范。
 
-1. 仓库文档：`CODING_STANDARDS.md`、`CONTRIBUTING.md` 或实现仓等价文件（若存在）。
-3. 影响面专项检查输入（与合同并集，不得互相替代）：
-   - 后端：`alibaba-java-code-style`、`yss-domain`、`yss-application`、`yss-repository`、`yss-mybatis`、`yss-web-controller`、`yss-dto`、`mapstruct`、`lombok`
-   - UI：`yss-design-system`（前端实现规范由独立前端规格维护，不在本模板）
+- Java/后端按变更选择 alibaba-java-code-style、yss-domain、yss-application、yss-web-controller、yss-dto、mapstruct、lombok 等实际适用输入。
+- 持久化变更涉及 PO、Repository、Mapper/XML、SQL、分页、批量、扫描或数据源时，分别检查 yss-repository 与 yss-mybatis 的适用规则。纯业务改动不强制加载全部持久化文档。
+- 精确组件 API、依赖或配置结论以当前源码和版本为依据；索引过期或源码不可读时回源核实，否则说明该结论不能确认。
+- 前端按实际工程规范与适用 YSS 技能；UI 设计还原只在相关设计与变更存在时检查，不给 Backend 增加前端要求。
 
-YSS 页面模块约定（YTable、YFormily、页面骨架等）走 Standards，不并入 UI fidelity。UI fidelity 只核原型与状态矩阵。
+范围是用户指定仓库与必要调用方；跨仓、子模块和外部源码按授权只读核实，不扩大写入范围。专项技能在审查中只提供判断标准，不因读取而获得修改代码权限。
 
-审查者只读这些 skill，不得用它们写实现路径。`role.test-engineer` 任务包禁止 `implement` 与脚手架生成器。
+## 工具与判断
 
-### 后端范围与持久化适用性
+测试、构建和 lint 按当前任务与风险选择，用户只要求静态审查时尊重该范围；需要运行时后端优先根 `./mvnw`，前端优先 `pnpm`。不为审查新建套件或要求所有既有命令跑完。
 
-- Review roots 从候选本体项目、实现仓登记、Slice `project_roots` 和 `allowed_write_paths` 解析；只包含本体项目和已登记后端研发项目，不固定为 `apps/backend`，不扫描前端、无关 submodule/vendor 或未登记目录。
-- 每个后端候选都必须分别评估 `yss-repository` 与 `yss-mybatis`。命中 PO、Repository、Mapper/XML、SQL、分页、批量、扫描/配置或数据源行为时，两者均为 applicable，并加载所选 Repository Profile 与当前 MyBatis source index。
-- 精确组件 API/配置结论要求 source index 的组件 tree 与当前源码一致且组件子树 clean；不满足时为 `missing_evidence` / `stale`，不能判 pass。
-- 无持久化影响时，两项 Skill 分别记录具体 `not-applicable` 原因；仅写“未命中”或留空不构成证据。
+记录实际命令与结果，区分代码缺陷、环境失败和未运行。退出非零需要分析原因，不能直接当违规；未执行测试本身不是 finding。已有工具结果只覆盖它检查的规则，不代表需求或业务行为已通过。
 
-## 2. 机器检查
+报告具体规则、触发条件、文件位置与后果；未知事实先调查或说明限制。没有独立 Spec 时使用当前请求、Ticket 或已有验收；完全没有需求依据时说明不能评价的维度。
 
-在派发 Standards / Spec 子审查之前，对实现仓**已登记且当前可执行**的命令实际跑一遍：
-
-- 后端优先：对本轮影响的已核验项目执行普通任务 / 正式切片绑定的 `./mvnw` 验证；若工程已配置 Checkstyle / P3C / Spotless / `validate`，执行适用项。
-- 前端优先：普通任务 / 正式切片绑定的 `pnpm` 验证；若存在 `pnpm lint` / `pnpm type-check`，执行适用项。
-
-记录命令、退出码、时间和证据引用。退出码非 0 记为 Standards **hard violation**。
-
-仓库没有对应工具时，该工具行写 `not-applicable` 加原因。可被工具检查的 Alibaba / ESLint 规则若工具没跑、LLM 也没按原文引用规则，不得记 `pass`。无法 lint 的分层、页面骨架、Formily 约定由 LLM 按 skill 原文引用。
-
-## 3. 完成阻断
-
-- 未消费合同 `required_skills` 或漏掉命中影响面的专项检查输入
-- 报告模板适用行空白或只写“符合 YSS / 符合阿里规范”
-- 机器检查失败，或可检查规则既无工具结果也无原文引用
-- 用第二个通用审查 skill 代替 `code-review`
-
-## 4. Finding 分流与豁免
-
-审查者只记录 finding，不得当场改实现代码。
-
-| 类型 | 动作 |
-|---|---|
-| `violation`、机器检查失败、适用行空白、`missing_evidence` | 实现者在**原合同允许路径**内修复；比较差异及受影响结论、行为和依赖，重新捕获并定向复审 / 验证，未受影响项有依据地复用并绑定当前候选 |
-| `drift`、`new_impacts`、`required_skills` 与真实影响不一致 | 合同标 `stale`，先调查实际变化及依赖，再回 实现合同编译器 或更早生命周期阶段更新受影响合同；禁止在旧合同上继续编码，不默认全轴复审 |
-
-首轮仍完整覆盖全部适用 Standards、Spec 和条件 UI fidelity。候选摘要变化、UI 影响或未知影响不构成全轴复审的默认或兜底；未知项先调查并阻断其依赖结论。复用证据必须可读，确认原检查条件、依据与依赖未变；当前完成结果重新绑定候选、合同和实际验证，不修改历史报告。
-
-## 可执行后端审查结果
-
-`implementation_actor_id`、`implementation_instance_id` 和 `actual_skill_impacts`（无新增影响为 `[]`）。
-`review_result_ref` 指向唯一 `code-review` 结果；记录 `result: completed`、合同原始字节的
-`contract_digest`、候选摘要、`reviewer` / `implementer` 的 actor_id / runtime_id / instance_id，
-并分别记录 `axes.Standards` 和 `axes.Spec`。自审不能用不同角色名替代不同执行实例。
-
-复用 `constraint_results`，按派生覆盖清单逐条包含 `constraint_id`、`applicability_basis`、`axis: Standards`、`skill`、`constraint`、`status`、`rule_ref/rule_digest`、`code_ref`、`evidence_ref/evidence_digest`。每个适用技能还须完成 full-text 项并保留具体 `review_notes`。漏技能、漏规则、重复项、过期证据均不能完成。无分页等需求只豁免对应条件规则，不豁免整个适用技能。
-
-后端输入必须增加 `scope_kind: change`、`standards_coverage_ref/digest`；`committed` 候选还绑定 `review_base_ref`。只读存量基线使用 `scope_kind: baseline`，允许无 Slice/无 diff，成功仅为 audited，不能关闭实现审查。详细输入、未知类型与全文核对规则见 `yss-backend-spec-review/references/standards-coverage.md`。未提供结构化覆盖的历史报告只能阅读，不作为新完成证据。
-
-工作树候选复用现有 packed candidate 工具；审查证据可排除，业务文件不可排除。已提交候选绑定
-不可变 tree ID，并核对当前清洁 checkout。读取结构化结果不会代替 Reviewer 的实际规则判断。
-
-政策2的正式后端复核在现有 review_input 中给出 basis 与原生 implementation_candidate，实际结果含 assessment（mode、provenance）；默认同一执行者自检，条件独立要求仍核验。真实源必须是当前完成任务；变更复核还要属于同一 Slice/工作单元与实现仓。当前覆盖、候选快照、逐规则结论、真实命令和源码映射继续核验，不能用新模式跳过这些约束。
+除非用户同时要求修复，审查保持只读。没有发现问题不等于批准、发布资格或完整业务正确性。复审优先检查修复和受影响依赖，旧结论只有依据仍成立时才复用，不固定轮数或要求另一个执行身份。

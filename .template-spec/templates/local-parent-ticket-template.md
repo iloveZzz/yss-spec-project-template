@@ -6,7 +6,7 @@ pending_publication_to: "<none | github | gitlab>"
 
 # 功能父 Ticket：<功能名称>
 
-默认 Local Markdown 填写 `tracker: local-markdown`、`publication: local`、`pending_publication_to: none`；若选定的远程平台不可用，填写目标平台、`publication: pending` 和对应的 `pending_publication_to`。
+选择 Local Markdown 时填写 `tracker: local-markdown`、`publication: local`、`pending_publication_to: none`；若选定的远程平台不可用，填写目标平台、`publication: pending` 和对应的 `pending_publication_to`。
 
 > Local Markdown 主 tracker 的功能父 Ticket。文件位于配置的功能包根，示例为 `.work/<feature>/parent-ticket.md`。
 > 若明确选择的 GitHub / GitLab 暂不可用，将 `tracker` 改为目标平台、`publication` 改为 `pending`，并填写 `pending_publication_to`；不得改投另一平台。

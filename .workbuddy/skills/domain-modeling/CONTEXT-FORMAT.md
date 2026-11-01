@@ -1,6 +1,6 @@
 # YSS 业务词汇表合同
 
-普通讨论和需求草稿不要求创建本文件。只有当前任务授权持久化稳定词汇、词义及适用范围已确定，且 ContextId 可从已确认业务边界取得时才按本合同建根词汇表；不默认使用 Global，不猜编号。正式治理仍执行已有词汇回写与对账要求。
+普通讨论和需求草稿不要求创建本文件。只有当前任务授权持久化稳定词汇、词义及适用范围已确定，且 ContextId 可从已确认业务边界取得时才按本合同建根词汇表；不默认使用 Global，不猜编号。实际写入遵循当前已确认的词义与身份，普通讨论不需要补齐流程资产。
 
 ## 位置与版本
 
@@ -14,7 +14,7 @@ context_schema_version: 1
 ---
 ```
 
-缺失或不支持的版本必须返回 `migration-required`，不得猜测格式。
+既有文件缺失版本或版本不支持时，说明 `migration-required`，暂停受影响词汇写入；可以继续只读分析和候选讨论，不猜测格式。
 
 ## 标准结构
 
@@ -40,7 +40,7 @@ context_schema_version: 1
 
 - 业务术语的稳定身份是 `<ContextId>/<EnglishIdentifier>`，例如 `ComplianceReview/AdmissionDecision`。
 - 跨业务责任区共享且含义完全一致的术语使用 `Global/<EnglishIdentifier>`。
-- `英文标识` 与 `ContextId` 使用 PascalCase；非 `Global` 的 ContextId 必须来自当前业务边界与规则设计的内部 `contexts[].context_id`。
+- `英文标识` 与 `ContextId` 使用 PascalCase；非 `Global` 的 ContextId 必须来自当前已确认业务边界的稳定身份；已有设计使用 `contexts[].context_id` 时沿用，不为普通讨论新建该结构。
 - 同一业务责任区内中文术语、英文标识和禁用别名不得冲突。不同责任区可以拥有同名局部术语，但引用必须带 ContextId。
 - `Global` 术语不得被局部上下文用相同中文术语或英文标识重新定义；语义不同的词不应声明为 Global。
 - 流程术语的 `英文标识` 固定为 `—`，只由 `template-source` 维护；`project-instance` 只维护业务术语。
@@ -53,9 +53,8 @@ context_schema_version: 1
 
 ## 命名派生与维护职责
 
-`英文标识` 是 PascalCase 词干，不是英语释义。`## 业务术语` 必须填写该列，并使用 `Global` 或“业务边界与规则设计”中已确认的 PascalCase `context_id` 填写 `适用业务责任区`；术语稳定身份仍是 `<ContextId>/<EnglishIdentifier>`，该编号由 Agent 维护，业务人员只需确认名称、含义和适用范围。`## 流程术语` 的英文标识填 `—`。代码类型名、字段名和契约 property 由该词干变形：类名 = 词干 + YSS 工程后缀；字段与 JSON property 为 camelCase；数据库列为 snake_case；枚举常量为 UPPER_SNAKE。工程后缀以 YSS skill 和当前工程惯例为准，不作为业务词写入本表。JSON 与 Java 字段不一致时，以 DTO wire shape / OpenAPI 为准，不在本表另开列。改中文术语、英文标识、含义或适用业务责任区都是统一业务词汇变更，必须先回写本表。`避免 / 备注` 中的禁用别名使用 `避免：别名一、别名二`，其他说明使用 `备注：...`。
+`英文标识` 是 PascalCase 词干，不是英语释义。`## 业务术语` 必须填写该列，并使用已确认的共享身份 `Global` 或业务边界中已确认的 PascalCase `context_id` 填写 `适用业务责任区`；术语稳定身份仍是 `<ContextId>/<EnglishIdentifier>`，Agent 沿用已有稳定身份，业务人员只需确认名称、含义和适用范围。`## 流程术语` 的英文标识填 `—`。代码类型名、字段名和契约 property 由该词干变形：类名 = 词干 + YSS 工程后缀；字段与 JSON property 为 camelCase；数据库列为 snake_case；枚举常量为 UPPER_SNAKE。工程后缀以 YSS skill 和当前工程惯例为准，不作为业务词写入本表。JSON 与 Java 字段不一致时，以 DTO wire shape / OpenAPI 为准，不在本表另开列。改中文术语、英文标识、含义或适用业务责任区都是统一业务词汇变更，在已授权的词汇变更中同步维护本表与实际消费者；候选讨论不直接回写。`避免 / 备注` 中的禁用别名使用 `避免：别名一、别名二`，其他说明使用 `备注：...`。
 
-## 机器验证
+## 写入核对
 
-
-需要限制责任区或选择术语时，使用 `--allowed-context-ids ComplianceReview,Reporting` 与 `--term-refs Global/Customer,ComplianceReview/AdmissionDecision`。原生参数按逗号分隔；旧重复参数 `--allowed-context`、`--term-ref` 只在冻结历史命令的显式映射中转换。
+读取实际根词汇表，检查版本、责任区身份、中文/英文标识和别名冲突；确认写入范围后只改已确认条目。没有可用的词汇验证 CLI 时直接核对，不引用退役参数。缺身份时保留候选，不填默认 Global，也不把正文讨论伪装成稳定词汇。

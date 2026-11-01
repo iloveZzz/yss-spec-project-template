@@ -1,8 +1,8 @@
 # YSS CLI 使用说明
 
-本文描述正在整理的新 CLI 接口，尚未作为正式发行发布。先运行已安装程序的 `yss version` 和 `yss help`，仅使用该版本实际支持的命令；旧发行版不因模板更新而获得新接口。
+命令支持以所装版本帮助为准。先运行 `yss version` 和 `yss help`，仅使用该版本实际支持的命令；模板更新不改变旧二进制能力，也不代表当前程序是最新发行。
 
-CLI 负责安装、同步、脚手架和工具升级。业务需求、设计与代码工作由 Agent 按当前目标直接开展。首次安装由 Agent 从固定私有 GitLab `https://gitlab.yss.test:9443/yss/yss-cli` 下载并核对用户选定的正式发行包；显式配置 CA 与安全环境鉴权，来源或 Release 缺失时报未就绪，不回退 GitHub。详见 `setup-yss-harness`。新接口不支持旧插件、旧兼容命令或旧保存计划。
+CLI 负责安装、同步、脚手架和工具升级。业务需求、设计与代码工作由 Agent 按当前目标直接开展。首次安装由 Agent 默认从 GitHub `iloveZzz/yss-cli` 的正式 Release 下载并核对用户选定的发行包；GitLab 为显式选择的次级来源，不自动跨平台回退。详见 `setup-yss-harness`。新接口不支持旧插件、旧兼容命令或旧保存计划。
 
 - [安装与升级](cli/install-and-verify.md)
 - [命令参考](cli/command-reference.md)

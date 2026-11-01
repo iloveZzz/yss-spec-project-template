@@ -1,49 +1,21 @@
 # 诊断调查与探针
 
-仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。Skill 自带的 bin/scripts 命令从 Skill 根目录执行；明确注明 repository root 的包装命令仍从项目根目录执行。
+以下方法按尚未解决的不确定性组合使用，不是固定阶段链。
 
-## Phase 2 — Reproduce + minimise
+## 复现与最小化
 
-Run the loop. Watch it go red — the bug appears.
+有环境时确认失败确实对应用户描述，记录错误、输出或耗时。可逐项缩减输入、调用方与配置，每次回查症状；能直接验证根因时不必继续证明每个剩余元素不可少。保留代表性条件。
 
-If you deliberately mutate code or a fixture to manufacture a failure, compare the original and changed bytes first: the intended edit must actually land. Then confirm the red result is the target symptom, not an unrelated error. A no-op replacement is not mutation evidence. An existing real failure needs no artificial mutation; use a disposable fixture without resetting or overwriting user work.
+人为修改代码或 fixture 制造失败时，先比较原始和修改后字节，再确认失败为目标症状，而非语法/环境错误。无变化替换不是变异证据。已有真实失败不必另造变异；用临时副本，不 reset、覆盖或丢弃用户工作。
 
-Confirm:
+## 可证伪假设
 
-- [ ] The loop produces the failure mode the **user** described — not a different failure that happens to be nearby. Wrong bug = wrong fix.
-- [ ] The failure is reproducible across multiple runs (or, for non-deterministic bugs, reproducible at a high enough rate to debug against).
-- [ ] You have captured the exact symptom (error message, wrong output, slow timing) so later phases can verify the fix actually addresses it.
+用“若 X 是原因，改变 Y 应出现 Z”表述预测。明确缺陷一个可检验假设即可；复杂问题提出足以区分合理原因的备选，不设数量。没有环境时标明这是代码推断，指出什么观察会推翻它。
 
-### Minimise
+## 探针与性能
 
-Once it's red, shrink the repro to the **smallest scenario that still goes red**. Cut inputs, callers, config, data, and steps **one at a time**, re-running the loop after each cut — keep only what's load-bearing for the failure.
+每个探针对应一个预测，一次改变一个关键条件。优先已有调试器或边界日志，不记录全部流量。临时日志用本次唯一前缀以便精确清理；输出令牌、密码或个人数据前脱敏。生产探针、额外访问及副作用必须有对应授权。
 
-Why bother: a minimal repro shrinks the hypothesis space in Phase 3 (fewer moving parts left to suspect) and becomes the clean regression test in Phase 5.
+性能结论需要同条件下的基线和测量，例如耗时、profiler 或查询计划；未测量只能描述疑似瓶颈，不能宣称提速。版本比较或二分使用隔离环境并保护用户暂存区和工作树。
 
-Done when **every remaining element is load-bearing** — removing any one of them makes the loop go green.
-
-Minimize further only while it removes meaningful uncertainty. Preserve representative conditions; do not spend effort proving every remaining element essential when the cause can already be tested directly.
-
-## Phase 3 — Hypothesise
-
-Generate enough competing falsifiable hypotheses to distinguish plausible causes. For a clear, bounded defect one directly testable hypothesis can be sufficient; complex or ambiguous failures need alternatives, without a fixed count.
-
-Each hypothesis must be **falsifiable**: state the prediction it makes.
-
-> Format: "If <X> is the cause, then <changing Y> will make the bug disappear / <changing Z> will make it worse."
-
-If you cannot state the prediction, the hypothesis is a vibe — discard or sharpen it.
-
-## Phase 4 — Instrument
-
-Each probe must map to a specific prediction from Phase 3. **Change one variable at a time.**
-
-Tool preference:
-
-1. **Debugger / REPL inspection** if the env supports it. One breakpoint beats ten logs.
-2. **Targeted logs** at the boundaries that distinguish hypotheses.
-3. Never "log everything and grep".
-
-**Tag every debug log** with a unique prefix, e.g. `[DEBUG-a4f2]`. Cleanup at the end becomes a single grep. Untagged logs survive; tagged logs die.
-
-**Perf branch.** For performance regressions, logs are usually wrong. Instead: establish a baseline measurement (timing harness, `performance.now()`, profiler, query plan), then bisect. Measure first, fix second.
+修复共享根因并检查调用方，按任务需要回查原始症状及相关回归；区分成功、无关环境失败和未运行。清除本次探针，保留有用的结果说明。

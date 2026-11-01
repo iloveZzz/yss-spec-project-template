@@ -240,6 +240,33 @@
       ]
     }
   },
+  "retiredSkills": {
+    "yss-openapi-draft-review": {
+      "replacements": [
+        "yss-openapi-governance"
+      ],
+      "reason": "OpenAPI 只读审查已合并到 yss-openapi-governance。"
+    },
+    "yss-implementation-contract-compiler": {
+      "replacements": [
+        "to-tickets",
+        "implement"
+      ],
+      "reason": "任务拆解与实现按当前请求开展，不再编译实现合同。"
+    },
+    "cross-repo-implementation-routing": {
+      "replacements": [
+        "implement"
+      ],
+      "reason": "仓库范围与跨仓分工由 implement 按本次授权处理。"
+    },
+    "implementation-repo-onboarding": {
+      "replacements": [
+        "implement"
+      ],
+      "reason": "工程识别、只读调查与子模块保护已并入 implement。"
+    }
+  },
   "installations": {
     "project": {
       "skills": [
@@ -276,7 +303,6 @@
         ".template-spec/process/spec-workflow.json",
         ".template-spec/process/subagent-collaboration.md",
         ".template-spec/templates/local-parent-ticket-template.md",
-        ".template-spec/templates/review-report-template.md",
         ".template-spec/user-guide/cli/command-reference.md",
         ".template-spec/user-guide/cli/daily-and-targets.md",
         ".template-spec/user-guide/cli/error-index.md",
@@ -296,58 +322,96 @@
         "yss-project.yaml",
         "yss-public-skills.json"
       ],
+      "skillDependencies": {
+        "yss-repository": [
+          "alibaba-java-code-style",
+          "lombok",
+          "mapstruct",
+          "yss-mybatis"
+        ],
+        "yss-openapi-governance": [
+          "yss-dto"
+        ]
+      },
       "skillReferences": {
         "alibaba-java-code-style": [
           ".template-spec/agents/backend-architecture-profiles.md"
         ],
-        "code-review": [],
-        "codebase-design": [],
-        "cross-repo-implementation-routing": [
-          ".template-spec/process/implementation-repo-integration.md",
-          ".template-spec/templates/cross-repo-slice-template.md"
+        "code-review": [
+          ".template-spec/agents/matt-skills-adaptation.md"
         ],
-        "diagnosing-bugs": [],
-        "domain-modeling": [],
+        "codebase-design": [
+          ".template-spec/agents/matt-skills-adaptation.md"
+        ],
+        "diagnosing-bugs": [
+          ".template-spec/agents/matt-skills-adaptation.md"
+        ],
+        "domain-modeling": [
+          ".template-spec/agents/matt-skills-adaptation.md"
+        ],
         "git-commit-core": [],
-        "grilling": [],
-        "handoff": [],
-        "i-have-adhd": [],
-        "implement": [],
-        "implementation-repo-onboarding": [
-          ".template-spec/templates/implementation-repo-registry-template.md"
+        "grilling": [
+          ".template-spec/agents/matt-skills-adaptation.md"
+        ],
+        "handoff": [
+          ".template-spec/agents/matt-skills-adaptation.md"
+        ],
+        "i-have-adhd": [
+          ".template-spec/process/document-writing.md",
+          ".template-spec/templates/examples/lifecycle-writing-examples.md"
+        ],
+        "implement": [
+          ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "java-backend-commit": [],
         "llm-wiki": [],
         "lombok": [],
         "maintaining-skills": [],
         "mapstruct": [],
-        "prototype": [],
+        "prototype": [
+          ".template-spec/agents/matt-skills-adaptation.md"
+        ],
         "prototype-review": [],
         "publish-skills-sh": [],
         "release-yss-cli": [],
-        "resolving-merge-conflicts": [],
+        "resolving-merge-conflicts": [
+          ".template-spec/agents/matt-skills-adaptation.md"
+        ],
         "setup-matt-pocock-skills": [
           ".template-spec/agents/issue-tracker.md",
-          ".template-spec/agents/triage-labels.md"
+          ".template-spec/agents/triage-labels.md",
+          ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "setup-yss-harness": [],
-        "tdd": [],
-        "to-spec": [],
+        "tdd": [
+          ".template-spec/agents/matt-skills-adaptation.md"
+        ],
+        "to-spec": [
+          ".template-spec/agents/matt-skills-adaptation.md"
+        ],
         "to-tickets": [
-          ".template-spec/templates/business-ticket-template.md"
+          ".template-spec/templates/business-ticket-template.md",
+          ".template-spec/templates/vertical-slice-ticket-template.md",
+          ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "triage": [
-          ".template-spec/agents/triage-labels.md"
+          ".template-spec/agents/triage-labels.md",
+          ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "using-git-worktrees": [],
-        "wayfinder": [],
-        "writing-for-agents": [],
+        "wayfinder": [
+          ".template-spec/agents/matt-skills-adaptation.md"
+        ],
+        "writing-for-agents": [
+          ".template-spec/agents/matt-skills-adaptation.md"
+        ],
         "yss-application": [],
         "yss-audit-log": [],
         "yss-backend-spec-review": [],
         "yss-cache": [],
         "yss-ddd-scaffold-generator": [
-          ".template-spec/engineering/backend-platforms.md"
+          ".template-spec/engineering/backend-platforms.md",
+          ".template-spec/engineering/backend-platforms.json"
         ],
         "yss-design-system": [
           ".template-spec/design/tokens/variables.css"
@@ -361,14 +425,10 @@
         "yss-exception": [
           ".template-spec/agents/backend-architecture-profiles.md"
         ],
-        "yss-implementation-contract-compiler": [],
         "yss-layered-mvc-scaffold-generator": [
           ".template-spec/agents/backend-architecture-profiles.md"
         ],
         "yss-mybatis": [],
-        "yss-openapi-draft-review": [
-          ".template-spec/api/templates/openapi-draft-review-checklist.md"
-        ],
         "yss-openapi-governance": [],
         "yss-product-lifecycle": [
           ".template-spec/agents/issue-tracker.md",
@@ -377,7 +437,9 @@
         "yss-repository": [
           ".template-spec/agents/backend-architecture-profiles.md"
         ],
-        "yss-research": [],
+        "yss-research": [
+          ".template-spec/agents/matt-skills-adaptation.md"
+        ],
         "yss-resilience4j": [],
         "yss-security-algorithm": [],
         "yss-skill-source-index-refresh": [],
@@ -424,58 +486,96 @@
         "AGENTS.md": ".template-source/distribution/entries/spec-skills-AGENTS.md",
         "CLAUDE.md": ".template-source/distribution/entries/skills-CLAUDE.md"
       },
+      "skillDependencies": {
+        "yss-repository": [
+          "alibaba-java-code-style",
+          "lombok",
+          "mapstruct",
+          "yss-mybatis"
+        ],
+        "yss-openapi-governance": [
+          "yss-dto"
+        ]
+      },
       "skillReferences": {
         "alibaba-java-code-style": [
           ".template-spec/agents/backend-architecture-profiles.md"
         ],
-        "code-review": [],
-        "codebase-design": [],
-        "cross-repo-implementation-routing": [
-          ".template-spec/process/implementation-repo-integration.md",
-          ".template-spec/templates/cross-repo-slice-template.md"
+        "code-review": [
+          ".template-spec/agents/matt-skills-adaptation.md"
         ],
-        "diagnosing-bugs": [],
-        "domain-modeling": [],
+        "codebase-design": [
+          ".template-spec/agents/matt-skills-adaptation.md"
+        ],
+        "diagnosing-bugs": [
+          ".template-spec/agents/matt-skills-adaptation.md"
+        ],
+        "domain-modeling": [
+          ".template-spec/agents/matt-skills-adaptation.md"
+        ],
         "git-commit-core": [],
-        "grilling": [],
-        "handoff": [],
-        "i-have-adhd": [],
-        "implement": [],
-        "implementation-repo-onboarding": [
-          ".template-spec/templates/implementation-repo-registry-template.md"
+        "grilling": [
+          ".template-spec/agents/matt-skills-adaptation.md"
+        ],
+        "handoff": [
+          ".template-spec/agents/matt-skills-adaptation.md"
+        ],
+        "i-have-adhd": [
+          ".template-spec/process/document-writing.md",
+          ".template-spec/templates/examples/lifecycle-writing-examples.md"
+        ],
+        "implement": [
+          ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "java-backend-commit": [],
         "llm-wiki": [],
         "lombok": [],
         "maintaining-skills": [],
         "mapstruct": [],
-        "prototype": [],
+        "prototype": [
+          ".template-spec/agents/matt-skills-adaptation.md"
+        ],
         "prototype-review": [],
         "publish-skills-sh": [],
         "release-yss-cli": [],
-        "resolving-merge-conflicts": [],
+        "resolving-merge-conflicts": [
+          ".template-spec/agents/matt-skills-adaptation.md"
+        ],
         "setup-matt-pocock-skills": [
           ".template-spec/agents/issue-tracker.md",
-          ".template-spec/agents/triage-labels.md"
+          ".template-spec/agents/triage-labels.md",
+          ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "setup-yss-harness": [],
-        "tdd": [],
-        "to-spec": [],
+        "tdd": [
+          ".template-spec/agents/matt-skills-adaptation.md"
+        ],
+        "to-spec": [
+          ".template-spec/agents/matt-skills-adaptation.md"
+        ],
         "to-tickets": [
-          ".template-spec/templates/business-ticket-template.md"
+          ".template-spec/templates/business-ticket-template.md",
+          ".template-spec/templates/vertical-slice-ticket-template.md",
+          ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "triage": [
-          ".template-spec/agents/triage-labels.md"
+          ".template-spec/agents/triage-labels.md",
+          ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "using-git-worktrees": [],
-        "wayfinder": [],
-        "writing-for-agents": [],
+        "wayfinder": [
+          ".template-spec/agents/matt-skills-adaptation.md"
+        ],
+        "writing-for-agents": [
+          ".template-spec/agents/matt-skills-adaptation.md"
+        ],
         "yss-application": [],
         "yss-audit-log": [],
         "yss-backend-spec-review": [],
         "yss-cache": [],
         "yss-ddd-scaffold-generator": [
-          ".template-spec/engineering/backend-platforms.md"
+          ".template-spec/engineering/backend-platforms.md",
+          ".template-spec/engineering/backend-platforms.json"
         ],
         "yss-design-system": [
           ".template-spec/design/tokens/variables.css"
@@ -489,14 +589,10 @@
         "yss-exception": [
           ".template-spec/agents/backend-architecture-profiles.md"
         ],
-        "yss-implementation-contract-compiler": [],
         "yss-layered-mvc-scaffold-generator": [
           ".template-spec/agents/backend-architecture-profiles.md"
         ],
         "yss-mybatis": [],
-        "yss-openapi-draft-review": [
-          ".template-spec/api/templates/openapi-draft-review-checklist.md"
-        ],
         "yss-openapi-governance": [],
         "yss-product-lifecycle": [
           ".template-spec/agents/issue-tracker.md",
@@ -505,7 +601,9 @@
         "yss-repository": [
           ".template-spec/agents/backend-architecture-profiles.md"
         ],
-        "yss-research": [],
+        "yss-research": [
+          ".template-spec/agents/matt-skills-adaptation.md"
+        ],
         "yss-resilience4j": [],
         "yss-security-algorithm": [],
         "yss-skill-source-index-refresh": [],

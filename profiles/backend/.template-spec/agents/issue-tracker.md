@@ -2,7 +2,8 @@
 tracker:
   lifecycle_tracking_version: 1
   business_ticket_version: 1
-  platform: local-markdown
+  platform: github
+  repository: ""
   root: .work
   legacy_roots:
     - docs/.scratch
@@ -11,139 +12,18 @@ tracker:
   remote_mirror: false
 ---
 
-# Ticket 追踪平台：Local Markdown / GitHub / GitLab
+# Ticket tracker
 
-> 本文是项目 Ticket tracker 的单一事实来源。当前模板默认使用 `local-markdown`；GitHub / GitLab 只有在项目明确选择时才作为主 tracker。Git remote 是代码托管信息，不会自动覆盖显式 tracker 配置。
+新项目默认使用 GitHub；`repository` 留空表示目标尚未配置，远程操作前明确 `owner/repo`，不能把模板仓或登录默认仓当作目标。GitLab 是用户显式选择的次级平台，Local Markdown 仍可明确选择；`.work` 仅供已授权本地资料使用，不是自动发布回退。已有项目复用已确认的平台配置。
 
-## 当前项目配置
+上方 frontmatter 是持久平台配置；当前请求未明确目标时沿用。用户当前明确的 URL、仓库或实例用于本次动作，与配置不同时说明差异即可，不重复确认、不改持久配置或扩大动作授权；多个候选确实无法消歧时才问。访问失败不回退到默认目标找同号条目，也不从 Git remote 静默切换平台。旧 lifecycle/business 版本字段可供历史材料解释，不作为普通工作或新写入的资格门槛。
 
-| 字段 | 值 |
-|---|---|
-| `platform` | `local-markdown` |
-| `root` | 读取上方 `tracker.root`（新项目默认 `.work`） |
-| `feature_layout` | 完整功能包 |
-| `remote_mirror` | 可选，默认关闭 |
-| `legacy_roots` | 上方配置只用于历史扫描，不授予写权限；规则见 [工作包布局](../process/work-layout.md#历史兼容边界) |
+- `local-markdown` 使用 `tracker.root`，新项目示例 `.work`；只按需求创建 Spec、业务票、Slice 或地图，保留已有 ID/目录。历史根只读诊断，冲突仅暂停受影响写入。
+- `github` 明确 `repository: owner/repo`，企业实例需明确 host；`gitlab` 明确 HTTPS `host` 与完整 `project`。fork、多个 remote 或默认登录实例不能替代目标选择。
+- 远程不可用时，当前对话可以继续分析；已授权保存草稿才写到约定 root，标明目标与未发布状态，不自动改投或写镜像。
+- 正文、评论、标签分别完整读取；分页列表不足以证明全量状态。凭据不可用不表示条目不存在。
+- 创建、更新、认领、标签、评论和关闭使用对应授权；只读分析不写入。超时先核实结果，不盲目重试创建；更新前复读并发变化，写后回读。
 
-`tracker.root` 是唯一功能包根；本文 `.work/` 是新初始化示例，旧实例 attach、sync、升级保留原配置和资产。
+平台操作方法按需读取安装的 `setup-matt-pocock-skills` 包内 `issue-tracker-local.md`、`issue-tracker-github.md` 或 `issue-tracker-gitlab.md`；未安装时按当前连接器能力与 CLI 帮助执行，不虚构参数或下载前置。GitHub 命令明确 repo/API host；GitLab 列表使用经帮助核对的 `--output json`，API 明确实例和项目 ID。
 
-上方 front matter 是机器可读的持久化配置；表格用于人和 Agent 阅读。初始化或迁移到 GitHub / GitLab 时，必须同时更新两处，并保留迁移记录。
-
-## 平台选择规则
-
-按以下优先级确定 Ticket tracker：
-
-1. 已写入本文件的项目配置优先；本模板默认配置为 `local-markdown`。
-2. 初始化或迁移时用户明确选择 GitHub / GitLab，则更新本文件后使用所选平台。
-3. Git remote 只用于代码托管、分支、PR / MR 和 CI；不能单独把 Ticket tracker 改成远程平台。
-4. 多个持久化配置声明不同平台时返回 `conflict`，暂停并要求迁移，不覆盖任何配置。
-5. 选定 GitHub / GitLab 但凭据或平台暂不可用时，先在配置根下的 `<feature>/` 生成“待发布平台”草案；`parent-ticket.md` 保留目标平台、标记 `publication: pending` 和 `pending_publication_to`；不得自动改投另一远程平台。
-
-Slice v3 声明冻结需求时，合同绑定的 Ticket 文件只保留冻结时状态。当前状态、验收结果和执行记录继续进入主 tracker；Local Markdown 使用现有父 Ticket / 任务包记录进度，远程平台不可用时沿用待发布记录。需求文件版本不得作为当前执行状态读取，也不得因更新进度而改写。协议见 [Slice 合同](../../.agents/skills/yss-implementation-contract-compiler/references/slice-implementation-contract.md#第二轮增量规则)。
-
-## Local Markdown 主 tracker
-
-Local 主 tracker 的完整功能包结构如下：
-
-```text
-.work/<feature>/
-├── map.md
-├── discovery/
-├── spec.md
-├── spec-delta/
-├── parent-ticket.md
-├── design/
-├── api/
-├── architecture/
-├── gates/
-├── verification/
-└── issues/01-<slug>.md
-```
-
-- `issues/01-<slug>.md` 等文件是垂直切片或 Wayfinder 子 Ticket；不得把多个 Ticket 合并成一个文件。
-- 评论和对话追加在 `## Comments` 下；状态变化必须保留原因、证据引用和下一步。
-- Wayfinder 的临时子问题可以沿用 Matt 的 `Status: claimed/resolved` 工作状态；它不是交付 Ticket 的五态角色，进入正式切片前必须转换为上述五态之一。
-- GitHub / GitLab 可以作为显式开启的镜像，在功能包中记录 URL、编号和最近同步时间；镜像失败不改变 Local 主 tracker 的权威性。
-- 当前写入位置只由 `tracker.root` 决定；历史扫描命中不改变配置根。历史根与当前根之间出现重复或引用冲突时，按 [历史兼容边界](../process/work-layout.md#历史兼容边界) 诊断，不静默覆盖或合并。
-
-## 生命周期状态同步
-
-Spec、生命周期和交付任务状态必须同步到当前主 tracker：
-
-- `local-markdown`：写入配置根下的 `<feature>/`，本地文件即 Ticket 和阶段证据的权威载体。
-- `github`：使用 GitHub Issues，并在本地功能包记录 URL / 编号和最近同步时间；平台不可用时保留 `tracker: github`、`publication: pending`、`pending_publication_to: github`。
-- `gitlab`：使用 GitLab Issues，并在本地功能包记录 URL / IID 和最近同步时间；平台不可用时保留 `tracker: gitlab`、`publication: pending`、`pending_publication_to: gitlab`。
-
-## GitLab Issues
-
-常用命令：
-
-- Create an issue: `glab issue create --title "..." --description "..."`
-- Read an issue: `glab issue view <iid> --comments`
-- List issues: `glab issue list --state opened`
-- Comment on an issue: `glab issue note <iid> --message "..."`
-- Close an issue: `glab issue close <iid>`
-
-GitLab 相关配置和 MR / CI 工作流见 `.template-spec/agents/gitlab-workflow-skills.md`。
-
-## GitHub Issues
-
-当平台为 GitHub 时，使用 `gh` CLI。
-
-常用命令：
-
-- Create an issue: `gh issue create --title "..." --body "..."`
-- Read an issue: `gh issue view <number> --comments`
-- List issues: `gh issue list --state open --json number,title,body,labels,comments`
-- Comment on an issue: `gh issue comment <number> --body "..."`
-- Apply or remove labels: `gh issue edit <number> --add-label "..."` / `--remove-label "..."`
-- Close an issue: `gh issue close <number> --comment "..."`
-
-### 用 yss 镜像五态标签
-
-固定 CLI 的 `yss capabilities --json` 含 `tracker-github-mirror-v1` 时，可用 `yss tracker` 把本地 Ticket 的 `Status:` 同步到已链接 Issue 的同名标签；本地 Markdown 仍是权威，镜像失败不改变本地状态。
-
-1. 在本文件 front matter 设 `remote_mirror: true`（主 tracker 为 `github` 时无需）。
-2. 链接：`yss tracker link --root . --ticket <tracker 根>/<feature>/parent-ticket.md --issue owner/repo#N --apply`，在 `Status:` 下写入 `Tracker-Link: github:owner/repo#N`。
-3. 规划：`yss tracker sync --root . --plan --out <项目外新文件>`，读取远端并列出要增删的标签。
-4. 应用：取得用户确认后 `yss tracker sync --root . --apply --plan-file <文件> --confirm-remote github`；本地或远端自规划后变化即拒绝，成功后在 Ticket 写入 `Tracker-Synced:`。
-
-只替换五态标签、保留其他标签，不创建、关闭或评论 Issue；读写需要 `GH_TOKEN`。只读核对用 `yss tracker status --root . --fetch`。Git 策略设 `ticket_pattern: github` 后，提交 trailer 可写 `#123` 或 `owner/repo#123`，分支名使用 `gh-123`。
-
-## Local Markdown 操作
-
-- 创建或发布 Ticket：在配置根下创建 `<feature>/`，按上述结构写入 `parent-ticket.md`、`spec.md` 或 `issues/NN-<slug>.md`。
-- 读取 Ticket：优先读取用户提供的功能包或具体 Ticket 路径；路径属于当前配置根时正常操作，属于其他历史根时只读诊断。
-- 更新状态：修改文件顶部的 `Status:`，并在 `## Comments` 追加原因和证据。
-- Wayfinder map：使用配置根下的 `<feature>/map.md`，子 Ticket 放在该功能包的 `issues/`。
-
-## Triage Surface
-
-Ticket 是默认 triage surface。MR / PR 是否纳入 triage 取决于当前平台和用户请求：
-
-- GitLab 项目：可按需读取 GitLab Issues、Merge Requests 和 Pipeline 状态。
-- GitHub 项目：可按需读取 GitHub Issues、Pull Requests 和 Actions 状态。
-- 用户只要求 issue triage 时，不主动扩展到 MR / PR。
-
-## Publishing
-
-当 skill 说 “publish to the issue tracker” 时：
-
-1. 读取本文件的 `platform` 配置。
-2. `local-markdown` 直接在 `.work/<feature>/` 创建或更新 Ticket。
-3. `github` / `gitlab` 在对应平台创建或更新 Ticket，并在本地功能包记录 URL / 编号和最近同步时间。
-4. 选定远程平台不可用时，在 `.work/<feature>/` 创建并标注“待发布平台”的草案；在 `parent-ticket.md` 写入 `publication: pending` 和 `pending_publication_to`，恢复后优先补同步。
-
-当 skill 说 “fetch the relevant ticket” 时：
-
-- Local Markdown：读取引用的 `.work/<feature>/...` 文件；旧路径引用必须先经过迁移检查。
-- GitLab：使用 `glab issue view <iid> --comments`。
-- GitHub：使用 `gh issue view <number> --comments`。
-
-## 阶段工作追踪
-
-新初始化默认启用 `tracker.lifecycle_tracking_version: 1`。已有项目的 attach / sync 保留原配置；缺省保持旧模式，按 [阶段工作追踪](../process/stage-tracking.md) 执行 check → plan → apply。
-
-## 业务拆分版本
-
-新项目 business_ticket_version: 1，按 `../process/business-tickets.md` 执行。每票位于功能包 business-tickets/，business-ticket-set.yaml 汇总引用与覆盖；issues/ 保留实现 Slice。缺少版本的旧实例进入兼容诊断，显式迁移前不自动启用；同步保留用户配置。
+业务票与实现 Slice 保持区别，按已有内容依据起草；无需先新建集合 YAML、阶段记录或批准包。Wayfinder 的 claimed/resolved 描述决策工作，不等于实现交付。分诊分类见 [标签表](triage-labels.md)。旧镜像元数据保留；当前 yss CLI 未提供的 tracker/capabilities 命令不作为操作步骤。

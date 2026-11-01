@@ -31,13 +31,8 @@ build-check:
       work=$(mktemp -d)
       trap 'rm -rf "$work"' EXIT
       export GIT_CONFIG_NOSYSTEM=1 GIT_CONFIG_GLOBAL=/dev/null GIT_TERMINAL_PROMPT=0
-      export GIT_CONFIG_COUNT=5
-      export GIT_CONFIG_KEY_0=credential.https://gitlab.yss.test:9443/yss/yss-cli.git.helper
-      export GIT_CONFIG_VALUE_0='!f() { test "$1" != get || printf "%s\n" "username=gitlab-ci-token" "password=$CI_JOB_TOKEN"; }; f'
-      export GIT_CONFIG_KEY_1=http.https://gitlab.yss.test:9443/.sslCAInfo GIT_CONFIG_VALUE_1="$YSS_GITLAB_CA_FILE"
-      export GIT_CONFIG_KEY_2=http.https://gitlab.yss.test:9443/.followRedirects GIT_CONFIG_VALUE_2=false
-      export GIT_CONFIG_KEY_3=credential.useHttpPath GIT_CONFIG_VALUE_3=true
-      export GIT_CONFIG_KEY_4=http.https://gitlab.yss.test:9443/.proxy GIT_CONFIG_VALUE_4=
+      export GIT_CONFIG_COUNT=1
+      export GIT_CONFIG_KEY_0=http.followRedirects GIT_CONFIG_VALUE_0=false
       python3 -I - <<'PYCODE'
       import json, os, re, ssl, urllib.request
       origin = "https://gitlab.yss.test:9443"
@@ -79,8 +74,8 @@ build-check:
           raise SystemExit("Fixed GitLab job identity/CA/auth not ready; no fallback") from None
       PYCODE
       git init "$work/source"
-      git -C "$work/source" remote add origin https://gitlab.yss.test:9443/yss/yss-cli.git
-      git -C "$work/source" fetch --depth 1 origin refs/heads/main
+      git -C "$work/source" remote add origin https://github.com/iloveZzz/yss-cli.git
+      git -C "$work/source" fetch --depth 1 origin refs/tags/v3.0.3
       git -C "$work/source" checkout --detach FETCH_HEAD
       git -C "$work/source" rev-parse HEAD > "$work/source-commit.txt"
       cmp .agents/skills/setup-yss-harness/SKILL.md .workbuddy/skills/setup-yss-harness/SKILL.md

@@ -62,7 +62,6 @@ backend_skill_domains:
     yss-security-algorithm: component-capability
     yss-ddd-scaffold-generator: engineering-initialization
     yss-layered-mvc-scaffold-generator: engineering-initialization
-    yss-implementation-contract-compiler: platform-governance-migration
     yss-skill-source-index-refresh: platform-governance-migration
     yss-up-springboot3: platform-governance-migration
     yss-backend-spec-review: platform-governance-migration
@@ -387,14 +386,6 @@ capabilities:
   - slice-implementation
   - troubleshooting
   - review-input
-- id: governance.implementation-contract
-  primary_skill: yss-implementation-contract-compiler
-  provider:
-    kind: none
-  task_modes:
-  - contract-compilation
-  - reroute
-  - result-validation
 - id: maintenance.skill-source-index
   primary_skill: yss-skill-source-index-refresh
   provider:
@@ -761,15 +752,9 @@ skill_dependencies:
   yss-backend-spec-review:
   - skill: alibaba-java-code-style
     type: context-required
-  - skill: yss-implementation-contract-compiler
-    type: coordination-only
   - skill: code-review
     type: review-only
   prototype-review:
-  - skill: i-have-adhd
-    type: context-conditional
-    when: lifecycle-document-output
-  yss-implementation-contract-compiler:
   - skill: i-have-adhd
     type: context-conditional
     when: lifecycle-document-output
@@ -852,13 +837,13 @@ skill_dependencies:
   - skill: yss-tactical-design
     type: coordination-only
     when: domain-driven
-  - skill: yss-openapi-draft-review
+  - skill: yss-openapi-governance
     type: review-only
     when: api-impact
   yss-tactical-design:
   - skill: domain-modeling
     type: coordination-only
-  - skill: yss-openapi-draft-review
+  - skill: yss-openapi-governance
     type: review-only
     when: api-impact
   - skill: yss-repository
@@ -1048,18 +1033,10 @@ invocation_contract:
       invocation_mode: user
     yss-tactical-design:
       invocation_mode: user
-    yss-implementation-contract-compiler:
-      invocation_mode: user
-    cross-repo-implementation-routing:
-      invocation_mode: user
-    implementation-repo-onboarding:
-      invocation_mode: user
     yss-backend-spec-review:
       invocation_mode: user
     prototype-review:
       invocation_mode: model
-    yss-openapi-draft-review:
-      invocation_mode: user
 agent_runtime_roots:
   claude: .claude/skills
   workbuddy: .workbuddy/skills
@@ -1093,13 +1070,6 @@ skills:
   aliases: []
   impacts:
   - quality
-- id: cross-repo-implementation-routing
-  layer: specialist
-  maturity: supported
-  instance_default_discoverable: false
-  aliases: []
-  impacts:
-  - lifecycle
 - id: diagnosing-bugs
   layer: core
   maturity: supported
@@ -1130,13 +1100,6 @@ skills:
   - lifecycle
 - id: implement
   layer: compatibility
-  maturity: supported
-  instance_default_discoverable: false
-  aliases: []
-  impacts:
-  - lifecycle
-- id: implementation-repo-onboarding
-  layer: core
   maturity: supported
   instance_default_discoverable: false
   aliases: []
@@ -1390,13 +1353,6 @@ skills:
   impacts:
   - backend
   stack: java
-- id: yss-openapi-draft-review
-  layer: core
-  maturity: supported
-  instance_default_discoverable: false
-  aliases: []
-  impacts:
-  - api
 - id: yss-openapi-governance
   layer: core
   maturity: supported
@@ -1427,15 +1383,6 @@ skills:
   impacts:
   - backend
   stack: java
-- id: yss-implementation-contract-compiler
-  layer: core
-  maturity: supported
-  instance_default_discoverable: false
-  aliases: []
-  impacts:
-  - lifecycle
-  - backend
-  - frontend
 - id: yss-stage-decision
   layer: core
   maturity: supported

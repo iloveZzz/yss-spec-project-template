@@ -1,42 +1,26 @@
 # Design It Twice
 
-When the user wants to explore alternative interfaces for a chosen deepening candidate, use this parallel sub-agent pattern. Based on "Design It Twice" (Ousterhout) — your first idea is unlikely to be the best.
+When the user wants alternative interfaces for a chosen candidate, explore meaningfully different designs before recommending one. Use [the module vocabulary](SKILL.md) and the project's existing domain terminology. This method does not authorize implementation.
 
-Uses the vocabulary in [SKILL.md](SKILL.md) — **module**, **interface**, **seam**, **adapter**, **leverage**.
+## Frame the question
 
-### 1. Frame the problem space
+State the real constraints, callers, invariants and dependencies, using [dependency categories](DEEPENING.md) where helpful. A short sketch can clarify the problem without preselecting a design. Reuse already chosen direction; ask only for an unresolved material trade-off.
 
-Before spawning sub-agents, write a user-facing explanation of the problem space for the chosen candidate:
+## Explore alternatives
 
-- The constraints any new interface would need to satisfy
-- The dependencies it would rely on, and which category they fall into (see [DEEPENING.md](DEEPENING.md))
-- A rough illustrative code sketch to ground the constraints — not a proposal, just a way to make the constraints concrete
+Choose the number of alternatives from the actual trade-offs and available resources, not a fixed agent count. Useful contrasts include a smaller interface, the common caller's simplest path, or a different placement of an external seam. Avoid speculative flexibility or arbitrary method-count targets.
 
-Show this to the user, then immediately proceed to Step 2. The user reads and thinks while the sub-agents work in parallel.
+When delegation is authorized and supported, each independent design task gets a fresh context (Codex's supported API: `fork_turns: "none"`), not the complete conversation. Supply:
 
-### 2. Spawn sub-agents
+- the goal and distinct design constraint;
+- read-only scope, or explicitly owned paths if a separate writing task was authorized;
+- current source/version pointers, caller facts, invariants and relevant vocabulary;
+- expected output and limitations.
 
-Spawn 3+ sub-agents in parallel. Each must produce a **radically different** interface for the deepened module.
+Ensure pointers are readable; provide minimum necessary excerpts when not, or proceed sequentially. Tell writing agents they share the codebase, must not revert others, and must respect ownership; shared indexes have one integrator. No host support means sequential design, not a simulated dispatch. No fixed model name or mandatory branch/commit workflow.
 
-Prompt each sub-agent with a separate technical brief (file paths, coupling details, dependency category from [DEEPENING.md](DEEPENING.md), what sits behind the seam). The brief is independent of the user-facing problem-space explanation in Step 1. Give each agent a different design constraint:
+Each alternative explains its interface (types, parameters, invariants, ordering and errors), caller example, hidden complexity, dependency strategy and trade-offs. State uncertainties rather than inventing facts.
 
-- Agent 1: "Minimize the interface — aim for 1–3 entry points max. Maximise leverage per entry point."
-- Agent 2: "Maximise flexibility — support many use cases and extension."
-- Agent 3: "Optimise for the most common caller — make the default case trivial."
-- Agent 4 (if applicable): "Design around ports & adapters for cross-seam dependencies."
+## Compare and recommend
 
-Include both [SKILL.md](SKILL.md) vocabulary and CONTEXT.md vocabulary in the brief so each sub-agent names things consistently with the architecture language and the project's domain language.
-
-Each sub-agent outputs:
-
-1. Interface (types, methods, params — plus invariants, ordering, error modes)
-2. Usage example showing how callers use it
-3. What the implementation hides behind the seam
-4. Dependency strategy and adapters (see [DEEPENING.md](DEEPENING.md))
-5. Trade-offs — where leverage is high, where it's thin
-
-### 3. Present and compare
-
-Present designs sequentially so the user can absorb each one, then compare them in prose. Contrast by **depth** (leverage at the interface), **locality** (where change concentrates), and **seam placement**.
-
-After comparing, give your own recommendation: which design you think is strongest and why. If elements from different designs would combine well, propose a hybrid. Be opinionated — the user wants a strong read, not a menu.
+Compare depth, locality and seam placement against actual callers. Recommend a design with reasons, optionally combine compatible elements. Keep analysis vocabulary from renaming domain concepts; implementation follows only when authorized.

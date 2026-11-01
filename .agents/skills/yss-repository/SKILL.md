@@ -5,7 +5,7 @@ description: 按已确认的 YSS 架构与持久化输入实现或重构 PO、Re
 
 # YSS 持久化实现
 
-依据当前工程的 DDD/MVC 架构、数据结构和实际调用方，实现或调整 PO、Repository、Convertor 与 Adapter。按需要读取 references/profiles 中对应架构的说明，不要求登记、Manifest、批准合同或验证报告。
+依据当前工程的 DDD/MVC 架构、数据结构和实际调用方，实现或调整 PO、Repository、Convertor 与 Adapter。不要求登记、Manifest、批准合同或验证报告。按架构读取 [DDD](references/profiles/target-domain-model.md) 或 [MVC Service](references/profiles/layered-mvc-service.md)；既有工程参考 [DDD Maven](references/profiles/existing-domain-driven-maven.md) / [MVC Maven](references/profiles/existing-layered-mvc-maven.md)，仅维护既有数据分析代码时参考 [数据分析持久层](references/profiles/mvc-data-analysis-v1.md)。
 
 - DDD 保持 Domain Gateway / Application Query Port 与实现分离；MVC 沿用 Service/Repository 职责。
 - 持久化对象覆盖主键、空值、逻辑删除、审计字段、枚举/值对象及敏感字段映射。

@@ -1,51 +1,13 @@
-# 构造诊断反馈循环
+# 诊断反馈信号
 
-仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。Skill 自带的 bin/scripts 命令从 Skill 根目录执行；明确注明 repository root 的包装命令仍从项目根目录执行。
+当原因尚不确定、需要区分假设时，选择能观察用户原始症状的反馈。它是调查方法，不是读代码或分析的开工资格；已有充分依据的明确缺陷可直接修复。
 
-## Phase 1 — Build a feedback loop
+可用信号包括：现有失败测试、请求重放、带 fixture 的 CLI、浏览器交互、脱敏日志、最小临时运行环境、版本/配置差分、属性测试或二分定位。按实际成本与区分能力选择，不按固定顺序全做，不为了反馈建设长期工具。
 
-**This is the skill.** Everything else is mechanical. If you have a **tight** pass/fail signal for the bug — one that goes red on _this_ bug — you will find the cause; bisection, hypothesis-testing, and instrumentation all just consume it. If you don't have one, no amount of staring at code will save you.
+信号应命中用户症状，而非只检查“没有崩溃”。记录输入、实际输出和运行条件；能控制时固定时间、随机种子、网络和文件环境。减小范围只要能减少不确定性即可，不强求几秒完成或完全确定性。
 
-Spend disproportionate effort here. **Be aggressive. Be creative. Refuse to give up.**
+偶发故障记录出现次数、尝试次数和条件；按需重复、施加负载或缩小时序窗口。未出现不等于已修复，不设通用复现率阈值，不在生产擅自加压。
 
-### Ways to construct one — try them in roughly this order
+没有可运行环境时继续阅读代码、调用方和已有事实，给出可证伪推断及最小验证方法，明确“尚未观察”。仅当下一动作依赖缺失权限或资料时说明缺口；请求生产探针授权前先完成能独立开展的分析。不能用推断声称修复或性能提升已验证。
 
-1. **Failing test** at whatever seam reaches the bug — unit, integration, e2e.
-2. **Curl / HTTP script** against a running dev server.
-3. **CLI invocation** with a fixture input, diffing stdout against a known-good snapshot.
-4. **Headless browser script** (Playwright / Puppeteer) — drives the UI, asserts on DOM/console/network.
-5. **Replay a captured trace.** Save a real network request / payload / event log to disk; replay it through the code path in isolation.
-6. **Throwaway harness.** Spin up a minimal subset of the system (one service, mocked deps) that exercises the bug code path with a single function call.
-7. **Property / fuzz loop.** If the bug is "sometimes wrong output", run 1000 random inputs and look for the failure mode.
-8. **Bisection harness.** If the bug appeared between two known states (commit, dataset, version), automate "boot at state X, check, repeat" so you can `git bisect run` it.
-9. **Differential loop.** Run the same input through old-version vs new-version (or two configs) and diff outputs.
-
-Build the right feedback loop, and the bug is 90% fixed.
-
-### Tighten the loop
-
-Treat the loop as a product. Once you have _a_ loop, **tighten** it:
-
-- Can I make it faster? (Cache setup, skip unrelated init, narrow the test scope.)
-- Can I make the signal sharper? (Assert on the specific symptom, not "didn't crash".)
-- Can I make it more deterministic? (Pin time, seed RNG, isolate filesystem, freeze network.)
-
-A 30-second flaky loop is barely better than no loop; a 2-second deterministic one is tight — a debugging superpower.
-
-### Non-deterministic bugs
-
-The goal is not a clean repro but a **higher reproduction rate**. Loop the trigger 100×, parallelise, add stress, narrow timing windows, inject sleeps. A 50%-flake bug is debuggable; 1% is not — keep raising the rate until it's debuggable.
-
-### When you genuinely cannot build a loop
-
-Stop and say so explicitly. List what you tried. Ask the user for: (a) access to whatever environment reproduces it, (b) a redacted captured artifact (HAR file, log dump, core dump, screen recording with timestamps), or (c) permission to add temporary production instrumentation. Do **not** proceed to hypothesise without a loop.
-
-### Completion criterion — a tight loop that goes red
-
-Phase 1 is done when the loop is **tight** and **red-capable**: you can name **one command** — a script path, a test invocation, a curl — that you have **already run at least once** (show the invocation and its output, redacted), and that is:
-
-- [ ] **Red-capable** — it drives the actual bug code path and asserts the **user's exact symptom**, so it can go red on this bug and green once fixed. Not "runs without erroring" — it must be able to _catch this specific bug_.
-- [ ] **Deterministic** — same verdict every run (flaky bugs: a pinned, high reproduction rate, per above).
-- [ ] **Fast** — seconds, not minutes.
-
-If you catch yourself reading code to build a theory before this command exists, **stop — jumping straight to a hypothesis is the exact failure this skill prevents.** No red-capable command, no Phase 2.
+反馈结果与环境故障分别记录；原始症状回查和临时探针清理按本次实际修改进行。敏感日志、请求和 fixture 必须脱敏。

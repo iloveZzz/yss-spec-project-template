@@ -1,40 +1,11 @@
-# 配置写入与种子模板
+# 配置写入
 
-仅在入口所列条件命中时读取本文件。Markdown 链接相对本文件；行内 references/assets/schemas 路径相对 Skill 根目录。仓库脚本与 pnpm 命令从当前登记的项目根目录执行。
+只在当前授权范围内写入。已有目标与偏好足够时直接完成，无需重复草案批准。
 
-### 4. Write
+1. 读取目标文件的当前内容，更新已有 `Agent skills` 或对应受管区块；不存在且配置请求需要时创建最小文件。保留其他正文、标签、账号与实例，不追加同名重复区块。
+2. 将明确平台及所需字段写入 `.template-spec/agents/issue-tracker.md` frontmatter：local 使用 root；GitHub 使用 repository；GitLab 使用 host/project。表格或正文若重复这些值，同步保持一致，不保存凭据。
+3. 平台方法种子：[GitHub](../issue-tracker-github.md)、[GitLab](../issue-tracker-gitlab.md)、[Local Markdown](../issue-tracker-local.md)。种子是内容参考，已有配置只改必要段落。
+4. triage 需要且没有映射时使用 [标签表](../triage-labels.md)；否则保留已确认表。业务导航只引用现有根 CONTEXT 和 ADR，不为凑齐布局建空业务文档。
+5. 写入前再次核对目标内容；若有人并发修改，先读取并整合再写。完成后回读实际结果并说明变更。
 
-**Pick the file to edit:**
-
-- If `AGENTS.md` exists, edit it.
-- If it is missing, ask before creating it.
-
-If an `## Agent skills` block already exists in the chosen file, update its contents in-place rather than appending a duplicate. Don't overwrite user edits to the surrounding sections.
-
-The block:
-
-```markdown
-### Issue tracker
-
-[one-line summary of where issues are tracked]. See `.template-spec/agents/issue-tracker.md`.
-
-### Triage labels
-
-[one-line summary of the label vocabulary]. See `.template-spec/agents/triage-labels.md`.
-
-### Domain docs
-
-[one-line summary: one root `CONTEXT.md`, with bounded contexts represented inside its business glossary]. See 根 `CONTEXT.md` 的消费规则.
-```
-
-Include the `### Triage labels` sub-block, and write `.template-spec/agents/triage-labels.md`, only when `triage` is installed and Section B ran. When it isn't, both are omitted.
-
-Then write the docs files using the seed templates in this skill folder as a starting point:
-
-- [issue-tracker-github.md](.././issue-tracker-github.md) — GitHub issue tracker
-- [issue-tracker-gitlab.md](.././issue-tracker-gitlab.md) — GitLab issue tracker
-- [issue-tracker-local.md](.././issue-tracker-local.md) — local-markdown issue tracker
-- [triage-labels.md](.././triage-labels.md) — label mapping (only if `triage` is installed)
-- 根 `CONTEXT.md` 文首合同与消费规则 — domain doc consumer rules + layout
-
-For an unsupported tracker request, stop and require a YSS tracker-contract extension; do not write an unsupported platform into `.template-spec/agents/issue-tracker.md`.
+AGENTS 中可保留简短导航：tracker → `.template-spec/agents/issue-tracker.md`；标签 → `.template-spec/agents/triage-labels.md`；业务词汇 → 根 `CONTEXT.md`。不复制整套操作方法，不以配置完成推断远程写入已授权。

@@ -14,9 +14,9 @@ This command is _informed_ by the project's domain model and built on a shared d
 - If the user named a direction — a module, a subsystem, a pain point — take it, and skip the inference below.
 - Otherwise, walk back a good stretch of the commit history (`git log --oneline`) to find the codebase's hot spots — the files and areas that keep coming up — and let those paths pull your attention first. If the changes are scattered with no clear hot spot, widen the net.
 
-Read the project's domain glossary (`CONTEXT.md`) and any ADRs in the area you're touching first.
+Read the project's domain glossary (`CONTEXT.md`) and relevant ADRs when present; missing documents do not block analysis and are not created just to start it.
 
-Inspect the bounded area directly; delegate an independent reading task only when useful parallel work exists. Note evidence of friction:
+Inspect the bounded area directly; delegate an independent reading task only when authorized and useful parallel work exists. Use the fresh-context brief and capability fallback in [Design It Twice](../DESIGN-IT-TWICE.md). Note evidence of friction:
 
 - Where does understanding one concept require bouncing between many small modules?
 - Where are modules **shallow** — interface nearly as complex as the implementation?
@@ -61,7 +61,7 @@ Once the user picks a candidate, run the `/grilling` skill to walk the decision 
 
 Side effects happen inline as decisions crystallize — run the `/domain-modeling` skill to keep the domain model current as you go:
 
-- **Naming a deepened module after a concept not in `CONTEXT.md`?** Add the term to `CONTEXT.md`. If the root contract is missing, stop and restore it before continuing.
-- **Sharpening a fuzzy term during the conversation?** Update `CONTEXT.md` right there.
+- **Naming a deepened module after a concept not in `CONTEXT.md`?** Keep it as a candidate until meaning, scope and stable identity are confirmed. Use domain-modeling for an authorized glossary update; missing CONTEXT does not block interface discussion.
+- **Sharpening a fuzzy term during the conversation?** Update the existing root glossary only if the term and identity are confirmed and this write is authorized; otherwise preserve the candidate in the current discussion.
 - **User rejects the candidate with a load-bearing reason?** Offer an ADR, framed as: _"Want me to record this as an ADR so future architecture reviews don't re-suggest it?"_ Only offer when the reason would actually be needed by a future explorer to avoid re-suggesting the same thing — skip ephemeral reasons ("not worth it right now") and self-evident ones.
 - **Want to explore alternative interfaces for the deepened module?** Run the `/codebase-design` skill and use its alternative interface design guidance within the authorized scope.

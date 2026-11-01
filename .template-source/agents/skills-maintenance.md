@@ -10,3 +10,7 @@
 4. 提交、推送、发行按用户已有授权进行，可使用 Git、宿主连接器或已安装 CLI。工具能力以实际帮助为准，不自动执行测试或要求审查回执。
 
 维护结果说明修改了哪些技能和副本。仅报告实际执行的工作，不声称未运行的检查通过。平台发现和既有 CLI 对新模板的兼容性需要实际使用时再确认。
+
+共同来源记录见 [.template-spec/agents/matt-skills-adaptation.md](../../.template-spec/agents/matt-skills-adaptation.md)。维护时区分原始引入和本次比较，不用本地内容哈希覆盖上游哈希。Backend 继承共享内容时保留共同来源，专有覆盖与平台元数据仍以该 profile 为准。
+
+来源说明需同时加入根与 Backend 两种安装模式的 `skillReferences`，不能只放在不分发的 `.template-source`。更新受影响 Backend 已有 `effectiveHash` 时，按有效技能树的相对路径排序计算 SHA-256：Node `localeCompare` 排序；依次输入路径、NUL、内容、NUL；无 NUL 的 UTF-8 文本将 CRLF 归一为 LF；忽略 `.DS_Store`、`__pycache__`、`.iml/.pyc/.pyo`。保留原文件属性；根锁没有该字段时不补加。无需恢复旧生成器。

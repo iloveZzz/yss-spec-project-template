@@ -8,61 +8,18 @@ tracker:
   remote_mirror: false
 ---
 
-功能包根只从 `.template-spec/agents/issue-tracker.md` 的 `tracker.root` 读取；本文 `.work/` 路径是新项目示例，已有项目沿用已配置的根。
-
 # Issue tracker: Local Markdown
 
-Issues and specs for this repo live as markdown files in `.work/`.
+实际 `.template-spec/agents/issue-tracker.md` 的 frontmatter 是权威配置。以下 `.work/` 仅是新项目示例；已有项目使用 `tracker.root`，Git remote 不改变 tracker。历史目录可只读诊断；重复资产只暂停冲突写入，不自动搬迁、合并或覆盖。
 
-The persisted tracker configuration above is authoritative. A Git remote is a code host only; do not switch to GitHub or GitLab unless the project configuration is explicitly changed.
+按当前需求创建文件，不预建 gates、verification 或整个生命周期目录。已有规格通常为 `<root>/<feature>/spec.md`；业务票和实现 Slice 沿用项目现有目录及 ID，多个票各有文件。普通讨论无需保存。只有用户要求保存、更新或发布到本地 tracker 时写入对应文件。
 
-The legacy roots above are read-only migration sources. New Local Markdown output must use `.work/`; if legacy and canonical assets coexist, return `conflict` instead of overwriting either side.
+评论追加在 `## Comments`，状态变化说明原因；triage 标签映射见配置的三条默认 [标签](triage-labels.md)，已有用户映射优先。外部镜像只有获授权才更新，不改变本地权威性。
 
-## Conventions
+## Wayfinding
 
-- One feature per directory: `.work/<feature-slug>/`
-- The spec is `.work/<feature-slug>/spec.md`
-- Implementation issues are one file per ticket at `.work/<feature-slug>/issues/<NN>-<slug>.md`, numbered from `01` — never a single combined tickets file
-- Triage state is recorded as a `Status:` line near the top of each issue file (see `triage-labels.md` for the role strings)
-- Comments and conversation history append to the bottom of the file under a `## Comments` heading
-
-## YSS lifecycle extension
-
-When `yss-product-lifecycle` is active, the same `.work/<feature-slug>/` directory is the complete local feature package. Keep the Matt files above and use these lifecycle evidence directories:
-
-```text
-.work/<feature-slug>/
-├── map.md
-├── plan/
-├── spec.md
-├── spec-delta/
-├── parent-ticket.md
-├── design/
-├── api/
-├── architecture/
-├── gates/
-├── verification/
-└── issues/01-<slug>.md
-```
-
-`parent-ticket.md` is the local functional parent Ticket. The lifecycle does not require a remote issue when `local-markdown` is the configured primary tracker. GitHub / GitLab URLs may be recorded as optional mirrors without changing local authority.
-
-## When a skill says "publish to the issue tracker"
-
-Create a new file under `.work/<feature-slug>/` (creating the directory if needed).
-
-## When a skill says "fetch the relevant ticket"
-
-Read the file at the referenced path. The user will normally pass the path or the issue number directly.
-
-## Wayfinding operations
-
-Used by `/wayfinder`. The **map** is a file with one **child** file per ticket.
-
-- **Map**: `.work/<effort>/map.md` — the Notes / Decisions-so-far / Fog body.
-- **Child ticket**: `.work/<effort>/issues/NN-<slug>.md`, numbered from `01`, with the question in the body. A `Type:` line records the ticket type (`research`/`prototype`/`grilling`/`task`); a `Status:` line records `claimed`/`resolved`.
-- Wayfinder's `Status: claimed/resolved` is a temporary work state, not one of the five triage roles. Promote a child ticket to a canonical triage `Status:` before using it as a delivery Ticket.
-- **Blocking**: a `Blocked by: NN, NN` line near the top. A ticket is unblocked when every file it lists is `resolved`.
-- **Frontier**: scan `.work/<effort>/issues/` for files that are open, unblocked, and unclaimed; first by number wins.
-- **Claim**: set `Status: claimed` and save before any work.
-- **Resolve**: append the answer under an `## Answer` heading, set `Status: resolved`, then append a context pointer (gist + link) to the map's Decisions-so-far in `map.md`.
+- 地图沿用 `<root>/<effort>/map.md`；子问题通常为 `issues/NN-<slug>.md`。沿用已有编号，不覆盖同名文件。
+- `Type:` 保存唯一的 research/prototype/grilling/task 方法类型，恢复时读取此字段，不从正文重新分类。用户明确的本次纠正可用于本次工作，写回字段仍需授权；缺失、未知或冲突且无法消歧时只澄清相关选择。Wayfinder 的 `Status: claimed/resolved` 只是决策工作状态，与 triage 分类分别解释，不强制转换为某个交付资格。
+- `Blocked by:` 使用真实路径或本地图内无歧义编号；读取每个阻塞对象的实际状态，未知状态不得当作已解决。前沿是未解决、无未解决阻塞且未被认领的子问题，按地图顺序处理。
+- 仅授权认领时写 claimed；文件状态不是原子锁，写前复读并协调并发。只读任务可以分析，不先写文件。
+- 解决时在授权范围追加答案、更新状态及地图决策引用。解决决策不表示业务实现完成；不自动删除旧讨论或关闭其他票。
