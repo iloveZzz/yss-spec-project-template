@@ -272,9 +272,18 @@
       "skills": [
         "setup-yss-harness",
         "yss-product-lifecycle",
-        "to-spec",
+        "yss-research",
+        "yss-stage-decision",
         "grilling",
         "domain-modeling",
+        "wayfinder",
+        "to-spec",
+        "yss-design-system",
+        "prototype",
+        "prototype-review",
+        "to-tickets",
+        "triage",
+        "llm-wiki",
         "i-have-adhd",
         "handoff"
       ],
@@ -334,7 +343,6 @@
         "codebase-design": [
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
-        "competitive-intelligence": [],
         "diagnosing-bugs": [
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
@@ -405,7 +413,9 @@
           ".template-spec/engineering/backend-platforms.md",
           ".template-spec/engineering/backend-platforms.json"
         ],
-        "yss-design-system": [],
+        "yss-design-system": [
+          ".template-spec/design/tokens/variables.css"
+        ],
         "yss-distributed-id": [],
         "yss-domain": [],
         "yss-dto": [
@@ -424,7 +434,6 @@
           ".template-spec/agents/issue-tracker.md",
           ".template-spec/templates/spec-template.md"
         ],
-        "yss-prototype-stage": [],
         "yss-repository": [
           ".template-spec/agents/backend-architecture-profiles.md"
         ],
@@ -455,13 +464,19 @@
       "skills": [
         "setup-yss-harness",
         "yss-product-lifecycle",
-        "grilling",
         "yss-research",
+        "yss-stage-decision",
+        "grilling",
         "domain-modeling",
+        "wayfinder",
         "to-spec",
+        "yss-design-system",
+        "prototype",
+        "prototype-review",
+        "to-tickets",
+        "triage",
+        "llm-wiki",
         "i-have-adhd",
-        "code-review",
-        "implement",
         "handoff"
       ],
       "files": [
@@ -492,7 +507,6 @@
         "codebase-design": [
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
-        "competitive-intelligence": [],
         "diagnosing-bugs": [
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
@@ -563,7 +577,9 @@
           ".template-spec/engineering/backend-platforms.md",
           ".template-spec/engineering/backend-platforms.json"
         ],
-        "yss-design-system": [],
+        "yss-design-system": [
+          ".template-spec/design/tokens/variables.css"
+        ],
         "yss-distributed-id": [],
         "yss-domain": [],
         "yss-dto": [
@@ -582,7 +598,6 @@
           ".template-spec/agents/issue-tracker.md",
           ".template-spec/templates/spec-template.md"
         ],
-        "yss-prototype-stage": [],
         "yss-repository": [
           ".template-spec/agents/backend-architecture-profiles.md"
         ],

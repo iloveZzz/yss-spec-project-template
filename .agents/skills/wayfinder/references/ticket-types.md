@@ -1,4 +1,4 @@
-# 决策 Ticket 类型
+# 决定类型
 
 ## Ticket Types
 

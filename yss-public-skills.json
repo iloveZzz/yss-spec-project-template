@@ -18,7 +18,6 @@
     "yss-mybatis",
     "yss-openapi-governance",
     "yss-product-lifecycle",
-    "yss-prototype-stage",
     "yss-repository",
     "yss-resilience4j",
     "yss-security-algorithm",
@@ -27,7 +26,20 @@
     "yss-userinfo",
     "yss-validation",
     "yss-web-controller",
-    "yss-backend-spec-review"
+    "yss-backend-spec-review",
+    "yss-research",
+    "yss-stage-decision",
+    "grilling",
+    "domain-modeling",
+    "wayfinder",
+    "to-spec",
+    "prototype",
+    "prototype-review",
+    "to-tickets",
+    "triage",
+    "llm-wiki",
+    "i-have-adhd",
+    "handoff"
   ],
   "groupings": [
     {
@@ -35,7 +47,6 @@
       "description": "用于 CLI、Skills 安装、规格任务整理与技能来源维护。",
       "skills": [
         "setup-yss-harness",
-        "yss-product-lifecycle",
         "yss-skill-source-index-refresh"
       ]
     },
@@ -55,11 +66,24 @@
       ]
     },
     {
-      "title": "产品设计",
-      "description": "用于 YSS 设计系统与产品原型阶段的技能。",
+      "title": "Spec 研究、设计与交付",
+      "description": "用于研究、业务分析、澄清、完整规格、原型及说明；显式入口遵循原调用政策。",
       "skills": [
+        "yss-product-lifecycle",
+        "yss-research",
+        "yss-stage-decision",
+        "grilling",
+        "domain-modeling",
+        "wayfinder",
+        "to-spec",
         "yss-design-system",
-        "yss-prototype-stage"
+        "prototype",
+        "prototype-review",
+        "to-tickets",
+        "triage",
+        "llm-wiki",
+        "i-have-adhd",
+        "handoff"
       ]
     },
     {

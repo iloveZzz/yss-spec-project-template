@@ -71,16 +71,6 @@
           ".workbuddy/skills"
         ]
       },
-      "competitive-intelligence": {
-        "source": "competitive-intelligence",
-        "sourceType": "local",
-        "skillPath": "sales/skills/competitive-intelligence/SKILL.md",
-        "effectiveHash": "66927a37bfeb3af76f8378e88ddb5b63de671f2965b330cf36cc9746ff831ac7",
-        "targets": [
-          ".agents/skills",
-          ".workbuddy/skills"
-        ]
-      },
       "diagnosing-bugs": {
         "source": "mattpocock/skills",
         "sourceType": "github",
@@ -121,7 +111,7 @@
         "source": "mattpocock/skills",
         "sourceType": "github",
         "skillPath": "skills/productivity/grilling/SKILL.md",
-        "effectiveHash": "452aa750ac63cdba465cfd5031bfdbe27322e8150226db2d5cfc1f88c7d0bd2a",
+        "effectiveHash": "14d010cbd3aa6298769597216dbde1586422ff8075374521fe4e9fc744f82cf7",
         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
         "upstreamHash": "0ca4cfe5105d79c6ef6755491492e056c43e88b82666376d8ecd7fac695d96e6",
         "adaptationRef": ".template-spec/agents/matt-skills-adaptation.md",
@@ -330,7 +320,7 @@
         "source": "mattpocock/skills",
         "sourceType": "github",
         "skillPath": "skills/engineering/to-tickets/SKILL.md",
-        "effectiveHash": "2caee132a095ebac93e1593e981c3e5319bf3f31ed53f816e6368d670ae782db",
+        "effectiveHash": "1f219e85b7bcc14f6eddc8ff64d9e302f552b572aaf91195ce9d43f2b3d5c0c4",
         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
         "upstreamHash": "597a1a0af4f7391ab459a02a3f33576109b6bc61ecdc5e7e05149336858b4f29",
         "adaptationRef": ".template-spec/agents/matt-skills-adaptation.md",
@@ -343,7 +333,7 @@
         "source": "mattpocock/skills",
         "sourceType": "github",
         "skillPath": "skills/engineering/triage/SKILL.md",
-        "effectiveHash": "9d3bca0f7445f30a2899a7aba286035f6fc1569aa763eb65e6029f2acd105ffc",
+        "effectiveHash": "318f9286e20e0acf3d9f04929fcd1f581871033c746562e483ea185060129772",
         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
         "upstreamHash": "461668611d1bd0eeb0533f347c11690a556c966a75938363a171914dcc42481a",
         "adaptationRef": ".template-spec/agents/matt-skills-adaptation.md",
@@ -366,7 +356,7 @@
         "source": "mattpocock/skills",
         "sourceType": "github",
         "skillPath": "skills/engineering/wayfinder/SKILL.md",
-        "effectiveHash": "7261806c1654a39fa91c17010e28a8d9b2858731fc50902058cbb712bed5df1d",
+        "effectiveHash": "4c7e17d062b137cc1eefd5210245bd448214888b37a78ecf716035e1f45befdc",
         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
         "upstreamHash": "93d2a866764b048ad641e82e27e7a1940fc370e7933470bffeb937fa1fb3922b",
         "adaptationRef": ".template-spec/agents/matt-skills-adaptation.md",
@@ -532,7 +522,7 @@
         "source": "mattpocock/skills",
         "sourceType": "github",
         "skillPath": "skills/engineering/research/SKILL.md",
-        "effectiveHash": "40d8908343017b3d4384d2070efcb403c457a2c92d91dd1f46d19f5345e25e77",
+        "effectiveHash": "80f028e97e685c63460c801e6fe5e68a77181d2f804441b7be697e40a0da869f",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"

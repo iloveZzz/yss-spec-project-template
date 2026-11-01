@@ -1,16 +1,18 @@
 ---
 name: yss-design-system
-description: 独立或在已有项目中开展低保真、高保真与按需交互设计，复用项目规范并适配 Vue 组件库。
+description: 设计信息结构、流程、内容与视觉，制作产品 UI 原型及交互说明；完整 Spec 交付必须包含适当形式的原型。
 ---
 
-# 按需产品设计
+# 产品设计与 UI 原型
 
-根据产品问题开展设计，使用 [按需设计规范](references/spec-design.md)。读取项目已有设计、页面和组件约定；缺规范时提出可审阅的设计建议，不虚构已有规范或批准。
+承担产品设计和 UI 原型制作。先读已有规格、业务决定、DESIGN.md、页面与组件约定，按 [设计方法](references/spec-design.md) 明确任务、信息结构、操作及状态。缺少事实交给 `.agents/skills/yss-research/SKILL.md`；业务取舍交给用户，不用视觉选择替代业务决定。
 
-按任务补充读取：新项目浏览器高保真使用 [Vue 原型准备](references/shadcn-vue-prototype.md)，新后台且无设计基线时参考可调整的 [高保真主题](references/high-fidelity-default-theme.md)；Vue 组件与主题适配见 [组件库适配](references/vue-library-adaptation.md)；页面组织见 [页面组合](references/page-composition.md)；设计评议和已有视觉基线核对见 [设计评议](references/design-review.md)。项目已采用相应 YSS 原型主题时可参考 [原型主题映射](references/prototype-default-theme.md)。
+完整 Spec 交付包含完整规格、原型设计、原型及交互说明。原型必须有，形式和精度按风险选择：核心任务含操作或状态变化时提供可操作闭环；纯展示可用静态设计；无 UI 由 `.agents/skills/prototype/SKILL.md` 提供业务逻辑或状态原型。普通查询、局部改稿只完成当前范围，不自动扩成完整产品设计。
 
-独立使用时按任务选择线框、高保真或必要的交互原型；新项目高保真默认使用 Vue + shadcn-vue 的浏览器页面，用户可要求其他形式；其他产品设计技能可用时按需协作。已有正式合同继续按原合同核验；普通设计不要求预先选择 H1/H2、OpenAPI、生产组件或固定 QA 矩阵。
+按需读取 [产品原型与说明](references/product-prototype.md)。产品 UI 的低保真草稿和完善版统一使用 [Vue + shadcn-vue](references/shadcn-vue-prototype.md)，在同一页面与场景上逐步完善，无设计基线的后台可参考可调整的 [主题起点](references/high-fidelity-default-theme.md)；已有项目沿用实际规范。页面组合见 [页面模式](references/business-patterns.md)、[组件配方](references/component-recipes.md) 和 [页面组织](references/page-composition.md)。有实质方向取舍时用 [方案比较](references/concept-comparison.md)，不强制多方案。
 
-只对当前产物及声称的范围检查。静态视觉不证明交互，原型操作未执行不写通过；复杂状态或业务规则交回产品设计与 Spec，不通过视觉润色替用户决定。
+产品页面、草稿、工作区评审和候选比较工具，有对应 shadcn 组件就直接使用：Button、Input/Textarea、Select/Combobox、Checkbox、Field/Label、InputGroup、Collapsible 及对应弹层。不以原生控件加相似 CSS 代替，不因临时或评审用途豁免。允许 form、布局/语义标签、链接、iframe、SVG、Vite HTML 挂载页，以及组件内部 DOM 和隐藏输入；不提供独立 HTML 轻量路线。不为 Form 名称新增表单库。草稿方法见 [低保真演练](references/low-fidelity-exercise.md)。
 
-设计成果保存到项目约定或用户指定的位置，没有约定时在当前任务目录新建清晰的设计目录；不覆盖既有成果。返回设计来源、范围、实际检查、允许差异与未解决问题，不自行批准、冻结或授予实施资格。
+制作方按 `.agents/skills/prototype-review/references/review-method.md` 操作验证并修正；需要单独复核时使用 `.agents/skills/prototype-review/SKILL.md`。静态画面不证明交互，模拟结果不证明真实服务；未执行或工具受限如实记录。原型使用的框架不替研发决定生产技术栈，不自动修改生产代码。
+
+保存到项目已有或用户指定位置，没有约定时新建清晰任务目录，保护已有成果。附规则与验收对应、查看方式、模拟范围、实际检查和未覆盖项；真实业务未决项回到规格。不自行批准、冻结或授予实施资格。

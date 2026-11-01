@@ -51,7 +51,6 @@ skill_scope:
   - yss-hook
   - yss-microapp-commit
   - yss-page-module-development
-  - yss-prototype-stage
   - yss-ui
   - yss-use-table-height
   - yss-use-tree-height

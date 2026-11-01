@@ -1,65 +1,27 @@
-# Logic Prototype
+# 可操作的逻辑原型
 
-A single, self-contained HTML file — a **shareable demo** — that lets anyone drive a state model by clicking buttons. Use this when the question is about **business logic, state transitions, or data shape** — the kind of thing that looks reasonable on paper but only feels wrong once you push it through real cases.
+以一个自包含 HTML 文件回答一个业务逻辑或状态问题；无须框架或服务即可打开。已有原型可按授权局部调整，不覆盖其他文件，不为复用试验建立生产架构。
 
-Because it's one file with nothing to install, you can hand it to a non-developer — a designer, a PM, a domain expert — and let them feel the model for themselves. So it speaks their language, not the code's.
+## 先确定问题
 
-## When this is the right shape
+在页面顶部写明本次问题、已知规则和模拟范围。代表输入与判定标准来自当前 Spec 或用户确认；只有示例数据时明确标注，不能将模拟结论写成真实业务结果。
 
-- "I'm not sure if this state machine handles the edge case where X then Y."
-- "Does this data model actually let me represent the case where..."
-- "I want to feel out what the API should look like before writing it."
-- Anything where someone wants to **press buttons and watch state change**.
+## 组织模型与页面
 
-产品视觉问题使用适用产品设计技能，本试验只验证逻辑与状态。
+模型可用纯函数、状态机或 reducer 表达，只承担当前问题；页面调用模型呈现动作和结果。模型与 DOM 分开便于检查，但不承诺代码可直接生产使用。默认内存状态，不接真实数据库、账号、支付或外部服务。
 
-### 1. State the question
+页面用业务语言提供：
 
-Before writing code, write down what state model and what question you're prototyping. One paragraph, at the top of the demo (in a visible intro, not just a comment). A logic prototype that answers the wrong question is pure waste — make the question explicit so it can be checked later, whether the user is watching now or returning to it AFK.
+- 问题和一行使用说明。
+- 可读的当前状态、相关字段和刚刚变化的内容，不只显示 JSON。
+- 可执行动作及不允许动作的原因，失败不能悄悄改变状态。
+- 代表场景的操作顺序与预期结果，至少覆盖当前风险对应的正常和异常组合。
+- 返回已知起点的重置方式，连续操作和重试结果可解释。
 
-### 2. Isolate the logic in a portable module
+视觉保持清晰可读，键盘可操作；复杂视觉方向交给产品设计。无需为试验构建通用状态框架或测试套件，但必须实际操作承诺路径，重要规则可用少量断言核对；未运行只能报告草稿。
 
-Put the actual logic — the bit that's answering the question — in a single `<script>` block written as a small, pure module that could be lifted out and dropped into the real codebase later. The page around it is throwaway; this module isn't.
+## 记录答案
 
-The right shape depends on the question:
+说明实际输入、动作、观察与判定是否一致，保留失败和未覆盖情况。把已确认的业务规则回写当前规格并保持验收一致，新的业务取舍交回用户。
 
-- **A pure reducer** — `(state, action) => state`. Good when actions are discrete events and state is a single value.
-- **A state machine** — explicit states and transitions. Good when "which actions are even legal right now" is part of the question.
-- **A small set of pure functions** over a plain data type. Good when there's no implicit current state — just transformations.
-- **A class or module with a clear method surface** when the logic genuinely owns ongoing internal state.
-
-Pick whichever shape best fits the question being asked, *not* whichever is easiest to wire to a page. Keep it pure: no DOM, no `document`, no button handlers reaching inside it. The page calls into it; nothing flows the other direction. This is what makes the prototype useful past its own lifetime: once the question's answered, the validated reducer / machine / function set lifts into the real module on its own.
-
-### 3. Build the shareable HTML file
-
-One file, plain HTML/CSS/JS — no framework, no bundler, no server, everything inline so it opens by double-click and survives being emailed around. Anyone should be able to run it by opening it.
-
-Write it for a non-developer. Every label is in **domain language**, not code — buttons and state read like the business, not the reducer. Explain in plain words what's happening.
-
-Lay it out with a clean hierarchy, top to bottom:
-
-1. **Title and one-line explanation** of what this demo lets you explore (the question from step 1).
-2. **Current state** — the full relevant state, rendered as a readable panel (labelled fields, not a raw JSON dump), re-rendered after every click so the change is visible. Where it helps a non-developer follow, call out what just changed.
-3. **Free-play buttons** — one button per action, always available, so anyone can poke at the model in any order. Each click dispatches its action and re-renders the state.
-4. **Guided walkthroughs** — a set of **scenarios**, one per tab. Each tab holds a short plain-language description of the scenario — the situation it sets up and what to watch for — and underneath it, the ordered **buttons to press** for that scenario. Each step is a real button: clicking it performs that action and moves to the next step. Starting a walkthrough resets to a known initial state so the scenario runs the same way every time.
-
-Choose scenarios that demonstrate the awkward cases — the happy path, a tricky edge case, an attempt at something that should be illegal — the ones hard to reason about on paper.
-
-Keep it beautiful but restrained: clean typography, generous spacing, one accent colour. No animations, no gimmicks — nothing that competes with the state and the buttons.
-
-### 4. Hand it over
-
-Send them the file, or open it for them. They'll click through the walkthroughs and free-play whenever they get to it; the interesting moments are when they say "wait, that shouldn't be possible" or "huh, I assumed X would be different" — those are the bugs in the _idea_, which is the whole point. If they want new actions or a new scenario, add them. Prototypes evolve.
-
-### 5. Capture the answer and the prototype
-
-Record the question, actual observations and remaining limits. Save the prototype only in the authorized location; do not automatically create a throwaway branch, send files, or promote the logic into production. Reuse in a real module requires the corresponding implementation scope and verification.
-
-## Anti-patterns
-
-- **Keep validation proportional.** Use representative interactions or a small check when the question needs it; do not build a new test framework for a temporary experiment.
-- **Don't wire it to the real database.** Use in-memory state unless the question is specifically about persistence.
-- **Don't generalise.** No "what if we wanted to support X later." The prototype answers one question.
-- **Don't blur the logic and the page together.** If the pure module references the DOM, `document`, or button handlers, it's no longer liftable. Keep the page as a thin shell over a pure module.
-- **Don't reach for a framework, bundler, or server.** One file the recipient double-clicks; a React app or a dev server defeats "shareable".
-- **Don't ship the HTML shell into production.** The page is optimised for being clicked through by hand. The logic module behind it is the bit worth keeping.
+交付原型位置、打开方式、操作与重置说明、模拟边界和实际检查。代码阅读、单次点击或截图不证明全部状态正确；试验结果不代表真实组件、接口、性能或生产正确性。不自动捕获分支、封存或迁入生产模块。

@@ -2,7 +2,7 @@ schema_version: 3
 profile_id: harness.spec-template
 status: active
 name: 非技术 Spec
-purpose: 澄清业务需求、形成非技术规格与必要产品设计，发布到所选 Issue tracker 供下游引用。
+purpose: 完成非技术规格、必需产品原型及说明，设计深度按风险选择，按授权保存或发布供研发承担技术设计与实现。
 spec_workflow: matt-spec-v1
 execution:
   side: specification

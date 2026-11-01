@@ -6,14 +6,22 @@ canonical_content_root: .agents/skills
 instance_distribution:
   schema_version: 1
   initial_skills:
-  - yss-product-lifecycle
   - setup-yss-harness
+  - yss-product-lifecycle
   - yss-research
+  - yss-stage-decision
   - grilling
   - domain-modeling
-  - yss-stage-decision
+  - wayfinder
+  - to-spec
+  - yss-design-system
+  - prototype
+  - prototype-review
+  - to-tickets
+  - triage
+  - llm-wiki
   - i-have-adhd
-  - code-review
+  - handoff
   runtimes:
   - claude
   - workbuddy
@@ -766,7 +774,28 @@ skill_dependencies:
   - skill: i-have-adhd
     type: context-conditional
     when: lifecycle-document-output
+  yss-design-system:
+  - skill: prototype-review
+    type: context-required
+  - skill: prototype
+    type: context-conditional
+    when: logic-or-state-prototype
   yss-product-lifecycle:
+  - skill: yss-research
+    type: context-conditional
+    when: fact-gap
+  - skill: yss-stage-decision
+    type: context-conditional
+    when: business-analysis
+  - skill: yss-design-system
+    type: context-conditional
+    when: product-ui-design
+  - skill: prototype
+    type: context-conditional
+    when: non-ui-or-logic-question
+  - skill: prototype-review
+    type: context-conditional
+    when: artifact-review
   - skill: i-have-adhd
     type: context-conditional
     when: lifecycle-document-output
@@ -784,14 +813,6 @@ skill_dependencies:
     when: backend-persistence-impact
     stacks:
     - java
-  yss-prototype-stage:
-  - skill: i-have-adhd
-    type: context-conditional
-    when: lifecycle-document-output
-  - skill: prototype-review
-    type: review-only
-  - skill: yss-design-system
-    type: coordination-only
   yss-ddd-scaffold-generator:
   - skill: alibaba-java-code-style
     type: context-required
@@ -922,6 +943,14 @@ invocation_contract:
       invocation_mode: user
       primary_output: maintenance-operation
   overrides:
+    triage:
+      invocation_mode: user
+    wayfinder:
+      invocation_mode: user
+    to-tickets:
+      invocation_mode: user
+    to-spec:
+      invocation_mode: user
     release-yss-cli:
       invocation_mode: both
       trigger_conditions:
@@ -940,13 +969,6 @@ invocation_contract:
       - unrelated-conversation
       - user-disabled
       primary_output: document-writing-assistance
-    yss-prototype-stage:
-      invocation_mode: model
-      trigger_conditions:
-      - impact:prototype
-      exclusion_conditions:
-      - no-product-design-impact
-      primary_output: artifact.prototype-deliverable
     git-commit-core:
       invocation_mode: user
       trigger_conditions:
@@ -1001,7 +1023,12 @@ invocation_contract:
     llm-wiki:
       invocation_mode: user
     yss-stage-decision:
-      invocation_mode: user
+      invocation_mode: both
+      trigger_conditions:
+      - business-analysis-request
+      exclusion_conditions:
+      - technical-design-only
+      primary_output: business-analysis-and-options
     yss-technical-design:
       invocation_mode: user
     yss-tactical-design:
@@ -1032,28 +1059,21 @@ skills:
 - id: code-review
   layer: core
   maturity: supported
-  instance_default_discoverable: true
+  instance_default_discoverable: false
   aliases: []
   impacts:
   - quality
 - id: codebase-design
   layer: core
   maturity: supported
-  instance_default_discoverable: true
+  instance_default_discoverable: false
   aliases: []
   impacts:
   - quality
-- id: competitive-intelligence
-  layer: core
-  maturity: supported
-  instance_default_discoverable: true
-  aliases: []
-  impacts:
-  - discovery
 - id: diagnosing-bugs
   layer: core
   maturity: supported
-  instance_default_discoverable: true
+  instance_default_discoverable: false
   aliases: []
   impacts:
   - quality
@@ -1103,14 +1123,14 @@ skills:
 - id: maintaining-skills
   layer: core
   maturity: supported
-  instance_default_discoverable: true
+  instance_default_discoverable: false
   aliases: []
   impacts:
   - template-maintenance
 - id: publish-skills-sh
   layer: core
   maturity: verified
-  instance_default_discoverable: true
+  instance_default_discoverable: false
   aliases: []
   impacts:
   - template-maintenance
@@ -1123,9 +1143,9 @@ skills:
   - backend
   stack: java
 - id: prototype
-  layer: maintainer-only
+  layer: core
   maturity: supported
-  instance_default_discoverable: false
+  instance_default_discoverable: true
   aliases: []
   impacts:
   - prototype
@@ -1154,7 +1174,7 @@ skills:
 - id: resolving-merge-conflicts
   layer: core
   maturity: supported
-  instance_default_discoverable: true
+  instance_default_discoverable: false
   aliases: []
   impacts:
   - quality
@@ -1175,28 +1195,28 @@ skills:
 - id: tdd
   layer: core
   maturity: supported
-  instance_default_discoverable: true
+  instance_default_discoverable: false
   aliases: []
   impacts:
   - quality
 - id: to-spec
   layer: compatibility
   maturity: supported
-  instance_default_discoverable: false
+  instance_default_discoverable: true
   aliases: []
   impacts:
   - lifecycle
 - id: to-tickets
   layer: compatibility
   maturity: supported
-  instance_default_discoverable: false
+  instance_default_discoverable: true
   aliases: []
   impacts:
   - lifecycle
 - id: triage
   layer: compatibility
   maturity: supported
-  instance_default_discoverable: false
+  instance_default_discoverable: true
   aliases: []
   impacts:
   - lifecycle
@@ -1210,7 +1230,7 @@ skills:
 - id: wayfinder
   layer: maintainer-only
   maturity: supported
-  instance_default_discoverable: false
+  instance_default_discoverable: true
   aliases: []
   impacts:
   - lifecycle
@@ -1288,7 +1308,7 @@ skills:
 - id: yss-technical-design
   layer: core
   maturity: draft
-  instance_default_discoverable: true
+  instance_default_discoverable: false
   aliases: []
   impacts:
   - backend
@@ -1336,7 +1356,7 @@ skills:
 - id: yss-openapi-governance
   layer: core
   maturity: supported
-  instance_default_discoverable: true
+  instance_default_discoverable: false
   aliases: []
   impacts:
   - api
@@ -1347,13 +1367,6 @@ skills:
   aliases: []
   impacts:
   - lifecycle
-- id: yss-prototype-stage
-  layer: core
-  maturity: supported
-  instance_default_discoverable: true
-  aliases: []
-  impacts:
-  - prototype
 - id: yss-repository
   layer: specialist
   maturity: supported
@@ -1372,7 +1385,7 @@ skills:
   stack: java
 - id: yss-stage-decision
   layer: core
-  maturity: draft
+  maturity: supported
   instance_default_discoverable: true
   aliases: []
   impacts:

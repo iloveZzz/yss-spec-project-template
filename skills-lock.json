@@ -52,16 +52,6 @@
           ".workbuddy/skills"
         ]
       },
-      "competitive-intelligence": {
-        "source": "competitive-intelligence",
-        "sourceType": "local",
-        "skillPath": "sales/skills/competitive-intelligence/SKILL.md",
-        "targets": [
-          ".agents/skills",
-          ".claude/skills",
-          ".workbuddy/skills"
-        ]
-      },
       "diagnosing-bugs": {
         "source": "mattpocock/skills",
         "sourceType": "github",
@@ -513,16 +503,6 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-product-lifecycle/SKILL.md",
-        "targets": [
-          ".agents/skills",
-          ".claude/skills",
-          ".workbuddy/skills"
-        ]
-      },
-      "yss-prototype-stage": {
-        "source": "project",
-        "sourceType": "local",
-        "skillPath": ".agents/skills/yss-prototype-stage/SKILL.md",
         "targets": [
           ".agents/skills",
           ".claude/skills",

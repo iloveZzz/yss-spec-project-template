@@ -47,7 +47,6 @@
       ".agents/skills/prototype/agents",
       ".agents/skills/yss-design-system",
       ".agents/skills/yss-product-lifecycle",
-      ".agents/skills/yss-prototype-stage",
       ".template-spec/process/process-glossary.md",
       ".template-spec/agents/digital-human-roles.md"
     ],
@@ -169,7 +168,6 @@
         "codebase-design": [
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
-        "competitive-intelligence": [],
         "diagnosing-bugs": [
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
@@ -313,7 +311,6 @@
         "codebase-design": [
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
-        "competitive-intelligence": [],
         "diagnosing-bugs": [
           ".template-spec/agents/matt-skills-adaptation.md"
         ],

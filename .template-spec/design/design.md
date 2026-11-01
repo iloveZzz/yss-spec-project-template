@@ -2,7 +2,7 @@
 
 > 规范源：仓库根目录 [`DESIGN.md`](../../DESIGN.md)。其中的 YAML frontmatter 和组件变体是视觉令牌的唯一事实来源；本文件只记录 YSS 的中文治理说明、产品生命周期衔接和验证要求。
 
-已核验 `matt-spec-v1` 的新 Spec 按 `yss-product-lifecycle` 与 `yss-prototype-stage` 根据当前问题和风险选择设计表达与检查。本文件的 H1/H2、六轴 QA、阶段资产及批准要求适用于采用相应历史合同的工作，不作为新 Spec 的通用前提；已有合同仍按原政策核验。
+本文件记录历史设计约定，不作为新 Spec 的默认流程。当前交付边界见本目录 README.md，产品设计和原型方法由 yss-design-system 维护。
 
 ## 与 DESIGN.md 的职责边界
 
@@ -285,7 +285,7 @@ H1/H2 原型使用 HTML/CSS/JavaScript：
 
 ## HTML 原型补充基线
 
-参见 `.agents/skills/yss-prototype-stage/references/html-prototype-practices.md`。复用现有六轴 QA 与 Visual Baseline，新增能力只补充其执行方式，不另建交接文档。原生语义优先，弹窗与自定义控件的 ARIA 属性必须对应真实键盘/焦点行为。样式采用项目 Token，关键反馈保留可读文本，场景重置后再采集浏览器证据。
+参见 `.agents/skills/yss-design-system/references/product-prototype.md`。复用现有六轴 QA 与 Visual Baseline，新增能力只补充其执行方式，不另建交接文档。原生语义优先，弹窗与自定义控件的 ARIA 属性必须对应真实键盘/焦点行为。样式采用项目 Token，关键反馈保留可读文本，场景重置后再采集浏览器证据。
 
 ## shadcn-vue 主要路线
 
