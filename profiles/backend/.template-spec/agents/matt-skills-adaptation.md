@@ -21,7 +21,7 @@
 | `setup-matt-pocock-skills` | 按明确目标配置 tracker | 已适配；文本与结构已核对 | `.agents/skills/setup-matt-pocock-skills/SKILL.md` |
 | `tdd` | 用户要求的测试优先方法 | 已适配；文本与结构已核对 | `.agents/skills/tdd/SKILL.md` |
 | `to-spec` | 复用讨论综合规格；Backend 保留研发定位 | 已适配；文本与结构已核对 | `.agents/skills/to-spec/SKILL.md` |
-| `to-tickets` | 业务票与实现 Slice 拆分 | 已适配；文本与结构已核对 | `.agents/skills/to-tickets/SKILL.md` |
+| `to-tickets` | Spec 显式拆业务票；Backend 按真实输入拆实现 Slice | 已适配；文本与结构已核对 | `.agents/skills/to-tickets/SKILL.md` |
 | `triage` | 已有条目的分析与授权更新 | 已适配；文本与结构已核对 | `.agents/skills/triage/SKILL.md` |
 | `wayfinder` | 决策地图与依赖前沿 | 已适配；文本与结构已核对 | `.agents/skills/wayfinder/SKILL.md` |
 | `writing-for-agents` | 条件引用与清晰指令 | 已适配；文本与结构已核对 | `.agents/skills/writing-for-agents/SKILL.md` |
@@ -42,3 +42,5 @@
 同次修订补齐 code-review、grilling、wayfinder 的已有委派分支独立上下文规则，以及 wayfinder 的方法类型保存、恢复与缺失/冲突处理。GitHub 关系命令示例经本机 gh 2.102.0 帮助核对；i-have-adhd 的发现描述明确包含 PR/MR 与复盘，保留既有调用政策。共享副本、Backend 有效内容和相关哈希已核对；场景只做文本核对，尚未验证安装宿主的实际发现/调用、远程关系写入或已安装项目升级。
 
 2026-11-01 Backend 完整研发适配：Backend 对 `implement` / `to-tickets` 新增同名文件覆盖，按已授权研发任务允许方法选择，保留共享来源、tracker 身份、真实关系与仓库/子模块/委派保护。共享 Spec 入口仍为显式调用。Backend 继承共享 references，并由 implement 持有构建部署手册方法；手册不授予部署权限。`tdd` 的共享发现描述与正文均限定明确测试优先请求，普通集成/回归测试不触发 TDD。原始 `sourceRevision` / `upstreamHash` 不变，Backend 的有效树哈希单独更新。这些适配不表示实际宿主已完成自动发现验证。
+
+2026-11-01 职责边界修订：Spec 的 to-tickets 仅在明确要求拆票时将规格组织为业务票，不增加必交付物或技术设计；Backend 同名覆盖只细化研发实现 Slice，直接消费既有 Spec/业务票/明确需求。两侧分别分发业务票和切片模板，保留原调用政策、tracker 授权与上游身份；现役研发切片模板由 Backend 持有。内容调整不代表已有实例或宿主行为已验证。

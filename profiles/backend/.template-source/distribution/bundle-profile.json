@@ -307,7 +307,6 @@
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "to-tickets": [
-          ".template-spec/templates/business-ticket-template.md",
           ".template-spec/templates/vertical-slice-ticket-template.md",
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
@@ -545,7 +544,6 @@
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "to-tickets": [
-          ".template-spec/templates/business-ticket-template.md",
           ".template-spec/templates/vertical-slice-ticket-template.md",
           ".template-spec/agents/matt-skills-adaptation.md"
         ],

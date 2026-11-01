@@ -280,7 +280,7 @@
         "source": "mattpocock/skills",
         "sourceType": "github",
         "skillPath": "skills/engineering/to-tickets/SKILL.md",
-        "effectiveHash": "69049a85e8381152172926adcb5be6afd9cbfa5d1e1878b9597115245e1a167b",
+        "effectiveHash": "84be2c5fdef1200517d2aa981fbe92e8f3585d08d3a9f7a1c87e086158aa1346",
         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
         "upstreamHash": "597a1a0af4f7391ab459a02a3f33576109b6bc61ecdc5e7e05149336858b4f29",
         "adaptationRef": ".template-spec/agents/matt-skills-adaptation.md",

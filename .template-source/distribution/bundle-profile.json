@@ -302,7 +302,6 @@
         ".template-spec/process/runtime-storage.md",
         ".template-spec/process/spec-workflow.json",
         ".template-spec/process/subagent-collaboration.md",
-        ".template-spec/templates/local-parent-ticket-template.md",
         ".template-spec/user-guide/cli/command-reference.md",
         ".template-spec/user-guide/cli/daily-and-targets.md",
         ".template-spec/user-guide/cli/error-index.md",
@@ -391,7 +390,6 @@
         ],
         "to-tickets": [
           ".template-spec/templates/business-ticket-template.md",
-          ".template-spec/templates/vertical-slice-ticket-template.md",
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "triage": [
@@ -454,7 +452,7 @@
         "yss-web-controller": []
       },
       "entries": {
-        "AGENTS.md": ".template-source/distribution/entries/project-AGENTS.md",
+        "AGENTS.md": ".template-source/distribution/entries/spec-project-AGENTS.md",
         "CONTEXT.md": ".template-source/distribution/entries/project-CONTEXT.md",
         "README.md": ".template-source/distribution/entries/spec-project-README.md",
         "yss-project.yaml": ".template-source/distribution/entries/project-identity.yaml"
@@ -555,7 +553,6 @@
         ],
         "to-tickets": [
           ".template-spec/templates/business-ticket-template.md",
-          ".template-spec/templates/vertical-slice-ticket-template.md",
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "triage": [
