@@ -14,6 +14,8 @@
 
 正文唯一来源为 [中文文档共用规范](../../.agents/skills/i-have-adhd/references/document-writing.md)。以下锚点保留作兼容入口。
 
+角色、状态、复杂条件、交互或变更需要关联阅读时，按 [图解表达](../../.agents/skills/i-have-adhd/references/visual-explanation.md) 选择必要形式，保留规则来源与未决项。简单说明不强制画图，图示不替代实际验证；方法正文只随文档配套技能维护。
+
 ### 先回答读者当前需要判断的问题
 
 见 [共用规范相同章节](../../.agents/skills/i-have-adhd/references/document-writing.md#先回答读者当前需要判断的问题)。

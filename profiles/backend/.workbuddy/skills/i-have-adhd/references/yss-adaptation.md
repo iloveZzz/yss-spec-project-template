@@ -19,3 +19,11 @@
 结构核对只能说明被核对的来源、路由和投影状态。中文文档质量需通过真实生成评估，不以结构检查或作者自检代替盲评效果。
 
 2026-10-31：普通 PR/MR 与复盘方法由包内 `pr-and-retro.md` 持有，原 document-writing 章节保留导航。按文档任务触发，不依赖治理或阶段批准；不从写作推导 CI、测试套件、关闭条目或发布授权。原始来源 revision/upstreamHash 不因此变化。
+
+## ShowMe 图解方法的补充来源
+
+2026-11-01 核验 HumanLayer `show-me`，固定提交 `69d5fc61d6ca6f7056d283a2ee2a045be741a1d6`；来源为 [技能正文](https://github.com/humanlayer/skills/blob/69d5fc61d6ca6f7056d283a2ee2a045be741a1d6/plugins/show-me/skills/show-me/SKILL.md)，完整许可保存在 [show-me-LICENSE.txt](show-me-LICENSE.txt)。该来源补充图解方法，不替换本技能原 `ayghri/i-have-adhd` 主来源、固定 revision、上游哈希或 LICENSE。
+
+共享方法见 [图解表达](visual-explanation.md)。保留上游最小视图、邻近短说明和变更对照的思路，增加 YSS 的业务状态/界面状态区别、规则引用、未决项、权限与交互教学样例。代码树不作为 Spec 默认要求；HTML 按宿主实际能力预览，不复制 macOS 专用 `open` 命令。原 ShowMe 的禁止隐式调用配置不引入，继续使用本技能的当前文档作用域。
+
+方法由本技能单独维护。独立公开消费者缺少共享技能时，按导出约定复制必要参考和许可到包内；分发副本只从此来源同步，不独立修改。不安装上游插件、hook 或在线渲染服务。

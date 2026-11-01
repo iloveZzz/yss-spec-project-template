@@ -117,7 +117,7 @@
         "source": "ayghri/i-have-adhd",
         "sourceType": "git",
         "skillPath": "skills/i-have-adhd/SKILL.md",
-        "effectiveHash": "19fb71ff2b7611db5e4fddff04ae83347bfcf131a8c6f61ea2f9177ae6ca3ada",
+        "effectiveHash": "c6d356736a492521d73df3923c232a8e8587e437225feba686de723b618ee101",
         "sourceRevision": "839872f9d1cd634fed642b4589ce7226199cc15f",
         "upstreamHash": "4c88635cbcb4765b63528d608d27589596840708e89607fda9c9fa5726c11f7e",
         "adaptationRef": ".agents/skills/i-have-adhd/references/yss-adaptation.md",
@@ -208,7 +208,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/publish-skills-sh/SKILL.md",
-        "effectiveHash": "0be63620879c2e9007a764a6fb48b5a5508e237dbd6cb490cf0904bb51cb93f5",
+        "effectiveHash": "ee3aa120350b8a4cccbafbe0a9ddae5deba52be36523e5a5cb8a61cc32446dd3",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"
@@ -525,7 +525,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-stage-decision/SKILL.md",
-        "effectiveHash": "df47b02ba0978c5926c7d059a064d1fa21afb7ad91e24e99a8a04d2e722a6178",
+        "effectiveHash": "7b777e59b06e4c37b7bae2ffe121c75d46c85b28854f3ac5ff7cd000827b95f9",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"
