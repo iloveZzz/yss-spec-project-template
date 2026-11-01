@@ -160,7 +160,7 @@
         "source": "mattpocock/skills",
         "sourceType": "github",
         "skillPath": "skills/engineering/implement/SKILL.md",
-        "effectiveHash": "30df098c9660251a69cd240ca072b55de1300b8a2ee73aa8314a841d18a32b1c",
+        "effectiveHash": "9f5408b3e771c8a45a4368607957bdb9e2bf0323365e8fceebdac9c13a209852",
         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
         "upstreamHash": "b49a049477c7eec7f8dd90745dbc3f27bf75617b832d5b5f33c55aab7638a12e",
         "adaptationRef": ".template-spec/agents/matt-skills-adaptation.md",
@@ -320,7 +320,7 @@
         "source": "mattpocock/skills",
         "sourceType": "github",
         "skillPath": "skills/engineering/to-tickets/SKILL.md",
-        "effectiveHash": "1f219e85b7bcc14f6eddc8ff64d9e302f552b572aaf91195ce9d43f2b3d5c0c4",
+        "effectiveHash": "69049a85e8381152172926adcb5be6afd9cbfa5d1e1878b9597115245e1a167b",
         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
         "upstreamHash": "597a1a0af4f7391ab459a02a3f33576109b6bc61ecdc5e7e05149336858b4f29",
         "adaptationRef": ".template-spec/agents/matt-skills-adaptation.md",
@@ -575,7 +575,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-tactical-design/SKILL.md",
-        "effectiveHash": "e19fa813ab74b2e0d4eab6dfa8fdbab57dd0bd798b30a6f6bb29436da68fc274",
+        "effectiveHash": "81f4c37d282328fc8400336cb3a4e15456d86278f12406e71d04e08d0ab9da47",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"
@@ -585,7 +585,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-technical-design/SKILL.md",
-        "effectiveHash": "82784eab844453342abca44dc89350e9a91875f6a87fe7ad40a7734f24568201",
+        "effectiveHash": "976a12d002a86ed2461d3f1023de653f8bdd19a8b8292795f3697d48787dfe58",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"

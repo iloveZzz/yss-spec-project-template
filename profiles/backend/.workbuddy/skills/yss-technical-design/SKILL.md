@@ -1,15 +1,14 @@
 ---
 name: yss-technical-design
-description: 根据需求与实际工程，按已有 DDD 或 MVC 架构设计后端行为和工程边界。
-disable-model-invocation: true
+description: 在后端任务需要架构、技术方案或详细设计判断时使用；沿用实际 DDD/MVC 工程，设计请求不自动授予实现权限。
 ---
 
 # 后端技术设计
 
-读取需求、实际工程结构和相关 YSS 技术资料，沿用工程现有架构与版本。新工程缺少影响实现的架构决定时集中澄清，不能把工具默认值当作业务决定。
+读取已有 Spec/验收、实际工程和相关技术资料，区分业务约束、工程事实与本次技术决定。沿用已有架构、依赖方向和版本；只有真正缺少影响方案的业务决定时定点澄清。
 
-DDD 设计聚合、不变量、Gateway、Application 编排与事务；MVC 设计 Controller、Service、Repository、用例规则与事务。说明数据模型、API 行为、错误处理、并发、幂等及外部依赖。
+按复杂度阅读 [架构、方案与详细设计方法](references/design-method.md)，在同一份权威说明中展开必要深度，不要求三份文档。设计请求只交付设计；包含实现的任务才继续改代码。局部修改只说明受影响的行为和取舍，不扩为全工程重构。
 
-按当前任务需要形成简明设计或直接落实到实现；使用 yss-tactical-design、yss-application、yss-repository、yss-web-controller 等相关技能。不要求固定技术合同、Schema 校验、阶段批准或门禁回执。
+DDD 聚合内部设计按需使用 `yss-tactical-design`；MVC 保留 Controller/Service/Repository，不增加 Domain/Gateway。模块接口与封装问题可用 `codebase-design`；实际实现选择对应分层技能。技术假设确需试验时使用 Backend `prototype`，只验证算法、状态或接口，不制作产品 UI，也不自动将试验迁入生产。
 
-平台和组件版本以项目 POM、实际源码和已有资料为依据；未知兼容性如实记录，不把设计完成当作已经运行成功。
+平台与精确组件 API 以 POM、当前源码和可读资料为依据，未知兼容性如实说明。不把设计完成当成运行成功，不要求技术合同、阶段批准或门禁回执。

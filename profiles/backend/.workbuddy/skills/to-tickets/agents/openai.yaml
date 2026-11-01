@@ -2,4 +2,4 @@ interface:
   display_name: "To Tickets"
   short_description: "按业务结果拆票并保留验收和依赖"
 policy:
-  allow_implicit_invocation: false
+  allow_implicit_invocation: true
