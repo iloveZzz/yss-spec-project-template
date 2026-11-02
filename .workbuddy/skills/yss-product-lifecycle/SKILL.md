@@ -1,6 +1,6 @@
 ---
 name: yss-product-lifecycle
-description: 组织 Spec 研究、业务分析、澄清、规格、产品原型及说明，完成非技术交付并按授权保存或发布。
+description: 组织 Spec 研究、业务分析、规格与产品原型；在准备将 Spec 或原型交给研发、生成交接提示词或通过 PR/MR 交付材料时使用。
 ---
 
 # Spec 工作路由

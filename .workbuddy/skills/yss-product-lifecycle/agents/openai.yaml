@@ -1,4 +1,4 @@
 interface:
   display_name: YSS Product Lifecycle
-  short_description: "组织完整规格、产品原型及说明的非技术交付"
+  short_description: "组织 Spec、产品原型及研发交接"
   default_prompt: 使用 $yss-product-lifecycle 按当前用户目标和已有工程资料完成任务，保留用户文件并如实说明实际结果。
