@@ -12,4 +12,4 @@ disable-model-invocation: true
 
 业务票仅在明确要求拆票时作为规格组织形式输出，不自动建票或增加第四类交付物。业务概念、唯一性与既有技术事实保留含义和来源，原型模拟不升级为生产契约；“确认 Spec”“准备交研发”不触发 DDL/索引、生产 API 或实现切片。明确技术设计或开发请求按研发任务承接，不改变本技能的业务规格职责。
 
-保存/发布使用 `.agents/skills/yss-product-lifecycle/references/spec-tracker.md`；没有 tracker 仍可完成授权草稿，实际发布前补明确配置。返回实际引用、检查、未决项和技术设计留给研发的边界，不自动批准、建 PR 或启动下游。
+保存/发布使用 `.agents/skills/yss-product-lifecycle/references/spec-tracker.md`；没有 tracker 仍可完成授权草稿，实际发布前补明确配置。交接提示按共享方法执行；返回实际引用、检查、未决项和技术设计留给研发的边界，不自动批准、建 PR 或启动下游。

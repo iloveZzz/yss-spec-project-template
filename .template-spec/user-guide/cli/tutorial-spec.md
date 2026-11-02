@@ -10,6 +10,19 @@
 
 业务票仅按明确拆票请求组织，不是第四类必交付物；Spec 的 to-tickets 不生成 DDL/索引、生产 API 契约或实现切片。业务概念与有来源的技术约束可表达，原型模拟不构成生产承诺。明确技术设计或开发请求按研发任务承接，不强制切换 profile 或增加审批。
 
+完整 Spec 交付（包括显式调用 `to-spec`）或准备交接时，Agent 会结合实际成果提供交接要点和可复制提示词；也可随时要求“为这份 Spec 生成 Backend 交接提示词”。缺少目标工程或链接时保留占位项，区分当前 Agent 的实际读取结果和接收方访问是否已验证；未指定研发动作时提示接收方先分析，不自动改生产代码。需要通过 PR/MR 以文件变更交付时，明确提出交付请求即可，`handoff` 的调用遵循宿主支持的入口；仅分享提示词或现有链接无需 PR/MR。交接提示不自动传递材料或授权研发、提交、推送和部署。
+
+Backend 分析提示词示例，使用前替换占位项并补充实际已知的版本、未决项和验证限制：
+
+```text
+请先阅读以下材料和目标工程，分析后端相关业务规则、权限、状态、异常、验收、实现影响及待决问题，暂不修改生产代码。
+业务规格：[路径或链接及版本]
+原型及交互说明：[路径或链接、查看方式及版本]
+目标后端工程：[路径或链接]
+已知模拟范围、未决项和验证限制：[实际情况；未知则注明]
+原型模拟不视为生产 API 或数据库设计；材料不可访问时说明缺口。
+```
+
 `project` 和 `skills` 默认都安装 16 个入口：setup-yss-harness、yss-product-lifecycle、yss-research、yss-stage-decision、grilling、domain-modeling、wayfinder、to-spec、yss-design-system、prototype、prototype-review、to-tickets、triage、llm-wiki、i-have-adhd、handoff。研究归 yss-research，产品设计与 UI 原型归 yss-design-system；implement 和 code-review 保留为按需安装能力。
 
 预装不自动执行显式入口或对外写入。没有 tracker 仍可完成授权草稿；只有截图或未运行原型时，如实说明交互尚未验证，不能宣称完整交付已完成。
