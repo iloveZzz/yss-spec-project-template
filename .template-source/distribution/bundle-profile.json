@@ -365,7 +365,9 @@
         "java-backend-commit": [],
         "llm-wiki": [],
         "lombok": [],
-        "maintaining-skills": [],
+        "maintaining-skills": [
+          ".agents/skills/i-have-adhd/references/pr-and-retro.md"
+        ],
         "mapstruct": [],
         "prototype": [
           ".template-spec/agents/matt-skills-adaptation.md"
@@ -401,7 +403,9 @@
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "writing-for-agents": [
-          ".template-spec/agents/matt-skills-adaptation.md"
+          ".template-spec/agents/matt-skills-adaptation.md",
+          ".agents/skills/i-have-adhd/references/pr-and-retro.md",
+          ".agents/skills/maintaining-skills/references/authoring.md"
         ],
         "yss-application": [],
         "yss-audit-log": [],
@@ -528,7 +532,9 @@
         "java-backend-commit": [],
         "llm-wiki": [],
         "lombok": [],
-        "maintaining-skills": [],
+        "maintaining-skills": [
+          ".agents/skills/i-have-adhd/references/pr-and-retro.md"
+        ],
         "mapstruct": [],
         "prototype": [
           ".template-spec/agents/matt-skills-adaptation.md"
@@ -564,7 +570,9 @@
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "writing-for-agents": [
-          ".template-spec/agents/matt-skills-adaptation.md"
+          ".template-spec/agents/matt-skills-adaptation.md",
+          ".agents/skills/i-have-adhd/references/pr-and-retro.md",
+          ".agents/skills/maintaining-skills/references/authoring.md"
         ],
         "yss-application": [],
         "yss-audit-log": [],

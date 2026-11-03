@@ -44,7 +44,6 @@
       ".agents/skills/release-yss-cli",
       ".agents/skills/prototype-review",
       ".agents/skills/prototype/LOGIC.md",
-      ".agents/skills/prototype/agents",
       ".agents/skills/yss-design-system",
       ".agents/skills/yss-product-lifecycle",
       ".template-spec/process/process-glossary.md",
@@ -285,7 +284,9 @@
         "java-backend-commit": [],
         "llm-wiki": [],
         "lombok": [],
-        "maintaining-skills": [],
+        "maintaining-skills": [
+          ".agents/skills/i-have-adhd/references/pr-and-retro.md"
+        ],
         "mapstruct": [],
         "prototype": [
           ".template-spec/agents/matt-skills-adaptation.md"
@@ -308,7 +309,8 @@
         ],
         "to-tickets": [
           ".template-spec/templates/vertical-slice-ticket-template.md",
-          ".template-spec/agents/matt-skills-adaptation.md"
+          ".template-spec/agents/matt-skills-adaptation.md",
+          ".agents/skills/implement/references/spec-feedback.md"
         ],
         "triage": [
           ".template-spec/agents/triage-labels.md",
@@ -319,7 +321,9 @@
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "writing-for-agents": [
-          ".template-spec/agents/matt-skills-adaptation.md"
+          ".template-spec/agents/matt-skills-adaptation.md",
+          ".agents/skills/i-have-adhd/references/pr-and-retro.md",
+          ".agents/skills/maintaining-skills/references/authoring.md"
         ],
         "yss-application": [],
         "yss-audit-log": [],
@@ -354,14 +358,18 @@
         "yss-skill-source-index-refresh": [],
         "yss-stage-decision": [],
         "yss-tactical-design": [],
-        "yss-technical-design": [],
+        "yss-technical-design": [
+          ".agents/skills/implement/references/spec-feedback.md"
+        ],
         "yss-up-springboot3": [
           ".template-spec/engineering/backend-platforms.json"
         ],
         "yss-userinfo": [],
         "yss-validation": [],
         "yss-web-controller": [],
-        "yss-backend-testing": []
+        "yss-backend-testing": [
+          ".agents/skills/implement/references/spec-feedback.md"
+        ]
       },
       "entries": {
         "AGENTS.md": ".template-source/distribution/entries/project-AGENTS.md",
@@ -522,7 +530,9 @@
         "java-backend-commit": [],
         "llm-wiki": [],
         "lombok": [],
-        "maintaining-skills": [],
+        "maintaining-skills": [
+          ".agents/skills/i-have-adhd/references/pr-and-retro.md"
+        ],
         "mapstruct": [],
         "prototype": [
           ".template-spec/agents/matt-skills-adaptation.md"
@@ -545,7 +555,8 @@
         ],
         "to-tickets": [
           ".template-spec/templates/vertical-slice-ticket-template.md",
-          ".template-spec/agents/matt-skills-adaptation.md"
+          ".template-spec/agents/matt-skills-adaptation.md",
+          ".agents/skills/implement/references/spec-feedback.md"
         ],
         "triage": [
           ".template-spec/agents/triage-labels.md",
@@ -556,7 +567,9 @@
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "writing-for-agents": [
-          ".template-spec/agents/matt-skills-adaptation.md"
+          ".template-spec/agents/matt-skills-adaptation.md",
+          ".agents/skills/i-have-adhd/references/pr-and-retro.md",
+          ".agents/skills/maintaining-skills/references/authoring.md"
         ],
         "yss-application": [],
         "yss-audit-log": [],
@@ -591,14 +604,18 @@
         "yss-skill-source-index-refresh": [],
         "yss-stage-decision": [],
         "yss-tactical-design": [],
-        "yss-technical-design": [],
+        "yss-technical-design": [
+          ".agents/skills/implement/references/spec-feedback.md"
+        ],
         "yss-up-springboot3": [
           ".template-spec/engineering/backend-platforms.json"
         ],
         "yss-userinfo": [],
         "yss-validation": [],
         "yss-web-controller": [],
-        "yss-backend-testing": []
+        "yss-backend-testing": [
+          ".agents/skills/implement/references/spec-feedback.md"
+        ]
       }
     }
   }

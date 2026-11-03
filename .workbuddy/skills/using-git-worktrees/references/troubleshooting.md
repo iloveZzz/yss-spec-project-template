@@ -6,14 +6,16 @@
 
 | Situation | Action |
 |-----------|--------|
-| Already in linked worktree | Skip creation (Step 0) |
+| Current execution unit has a suitable linked worktree | Reuse it (Step 0) |
+| Parent is a linked worktree, another concurrent writer is not | Reuse independent isolation or select an external sibling; never default inside the parent |
 | In a submodule | Treat as normal repo (Step 0 guard) |
 | Native worktree tool available | Use it (Step 1a) |
 | No native tool | Git worktree fallback (Step 1b) |
-| `.worktrees/` exists | Use it (verify ignored) |
-| `worktrees/` exists | Use it (verify ignored) |
-| Both exist | Use `.worktrees/` |
-| Neither exists | Check instruction file, then default `.worktrees/` |
+| Main checkout has `.worktrees/` | Use it after target containment and ignore checks |
+| Main checkout has `worktrees/` | Use it after target containment and ignore checks |
+| Both exist in the main checkout | Prefer `.worktrees/` |
+| Neither exists in the main checkout | Default to its `.worktrees/`; linked worktrees use external siblings |
+| Candidate resolves inside a linked worktree, including through a symlink | Reject that location; select an authorized independent target |
 | Directory not ignored | Add to .gitignore; commit only when authorized |
 | Permission error on create | Report failure; preserve the requested isolation boundary |
 | Tests fail during baseline | Record failures; continue authorized diagnosis |
@@ -21,23 +23,28 @@
 
 ### Fighting the harness
 
-- **Problem:** Using `git worktree add` when the platform already provides isolation
+- **Problem:** Using `git worktree add` when the platform provides a native workspace tool
 - **Fix:** Step 0 detects existing isolation. Step 1a defers to native tools.
 
 ### Skipping detection
 
 - **Problem:** Creating a nested worktree inside an existing one
-- **Fix:** Always run Step 0 before creating anything
+- **Fix:** Run Step 0 for each execution unit; linked worktrees skip internal directory defaults. Resolve the target and its existing ancestors, then check against registered worktree roots before creation
 
 ### Skipping ignore verification
 
 - **Problem:** Worktree contents get tracked, pollute git status
-- **Fix:** Always use `git check-ignore` before creating project-local worktree
+- **Fix:** Run `git check-ignore` from the containing main checkout for the actual selected target; an ignored alternative directory does not suffice
 
 ### Assuming directory location
 
 - **Problem:** Creates inconsistency, violates project conventions
-- **Fix:** Follow priority: explicit instructions > existing project-local directory > default
+- **Fix:** Follow [directory selection and target validation](git-fallback.md); distinguish the main checkout from a linked worktree before applying defaults
+
+### Losing prerequisites
+
+- **Problem:** A new worktree starts from HEAD while the prerequisite exists only as an uncommitted change
+- **Fix:** Verify the actual required files, preserve user edits, and continue sequentially in the source workspace if reliable transfer is unavailable; never commit or reset user work just to clean the baseline
 
 ### Proceeding with failing tests
 

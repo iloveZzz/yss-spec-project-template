@@ -1,5 +1,5 @@
 interface:
-  display_name: "To Spec"
-  short_description: "Turn a conversation into a spec"
+  display_name: "Spec 规格综合"
+  short_description: "显式综合已确认讨论与业务材料，形成业务规格"
 policy:
   allow_implicit_invocation: false

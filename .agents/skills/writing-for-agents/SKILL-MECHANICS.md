@@ -14,7 +14,7 @@ Read this reference when designing a skill's invocation policy or shared depende
 
 `description`, `disable-model-invocation` and `agents/openai.yaml` are not interchangeable controls. The frontmatter field is interpreted by hosts that support it; Codex has its own `policy.allow_implicit_invocation` metadata. A generated projection proves that files were distributed, not that another host enforces the same policy.
 
-For YSS registry and metadata consistency, use [the maintained authoring contract](../maintaining-skills/references/authoring.md). Preserve existing interface and dependency metadata. Verify the actual installed host's catalog and invocation behavior; record unsupported or unknown capabilities instead of treating an ignored field as enforcement.
+For YSS registry and metadata consistency, read `.agents/skills/maintaining-skills/references/authoring.md` from the project root. Preserve existing interface and dependency metadata. Verify the actual installed host's catalog and invocation behavior; record unsupported or unknown capabilities instead of treating an ignored field as enforcement.
 
 Do not claim that a description is always loaded, that explicit-only skills have zero context cost, or that a policy field is a filesystem sandbox. Measure observable reads and runtime usage for the task being optimized, and leave absent telemetry unknown.
 

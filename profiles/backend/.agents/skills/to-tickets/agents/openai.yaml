@@ -1,5 +1,5 @@
 interface:
-  display_name: "To Tickets"
-  short_description: "依据真实业务与技术输入拆分研发实现切片"
+  display_name: "Backend 实现切片"
+  short_description: "根据真实工程拆分可验证行为，明确实现依赖"
 policy:
   allow_implicit_invocation: true
