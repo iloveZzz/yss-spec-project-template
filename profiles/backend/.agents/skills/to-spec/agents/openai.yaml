@@ -1,0 +1,5 @@
+interface:
+  display_name: "Backend 规格整理"
+  short_description: "显式整理既有讨论与材料，形成可供实现使用的规格"
+policy:
+  allow_implicit_invocation: false

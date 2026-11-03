@@ -1,5 +1,5 @@
 interface:
-  display_name: "Implement"
-  short_description: "Build work from a spec or tickets"
+  display_name: "Backend 研发实现"
+  short_description: "承接明确开发或修复，按需设计、并行实现与验证"
 policy:
   allow_implicit_invocation: true

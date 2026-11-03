@@ -10,3 +10,5 @@ Backend 的 project / skills 两种安装均默认预装 41 项研发技能，�
 承接上游 Spec 的规则、验收与原型说明，按需完成任务拆分、架构/技术/详细设计、脚手架、开发和测试。完整交付更新构建部署手册（优先已有 README/运维文档，结构见 `.template-spec/templates/build-deploy-guide-template.md`）；部署仅为说明，不执行部署或建设 CI/CD/云资源。局部修改只处理受影响部分，MVC 不添加 DDD 层，TDD 仅在明确要求时采用。
 
 用户业务文件与本地修改保留；不要求阶段门禁、批准包或测试报告。提交、推送、部署与发布按用户授权执行。
+
+已授权研发满足任务可拆、依赖明确、路径及运行资源可隔离且宿主允许时，由 implement 自行并行并负责集成验证；条件不满足则顺序完成。具体方法见 `.agents/skills/implement/SKILL.md`。

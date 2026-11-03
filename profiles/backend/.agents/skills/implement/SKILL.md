@@ -5,6 +5,8 @@ description: 在用户要求后端开发、修复或按 Spec/Ticket 完成研发
 
 Implement the user's goal in the authorized repository using the current request, spec or tickets. Read the relevant code, map the accepted behavior to concrete changes and finish the affected callers and configuration.
 
+当用户给出 Spec、业务票或原型，或在工程中读到本次需求依据（如 spec.md）时，先读取 [规格接收与反馈](references/spec-feedback.md)，再确定实现与验证范围；发现来源变化或业务差异时也使用该方法。沿原规则说明结果和缺口，常规技术决定按授权继续。
+
 When given a Ticket URL or number, resolve the actual tracker, repository/instance and issue type, then read the real title, body and relevant comments before implementation. Refer to it by title with its link. A bare number with multiple possible targets needs only a locating question; access failure is not proof of absence. Continue independent work supported by existing inputs without inventing ticket contents.
 
 Keep the observable goal, actual repository and paths, interface dependencies, acceptance and applicable skills in the existing task. For YSS work, use yss-domain / yss-application for DDD behavior and orchestration, and the existing Service boundary for MVC; use yss-repository / yss-web-controller for persistence and HTTP boundaries. Do not create a parallel implementation contract.
@@ -24,4 +26,4 @@ Select the engineering skills needed for the work. Do not require lifecycle rout
 
 Preserve user changes and error handling. Reuse existing authorization for local work; commit, push, publish and deploy only within the authorization for those actions. On resumption, inspect existing changes and command results before continuing.
 
-Delegation is optional, only when authorized, useful and supported by the host. Give each independent task a fresh context with its goal, acceptance, permissions, owned paths, source/version pointers and expected output; with Codex's supported API use `fork_turns: "none"`. Confirm pointers are readable, otherwise supply the minimum relevant source text or work sequentially. A writing worker must know others share the codebase, must not revert their changes, and must respect path ownership; appoint one integrator for shared indexes. Do not copy the whole conversation as a substitute for the brief, or invent cross-host parameters, branches or automatic commits.
+已授权研发采用策略 A：至少两个工作项可独立推进，依赖明确、路径与运行资源可隔离，主控能够集成，且宿主允许并有实际收益时，自行并行，不重复索取已有授权。判断或执行并行时读取 [并行研发与集成](references/parallel-development.md)；条件不满足则顺序完成。只读分析不因此转为开发，模板策略不覆盖宿主限制。

@@ -13,7 +13,11 @@ Slice 参考 `.template-spec/templates/vertical-slice-ticket-template.md`。模�
 
 一票描述一个完整可观察行为，保留真实业务来源与 FR/AC，不按 Controller/Service/Repository 横向分票，也不机械一条 FR 一票。实现 Slice 只贯通当前行为命中的技术层；纯后端不引入 UI。产品规则、流程或异常未定时说明业务缺口及解除条件，不代替产品决定或补造原型。
 
+需要承接来源版本、处理规则变化或回报业务差异时，按项目根读取 `.agents/skills/implement/references/spec-feedback.md`；保留原验收及相关原型模拟边界，不另建业务规格。
+
 研发 Slice 同时写明实际仓库与路径、接口依赖及适用技能，沿用已有验收和稳定 ID。DDD 按领域/用例/持久化职责拆解实现，MVC 沿用 Service/Repository，不因为缺登记或合同编译结果阻止起草，也不将另一仓库的可读资料当作写入授权。
+
+有依赖的 Slice 写清真实前提；子任务自报完成只是待集成，主控集成并完成依赖所需验证后才释放下游。共享接口、POM、锁文件与生成输出由单一负责人处理，同时考虑测试库、端口和构建输出，不能以文件不同判定可并行；实际调度由 implement 负责，不因拆票自动启动研发。
 
 机械重构按 expand → migrate → contract 排序；能独立验证时说明各票验收，不能独立保持绿色时明确共享集成边界，不虚称每批已独立完成。
 
