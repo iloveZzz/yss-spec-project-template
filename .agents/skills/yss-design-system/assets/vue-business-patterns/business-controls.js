@@ -17,8 +17,12 @@ export function rangeError({start='',end=''}){
 export function inRange(date,range){return !rangeError(range)&&validDate(date)&&(!range.start||(date>=range.start&&date<=range.end));}
 export function filterOptions(options,query){const text=query.trim().toLocaleLowerCase('zh-CN');return options.filter(o=>`${o.name} ${o.id}`.toLocaleLowerCase('zh-CN').includes(text));}
 export function selectedOption(options,id){return options.find(o=>o.id===id)||null;}
-export function restoreControlFocus(id){
+export function restoreControlFocus(id,event){
  const trigger=document.getElementById(id);
- const target=trigger?.isConnected&&trigger.getClientRects().length&&!trigger.closest('[hidden],[inert]')?trigger:document.querySelector('main[tabindex]');
+ const available=trigger?.isConnected&&trigger.getClientRects().length&&!trigger.closest('[hidden],[inert]');
+ // Popover preserves outside focus; intervene only when its trigger is unavailable.
+ if(event&&available)return;
+ event?.preventDefault();
+ const target=available?trigger:document.querySelector('main[tabindex]');
  target?.focus();
 }

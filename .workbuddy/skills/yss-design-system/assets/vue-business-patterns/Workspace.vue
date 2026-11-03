@@ -135,7 +135,7 @@ function transparency(checked: boolean) { reduced.value = checked; document.docu
 let small: MediaQueryList, wide: MediaQueryList
 function viewport() { navigationHint.value = ''; narrow.value = small.matches; collapsed.value = !wide.matches; mobileNav.value = false }
 onMounted(() => {
-  small = matchMedia('(max-width: 767px)'); wide = matchMedia('(min-width: 1200px)'); viewport()
+  small = matchMedia('(width < 720px)'); wide = matchMedia('(min-width: 1200px)'); viewport()
   small.addEventListener('change', viewport); wide.addEventListener('change', viewport)
   addEventListener('hashchange', reset); addEventListener('popstate', popstate); reset()
 })

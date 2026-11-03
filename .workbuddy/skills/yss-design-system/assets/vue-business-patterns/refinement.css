@@ -88,8 +88,8 @@ main {max-width:1280px;padding:var(--brand-size-lg) var(--brand-size)}
 @media(prefers-reduced-transparency:reduce),(forced-colors:active) {
  :root[data-appearance="glass"] .material-surface,:root[data-appearance="glass"] [data-slot="dropdown-menu-content"],:root[data-appearance="glass"] [data-slot="select-content"] {background:var(--brand-color-bg-elevated);backdrop-filter:none;-webkit-backdrop-filter:none}
 }
-@media(max-width:768px) {.form-layout {grid-template-columns:minmax(0,1fr);gap:var(--brand-size-sm)}.step-aside {padding:0}.step-list {display:flex;gap:var(--brand-size)}.step-list li {flex:1;padding-bottom:var(--brand-size-xs)}.step-help {display:none}}
-@media(max-width:576px) {
+@media(width < 720px) {.form-layout {grid-template-columns:minmax(0,1fr);gap:var(--brand-size-sm)}.step-aside {padding:0}.step-list {display:flex;gap:var(--brand-size)}.step-list li {flex:1;padding-bottom:var(--brand-size-xs)}.step-help {display:none}}
+@media(width < 720px) {
  main {padding:var(--brand-size-sm)}
  .workspace-bar {padding:var(--brand-size-sm);gap:var(--brand-size-xs)}
  .workspace-brand {gap:var(--brand-size-xs)}
@@ -120,9 +120,9 @@ main {max-width:1280px;padding:var(--brand-size-lg) var(--brand-size)}
 }
 @media(prefers-reduced-motion:reduce) {*,*::before,*::after {animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 
-/* Use the registered Select with one project focus ring and an anchored popup. */
+/* Use the registered Select with one focus border and an anchored popup. */
 [data-slot="select-trigger"] {font-weight:400;box-shadow:none}
 [data-slot="select-trigger"]:focus:not(:focus-visible) {outline:none}
 [data-slot="select-content"] {min-width:var(--reka-select-trigger-width);max-width:calc(100vw - var(--brand-size-lg));border-radius:var(--brand-border-radius);font-size:var(--yss-typography-body-font-size);transform:none}
-[data-slot="select-content"] [role="option"] {border-radius:var(--brand-border-radius-sm);padding-inline:var(--brand-size-xs) var(--brand-size-xl);color:var(--brand-color-text)}
-[data-slot="select-content"] [role="option"][data-highlighted] {background:var(--yss-colors-primary-bg)}
+[data-slot="select-content"] [role="option"] {border-radius:0;padding-inline:10px var(--brand-size-xl)}
+[data-slot="select-content"] [role="option"][data-highlighted] {background:var(--yss-colors-surface-hover)}

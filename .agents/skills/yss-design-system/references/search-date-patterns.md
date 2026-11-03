@@ -1,6 +1,6 @@
 # 搜索选择与日期范围
 
-在选项较多、同名对象需要编号区分时选择 Combobox；少量固定选项继续使用 Select。日期条件包含起止日且只关心日历日时选择 RangeCalendar + Popover。先明确任务、数据和取消语义，再选择组件；本配方不覆盖远程搜索、多选、日期时间或时区转换。
+在选项较多、同名对象需要编号区分时选择 Combobox；少量固定选项继续使用 Select。日期条件包含起止日且只关心日历日时选择 RangeCalendar + Popover。先明确任务、数据和取消语义，再选择组件；`SearchSelect` 仍是单选；员工/部门的本地多选使用 `TeamPicker`。本配方不覆盖远程搜索、任意深度组织树、日期时间或时区转换。
 
 ## 行为与教学入口
 
@@ -15,7 +15,7 @@
 | 日期草稿 | 浮层独立草稿；应用才提交；取消/Escape 保留原值；清空先改临时值 | 保存、筛选和浮层应用的三个边界 |
 | 页面生命周期 | KeepAlive 保留已应用查询及表单草稿；关闭确认后重开初态；离页清理浮层 | 内存保留范围、刷新策略和逻辑焦点后继 |
 
-新增能力由固定 revision 的原始组件承担语义。本地 SearchSelect/DateRange 承担业务状态，主题在独立映射层；不修改 vendor 源文件。`@internationalized/date` 使用锁定的 3.12.4，禁止用 `new Date('YYYY-MM-DD')` 绕入时区语义。
+新增能力由固定 revision 的原始组件承担语义。本地 SearchSelect/DateRange/TeamPicker 承担业务状态，主题在独立映射层；不修改 vendor 源文件。`@internationalized/date` 使用锁定的 3.12.4，禁止用 `new Date('YYYY-MM-DD')` 绕入时区语义。
 
 ## 把设计疑问写成可观察任务
 
@@ -26,3 +26,5 @@
 ## 验证
 
 按 `.agents/skills/prototype-review/references/review-method.md` 核对实际产物并操作相关场景。重点反例：文字假冒选择、非法 ID、重名误选、IME 误提交、未完成范围被应用、取消改值、失效触发器抢焦点。结果并入现有交互说明，明确实际检查及未覆盖项。
+
+内联日期、双月快捷范围与团队多选的接口、尺寸和草稿合同见 [标准页面模式](standard-theme-patterns.md)。`CombinedQuery.vue` 与 `OwnerValidity.vue` 继续使用原有 `{start,end}` 日期接口；不因视觉优化改变业务日期含义。

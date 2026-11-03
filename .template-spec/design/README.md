@@ -8,4 +8,4 @@
 
 成果保存在已有或用户指定位置，无约定时新建任务目录，保护已有文件。说明规则/AC 与页面状态的对应、查看/运行方式、入口与退出、操作结果、异常恢复、模拟范围、实际检查和未覆盖项。可与 Spec 共用文件。
 
-按需使用 [交互说明](templates/interaction-spec-template.md)、[状态矩阵](templates/state-matrix-template.md) 和 [复核记录](templates/prototype-review-checklist.md)，不是额外交付门禁。`design.md`、确认模板及 examples 保留历史约定的记录，仅用于对应历史材料，不是新任务的默认步骤或现役技能入口。
+按需使用 [交互说明](templates/interaction-spec-template.md)、[状态矩阵](templates/state-matrix-template.md) 和 [复核记录](templates/prototype-review-checklist.md)，不是额外交付门禁。`design.md` 说明当前规范与映射；确认模板及 examples 保留历史约定，仅用于对应历史材料，不是新任务的默认步骤。

@@ -11,4 +11,135 @@
 .date-range-popover {width:22rem;max-width:calc(100vw - var(--brand-size));max-height:var(--reka-popover-content-available-height);overflow:auto;padding:var(--brand-size-sm);box-sizing:border-box}
 .range-actions {flex-wrap:wrap}
 .control-message {padding:var(--brand-size-sm);white-space:normal;overflow-wrap:anywhere}
-@media(max-width:600px){.business-filter-grid {grid-template-columns:1fr}.range-fields {grid-template-columns:1fr}}
+@media(width < 720px){.business-filter-grid {grid-template-columns:1fr}.range-fields {grid-template-columns:1fr}}
+
+/* Place registered controls directly in the group; each keeps its own label. */
+.compound-field {display:flex;min-width:0;isolation:isolate}
+.compound-field>:is([data-slot="input"],[data-slot="select-trigger"],[data-slot="input-group"]) {position:relative;flex:1 1 0;min-width:0;border-radius:0}
+.compound-field>:first-child {border-top-left-radius:var(--yss-rounded-sm);border-bottom-left-radius:var(--yss-rounded-sm)}
+.compound-field>:last-child {border-top-right-radius:var(--yss-rounded-sm);border-bottom-right-radius:var(--yss-rounded-sm)}
+.compound-field>:not(:first-child) {margin-left:-1px}
+.compound-field>:is(:hover,:focus-visible,:focus-within) {z-index:1}
+.compound-field>:has([aria-invalid="true"]),.compound-field>[aria-invalid="true"] {z-index:2}
+.range-fields [data-slot="input"]:focus-visible {background:var(--yss-colors-surface-editing)}
+.date-range-popover-wide {width:var(--yss-components-date-range-popup-width);max-width:calc(100vw - 16px)}
+@media(width < 720px) {
+ .compound-field {flex-wrap:wrap;gap:var(--brand-size-xs)}
+ .compound-field>:is([data-slot="input"],[data-slot="select-trigger"],[data-slot="input-group"]) {flex-basis:100%;margin-left:0;border-radius:var(--yss-rounded-sm)}
+ .date-range-popover-wide {width:22rem}
+}
+
+.search-select>label,.date-range>label {margin:0}
+
+/* Inline range editing and two-month calendar use the same committed value/draft contract. */
+.date-range-control {display:flex;align-items:center;min-width:0;height:var(--prototype-control-height);border:1px solid var(--yss-colors-border-control);border-radius:var(--yss-rounded-sm);background:var(--yss-colors-surface);padding:0 6px;gap:4px}
+.date-range-control:focus-within,.date-range-control[data-open="true"] {border-color:var(--yss-color-primary-control)}
+.date-range-control[data-invalid="true"] {border-color:var(--yss-colors-error-text)}
+.date-range-control[data-disabled] {background:var(--yss-colors-surface-subtle);border-color:var(--yss-colors-border)}
+.date-range-control>[data-slot="input"] {flex:1 1 0;width:0;min-width:0;height:calc(var(--prototype-control-height) - 10px);min-height:0;padding:0 4px;border:0!important;border-radius:0;box-shadow:none;outline:none;font-variant-numeric:tabular-nums}
+.date-range-control>[data-slot="input"][data-active="true"] {background:var(--yss-colors-surface-editing)}
+.date-range-separator {flex:none;color:var(--brand-color-text-secondary)}
+button.date-calendar-trigger {flex:none;width:24px;min-width:24px;height:calc(var(--prototype-control-height) - 2px);min-height:0;padding:0;border:0;border-radius:0;background:transparent;color:var(--brand-color-text-secondary)}
+.date-calendar-trigger svg {width:16px;height:16px}
+.date-range-embedded {flex:2 1 0;min-width:0;display:block}
+.compound-field>.date-range-embedded:not(:first-child) {margin-left:-1px}
+.compound-field>.date-range-embedded .date-range-control {border-top-left-radius:0;border-bottom-left-radius:0}
+.compound-field>.date-range-embedded:focus-within,.compound-field>.date-range-embedded:has([data-open="true"]) {position:relative;z-index:1}
+.date-range-popover-wide {width:var(--yss-components-date-range-popup-width);padding:0;max-width:calc(100vw - 16px)}
+.date-range-layout {display:grid;grid-template-columns:102px minmax(0,1fr)}
+.date-shortcuts {display:flex;flex-direction:column;padding:8px 0;border-right:1px solid var(--yss-colors-border-secondary)}
+.date-shortcuts button {width:100%;justify-content:flex-start;padding-inline:16px;border:0;border-radius:0;background:transparent;color:var(--brand-color-text)}
+.date-shortcuts button:hover,.date-shortcuts button[aria-pressed="true"] {color:var(--yss-color-primary-control);background:var(--yss-colors-surface-hover)}
+.date-shortcuts button:focus-visible {outline-offset:-2px}
+[data-slot="range-calendar"].date-range-calendar {padding:0;min-width:0}
+.date-months {display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+.date-month {min-width:0;padding-bottom:12px}
+.date-month+.date-month {border-left:1px solid var(--yss-colors-border-secondary)}
+.date-month-header {display:grid;grid-template-columns:48px minmax(0,1fr) 48px;align-items:center;height:40px;padding:0 8px;margin-bottom:8px;border-bottom:1px solid var(--yss-colors-border-secondary)}
+.date-month-title {text-align:center;white-space:nowrap;font-variant-numeric:tabular-nums}
+.date-month-nav {display:flex;align-items:center}
+.date-month-nav button {position:static;inset:auto;display:grid;place-items:center;min-width:24px;width:24px;height:32px;min-height:24px;padding:0;border:0;background:transparent;color:var(--brand-color-text);box-shadow:none}
+.date-month-nav svg {width:16px;height:16px}
+.date-month [data-slot="range-calendar-grid"] {padding:0 14px}
+.date-month [data-slot="range-calendar-trigger"][data-outside-view]:not([data-selected]) {color:var(--brand-color-text-secondary)}
+.date-range-footer {display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:12px 16px;border-top:1px solid var(--yss-colors-border-secondary)}
+.range-actions {display:flex;align-items:center;gap:8px;margin-left:auto}
+.list-filter-grid:has(.date-range-control) {grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr))}
+.compound-field>.filter-operator {flex:0 0 112px}
+
+/* Team selection is a local checkbox collection grouped by collapsible departments. */
+button.team-picker-trigger {display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-width:0;font-weight:400;color:var(--brand-color-text-secondary);padding:5px 10px}
+.team-picker-trigger>span {min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+button.team-picker-trigger.has-value {color:var(--brand-color-text)}
+button.team-picker-trigger:focus-visible {outline:none;box-shadow:none;border-color:var(--yss-color-primary-control)}
+button.team-picker-trigger[data-state="open"] {border-color:var(--yss-color-primary-control)}
+.team-picker-trigger>svg {width:16px;height:16px;flex:none;color:var(--brand-color-text-secondary)}
+.team-picker-trigger[data-state="open"]>svg {transform:rotate(180deg)}
+.compound-field>button.team-picker-trigger {flex:2 1 0;border-top-left-radius:0;border-bottom-left-radius:0}
+.team-picker-popover {width:var(--yss-components-team-picker-popup-width);max-width:calc(100vw - 16px);max-height:var(--reka-popover-content-available-height);padding:0;overflow:auto}
+.team-picker-main {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));height:var(--yss-components-team-picker-body-height);min-height:0}
+.team-picker-browser {display:flex;flex-direction:column;min-width:0;min-height:0;padding:16px}
+.team-picker-heading {border-bottom:1px solid var(--yss-colors-border-secondary);margin-bottom:8px}
+.team-picker-heading h3 {display:inline-flex;align-items:center;min-height:32px;border-bottom:2px solid var(--yss-color-primary-control);font-weight:400;color:var(--yss-color-primary-control)}
+.team-picker-browser>[data-slot="input-group"] {flex-shrink:0}
+.team-tree {min-height:0;overflow:auto;margin-top:8px}
+.team-tree-row {display:flex;align-items:center;gap:8px;min-height:var(--prototype-control-height);padding:4px 0}
+.team-tree-row:hover {background:var(--yss-colors-surface-hover)}
+.team-tree-row label {display:flex;align-items:center;flex-wrap:wrap;gap:4px 8px;min-width:0;min-height:0;margin:0;cursor:pointer;color:var(--brand-color-text);overflow-wrap:anywhere}
+.team-tree-row small {font-size:12px}
+.team-tree-row [data-slot="checkbox"] svg {width:12px;height:12px}
+button.tree-expand {display:grid;place-items:center;flex:none;width:24px;min-width:24px;height:24px;min-height:24px;padding:0;border:0;background:transparent}
+.tree-expand svg {width:16px;height:16px;transition:transform var(--brand-motion-duration-fast)}
+.tree-expand svg.is-expanded {transform:rotate(90deg)}
+.team-folder {width:16px;height:16px;flex:none;color:var(--brand-color-text-secondary)}
+.team-employee {padding-left:32px}
+.team-picker-selected {display:flex;flex-direction:column;min-width:0;min-height:0;padding:16px;border-left:1px solid var(--yss-colors-border-secondary)}
+.team-selection-heading {display:flex;align-items:center;justify-content:space-between;gap:8px;color:var(--brand-color-text-secondary)}
+.team-selection-heading button {color:var(--yss-color-primary-control)}
+.team-selection-heading button:disabled {color:var(--yss-colors-text-disabled);background:transparent}
+.team-selected-list {list-style:none;padding:0;margin:8px 0 0;overflow:auto}
+.team-selected-list li {display:flex;align-items:center;gap:8px;min-height:40px}
+.team-selected-list li>svg {width:16px;height:16px;flex:none;color:var(--brand-color-text-secondary)}
+.team-selected-list li>div {flex:1;min-width:0;overflow-wrap:anywhere}
+.team-selected-list small {display:block;font-size:12px}
+.team-selected-list button {width:32px;min-width:32px;padding:0;flex:none;background:transparent}
+.team-selected-list button svg {width:16px;height:16px}
+.team-selection-empty {display:grid;align-content:center;justify-items:center;gap:12px;flex:1;min-height:120px;color:var(--brand-color-text-secondary)}
+.team-selection-empty svg {width:40px;height:40px;stroke-width:1.5}
+.team-picker-footer {position:sticky;bottom:0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px 16px;padding:12px 16px;border-top:1px solid var(--yss-colors-border-secondary);background:var(--yss-colors-surface);z-index:1}
+.team-show-all {display:flex;align-items:center;gap:8px;min-height:24px}
+.team-show-all label {margin:0;min-height:0;color:var(--brand-color-text);cursor:pointer}
+.team-picker-footer .field-hint {font-size:12px;margin-top:4px}
+.team-picker-actions {display:flex;gap:8px;margin-left:auto}
+.team-picker-footer>.range-error {flex-basis:100%}
+@media(width < 720px) {
+ .compound-field>.filter-operator,.compound-field>.date-range-embedded,.compound-field>button.team-picker-trigger {flex-basis:100%;margin-left:0}
+ .compound-field>.date-range-embedded:not(:first-child) {margin-left:0}
+ .compound-field>.date-range-embedded .date-range-control,.compound-field>button.team-picker-trigger {border-radius:var(--yss-rounded-sm)}
+ .date-range-popover-wide {width:304px}
+ .date-range-layout {grid-template-columns:minmax(0,1fr)}
+ .date-shortcuts {flex-direction:row;border-right:0;border-bottom:1px solid var(--yss-colors-border-secondary);padding:4px}
+ .date-shortcuts button {flex:1 1 0;width:0;justify-content:center;padding-inline:4px;min-width:0}
+ .date-months {grid-template-columns:minmax(0,1fr)}
+ .date-month-header {height:48px;grid-template-columns:64px minmax(0,1fr) 64px}
+ .date-month-nav button {width:32px;height:44px;min-height:44px}
+ .date-month [data-slot="range-calendar-grid"] {padding-inline:8px}
+ .date-range-footer {padding:8px 12px}
+ .team-picker-main {grid-template-columns:minmax(0,1fr);height:auto}
+ .team-picker-browser {max-height:280px;padding:12px}
+ .team-picker-selected {max-height:200px;padding:12px;border-left:0;border-top:1px solid var(--yss-colors-border-secondary)}
+ .team-picker-footer {padding:12px}
+ .team-tree-row {padding-block:6px}
+ .team-show-all {min-height:32px}
+}
+@media(forced-colors:active) {
+ .date-range-control:focus-within,button.team-picker-trigger:focus-visible {outline:2px solid Highlight;outline-offset:2px}
+ .team-picker-popover,.date-range-popover-wide {border:1px solid CanvasText}
+}
+
+.list-filter-field {display:grid;grid-template-columns:7em minmax(0,1fr);align-items:center;gap:10px;min-width:0}
+.list-filter-grid .list-filter-field>label {margin:0;text-align:right;overflow-wrap:anywhere}
+@media(width < 720px) {
+ .list-filter-field {grid-template-columns:minmax(0,1fr);gap:8px}
+ .list-filter-grid .list-filter-field>label {text-align:left}
+}
