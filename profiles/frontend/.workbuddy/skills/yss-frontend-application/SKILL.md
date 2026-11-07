@@ -7,7 +7,7 @@ description: Use when implementing, engineering, or reviewing Vue 3 frontend app
 
 把业务规格、高保真页面、交互说明及原型代码接入可维护、可验证的前端应用。设计产物决定要实现的体验；工程实现补齐运行、数据和边界，不借迁移重新设计产品。
 
-使用简体中文。按本次授权实施、修复或审查；只请求 review 时只报告发现。技能不引入阶段审批或固定数量检查，也不把开发授权扩大为提交、推送、部署。本版本仅分发技能文档与必要示例，不携带应用 starter、检查脚本或测试套件；初始化和验证读取目标工程的实际工具与约定。
+使用简体中文。按本次授权实施、修复或审查；只请求 review 时只报告发现。技能不引入阶段审批或固定数量检查，也不把开发授权扩大为提交、推送、部署。应用技能保留文档与必要示例；新建工程先使用 `yss-frontend-scaffold-generator`，已有工程与只读 review 直接在本技能处理。starter 由 CLI Bundle 提供，安装技能不生成应用。初始化和验证读取目标工程的实际工具与约定。
 
 ## 高保真还原的必需约束
 
@@ -28,7 +28,7 @@ description: Use when implementing, engineering, or reviewing Vue 3 frontend app
 | 请求状态 | 需要异步状态能力时使用 `vue-hooks-plus/useRequest`（从 `vue-hooks-plus` 导入） | 与已有请求管理器选择一个状态所有者；不叠加轮询、缓存或重试 |
 | UI | shadcn-vue 本地组件 + Tailwind 4 + Reka | 复用符合基线的 `components/ui`、tokens、variants，不以默认主题重画 |
 | 路由/共享状态 | 多页面使用 Vue Router；确需跨页面状态时使用 Pinia | 保留既有入口和状态归属，迁移受影响调用者时才调整 |
-| 接口契约 | OpenAPI 3 + Orval 8，生成普通异步函数与 DTO 类型 | 复用真实契约与统一 transport，生成代码和手写代码分开 |
+| 接口契约 | 任务需要时接入 OpenAPI 3 + Orval 8，生成普通异步函数与 DTO 类型 | 复用真实契约与统一 transport，生成代码和手写代码分开 |
 
 修改 Vue 逻辑时，使用可用的 `vue-best-practices`；有独立状态职责或可复用 composable 接口时再用 `create-adaptable-composable`。产品流程或视觉缺口由可用的 `yss-design-system` 协作；事实缺口可交给 `yss-research`。按技能名在当前环境发现它们，不假定仓库路径、不自动安装。缺少辅助技能时，本技能的边界仍适用，依据项目源码和官方资料继续可完成的部分。
 

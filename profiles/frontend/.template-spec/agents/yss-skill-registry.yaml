@@ -8,6 +8,7 @@ instance_distribution:
   initial_skills:
   - setup-yss-harness
   - yss-frontend-application
+  - yss-frontend-scaffold-generator
   - vue-best-practices
   - create-adaptable-composable
   - code-review
@@ -149,3 +150,12 @@ skill_dependencies:
     type: context-required
   - skill: yss-research
     type: context-required
+
+- id: yss-frontend-scaffold-generator
+  layer: specialist
+  maturity: supported
+  instance_default_discoverable: true
+  aliases: []
+  impacts:
+  - frontend
+  stack: vue

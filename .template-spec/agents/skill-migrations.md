@@ -168,3 +168,7 @@ DDD 脚手架的 Parent 工程约束由 `yss-ddd-scaffold-generator/references/e
 Data Analytics 平台包从本模板及 frontend 分发退出；不卸载用户另装插件。frontend-commit / java-backend-commit 保留专项入口并读取内部 git-commit-core。prototype 仅做逻辑与状态试验；正式 UI 由生命周期产品设计阶段承接。
 
 存量实例先预览同步计划。只按旧版本基线移除未修改的受管文件，用户修改保留并报告冲突；不自动迁移历史审批、问卷或快照。
+
+## 2026-11-07：重新引入前端脚手架技能
+
+`yss-frontend-scaffold-generator` 以原生 CLI 最小工程入口重新引入，Frontend 默认、Spec 按需、Backend 排除。此前旧实现退役记录保留；不恢复旧 Node 生成器、capability/recipe 或迁移协议。实际支持以 `yss scaffold frontend --help` 为准。

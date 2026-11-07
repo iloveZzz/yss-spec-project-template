@@ -1,0 +1,4 @@
+interface:
+  display_name: "YSS 前端脚手架"
+  short_description: "在全新目录生成最小 Vue 3 工程，按目标验证运行"
+  default_prompt: "使用 $yss-frontend-scaffold-generator，核对实际 CLI 能力，在不存在的新目录生成最小前端工程并完成用户要求的运行验证。"

@@ -463,6 +463,9 @@
         ],
         "create-adaptable-composable": [
           ".template-spec/agents/frontend-skills-adaptation.md"
+        ],
+        "yss-frontend-scaffold-generator": [
+          ".template-spec/agents/frontend-skills-adaptation.md"
         ]
       },
       "entries": {
@@ -638,6 +641,9 @@
           ".template-spec/agents/frontend-skills-adaptation.md"
         ],
         "create-adaptable-composable": [
+          ".template-spec/agents/frontend-skills-adaptation.md"
+        ],
+        "yss-frontend-scaffold-generator": [
           ".template-spec/agents/frontend-skills-adaptation.md"
         ]
       }

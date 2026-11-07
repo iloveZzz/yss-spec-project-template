@@ -42,7 +42,8 @@
     "handoff",
     "yss-frontend-application",
     "vue-best-practices",
-    "create-adaptable-composable"
+    "create-adaptable-composable",
+    "yss-frontend-scaffold-generator"
   ],
   "groupings": [
     {
@@ -124,7 +125,8 @@
       "skills": [
         "yss-frontend-application",
         "vue-best-practices",
-        "create-adaptable-composable"
+        "create-adaptable-composable",
+        "yss-frontend-scaffold-generator"
       ]
     }
   ]

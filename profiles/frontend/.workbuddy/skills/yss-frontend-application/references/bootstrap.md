@@ -10,13 +10,13 @@
 - `components/ui` 或对应别名下已有组件时先读源码与用法。shadcn-vue 生成的本地源码可能经过业务定制，新增组件不等于允许覆盖旧组件。
 - 新依赖前核对 `engines`、`peerDependencies`、现有 Vue/TypeScript/Vite/Tailwind 版本及锁文件解析结果；不要用强制忽略 peer 冲突掩盖不兼容。
 
-## 空目录新建
+## 全新目录生成
 
-- 确认目标路径及已有文件；空目录才走初始化。目录已有业务资产时按存量流程处理，脚手架提示覆盖不能视作授权。
-- 优先使用项目已有且可运行的初始化方法。本版本不分发应用脚手架或 `yss-frontend-scaffold-generator`，不把该技能设为依赖。没有现成方法时，从官方 [create-vue](https://vuejs.org/guide/quick-start.html) 或 [create-vite](https://vite.dev/guide/) 核对候选精确版本、Node 要求与选项后初始化；已有目录不能因初始化提示而被覆盖。
-- 不把 `@latest` 写成固定执行方案。实际执行记录选中的脚手架版本；生成后核对依赖、`packageManager` 与 `pnpm-lock.yaml`，用锁文件保证可复现。
-- 采用 Vue 3 + TypeScript + ESM + Vite + pnpm；需要页面导航时加 Vue Router，需要跨页共享状态时加 Pinia。测试与质量工具沿用团队约定或本次行为需要，不勾选用不到的平台能力。
-- 初始化完成先使入口运行，再接入所需组件和一个真实页面。不要一次创建空的权限、插件、微前端、代码生成或部署体系。
+- 新建应用使用 `yss-frontend-scaffold-generator`；先核对实际 `yss version`、`yss scaffold frontend --help` 与 catalog。新命令未随新版发行，旧 CLI 不支持时说明能力缺口，不回退旧 Node 生成器。
+- 输出父目录必须存在，工程目录必须不存在，包括拒绝已有空目录。已有业务资产按存量流程处理，不删除/清空目录来满足生成条件。
+- 生成最小 Vue 3 + TypeScript + ESM + Vite + pnpm 工程，附 VueUse、Tailwind、Button/Input 与 ESLint。请求/useRequest/Axios/Orval 按实际任务接入；需要导航或共享状态再引入 Router/Pinia。
+- 生成只修改 package.name，资源由 Bundle 提供；生成收据不管理后续应用源码。需要技能时在生成后单独 `attach --profile frontend --installation skills`，仅安装技能不生成 starter。
+- 安装前检查父级 pnpm-workspace.yaml 的真实匹配范围，确认依赖命令不会进入其他 workspace。按 packageManager/engines 使用冻结锁安装，检查已有 lint/typecheck/build 并运行入口；不把源码生成当作运行通过。
 
 新工程与新增页面采用 [项目与页面目录规范](project-structure.md)。根组件为 `App.vue`，页面进入 `views/<可选业务分组>/<页面名>/index.vue`，每页必须保留 `components`、`hooks`、`schemas` 三目录。新工程统一使用 `hooks`，不创建并行的 `composables` 树；无内容目录以 `.gitkeep` 保留，不造无用逻辑。存量页面只有在明确迁移范围内才调整。
 

@@ -18,7 +18,8 @@
     "yss-design-system",
     "prototype-review",
     "prototype",
-    "domain-modeling"
+    "domain-modeling",
+    "yss-frontend-scaffold-generator"
   ],
   "groupings": [
     {
@@ -40,7 +41,8 @@
         "yss-design-system",
         "prototype-review",
         "prototype",
-        "domain-modeling"
+        "domain-modeling",
+        "yss-frontend-scaffold-generator"
       ]
     }
   ]

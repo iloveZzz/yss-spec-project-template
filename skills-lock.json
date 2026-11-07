@@ -669,6 +669,17 @@
           ".claude/skills",
           ".workbuddy/skills"
         ]
+      },
+      "yss-frontend-scaffold-generator": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-frontend-scaffold-generator/SKILL.md",
+        "adaptationRef": ".template-spec/agents/frontend-skills-adaptation.md",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".workbuddy/skills"
+        ]
       }
     },
     "platform": {}

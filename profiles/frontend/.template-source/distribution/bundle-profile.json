@@ -70,7 +70,9 @@
       ".template-spec/templates/examples/plan-spec/ordinary-plan.md",
       ".template-spec/templates/examples/plan-spec/ordinary-source.md",
       ".template-spec/templates/examples/plan-spec/ordinary-valid.md",
-      ".template-spec/templates/frontend-starter"
+      ".template-spec/templates/frontend-starter",
+      ".agents/skills/yss-frontend-scaffold-generator",
+      ".workbuddy/skills/yss-frontend-scaffold-generator"
     ],
     "excludeRootEntries": [
       ".git",
@@ -148,7 +150,7 @@
         },
         {
           "pattern": ".gitignore",
-          "ownership": "managed-customizable"
+          "ownership": "user-owned"
         },
         {
           "pattern": "apps/**",
@@ -266,6 +268,7 @@
       "skills": [
         "setup-yss-harness",
         "yss-frontend-application",
+        "yss-frontend-scaffold-generator",
         "vue-best-practices",
         "create-adaptable-composable",
         "code-review",
@@ -357,6 +360,9 @@
         ],
         "domain-modeling": [
           ".template-spec/agents/matt-skills-adaptation.md"
+        ],
+        "yss-frontend-scaffold-generator": [
+          ".template-spec/agents/frontend-skills-adaptation.md"
         ]
       },
       "entries": {
@@ -370,6 +376,7 @@
       "skills": [
         "setup-yss-harness",
         "yss-frontend-application",
+        "yss-frontend-scaffold-generator",
         "vue-best-practices",
         "create-adaptable-composable",
         "code-review",
@@ -447,6 +454,9 @@
         ],
         "domain-modeling": [
           ".template-spec/agents/matt-skills-adaptation.md"
+        ],
+        "yss-frontend-scaffold-generator": [
+          ".template-spec/agents/frontend-skills-adaptation.md"
         ]
       },
       "entries": {

@@ -292,7 +292,6 @@ retirement_contract:
   - yss-filerunner
   - yss-formily
   - yss-formily-schema-generator
-  - yss-frontend-scaffold-generator
   - yss-harness-upgrade
   - yss-hook
   - yss-infrastructure-layer-reference
@@ -1494,3 +1493,12 @@ skills:
   stack: vue
 platform_skills: []
 external_skills: []
+
+- id: yss-frontend-scaffold-generator
+  layer: specialist
+  maturity: supported
+  instance_default_discoverable: false
+  aliases: []
+  impacts:
+  - frontend
+  stack: vue

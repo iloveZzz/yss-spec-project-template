@@ -15,7 +15,7 @@
 - `.agents/skills/`：共享技能内容源、参考资料和模板资产。
 - `.claude/skills/`：共享技能链接；`.workbuddy/skills/`：普通文件副本。
 - `profiles/backend/`：Backend 技能与资料覆盖层。
-- `profiles/frontend/`：Frontend 技能与资料覆盖层；默认 12 项，可用 16 项，按需加载。
+- `profiles/frontend/`：Frontend 技能与资料覆盖层；默认 13 项，可用 17 项，按需加载。
 - `.template-spec/`：业务、设计和工程参考。
 - `.template-source/distribution/`：分发清单与客户端入口。
 - `skills-lock.json`：技能来源和安装目录信息；`yss-public-skills.json`：公开技能清单。
@@ -27,3 +27,5 @@
 既有 yss CLI 的安装包和内置行为独立于本仓，本次目录变化不会改写已安装的二进制。新模板与具体 CLI 版本的安装、同步兼容性须以实际使用结果为准。
 
 Template 5.2.0 的 frontend 由 CLI 3.2.0 及其对应 Bundle 支持，3.1.4 及以前不支持。参见 [Frontend 接入](.template-spec/user-guide/cli/tutorial-frontend.md)。GitLab CI 使用支持三 Profile 的固定 CLI 源码提交，覆盖 Spec/Backend/Frontend；具体远程执行结果以该次流水线为准。
+
+新建 Vue 工程使用实际支持的 `yss scaffold frontend --project-name my-frontend --output-dir .`，父目录须存在且目标须不存在；新命令当前尚未随新版发行，先查看实际帮助。需要技能再单独 attach skills，应用源码与技能资源分开维护。

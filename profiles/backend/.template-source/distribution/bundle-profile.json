@@ -53,7 +53,9 @@
       ".agents/skills/vue-best-practices",
       ".agents/skills/create-adaptable-composable",
       ".workbuddy/skills/vue-best-practices",
-      ".workbuddy/skills/create-adaptable-composable"
+      ".workbuddy/skills/create-adaptable-composable",
+      ".agents/skills/yss-frontend-scaffold-generator",
+      ".workbuddy/skills/yss-frontend-scaffold-generator"
     ],
     "excludeRootEntries": [
       ".git",

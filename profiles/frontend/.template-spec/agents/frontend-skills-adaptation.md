@@ -1,6 +1,6 @@
 # Frontend 技能来源与适配
 
-本记录说明 2026-11-07 导入的来源、分发范围与本仓取舍，不是应用验收或审批材料。三个技能的共享内容源均为根 `.agents/skills`；Frontend 按显式白名单选择分发，Spec 按需可用但不增加默认安装，Backend 不分发这三个技能。安装后按目标工程的技能目录发现，不依赖来源工程或本机绝对路径。
+本记录说明 2026-11-07 导入的来源、分发范围与本仓取舍，不是应用验收或审批材料。最初三个技能的共享内容源均为根 `.agents/skills`；Frontend 按显式白名单选择分发，Spec 按需可用但不增加默认安装，Backend 不分发这三个技能。安装后按目标工程的技能目录发现，不依赖来源工程或本机绝对路径。
 
 ## 本次来源
 
@@ -29,10 +29,14 @@
 
 补充 `assets/patches/VUE-HOOKS-PLUS-LICENSE.txt`，来源为同一 scrm-frontend HEAD 的 `.agents/skills/yss-frontend-scaffold-generator/assets/template/provenance/VUE-HOOKS-PLUS-LICENSE.txt`，保留 MIT 与 `Copyright (c) 2022 YongGit` 原文。仅取许可文件，不导入脚手架。复制或分发补丁时一并保留该许可证。
 
-不导入 `yss-frontend-scaffold-generator` 或原版 `shadcn-vue` 技能。组件复用与生成遵循实际锁定版本、本地组件、Tailwind 4 与 Reka；不采用上游 AUTO、`@latest`、强制表单库或嵌入 CLI 对项目授权的扩张。保留 pnpm、Vue 3、TypeScript、按需 VueUse/useRequest、现有工程保护与取消不等于撤销的边界。
+初次导入未纳入 `yss-frontend-scaffold-generator`，后续重新引入见下文；仍不导入原版 `shadcn-vue` 技能。组件复用与生成遵循实际锁定版本、本地组件、Tailwind 4 与 Reka；不采用上游 AUTO、`@latest`、强制表单库或嵌入 CLI 对项目授权的扩张。保留 pnpm、Vue 3、TypeScript、按需 VueUse/useRequest、现有工程保护与取消不等于撤销的边界。
 
 ## 副本与证据边界
 
 根 `.claude/skills` 的三个技能入口是指向 canonical 内容的链接；根 `.workbuddy/skills` 保持普通副本。Frontend 复用根共享主源，其 WorkBuddy 有效副本位于 `profiles/frontend/.workbuddy/skills`。本说明在 Frontend 的 `.template-spec/agents` 下保留同内容副本，随 Spec 与 Frontend 对应安装模式的资源清单分发。
 
-本轮执行导入范围、技能内相对 Markdown 引用、来源/许可证保留及副本一致性核对。没有运行应用构建、接口生成、浏览器视觉/交互、技能宿主发现或真实接口联调；没有提交、推送或发行。结构核对不能替代这些运行证据。
+初次导入执行范围、技能内相对 Markdown 引用、来源/许可证保留及副本一致性核对。没有运行应用构建、接口生成、浏览器视觉/交互、技能宿主发现或真实接口联调；没有提交、推送或发行。结构核对不能替代这些运行证据。
+
+## 最小工程整合
+
+以 SCRM `a5a331548bf7d2d4c46153506c4b823b4bcd14eb` 为固定参考，新增第四个共享前端技能 `yss-frontend-scaffold-generator`。Frontend 默认 13、可用 17；Spec 默认 16、Backend 默认 41 不变。轻量技能调用原生 CLI，静态 starter 仅在 Frontend Bundle 中，安装技能不复制它。请求与 OpenAPI 按任务接入；来源、许可和裁剪详见新技能包内 references/source-adaptation.md。Spec 的设计升级仍在原有 yss-design-system 中，不新增 Design Profile。

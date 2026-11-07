@@ -56,3 +56,7 @@ OpenAPI 补充核对：参考锁文件为 Orval 7.10.0，配置的 `client: 'axi
 可选 TanStack Table 使用实际 npm 包附带的 skills 与版本；VeeValidate/Storybook/Router/Pinia 未在模板预装。Reka/WAI-ARIA、Vue 测试与 ESLint、MSW、Playwright 官方文档分别链接在对应参考页，文档中的示例选型不是新增运行依赖授权。
 
 来源技能曾为其应用模板记录以下工具版本：ESLint 10.14.0、eslint-plugin-vue 10.12.0、@vue/eslint-config-typescript 14.9.0、MSW 3.0.3、@playwright/test 1.64.1、@axe-core/playwright 4.14.0；并记录 VueUse 15.0.0、Reka 2.11.0 的模板调整。本版本不分发这些模板、依赖或测试，不将历史版本清单作为安装命令。目标工程沿用实际锁文件，按需要核对直接与间接依赖；“VueUse 15 基线”指指导范围，不声称整棵依赖树已单版本。此处不构成当前安装、运行或浏览器验证证据。
+
+## 原生最小工程整合（2026-11-07）
+
+后续以 SCRM `a5a331548bf7d2d4c46153506c4b823b4bcd14eb` 为固定参考，新增轻量 `yss-frontend-scaffold-generator` 与 CLI 静态资源。先前“不分发模板”描述只适用于应用技能包；Bundle 单独提供裁剪后的最小 starter。请求与 OpenAPI 保留按需参考，不预装其运行依赖；详见 [整合边界](integration-design.md)。
