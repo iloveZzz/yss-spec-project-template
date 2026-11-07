@@ -10,4 +10,4 @@ Preserve business validation, security, error handling and user files. Commits, 
 
 Installed yss CLI binaries are separate products. Check compatibility against the installed version and its embedded template.
 
-Template 5.3.0 includes a minimal Vue starter and updated Spec prototype guidance. CLI 3.3.0 adds `scaffold frontend`; the Frontend Profile remains available from CLI 3.2.0, while 3.1.4 and earlier do not support it. Check the actual CLI help and embedded Bundle. GitLab CI pins a frontend-capable CLI source commit and covers all three profiles. Report remote execution and release results from the actual run.
+Template 5.3.1 includes a minimal Vue starter and updated Spec prototype guidance. CLI 3.3.0 adds `scaffold frontend`; the Frontend Profile remains available from CLI 3.2.0, while 3.1.4 and earlier do not support it. Check the actual CLI help and embedded Bundle. GitLab CI pins a frontend-capable CLI source commit and covers all three profiles. Report remote execution and release results from the actual run.
