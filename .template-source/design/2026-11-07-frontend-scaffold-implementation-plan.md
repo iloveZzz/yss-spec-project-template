@@ -8,7 +8,7 @@
 
 **Tech Stack:** Rust/Clap/Serde、现有 Bundle/RenderedTree、安全文件系统；Vue 3、VueUse 15、Reka、Tailwind 4、Vite、TypeScript、pnpm。
 
-**Spec:** [已确认设计](2026-11-07-frontend-scaffold-integration-design.md)，第 1–8、10–13 节。2026-11-07 已确认进入计划，本计划尚未执行。
+**Spec:** [已确认设计](2026-11-07-frontend-scaffold-integration-design.md)，第 1–8、10–13 节。2026-11-07 已确认设计、计划并批准执行；实际结果见末尾记录。
 
 ## Global Constraints
 
@@ -22,7 +22,7 @@
 - 文档与技能不声称 CLI 3.2.0 已支持新命令；PATH CLI 实测仅 3.1.4，全部验收使用本次候选的绝对路径，不修改全局安装。
 - 两仓不维护或分发脚本与测试套件；本计划的断言/故障注入仅在临时目录使用并清理，不提交产品测试开关。
 - macOS ARM64 与 Windows x86_64 的原生生成证据分别记录。没有 Windows 条件时保留缺口，不以交叉构建代替原生回放。
-- 本轮授权为计划编写。后续提交、推送、PR/主分支合并与发行使用各动作的真实授权；不预定版本、不伪造 SHA、不重发已有 5.2.0/3.2.0。
+- 计划编写后用户已批准实施及计划中的本地提交。推送、PR/主分支合并与发行继续使用各动作的真实授权；不预定版本、不伪造 SHA、不重发已有 5.2.0/3.2.0。
 
 ## Review Focus
 
@@ -166,7 +166,7 @@ doctor 即使存在差异也可能正常退出，必须断言 JSON `.result.diff
 - [x] **Step 3：从最终干净候选重新打包构建。** 使用 B3 命令，核对 `source.commit/state/snapshot` 和 Bundle 摘要；执行一次 `cargo clippy --locked --bin yss -- -D warnings` 与格式检查。前面已有检查无变动时复用结果，只重跑新改动影响的断言；最终生成/来源检查必须对应当前二进制。
 - [x] **Step 4：完成最终生成→运行→接入回放。** 候选生成、冻结依赖安装、lint/typecheck/build、实际起始页、attach skills、sync/doctor；保留各步骤不同结论。核对 A/B 重叠 token、许可证与来源说明一致；不宣称业务 UI 已还原。生成模式依赖包声明，不能把失败安装当作成功工程。
 - [x] **Step 5：按平台记录证据。** macOS ARM64 原生执行生成和保护场景；Windows x86_64 在可用原生环境执行至少生成、dry-run、重复/保留名称/路径保护及收据核验。应用运行另记环境与结果；平台不可用时明确未覆盖，不新增远程服务或购买工具来替代。
-- [ ] **Step 6：范围审查与交接。** 检查两仓最终 diff、无持久验证材料/无来源项目修改、受影响 Java/安装/发布错误行为、技能与清单一致。说明实际执行命令、最终提交/摘要、未覆盖项；建议提交 `chore: align Frontend scaffold integration sources`。PR/合并/发行不是本计划已完成的动作。
+- [x] **Step 6：范围审查与交接。** 检查两仓最终 diff、无持久验证材料/无来源项目修改、受影响 Java/安装/发布错误行为、技能与清单一致。说明实际执行命令、最终提交/摘要、未覆盖项；建议提交 `chore: align Frontend scaffold integration sources`。PR/合并/发行不是本计划已完成的动作。
 
 ## 覆盖与执行选择
 
@@ -222,4 +222,10 @@ B1–B4 已实施。模板功能提交 `0205c5eb`、`56707076`；CLI 功能提�
 
 六个 Profile/安装范围完成实际 init；Spec 按需补装、Backend 排除、Frontend sync 幂等成立。生成工程 attach 后应用、package/lock、README/DESIGN/.gitignore 字节保留，两类收据并存。缺失 .gitignore 新建为 user-owned；修改/删除后 sync 保留现状且 doctor 分别报告 modified/deleted；本轮旧候选产生的 managed 收据保持原 ownership/hash。六种技能路由完成文本演练，不把它当作宿主发现实测。
 
-B5 已固定真实功能提交并扩展既有 CI 内联演练，未新增脚本或测试套件。Clippy `-D warnings` 通过。Windows 原生环境不可用，未将交叉编译当作运行证据；CI pin 尚未推送，远端 pipeline 未运行。最终干净候选、整链回放与独立 review 的结果继续补入此节；尚未推送、合并或发行。
+B5 已固定真实功能提交并扩展既有 CI 内联演练，未新增脚本或测试套件。Clippy `-D warnings` 通过。Windows 原生环境不可用，未将交叉编译当作运行证据；CI pin 尚未推送，远端 pipeline 未运行。已从干净提交重建候选，完成生成→冻结安装→lint/typecheck/build→浏览器→attach→sync/doctor 回放；适用源码和文档摘要保持不变。本地执行了既有 verify-scaffolds 内联 job，不能将其报告为远端 CI 通过。尚未推送、合并或发行。
+
+独立完整分支 review 使用新上下文完成，发现两项 Important/P2：两份注册表新增条目离开 skills 列表导致 YAML 解析失败；starter Input 的错误边框被默认/focus 样式覆盖。两项均先用临时断言复现，再修正并通过：注册表可解析且 active/default 标记正确；实际 vendor Input 在默认、hover、focus 状态都保留错误色，vendor 未改。全部 20 个变更 JSON/YAML 可解析，starter 再次完成 lint/typecheck/build 与浏览器检查。遗留客户演示标题也按已确认的中性入口范围改正；功能修复提交 `1a2aee42`。
+
+CLI CI 固定含修复的模板提交 `1a2aee4270f96cd923724a09eeeef5b3fd09d60a`；模板 CI 固定 CLI 提交 `9f3fcc43ddea61d501365d65d5e7f36a9987b7e0`。两者均是真实本地提交，尚待对应推送后远端可取。评审后仅做一次定向修复和验证，无二次独立 review；没有未处理的重要发现。Windows、远端 CI/发行、宿主实际发现、跨浏览器/读屏/触摸继续保留为未验证范围。
+
+实施判断：仓库不持久化脚本/套件约定优先于通用技能的全量套件要求，临时断言只证明列明范围；标题修正属于已确认中性工程范围，影响仅浏览器标题；本次保留本地分支与 worktree，不重复询问集成选项，也不把此前已完成发行的授权扩展为新发行。
