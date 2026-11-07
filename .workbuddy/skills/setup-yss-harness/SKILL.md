@@ -60,7 +60,7 @@ npx skills@latest add iloveZzz/yss-spec-dev-skills --skill setup-yss-harness --a
 
 所有写入命令默认直接执行；同一命令加 `--dry-run` 仅预览，不创建目标、控制目录或保存计划。`doctor` 查看安装来源、目标文件差异、冲突与未完成事务；`recover` 仅安全恢复未完成事务，参数以实际帮助为准，不提供已完成操作的通用回滚；已提交事务仅重试安全清理。Windows 更新可能保留仍被旧进程占用的程序，提交和清理结果分别报告；若中断导致主入口暂缺，从已核验发行包取得独立新程序执行 `recover --root <工具根>`。
 
-脚手架使用 `scaffold catalog`、`scaffold ddd`、`scaffold mvc`。先确定项目、平台和 Maven 坐标，仅生成新目标，不要求合同或批准，不自动执行 Maven。
+Java 脚手架使用 `scaffold catalog`、`scaffold ddd`、`scaffold mvc`。先确定项目、平台和 Maven 坐标，仅生成新目标，不要求合同或批准，不自动执行 Maven。
 
 旧插件、保存计划、`plan/apply`、`migrate`、`assets`、`update`、`rollback` 和 `project` 等已退役；不要构造兼容命令。Rust 使用 `.yss/project.json`（`format: yss.project`、`formatVersion: 1`）；发现旧 `.yss.json`、家族标记或旧工具收据时只读拒绝，不迁移、不复用旧事务。保留旧目录，在新的目录重新接入；不删状态或覆盖用户修改。
 
