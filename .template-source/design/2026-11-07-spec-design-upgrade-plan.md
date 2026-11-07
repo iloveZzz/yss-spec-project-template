@@ -12,7 +12,7 @@
 
 ## Global Constraints
 
-- 用户于 2026-11-07 确认整版设计并要求编制计划；本文步骤尚未执行，不据此声称技能或 UI 已验收。
+- 用户于 2026-11-07 确认整版设计并要求编制计划；本计划已按下方执行记录实施，验收结论只限实际执行范围。
 - 工作仓为 `yss-spec-project-template`；SCRM 只读来源固定到 `a5a331548bf7d2d4c46153506c4b823b4bcd14eb`，不拉入或覆盖其未提交工作。
 - 只增强现有 Spec；不新增 `design` Profile、身份、迁移或兼容路径。Spec 默认 16、Backend 默认 41 不变；Frontend 数量变化由配套计划负责。
 - 新标准列表 48px、表格正文 14/22；主色 `#0d6be9`、正文 14/20、控件 32px、表头 48px、圆角 4px；必要边界 `#7d8aa0`、辅助文字 `#62728c`。
@@ -52,11 +52,11 @@
 - Consumes: 设计 §9.2 的值与语义角色；SCRM 9 个变化文件作为参考，不整体覆盖。
 - Produces: 根 DESIGN 与 `assets/DESIGN.md` 同字节；现有 `--yss-components-table-row-height` 为 `48px`；新增 `typography.table-body` 角色及 `--yss-typography-table-body-font-size:14px`、`--yss-typography-table-body-line-height:1.5714285714285714` 表达 14/22；`--brand-*` 继续作现有桥接。Frontend B1 从这些文件取得主题，不另立值表。
 
-- [ ] **Step 1：记录受影响角色的现值。** 读取 DESIGN front matter 和实际 CSS，列出表格正文/行高、筛选区、占位、Checkbox、按钮边界和 hover 的映射；当前 row-height 为 36px，明确本次应变为 48px，其余已符合值保持。不要把 JSON 历史预设色板当成主题主源。
-- [ ] **Step 2：修改根规范与 token 投影。** 写入已确认的样式决定，补齐必要的新语义角色后同步 `variables.css`；表格行使用可自然增高的 height/minimum 语义，不能裁掉长内容。普通正文仍 14/20。将根 DESIGN 复制为技能内同内容副本。
-- [ ] **Step 3：更新实际布局与组件映射。** 在上述 4 个自有 CSS 文件落实筛选末列操作、窄屏收缩、平面列表 hover 和 Checkbox 强边界。沿用必要控件边界与占位色；不要把 SCRM 的浅色替换进默认值。可选导航/头像/顶栏只提供组合规则，不自动包围所有页面。
-- [ ] **Step 4：同步主题说明并做针对性静态断言。** `cmp DESIGN.md .agents/skills/yss-design-system/assets/DESIGN.md` 应无输出；临时解析/断言验证 row-height=48、table text=14/22、border-control=#7d8aa0、辅助色=#62728c，检查受改 CSS 使用的 `--yss-*`/`--brand-*` 变量均有定义。`git diff --check` 应退出 0。不恢复旧 token 生成器。
-- [ ] **Step 5：提交本任务受影响源文件。** 建议提交 `feat: align Spec standard theme and list patterns`；完整浏览器验证与副本同步在 A2/A3，提交说明不提前写验收通过。
+- [x] **Step 1：记录受影响角色的现值。** 读取 DESIGN front matter 和实际 CSS，列出表格正文/行高、筛选区、占位、Checkbox、按钮边界和 hover 的映射；当前 row-height 为 36px，明确本次应变为 48px，其余已符合值保持。不要把 JSON 历史预设色板当成主题主源。
+- [x] **Step 2：修改根规范与 token 投影。** 写入已确认的样式决定，补齐必要的新语义角色后同步 `variables.css`；表格行使用可自然增高的 height/minimum 语义，不能裁掉长内容。普通正文仍 14/20。将根 DESIGN 复制为技能内同内容副本。
+- [x] **Step 3：更新实际布局与组件映射。** 在上述 4 个自有 CSS 文件落实筛选末列操作、窄屏收缩、平面列表 hover 和 Checkbox 强边界。沿用必要控件边界与占位色；不要把 SCRM 的浅色替换进默认值。可选导航/头像/顶栏只提供组合规则，不自动包围所有页面。
+- [x] **Step 4：同步主题说明并做针对性静态断言。** `cmp DESIGN.md .agents/skills/yss-design-system/assets/DESIGN.md` 应无输出；临时解析/断言验证 row-height=48、table text=14/22、border-control=#7d8aa0、辅助色=#62728c，检查受改 CSS 使用的 `--yss-*`/`--brand-*` 变量均有定义。`git diff --check` 应退出 0。不恢复旧 token 生成器。
+- [x] **Step 5：提交本任务受影响源文件。** 建议提交 `feat: align Spec standard theme and list patterns`；完整浏览器验证与副本同步在 A2/A3，提交说明不提前写验收通过。
 
 ## Task A2: 落实原型交互规范并验证代表页面
 
@@ -67,11 +67,11 @@
 - Consumes: A1 主题；现有 Vue props/emits/slots；`window.prototypeScenarioContract` 和 `window.prototypeRuntime.{initialize,ready,fail,showError}`。
 - Produces: 完整 UI Spec 的高保真原型/说明规则与可操作示例；维持 `initialize()` 返回的 `id,label,stateRef,data,ticket` 及 `ready(ticket)` 的过期回调保护，不变更合同结构。
 
-- [ ] **Step 1：补齐已有方法的具体规则。** 将设计 §9.3 的 8 条规则写入最相关的现有参考；入口只保留路由摘要，不复制整篇。明确完整交付与局部改稿、真实输入与模拟数据、共享 CSS 与局部变体；SCRM AGENTS 相对链接改为包内有效说明。
-- [ ] **Step 2：核对并局部调整现有示例。** `ListDetail.vue` 已有固定工具栏及“跨页保留、重置场景清除”，保留该选择语义，不为展示全选扩建业务表格。需要全选/半选的示例按其可选集合排除禁用项。确认式日期/团队选择器保留草稿和应用值、取消/Escape 与外部焦点；弹层用自有容器提供可收缩主体，保留标题/底部操作。不修改已经符合的逻辑。
-- [ ] **Step 3：在仓外临时目录组装一次代表原型。** 按 `shadcn-vue-prototype.md` 复制锁、`vite.config.ts`、所选 Vue 入口及依赖闭包和固定组件，核验组件清单 SHA-256、保留许可。优先复用 `workspace-standard.config.json` 组合列表；补入已有 `ComponentStates.vue`、`TeamPicker.vue`、`DateRange.vue` 所需演练即可。场景 JSON 包装为 `window.prototypeScenarioContract`，普通脚本先于 Vue 入口，tokens 在文档根装配。
-- [ ] **Step 4：运行实际工程检查。** 在临时原型目录使用其锁指定的 pnpm：`pnpm install --frozen-lockfile`、`pnpm exec vite build`、`pnpm exec vite --host 127.0.0.1`。预期安装与构建退出 0，页面可打开且无本次引入的控制台错误；命令失败则修复受影响源或明确条件缺口，不写“已运行”。
-- [ ] **Step 5：复用同一原型完成最小浏览器断言。** 桌面 1440×900、窄屏 390×844，加 500px 高窗口；检查下表并保存实际条件和发现。可用当前浏览器能力或临时 Playwright，不把工具和用例放进技能。
+- [x] **Step 1：补齐已有方法的具体规则。** 将设计 §9.3 的 8 条规则写入最相关的现有参考；入口只保留路由摘要，不复制整篇。明确完整交付与局部改稿、真实输入与模拟数据、共享 CSS 与局部变体；SCRM AGENTS 相对链接改为包内有效说明。
+- [x] **Step 2：核对并局部调整现有示例。** `ListDetail.vue` 已有固定工具栏及“跨页保留、重置场景清除”，保留该选择语义，不为展示全选扩建业务表格。需要全选/半选的示例按其可选集合排除禁用项。确认式日期/团队选择器保留草稿和应用值、取消/Escape 与外部焦点；弹层用自有容器提供可收缩主体，保留标题/底部操作。不修改已经符合的逻辑。
+- [x] **Step 3：在仓外临时目录组装一次代表原型。** 按 `shadcn-vue-prototype.md` 复制锁、`vite.config.ts`、所选 Vue 入口及依赖闭包和固定组件，核验组件清单 SHA-256、保留许可。优先复用 `workspace-standard.config.json` 组合列表；补入已有 `ComponentStates.vue`、`TeamPicker.vue`、`DateRange.vue` 所需演练即可。场景 JSON 包装为 `window.prototypeScenarioContract`，普通脚本先于 Vue 入口，tokens 在文档根装配。
+- [x] **Step 4：运行实际工程检查。** 在临时原型目录使用其锁指定的 pnpm：`pnpm install --frozen-lockfile`、`pnpm exec vite build`、`pnpm exec vite --host 127.0.0.1`。预期安装与构建退出 0，页面可打开且无本次引入的控制台错误；命令失败则修复受影响源或明确条件缺口，不写“已运行”。
+- [x] **Step 5：复用同一原型完成最小浏览器断言。** 桌面 1440×900、窄屏 390×844，加 500px 高窗口；检查下表并保存实际条件和发现。可用当前浏览器能力或临时 Playwright，不把工具和用例放进技能。
 
 | 代表条件 | 必须得到的结果 |
 | --- | --- |
@@ -81,7 +81,7 @@
 | 小视口弹层与 Teleport | 标题和操作区在可用视口内，主体独立滚动，浮层计算色/字体正确，必要边界、错误、半选和焦点可辨认 |
 | 场景与加载 | 未知 hash 显示错误，reset 后旧 ticket 不覆盖新状态；失败恢复不伪装空态；刷新直达与页间切换的共享样式一致 |
 
-- [ ] **Step 6：提交方法和必要示例修正。** 建议提交 `feat: strengthen Spec prototype interaction guidance`；附实际运行范围，来源已有测试不能算本次结果。A1 样式无新变化时不重复安装或构建。
+- [x] **Step 6：提交方法和必要示例修正。** 建议提交 `feat: strengthen Spec prototype interaction guidance`；附实际运行范围，来源已有测试不能算本次结果。A1 样式无新变化时不重复安装或构建。
 
 ## Task A3: 同步分发并证明安装后可用
 
@@ -92,9 +92,9 @@
 - Consumes: A1/A2 的最终共享内容，以及现有 project/skills 两种安装集合。
 - Produces: Spec 默认安装可用、Frontend 可选安装同内容的 design-system；供 B1 使用的最终主题；来源说明留在技能包内并由正文相对链接可达。
 
-- [ ] **Step 1：记录来源与适配。** 新建 `D/references/integration-source.md`：固定 SCRM 比较提交、9 项变化/1 个排除头像、采用与舍弃值、作者资源与 vendor 的边界、实际验证及限制；保留原上游记录，不把本地摘要写作上游版本。更新 `.template-spec/design/README.md` 的默认规范说明。
-- [ ] **Step 2：同步实际消费副本。** 根 `.workbuddy/skills/yss-design-system/` 和 `profiles/frontend/.workbuddy/skills/yss-design-system/` 与主源同字节；核对根 `.claude/skills/yss-design-system` 既有链接。同步上表列明的 DESIGN/tokens；Backend 不新增 DESIGN 文件或设计技能。根与 Frontend 锁当前均无 `effectiveHash`，不补字段；Backend 技能树未改，不动其哈希。
-- [ ] **Step 3：打包候选并演练安装。** PATH 上 CLI 实测为 3.1.4，不能用于本次验证。在隔离 CLI checkout 执行下列已有命令，使用输出的绝对二进制路径演练 Spec project/skills 和 Frontend 两种范围，再对 Frontend 执行 `skills ensure yss-design-system`。此处不依赖尚未实现的 `scaffold frontend`，不替换全局安装。
+- [x] **Step 1：记录来源与适配。** 新建 `D/references/integration-source.md`：固定 SCRM 比较提交、9 项变化/1 个排除头像、采用与舍弃值、作者资源与 vendor 的边界、实际验证及限制；保留原上游记录，不把本地摘要写作上游版本。更新 `.template-spec/design/README.md` 的默认规范说明。
+- [x] **Step 2：同步实际消费副本。** 根 `.workbuddy/skills/yss-design-system/` 和 `profiles/frontend/.workbuddy/skills/yss-design-system/` 与主源同字节；核对根 `.claude/skills/yss-design-system` 既有链接。同步上表列明的 DESIGN/tokens；Backend 不新增 DESIGN 文件或设计技能。根与 Frontend 锁当前均无 `effectiveHash`，不补字段；Backend 技能树未改，不动其哈希。
+- [x] **Step 3：打包候选并演练安装。** PATH 上 CLI 实测为 3.1.4，不能用于本次验证。在隔离 CLI checkout 执行下列已有命令，使用输出的绝对二进制路径演练 Spec project/skills 和 Frontend 两种范围，再对 Frontend 执行 `skills ensure yss-design-system`。此处不依赖尚未实现的 `scaffold frontend`，不替换全局安装。
 
 ```sh
 cargo run --locked --bin yss-bundle -- --source-root /absolute/template-checkout --out assets/bundle.tar.gz
@@ -115,9 +115,9 @@ for installation in project skills; do
 done
 ```
 
-- [ ] **Step 4：核对安装结果。** 校验全部修改文件副本摘要一致、相对链接可达、设计 token 存在、无 SCRM 运行路径或未知 webp；Spec 默认 16、Backend 默认 41 不变。Frontend 在仅完成 A 时仍为 12/16，配套 B 完成后为 13/17。从至少一个实际安装环境复用 A2 原型验证资源闭包；其余模式以相同字节与引用检查复用结果，不机械重复整套浏览器操作。
-- [ ] **Step 5：验证既有项目保护。** 复制一个包含定制 DESIGN/36px 样式的临时项目，按真实授权接入 skills，比较接入前后业务文件摘要；预期不更改应用样式、业务源码或设计。遇现有受管冲突按原规则拒绝，不为了让安装成功覆盖用户文件。
-- [ ] **Step 6：提交分发同步。** 建议提交 `feat: distribute upgraded Spec design resources`；记录模板提交与打包时真实来源状态，交接给 B1。候选若按 working-tree 打包就如实记录，不能把随后提交的 HEAD 写成本次已验证的 committed 来源。只清理本任务创建且可确认归属的临时材料。
+- [x] **Step 4：核对安装结果。** 校验全部修改文件副本摘要一致、相对链接可达、设计 token 存在、无 SCRM 运行路径或未知 webp；Spec 默认 16、Backend 默认 41 不变。Frontend 在仅完成 A 时仍为 12/16，配套 B 完成后为 13/17。从至少一个实际安装环境复用 A2 原型验证资源闭包；其余模式以相同字节与引用检查复用结果，不机械重复整套浏览器操作。
+- [x] **Step 5：验证既有项目保护。** 复制一个包含定制 DESIGN/36px 样式的临时项目，按真实授权接入 skills，比较接入前后业务文件摘要；预期不更改应用样式、业务源码或设计。遇现有受管冲突按原规则拒绝，不为了让安装成功覆盖用户文件。
+- [x] **Step 6：提交分发同步。** 建议提交 `feat: distribute upgraded Spec design resources`；记录模板提交与打包时真实来源状态，交接给 B1。候选若按 working-tree 打包就如实记录，不能把随后提交的 HEAD 写成本次已验证的 committed 来源。只清理本任务创建且可确认归属的临时材料。
 
 ## 覆盖与交接
 
@@ -131,3 +131,11 @@ done
 | 与应用 starter 共用主题 | A1 输出、B1 消费，B5 最终核对 |
 
 计划自查：已检查覆盖、步骤可执行性、合同字段与边界一致性；没有把旧来源测试写作执行结果。实施时维护复选框和实际结果即可，不另建统一验收报告系统。人工读屏、其他浏览器、真实触摸和生产 API 未覆盖时明确保留限制。
+
+## 执行记录（2026-11-07）
+
+A1–A3 已实施，功能提交 `16c8bab9`、`0fb39cc3`、`fcfb8301`。共享主题、宿主副本与 Profile token 一致；保留原型依赖锁及固定 vendor 字节。浏览器发现并修复停用员工仍可选的问题。
+
+临时原型完成 pnpm 10.32.1 冻结安装、Vite 构建；Chromium 1440×900、390×844、1440×500 验证 48px/14/22、选择/翻页/重置、确认/取消/Escape、焦点、长选项滚动、Teleport 主题、日期操作、未知场景和过期 ready ticket。实际四种安装的资源一致，从安装后的技能重放原型；36px 定制 DESIGN 与业务 CSS 接入后不变。
+
+首次安装候选 Bundle 摘要 `821fb3d9ac9602881fe0ee110073db41bb02e2e84c821e74a3f4c9e60c1971d6`，打包来源为 `0fb39cc3` 的 working-tree，后续提交不追认该次为 committed。共享技能最终整合与干净候选结果见 Frontend 配套计划。其他浏览器、人工读屏、真实触摸及生产 API 未验证；没有新增 Design Profile，也没有执行推送或发行。
