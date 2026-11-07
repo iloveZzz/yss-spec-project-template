@@ -60,3 +60,9 @@ OpenAPI 补充核对：参考锁文件为 Orval 7.10.0，配置的 `client: 'axi
 ## 原生最小工程整合（2026-11-07）
 
 后续以 SCRM `a5a331548bf7d2d4c46153506c4b823b4bcd14eb` 为固定参考，新增轻量 `yss-frontend-scaffold-generator` 与 CLI 静态资源。先前“不分发模板”描述只适用于应用技能包；Bundle 单独提供裁剪后的最小 starter。请求与 OpenAPI 保留按需参考，不预装其运行依赖；详见 [整合边界](integration-design.md)。
+
+## 官方组件复用方法（2026-11-08）
+
+本次依据用户确认的自主接入范围和[官方组件目录](https://shadcn-vue.com/docs/components)、[配置](https://shadcn-vue.com/docs/components-json)、[CLI](https://shadcn-vue.com/docs/cli)完善组件参考。另核对官方 Skill 的 `d9aec43ae5eb258d62d532cc788c0f693c07bd5b` 来源，保留上表原始引入记录；本地方法适配不冒充上游升级，不复制完整 Skill 或继承其自动命令、强制表单库及 preset 政策。
+
+共享组件参考可作为叶子随设计技能分发，按实际任务选择本地/固定清单/官方固定源码。CLI 精确版本和组件 revision 分别核验；不因官方目录扩充而下载全部组件。本次方法变化不更新固定组件、许可或应用依赖锁；运行和宿主发现的实际结果应按当前任务说明。

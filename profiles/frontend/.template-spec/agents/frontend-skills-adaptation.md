@@ -40,3 +40,7 @@
 ## 最小工程整合
 
 以 SCRM `a5a331548bf7d2d4c46153506c4b823b4bcd14eb` 为固定参考，新增第四个共享前端技能 `yss-frontend-scaffold-generator`。Frontend 默认 13、可用 17；Spec 默认 16、Backend 默认 41 不变。轻量技能调用原生 CLI，静态 starter 仅在 Frontend Bundle 中，安装技能不复制它。请求与 OpenAPI 按任务接入；来源、许可和裁剪详见新技能包内 references/source-adaptation.md。Spec 的设计升级仍在原有 yss-design-system 中，不新增 Design Profile。
+
+## 官方组件按需接入（2026-11-08）
+
+三个现有技能补齐官方组件发现、固定兼容来源、必要依赖/配置、现有主题适配和实际验证；共享正文为项目根 `.agents/skills/yss-frontend-application/references/component-engineering.md`。该自包含叶子随 Spec/Frontend 的设计技能在 project、skills 两种模式分发，不安装完整应用技能；默认/可用技能集合不变。大版本升级、已有定制和全局主题变化先提供具体方案，由用户决定。starter 仅增加 YSS 自有组件配置，不更新固定组件、许可、依赖锁或主题；上游来源身份保留，规则适配不冒充上游升级。

@@ -352,7 +352,8 @@
         ],
         "yss-design-system": [
           ".template-spec/design/tokens/variables.css",
-          ".agents/skills/prototype-review/references/review-method.md"
+          ".agents/skills/prototype-review/references/review-method.md",
+          ".agents/skills/yss-frontend-application/references/component-engineering.md"
         ],
         "prototype-review": [],
         "prototype": [
@@ -446,7 +447,8 @@
         ],
         "yss-design-system": [
           ".template-spec/design/tokens/variables.css",
-          ".agents/skills/prototype-review/references/review-method.md"
+          ".agents/skills/prototype-review/references/review-method.md",
+          ".agents/skills/yss-frontend-application/references/component-engineering.md"
         ],
         "prototype-review": [],
         "prototype": [

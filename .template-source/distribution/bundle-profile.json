@@ -417,7 +417,8 @@
           ".template-spec/engineering/backend-platforms.json"
         ],
         "yss-design-system": [
-          ".template-spec/design/tokens/variables.css"
+          ".template-spec/design/tokens/variables.css",
+          ".agents/skills/yss-frontend-application/references/component-engineering.md"
         ],
         "yss-distributed-id": [],
         "yss-domain": [],
@@ -596,7 +597,8 @@
           ".template-spec/engineering/backend-platforms.json"
         ],
         "yss-design-system": [
-          ".template-spec/design/tokens/variables.css"
+          ".template-spec/design/tokens/variables.css",
+          ".agents/skills/yss-frontend-application/references/component-engineering.md"
         ],
         "yss-distributed-id": [],
         "yss-domain": [],

@@ -1,6 +1,6 @@
 # 任务、页面组合与当前组件
 
-先读当前交互说明和状态矩阵，再按任务选择组合。组件可用不代表业务规则已批准；此处只导航已固定源码，不自动搜索 registry、执行 latest 或覆盖 preset。新高保真优先 shadcn-vue + Vue 3；Blocks 仅提供任务组合参考，不自动复制上游页面、依赖或默认主题。
+先读当前交互说明和状态矩阵，再按任务选择组合。组件可用不代表业务规则已批准；优先已有实现，缺失时按已授权任务查官方目录并固定兼容来源，不执行 latest 或覆盖 preset。组件状态与接入方法共用项目根 `.agents/skills/yss-frontend-application/references/component-engineering.md`。新高保真优先 shadcn-vue + Vue 3；Blocks 仅提供任务组合参考，不自动复制上游页面、依赖或默认主题。
 
 ## 任务导航
 
@@ -20,7 +20,7 @@
 
 - Field 组合 Label/Separator；InputGroup 组合 Button/Input/Textarea；Pagination 使用 Button 变体。Table 只负责基础表格，筛选、排序、分页和选择逻辑消费本地场景与现有业务合同。
 - Vue 的 Sheet、DropdownMenu、Tooltip 使用固定 reka-ui；图标使用 @lucide/vue。制作时核对固定 revision、许可、包版本、锁及实际组件依赖。主题只在本地映射层适配，源文件变更须另记差异。
-- 搜索单选与纯日期范围按 [专项配方](search-date-patterns.md) 使用；不使用未登记的多选、日期时间、图表、Sidebar 或 Sonner。确有新增需求时先明确决策及验证范围，不假装当前已支持。
+- 搜索单选与纯日期范围按 [专项配方](search-date-patterns.md) 使用；多选、日期时间、图表、Sidebar 或 Sonner 等清单外能力只在任务需要时按共享组件方法调查、获取与验证，不把官方目录或可选能力写成已经安装。
 
 ## 键盘、焦点及主题配方
 

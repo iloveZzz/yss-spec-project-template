@@ -34,6 +34,8 @@ description: Use when implementing, engineering, or reviewing Vue 3 frontend app
 
 精选规范随本技能内置，按任务读取：通用交互/hook 用 [VueUse](references/vueuse.md)，组件/表单/弹层用 [组件工程](references/component-engineering.md)，测试与工具接入用 [质量工具](references/quality-tooling.md)，复杂表格/表单/共享状态等用 [可选能力](references/optional-capabilities.md)。上游技能的 AUTO、强制表单库、目录偏好或嵌入 CLI 不覆盖项目约定，不要求整包安装。
 
+缺少官方 shadcn-vue 组件时，在已有开发授权内按组件工程参考自主完成兼容来源获取、必要依赖/配置补齐、现有主题与尺寸适配、类型检查/构建及关键交互验证。大版本升级、改动已有定制组件或全局主题时，先给出具体影响与处理方案，由用户决定；不能把缺少组件转成默认重建、整包安装或反复请求普通接入许可。
+
 纯文案、颜色或间距修改沿用现有设计规则，不因文件为 `.vue` 就加载逻辑技能、引入新依赖或新增逻辑测试。
 
 ## 工作方式

@@ -15,4 +15,6 @@ description: 在不存在的新目录生成 YSS Vue 3 最小前端工程；需�
 
 最小工程含 Vue 3、VueUse、TypeScript、Vite、Tailwind、Button/Input 和 ESLint；请求/useRequest/Axios/Orval 按任务接入，不预建平台。默认主题只作为新项目起点。源码树与技能安装分开：仅安装技能不创建 Vue 工程；生成后需要技能再单独 attach skills。
 
+starter 的 `components.json` 只描述已有组件 style、Tailwind/CSS 与别名，不表示其余官方组件已安装。生成不访问 registry 或执行 shadcn-vue init/apply；页面开发缺少组件时交由应用技能按兼容固定来源自主补齐、适配和验证。大版本升级、已有定制或全局主题变更先提供具体影响方案，由用户决定。
+
 说明实际结果、未执行检查及来源。提交、推送、发布和部署遵循对应授权。适配与许可见 [来源](references/source-adaptation.md)。

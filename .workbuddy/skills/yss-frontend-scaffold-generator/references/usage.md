@@ -23,3 +23,9 @@ yss attach --root /absolute/output/my-frontend --profile frontend --installation
 需要运行时，先看父目录 package.json / pnpm-workspace.yaml 的实际范围，防止安装落入其他 workspace。使用声明的环境执行 `pnpm install --frozen-lockfile`、`pnpm lint`、`pnpm typecheck`、`pnpm build`、`pnpm dev`；验证页面与键盘焦点。只执行本次所需检查，不要求新增脚本/套件。页面用 `views/<Page>/{index.vue,components,hooks,schemas}`，通用 hooks 在 `src/hooks`。
 
 JSON 输出使用现有 yss.output 信封。失败的 phase/stagingPath/targetPath/cleanup 表示实际阶段和残留；renameApplied=true、phase=published 表示目标已发布但后续检查失败。保留目标并说明状态，不把非事务暂存目录交给 recover，也不声称已安全回滚。
+
+## 组件配置与后续接入
+
+`components.json` 从实际 Frontend Bundle 静态复制，描述 new-york-v4、Tailwind 4、`src/styles/main.css` 和现有 `@/` 别名，composables 使用 `@/hooks`。baseColor 不改写 YSS tokens，也不要求安装 CLI、图标包或完整组件集合。
+
+需要新增组件时进入应用技能，先读取项目实际配置/源码/锁、选择兼容的官方固定来源，补齐必要依赖和导出，适配已有主题与尺寸并验证类型、构建及关键交互。没有该配置的旧项目可按实际目录复制固定源码；不要为了补一个组件重新生成工程或应用 preset。仅生成源码的请求仍不执行这些开发动作。
