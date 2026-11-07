@@ -26,6 +26,6 @@
 
 既有 yss CLI 的安装包和内置行为独立于本仓，本次目录变化不会改写已安装的二进制。新模板与具体 CLI 版本的安装、同步兼容性须以实际使用结果为准。
 
-Template 5.3.1 包含最小 Vue 工程资源与更新后的 Spec 原型规范，配套 CLI 3.3.0 支持 `scaffold frontend`。Frontend Profile 从 CLI 3.2.0 开始支持，3.1.4 及以前不支持。参见 [Frontend 接入](.template-spec/user-guide/cli/tutorial-frontend.md)。GitLab CI 使用支持三 Profile 的固定 CLI 源码提交，覆盖 Spec/Backend/Frontend；具体远程执行结果以该次流水线为准。
+Template 5.3.2 修复 CLI 安装、发行与公开技能分发说明，明确 Profile 安装与源码生成的版本边界，并保留 41 项公开白名单；供 CLI 3.3.1 打包使用。最小 Vue 工程资源与 Spec 原型规范沿用 5.3.1，`scaffold frontend` 从 CLI 3.3.0 起支持。Frontend Profile 从 CLI 3.2.0 开始支持，3.1.4 及以前不支持。参见 [Frontend 接入](.template-spec/user-guide/cli/tutorial-frontend.md)。GitLab CI 使用支持三 Profile 的固定 CLI 源码提交，覆盖 Spec/Backend/Frontend；具体远程执行结果以该次流水线为准。
 
 新建 Vue 工程使用 CLI 3.3.0 起支持的 `yss scaffold frontend --project-name my-frontend --output-dir .`，父目录须存在且目标须不存在，先查看实际帮助。需要技能再单独 attach skills，应用源码与技能资源分开维护。
