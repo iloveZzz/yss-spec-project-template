@@ -16,3 +16,5 @@ description: 设计信息结构、流程、内容与视觉，制作产品 UI 原
 制作方按 `.agents/skills/prototype-review/references/review-method.md` 操作验证并修正；需要单独复核时使用 `.agents/skills/prototype-review/SKILL.md`。静态画面不证明交互，模拟结果不证明真实服务；未执行或工具受限如实记录。原型可以编写演示代码、数据和模拟请求来表达业务行为，不将这些结构或所用框架升级为生产 API、物理库表或技术选型，不自动修改生产代码。
 
 保存到项目已有或用户指定位置，没有约定时新建清晰任务目录，保护已有成果。附规则与验收对应、查看方式、模拟范围、实际检查和未覆盖项；真实业务未决项回到规格。不自行批准、冻结或授予实施资格。
+
+共享默认值的采用、排除与验证范围见 [适配来源](references/integration-source.md)。

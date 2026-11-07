@@ -61,7 +61,7 @@ textarea,[data-slot="textarea"] {display:block;width:100%;min-height:calc(var(--
 table,[data-slot="table"] {width:100%;min-width:650px;border-collapse:collapse;font-size:inherit}
 th,td,[data-slot="table-cell"],[data-slot="table-head"] {text-align:left;border-bottom:1px solid var(--brand-color-border-secondary);line-height:inherit}
 th,[data-slot="table-head"] {height:var(--yss-components-table-header-height);padding:var(--yss-components-table-header-padding);background:var(--yss-colors-surface-subtle);color:var(--yss-components-table-header-text-color);font-weight:var(--yss-typography-table-heading-font-weight);line-height:var(--yss-typography-table-heading-line-height)}
-td,[data-slot="table-cell"] {height:var(--yss-components-table-row-height);padding:var(--yss-components-table-row-padding);color:var(--brand-color-text-secondary)}
+td,[data-slot="table-cell"] {height:var(--yss-components-table-row-height);padding:var(--yss-components-table-row-padding);color:var(--yss-components-table-row-text-color);font-size:var(--yss-typography-table-body-font-size);line-height:var(--yss-typography-table-body-line-height)}
 tbody tr:hover {background:var(--yss-colors-surface-hover)}
 tbody tr[data-state="selected"],tbody tr[data-state="selected"]:hover {background:var(--yss-colors-primary-bg, var(--brand-color-primary-bg))}
 td:nth-child(2) {max-width:360px;white-space:normal;overflow-wrap:anywhere}

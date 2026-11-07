@@ -93,6 +93,10 @@
   --yss-typography-table-heading-font-size: 14px;
   --yss-typography-table-heading-font-weight: 400;
   --yss-typography-table-heading-line-height: 1.5714285714285714;
+  --yss-typography-table-body-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  --yss-typography-table-body-font-size: 14px;
+  --yss-typography-table-body-font-weight: 400;
+  --yss-typography-table-body-line-height: 1.5714285714285714;
   --yss-typography-toolbar-heading-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
   --yss-typography-toolbar-heading-font-size: 14px;
   --yss-typography-toolbar-heading-font-weight: 600;
@@ -161,7 +165,7 @@
   --yss-components-table-header-height: 48px;
   --yss-components-table-row-text-color: #62728c;
   --yss-components-table-row-padding: 7px 10px;
-  --yss-components-table-row-height: 36px;
+  --yss-components-table-row-height: 48px;
   --yss-components-table-row-selected-background-color: #e7f0fd;
   --yss-components-table-row-selected-text-color: #2c4068;
   --yss-components-table-row-selected-padding: 7px 10px;
@@ -232,6 +236,8 @@
   --yss-components-list-surface-background-color: #ffffff;
   --yss-components-list-surface-padding: 12px 20px;
   --yss-components-list-surface-rounded: 4px;
+  --yss-components-list-toolbar-height: 46px;
+  --yss-components-list-filter-label-width: 70px;
   --yss-components-page-tab-height: 32px;
   --yss-components-page-tab-text-color: #2c4068;
   --yss-components-page-tab-active-text-color: #0d6be9;

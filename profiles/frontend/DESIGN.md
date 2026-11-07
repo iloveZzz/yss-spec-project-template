@@ -109,6 +109,11 @@ typography:
     fontSize: 14px
     fontWeight: 400
     lineHeight: 1.5714285714285714
+  table-body:
+    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif'
+    fontSize: 14px
+    fontWeight: 400
+    lineHeight: 1.5714285714285714
   toolbar-heading:
     fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif'
     fontSize: 14px
@@ -208,13 +213,13 @@ components:
     height: 48px
   table-row:
     textColor: "{colors.text-secondary}"
-    typography: "{typography.body}"
+    typography: "{typography.table-body}"
     padding: "7px 10px"
-    height: 36px
+    height: 48px
   table-row-selected:
     backgroundColor: "{colors.primary-bg}"
     textColor: "{colors.text}"
-    typography: "{typography.body}"
+    typography: "{typography.table-body}"
     padding: "7px 10px"
   modal-default:
     backgroundColor: "{colors.surface-elevated}"
@@ -319,6 +324,10 @@ components:
     backgroundColor: "{colors.surface}"
     padding: "12px 20px"
     rounded: "{rounded.sm}"
+  list-toolbar:
+    height: 46px
+  list-filter-label:
+    width: 70px
   page-tab:
     height: 32px
     typography: "{typography.body}"
@@ -394,7 +403,7 @@ YAML 保持 [Google design.md alpha 格式](https://github.com/google-labs-code/
 
 数字对比使用 `font-variant-numeric: tabular-nums`，数字列右对齐、单位和精度一致；这不要求整段文字使用等宽字体。代码使用 `typography.code`。DIN 或下载字体需核实实际授权和回退，不作为默认依赖。字体回退中的 Emoji 支持不授权用 Emoji 代替 UI 图标。
 
-默认普通控件 32px，表头 48px，表格数据单行基础高度 36px（含分隔线，20px 行高、上下各 7px 内边距，剩余空间由单元格分配）。多行、标签及行内按钮允许自然增高，不能锁死并截断内容。表单整体、Textarea、Checkbox 的可见方框、Dialog 不是统一 32px。
+默认普通控件 32px，表头 48px，新标准列表数据行基础高度 48px、正文 14px / 22px；上下各 7px 内边距，剩余空间由单元格分配。多行、标签及行内按钮允许自然增高，不能锁死并截断内容。既有项目的 36px 或其他密度仍按其实际规范，不因模板升级自动迁移。表单整体、Textarea、Checkbox 的可见方框、Dialog 不是统一 32px。
 
 `compact` 的 28px 只在明确选择高密度场景时使用；`comfortable` 保留 32px 控件和 20px Card 内边距。默认 Card 内边距 16px，窄屏 12px；页面边距 16px、窄屏 12px；布局使用 4 / 8 / 12 / 16 / 20 / 24 / 32 / 48px 阶梯。组件间优先由父级 gap 管理，不缩小正文制造密度。
 
@@ -442,10 +451,13 @@ Select、Combobox 与 DropdownMenu 的弹出选项不套用通用控件的粗焦
 
 ## 列表、筛选与阶段看板
 
-这套标准合并企业列表与销售机会两类页面的共性：蓝色操作、蓝灰文字、白色工作区、浅色导航和表头、细边框与紧凑排列。两个页面实测确认的 32px 控件、4px 圆角、48px 表头和 52px 顶栏用于默认值。文字、必要控件边框及 Hover / Active 色按可读性优化，图表蓝按主色重新派生；这些是主题设计值。参考页面均无数据，数据行仍沿用原有 36px 基线，不据此声称已验证实际数据行或机会卡片。
+这套标准合并企业列表与销售机会页面的共性：蓝色操作、蓝灰文字、白色工作区、浅色导航和表头、细边框与紧凑排列。默认控件 32px、圆角 4px、表头 48px、普通顶栏 52px；新列表采用 48px 数据行和 14/22 正文。文字、必要控件边框及 Hover / Active 色保留可读性设计值。来源项目的局部样式与历史检查不能作为本次页面已通过验证的证据，机会卡片与权限仍按真实业务设计。
 
 - **应用壳**：普通工作台保留 240px 侧栏。只有同时存在应用、模块和保存视图三层导航时，才分别采用 60 / 104 / 130px；三列不能无条件叠加到所有页面。小于 1200px 收起次要导航，小于 720px 由 Sheet 承载；详情与导航不挤压主任务。
 - **列表面板**：可使用 `list-surface` 的 12px × 20px 内边距和 8px 外部沟槽。筛选行列间距 20px、行间距 10px；桌面标签与控件间距 10px，窄屏标签置上并采用表单 8px 间距。长标签可换行，必要信息不只显示省略号。分页位于结果后，零条数据不显示可执行的翻页。
+- **工具与筛选区**：工具栏最小 46px，换行可增高；宽屏筛选列参考最小 360px、标签最小 70px，窄屏按容器宽度重排。查询/重置放网格最后一列并右对齐，允许按钮换行。批量动作复用现有工具栏，选中后不新增“已选 N 项”栏推动表格；说明当前页或跨页选择、清空与禁用项语义。
+- **平面列表**：仅 `.list-surface` 内可去除整行 hover 底色，保留选中态、操作 hover 与键盘焦点；其他表格沿用实际规范。需要时移除外框、保留行分隔，不全局取消 hover。
+- **可选外壳细节**：导航、顶栏搜索、头像和在线标记按项目组合，尺寸为 CSS px；不从高分屏截图物理像素反推。头像使用项目有授权的图像或已有图标/文字，占位图有邻近姓名时使用空 alt；不引入来源不明素材或通用的联系人/公司业务动作。
 - **页内 Tabs**：14/20 常规字重，标签间距 24px，选中蓝字 + 2px 底线，命中区域至少 32px 高。内容较多时只在页签区横向滚动；不可把视觉底线包成整块粗边框。
 - **组合筛选**：相邻 Select / Input 共用 4px 外圆角、内部直角和单条 1px 分隔；只有当前操作的子控件变蓝。每个子控件有独立名称，组标签不能代替子控件的可访问名称；独立控件仍保留正常键盘顺序。
 - **下拉**：32px 基础选项行、上下 4px 菜单留白、4px 浮层圆角，宽度至少等于触发器且不超出视口。当前项和选中值分开，禁用项不可确认，长项自然增高。下拉箭头、搜索与勾选统一使用 16px Lucide SVG。

@@ -28,8 +28,14 @@ fieldset p+p {margin-top:var(--brand-size-xxs)}
 
 /* Optional list and stage-board compositions; do not force them onto every page. */
 .list-surface {min-width:0;padding:var(--yss-components-list-surface-padding);background:var(--yss-components-list-surface-background-color);border-radius:var(--yss-components-list-surface-rounded)}
-.list-filter-grid {display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:10px 20px;align-items:start}
+.list-toolbar {display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 16px;min-height:var(--yss-components-list-toolbar-height);padding-block:6px;border-bottom:1px solid var(--yss-colors-border-secondary)}
+.list-toolbar .toolbar,.list-toolbar .actions {margin:0}
+.list-filter-grid {display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:10px 20px;align-items:start;padding-block:10px}
 .list-filter-grid label {margin:0 0 var(--brand-size-xs)}
+.list-filter-actions {grid-column:-2 / -1;display:flex;justify-content:flex-end;align-items:center;flex-wrap:wrap;gap:8px;min-width:0}
+.list-surface :is(.table-scroll,[data-slot="table-container"]) {border:0;border-radius:0}
+.list-surface tbody tr:hover,.list-surface [data-slot="table-row"]:hover {background:transparent}
+.list-surface tbody tr[data-state="selected"],.list-surface tbody tr[data-state="selected"]:hover {background:var(--yss-colors-primary-bg)}
 .filter-heading {font-weight:var(--yss-typography-toolbar-heading-font-weight);color:var(--yss-colors-text-title)}
 [data-slot="tabs-list"].view-switch {gap:0;overflow:visible;border:1px solid var(--yss-colors-border-control);border-radius:var(--yss-components-view-switch-rounded);width:fit-content}
 .view-switch [data-slot="tabs-trigger"] {min-width:88px;padding:0 16px;border-radius:0;height:calc(var(--prototype-control-height) - 2px);min-height:calc(var(--prototype-control-height) - 2px)}

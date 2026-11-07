@@ -68,7 +68,7 @@ button.date-calendar-trigger {flex:none;width:24px;min-width:24px;height:calc(va
 .compound-field>.filter-operator {flex:0 0 112px}
 
 /* Team selection is a local checkbox collection grouped by collapsible departments. */
-button.team-picker-trigger {display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-width:0;font-weight:400;color:var(--brand-color-text-secondary);padding:5px 10px}
+button.team-picker-trigger {display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-width:0;font-weight:400;color:var(--brand-color-text-secondary);padding:5px 10px;border-color:var(--yss-colors-border-control)}
 .team-picker-trigger>span {min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 button.team-picker-trigger.has-value {color:var(--brand-color-text)}
 button.team-picker-trigger:focus-visible {outline:none;box-shadow:none;border-color:var(--yss-color-primary-control)}
@@ -137,7 +137,7 @@ button.tree-expand {display:grid;place-items:center;flex:none;width:24px;min-wid
  .team-picker-popover,.date-range-popover-wide {border:1px solid CanvasText}
 }
 
-.list-filter-field {display:grid;grid-template-columns:7em minmax(0,1fr);align-items:center;gap:10px;min-width:0}
+.list-filter-field {display:grid;grid-template-columns:minmax(var(--yss-components-list-filter-label-width),22.5%) minmax(0,1fr);align-items:center;gap:10px;min-width:0}
 .list-filter-grid .list-filter-field>label {margin:0;text-align:right;overflow-wrap:anywhere}
 @media(width < 720px) {
  .list-filter-field {grid-template-columns:minmax(0,1fr);gap:8px}
