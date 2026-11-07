@@ -43,7 +43,7 @@ export type MaybeRefOrGetter<T = any> = MaybeRef<T> | ComputedRef<T> | (() => T)
 - Parameter might be a function value (callback/predicate/comparator): do not use `MaybeRefOrGetter`, or you may accidentally invoke it as a getter.
 - DOM/Element targets: if you want computed/derived targets, use `MaybeRefOrGetter`.
 
-When `MaybeRefOrGetter` or `MaybeRef` is used: 
+When `MaybeRefOrGetter` or `MaybeRef` is used:
 - resolve reactive value using `toRef()` (e.g. watcher source)
 - resolve non-reactive value using `toValue()`
 
