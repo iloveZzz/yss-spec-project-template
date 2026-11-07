@@ -1,0 +1,68 @@
+diff --git a/es/useRequest/plugins/useThrottlePlugin.js b/es/useRequest/plugins/useThrottlePlugin.js
+index 6db95e0122b19d3bbbb708f11065f28c451b78a2..2aad9961fe4de9cd3488f7537b6b6085f5187b0a 100644
+--- a/es/useRequest/plugins/useThrottlePlugin.js
++++ b/es/useRequest/plugins/useThrottlePlugin.js
+@@ -1,7 +1,6 @@
+ import { computed, unref, ref, watch, onUnmounted } from "vue";
+ import { throttle } from "lodash-es";
+ const useThrottlePlugin = (fetchInstance, { throttleWait, throttleLeading, throttleTrailing }) => {
+-  let originThrottled = null;
+   const options = computed(() => {
+     const ret = {};
+     if (unref(throttleLeading) !== void 0) {
+@@ -14,38 +13,38 @@ const useThrottlePlugin = (fetchInstance, { throttleWait, throttleLeading, throt
+   });
+   const _originRunAsync = fetchInstance.runAsync.bind(fetchInstance);
+   const throttled = ref();
++  fetchInstance.runAsync = (...args) => {
++    if (!throttled.value) {
++      return _originRunAsync(...args);
++    }
++    return new Promise((resolve, reject) => {
++      throttled.value(() => {
++        _originRunAsync(...args).then(resolve).catch(reject);
++      });
++    });
++  };
+   const throttleWaitComputed = computed(() => {
+     return unref(throttleWait);
+   });
+   watch([throttleWaitComputed, options], (cur) => {
+-    if (originThrottled) {
+-      originThrottled.cancel();
+-      fetchInstance.runAsync = _originRunAsync;
++    if (throttled.value) {
++      throttled.value.cancel();
+     }
+     const [curWait, curOptions] = cur;
+-    const _throttle = throttle(
++    if (!unref(curWait)) {
++      throttled.value = void 0;
++      return;
++    }
++    throttled.value = throttle(
+       (callback) => {
+         callback();
+       },
+       unref(curWait),
+       curOptions
+     );
+-    originThrottled = _throttle;
+-    throttled.value = _throttle;
+-    fetchInstance.runAsync = (...args) => {
+-      return new Promise((resolve, reject) => {
+-        var _a;
+-        (_a = throttled.value) == null ? void 0 : _a.call(throttled, () => {
+-          _originRunAsync(...args).then(resolve).catch(reject);
+-        });
+-      });
+-    };
+   }, {
+     immediate: true
+   });
+-  if (!unref(throttleWait)) {
+-    return {};
+-  }
+   onUnmounted(() => {
+     var _a;
+     (_a = throttled.value) == null ? void 0 : _a.cancel();

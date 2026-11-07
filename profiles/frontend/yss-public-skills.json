@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "repository": "iloveZzz/yss-spec-dev-skills",
+  "canonical_root": ".agents/skills",
+  "skills": [
+    "setup-yss-harness",
+    "yss-frontend-application",
+    "vue-best-practices",
+    "create-adaptable-composable",
+    "code-review",
+    "diagnosing-bugs",
+    "yss-research",
+    "grilling",
+    "i-have-adhd",
+    "handoff",
+    "using-git-worktrees",
+    "resolving-merge-conflicts",
+    "yss-design-system",
+    "prototype-review",
+    "prototype",
+    "domain-modeling"
+  ],
+  "groupings": [
+    {
+      "title": "Frontend 应用工程",
+      "description": "Vue 工程、逻辑与设计还原方法；发布需单独授权。",
+      "skills": [
+        "setup-yss-harness",
+        "yss-frontend-application",
+        "vue-best-practices",
+        "create-adaptable-composable",
+        "code-review",
+        "diagnosing-bugs",
+        "yss-research",
+        "grilling",
+        "i-have-adhd",
+        "handoff",
+        "using-git-worktrees",
+        "resolving-merge-conflicts",
+        "yss-design-system",
+        "prototype-review",
+        "prototype",
+        "domain-modeling"
+      ]
+    }
+  ]
+}

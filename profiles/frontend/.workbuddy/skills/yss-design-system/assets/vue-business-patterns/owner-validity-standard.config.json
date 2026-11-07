@@ -1,0 +1,6 @@
+{
+  "schema_version": 1,
+  "title": "负责人及有效期表单",
+  "entry": "owner-validity-standard.ts",
+  "scenarios": "owner-validity.scenarios.json"
+}

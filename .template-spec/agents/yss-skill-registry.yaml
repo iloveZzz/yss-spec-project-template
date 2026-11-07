@@ -1465,5 +1465,32 @@ skills:
   aliases: []
   impacts:
   - template-maintenance
+- id: yss-frontend-application
+  layer: specialist
+  maturity: supported
+  instance_default_discoverable: false
+  aliases: []
+  impacts:
+  - frontend
+  - api
+  stack: vue
+- id: vue-best-practices
+  layer: specialist
+  maturity: supported
+  instance_default_discoverable: false
+  aliases: []
+  impacts:
+  - frontend
+  - prototype
+  stack: vue
+- id: create-adaptable-composable
+  layer: specialist
+  maturity: supported
+  instance_default_discoverable: false
+  aliases: []
+  impacts:
+  - frontend
+  - prototype
+  stack: vue
 platform_skills: []
 external_skills: []

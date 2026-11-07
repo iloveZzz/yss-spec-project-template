@@ -1,0 +1,200 @@
+{
+  "version": 3,
+  "generatedBy": "agent",
+  "canonicalRoot": ".agents/skills",
+  "projectionRoots": [
+    ".workbuddy/skills"
+  ],
+  "sources": {
+    "mattpocock/skills": {
+      "revision": "0ab1b63a410a03d3627979a109c8695de27af954"
+    },
+    "ayghri/i-have-adhd": {
+      "revision": "839872f9d1cd634fed642b4589ce7226199cc15f"
+    },
+    "vuejs-ai/skills": {
+      "revision": "198f0cd8f7f9c0a3d9b566ccc16de6677519ee78"
+    }
+  },
+  "skills": {
+    "shared": {
+      "setup-yss-harness": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/setup-yss-harness/SKILL.md",
+        "targets": [
+          ".agents/skills",
+          ".workbuddy/skills"
+        ]
+      },
+      "yss-frontend-application": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-frontend-application/SKILL.md",
+        "adaptationRef": ".template-spec/agents/frontend-skills-adaptation.md",
+        "targets": [
+          ".agents/skills",
+          ".workbuddy/skills"
+        ]
+      },
+      "vue-best-practices": {
+        "source": "vuejs-ai/skills",
+        "sourceType": "github",
+        "skillPath": "skills/vue-best-practices/SKILL.md",
+        "sourceRevision": "198f0cd8f7f9c0a3d9b566ccc16de6677519ee78",
+        "adaptationRef": ".template-spec/agents/frontend-skills-adaptation.md",
+        "targets": [
+          ".agents/skills",
+          ".workbuddy/skills"
+        ]
+      },
+      "create-adaptable-composable": {
+        "source": "vuejs-ai/skills",
+        "sourceType": "github",
+        "skillPath": "skills/create-adaptable-composable/SKILL.md",
+        "sourceRevision": "198f0cd8f7f9c0a3d9b566ccc16de6677519ee78",
+        "adaptationRef": ".template-spec/agents/frontend-skills-adaptation.md",
+        "targets": [
+          ".agents/skills",
+          ".workbuddy/skills"
+        ]
+      },
+      "code-review": {
+        "source": "mattpocock/skills",
+        "sourceType": "github",
+        "skillPath": "skills/engineering/code-review/SKILL.md",
+        "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+        "upstreamHash": "12daafb9c4f77deb3c3303dc2e6f8a3c2a0ff7928fc004af959ba18b8bd38068",
+        "adaptationRef": ".template-spec/agents/matt-skills-adaptation.md",
+        "targets": [
+          ".agents/skills",
+          ".workbuddy/skills"
+        ]
+      },
+      "diagnosing-bugs": {
+        "source": "mattpocock/skills",
+        "sourceType": "github",
+        "skillPath": "skills/engineering/diagnosing-bugs/SKILL.md",
+        "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+        "upstreamHash": "bcdaec9e1033901c396437fcb102161d8ad3cd87632007aaf270b19e03e70117",
+        "adaptationRef": ".template-spec/agents/matt-skills-adaptation.md",
+        "targets": [
+          ".agents/skills",
+          ".workbuddy/skills"
+        ]
+      },
+      "yss-research": {
+        "source": "mattpocock/skills",
+        "sourceType": "github",
+        "skillPath": "skills/engineering/research/SKILL.md",
+        "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+        "upstreamHash": "75b7f9bbd7ccff6755a006f8b25d319a46ecbf6bd4b4c3323965ed9cb65e78ff",
+        "adaptationRef": ".template-spec/agents/matt-skills-adaptation.md",
+        "targets": [
+          ".agents/skills",
+          ".workbuddy/skills"
+        ]
+      },
+      "grilling": {
+        "source": "mattpocock/skills",
+        "sourceType": "github",
+        "skillPath": "skills/productivity/grilling/SKILL.md",
+        "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+        "upstreamHash": "0ca4cfe5105d79c6ef6755491492e056c43e88b82666376d8ecd7fac695d96e6",
+        "adaptationRef": ".template-spec/agents/matt-skills-adaptation.md",
+        "targets": [
+          ".agents/skills",
+          ".workbuddy/skills"
+        ]
+      },
+      "i-have-adhd": {
+        "source": "ayghri/i-have-adhd",
+        "sourceType": "git",
+        "skillPath": "skills/i-have-adhd/SKILL.md",
+        "sourceRevision": "839872f9d1cd634fed642b4589ce7226199cc15f",
+        "upstreamHash": "4c88635cbcb4765b63528d608d27589596840708e89607fda9c9fa5726c11f7e",
+        "adaptationRef": ".agents/skills/i-have-adhd/references/yss-adaptation.md",
+        "targets": [
+          ".agents/skills",
+          ".workbuddy/skills"
+        ]
+      },
+      "handoff": {
+        "source": "mattpocock/skills",
+        "sourceType": "github",
+        "skillPath": "skills/productivity/handoff/SKILL.md",
+        "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+        "upstreamHash": "e5a44fccc710f5402deee06beaf5178397885765773375f186aefd179565f23f",
+        "adaptationRef": ".template-spec/agents/matt-skills-adaptation.md",
+        "targets": [
+          ".agents/skills",
+          ".workbuddy/skills"
+        ]
+      },
+      "using-git-worktrees": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/using-git-worktrees/SKILL.md",
+        "targets": [
+          ".agents/skills",
+          ".workbuddy/skills"
+        ]
+      },
+      "resolving-merge-conflicts": {
+        "source": "mattpocock/skills",
+        "sourceType": "github",
+        "skillPath": "skills/engineering/resolving-merge-conflicts/SKILL.md",
+        "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+        "upstreamHash": "310fa72a34cddd1dd1a9790f9ebc17bf2c83caeae5cdf87e2485be8b1abec90e",
+        "adaptationRef": ".template-spec/agents/matt-skills-adaptation.md",
+        "targets": [
+          ".agents/skills",
+          ".workbuddy/skills"
+        ]
+      },
+      "yss-design-system": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-design-system/SKILL.md",
+        "targets": [
+          ".agents/skills",
+          ".workbuddy/skills"
+        ]
+      },
+      "prototype-review": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/prototype-review/SKILL.md",
+        "targets": [
+          ".agents/skills",
+          ".workbuddy/skills"
+        ]
+      },
+      "prototype": {
+        "source": "mattpocock/skills",
+        "sourceType": "github",
+        "skillPath": "skills/engineering/prototype/SKILL.md",
+        "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+        "upstreamHash": "492e4433fcd9cf88c0854aba063829ee248b208849e5827a45da8424199fd10f",
+        "adaptationRef": ".template-spec/agents/matt-skills-adaptation.md",
+        "targets": [
+          ".agents/skills",
+          ".workbuddy/skills"
+        ]
+      },
+      "domain-modeling": {
+        "source": "mattpocock/skills",
+        "sourceType": "github",
+        "skillPath": "skills/engineering/domain-modeling/SKILL.md",
+        "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+        "upstreamHash": "2bc3bb0a64ea9c6f5c3bcf78fc17f0fcdc7c062edc547ef006441de0b576d248",
+        "adaptationRef": ".template-spec/agents/matt-skills-adaptation.md",
+        "targets": [
+          ".agents/skills",
+          ".workbuddy/skills"
+        ]
+      }
+    },
+    "platform": {}
+  }
+}

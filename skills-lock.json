@@ -12,6 +12,9 @@
     },
     "ayghri/i-have-adhd": {
       "revision": "839872f9d1cd634fed642b4589ce7226199cc15f"
+    },
+    "vuejs-ai/skills": {
+      "revision": "198f0cd8f7f9c0a3d9b566ccc16de6677519ee78"
     }
   },
   "skills": {
@@ -626,6 +629,41 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-web-controller/SKILL.md",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".workbuddy/skills"
+        ]
+      },
+      "yss-frontend-application": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-frontend-application/SKILL.md",
+        "adaptationRef": ".template-spec/agents/frontend-skills-adaptation.md",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".workbuddy/skills"
+        ]
+      },
+      "vue-best-practices": {
+        "source": "vuejs-ai/skills",
+        "sourceType": "github",
+        "skillPath": "skills/vue-best-practices/SKILL.md",
+        "sourceRevision": "198f0cd8f7f9c0a3d9b566ccc16de6677519ee78",
+        "adaptationRef": ".template-spec/agents/frontend-skills-adaptation.md",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".workbuddy/skills"
+        ]
+      },
+      "create-adaptable-composable": {
+        "source": "vuejs-ai/skills",
+        "sourceType": "github",
+        "skillPath": "skills/create-adaptable-composable/SKILL.md",
+        "sourceRevision": "198f0cd8f7f9c0a3d9b566ccc16de6677519ee78",
+        "adaptationRef": ".template-spec/agents/frontend-skills-adaptation.md",
         "targets": [
           ".agents/skills",
           ".claude/skills",

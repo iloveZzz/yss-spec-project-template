@@ -1,0 +1,3 @@
+# YSS Frontend Skills
+
+读取根 AGENTS.md，按任务选择 .agents/skills 中的技能；WorkBuddy 使用 .workbuddy/skills 副本。沿用实际工程和选定设计，不自动执行无关检查。

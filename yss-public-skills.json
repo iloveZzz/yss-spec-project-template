@@ -39,7 +39,10 @@
     "triage",
     "llm-wiki",
     "i-have-adhd",
-    "handoff"
+    "handoff",
+    "yss-frontend-application",
+    "vue-best-practices",
+    "create-adaptable-composable"
   ],
   "groupings": [
     {
@@ -113,6 +116,15 @@
       "description": "用于应用审计日志的接入与排查。",
       "skills": [
         "yss-audit-log"
+      ]
+    },
+    {
+      "title": "Vue 前端工程与原型逻辑",
+      "description": "用于 Vue 应用工程、设计还原，以及状态、数据流、生命周期与 composable 方法。",
+      "skills": [
+        "yss-frontend-application",
+        "vue-best-practices",
+        "create-adaptable-composable"
       ]
     }
   ]

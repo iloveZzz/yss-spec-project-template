@@ -4,7 +4,7 @@
 
 首次安装交给 Agent：选择用户授权的版本与平台，从官方发行说明确认资产名称、SHA-256 和安装位置；在临时目录安全展开，核对二进制实际帮助，再放入独立工具目录并配置 PATH。没有可用发行版时报告这一事实；不要把未发布构建称为正式版，不调用旧插件或仓内安装脚本。
 
-新接口中，新建用 `init`，普通已有工程用 `attach`，已有受管工程用 `sync`。先选择 `--profile spec|backend`；`--installation project` 安装项目入口与资料，`--installation skills` 只装技能及所需入口。需要预览时，在同一条命令加 `--dry-run` 检查影响；写入按已有授权直接执行，不要求保存或应用计划。同步转换安装内容时查看 `sync --help` 的实际开关，不手改安装元数据。
+新接口中，新建用 `init`，普通已有工程用 `attach`，已有受管工程用 `sync`。CLI 3.2.0 支持 `--profile spec|backend|frontend`；frontend 需要对应 Bundle，3.1.4 及以前不支持，先确认实际版本与帮助。`--installation project` 安装项目入口与资料，`--installation skills` 只装技能及所需入口。需要预览时，在同一条命令加 `--dry-run` 检查影响；写入按已有授权直接执行，不要求保存或应用计划。同步转换安装内容时查看 `sync --help` 的实际开关，不手改安装元数据，也不切换 Profile。
 
 程序升级与项目同步分别操作。在线使用 `yss upgrade --to <版本> --tool-root <工具目录>`；离线使用 `yss upgrade --artifact <归档> --sha256 <SHA-256> --tool-root <工具目录>`。两者均可加 `--dry-run`，不生成保存计划。升级后核对 `version`，项目需要更新时再执行 `sync`。
 

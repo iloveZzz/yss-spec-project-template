@@ -1,0 +1,6 @@
+interface:
+  display_name: "i-have-adhd · YSS 文档配套"
+  short_description: "按中文规范起草文档、PR/MR 与复盘，按需图解状态与交互，保留规则和证据"
+  default_prompt: "使用 i-have-adhd 配套技能改善当前研发文档、PR/MR 描述或复盘表达，按需图解业务状态、规则与交互，保留业务规则、证据、未决项和原批准状态；简单说明不强制画图。"
+policy:
+  allow_implicit_invocation: true

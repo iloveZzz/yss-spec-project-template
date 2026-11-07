@@ -1,0 +1,6 @@
+{
+  "schema_version": 1,
+  "title": "组件状态展示",
+  "entry": "component-states-standard.ts",
+  "scenarios": "list-detail.scenarios.json"
+}

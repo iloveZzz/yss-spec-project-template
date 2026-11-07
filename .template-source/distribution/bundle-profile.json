@@ -319,7 +319,8 @@
         "README.md",
         "skills-lock.json",
         "yss-project.yaml",
-        "yss-public-skills.json"
+        "yss-public-skills.json",
+        ".template-spec/user-guide/cli/tutorial-frontend.md"
       ],
       "skillDependencies": {
         "yss-repository": [
@@ -453,7 +454,16 @@
         ],
         "yss-userinfo": [],
         "yss-validation": [],
-        "yss-web-controller": []
+        "yss-web-controller": [],
+        "yss-frontend-application": [
+          ".template-spec/agents/frontend-skills-adaptation.md"
+        ],
+        "vue-best-practices": [
+          ".template-spec/agents/frontend-skills-adaptation.md"
+        ],
+        "create-adaptable-composable": [
+          ".template-spec/agents/frontend-skills-adaptation.md"
+        ]
       },
       "entries": {
         "AGENTS.md": ".template-source/distribution/entries/spec-project-AGENTS.md",
@@ -620,7 +630,16 @@
         ],
         "yss-userinfo": [],
         "yss-validation": [],
-        "yss-web-controller": []
+        "yss-web-controller": [],
+        "yss-frontend-application": [
+          ".template-spec/agents/frontend-skills-adaptation.md"
+        ],
+        "vue-best-practices": [
+          ".template-spec/agents/frontend-skills-adaptation.md"
+        ],
+        "create-adaptable-composable": [
+          ".template-spec/agents/frontend-skills-adaptation.md"
+        ]
       }
     }
   }

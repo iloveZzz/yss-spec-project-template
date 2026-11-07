@@ -1,6 +1,6 @@
 # 安装内容与同步转换
 
-新精简 CLI 的 Profile 为 `spec` / `backend`，安装内容为 `project` / `skills`。新接口尚未正式发行，先查看所装程序 `version`、`help` 及目标命令帮助；旧版不自动支持新名称，不使用旧插件兼容入口。
+CLI 3.2.0 的 Profile 为 `spec` / `backend` / `frontend`，安装内容为 `project` / `skills`。frontend 需要对应 Bundle，3.1.4 及以前不支持；先查看所装程序 `version`、`help` 及目标命令帮助，不把源码能力当作已发行能力，不使用旧插件兼容入口。
 
 首次安装由 Agent 根据官方发行说明确认版本、平台、归档与摘要后完成。新建用 `init`，普通已有工程用 `attach`，受管工程更新与安装内容转换用 `sync`；具体转换开关以实际帮助为准，不手改安装元数据。
 

@@ -15,7 +15,7 @@
 | `recover` | 恢复未完成事务，保护后续用户修改 |
 | `version` / `help` | 查看实际版本、来源与帮助 |
 
-项目选择使用 `--profile spec|backend`、`--installation project|skills`。`init`、`attach`、`sync`、`skills ensure`、`scaffold` 和 `upgrade` 使用 `--dry-run` 预览；实际参数以对应帮助为准。
+CLI 3.2.0 的项目选择支持 `--profile spec|backend|frontend`、`--installation project|skills`。frontend 需要对应 Bundle，3.1.4 及以前不支持；先确认实际版本与帮助。`init`、`attach`、`sync`、`skills ensure`、`scaffold` 和 `upgrade` 使用 `--dry-run` 预览；实际参数以对应帮助为准。前端接入见 [Frontend](tutorial-frontend.md)。
 
 在线升级指定 `upgrade --to <版本> --tool-root <工具目录>`；离线升级指定 `upgrade --artifact <归档> --sha256 <摘要> --tool-root <工具目录>`。不要将两组来源混用。恢复操作按 `recover --help` 选择实际支持的项目或工具目录参数。
 
