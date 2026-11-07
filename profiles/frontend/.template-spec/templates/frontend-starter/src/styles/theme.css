@@ -1,0 +1,23 @@
+@theme inline {
+  --font-sans: var(--brand-font-family);
+  --color-background: var(--brand-color-bg-container);
+  --color-foreground: var(--brand-color-text);
+  --color-primary: var(--yss-color-primary-control);
+  --color-primary-foreground: var(--yss-color-on-primary);
+  --color-secondary: var(--brand-color-fill-secondary);
+  --color-secondary-foreground: var(--brand-color-text);
+  --color-muted: var(--brand-color-bg-layout);
+  --color-muted-foreground: var(--brand-color-text-secondary);
+  --color-accent: var(--yss-colors-primary-bg, var(--brand-color-primary-bg));
+  --color-accent-foreground: var(--brand-color-text);
+  --color-destructive: var(--brand-color-error-active);
+  --color-border: var(--yss-colors-border);
+  --color-input: var(--yss-colors-border-control);
+  --color-ring: var(--yss-color-primary-control);
+  --color-popover: var(--brand-color-bg-elevated);
+  --color-popover-foreground: var(--brand-color-text);
+  --radius-lg: var(--brand-border-radius-lg);
+  --radius-md: var(--brand-border-radius);
+  --radius-sm: var(--brand-border-radius-sm);
+}
+@layer base { * { border-color:var(--yss-colors-border); } }

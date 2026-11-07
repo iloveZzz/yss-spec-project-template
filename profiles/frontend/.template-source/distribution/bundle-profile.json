@@ -69,7 +69,8 @@
       ".template-spec/templates/examples/plan-spec/ordinary-defective.md",
       ".template-spec/templates/examples/plan-spec/ordinary-plan.md",
       ".template-spec/templates/examples/plan-spec/ordinary-source.md",
-      ".template-spec/templates/examples/plan-spec/ordinary-valid.md"
+      ".template-spec/templates/examples/plan-spec/ordinary-valid.md",
+      ".template-spec/templates/frontend-starter"
     ],
     "excludeRootEntries": [
       ".git",

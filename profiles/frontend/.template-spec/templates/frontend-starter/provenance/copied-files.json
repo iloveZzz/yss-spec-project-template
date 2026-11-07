@@ -1,0 +1,38 @@
+[
+  {
+    "source": "yss-design-system/assets/shadcn-vue-authoring/ui/button/Button.vue",
+    "destination": "src/components/ui/button/Button.vue",
+    "sha256": "7e4d659bcbdf16b9b3c2bf95d60d4fcf16318352696570c77aab19d45dadb3da",
+    "adaptation": "none"
+  },
+  {
+    "source": "yss-design-system/assets/shadcn-vue-authoring/ui/button/index.ts",
+    "destination": "src/components/ui/button/index.ts",
+    "sha256": "1710820182b3f7c91823da7f4f516026a124ec86f7a3a10a96fb55e518f12b41",
+    "adaptation": "none"
+  },
+  {
+    "source": "yss-design-system/assets/shadcn-vue-authoring/ui/input/Input.vue",
+    "destination": "src/components/ui/input/Input.vue",
+    "sha256": "795ead249ae5067c44f117346ed42fdc765aa13254245b4ac6e65fd61f272c1d",
+    "adaptation": "none"
+  },
+  {
+    "source": "yss-design-system/assets/shadcn-vue-authoring/ui/input/index.ts",
+    "destination": "src/components/ui/input/index.ts",
+    "sha256": "ba728db29f97b894318836d094705b34c0f792352548189703224c694d29ed5b",
+    "adaptation": "none"
+  },
+  {
+    "source": "yss-design-system/assets/shadcn-vue-authoring/utils.ts",
+    "destination": "src/lib/utils.ts",
+    "sha256": "ce4d9a828c0312cf66d0196934e9efd50491887f601dcb12ccda8683118520e9",
+    "adaptation": "none"
+  },
+  {
+    "source": "yss-design-system/assets/shadcn-vue-authoring/SHADCN-LICENSE.txt",
+    "destination": "provenance/SHADCN-LICENSE.txt",
+    "sha256": "69f84f4ad77be299dbf42d03d7fd862ab3ab05546c6e573c6c7c875b0168a94d",
+    "adaptation": "none"
+  }
+]

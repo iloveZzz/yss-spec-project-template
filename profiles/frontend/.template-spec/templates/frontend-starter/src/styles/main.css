@@ -1,0 +1,26 @@
+@import 'tailwindcss' source('../');
+@import './tokens.css';
+@import './theme.css';
+
+:root { font-family: var(--brand-font-family); font-size: var(--yss-typography-body-font-size); line-height: var(--yss-typography-body-line-height); color: var(--brand-color-text); background: var(--brand-color-bg-layout); }
+body { margin: 0; }
+h1 { font-size: 20px; line-height: 1.5; font-weight: 600; color: var(--yss-colors-text-title); }
+h1, p { margin: 0; }
+/* Minimal Button/Input density projection from DESIGN.md and prototype-theme.css. */
+[data-slot='input'], [data-slot='button'] { height: var(--yss-control-height); min-height: var(--yss-control-height); border-radius: var(--brand-border-radius); font: inherit; box-shadow: none; }
+[data-slot='input'] { border: 1px solid var(--yss-colors-border-control); padding: var(--yss-components-input-default-padding); background: var(--brand-color-bg-container); color: var(--brand-color-text); }
+[data-slot='input']::placeholder { color: var(--yss-colors-text-secondary); opacity: 1; }
+[data-slot='input']:hover, [data-slot='input']:focus-visible { border-color: var(--yss-color-primary-control); }
+[data-slot='input']:focus-visible { outline: none; box-shadow: none; }
+[data-slot='button'] { padding: var(--yss-components-button-default-padding); font-weight: 400; cursor: pointer; }
+[data-slot='button']:focus-visible { outline: 2px solid var(--yss-color-primary-control); outline-offset: 2px; }
+@media (width < 720px), (pointer: coarse) {
+  [data-slot='input'], [data-slot='button'] { min-height: 44px; }
+  [data-slot='input'] { font-size: 16px; }
+}
+@media (forced-colors: active) {
+  [data-slot='input']:focus-visible { outline: 2px solid Highlight; outline-offset: 2px; }
+}
+
+[data-slot="button"]:not([data-variant]):hover { background: var(--yss-color-primary-control-hover); }
+[data-slot="button"]:not([data-variant]):active { background: var(--yss-color-primary-control-active); }

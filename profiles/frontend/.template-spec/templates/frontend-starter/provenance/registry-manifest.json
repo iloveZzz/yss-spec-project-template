@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "repository": "https://github.com/unovue/shadcn-vue",
+  "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+  "component_groups": [
+    "button",
+    "input"
+  ],
+  "components": [
+    {
+      "path": "ui/button/Button.vue",
+      "digest": "sha256:7e4d659bcbdf16b9b3c2bf95d60d4fcf16318352696570c77aab19d45dadb3da",
+      "source_url": "https://github.com/unovue/shadcn-vue/blob/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/registry/new-york-v4/ui/button/Button.vue"
+    },
+    {
+      "path": "ui/button/index.ts",
+      "digest": "sha256:1710820182b3f7c91823da7f4f516026a124ec86f7a3a10a96fb55e518f12b41",
+      "source_url": "https://github.com/unovue/shadcn-vue/blob/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/registry/new-york-v4/ui/button/index.ts"
+    },
+    {
+      "path": "ui/input/Input.vue",
+      "digest": "sha256:795ead249ae5067c44f117346ed42fdc765aa13254245b4ac6e65fd61f272c1d",
+      "source_url": "https://github.com/unovue/shadcn-vue/blob/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/registry/new-york-v4/ui/input/Input.vue"
+    },
+    {
+      "path": "ui/input/index.ts",
+      "digest": "sha256:ba728db29f97b894318836d094705b34c0f792352548189703224c694d29ed5b",
+      "source_url": "https://github.com/unovue/shadcn-vue/blob/67c9a3926dc0a854507b325c6337ff2210d16379/apps/v4/registry/new-york-v4/ui/input/index.ts"
+    }
+  ]
+}
