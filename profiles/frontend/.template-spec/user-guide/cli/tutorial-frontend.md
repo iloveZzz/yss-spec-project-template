@@ -25,7 +25,7 @@ Vue 逻辑使用 `vue-best-practices`，独立状态或可复用接口使用 `cr
 
 ## 新建最小工程
 
-当前开发源码新增 `scaffold frontend`，尚未随新版发行。Profile 支持不等于生成命令支持，先核对实际帮助；旧 CLI 不识别时按授权升级，不回退旧 Node 生成器。
+CLI 3.3.0 新增 `scaffold frontend`。Profile 支持不等于生成命令支持，先核对实际帮助；旧 CLI 不识别时按授权升级，不回退旧 Node 生成器。
 
 ```sh
 yss scaffold frontend --help

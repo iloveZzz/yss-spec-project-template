@@ -10,4 +10,4 @@ Frontend 承接 Spec 的业务规格、高保真原型与交互说明，完成 V
 
 frontend 从 CLI 3.2.0 开始支持，需要对应的三 Profile Bundle；3.1.4 及以前不具备该能力。实际安装版本与来源以 `yss version` 为准；技能安装不代表业务页面已通过浏览器还原验证。
 
-新建 Vue 工程使用实际支持的 `yss scaffold frontend --project-name my-frontend --output-dir .`，父目录须存在且目标须不存在；新命令当前尚未随新版发行，先查看实际帮助。需要技能再单独 attach skills，应用源码与技能资源分开维护。
+新建 Vue 工程使用 CLI 3.3.0 起支持的 `yss scaffold frontend --project-name my-frontend --output-dir .`，父目录须存在且目标须不存在，先查看实际帮助。需要技能再单独 attach skills，应用源码与技能资源分开维护。

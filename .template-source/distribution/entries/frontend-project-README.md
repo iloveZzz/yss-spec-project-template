@@ -9,4 +9,4 @@ Frontend 项目入口见 [AGENTS.md](AGENTS.md)。默认安装 13 项工程与�
 
 完整交付说明设计依据、实现范围、运行方式、工程与浏览器验证及真实接口状态。模拟运行明确待联调，未执行的检查不声称通过。无关文件与本地修改保留，提交、推送、部署和发布使用对应授权。
 
-新建 Vue 工程使用实际支持的 `yss scaffold frontend --project-name my-frontend --output-dir .`，父目录须存在且目标须不存在；新命令当前尚未随新版发行，先查看实际帮助。需要技能再单独 attach skills，应用源码与技能资源分开维护。
+新建 Vue 工程使用 CLI 3.3.0 起支持的 `yss scaffold frontend --project-name my-frontend --output-dir .`，父目录须存在且目标须不存在，先查看实际帮助。需要技能再单独 attach skills，应用源码与技能资源分开维护。
