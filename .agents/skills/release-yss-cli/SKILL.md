@@ -19,7 +19,11 @@ cargo run --locked --bin yss-bundle -- package --binary <实际程序> --version
 
 Bundle 必须先生成。只分发 `yss`/`yss.exe`；内部 `yss-bundle` 不分发。打包器从实际程序的构建记录读取来源，并核对版本和目标架构；不手写来源、不执行外平台程序取版本。用实际归档生成 `SHA256SUMS`，再用同平台新程序执行离线 `upgrade --dry-run` 验证。
 
-归档名为 `yss_<版本>_<完整Rust target>.tar.gz`，Windows 为 `.zip`；包内只有程序和 `release-manifest.json`。发行清单使用 `format: yss.release`、`formatVersion: 1`，工具收据 `.yss/tool.json` 由安装器生成。发行目标仅为 macOS ARM64（`aarch64-apple-darwin`）和 Windows x86_64（`x86_64-pc-windows-msvc`）。分别报告构建与原生运行证据，不能将交叉编译或模拟器结果称为原生验证。
+Windows x86_64 MSVC 用户程序沿用实际发行工作流的 `-C target-feature=+crt-static` 配置。仅对相应用户程序构建设置 RUSTFLAGS，保留原有设置并在之后恢复，不扩散到内部打包工具。实际版本和工具链分别来自 Cargo 与工具链文件，不将本次观察到的版本写成未来发行目标。
+
+本地与远程工作流都核对模板完整提交；修改模板来源时同步相应构建固定值，并核对产物记录，不能只改文档就称 CI 已消费新内容。跨平台分别比较 CLI/模板来源、资源、架构和摘要；文件模式差异可能导致模板快照与 Bundle 摘要不同，不要求摘要必然相同，也不能凭版本号相同忽略资源差异。
+
+归档名为 `yss_<版本>_<完整Rust target>.tar.gz`，Windows 为 `.zip`；包内只有程序和 `release-manifest.json`。发行清单使用 `format: yss.release`、`formatVersion: 1`，工具收据 `.yss/tool.json` 由安装器生成。发行目标仅为 macOS ARM64（`aarch64-apple-darwin`）和 Windows x86_64（`x86_64-pc-windows-msvc`）。分别报告编译、静态包检查、同平台用户程序运行与正式发布；Windows 工作流只有构建和静态校验时不能称原生运行通过，也不能将交叉编译或模拟器结果称为原生验证。
 
 Rust 在线默认 GitHub 固定仓库 `iloveZzz/yss-cli`；公开读取不携带鉴权。`--source gitlab` 显式选择固定次级来源 `https://gitlab.yss.test:9443/yss/yss-cli`，使用显式 `YSS_GITLAB_CA_FILE` 与受限 PAT `YSS_GITLAB_TOKEN`；动态核验项目 ID、完整路径、Web URL、Release 和同项目资产，资产 HEAD 必须返回真实 Content-Length。保留 TLS 主机校验，不关闭验证或发送凭据到其他来源。离线 `--artifact` 不与 `--source` 混用；不自动跨来源回退。CI Job Token 只用于受支持的 CI 身份通道；模板源码从 GitHub 固定仓库读取真实提交，不向 CI 注入 PAT。
 
