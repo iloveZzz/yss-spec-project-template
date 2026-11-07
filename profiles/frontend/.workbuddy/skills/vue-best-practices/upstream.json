@@ -1,0 +1,10 @@
+{
+  "source": "https://github.com/vuejs-ai/skills",
+  "sourceRevision": "198f0cd8f7f9c0a3d9b566ccc16de6677519ee78",
+  "skillPath": "skills/vue-best-practices",
+  "license": "MIT",
+  "localChanges": {
+    "references/sfc.md": "为使用 TypeScript defineProps 泛型的示例添加 lang=\"ts\"，修复 Vue SFC 编译错误。",
+    "references/component-fallthrough-attrs.md": "将属性存在性判断改为渲染时调用的函数，避免缓存过期的 in 判断结果。"
+  }
+}

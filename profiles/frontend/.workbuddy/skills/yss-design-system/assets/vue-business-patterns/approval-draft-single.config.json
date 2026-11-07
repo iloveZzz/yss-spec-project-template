@@ -1,0 +1,6 @@
+{
+  "schema_version": 1,
+  "title": "资料审批草稿 · 逐项处理",
+  "entry": "approval-draft-single.ts",
+  "scenarios": "approval-draft.scenarios.json"
+}

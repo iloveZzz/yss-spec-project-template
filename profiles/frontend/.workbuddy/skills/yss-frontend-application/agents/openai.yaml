@@ -1,0 +1,4 @@
+interface:
+  display_name: "YSS 前端应用工程"
+  short_description: "将高保真设计、原型和页面代码落地为 Vue 3 前端应用并完成工程审查"
+  default_prompt: "使用 $yss-frontend-application，沿用现有设计和核心技术栈完成前端工程实现、设计还原验证与 review。"

@@ -1,0 +1,9 @@
+{
+  "source": "https://github.com/vuejs-ai/skills",
+  "sourceRevision": "198f0cd8f7f9c0a3d9b566ccc16de6677519ee78",
+  "skillPath": "skills/create-adaptable-composable",
+  "license": "MIT",
+  "localChanges": {
+    "SKILL.md": "为 useDocumentTitle 增加服务端环境检查，避免 SSR 访问 document。"
+  }
+}

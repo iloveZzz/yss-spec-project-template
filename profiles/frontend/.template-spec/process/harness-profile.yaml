@@ -1,0 +1,23 @@
+schema_version: 3
+profile_id: harness.frontend-delivery
+status: active
+name: 前端应用工程
+purpose: 承接选定业务规格、高保真原型与交互说明，完成 Vue 应用工程、设计还原、接口接入与适用验证。
+execution:
+  side: frontend
+  product_design: reuse-selected-input
+  terminal_conclusion: frontend-scope-only
+instantiation:
+  cli_package: yss
+  native_profile: frontend
+  metadata_file: .yss/project.json
+  template_source: github:iloveZzz/yss-spec-project-template
+  command: yss init --profile frontend --root <directory>
+  minimum_cli_version: 3.2.0
+business_input:
+  modes:
+  - standalone
+  - upstream
+  conflicts: clarify-business-decision-before-dependent-work
+  analysis_grants_opposite_side_write: false
+  mock_results: not-production-integration

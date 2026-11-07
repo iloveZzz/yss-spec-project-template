@@ -1,0 +1,6 @@
+{
+  "schema_version": 1,
+  "title": "查询与详情",
+  "entry": "list-detail-glass.ts",
+  "scenarios": "list-detail.scenarios.json"
+}

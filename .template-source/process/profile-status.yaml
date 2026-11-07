@@ -1,7 +1,9 @@
 schema_version: 1
-# Spec 内核承载产品设计；Backend 是唯一专职覆盖层。
+# Spec 内核承载产品设计；Backend 与 Frontend 分别承接服务端与前端工程。
 profiles:
   spec:
     status: kernel
   backend:
+    status: active
+  frontend:
     status: active

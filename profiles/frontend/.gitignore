@@ -1,0 +1,83 @@
+# >>> create-yss-spec managed rules
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+.venv/
+venv/
+
+# Node
+node_modules/
+dist/
+*.tsbuildinfo
+
+# IDE
+.idea/
+.DS_Store
+
+# Secrets
+.env
+.env.*
+!.env.example
+*.pem
+
+# Database
+*.db
+*.sqlite
+
+# Logs
+*.log
+logs/
+
+# Coverage
+htmlcov/
+.coverage
+.pytest_cache/
+# Durable work package records
+!/.work/
+!/.work/**/
+!/.work/**/*.md
+!/.work/**/*.yaml
+!/.work/**/*.yml
+!/.work/**/*.json
+!/.work/**/verification/**/*.log
+# Explicitly rebuildable local materials
+.work/**/cache/
+.work/**/tmp/
+.work/**/build/
+.work/**/verification/browser/.chrome-profile/
+.work/**/verification/browser/.chrome-baseline-profile/
+
+# <<< create-yss-spec managed rules
+
+# Template-source only
+# Local agent settings and repository-local worktrees
+/.claude/settings.local.json
+/.codex/settings.local.json
+/.claude/worktrees/
+/.worktrees/
+
+.vscode/
+Excalidraw
+.obsidian
+.ua
+output
+docs/process/presentations/
+docs/process/yss-product-lifecycle-team-guide.md
+.template-spec/process/presentations/
+.template-spec/process/yss-product-lifecycle-team-guide.md
+docs/graphify-out
+# llm-wiki 在模板源本机按需生成的阅读视图，不提交
+.template-source/wiki/
+docs/.scratch/
+.work/
+# Superpowers 技能库的本地计划/设计输出，不进入模板内容
+docs/superpowers/
+# Preserved in calibration-and-environment-evidence.tar.gz with a SHA-256 manifest.
+
+# Portable selected-platform verification evidence
+!.template-spec/engineering/evidence/scaffold-3.2.0/**/*.log
+
+# graphify 生成的知识图谱
+graphify-out/

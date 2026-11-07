@@ -1,0 +1,6 @@
+interface:
+  display_name: "设计与原型复核"
+  short_description: "核查规格一致性、实际行为与适用视觉和可访问性"
+  default_prompt: "Use $prototype-review to inspect the actual design or logic prototype against its requirements and report findings and unverified behavior."
+policy:
+  allow_implicit_invocation: true

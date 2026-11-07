@@ -80,9 +80,9 @@ build-cli:
       PYCODE
       git init "$work/source"
       git -C "$work/source" remote add origin https://github.com/iloveZzz/yss-cli.git
-      git -C "$work/source" fetch --depth 1 origin refs/tags/v3.1.0
+      git -C "$work/source" fetch --depth 1 origin 623e747c19d34f1640091ca630eac31e5f43399c
       git -C "$work/source" checkout --detach FETCH_HEAD
-      test "$(git -C "$work/source" rev-parse HEAD)" = 55df5179e79572bfa0b7b6a72f541c511eb80030
+      test "$(git -C "$work/source" rev-parse HEAD)" = 623e747c19d34f1640091ca630eac31e5f43399c
       git -C "$work/source" rev-parse HEAD > "$work/source-commit.txt"
       cmp .agents/skills/setup-yss-harness/SKILL.md .workbuddy/skills/setup-yss-harness/SKILL.md
       cmp .agents/skills/release-yss-cli/SKILL.md .workbuddy/skills/release-yss-cli/SKILL.md
@@ -115,8 +115,8 @@ build-cli:
       bundle = json.loads((report / "bundle.json").read_text())
       version = json.loads((report / "version.json").read_text())
       assert bundle["source"]["commit"] == os.environ["CI_COMMIT_SHA"]
-      assert version["status"] == "ok" and version["result"]["version"] == "3.1.0"
-      assert version["result"]["source"]["commit"] == "55df5179e79572bfa0b7b6a72f541c511eb80030"
+      assert version["status"] == "ok" and version["result"]["version"] == "3.2.0"
+      assert version["result"]["source"]["commit"] == "623e747c19d34f1640091ca630eac31e5f43399c"
       assert version["result"]["bundleDigest"] == bundle["sha256"]
       PYCODE
   artifacts:
@@ -139,7 +139,7 @@ verify-projects:
       test "$(uname -m)" = "$(cat "$CI_PROJECT_DIR/ci-build/architecture")" || { echo 'Runner architecture differs from build-cli' >&2; exit 1; }
       report="$CI_PROJECT_DIR/ci-report/projects"
       mkdir -p "$report"
-      for profile in spec backend; do
+      for profile in spec backend frontend; do
         for installation in skills project; do
           name="$profile-$installation"
           root="$work/$name"

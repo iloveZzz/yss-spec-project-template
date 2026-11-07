@@ -1,0 +1,6 @@
+{
+  "schema_version": 1,
+  "title": "高密度分析",
+  "entry": "analysis-standard.ts",
+  "scenarios": "analysis.scenarios.json"
+}

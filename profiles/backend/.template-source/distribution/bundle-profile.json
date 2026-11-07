@@ -47,7 +47,13 @@
       ".agents/skills/yss-design-system",
       ".agents/skills/yss-product-lifecycle",
       ".template-spec/process/process-glossary.md",
-      ".template-spec/agents/digital-human-roles.md"
+      ".template-spec/agents/digital-human-roles.md",
+      ".agents/skills/yss-frontend-application",
+      ".workbuddy/skills/yss-frontend-application",
+      ".agents/skills/vue-best-practices",
+      ".agents/skills/create-adaptable-composable",
+      ".workbuddy/skills/vue-best-practices",
+      ".workbuddy/skills/create-adaptable-composable"
     ],
     "excludeRootEntries": [
       ".git",
@@ -181,7 +187,8 @@
         ".template-spec/user-guide/cli/tutorial-backend.md",
         ".template-spec/user-guide/cli/tutorial-maintenance.md",
         ".template-spec/user-guide/后端子项目用户手册.md",
-        ".template-spec/user-guide/用户手册索引.md"
+        ".template-spec/user-guide/用户手册索引.md",
+        ".template-spec/user-guide/cli/tutorial-frontend.md"
       ],
       "skillDependencies": {
         "java-backend-commit": [

@@ -1,0 +1,457 @@
+{
+  "schemaVersion": 6,
+  "profile": "frontend",
+  "manifest": {
+    "allowRootEntries": [],
+    "allowRootFiles": [],
+    "allowFiles": [
+      ".gitignore",
+      ".cursorrules",
+      "AGENTS.md",
+      "CLAUDE.md",
+      "CONTEXT.md",
+      "DESIGN.md",
+      "README.md",
+      "skills-lock.json",
+      "yss-public-skills.json",
+      "yss-project.yaml",
+      ".template-spec/process/harness-profile.yaml",
+      ".template-spec/agents/yss-skill-registry.yaml",
+      ".template-spec/user-guide/cli/tutorial-frontend.md",
+      ".template-spec/user-guide/cli/command-reference.md",
+      ".template-spec/user-guide/cli/install-and-verify.md",
+      ".agents/skills/prototype-review/references/review-method.md",
+      ".template-spec/agents/frontend-skills-adaptation.md",
+      ".template-spec/agents/matt-skills-adaptation.md",
+      ".template-spec/design/tokens/variables.css",
+      ".template-spec/process/document-writing.md",
+      ".template-spec/templates/examples/lifecycle-writing-examples.md",
+      ".agents/skills/setup-yss-harness",
+      ".agents/skills/yss-frontend-application",
+      ".agents/skills/vue-best-practices",
+      ".agents/skills/create-adaptable-composable",
+      ".agents/skills/code-review",
+      ".agents/skills/diagnosing-bugs",
+      ".agents/skills/yss-research",
+      ".agents/skills/grilling",
+      ".agents/skills/i-have-adhd",
+      ".agents/skills/handoff",
+      ".agents/skills/using-git-worktrees",
+      ".agents/skills/resolving-merge-conflicts",
+      ".agents/skills/yss-design-system",
+      ".agents/skills/prototype-review",
+      ".agents/skills/prototype",
+      ".agents/skills/domain-modeling",
+      ".workbuddy/skills/setup-yss-harness",
+      ".workbuddy/skills/yss-frontend-application",
+      ".workbuddy/skills/vue-best-practices",
+      ".workbuddy/skills/create-adaptable-composable",
+      ".workbuddy/skills/code-review",
+      ".workbuddy/skills/diagnosing-bugs",
+      ".workbuddy/skills/yss-research",
+      ".workbuddy/skills/grilling",
+      ".workbuddy/skills/i-have-adhd",
+      ".workbuddy/skills/handoff",
+      ".workbuddy/skills/using-git-worktrees",
+      ".workbuddy/skills/resolving-merge-conflicts",
+      ".workbuddy/skills/yss-design-system",
+      ".workbuddy/skills/prototype-review",
+      ".workbuddy/skills/prototype",
+      ".workbuddy/skills/domain-modeling",
+      ".template-spec/templates/examples/plan-spec/complex-defective.md",
+      ".template-spec/templates/examples/plan-spec/complex-source.md",
+      ".template-spec/templates/examples/plan-spec/complex-valid.md",
+      ".template-spec/templates/examples/plan-spec/expectations.json",
+      ".template-spec/templates/examples/plan-spec/high-risk-before.md",
+      ".template-spec/templates/examples/plan-spec/high-risk-defective.md",
+      ".template-spec/templates/examples/plan-spec/high-risk-source.md",
+      ".template-spec/templates/examples/plan-spec/high-risk-valid.md",
+      ".template-spec/templates/examples/plan-spec/ordinary-defective.md",
+      ".template-spec/templates/examples/plan-spec/ordinary-plan.md",
+      ".template-spec/templates/examples/plan-spec/ordinary-source.md",
+      ".template-spec/templates/examples/plan-spec/ordinary-valid.md"
+    ],
+    "excludeRootEntries": [
+      ".git",
+      ".codegraph",
+      ".codebuddy",
+      ".workbuddy",
+      ".idea",
+      ".uploads",
+      "node_modules",
+      ".ua",
+      ".qwen",
+      ".template-source",
+      "packages",
+      ".github"
+    ],
+    "excludeRootFiles": [
+      "package-lock.json",
+      "template.manifest.json",
+      "template.snapshot.json",
+      ".gitmodules"
+    ],
+    "excludePaths": [
+      ".claude/skills",
+      ".codex/skills",
+      ".cursor/skills",
+      ".pi/skills"
+    ],
+    "excludePathSuffixes": [
+      "-scenarios"
+    ],
+    "renderPaths": [
+      "README.md"
+    ],
+    "exampleDocPaths": [],
+    "initExcludeRootEntries": [],
+    "initExcludeRootFiles": [
+      "yss-public-skills.json"
+    ],
+    "initExcludePaths": [],
+    "ownershipPolicy": {
+      "version": 1,
+      "default": "managed",
+      "rules": [
+        {
+          "pattern": ".git/**",
+          "ownership": "protected"
+        },
+        {
+          "pattern": ".template-source/design/design-system-sync.yaml",
+          "ownership": "managed"
+        },
+        {
+          "pattern": ".template-source/design/preview-dark.html",
+          "ownership": "managed"
+        },
+        {
+          "pattern": ".template-source/design/preview.css",
+          "ownership": "managed"
+        },
+        {
+          "pattern": ".template-source/design/preview.html",
+          "ownership": "managed"
+        },
+        {
+          "pattern": ".template-source/design/preview.js",
+          "ownership": "managed"
+        },
+        {
+          "pattern": ".template-source/**",
+          "ownership": "protected"
+        },
+        {
+          "pattern": ".gitmodules",
+          "ownership": "user-owned"
+        },
+        {
+          "pattern": ".gitignore",
+          "ownership": "managed-customizable"
+        },
+        {
+          "pattern": "apps/**",
+          "ownership": "user-owned"
+        },
+        {
+          "pattern": "packages/**",
+          "ownership": "user-owned"
+        },
+        {
+          "pattern": "wiki/**",
+          "ownership": "user-owned"
+        },
+        {
+          "pattern": "docs/reviews/**",
+          "ownership": "user-owned"
+        },
+        {
+          "pattern": "docs/.scratch/**",
+          "ownership": "user-owned"
+        },
+        {
+          "pattern": ".template-spec/agents/issue-tracker.md",
+          "ownership": "managed-customizable"
+        },
+        {
+          "pattern": "yss-project.yaml",
+          "ownership": "generated"
+        },
+        {
+          "pattern": "skills-lock.json",
+          "ownership": "generated"
+        },
+        {
+          "pattern": "yss-public-skills.json",
+          "ownership": "generated"
+        },
+        {
+          "pattern": ".agents/skills/.yss-skills-manifest.json",
+          "ownership": "generated"
+        },
+        {
+          "pattern": "AGENTS.md",
+          "ownership": "managed-customizable"
+        },
+        {
+          "pattern": "CONTEXT.md",
+          "ownership": "managed-customizable"
+        },
+        {
+          "pattern": "DESIGN.md",
+          "ownership": "managed-customizable"
+        },
+        {
+          "pattern": "README.md",
+          "ownership": "user-owned"
+        },
+        {
+          "pattern": ".work/**",
+          "ownership": "user-owned"
+        }
+      ]
+    },
+    "customizationPolicy": {
+      "version": 1,
+      "defaultStrategy": "replace-with-force",
+      "rules": [
+        {
+          "pattern": ".gitignore",
+          "strategy": "manual"
+        },
+        {
+          "pattern": ".template-spec/agents/issue-tracker.md",
+          "strategy": "manual"
+        },
+        {
+          "pattern": "CONTEXT.md",
+          "strategy": "manual"
+        },
+        {
+          "pattern": "DESIGN.md",
+          "strategy": "manual"
+        }
+      ]
+    },
+    "generatorPolicy": {
+      "version": 1,
+      "rules": [
+        {
+          "pattern": "yss-project.yaml",
+          "generatorId": "repository-identity",
+          "generatorVersion": 1
+        },
+        {
+          "pattern": "skills-lock.json",
+          "generatorId": "skills-lock",
+          "generatorVersion": 1
+        },
+        {
+          "pattern": "yss-public-skills.json",
+          "generatorId": "public-skills",
+          "generatorVersion": 1
+        },
+        {
+          "pattern": ".agents/skills/.yss-skills-manifest.json",
+          "generatorId": "skills-manifest",
+          "generatorVersion": 1
+        }
+      ]
+    }
+  },
+  "retiredSkills": {},
+  "installations": {
+    "project": {
+      "skills": [
+        "setup-yss-harness",
+        "yss-frontend-application",
+        "vue-best-practices",
+        "create-adaptable-composable",
+        "code-review",
+        "diagnosing-bugs",
+        "yss-research",
+        "grilling",
+        "i-have-adhd",
+        "handoff",
+        "using-git-worktrees",
+        "resolving-merge-conflicts"
+      ],
+      "files": [
+        ".gitignore",
+        ".cursorrules",
+        "AGENTS.md",
+        "CLAUDE.md",
+        "CONTEXT.md",
+        "DESIGN.md",
+        "README.md",
+        "skills-lock.json",
+        "yss-public-skills.json",
+        "yss-project.yaml",
+        ".template-spec/process/harness-profile.yaml",
+        ".template-spec/agents/yss-skill-registry.yaml",
+        ".template-spec/user-guide/cli/tutorial-frontend.md",
+        ".template-spec/user-guide/cli/command-reference.md",
+        ".template-spec/user-guide/cli/install-and-verify.md"
+      ],
+      "skillDependencies": {
+        "yss-design-system": [
+          "prototype-review",
+          "prototype",
+          "yss-research"
+        ]
+      },
+      "skillReferences": {
+        "setup-yss-harness": [],
+        "yss-frontend-application": [
+          ".template-spec/agents/frontend-skills-adaptation.md"
+        ],
+        "vue-best-practices": [
+          ".template-spec/agents/frontend-skills-adaptation.md"
+        ],
+        "create-adaptable-composable": [
+          ".template-spec/agents/frontend-skills-adaptation.md"
+        ],
+        "code-review": [
+          ".template-spec/agents/matt-skills-adaptation.md"
+        ],
+        "diagnosing-bugs": [
+          ".template-spec/agents/matt-skills-adaptation.md"
+        ],
+        "yss-research": [
+          ".template-spec/agents/matt-skills-adaptation.md"
+        ],
+        "grilling": [
+          ".template-spec/agents/matt-skills-adaptation.md"
+        ],
+        "i-have-adhd": [
+          ".template-spec/process/document-writing.md",
+          ".template-spec/templates/examples/lifecycle-writing-examples.md",
+          ".template-spec/templates/examples/plan-spec/complex-defective.md",
+          ".template-spec/templates/examples/plan-spec/complex-source.md",
+          ".template-spec/templates/examples/plan-spec/complex-valid.md",
+          ".template-spec/templates/examples/plan-spec/expectations.json",
+          ".template-spec/templates/examples/plan-spec/high-risk-before.md",
+          ".template-spec/templates/examples/plan-spec/high-risk-defective.md",
+          ".template-spec/templates/examples/plan-spec/high-risk-source.md",
+          ".template-spec/templates/examples/plan-spec/high-risk-valid.md",
+          ".template-spec/templates/examples/plan-spec/ordinary-defective.md",
+          ".template-spec/templates/examples/plan-spec/ordinary-plan.md",
+          ".template-spec/templates/examples/plan-spec/ordinary-source.md",
+          ".template-spec/templates/examples/plan-spec/ordinary-valid.md"
+        ],
+        "handoff": [
+          ".template-spec/agents/matt-skills-adaptation.md"
+        ],
+        "using-git-worktrees": [],
+        "resolving-merge-conflicts": [
+          ".template-spec/agents/matt-skills-adaptation.md"
+        ],
+        "yss-design-system": [
+          ".template-spec/design/tokens/variables.css",
+          ".agents/skills/prototype-review/references/review-method.md"
+        ],
+        "prototype-review": [],
+        "prototype": [
+          ".template-spec/agents/matt-skills-adaptation.md"
+        ],
+        "domain-modeling": [
+          ".template-spec/agents/matt-skills-adaptation.md"
+        ]
+      },
+      "entries": {
+        "AGENTS.md": ".template-source/distribution/entries/frontend-project-AGENTS.md",
+        "CONTEXT.md": ".template-source/distribution/entries/project-CONTEXT.md",
+        "README.md": ".template-source/distribution/entries/frontend-project-README.md",
+        "yss-project.yaml": ".template-source/distribution/entries/project-identity.yaml"
+      }
+    },
+    "skills": {
+      "skills": [
+        "setup-yss-harness",
+        "yss-frontend-application",
+        "vue-best-practices",
+        "create-adaptable-composable",
+        "code-review",
+        "diagnosing-bugs",
+        "yss-research",
+        "grilling",
+        "i-have-adhd",
+        "handoff",
+        "using-git-worktrees",
+        "resolving-merge-conflicts"
+      ],
+      "files": [
+        ".gitignore"
+      ],
+      "skillDependencies": {
+        "yss-design-system": [
+          "prototype-review",
+          "prototype",
+          "yss-research"
+        ]
+      },
+      "skillReferences": {
+        "setup-yss-harness": [],
+        "yss-frontend-application": [
+          ".template-spec/agents/frontend-skills-adaptation.md"
+        ],
+        "vue-best-practices": [
+          ".template-spec/agents/frontend-skills-adaptation.md"
+        ],
+        "create-adaptable-composable": [
+          ".template-spec/agents/frontend-skills-adaptation.md"
+        ],
+        "code-review": [
+          ".template-spec/agents/matt-skills-adaptation.md"
+        ],
+        "diagnosing-bugs": [
+          ".template-spec/agents/matt-skills-adaptation.md"
+        ],
+        "yss-research": [
+          ".template-spec/agents/matt-skills-adaptation.md"
+        ],
+        "grilling": [
+          ".template-spec/agents/matt-skills-adaptation.md"
+        ],
+        "i-have-adhd": [
+          ".template-spec/process/document-writing.md",
+          ".template-spec/templates/examples/lifecycle-writing-examples.md",
+          ".template-spec/templates/examples/plan-spec/complex-defective.md",
+          ".template-spec/templates/examples/plan-spec/complex-source.md",
+          ".template-spec/templates/examples/plan-spec/complex-valid.md",
+          ".template-spec/templates/examples/plan-spec/expectations.json",
+          ".template-spec/templates/examples/plan-spec/high-risk-before.md",
+          ".template-spec/templates/examples/plan-spec/high-risk-defective.md",
+          ".template-spec/templates/examples/plan-spec/high-risk-source.md",
+          ".template-spec/templates/examples/plan-spec/high-risk-valid.md",
+          ".template-spec/templates/examples/plan-spec/ordinary-defective.md",
+          ".template-spec/templates/examples/plan-spec/ordinary-plan.md",
+          ".template-spec/templates/examples/plan-spec/ordinary-source.md",
+          ".template-spec/templates/examples/plan-spec/ordinary-valid.md"
+        ],
+        "handoff": [
+          ".template-spec/agents/matt-skills-adaptation.md"
+        ],
+        "using-git-worktrees": [],
+        "resolving-merge-conflicts": [
+          ".template-spec/agents/matt-skills-adaptation.md"
+        ],
+        "yss-design-system": [
+          ".template-spec/design/tokens/variables.css",
+          ".agents/skills/prototype-review/references/review-method.md"
+        ],
+        "prototype-review": [],
+        "prototype": [
+          ".template-spec/agents/matt-skills-adaptation.md"
+        ],
+        "domain-modeling": [
+          ".template-spec/agents/matt-skills-adaptation.md"
+        ]
+      },
+      "entries": {
+        "AGENTS.md": ".template-source/distribution/entries/frontend-skills-AGENTS.md",
+        "CLAUDE.md": ".template-source/distribution/entries/skills-CLAUDE.md"
+      }
+    }
+  }
+}

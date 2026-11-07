@@ -8,6 +8,7 @@ CLI 负责安装、同步、脚手架和工具升级。业务需求、设计与�
 - [命令参考](cli/command-reference.md)
 - [Spec 使用](cli/tutorial-spec.md)
 - [Backend 使用](cli/tutorial-backend.md)
+- [Frontend 使用](cli/tutorial-frontend.md)
 - [维护与恢复](cli/tutorial-maintenance.md)
 
-写入命令默认直接执行，`--dry-run` 只预览，不保存计划、控制目录或目标文件。Profile 为 `spec` 或 `backend`；安装内容为 `project` 或 `skills`。
+写入命令默认直接执行，`--dry-run` 只预览，不保存计划、控制目录或目标文件。CLI 3.2.0 的 Profile 为 `spec`、`backend` 或 `frontend`；frontend 需要对应 Bundle，3.1.4 及以前不支持，先查看实际版本与帮助。安装内容为 `project` 或 `skills`。

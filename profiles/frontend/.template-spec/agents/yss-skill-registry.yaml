@@ -1,0 +1,151 @@
+schema_version: 3
+registry_id: yss.skill-routing
+status: active
+description: 前端工程与按需设计方法；不提供阶段资格或统一测试门禁。
+canonical_content_root: .agents/skills
+instance_distribution:
+  schema_version: 1
+  initial_skills:
+  - setup-yss-harness
+  - yss-frontend-application
+  - vue-best-practices
+  - create-adaptable-composable
+  - code-review
+  - diagnosing-bugs
+  - yss-research
+  - grilling
+  - i-have-adhd
+  - handoff
+  - using-git-worktrees
+  - resolving-merge-conflicts
+  runtimes:
+  - workbuddy
+  projection_roots:
+    workbuddy: .workbuddy/skills
+  initial_example_docs: false
+skills:
+- id: setup-yss-harness
+  layer: core
+  maturity: supported
+  instance_default_discoverable: true
+  aliases: []
+  impacts:
+  - lifecycle
+- id: yss-frontend-application
+  layer: specialist
+  maturity: supported
+  aliases: []
+  impacts:
+  - frontend
+  stack: vue
+  instance_default_discoverable: true
+- id: vue-best-practices
+  layer: specialist
+  maturity: supported
+  aliases: []
+  impacts:
+  - frontend
+  stack: vue
+  instance_default_discoverable: true
+- id: create-adaptable-composable
+  layer: specialist
+  maturity: supported
+  aliases: []
+  impacts:
+  - frontend
+  stack: vue
+  instance_default_discoverable: true
+- id: code-review
+  layer: core
+  maturity: supported
+  instance_default_discoverable: true
+  aliases: []
+  impacts:
+  - quality
+- id: diagnosing-bugs
+  layer: core
+  maturity: supported
+  instance_default_discoverable: true
+  aliases: []
+  impacts:
+  - quality
+- id: yss-research
+  layer: core
+  maturity: supported
+  instance_default_discoverable: true
+  aliases:
+  - research
+  impacts:
+  - discovery
+- id: grilling
+  layer: core
+  maturity: supported
+  instance_default_discoverable: true
+  aliases: []
+  impacts:
+  - discovery
+- id: i-have-adhd
+  layer: core
+  maturity: supported
+  instance_default_discoverable: true
+  aliases: []
+  impacts:
+  - writing
+- id: handoff
+  layer: core
+  maturity: supported
+  instance_default_discoverable: true
+  aliases: []
+  impacts:
+  - lifecycle
+- id: using-git-worktrees
+  layer: maintainer-only
+  maturity: supported
+  instance_default_discoverable: true
+  aliases: []
+  impacts:
+  - setup
+- id: resolving-merge-conflicts
+  layer: core
+  maturity: supported
+  instance_default_discoverable: true
+  aliases: []
+  impacts:
+  - quality
+- id: yss-design-system
+  layer: core
+  maturity: supported
+  instance_default_discoverable: false
+  aliases: []
+  impacts:
+  - prototype
+  - frontend
+- id: prototype-review
+  layer: core
+  maturity: supported
+  instance_default_discoverable: false
+  aliases: []
+  impacts:
+  - prototype
+- id: prototype
+  layer: core
+  maturity: supported
+  instance_default_discoverable: false
+  aliases: []
+  impacts:
+  - prototype
+- id: domain-modeling
+  layer: core
+  maturity: supported
+  instance_default_discoverable: false
+  aliases: []
+  impacts:
+  - discovery
+skill_dependencies:
+  yss-design-system:
+  - skill: prototype-review
+    type: context-required
+  - skill: prototype
+    type: context-required
+  - skill: yss-research
+    type: context-required
