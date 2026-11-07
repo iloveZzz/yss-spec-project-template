@@ -7,7 +7,15 @@ description: 安装或升级 YSS CLI，配置项目或用户级 Skills，初始�
 
 先区分程序安装、项目受管技能、用户级技能与工程同步，复用目标路径和已有授权。只要求查询时保持只读；不要因为调用本技能就升级程序、同步工程或改用户级配置。
 
-本技能面向纯 Rust YSS CLI 3.2.0，不兼容旧 Go 安装记录或旧插件。先读实际 `yss version`、`yss help` 和目标命令帮助，按安装程序真实能力操作；模板与 Skills 更新不会替换已有二进制。是否正式发布以所选来源的实际 Release 为准，尚未发布的版本或功能必须称开发构建。
+本技能面向纯 Rust YSS CLI，不兼容旧 Go 安装记录或旧插件。先读实际 `yss version`、`yss help` 和目标命令帮助，按安装程序真实能力操作；模板与 Skills 更新不会替换已有二进制。是否正式发布以所选来源的实际 Release 为准，尚未发布的版本或功能必须称开发构建。
+
+| 能力 | 最低版本与边界 |
+|---|---|
+| Frontend Profile | CLI 3.2.0 起支持，安装技能及资料；3.1.4 及以前不支持 |
+| Vue 工程生成 | CLI 3.3.0 起支持 `scaffold frontend`，还需对应 Bundle 资源；仅有 Frontend Profile 不代表能生成源码 |
+| 独立 Skills 安装 | 无需 YSS CLI；实际任务需要程序时再检查或按授权安装 |
+
+版本阈值用于解释能力缺口，不作为未来固定安装版本。命令和资源以实际帮助与 Bundle 为准。
 
 ## 安装或升级程序
 
@@ -15,7 +23,7 @@ Rust 在线默认使用 `https://github.com/iloveZzz/yss-cli` 的公开 Release�
 
 GitHub 公开读取不需要凭据，不读取或发送 GitLab token。仅选用 GitLab 时配置显式 CA `YSS_GITLAB_CA_FILE` 和具备项目、Release、资产读取权限的受限 PAT `YSS_GITLAB_TOKEN`。每次核验完整项目路径、Web URL 和动态正数项目 ID；token 只在内存及受限请求头中传递，不进入 URL、参数、日志或产物。`--source` 仅用于在线升级，不与 `--artifact` 混用；不自动跨来源回退，不提供在线 Job Token 模式。来源不可用返回 NOT_READY，不自动创建发行或向日常 CI 注入 PAT。
 
-首次安装或从旧接口切换时，由 Agent 下载匹配的归档及 `SHA256SUMS`，核验实际 SHA-256，在临时目录安全解包。拒绝越界、链接和重复路径，核对包内 `release-manifest.json` 的 `format: yss.release`、`formatVersion: 1`、实际程序构建记录、精确 target 与载荷摘要，再用新程序查看版本和帮助。使用新程序安装到独立工具目录，不调用旧升级器或仅覆盖旧可执行文件：
+首次安装或从旧接口切换时，由 Agent 下载匹配的归档及 `SHA256SUMS`，核验实际 SHA-256，在临时目录安全解包。拒绝越界、链接和重复路径，核对包内 `release-manifest.json` 的 `format: yss.release`、`formatVersion: 1`、实际程序构建记录、精确 target 与载荷摘要，再用新程序查看版本和帮助。工具目录不得位于 Git 工作树内或兼作项目目录；使用新程序安装到独立的新目录或空目录，不调用旧升级器或仅覆盖旧可执行文件：
 
 ```text
 <新程序> upgrade --artifact <归档绝对路径> --sha256 <实际归档摘要> --tool-root <新的工具目录> --dry-run
@@ -45,22 +53,36 @@ yss sync --root <受管目录> --installation project
 
 ## 独立或用户级 Skills
 
-仅安装 Agent 技能无需安装 YSS CLI，也无需初始化受管工程。从 [公开技能仓](https://github.com/iloveZzz/yss-spec-dev-skills) 选择实际存在的技能及资源；使用 [skills CLI](https://github.com/vercel-labs/skills) 时先查看其帮助：
+仅安装 Agent 技能无需安装 YSS CLI，也无需初始化受管工程。从 [公开技能仓](https://github.com/iloveZzz/yss-spec-dev-skills) 选择实际存在的技能及资源；使用 [skills CLI](https://github.com/vercel-labs/skills) 时先核对其实际版本、帮助和 Node 要求，不能只检查是否装有 Node。skills 1.7.6 要求 Node `>=22.20.0`，后续版本读取其实际声明：
 
 ```text
 npx skills@latest add iloveZzz/yss-spec-dev-skills --list
 npx skills@latest add iloveZzz/yss-spec-dev-skills --skill setup-yss-harness --agent codex
 ```
 
-默认安装到当前项目；只有用户要求跨项目可用时才加 `--global`。目标 Agent 按实际宿主选择，Claude Code 使用 `--agent claude-code`；不要自动使用 `--all`。缺少 Node 或 skills CLI 时，可由 Agent 将选定技能、必要资源与许可证直接放入宿主实际支持的技能目录。
+默认安装到当前项目；只有用户要求跨项目可用时才加 `--global`。目标 Agent 按实际宿主选择，Claude Code 使用 `--agent claude-code`；不要自动使用 `--all`。缺少适用的 Node 或 skills CLI 时，可由 Agent 将选定技能、必要资源与许可证直接放入宿主实际支持的技能目录。
 
 同名技能先检查来源、已有内容及宿主发现路径；不得直接覆盖用户定制。独立 Skills 的更新通过原安装来源完成，不对用户级技能目录运行 `yss init/attach/sync`，也不改成治理工程。模板源的技能修改与公开发布按维护任务处理，不因安装请求自动提交或发布。
+
+## 生成工程源码
+
+Java 脚手架使用 `scaffold catalog`、`scaffold ddd`、`scaffold mvc`。先确定项目、平台和 Maven 坐标，仅生成新目标，不要求合同或批准，不自动执行 Maven。
+
+Vue 工程生成先读实际帮助与 catalog；旧程序不识别命令时说明缺口，按已有授权处理程序升级，不构造兼容命令或回退旧 Node 生成器：
+
+```text
+yss scaffold frontend --help
+yss scaffold catalog --json
+yss scaffold frontend --project-name <小写kebab-case工程名> --output-dir <已存在父目录>
+```
+
+父目录须已存在，目标工程目录必须不存在，包括已有空目录。加 `--dry-run` 只预览；生成复制内嵌 starter 并修改 package.name，不安装依赖或启动服务。只要求源码就交付源码与运行说明；需要项目技能时另行执行 `attach --profile frontend --installation skills`。`.yss/scaffold.json` 记录生成来源，不授予 `sync` 管理应用源码的权利。已有工程改造交给应用工程技能，不能用生成命令覆盖。
+
+运行 Vue 工程前，按实际 catalog、package.json 和锁文件核对 Node/pnpm；它们与 Rust CLI 本体、skills 安装工具的运行要求分别判断。依赖安装、工程检查和启动遵循本次任务范围，不从源码生成请求推导这些动作已获授权。
 
 ## 诊断与其他操作
 
 所有写入命令默认直接执行；同一命令加 `--dry-run` 仅预览，不创建目标、控制目录或保存计划。`doctor` 查看安装来源、目标文件差异、冲突与未完成事务；`recover` 仅安全恢复未完成事务，参数以实际帮助为准，不提供已完成操作的通用回滚；已提交事务仅重试安全清理。Windows 更新可能保留仍被旧进程占用的程序，提交和清理结果分别报告；若中断导致主入口暂缺，从已核验发行包取得独立新程序执行 `recover --root <工具根>`。
-
-Java 脚手架使用 `scaffold catalog`、`scaffold ddd`、`scaffold mvc`。先确定项目、平台和 Maven 坐标，仅生成新目标，不要求合同或批准，不自动执行 Maven。
 
 旧插件、保存计划、`plan/apply`、`migrate`、`assets`、`update`、`rollback` 和 `project` 等已退役；不要构造兼容命令。Rust 使用 `.yss/project.json`（`format: yss.project`、`formatVersion: 1`）；发现旧 `.yss.json`、家族标记或旧工具收据时只读拒绝，不迁移、不复用旧事务。保留旧目录，在新的目录重新接入；不删状态或覆盖用户修改。
 
