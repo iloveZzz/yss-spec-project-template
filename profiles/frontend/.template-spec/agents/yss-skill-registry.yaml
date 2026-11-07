@@ -25,6 +25,14 @@ instance_distribution:
     workbuddy: .workbuddy/skills
   initial_example_docs: false
 skills:
+- id: yss-frontend-scaffold-generator
+  layer: specialist
+  maturity: supported
+  instance_default_discoverable: true
+  aliases: []
+  impacts:
+  - frontend
+  stack: vue
 - id: setup-yss-harness
   layer: core
   maturity: supported
@@ -150,12 +158,3 @@ skill_dependencies:
     type: context-required
   - skill: yss-research
     type: context-required
-
-- id: yss-frontend-scaffold-generator
-  layer: specialist
-  maturity: supported
-  instance_default_discoverable: true
-  aliases: []
-  impacts:
-  - frontend
-  stack: vue

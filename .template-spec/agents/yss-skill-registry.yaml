@@ -1043,6 +1043,14 @@ agent_runtime_roots:
   claude: .claude/skills
   workbuddy: .workbuddy/skills
 skills:
+- id: yss-frontend-scaffold-generator
+  layer: specialist
+  maturity: supported
+  instance_default_discoverable: false
+  aliases: []
+  impacts:
+  - frontend
+  stack: vue
 - id: i-have-adhd
   layer: core
   maturity: supported
@@ -1493,12 +1501,3 @@ skills:
   stack: vue
 platform_skills: []
 external_skills: []
-
-- id: yss-frontend-scaffold-generator
-  layer: specialist
-  maturity: supported
-  instance_default_discoverable: false
-  aliases: []
-  impacts:
-  - frontend
-  stack: vue

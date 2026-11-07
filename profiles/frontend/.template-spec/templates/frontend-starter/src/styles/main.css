@@ -12,6 +12,7 @@ h1, p { margin: 0; }
 [data-slot='input']::placeholder { color: var(--yss-colors-text-secondary); opacity: 1; }
 [data-slot='input']:hover, [data-slot='input']:focus-visible { border-color: var(--yss-color-primary-control); }
 [data-slot='input']:focus-visible { outline: none; box-shadow: none; }
+[data-slot='input'][aria-invalid='true'] { border-color: var(--yss-colors-error-text); }
 [data-slot='button'] { padding: var(--yss-components-button-default-padding); font-weight: 400; cursor: pointer; }
 [data-slot='button']:focus-visible { outline: 2px solid var(--yss-color-primary-control); outline-offset: 2px; }
 @media (width < 720px), (pointer: coarse) {
