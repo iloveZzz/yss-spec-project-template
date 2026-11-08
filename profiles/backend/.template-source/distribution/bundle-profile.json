@@ -170,6 +170,7 @@
         "yss-skill-source-index-refresh"
       ],
       "files": [
+        ".template-spec/agents/profile-skills.md",
         ".cursorrules",
         ".gitignore",
         "AGENTS.md",
@@ -432,6 +433,7 @@
         "yss-skill-source-index-refresh"
       ],
       "files": [
+        ".template-spec/agents/profile-skills.md",
         ".gitignore"
       ],
       "entries": {

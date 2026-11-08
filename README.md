@@ -26,6 +26,6 @@
 
 既有 yss CLI 的安装包和内置行为独立于本仓，本次目录变化不会改写已安装的二进制。新模板与具体 CLI 版本的安装、同步兼容性须以实际使用结果为准。
 
-Template 5.3.3 补齐官方 shadcn-vue 组件的发现、兼容来源获取、依赖配置、主题适配与验证方法，三个现有技能复用一份组件工程参考；最小 Vue starter 增加 components.json。供 CLI 3.3.2 打包使用，固定组件、依赖锁与主题保持原基线。`scaffold frontend` 从 CLI 3.3.0 起支持；Frontend Profile 从 CLI 3.2.0 开始支持，3.1.4 及以前不支持。参见 [Frontend 接入](.template-spec/user-guide/cli/tutorial-frontend.md)。GitLab CI 使用已发行 CLI 3.3.1 的固定源码提交，覆盖 Spec/Backend/Frontend；实际远程执行结果以对应流水线为准。
+Template 5.3.4 增加三个 Profile 的[技能地图](.template-spec/agents/profile-skills.md)与六个安装入口导航，明确默认技能、按需协作及 Spec 的 handoff 交接职责；完善第三方待答问题、Agent 文档事实来源及前端模块边界检查方法。供 CLI 3.3.3 打包使用，默认技能集合仍为 Spec 16 项、Backend 41 项、Frontend 13 项。前版引入的官方 shadcn-vue 组件复用方法与 starter 配置继续适用。`scaffold frontend` 从 CLI 3.3.0 起支持；Frontend Profile 从 CLI 3.2.0 开始支持，3.1.4 及以前不支持。参见 [Frontend 接入](.template-spec/user-guide/cli/tutorial-frontend.md)。GitLab CI 使用已发行 CLI 3.3.1 的固定源码提交，覆盖 Spec/Backend/Frontend；实际远程执行结果以对应流水线为准。
 
 新建 Vue 工程使用 CLI 3.3.0 起支持的 `yss scaffold frontend --project-name my-frontend --output-dir .`，父目录须存在且目标须不存在，先查看实际帮助。需要技能再单独 attach skills，应用源码与技能资源分开维护。

@@ -16,4 +16,4 @@ Write instructions that help an Agent make the right decision in the intended ta
 
 When recording actual use after a behavior change, a user-requested check or an observed misfire, read `.agents/skills/i-have-adhd/references/pr-and-retro.md` from the project root. Reuse the current task's evidence; ordinary prose edits do not require an evaluation, report or new tracking artifact.
 
-When editing skill metadata or invocation policy, read [skill mechanics](SKILL-MECHANICS.md). When deciding how to split a long document or repair an unreliable context pointer, read [writing principles and examples](references/writing-principles.md). These references do not impose a uniform writing length or override project governance.
+When editing skill metadata or invocation policy, read [skill mechanics](SKILL-MECHANICS.md). When deciding which facts belong in agent documentation, splitting a long document or repairing an unreliable context pointer, read [writing principles and examples](references/writing-principles.md). These references do not impose a uniform writing length or override project governance.

@@ -1,7 +1,9 @@
 ---
 name: grilling
-description: 澄清只有业务方才能决定的问题，检验需求假设和方案取舍；复用已有确认，可调查事实自行核实。
+description: 澄清只有业务方才能决定的问题，检验需求假设和方案取舍，或整理第三方待答问题清单；复用已有确认，可调查事实自行核实。
 ---
+
+When the requested output is a question list for someone else to answer, use **Third-party questions** below. For a live decision interview with the user, use the rounds that follow.
 
 Interview the user relentlessly until you reach a shared understanding. Map this as a **design tree**: every decision branches into the decisions that hang off it.
 
@@ -29,4 +31,11 @@ Delegate only within authorization and host capability, with a fresh context (Co
 
 Stop when decisions material to the agreed scope are settled, remaining uncertainty is explicit and the next action is authorized. Reuse existing confirmations; do not traverse irrelevant branches or re-ask settled questions. New material decisions still require a real user response.
 
-If a decision requires third-party knowledge that cannot be obtained directly, prepare a concise question list within the requested scope. Do not send it to anyone, create a new questionnaire skill, or treat silence as agreement.
+## Third-party questions
+
+Use this branch when the missing knowledge belongs to someone other than the user:
+
+- Establish the recipient's role, what they know and what facts or decisions the user needs back. Reuse known context; ask the user only for missing details about the recipient or intended use, rather than interviewing them about knowledge they do not hold.
+- Read available source material first. State what is already known and aim questions at the remaining gaps; distinguish a factual question from a decision the recipient is authorized to make.
+- Draft a short purpose and enough background for a recipient outside the conversation. Order questions by importance, ask one thing per question and leave an answer slot. Invite partial answers, uncertainty and links to supporting evidence; include a deadline only when one was supplied.
+- Finish when the requested gaps are covered and the draft is usable by the intended recipient. Return it in the conversation or an authorized destination. Drafting does not authorize sending, creating a new questionnaire skill or treating silence as agreement.

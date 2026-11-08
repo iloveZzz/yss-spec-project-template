@@ -288,6 +288,7 @@
         "handoff"
       ],
       "files": [
+        ".template-spec/agents/profile-skills.md",
         ".cursorrules",
         ".gitignore",
         ".template-spec/agents/gitlab-workflow-skills.md",
@@ -496,6 +497,7 @@
         "handoff"
       ],
       "files": [
+        ".template-spec/agents/profile-skills.md",
         ".gitignore"
       ],
       "entries": {

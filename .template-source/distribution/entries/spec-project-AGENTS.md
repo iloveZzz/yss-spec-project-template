@@ -4,6 +4,8 @@
 
 - 优先使用适用的 YSS 技能；前端工程命令优先 pnpm，后端工程命令优先 ./mvnw。
 - 技能位于 .agents/skills，规格与产品设计参考位于 .template-spec；宿主技能副本由安装记录管理。
+- 需要了解默认技能、选择条件及跨 Profile 衔接时，按需读取 [技能地图](.template-spec/agents/profile-skills.md)；普通任务直接选择相关技能。
+- Spec 默认包含 `handoff`：交接要点与提示词由 `yss-product-lifecycle` 整理；明确要求通过 PR/MR 交付选定规格、原型及交互说明时使用 `handoff`，按对应动作授权执行。
 - 不要求生命周期路由、阶段批准、checkpoint、检查计划或测试报告。免除流程审批不扩大当前任务范围；检查按实际需要开展。
 - 保留权限、业务输入校验、错误处理与用户文件保护。提交、推送和发布使用对应授权。
 - 使用已安装 CLI 的实际帮助。支持本版接口时，sync 更新文件，--dry-run 仅预览；doctor 查看差异，recover 处理未完成文件事务。

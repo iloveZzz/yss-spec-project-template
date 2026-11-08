@@ -17,6 +17,7 @@
       "yss-project.yaml",
       ".template-spec/process/harness-profile.yaml",
       ".template-spec/agents/yss-skill-registry.yaml",
+      ".template-spec/agents/profile-skills.md",
       ".template-spec/user-guide/cli/tutorial-frontend.md",
       ".template-spec/user-guide/cli/command-reference.md",
       ".template-spec/user-guide/cli/install-and-verify.md",
@@ -281,6 +282,7 @@
         "resolving-merge-conflicts"
       ],
       "files": [
+        ".template-spec/agents/profile-skills.md",
         ".gitignore",
         ".cursorrules",
         "AGENTS.md",
@@ -390,6 +392,7 @@
         "resolving-merge-conflicts"
       ],
       "files": [
+        ".template-spec/agents/profile-skills.md",
         ".gitignore"
       ],
       "skillDependencies": {
