@@ -1,0 +1,400 @@
+{
+  "schema_version": 1,
+  "scenarios": [
+    {
+      "id": "primary",
+      "label": "正常闭环",
+      "state_ref": ".agents/skills/yss-design-system/assets/spec-delivery-example/spec.md#业务规则",
+      "initial_data": {
+        "actor": {
+          "userId": "U-001",
+          "teamId": "T-001",
+          "role": "editor"
+        },
+        "requests": [
+          {
+            "id": "REQ-001",
+            "teamId": "T-001",
+            "ownerId": "U-001",
+            "title": "季度采购资料申请",
+            "note": "保留原始说明",
+            "status": "draft",
+            "requiredAttachments": [
+              "报价单",
+              "采购说明"
+            ],
+            "attachments": []
+          },
+          {
+            "id": "REQ-002",
+            "teamId": "T-001",
+            "ownerId": "U-002",
+            "title": "同团队其他经办人的申请",
+            "note": "",
+            "status": "draft",
+            "requiredAttachments": [
+              "报价单",
+              "采购说明"
+            ],
+            "attachments": []
+          },
+          {
+            "id": "REQ-003",
+            "teamId": "T-002",
+            "ownerId": "U-003",
+            "title": "另一团队的内部申请",
+            "note": "范围外记录不得出现在详情界面",
+            "status": "draft",
+            "requiredAttachments": [
+              "报价单",
+              "采购说明"
+            ],
+            "attachments": []
+          }
+        ],
+        "openRequestId": null,
+        "failFirstSubmit": false,
+        "failFirstRequirementsRead": false
+      }
+    },
+    {
+      "id": "missing-attachments",
+      "label": "缺附件与逐项补齐",
+      "state_ref": ".agents/skills/yss-design-system/assets/spec-delivery-example/spec.md#业务规则",
+      "initial_data": {
+        "actor": {
+          "userId": "U-001",
+          "teamId": "T-001",
+          "role": "editor"
+        },
+        "requests": [
+          {
+            "id": "REQ-001",
+            "teamId": "T-001",
+            "ownerId": "U-001",
+            "title": "季度采购资料申请",
+            "note": "保留原始说明",
+            "status": "draft",
+            "requiredAttachments": [
+              "报价单",
+              "采购说明"
+            ],
+            "attachments": []
+          },
+          {
+            "id": "REQ-002",
+            "teamId": "T-001",
+            "ownerId": "U-002",
+            "title": "同团队其他经办人的申请",
+            "note": "",
+            "status": "draft",
+            "requiredAttachments": [
+              "报价单",
+              "采购说明"
+            ],
+            "attachments": []
+          },
+          {
+            "id": "REQ-003",
+            "teamId": "T-002",
+            "ownerId": "U-003",
+            "title": "另一团队的内部申请",
+            "note": "范围外记录不得出现在详情界面",
+            "status": "draft",
+            "requiredAttachments": [
+              "报价单",
+              "采购说明"
+            ],
+            "attachments": []
+          }
+        ],
+        "openRequestId": "REQ-001",
+        "failFirstSubmit": false,
+        "failFirstRequirementsRead": false
+      }
+    },
+    {
+      "id": "readonly",
+      "label": "团队观察者只读",
+      "state_ref": ".agents/skills/yss-design-system/assets/spec-delivery-example/spec.md#业务规则",
+      "initial_data": {
+        "actor": {
+          "userId": "U-004",
+          "teamId": "T-001",
+          "role": "observer"
+        },
+        "requests": [
+          {
+            "id": "REQ-001",
+            "teamId": "T-001",
+            "ownerId": "U-001",
+            "title": "季度采购资料申请",
+            "note": "保留原始说明",
+            "status": "draft",
+            "requiredAttachments": [
+              "报价单",
+              "采购说明"
+            ],
+            "attachments": []
+          },
+          {
+            "id": "REQ-002",
+            "teamId": "T-001",
+            "ownerId": "U-002",
+            "title": "同团队其他经办人的申请",
+            "note": "",
+            "status": "draft",
+            "requiredAttachments": [
+              "报价单",
+              "采购说明"
+            ],
+            "attachments": []
+          },
+          {
+            "id": "REQ-003",
+            "teamId": "T-002",
+            "ownerId": "U-003",
+            "title": "另一团队的内部申请",
+            "note": "范围外记录不得出现在详情界面",
+            "status": "draft",
+            "requiredAttachments": [
+              "报价单",
+              "采购说明"
+            ],
+            "attachments": []
+          }
+        ],
+        "openRequestId": "REQ-001",
+        "failFirstSubmit": false,
+        "failFirstRequirementsRead": false
+      }
+    },
+    {
+      "id": "out-of-scope",
+      "label": "范围外直达拒绝",
+      "state_ref": ".agents/skills/yss-design-system/assets/spec-delivery-example/spec.md#业务规则",
+      "initial_data": {
+        "actor": {
+          "userId": "U-001",
+          "teamId": "T-001",
+          "role": "editor"
+        },
+        "requests": [
+          {
+            "id": "REQ-001",
+            "teamId": "T-001",
+            "ownerId": "U-001",
+            "title": "季度采购资料申请",
+            "note": "保留原始说明",
+            "status": "draft",
+            "requiredAttachments": [
+              "报价单",
+              "采购说明"
+            ],
+            "attachments": []
+          },
+          {
+            "id": "REQ-002",
+            "teamId": "T-001",
+            "ownerId": "U-002",
+            "title": "同团队其他经办人的申请",
+            "note": "",
+            "status": "draft",
+            "requiredAttachments": [
+              "报价单",
+              "采购说明"
+            ],
+            "attachments": []
+          },
+          {
+            "id": "REQ-003",
+            "teamId": "T-002",
+            "ownerId": "U-003",
+            "title": "另一团队的内部申请",
+            "note": "范围外记录不得出现在详情界面",
+            "status": "draft",
+            "requiredAttachments": [
+              "报价单",
+              "采购说明"
+            ],
+            "attachments": []
+          }
+        ],
+        "openRequestId": "REQ-003",
+        "failFirstSubmit": false,
+        "failFirstRequirementsRead": false
+      }
+    },
+    {
+      "id": "submit-failure",
+      "label": "首次有效提交失败",
+      "state_ref": ".agents/skills/yss-design-system/assets/spec-delivery-example/spec.md#业务规则",
+      "initial_data": {
+        "actor": {
+          "userId": "U-001",
+          "teamId": "T-001",
+          "role": "editor"
+        },
+        "requests": [
+          {
+            "id": "REQ-001",
+            "teamId": "T-001",
+            "ownerId": "U-001",
+            "title": "季度采购资料申请",
+            "note": "保留原始说明",
+            "status": "draft",
+            "requiredAttachments": [
+              "报价单",
+              "采购说明"
+            ],
+            "attachments": [
+              "报价单",
+              "采购说明"
+            ]
+          },
+          {
+            "id": "REQ-002",
+            "teamId": "T-001",
+            "ownerId": "U-002",
+            "title": "同团队其他经办人的申请",
+            "note": "",
+            "status": "draft",
+            "requiredAttachments": [
+              "报价单",
+              "采购说明"
+            ],
+            "attachments": []
+          },
+          {
+            "id": "REQ-003",
+            "teamId": "T-002",
+            "ownerId": "U-003",
+            "title": "另一团队的内部申请",
+            "note": "范围外记录不得出现在详情界面",
+            "status": "draft",
+            "requiredAttachments": [
+              "报价单",
+              "采购说明"
+            ],
+            "attachments": []
+          }
+        ],
+        "openRequestId": "REQ-001",
+        "failFirstSubmit": true,
+        "failFirstRequirementsRead": false
+      }
+    },
+    {
+      "id": "requirements-failure",
+      "label": "附件清单读取失败",
+      "state_ref": ".agents/skills/yss-design-system/assets/spec-delivery-example/spec.md#业务规则",
+      "initial_data": {
+        "actor": {
+          "userId": "U-001",
+          "teamId": "T-001",
+          "role": "editor"
+        },
+        "requests": [
+          {
+            "id": "REQ-001",
+            "teamId": "T-001",
+            "ownerId": "U-001",
+            "title": "季度采购资料申请",
+            "note": "保留原始说明",
+            "status": "draft",
+            "requiredAttachments": [
+              "报价单",
+              "采购说明"
+            ],
+            "attachments": []
+          },
+          {
+            "id": "REQ-002",
+            "teamId": "T-001",
+            "ownerId": "U-002",
+            "title": "同团队其他经办人的申请",
+            "note": "",
+            "status": "draft",
+            "requiredAttachments": [
+              "报价单",
+              "采购说明"
+            ],
+            "attachments": []
+          },
+          {
+            "id": "REQ-003",
+            "teamId": "T-002",
+            "ownerId": "U-003",
+            "title": "另一团队的内部申请",
+            "note": "范围外记录不得出现在详情界面",
+            "status": "draft",
+            "requiredAttachments": [
+              "报价单",
+              "采购说明"
+            ],
+            "attachments": []
+          }
+        ],
+        "openRequestId": "REQ-001",
+        "failFirstSubmit": false,
+        "failFirstRequirementsRead": true
+      }
+    },
+    {
+      "id": "dirty-leave",
+      "label": "未保存修改离开",
+      "state_ref": ".agents/skills/yss-design-system/assets/spec-delivery-example/spec.md#业务规则",
+      "initial_data": {
+        "actor": {
+          "userId": "U-001",
+          "teamId": "T-001",
+          "role": "editor"
+        },
+        "requests": [
+          {
+            "id": "REQ-001",
+            "teamId": "T-001",
+            "ownerId": "U-001",
+            "title": "季度采购资料申请",
+            "note": "保留原始说明",
+            "status": "draft",
+            "requiredAttachments": [
+              "报价单",
+              "采购说明"
+            ],
+            "attachments": []
+          },
+          {
+            "id": "REQ-002",
+            "teamId": "T-001",
+            "ownerId": "U-002",
+            "title": "同团队其他经办人的申请",
+            "note": "",
+            "status": "draft",
+            "requiredAttachments": [
+              "报价单",
+              "采购说明"
+            ],
+            "attachments": []
+          },
+          {
+            "id": "REQ-003",
+            "teamId": "T-002",
+            "ownerId": "U-003",
+            "title": "另一团队的内部申请",
+            "note": "范围外记录不得出现在详情界面",
+            "status": "draft",
+            "requiredAttachments": [
+              "报价单",
+              "采购说明"
+            ],
+            "attachments": []
+          }
+        ],
+        "openRequestId": "REQ-001",
+        "failFirstSubmit": false,
+        "failFirstRequirementsRead": false
+      }
+    }
+  ]
+}

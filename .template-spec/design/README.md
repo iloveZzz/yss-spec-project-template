@@ -9,3 +9,5 @@
 成果保存在已有或用户指定位置，无约定时新建任务目录，保护已有文件。说明规则/AC 与页面状态的对应、查看/运行方式、入口与退出、操作结果、异常恢复、模拟范围、实际检查和未覆盖项。可与 Spec 共用文件。
 
 按需使用 [交互说明](templates/interaction-spec-template.md)、[状态矩阵](templates/state-matrix-template.md) 和 [复核记录](templates/prototype-review-checklist.md)，不是额外交付门禁。`design.md` 说明当前规范与映射；确认模板及 examples 保留历史约定，仅用于对应历史材料，不是新任务的默认步骤。
+
+需要完整填写示范时，查看 [附件提交校验贯通示例](../../.agents/skills/yss-design-system/assets/spec-delivery-example/README.md)。它将同一份教学规则、Spec、Vue 原型和交互说明关联；作者资源需复制到新的空目录组装运行，不在技能目录安装依赖。模板中的业务信息、权限、流程、场景和采用版本按本次范围填写，简单内容可用短段落。
