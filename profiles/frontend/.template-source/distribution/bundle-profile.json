@@ -361,7 +361,8 @@
           ".agents/skills/yss-frontend-application/references/component-engineering.md",
           ".template-spec/design/templates/interaction-spec-template.md",
           ".template-spec/design/templates/state-matrix-template.md",
-          ".template-spec/design/templates/prototype-review-checklist.md"
+          ".template-spec/design/templates/prototype-review-checklist.md",
+          ".agents/skills/grilling/SKILL.md"
         ],
         "prototype-review": [],
         "prototype": [
@@ -460,7 +461,8 @@
           ".agents/skills/yss-frontend-application/references/component-engineering.md",
           ".template-spec/design/templates/interaction-spec-template.md",
           ".template-spec/design/templates/state-matrix-template.md",
-          ".template-spec/design/templates/prototype-review-checklist.md"
+          ".template-spec/design/templates/prototype-review-checklist.md",
+          ".agents/skills/grilling/SKILL.md"
         ],
         "prototype-review": [],
         "prototype": [

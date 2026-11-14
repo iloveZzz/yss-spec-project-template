@@ -4,6 +4,38 @@
 
 事实缺口使用 `.agents/skills/yss-research/SKILL.md`，业务分析使用 `.agents/skills/yss-stage-decision/SKILL.md`，真实取舍与词义问题分别使用 `.agents/skills/grilling/SKILL.md` 和 `.agents/skills/domain-modeling/SKILL.md`。可调查事实先调查；复用有效确认，多个来源冲突不静默改范围。
 
+## 主 Spec、澄清与确认
+
+同一需求维护一个主 Spec，正文是业务规则的权威来源，交互说明、原型和补充材料通过主 Spec 关联；工作台只索引这些真实产物、问题和个人答复，不复制另一份规格。草稿保存后即可查看，登记或确认不是起草、修改与查看的前置。旧文件没有明确内容状态或真实确认记录时保持未知，不能从文件名、成熟外观或 `Content: ready` 猜测已确认。
+
+生成或更新 Spec 时，先查当前材料和已有答复。Agent 当场使用 grilling 澄清影响本次范围的关键业务选择，给出影响和建议；事实自行调查，不只在文末留 OQ 后结束。未决项保留稳定 OQ/问题 ID，记录事实缺口或业务决定、影响、建议、是否阻塞及受影响范围。等待只暂停依赖该问题的工作，其余部分继续；不会因此增加逐阶段审批。
+
+用户可在当前聊天答复，也可在工作台答复、补充或延期。答复已保存仅表示待回写：Agent 读取最新原文和具体答复 ID，沿原 FR/AC/OQ 增量更新规则、验收、交互说明和相关原型，实际核对一致后才把对应问题标为已解决，并记录解决依据与 `appliedDecisionId`。不能删问题、换编号或只改状态来消除缺口；新补充推翻旧结论时保留原记录，重新检查受影响范围。可调查事实用实际证据解决，不伪造用户答复 ID；聊天答复沿用原始来源，使用实际 CLI 支持的 `workbench respond` 保存个人答复后取得真实 ID，再沿原问题回写；已答复事项不重复询问。接口不支持时明确尚待关联，不能要求用户重新作同一决定。
+
+延期不等于解决：记录原因、影响、明确排除的范围，以及复查日期或条件，保留延期状态。阻塞问题仅在用户明确把其整个受影响范围排除出本次确认范围后，才不阻塞剩余范围；仍在范围内的必经路径不能延期后确认。到期或满足复查条件时重新处理，不从沉默推断延期继续有效。提醒限于当前聊天和工作台打开/刷新时，不承诺后台通知。
+
+问题已回写、关键缺口解决、必需产物及检查齐备后，Agent 才可声明本次内容可确认；这只是内容就绪。只有用户明确确认展示的本次范围和产物版本，才记为已确认，历史确认仍绑定原范围和版本。正文、交互或原型的实质变化需要重新确认；已有版本摘要变化先核对差异，纯排版不由 Agent 擅自延伸原确认。用户没有要求确认时不为继续授权工作增设批准环节。
+
+## 工作台登记与续办
+
+当前 CLI 支持登记时，在主 Spec 或关联材料保存/更新后自动登记同一主 Spec，无需再次确认；用户明确不使用工作台时遵从该选择。先查看 `yss version`、`yss workbench --help` 和对应子命令帮助；以下接口只适用于帮助实际列出它们的 CLI，模板更新不会使旧版获得新命令：
+
+先从当前会话启动信息、已有续办文本等核实工作台数据目录。使用自定义目录时，以下所有命令统一使用 `yss workbench --data-dir <已核实的绝对路径> ...`；只有确认使用默认目录时才省略。已有目录不可改用默认目录重新登记，可查事实自行核实，不要求用户重复提供。
+
+```sh
+yss workbench register --root <项目绝对路径> --source <主Spec的项目相对路径> --json
+yss workbench request --spec-id <实际登记返回的ID> --json
+yss workbench respond --spec-id <实际ID> --question-id <原问题ID> --question-digest <当前问题摘要> --kind answer --answer '<用户实际答复>' --json
+```
+
+`register` 读取主 Spec 的一个 `<!-- yss-spec {JSON} -->` 元数据块，复用该项目和主文件的登记；附属材料放在 `resources`，不再各登记为独立 Spec。JSON 使用 `schemaVersion: 1`、`scope`、`contentStatus: "draft" | "ready"`、`resources` 和 `questions`。无状态时按草稿处理，不能由登记成功推导确认。资源含 `kind`（`supplement`/`prototype`/`interaction`/`other`）、`label`、`targetType`（`local`/`web`）、`target`（项目内相对路径或 HTTP(S) URL）；只填实际存在且可核对的材料。当前工作台无法锁定 web 资源版本，确认前须将相应资源项替换为已核验的项目内本地快照，使用 `targetType: "local"`；原链接可保留在正文来源中，同时保留 web 资源项仍会阻塞确认。问题含 `id`、`title`、`kind`（`research`/`decision`）、`impact`、`recommendation`、`blocking`、`affectedScope`、`status`（`open`/`resolved`/`deferred`）、`resolution` 和可空的 `appliedDecisionId`。正文中的问题详情与该索引保持一致，未决与延期不得改成 resolved 来获得 ready。
+
+`request` 只读取续办上下文及现有答复，不启动 Agent，不代表完成回写。其 `data.text` 中的问题 JSON 数组，每项通过 `question.id` 识别原问题，当前摘要和已保存答复 ID 分别在该项的 `digest`、`response.id`；`respond` 成功返回 `data.responseId`。已有聊天答复写入对应问题，使用当前摘要避免把答复套到变更后的问题；读取真实答复 ID，不根据命名规则猜测 ID。多行或含引号的答复使用宿主结构化参数或安全参数传递，不能把用户原文直接拼接为 shell 代码。
+
+延期使用 `respond --kind defer`，按实际帮助传 `--reason`、`--impact`、`--excluded-scope`，并提供 `--review-at YYYY-MM-DD` 和当地 `--review-utc-offset-minutes`（中国为 `480`），或提供 `--review-when` 条件。工作台对应答复字段为 `reason`、`impact`、`excludedScope`、`reviewAt`、`reviewWhen`；回写时保留真实值和日期时区。在原问题同时写入 `status: "deferred"`、说明延期依据的非空 `resolution`、引用本次真实延期答复 ID 的 `appliedDecisionId`，缺一仍是待回写，不把延期改成 resolved。再次登记后核对显示的主 Spec、资源、问题和内容状态，再报告实际结果。内容来源仍为主 Spec 及所关联文件，个人答复和确认记录不能替代规则正文。
+
+登记失败不等于内容丢失：保留已保存产物，明确失败步骤、主文件位置和具体错误；修复路径、元数据或 CLI 能力后重试同一主文件，不另建重复 Spec。不支持新接口时仍交付可读文件和查看方式，明确工作台尚未登记或更新；不能称登记、回写关联或确认已完成。
+
 ## 完整产品 Spec 的三类内容
 
 1. **业务规格**：按 `.template-spec/templates/spec-template.md` 或当前适用结构说明问题、目标、角色场景、范围、规则、权限、状态异常、非目标、业务质量约束、可观察验收、重要来源和决定。量词、数值、边界保持来源一致；未知值列未决项。

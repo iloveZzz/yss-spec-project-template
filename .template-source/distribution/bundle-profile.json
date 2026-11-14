@@ -422,7 +422,8 @@
           ".agents/skills/yss-frontend-application/references/component-engineering.md",
           ".template-spec/design/templates/interaction-spec-template.md",
           ".template-spec/design/templates/state-matrix-template.md",
-          ".template-spec/design/templates/prototype-review-checklist.md"
+          ".template-spec/design/templates/prototype-review-checklist.md",
+          ".agents/skills/grilling/SKILL.md"
         ],
         "yss-distributed-id": [],
         "yss-domain": [],
@@ -440,7 +441,8 @@
         "yss-openapi-governance": [],
         "yss-product-lifecycle": [
           ".template-spec/agents/issue-tracker.md",
-          ".template-spec/templates/spec-template.md"
+          ".template-spec/templates/spec-template.md",
+          ".agents/skills/grilling/SKILL.md"
         ],
         "yss-repository": [
           ".template-spec/agents/backend-architecture-profiles.md"
@@ -451,7 +453,9 @@
         "yss-resilience4j": [],
         "yss-security-algorithm": [],
         "yss-skill-source-index-refresh": [],
-        "yss-stage-decision": [],
+        "yss-stage-decision": [
+          ".agents/skills/grilling/SKILL.md"
+        ],
         "yss-tactical-design": [],
         "yss-technical-design": [],
         "yss-up-springboot3": [
@@ -606,7 +610,8 @@
           ".agents/skills/yss-frontend-application/references/component-engineering.md",
           ".template-spec/design/templates/interaction-spec-template.md",
           ".template-spec/design/templates/state-matrix-template.md",
-          ".template-spec/design/templates/prototype-review-checklist.md"
+          ".template-spec/design/templates/prototype-review-checklist.md",
+          ".agents/skills/grilling/SKILL.md"
         ],
         "yss-distributed-id": [],
         "yss-domain": [],
@@ -624,7 +629,8 @@
         "yss-openapi-governance": [],
         "yss-product-lifecycle": [
           ".template-spec/agents/issue-tracker.md",
-          ".template-spec/templates/spec-template.md"
+          ".template-spec/templates/spec-template.md",
+          ".agents/skills/grilling/SKILL.md"
         ],
         "yss-repository": [
           ".template-spec/agents/backend-architecture-profiles.md"
@@ -635,7 +641,9 @@
         "yss-resilience4j": [],
         "yss-security-algorithm": [],
         "yss-skill-source-index-refresh": [],
-        "yss-stage-decision": [],
+        "yss-stage-decision": [
+          ".agents/skills/grilling/SKILL.md"
+        ],
         "yss-tactical-design": [],
         "yss-technical-design": [],
         "yss-up-springboot3": [

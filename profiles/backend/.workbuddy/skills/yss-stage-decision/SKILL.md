@@ -8,6 +8,8 @@ disable-model-invocation: true
 
 从用户目标、现有需求、业务故事和 CONTEXT.md 整理事实、规则、假设、约束与待决定事项。按需使用 yss-research、grilling 和 domain-modeling。
 
+按 [共享业务分析方法](references/business-analysis.md) 当场澄清关键业务选择，事实自行调查；复用原 FR/AC/OQ。工作台答复回写原规格与相关产物、核对一致后才解决，延期保留影响、排除范围和复查条件，仅暂停依赖范围。
+
 说明每个业务责任区的职责、关键对象、规则提供方和使用方、交接信息、失败路径与非目标。业务依赖方向与 HTTP 或消息方向分开表达，不从数据库表反推业务边界。
 
 复用已有 Plan、Spec 或 ADR 写明选择、理由、代价与重新考虑条件。记录影响当前工作的重要未决项；不要求固定 Schema、稳定 ID、阶段包、检查命令或批准状态。

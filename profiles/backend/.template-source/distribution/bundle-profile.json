@@ -366,7 +366,9 @@
         "yss-resilience4j": [],
         "yss-security-algorithm": [],
         "yss-skill-source-index-refresh": [],
-        "yss-stage-decision": [],
+        "yss-stage-decision": [
+          ".agents/skills/grilling/SKILL.md"
+        ],
         "yss-tactical-design": [],
         "yss-technical-design": [
           ".agents/skills/implement/references/spec-feedback.md"
@@ -613,7 +615,9 @@
         "yss-resilience4j": [],
         "yss-security-algorithm": [],
         "yss-skill-source-index-refresh": [],
-        "yss-stage-decision": [],
+        "yss-stage-decision": [
+          ".agents/skills/grilling/SKILL.md"
+        ],
         "yss-tactical-design": [],
         "yss-technical-design": [
           ".agents/skills/implement/references/spec-feedback.md"
