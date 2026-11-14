@@ -1,0 +1,4 @@
+interface:
+  display_name: "数据库分析与设计文档"
+  short_description: "分析与设计数据库，采集 MySQL、PostgreSQL 元信息，生成说明书及 DDL"
+  default_prompt: "使用 $database-analysis-docs，根据业务需求、数据库连接或已有说明文档，生成数据库分析、设计说明书或 MySQL/PostgreSQL DDL。"

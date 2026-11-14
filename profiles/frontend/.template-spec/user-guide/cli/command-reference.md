@@ -31,7 +31,9 @@ CLI 3.0.3 起，在线升级默认 GitHub `iloveZzz/yss-cli`，GitLab 为次级�
 
 工作台接口以 `workbench --help`、`workbench register --help` 和 `workbench request --help` 为准，不能把新源码能力当作已安装版本能力。支持时使用 `workbench register --root <项目绝对路径> --source <主Spec项目相对路径> --json`，从一个主文件的 `yss-spec` JSON 元数据读取范围、关联资源和问题；更新复用同一登记。`workbench request --spec-id <实际ID> --json` 只读输出交给 Agent 的续办上下文。登记失败不删除源文件，修复具体错误后重试同一主文件；登记、答复保存、内容就绪和用户确认是不同结果。
 
-刷新或再次 `register` 已登记的主 Spec 时，保留用户设置的启用／停用状态（`active`）。自动合并停用仅限主 Spec 同目录、且没有独立 `yss-spec` 元数据的 `interaction.md`；其他关联或参考文档正常作为资源展示，不因被引用而停用其独立 Spec。资源模型没有 `owner`，不能据此猜测文档归属。
+刷新或再次 `register` 已登记的主 Spec 时，保留用户设置的启用／停用状态（`active`）。新需求无约定时使用固定创建日期与具体英文主题组成 key，主文件为 `docs/spec/<key>/<key>-spec.md`。支持新命名识别的 CLI 只归并同目录同 key、无自身元数据且被主文档 resources 明确本地引用的 `<key>-interaction.md`（kind=interaction）或 `<key>-design.md`（kind=supplement/other）。旧 `spec.md + interaction.md` 的无元数据推断保留；旧主文件有元数据时须明确本地引用交互说明，兼容原 kind。自身有效元数据保持独立，其他参考文件不因引用而停用；个人资源和正文链接不代表新附件归属，资源模型没有 owner。主文件 register/refresh 才停用符合条件的旧附件记录，单独刷新附件不合并；发现错误会告警并跳过候选。上述兼容性须用实际程序核验，模板更新和同名命令帮助不会使旧二进制获得新行为。
+
+已有路径继续维护，不自动迁移。明确改名时，先核实原数据目录、Spec ID 和新路径是否被启用/停用记录占用；安全改名并更新正文链接、来源与个人资源后，先编辑原 Spec 的“主规格相对路径”，再 register 新路径并核对仍为原 ID。不能先新建登记再合并，停用不释放路径；改路径指向已归属附件会被拒绝。答复与历史保留，但路径参与摘要，纯改名后仍须重新核对确认；中途失败修复同一记录，不覆盖并发改动或创建补偿 Spec。
 
 先从已有启动信息或续办文本核实工作台数据目录；使用自定义目录时，所有命令均以 `workbench --data-dir <已核实的绝对路径> ...` 执行，只有确认使用默认目录时才省略，不能在默认库另建登记。当前 web 资源会阻塞确认，需将相应资源项替换为已核验的项目内本地快照（`targetType: "local"`）；原链接可保留在正文来源中，同时保留 web 资源项仍会阻塞。
 

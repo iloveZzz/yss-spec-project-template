@@ -4,7 +4,7 @@
 
 ## 密度与视觉角色
 
-新页面默认标准亮色：控件采用 `components.button-default.height`（32px），容器采用 `components.card-compact.padding`（16px）。显式 `data-density="compact"` 使用 28px 控件；`comfortable` 使用 32px 控件和 20px Card 内边距。小于 720px 或粗指针时常用控件优先 44px，并让筛选、动作换行。表格按任务选择局部滚动或显式 `.responsive-list` 摘要，不能给所有表格强制转卡片。密度不压缩正文、焦点或错误说明，不把生产 compact algorithm 的排版结果直接套给原型，也不再次运行算法。
+新页面默认 YSS Tesla Light：small 紧凑控件采用 `components.button-default.height`（28px），容器采用 `components.card-compact.padding`（16px）。`data-density="compact"` 与默认 small 均使用 28px 控件，显式 medium / `comfortable` 使用 36px 控件和 20px Card 内边距。小于 720px 或粗指针时常用控件优先 44px，并让筛选、动作换行。表格按任务选择局部滚动或显式 `.responsive-list` 摘要，不能给所有表格强制转卡片。密度不压缩正文、焦点或错误说明，不把生产 compact algorithm 的排版结果直接套给原型，也不再次运行算法。
 
 正文使用 `typography.body`，页面标题和分区标题分别使用 `heading-lg`、`heading-md`，辅助信息才用 `caption`。页面、内容、浮层分别使用对应表面角色；主操作使用 button-primary 系列，不能回退到品牌 seed。筛选、列表、表单和审批优先用边界与分组表达层次。
 
@@ -12,7 +12,7 @@
 
 ## 默认页面结构
 
-相应 YSS 原型合同的多页面企业任务可采用根规范 workspace 应用壳：模块、分组侧栏、页签和流式任务区。标题使用 workspace-title；既有页面保持项不被新框架覆盖。原型技能可用时参考其工作区状态；否则记录未验证的多页行为，不把页签缓存视为持久保存。
+相应 YSS 原型合同的多页面企业任务可采用根规范 workspace 应用壳：全宽顶部模块导航、业务侧栏、已开页面标签栏和流式任务区。标题使用 workspace-title；既有页面保持项不被新框架覆盖。原型技能可用时参考其工作区状态；否则记录未验证的多页行为，不把页签缓存视为持久保存。
 
 - 查询：条件与筛选动作对齐；列表标题、排序/选择状态位于紧凑工具栏，分页在结果后。窄屏按任务保留局部表格滚动，或转为带身份、名称、状态和操作的摘要列表。
 - 表单：按任务分组，控制阅读宽度；错误靠近字段且可定位，返回保留输入，确认动作保持可见。

@@ -4,6 +4,22 @@
 
 事实缺口使用 `.agents/skills/yss-research/SKILL.md`，业务分析使用 `.agents/skills/yss-stage-decision/SKILL.md`，真实取舍与词义问题分别使用 `.agents/skills/grilling/SKILL.md` 和 `.agents/skills/domain-modeling/SKILL.md`。可调查事实先调查；复用有效确认，多个来源冲突不静默改范围。
 
+## 保存位置与命名
+
+沿用用户指定位置和项目已有约定。无约定的新需求使用 `key = YYYY-MM-DD-<topic>`：日期取首次创建产物时的当地日期并保持不变；topic 使用具体需求的英文 kebab-case，优先复用 Context 的业务标识，如 `2026-11-14-user-batch-import`。
+
+```text
+docs/spec/<key>/<key>-spec.md
+docs/spec/<key>/<key>-interaction.md
+prototypes/<key>/
+```
+
+主文件与分文件交互说明共用同一 key；确有独立产品设计说明才新增 `<key>-design.md`，不增加必交付物。交互已合并到主文件时不强拆。原型只有新建独立工程时采用上述目录；已有共享原型继续增量维护，关联真实入口，不复制整套应用。文档 H1 使用清晰中文业务标题。
+
+同一需求的补充、澄清和修错沿用原 key、文件及 FR/AC/OQ；独立可交付的新范围另建具体 topic，并在正文说明与原规格的关系。同日同 topic 已存在时先读内容：同需求复用，不同范围细化 topic，不能覆盖或自动添加随机后缀。日期不随修订更新，状态和版本放正文、既有元数据及 Git，不用 `v2`、`final`、`最新版`、`已确认` 命名。旧 `docs/spec/user-management/spec.md`、`interaction.md` 继续使用，局部修订不触发迁移。
+
+`key` 不是工作台 Spec ID。明确要求改名已登记文件时，先沿用原数据目录核实 specId 与新路径是否被启用或停用记录占用；安全改名并同步正文相对链接、项目相对 resources、个人资源及受影响原型入口，再通过原 Spec 的“主规格相对路径”编辑保存，最后登记新路径并核对返回仍为原 ID。不能先登记新路径制造第二条记录，停用也不会释放占用。保持原问题、答复和历史；路径也参与产物摘要，纯改名后仍需重新核对确认，不改写旧确认。文件与工作台修改不是跨目录事务，失败时修复同一记录并说明当前路径，不创建补偿 Spec，也不覆盖并发改动。
+
 ## 主 Spec、澄清与确认
 
 同一需求维护一个主 Spec，正文是业务规则的权威来源，交互说明、原型和补充材料通过主 Spec 关联；工作台只索引这些真实产物、问题和个人答复，不复制另一份规格。草稿保存后即可查看，登记或确认不是起草、修改与查看的前置。旧文件没有明确内容状态或真实确认记录时保持未知，不能从文件名、成熟外观或 `Content: ready` 猜测已确认。
@@ -29,6 +45,8 @@ yss workbench respond --spec-id <实际ID> --question-id <原问题ID> --questio
 ```
 
 `register` 读取主 Spec 的一个 `<!-- yss-spec {JSON} -->` 元数据块，复用该项目和主文件的登记；附属材料放在 `resources`，不再各登记为独立 Spec。JSON 使用 `schemaVersion: 1`、`scope`、`contentStatus: "draft" | "ready"`、`resources` 和 `questions`。无状态时按草稿处理，不能由登记成功推导确认。资源含 `kind`（`supplement`/`prototype`/`interaction`/`other`）、`label`、`targetType`（`local`/`web`）、`target`（项目内相对路径或 HTTP(S) URL）；只填实际存在且可核对的材料。当前工作台无法锁定 web 资源版本，确认前须将相应资源项替换为已核验的项目内本地快照，使用 `targetType: "local"`；原链接可保留在正文来源中，同时保留 web 资源项仍会阻塞确认。问题含 `id`、`title`、`kind`（`research`/`decision`）、`impact`、`recommendation`、`blocking`、`affectedScope`、`status`（`open`/`resolved`/`deferred`）、`resolution` 和可空的 `appliedDecisionId`。正文中的问题详情与该索引保持一致，未决与延期不得改成 resolved 来获得 ready。
+
+正文链接相对所在文档，`resources.target` 相对项目根，两者不混用；只有实际构建后才把原型资源指向 `dist/index.html`。支持新命名识别的 CLI 只将同目录同 key、无自身元数据且被主文档明确本地引用的 `<key>-interaction.md`（kind=interaction）或 `<key>-design.md`（kind=supplement/other）归主；有效自身元数据始终代表独立 Spec，其他参考文件不因被引用而归并。旧 `spec.md + interaction.md` 的无元数据推断保留。新命名归并须核验实际程序行为，不能仅凭相同命令帮助或模板更新推断旧二进制支持；兼容性未核实时只显式登记主路径，说明附件发现/归并尚未验证。
 
 `request` 只读取续办上下文及现有答复，不启动 Agent，不代表完成回写。其 `data.text` 中的问题 JSON 数组，每项通过 `question.id` 识别原问题，当前摘要和已保存答复 ID 分别在该项的 `digest`、`response.id`；`respond` 成功返回 `data.responseId`。已有聊天答复写入对应问题，使用当前摘要避免把答复套到变更后的问题；读取真实答复 ID，不根据命名规则猜测 ID。多行或含引号的答复使用宿主结构化参数或安全参数传递，不能把用户原文直接拼接为 shell 代码。
 

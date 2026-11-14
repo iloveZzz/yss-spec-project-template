@@ -10,10 +10,12 @@
 
 ## 完整研发技能
 
-包含本轮模板的 CLI 在 Backend `project` / `skills` 两种安装下均默认安装 41 项，库中另有 12 项可按需补装，共 53 项。以 `skills list` 的实际结果为准；模板改动不会更新已经安装的二进制。
+包含本轮模板的 CLI 在 Backend `project` / `skills` 两种安装下均默认安装 42 项，库中另有 12 项可按需补装，共 54 项。以 `skills list` 的实际结果为准；模板改动不会更新已经安装的二进制。
 
 `implement` 承接 Spec/明确需求，按需使用 `to-tickets` 细化研发实现切片、`yss-technical-design` 完成架构/方案/详细设计、对应脚手架与分层技能实现，再用 `yss-backend-testing` 选择并解释实际验证。切片依据真实工程、技术栈与适用设计，不猜测已确认方案，不要求先补业务票；缺失事实列明影响。DDD 建模才使用 `yss-tactical-design`；MVC 沿用 Service，普通测试不强制 TDD。一次安装具备完整能力，不等于每个任务执行全部技能。
 
 完整交付维护有源码依据的构建部署手册，优先更新已有 README/运维说明，结构参考 `.template-spec/templates/build-deploy-guide-template.md`。部署当前仅交付说明；未知平台、健康入口和回滚限制如实注明，不执行部署、建设 CI/CD 或云资源。构建、测试、启动和部署的实际结果分别说明。
 
 12 项按需技能为 `to-spec`、`yss-stage-decision`、`triage`、`wayfinder`、`llm-wiki`、`yss-backend-spec-review`、`yss-up-springboot3`、`yss-security-algorithm`、`setup-matt-pocock-skills`、`maintaining-skills`、`writing-for-agents`、`publish-skills-sh`。历史安全算法组件仍禁止新生产接入；提交、交接和来源索引维护保持显式调用及原授权边界。
+
+数据库设计、结构审查、元信息说明书及 DDL 使用默认技能 `database-analysis-docs`。Backend 版本只分发技能说明和参考，采集、表格和 SQL 核对使用实际可用的宿主工具；保留逻辑关系与必要基础约束，不默认创建外键、自增或特殊数据库机制。安装技能不授权连接未指定的数据库或执行 DDL。

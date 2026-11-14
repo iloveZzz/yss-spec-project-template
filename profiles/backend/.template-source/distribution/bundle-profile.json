@@ -141,6 +141,7 @@
         "using-git-worktrees",
         "resolving-merge-conflicts",
         "yss-technical-design",
+        "database-analysis-docs",
         "yss-tactical-design",
         "codebase-design",
         "domain-modeling",
@@ -381,7 +382,8 @@
         "yss-web-controller": [],
         "yss-backend-testing": [
           ".agents/skills/implement/references/spec-feedback.md"
-        ]
+        ],
+        "database-analysis-docs": []
       },
       "entries": {
         "AGENTS.md": ".template-source/distribution/entries/project-AGENTS.md",
@@ -406,6 +408,7 @@
         "using-git-worktrees",
         "resolving-merge-conflicts",
         "yss-technical-design",
+        "database-analysis-docs",
         "yss-tactical-design",
         "codebase-design",
         "domain-modeling",
@@ -630,7 +633,8 @@
         "yss-web-controller": [],
         "yss-backend-testing": [
           ".agents/skills/implement/references/spec-feedback.md"
-        ]
+        ],
+        "database-analysis-docs": []
       }
     }
   }

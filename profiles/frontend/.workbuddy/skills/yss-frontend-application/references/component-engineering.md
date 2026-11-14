@@ -56,10 +56,18 @@
 - 普通 SFC 的 defineModel 优先，但 vendor 的 useVModel/passive/defaultValue 需保留行为。不要根据最新文档批量替换固定组件。
 - 不强制每张 Card 具备所有区域，不按选项数量机械把 Radio/Checkbox 改成 ToggleGroup；根据单选、多选、动作或导航的真实语义选择。
 
+## 选择器的展开状态
+
+当设计要求下拉外观统一时，复用项目已有的 shadcn/Reka Select 或适用的 Combobox，触发器和展开内容共同消费当前主题。只给原生 `<select>` 的外框、箭头和焦点加 CSS，不能证明系统弹出菜单的外观一致。例如“视图”选择器收起时匹配页面，展开后却出现系统黑边和蓝色选中块，就必须检查展开内容，不能只调整触发器。组件内部用于表单提交或辅助技术的隐藏原生 select 可以保留；修复覆盖本次受影响的共享组件及调用方，不要求迁移无关页面。
+
+实际展开检查默认、已选、hover、键盘焦点和 disabled 状态，核对菜单边框、圆角、阴影与选中标记；用长中文、靠近视口底部和适用窄屏检查宽高约束、避让及滚动。保留可访问标签、可见焦点、方向键导航、确认、Escape 关闭与焦点返回；不以移除 outline 或只看收起截图代替验证。
+
+在 `showModal()` 打开的原生 `<dialog>` 内，挂到 `body` 的 Portal 可能落在浏览器 top layer 之下。按本地组件实际支持的 API，把展开内容挂到该 dialog 内的适当容器，或复用现有兼容弹层方案；同时核对主题继承、滚动裁剪和键盘焦点。不能只提高 z-index，也不能凭最新文档臆造本地 Portal 参数。
+
 ## 弹层与可访问性
 
 Dialog/Sheet 等应有可访问名称；需要隐藏标题时保留辅助技术可读的文本。验证开启焦点、Tab/Shift+Tab 范围、Escape/取消、关闭返回合理触发点及嵌套弹层。避免在 Reka 之外再写冲突的焦点陷阱或全局 Escape 监听。可点击元素用正确控件、图标按钮提供名称。
 
 组件默认能力不代表页面通过：实际检查表单关联、焦点可见、错误恢复、窄屏与长内容；有动画时尊重 reduced-motion。截图检查视觉，浏览器动作检查交互，axe 检查自动可识别项；任一证据不代替其余证据。
 
-依据：[shadcn-vue 官方技能](https://www.shadcn-vue.com/docs/skills)、[Reka 可访问性](https://www.reka-ui.com/docs/overview/accessibility)、[WAI-ARIA Dialog](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/)。规则摘取和适配，未复制完整上游 Skill 或自动执行其嵌入命令。
+依据：[shadcn-vue 官方技能](https://www.shadcn-vue.com/docs/skills)、[Reka Select](https://reka-ui.com/docs/components/select)、[Reka 可访问性](https://www.reka-ui.com/docs/overview/accessibility)、[MDN top layer](https://developer.mozilla.org/en-US/docs/Glossary/Top_layer)、[WAI-ARIA Dialog](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/)。规则摘取和适配，未复制完整上游 Skill 或自动执行其嵌入命令。

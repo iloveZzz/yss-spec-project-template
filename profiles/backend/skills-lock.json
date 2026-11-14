@@ -600,6 +600,16 @@
           ".agents/skills",
           ".workbuddy/skills"
         ]
+      },
+      "database-analysis-docs": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/database-analysis-docs/SKILL.md",
+        "effectiveHash": "5fe90df87b4caf9d84b9f33bbbcba651918196cccb56c5be5513c817d8c5ec65",
+        "targets": [
+          ".agents/skills",
+          ".workbuddy/skills"
+        ]
       }
     },
     "platform": {}

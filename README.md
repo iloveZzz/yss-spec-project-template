@@ -29,3 +29,5 @@
 Template 5.4.2 补齐草稿主动提问、主 Spec 登记、问题答复与延期回写、关联文档和原型阅读，以及明确范围与版本确认的协作规则，供 CLI 3.4.1 打包使用。保留三个 Profile 的[技能地图](.template-spec/agents/profile-skills.md)及原有默认技能集合（Spec 16 项、Backend 41 项、Frontend 13 项）。`scaffold frontend` 从 CLI 3.3.0 起支持；Frontend Profile 从 CLI 3.2.0 开始支持，3.1.4 及以前不支持。参见 [Frontend 接入](.template-spec/user-guide/cli/tutorial-frontend.md)。GitLab CI 固定 CLI 配套源码 `479b37f696e866776a3508b9f7cc27d5cfdf5546`，包含工作台修复及 Review 修正；这是构建用固定提交，CLI 正式发行来源以其 Release 为准。实际远程执行结果以对应流水线为准。
 
 新建 Vue 工程使用 CLI 3.3.0 起支持的 `yss scaffold frontend --project-name my-frontend --output-dir .`，父目录须存在且目标须不存在，先查看实际帮助。需要技能再单独 attach skills，应用源码与技能资源分开维护。
+
+当前工作树新增 Backend 默认技能 `database-analysis-docs`：两种安装模式默认 42 项、可用 54 项；Spec 和 Frontend 集合不变。这是待打包发行的模板改动，不会自动更新已安装的 CLI 或项目。

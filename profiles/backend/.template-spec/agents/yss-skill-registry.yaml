@@ -736,6 +736,13 @@ invocation_contract:
       invocation_mode: user
       primary_output: maintenance-operation
   overrides:
+    database-analysis-docs:
+      invocation_mode: both
+      trigger_conditions:
+      - database-design-review-or-documentation
+      exclusion_conditions:
+      - ordinary-query-or-production-operation
+      primary_output: database-design-documents
     i-have-adhd:
       invocation_mode: model
       trigger_conditions:
@@ -1238,6 +1245,13 @@ skills:
   impacts:
   - backend
   - quality
+- id: database-analysis-docs
+  layer: specialist
+  maturity: supported
+  instance_default_discoverable: true
+  aliases: []
+  impacts:
+  - backend
 platform_skills: []
 external_skills:
 - id: frontend-agent
@@ -1301,6 +1315,7 @@ backend_skill_domains:
     yss-ddd-scaffold-generator: engineering-initialization
     yss-up-springboot3: platform-governance-migration
     yss-technical-design: technical-design
+    database-analysis-docs: technical-design
     yss-backend-spec-review: platform-governance-migration
     yss-backend-testing: testing
   deprecated_skills: []

@@ -40,8 +40,8 @@ fieldset p+p {margin-top:var(--brand-size-xxs)}
 [data-slot="tabs-list"].view-switch {gap:0;overflow:visible;border:1px solid var(--yss-colors-border-control);border-radius:var(--yss-components-view-switch-rounded);width:fit-content}
 .view-switch [data-slot="tabs-trigger"] {min-width:88px;padding:0 16px;border-radius:0;height:calc(var(--prototype-control-height) - 2px);min-height:calc(var(--prototype-control-height) - 2px)}
 .view-switch [data-slot="tabs-trigger"]+[data-slot="tabs-trigger"] {border-left:1px solid var(--yss-colors-border-control)}
-.view-switch [data-slot="tabs-trigger"]:first-child {border-radius:3px 0 0 3px}
-.view-switch [data-slot="tabs-trigger"]:last-child {border-radius:0 3px 3px 0}
+.view-switch [data-slot="tabs-trigger"]:first-child {border-radius:calc(var(--yss-components-view-switch-rounded) - 1px) 0 0 calc(var(--yss-components-view-switch-rounded) - 1px)}
+.view-switch [data-slot="tabs-trigger"]:last-child {border-radius:0 calc(var(--yss-components-view-switch-rounded) - 1px) calc(var(--yss-components-view-switch-rounded) - 1px) 0}
 .view-switch [data-slot="tabs-trigger"]::after {display:none}
 .view-switch [data-slot="tabs-trigger"][data-state="active"] {background:var(--yss-color-primary-control);color:var(--yss-color-on-primary)}
 .view-switch [data-slot="tabs-trigger"]:focus-visible {outline-offset:-3px;outline-color:var(--yss-color-primary-control)}

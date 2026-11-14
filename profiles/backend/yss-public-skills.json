@@ -4,6 +4,7 @@
   "canonical_root": ".agents/skills",
   "skills": [
     "setup-yss-harness",
+    "database-analysis-docs",
     "yss-audit-log",
     "yss-application",
     "yss-cache",
@@ -38,6 +39,7 @@
       "title": "后端",
       "description": "用于 YSS Java、DDD、数据访问和服务端契约实现的技能。",
       "skills": [
+        "database-analysis-docs",
         "yss-application",
         "yss-ddd-scaffold-generator",
         "yss-domain",
