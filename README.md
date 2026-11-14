@@ -26,6 +26,6 @@
 
 既有 yss CLI 的安装包和内置行为独立于本仓，本次目录变化不会改写已安装的二进制。新模板与具体 CLI 版本的安装、同步兼容性须以实际使用结果为准。
 
-Template 5.4.0 完善 Spec 规格、交互说明、状态矩阵和原型评审模板，新增附件提交教学示例，并在 Spec、Backend、Frontend 分发相应资料。供 CLI 3.4.0 打包使用；个人 Spec 工作台、任务看板与全生命周期查询由 CLI 提供。保留三个 Profile 的[技能地图](.template-spec/agents/profile-skills.md)及原有默认技能集合（Spec 16 项、Backend 41 项、Frontend 13 项）。`scaffold frontend` 从 CLI 3.3.0 起支持；Frontend Profile 从 CLI 3.2.0 开始支持，3.1.4 及以前不支持。参见 [Frontend 接入](.template-spec/user-guide/cli/tutorial-frontend.md)。GitLab CI 固定 CLI 配套源码 `2ae66c7cb6635098750ecb6236ec7e0fc3d68893`，包含共享设计模板打包修复和 UI 构建前置；这是构建用固定提交，CLI 正式发行来源以其 Release 为准。实际远程执行结果以对应流水线为准。
+Template 5.4.1 完善 Spec 规格、交互说明、状态矩阵和原型评审模板，新增附件提交教学示例，并在 Spec、Backend、Frontend 分发相应资料。供 CLI 3.4.0 打包使用；个人 Spec 工作台、任务看板与全生命周期查询由 CLI 提供。保留三个 Profile 的[技能地图](.template-spec/agents/profile-skills.md)及原有默认技能集合（Spec 16 项、Backend 41 项、Frontend 13 项）。`scaffold frontend` 从 CLI 3.3.0 起支持；Frontend Profile 从 CLI 3.2.0 开始支持，3.1.4 及以前不支持。参见 [Frontend 接入](.template-spec/user-guide/cli/tutorial-frontend.md)。GitLab CI 固定 CLI 配套源码 `2ae66c7cb6635098750ecb6236ec7e0fc3d68893`，包含共享设计模板打包修复和 UI 构建前置；这是构建用固定提交，CLI 正式发行来源以其 Release 为准。实际远程执行结果以对应流水线为准。
 
 新建 Vue 工程使用 CLI 3.3.0 起支持的 `yss scaffold frontend --project-name my-frontend --output-dir .`，父目录须存在且目标须不存在，先查看实际帮助。需要技能再单独 attach skills，应用源码与技能资源分开维护。
