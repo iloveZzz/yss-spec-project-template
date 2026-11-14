@@ -20,6 +20,8 @@ variables:
 build-cli-ui:
   stage: ui
   image: node:24.14.1-bookworm
+  rules:
+    - when: on_success
   script:
     - |
       set -eu
