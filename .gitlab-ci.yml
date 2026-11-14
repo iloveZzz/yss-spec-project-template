@@ -13,7 +13,7 @@ default:
 
 variables:
   GIT_DEPTH: "0"
-  YSS_CLI_COMMIT: "479b37f696e866776a3508b9f7cc27d5cfdf5546"
+  YSS_CLI_COMMIT: "e8b295c46ad5427a0ea89ce64487da968f14db0b"
   YSS_GITLAB_CA_FILE: /etc/gitlab-runner/certs/gitlab.yss.test.crt
   YSS_GITLAB_CI_AUTH: "1"
 
@@ -145,7 +145,7 @@ build-cli:
       bundle = json.loads((report / "bundle.json").read_text())
       version = json.loads((report / "version.json").read_text())
       assert bundle["source"]["commit"] == os.environ["CI_COMMIT_SHA"]
-      assert version["status"] == "ok" and version["result"]["version"] == "3.4.1"
+      assert version["status"] == "ok" and version["result"]["version"] == "3.5.0"
       assert version["result"]["source"]["commit"] == os.environ["YSS_CLI_COMMIT"]
       assert version["result"]["bundleDigest"] == bundle["sha256"]
       PYCODE

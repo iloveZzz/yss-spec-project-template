@@ -6,7 +6,7 @@
 
 ## 使用
 
-先读 [AGENTS.md](AGENTS.md)。共享技能位于 [.agents/skills](.agents/skills)，[Backend](profiles/backend) 保存后端专有内容，[Frontend](profiles/frontend) 按白名单分发共享技能。Spec 负责业务规格与产品设计，Frontend 承接设计还原与应用工程，Backend 承接服务端研发。资料按需读取，不要求生命周期路由、阶段批准、检查计划或测试报告。
+先读 [AGENTS.md](AGENTS.md)。共享技能位于 [.agents/skills](.agents/skills)，[Backend](profiles/backend) 保存后端专有内容，[Frontend](profiles/frontend) 按白名单分发共享技能。Spec 保存业务规格与产品设计，并作为产品 Home 的默认工程会话入口；Frontend 承接设计还原与应用工程，Backend 承接服务端研发。资料按需读取，不要求生命周期路由、阶段批准、检查计划或测试报告。
 
 本仓不维护脚本目录、测试套件和自动钩子。GitLab CI 在 Linux 上构建当前模板对应的 Rust CLI，并验证项目安装、同步和脚手架生成，不生成或发布 Linux 发行包；使用 `yss-linux` 标签的 Runner 需要采用相同架构，以便复用构建产物。生成工程、同步技能、整理导出和准备发布由 Agent 直接操作保留的资产；安装或发布也可使用现有 CLI 的实际能力。后端工程命令优先 ./mvnw，前端优先 pnpm；是否运行构建、测试或审查由当前任务决定。
 
@@ -26,8 +26,10 @@
 
 既有 yss CLI 的安装包和内置行为独立于本仓，本次目录变化不会改写已安装的二进制。新模板与具体 CLI 版本的安装、同步兼容性须以实际使用结果为准。
 
-Template 5.4.2 补齐草稿主动提问、主 Spec 登记、问题答复与延期回写、关联文档和原型阅读，以及明确范围与版本确认的协作规则，供 CLI 3.4.1 打包使用。保留三个 Profile 的[技能地图](.template-spec/agents/profile-skills.md)及原有默认技能集合（Spec 16 项、Backend 41 项、Frontend 13 项）。`scaffold frontend` 从 CLI 3.3.0 起支持；Frontend Profile 从 CLI 3.2.0 开始支持，3.1.4 及以前不支持。参见 [Frontend 接入](.template-spec/user-guide/cli/tutorial-frontend.md)。GitLab CI 固定 CLI 配套源码 `479b37f696e866776a3508b9f7cc27d5cfdf5546`，包含工作台修复及 Review 修正；这是构建用固定提交，CLI 正式发行来源以其 Release 为准。实际远程执行结果以对应流水线为准。
+Template 5.5.0 将 Spec 扩展为产品 Home：默认加入 `implement`，明确研发请求可从 Home 定位实际工程、读取目标规则、采用选定规格并回收跨仓结果；项目维护的仓库地图不由 CLI 覆盖。三个 Profile 的[技能地图](.template-spec/agents/profile-skills.md)与默认集合为 Spec 17 项、Backend 42 项、Frontend 13 项；Backend 新增默认 `database-analysis-docs`，可用集合为 54 项。本版同时包含主分支累计的 Spec 目标与交付证据、主题密度及固定组件参考更新，供 CLI 3.5.0 打包使用。
+
+`scaffold frontend` 从 CLI 3.3.0 起支持；Frontend Profile 从 CLI 3.2.0 开始支持，3.1.4 及以前不支持。参见 [Frontend 接入](.template-spec/user-guide/cli/tutorial-frontend.md)。GitLab CI 固定 CLI 配套构建源码 `e8b295c46ad5427a0ea89ce64487da968f14db0b`，版本为 3.5.0；这是构建工具的固定提交，正式 CLI 的最终源码与模板来源以 Release 产物记录为准。实际远程执行结果以对应流水线为准。
 
 新建 Vue 工程使用 CLI 3.3.0 起支持的 `yss scaffold frontend --project-name my-frontend --output-dir .`，父目录须存在且目标须不存在，先查看实际帮助。需要技能再单独 attach skills，应用源码与技能资源分开维护。
 
-当前工作树新增 Backend 默认技能 `database-analysis-docs`：两种安装模式默认 42 项、可用 54 项；Spec 和 Frontend 集合不变。这是待打包发行的模板改动，不会自动更新已安装的 CLI 或项目。
+Home 的分发、真实多仓 Demo、复审修复和验证范围见[验证报告](.template-source/design/2026-11-15-spec-home-repo-validation.md)。使用包含新版模板的 CLI Bundle 才会取得这些方法；模板发行不会自动更新已安装的 CLI 或项目。
