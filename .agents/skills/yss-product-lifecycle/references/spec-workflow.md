@@ -2,6 +2,8 @@
 
 读取当前目标、来源、已确认决定及既有规格；存在 Context 时沿用稳定词汇，缺失不阻断综合，不自动创建 Context、ADR 或计划。普通查询仅回答问题；局部改稿仅修订受影响范围。
 
+综合目标时保留来源中的对象、范围和确定程度，不因某个环节已有功能或更容易测量就缩小业务目标。细化指标、统计起止事件或目标值属于建议时，明确标为建议或待确认；来源已明确的口径直接沿用，不重复询问。
+
 事实缺口使用 `.agents/skills/yss-research/SKILL.md`，业务分析使用 `.agents/skills/yss-stage-decision/SKILL.md`，真实取舍与词义问题分别使用 `.agents/skills/grilling/SKILL.md` 和 `.agents/skills/domain-modeling/SKILL.md`。可调查事实先调查；复用有效确认，多个来源冲突不静默改范围。
 
 ## 保存位置与命名
