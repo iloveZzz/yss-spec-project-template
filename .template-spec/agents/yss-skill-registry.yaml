@@ -22,6 +22,7 @@ instance_distribution:
   - llm-wiki
   - i-have-adhd
   - handoff
+  - implement
   runtimes:
   - claude
   - workbuddy
@@ -945,6 +946,16 @@ invocation_contract:
       invocation_mode: user
       primary_output: maintenance-operation
   overrides:
+    implement:
+      invocation_mode: both
+      trigger_conditions:
+      - explicit-development-or-fix-request
+      - authorized-spec-or-ticket-implementation
+      exclusion_conditions:
+      - read-only-analysis
+      - spec-confirmation-only
+      - handoff-preparation-only
+      primary_output: verified-repository-implementation
     triage:
       invocation_mode: user
     wayfinder:
@@ -1109,9 +1120,9 @@ skills:
   impacts:
   - lifecycle
 - id: implement
-  layer: compatibility
+  layer: core
   maturity: supported
-  instance_default_discoverable: false
+  instance_default_discoverable: true
   aliases: []
   impacts:
   - lifecycle

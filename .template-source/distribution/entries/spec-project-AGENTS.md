@@ -1,9 +1,10 @@
-# YSS Spec 项目入口
+# YSS Spec / Home 项目入口
 
-使用简体中文。按用户目标与已有授权直接开展工作，按需读取相关需求及根 CONTEXT.md。
+使用简体中文。本仓承载产品定义、业务规格与原型，也是该产品研发任务的默认会话入口。按用户目标与已有授权直接开展工作，按需读取相关需求及根 CONTEXT.md；工程技术方案、代码和验证保存在相应实现仓。
 
 - 优先使用适用的 YSS 技能；前端工程命令优先 pnpm，后端工程命令优先 ./mvnw。
 - 技能位于 .agents/skills，规格与产品设计参考位于 .template-spec；宿主技能副本由安装记录管理。
+- 明确研发请求可使用默认的 `implement` 或适用工程技能。从 Home 进入工程时先读 [仓库范围方法](.agents/skills/implement/references/repository-scope.md)，按已有地图（默认 `REPOSITORIES.md`）、README 索引或明确路径核实实际工程、工作树和目标规则；无地图不阻止明确任务，切换目录不等于宿主已加载目标技能。跨仓结果按实际仓库汇总。
 - 需要了解默认技能、选择条件及跨 Profile 衔接时，按需读取 [技能地图](.template-spec/agents/profile-skills.md)；普通任务直接选择相关技能。
 - Spec 默认包含 `handoff`：交接要点与提示词由 `yss-product-lifecycle` 整理；明确要求通过 PR/MR 交付选定规格、原型及交互说明时使用 `handoff`，按对应动作授权执行。
 - 不要求生命周期路由、阶段批准、checkpoint、检查计划或测试报告。免除流程审批不扩大当前任务范围；检查按实际需要开展。

@@ -285,7 +285,8 @@
         "triage",
         "llm-wiki",
         "i-have-adhd",
-        "handoff"
+        "handoff",
+        "implement"
       ],
       "files": [
         ".template-spec/agents/profile-skills.md",
@@ -501,7 +502,8 @@
         "triage",
         "llm-wiki",
         "i-have-adhd",
-        "handoff"
+        "handoff",
+        "implement"
       ],
       "files": [
         ".template-spec/agents/profile-skills.md",

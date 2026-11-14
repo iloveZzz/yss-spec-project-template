@@ -1,5 +1,5 @@
 interface:
-  display_name: "Implement"
-  short_description: "Build work from a spec or tickets"
+  display_name: "研发实现"
+  short_description: "承接明确研发请求，核实工程上下文并完成单仓或跨仓实现"
 policy:
-  allow_implicit_invocation: false
+  allow_implicit_invocation: true

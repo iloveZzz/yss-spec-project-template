@@ -1,10 +1,20 @@
-# Spec 项目
+# Spec / Home 项目
+
+Spec 仓承载产品定义、业务规格、原型和交互说明，也是该产品及关联工程的默认会话入口。可以在这里连续提出产品和研发目标；技术方案、源码、构建与验证保存在各实现仓，Agent 在当前会话整合结果。
 
 命令支持以所装版本帮助为准。先运行 `yss version` 和 `yss help`，仅使用该版本实际支持的命令；模板更新不改变旧二进制能力，也不代表当前程序是最新发行。
 
 用 `init --profile spec --installation project` 创建项目，用 `attach` 接入已有工程；具体必填参数查看命令帮助。需要预览时加 `--dry-run`。
 
 向 Agent 提供目标、现有需求、业务词汇和允许修改的工程。Agent 先读相关材料，复用有效成果，缺少关键业务决定时询问；无需登记阶段、编制批准包或通过 CLI 资格门禁才开始。
+
+工程关系沿用已有 README 索引或仓库地图；明确要求配置 Home 时，Agent 使用 setup 中的模板按真实资料补齐，独立地图默认命名为 `REPOSITORIES.md`。地图由项目维护，记录稳定身份、职责与资料入口，个人路径、当前分支及进度不写入共享地图。CLI 安装只提供方法和模板，不会自动填充真实关系；`skills` 安装不要求创建地图或改变项目定位。已有明确工程位置时可以直接工作。
+
+例如，“把桌面端保存按钮改成提交”直接进入对应前端工程；“按这份规格调整联系人展示名，完成 API 和 Web 两侧修改”会核查实际调用关系、分工并逐仓验证；“实现移动端的查询功能”但找不到移动端 checkout 时，Agent 先查已知资料，仍缺位置才询问，不猜目录或自动检出所有仓库。只要求分析影响、确认 Spec 或准备交接时保持原范围。
+
+进入工程时会核对 Git 身份与本次工作树，读取目标入口、局部规则及有效技能。多个 checkout 无法按已有任务消歧时，只暂停相关写入；切换 shell 目录不代表目标规则已经自动加载。上游包含未提交修改时明确采用的内容；来源变化只影响对应工作，结果按仓库说明实际修改、检查与剩余事项。
+
+旧项目需先使用包含这些方法的 Bundle，再沿原 Profile 与安装范围 `sync`；查看 `skills list` 和实际文件确认 `implement` 已补齐，缺少时按实际帮助使用 `skills ensure implement --root <Home目录>`。源模板更新不自动改写项目地图或已有 README 事实；入口定制按实际安装记录处理冲突，不强制覆盖，保留已有地图位置及有效授权。
 
 同一需求使用一个主 Spec，交互说明、原型和补充资料从该 Spec 进入；草稿保存后就能查看。生成或更新时，Agent 会在当前聊天澄清关键业务选择，说明影响和建议；能自行查明的事实由 Agent 调查。未决项只阻塞依赖它的范围，其他工作继续，不把一串文末问题当作已经完成。
 
@@ -48,6 +58,6 @@ Backend 分析提示词示例，使用前替换占位项并补充实际已知的
 原型模拟不视为生产 API 或数据库设计；材料不可访问时说明缺口。
 ```
 
-`project` 和 `skills` 默认都安装 16 个入口：setup-yss-harness、yss-product-lifecycle、yss-research、yss-stage-decision、grilling、domain-modeling、wayfinder、to-spec、yss-design-system、prototype、prototype-review、to-tickets、triage、llm-wiki、i-have-adhd、handoff。研究归 yss-research，产品设计与 UI 原型归 yss-design-system；implement 和 code-review 保留为按需安装能力。
+`project` 和 `skills` 默认都安装 17 个入口：setup-yss-harness、yss-product-lifecycle、yss-research、yss-stage-decision、grilling、domain-modeling、wayfinder、to-spec、yss-design-system、prototype、prototype-review、to-tickets、triage、llm-wiki、i-have-adhd、handoff、implement。研究归 yss-research，产品设计与 UI 原型归 yss-design-system；implement 可按明确研发请求选用，code-review 和具体工程技能按需取得。默认协调方法不代表全部专业能力已经安装。
 
 预装不自动执行显式入口或对外写入。没有 tracker 仍可完成授权草稿；只有截图或未运行原型时，如实说明交互尚未验证，不能宣称完整交付已完成。

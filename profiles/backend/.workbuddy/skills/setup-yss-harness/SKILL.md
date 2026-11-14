@@ -1,6 +1,6 @@
 ---
 name: setup-yss-harness
-description: 安装或升级 YSS CLI，配置项目或用户级 Skills，初始化、接管、同步项目并处理安装冲突。
+description: 安装或升级 YSS CLI，配置项目或用户级 Skills、产品 Home 仓库关系，初始化、接管、同步项目并处理安装冲突。
 ---
 
 # 安装与同步 YSS
@@ -34,7 +34,7 @@ GitHub 公开读取不需要凭据，不读取或发送 GitLab token。仅选用
 
 ## 项目中的受管 Skills
 
-`spec` 用于业务规格和产品设计，`backend` 用于后端工程，`frontend` 用于前端应用工程与设计还原。frontend 从 CLI 3.2.0 开始支持，需内嵌对应 Bundle；3.1.4 及以前的程序不会随模板更新获得该能力，先以实际帮助确认。新建或接管时明确 Profile；已有项目沿用安装记录，`sync` 不切换 Profile。
+`spec` 用于业务规格、产品设计及产品 Home 入口，`backend` 用于后端工程，`frontend` 用于前端应用工程与设计还原。frontend 从 CLI 3.2.0 开始支持，需内嵌对应 Bundle；3.1.4 及以前的程序不会随模板更新获得该能力，先以实际帮助确认。新建或接管时明确 Profile；已有项目沿用安装记录，`sync` 不切换 Profile。
 
 - `project` 安装技能和必要项目文档，是新安装默认值。
 - `skills` 安装技能、宿主入口及必要引用资源，不创建项目治理流程。它仍是项目目录中的受管安装，不等于用户级全局安装。
@@ -50,6 +50,16 @@ yss sync --root <受管目录> --installation project
 ```
 
 `init` 只用于新目录或空目录；普通已有目录使用 `attach`，已有受管项目使用 `sync`。`skills ensure` 的技能名是位置参数，只安装所选技能及必要资源。`sync` 默认沿用原安装范围，只有显式 `--installation project|skills` 才切换。模板与技能来自该 CLI 的内嵌 Bundle，不会另拉模板 main；需要新 Bundle 时先升级 CLI。
+
+## 配置产品 Home
+
+用户要求配置 Home，或本次初始化已经包含产品及其关联工程的协调目标时，使用[仓库地图模板](references/repositories-template.md)。先读取已有 README 索引、仓库地图、交接资料和用户提供的位置；已有等价地图继续使用，只补缺失事实并在 Home 的 AGENTS 中引用实际位置。需要独立地图时创建根 `REPOSITORIES.md`，按真实 Git 身份和资料核实内容，未知关系保留未知。
+
+地图由产品项目维护，不加入 CLI 收据或受管清单；不写个人绝对路径、凭据、当前工作树、分支或进度。仓库关系只帮助查找，不授予关联仓的写入权限。明确任务已有目标时可以直接继续，不要求先配置地图、登记 Workbench 或检出全部仓库。
+
+直接执行 `init/attach` 只分发入口、技能与地图模板，不自动填充真实产品关系。仅安装 `skills` 不创建地图或业务文档，也不把现有工程改成产品 Home；明确配置 Home 时才按已有授权补齐入口和关系。
+
+旧项目先使用包含新内容的 Bundle 再 `sync`，保留原 Profile 和安装范围。核对 `skills list` 与实际文件中是否已有 `implement`；缺少时按当前 CLI 支持的 `skills ensure implement --root <Home目录>` 补齐，不手改收据。地图中的项目事实由项目维护；README、AGENTS 等入口的本地定制遵守实际安装记录的同步冲突保护，不假设能自动合并或覆盖。需要更新地图或已有入口定制时先读取并增量修改，不强制覆盖。独立或用户级技能仍通过原安装来源更新，不接管为受管项目。
 
 ## 独立或用户级 Skills
 
