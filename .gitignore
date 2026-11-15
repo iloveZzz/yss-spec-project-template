@@ -49,6 +49,10 @@ htmlcov/
 .work/**/verification/browser/.chrome-profile/
 .work/**/verification/browser/.chrome-baseline-profile/
 
+# YSS local runtime
+/.yss/lock
+/.yss/transactions/
+
 # <<< create-yss-spec managed rules
 
 # Template-source only

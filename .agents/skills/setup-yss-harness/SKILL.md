@@ -51,6 +51,10 @@ yss sync --root <受管目录> --installation project
 
 `init` 只用于新目录或空目录；普通已有目录使用 `attach`，已有受管项目使用 `sync`。`skills ensure` 的技能名是位置参数，只安装所选技能及必要资源。`sync` 默认沿用原安装范围，只有显式 `--installation project|skills` 才切换。模板与技能来自该 CLI 的内嵌 Bundle，不会另拉模板 main；需要新 Bundle 时先升级 CLI。
 
+需要建立工程 Git 边界、向团队共享已安装方法或在新 clone 中继续维护时，读取[Git 接入与 Skills 共享](references/project-portability.md)。保留完整技能、引用资源和有效项目收据；Profile 和技能安装本身不代表创建独立 Git 仓。
+
+从 Home 协调多个工程、续办任务或处理同仓多安装根时，也按上述参考核实工程身份、输入版本和运行资源。涉及 Codex、Claude Code、Pi、DeepSeek Harness、WorkBuddy 的加载与外部技能时，读取[宿主发现与跨工程技能](references/host-compatibility.md)，分别确认文件分发、原生发现、实际来源和工具能力。
+
 先根据本次目标选择职责、安装范围和是否生成源码：新 Home 使用 spec/project；仅在原仓使用 Spec 方法可选 spec/skills；已有前后端需要项目技能时使用对应 Profile 的 skills。project 继续支持工程资料安装；skills 也包含宿主入口，不能承诺与自定义 AGENTS 等文件无冲突。独立技能目录沿原安装来源，不先转换为受管项目。
 
 支持 `nextSteps` 的开发构建会在成功安装或生成后提供指引；以实际报告核实，不能声称旧版已有该字段。读取 command 时先确认目标、Profile 和范围符合本次任务，沿用本轮已核验的二进制绝对路径，将 args 作为独立参数数组执行，不拼接 shell 字符串。program 只是调用名，不表示 PATH 中同名程序已核验；command 缺失时按文字指引处理。旧版没有 nextSteps 时，仍可按实际帮助使用已有命令。

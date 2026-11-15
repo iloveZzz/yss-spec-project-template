@@ -4,7 +4,8 @@
   "manifest": {
     "allowFiles": [
       ".template-spec/adr/README.md",
-      ".workbuddy/skills"
+      ".workbuddy/skills",
+      ".claude/skills"
     ],
     "allowRootEntries": [
       ".agents",
@@ -32,7 +33,6 @@
       ".pi/skills",
       ".cursor/skills",
       ".codex/skills",
-      ".claude/skills",
       ".codex/config.toml",
       ".codex/settings.local.json",
       ".codex/skills/.DS_Store",

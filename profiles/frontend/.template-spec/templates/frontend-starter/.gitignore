@@ -3,3 +3,7 @@ dist/
 .pnpm-store/
 .env.local
 .env.*.local
+
+# YSS local runtime
+/.yss/lock
+/.yss/transactions/

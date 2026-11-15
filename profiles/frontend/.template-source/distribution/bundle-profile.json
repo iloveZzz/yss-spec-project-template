@@ -76,7 +76,8 @@
       ".workbuddy/skills/yss-frontend-scaffold-generator",
       ".template-spec/design/templates/interaction-spec-template.md",
       ".template-spec/design/templates/state-matrix-template.md",
-      ".template-spec/design/templates/prototype-review-checklist.md"
+      ".template-spec/design/templates/prototype-review-checklist.md",
+      ".claude/skills"
     ],
     "excludeRootEntries": [
       ".git",
@@ -99,7 +100,6 @@
       ".gitmodules"
     ],
     "excludePaths": [
-      ".claude/skills",
       ".codex/skills",
       ".cursor/skills",
       ".pi/skills"
