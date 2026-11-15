@@ -1,4 +1,4 @@
 interface:
   display_name: "YSS Layered MVC Scaffold Generator"
-  short_description: "直接生成 YSS MVC 后端脚手架，无需需求合同或设计审批"
-  default_prompt: "Use $yss-layered-mvc-scaffold-generator to directly generate a YSS MVC backend skeleton with server, service, and repository modules. Collect project inputs and generate without requiring a requirements contract, prototype, design approval, or lifecycle setup. Use the governed path when a scaffold contract is explicitly supplied, reject retired mvc-data-analysis-v1 before writing any files. Include the independent examples/reference reactor by default; --without-example disables it."
+  short_description: "新建 MVC Java 空工程，已有 Service 增量维护"
+  default_prompt: "使用 $yss-layered-mvc-scaffold-generator。先区分新建工程、已有 MVC 维护和仅安装 Backend 技能。新建时读取 yss --version、yss scaffold catalog --json、yss scaffold mvc --help，收集真实项目、平台和 Maven 参数，现装 CLI 支持时用 scaffold mvc 写入不存在的目标目录。CLI 缺失先用 setup-yss-harness 安装，能力缺口按 项目根 .agents/skills/yss-ddd-scaffold-generator/references/standalone-generation.md 评估资产 fallback，保留版本兼容、路径和文件保护。已有工程沿用 Service 增量维护，技能安装使用 init/attach --profile backend --installation skills。当前仅生成 server/service/repository 空骨架、POM、启动配置、Wrapper 和来源收据，教学资料按需读取。构建按任务需要执行并如实报告。"

@@ -15,13 +15,13 @@ description: "接入或排查 YSS Resilience4j starter、网关熔断、限流�
 
 1. 按平台索引定位当前组件源码与 `readme.md`。
 2. 区分网关断路器配置、fallback 响应、全局 circuit 异常映射与韧性排障。
-3. 装配问题核验 `GatewayConfiguration` 的 route/filter；异常响应核验 `GlobalCircuitExceptionAdvice`。
+3. 装配问题核验 `GatewayConfiguration` 的 CircuitBreaker classpath 与 Web 条件以及 Advice 导入。当前 Boot 4 配置类没有 route/filter 方法，路由与过滤器读取消费应用配置。异常响应核验 `GlobalCircuitExceptionAdvice`。
 4. 阈值和超时在配置中调整，不硬编码到业务 handler。
 5. fallback 状态和正文与网关/API 合同一致。
 
 ## 能力边界
 
-- 网关韧性装配：`GatewayConfiguration`。
+- 网关韧性装配使用 `GatewayConfiguration`，Boot 4 显式使用 `resilience4j-spring-boot4` 2.4.0。
 - Circuit 异常映射：`GlobalCircuitExceptionAdvice`。
 - 运行指引：README“轻量微服务断路器”。
 

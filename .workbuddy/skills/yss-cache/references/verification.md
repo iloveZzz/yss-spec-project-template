@@ -8,7 +8,7 @@
 
 跨模块测试使用父 reactor 的 `-pl <module> -am`，避免解析本地旧 SNAPSHOT。
 
-运行前将 `JAVA_HOME` 与 `PATH` 设为所选平台的 JDK（Boot 2 为 Java 8，Boot 3 为 Java 17）；需要核对字节码兼容性时读取本次构建的 class major，读不到则报告未验证。
+运行前将 `JAVA_HOME` 与 `PATH` 设为所选平台的 JDK（Boot 2 为 Java 8，Boot 3/4 为 Java 17）；需要核对字节码兼容性时读取本次构建的 class major，读不到则报告未验证。
 
 ## 消费项目
 
@@ -20,7 +20,7 @@
 
 ## 验收矩阵
 
-通用命中、隔离和失效项适用于所选平台线；下述 `failure-mode`、区域策略、`empty-key-eviction` 与 JetCache 场景核验的是当前 Boot 3 / Java 17 组件。Boot 2 的对应行为按其源码和实际配置另行验证。
+通用命中、隔离和失效项适用于所选平台线；下述 `failure-mode`、区域策略、`empty-key-eviction` 与 JetCache 场景核验的是当前 Boot 3/4 / Java 17 组件。Boot 2 的对应行为按其源码和实际配置另行验证。
 
 - 首次调用执行业务，第二次相同 key 命中缓存。
 - 不同租户/业务 key 不串值。
@@ -32,5 +32,5 @@
 - JetCache 分别验证包装器与原生 `QuickConfig`：包装器即使配置广播频道也不自动同步本地失效；原生 `BOTH + syncLocal(true)` 在频道、相同 area/name 和订阅生效后，用两个独立 JVM 验证更新、删除与未订阅时的旧值边界；第二次创建不改变首次缓存配置。
 - Sentinel/Cluster 创建正确连接工厂，Cluster 使用 DB 0。
 - Docker 可用时真实 Redis 认证、JSON template、JDK cache serialization 和 TTL 测试实际执行。
-- 所选 Boot 2 / Java 8 源码 class major 为 52；Boot 3 / Java 17 为 61。两条平台线分别使用匹配的源码根与实际测试命令，Docker 不可用时单独报告真实 Redis 集成测试未执行。
+- 所选 Boot 2 / Java 8 源码 class major 为 52；Boot 3/4 / Java 17 为 61。各平台线分别使用匹配的源码根与实际测试命令，Docker 不可用时单独报告真实 Redis 集成测试未执行。
 - `git diff --check` 通过，消费 starter 构建通过。

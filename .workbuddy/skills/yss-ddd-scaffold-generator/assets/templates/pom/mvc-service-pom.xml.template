@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>{{group_id}}</groupId>
+        <artifactId>{{project_name}}</artifactId>
+        <version>{{project_version}}</version>
+    </parent>
+    <artifactId>{{project_name}}-service</artifactId>
+    <dependencies>
+        <dependency>
+            <groupId>{{group_id}}</groupId>
+            <artifactId>{{project_name}}-repository</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.yss.cloud</groupId>
+            <artifactId>yss-component-dto</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>{{lombok_version}}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+</project>

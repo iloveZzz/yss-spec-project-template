@@ -1,6 +1,6 @@
 # JetCache 独立接入与验证
 
-本页记录当前 Boot 3 / Java 17 `yss-component-jetcache` 工作树的接入判断；Boot 2 的精确能力以其平台索引和匹配源码为准。JetCache 与 YSS Spring Cache 是两条独立入口，不继承 `yss.cache.active-type`、区域 TTL 或 Redis `failure-mode`。
+本页记录 Boot 3 历史接入判断，Boot 4 当前源码保留的包装器与配置入口见其平台索引；Boot 2 的精确能力以其平台索引和匹配源码为准。JetCache 与 YSS Spring Cache 是两条独立入口，不继承 `yss.cache.active-type`、区域 TTL 或 Redis `failure-mode`。
 
 ## 先确认实际入口
 

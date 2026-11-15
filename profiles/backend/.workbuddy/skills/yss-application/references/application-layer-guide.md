@@ -1,6 +1,6 @@
 # YSS Application Target Profile 指南
 
-Application 是 Web 与 Domain 之间的稳定用例边界。Target Profile 使用 `application` 包；历史 `core/service` 对新脚手架为 `unsupported`。
+本页描述 DDD Application 的用例边界与新脚手架的 `application` 布局。既有 DDD 沿用真实模块与包名维护职责，MVC Service 的事务、幂等与转换读取 [MVC 用例说明](profiles/layered-mvc-service.md)。
 
 ## 1. 职责
 
@@ -82,9 +82,9 @@ public interface QualityTemplateApplicationConvertor {
 - Application 不依赖 Infrastructure/Web。
 - 按实际风险选择工程已有测试命令，优先根 `./mvnw`；区分编译、测试和未验证范围。
 
-## 8. 旧架构边界
+## 8. 既有工程边界
 
-检测到 AppService 接收 client Cmd、返回 client VO、调用返回 VO 的 Domain Gateway 或位于 `core/service` 时，返回 `unsupported`，不得由新 scaffold 或本指南自动改写。旧项目继续按原工程维护；现代化改造必须单独立项、先评估再逐切片迁移。
+按真实调用方检查 AppService 的输入输出、Gateway 和依赖方向。`core/service` 或 client 模块名称本身不阻止增量维护；HTTP 模型穿透、公开接口变化或职责冲突需要结合当前行为处理。只改本次需求涉及的部分并同步调用方，架构迁移按用户授权另行评估范围与兼容性。
 
 ## 事务与外部副作用
 

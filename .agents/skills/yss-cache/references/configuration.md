@@ -13,7 +13,7 @@
 
 ## 公共属性
 
-以下示例及 `failure-mode`、区域策略、空值策略说明针对当前 Boot 3 / Java 17 组件。Boot 2 / Java 8 维护须先核对其独立源码索引与匹配源码，不套用这些新属性或默认值。
+以下示例及 `failure-mode`、区域策略、空值策略说明针对当前 Boot 3/4 / Java 17 组件。Boot 2 / Java 8 维护须先核对其独立源码索引与匹配源码，不套用这些新属性或默认值。
 
 ```yaml
 yss:
@@ -34,4 +34,4 @@ yss:
 
 ## 自定义 Bean
 
-默认配置会对用户提供的 `RedisProperties`、`RedisConnectionFactory`、`JedisClientConfiguration`、pool config、RedisCacheManager、resolver、provider、serializer、RedisTemplate 和 RedisMappingContext 回退。排障时按类型和名称检查实际 Bean，不能假设框架默认 Bean 一定生效。
+默认配置会对用户提供的 Redis 属性 Bean（Boot 3 为 `RedisProperties`，Boot 4 为 `org.springframework.boot.data.redis.autoconfigure.DataRedisProperties`）、`RedisConnectionFactory`、`JedisClientConfiguration`、pool config、RedisCacheManager、resolver、provider、serializer、RedisTemplate 和 RedisMappingContext 回退。排障时按类型和名称检查实际 Bean，不能假设框架默认 Bean 一定生效。

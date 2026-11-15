@@ -8,8 +8,8 @@ description: "接入或排查 YSS 分布式 ID 的 Segment、Snowflake、主键�
 ## 接入决策
 
 1. 核对实际组件 GAV、平台线、依赖树及当前源码，再确定已有主键策略、注入模式和数据库约束。保持既有 Long 主键及调用方类型，策略变更单独评估数据和 API 影响。
-2. Boot 3 的数值分布式发号使用本地 Leaf Segment / Snowflake；拦截器仍有 String UUID 分支，但它不是数值发号方案。CosId、Feign/远程注入及旧注解参数是迁移分诊线索，不作为新接入选项；Boot 2 维护以其独立源码索引为准。
-3. Boot 3 默认 `local + Segment`：引入组件后核对 DataSource、JDBC 驱动、目标方言建表脚本及 `leaf_alloc`。不发号的应用应显式关闭注入及 Segment；选 Snowflake 时显式启用 Snowflake、关闭 Segment，并验证 worker-id 唯一、时钟回拨处理和节点重启行为。`local` 注入须且只能启用一种算法，不要把 ZooKeeper 当作当前 Snowflake 的默认依赖。
+2. Boot 3/4 的数值分布式发号使用本地 Leaf Segment / Snowflake；拦截器仍有 String UUID 分支，但它不是数值发号方案。CosId、Feign/远程注入及旧注解参数是迁移分诊线索，不作为新接入选项；Boot 2 维护以其独立源码索引为准。
+3. Boot 3/4 默认 `local + Segment`：引入组件后核对 DataSource、JDBC 驱动、目标方言建表脚本及 `leaf_alloc`。不发号的应用应显式关闭注入及 Segment；选 Snowflake 时显式启用 Snowflake、关闭 Segment，并验证 worker-id 唯一、时钟回拨处理和节点重启行为。`local` 注入须且只能启用一种算法，不要把 ZooKeeper 当作当前 Snowflake 的默认依赖。
 4. Segment 缺失标签策略、声明、step 和初始水位必须与真实业务表及既有分配记录一致。自动建标签不建表、也不读取业务表最大 ID；迁移前固定停写/切换边界，起点不得低于已分配号段上界，不重置 `leaf_alloc`。
 5. 主键填充同时核对实体注解、插入方法和参数形态。`IdType.AUTO` 保留数据库自增；`ASSIGN_ID` 或显式 Segment/Snowflake 才走组件发号。已有非零值应保留；生成值与 `Long`、十进制 `String`、`Integer` 的转换及溢出必须验证，不能只凭注解推断批量入口已被拦截。
 

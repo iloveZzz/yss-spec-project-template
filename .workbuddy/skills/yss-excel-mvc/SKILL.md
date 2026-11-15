@@ -7,6 +7,8 @@ description: "实现或排查 YSS Spring MVC Excel 导入导出、RequestExcel�
 
 用于处理基于注解的 Excel 导入导出能力。
 
+Boot 4 当前入口为 `FastExcelAutoConfiguration` 的 Servlet 条件自动配置与 `@EnableExcelMvc` 显式导入，POM 使用 Fesod Sheet 2.0.2-incubating、WebMVC starter 和统一 POI 5.5.1。精确注解与 resolver API 读取 [Boot 4 索引](references/source-index.boot4-java17.md)。
+
 ## 何时使用
 
 - 用户要新增 Excel 导入接口。

@@ -17,6 +17,26 @@
 7. 旧产物和配置的恢复前提与步骤，区分应用回退与数据恢复；没有已验证路径时说明限制。
 8. 分别列明编译、测试、启动、部署的已验证与待验证状态，不从构建成功推导部署成功。
 
+## 迁移与恢复步骤
+
+有 schema 或数据变化时，记录目标数据库版本、schema、当前迁移版本、发布应用版本及实际使用的迁移入口。沿用项目已有工具或 SQL 发布方式，已执行迁移保持原样，修正写成后续增量。分别说明空库安装和存量升级，指明谁执行迁移及如何避免多个实例竞争执行。
+
+按实际依赖排列兼容结构扩展、兼容应用发布、历史数据分批回填与核对、读写切换、旧实例及其他消费者退出、旧结构清理。每一步写明可继续的观察结果、失败中止条件和恢复动作，回填需说明并发写入、进度及重跑方式。收紧非空或唯一约束前先完成相应历史数据处理。
+
+失败后先确认实际完成的 schema、迁移记录和数据批次，再选择继续或前向修复。应用回退前核对旧版本能否读取当前 schema 和已转换数据。需要数据恢复时写清备份/恢复点、执行入口、期间新增写入的处理及预计影响，未经演练的恢复路径保留为待验证。DDL 的事务与锁行为按目标数据库和语句核实。
+
+## 观测接线与健康检查
+
+只描述工程已有设施或本次明确选择的接入。先核对 POM 解析版本、启用的 Profile、配置与实际运行结果，再记录以下接线，缺少任一环节时说明具体影响。
+
+- Actuator 核对 `spring-boot-starter-actuator`、端点暴露配置、管理端口/路径、网络范围及认证授权。健康入口从真实配置确认，敏感详情按受控访问提供。[Spring Boot 端点说明](https://docs.spring.io/spring-boot/3.5/reference/actuator/endpoints.html)
+- Micrometer 核对实际 `MeterRegistry`、采集点、所选 registry/exporter 及接收端。Prometheus 抓取还需匹配 registry、已暴露端点和抓取配置，存在依赖或本地指标并不足以证明接收端已收到。按实际故障风险关注请求错误/时延、连接池、队列和下游失败。[Spring Boot 指标说明](https://docs.spring.io/spring-boot/3.5/reference/actuator/metrics.html)
+- Tracing 核对 Micrometer bridge、tracer、exporter、采样与接收端配置，沿真实入站请求、出站客户端和异步线程检查上下文传播。Spring Boot 自动配置的客户端 builder 可参与传播，手工新建客户端及线程切换需另外验证。记录日志中的 traceId/spanId 或现有 requestId 关联方式，跨线程 MDC 需正确传播并清理。[Spring Boot Tracing 说明](https://docs.spring.io/spring-boot/3.5/reference/actuator/tracing.html)
+- 指标标签限定为有界集合，例如路由模板、操作和结果分类。用户/租户/订单 ID、原始 URL、SQL 与异常全文会导致高基数，按必要性仅进入受控日志或 trace。密码、token、Authorization、Cookie、个人及医疗等敏感内容在日志、标签和 span 属性中都需白名单筛选或脱敏，不能靠降低采样率保护。[Spring Boot Observation 说明](https://docs.spring.io/spring-boot/3.5/reference/actuator/observability.html)
+- liveness 表达进程自身是否可继续运行，避免绑定共享数据库、缓存等外部依赖，防止依赖故障触发实例连锁重启。readiness 表达是否能接流量，按当前服务必要依赖和故障策略选择检查项。探针分组、启动期、超时与实际流量端口需核验，独立管理端口健康不能证明业务端口可用。[Spring Boot 探针说明](https://docs.spring.io/spring-boot/3.5/reference/actuator/endpoints.html#actuator.endpoints.kubernetes-probes)
+
+上述链接用于查阅 Boot 3 接线，具体属性和支持范围以工程实际版本文档为准。日志关联、指标导出和链路追踪分别给出实际观察，审计还需按解析的组件版本确认采集、提交时点、队列丢弃和订阅器失败。当前 YSS 审计的进程内异步入队无法证明事务已提交或下游已持久化。缺设施时保留缺口，不为补齐手册默认增加观测或迁移依赖。
+
 ## 操作边界
 
 本方法只编写手册；其中的命令不授予执行部署权限。构建和本地测试按实际研发任务授权进行，未执行的步骤写为待验证。手册不要求新增 CI/CD、部署脚本、集群配置、云资源或凭据。

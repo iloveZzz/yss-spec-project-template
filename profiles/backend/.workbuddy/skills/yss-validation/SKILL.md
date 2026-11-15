@@ -14,21 +14,23 @@ description: "接入或排查 YSS Bean Validation、校验消息与校验错误�
 ## 工作流
 
 1. 区分 JSR-303 注解校验与表达式/EL parser 请求。
-2. 从当前路线已核验平台的索引核验实际 POM、校验消息资源、消费 Controller 注解及匹配的异常 Advice。当前模块 README 为空，不作为前置证据。
+2. 从当前路线已核验平台的索引核验实际 POM、Java 自动配置、消息插值器、校验消息资源、消费 Controller 注解及匹配的异常 Advice。
 3. 当前组件仓不存在历史 `yss-component-validation-engine-parent`；表达式、LiteFlow EL 或 `ExpressParserFactory` 请求返回 `blocked`，先确认真实组件来源和生命周期影响，不以旧索引或通用知识生成实现。
 4. 校验失败映射保持当前工程的 service/API 错误合同。
 5. 消费工程基线选择 javax/jakarta，不自行升级 Java/Boot。MVC 输入校验放在 server/client，业务不变量由 service/core 验证；不生成 DDD Domain。HTTP 失败形态由 server 的合同测试验证。
 
 ## 能力边界
 
-- `validation-jsr303` 当前聚合依赖与消息资源，没有本地 Validator、Advice 或自动配置 Java 实现。
+- Boot 4 `validation-jsr303` 已具有 `YssValidationAutoConfiguration`、消息属性及 `YssValidationMessageInterpolator`。默认 `yss.validation.messages.enabled=true`，Locale 回退为简体中文。
+- 消息顺序为应用 Spring MessageSource、应用 ValidationMessages、组件 messages、provider 插值。自动配置沿用 Boot 默认 Validator 的 DI、方法校验与生命周期，并给同优先级或更高优先级消费方 customizer 让位。
+- HTTP 校验失败映射由 exception 组件的 `GlobalExceptionAdvice` 提供。Boot 2/3 的能力按各自索引与实际构件核验。
 - 历史 `validation-el-parser` / `ExpressParserFactory`：当前源码根不存在，状态为 `blocked`，不得作为可用 capability。
 
 ## 排障
 
 - EL/parser 请求停止实施并确认真实仓库/模块，不假设已移除路径仍存在。
 - 注解未生效时先检查 Controller/service 校验注解和 Spring validation starter 装配，不先改 parser 代码。
-- 当前证据使用 POM、消息资源、Controller 注解和 `GlobalExceptionAdvice`。
+- 当前证据使用 POM、自动配置、消息插值器与资源、Controller 注解和 `GlobalExceptionAdvice`。
 - 表达式校验与 DTO 校验行为不一致时先确认对应模块，再路由问题。
 
 ## 验收

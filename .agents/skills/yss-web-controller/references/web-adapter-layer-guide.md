@@ -1,6 +1,6 @@
 # YSS Web Adapter Target Profile 指南
 
-Web Adapter 负责 HTTP 边界、Wire DTO、校验、YSS Result 包装、WebConvertor 和异常翻译。它只调用 Application，不直接访问 Domain Gateway、Repository 或 PO。
+本页描述 DDD Web Adapter 的 HTTP 边界、Wire DTO、校验、YSS Result 包装、WebConvertor 和异常翻译。它只调用 Application，不直接访问 Domain Gateway、Repository 或 PO。MVC 的 Server 按 [MVC 结构说明](profiles/layered-mvc-service.md) 调用已有 Service。
 
 ## 1. 包结构
 
@@ -14,7 +14,7 @@ Web Adapter 负责 HTTP 边界、Wire DTO、校验、YSS Result 包装、WebConv
 └── *Controller.java
 ```
 
-DTO 固定属于 Web module。独立 client module 与把 client DTO 放进 Domain module 均为 `unsupported`；如未来确需发布复用制品，必须另行设计并批准新的 Target Profile，不能由当前脚手架推断或回退。
+新 DDD 布局的 DTO 属于 Web module。既有工程沿用真实 Web/client 模块，保持 HTTP 模型与 Domain、PO 的边界。确需发布复用制品时，按当前需求评估依赖、字段暴露和兼容性，并在相应授权内修改。
 
 ## 2. Wire 约定
 
