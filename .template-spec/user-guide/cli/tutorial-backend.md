@@ -1,12 +1,12 @@
 # Backend 项目与脚手架
 
-命令支持以所装版本帮助为准。先运行 `yss version` 和 `yss help`，仅使用该版本实际支持的命令；模板更新不改变旧二进制能力，也不代表当前程序是最新发行。
+命令支持以所装版本帮助为准。先运行 `yss --version` 和 `yss help`，仅使用该版本实际支持的命令；模板更新不改变旧二进制能力，也不代表当前程序是最新发行。
 
 项目入口使用 `init` 或 `attach --profile backend`，技能补装使用 `skills list`、`skills ensure`。先查看所用命令的实际帮助。
 
-新骨架先读 `scaffold catalog`，再使用 `scaffold ddd` 或 `scaffold mvc`。明确项目名、Java 包名、输出父目录、平台、精确 Spring Boot/Java 版本和 Maven 工程、Parent、YSS BOM 坐标；不猜版本。`--dry-run` 只在内存预览，不创建目标、控制目录或计划。目标必须不存在，输出路径不能经过符号链接，已有工程不能用脚手架覆盖。
+新骨架先读 `scaffold catalog --json` 和对应子命令帮助，再使用 `scaffold ddd` 或 `scaffold mvc`。最少五项工程参数为 `--project-name`、`--base-package`、`--output-dir`、`--group-id`、`--project-version`，工程版本继续必填。支持当前默认解析的 CLI 会从 CLI catalog 的 `defaultRecipeId` 补齐 YSS `4.0.0-SNAPSHOT`、Boot `4.1.2`、Java `17`、Parent `com.yss.cloud:yss-cloud-microservice:4.0.0-SNAPSHOT` 和同版本 `com.yss.cloud:yss-components-bom`。显式技术参数优先，仅补齐唯一匹配组合。只选组件 `3.2.0-SNAPSHOT` 时补齐其 Parent 与 Boot `3.5.16` / Java `17`，歧义按错误补参数，未知版本需显式提供 Parent 等缺项。完整自定义输入沿用实际输入与兼容 warnings。 三个完整场景见项目根 `.agents/skills/yss-ddd-scaffold-generator/references/command-examples.md`。旧 CLI 先核对实际帮助，已有工程从 POM/effective POM 与解析依赖选择平台。`--dry-run` 只在内存预览，不创建目标、控制目录或计划。目标必须不存在，输出路径不能经过符号链接，已有工程不能用脚手架覆盖。
 
-生成不需要合同、批准或平台资格证据，不生成测试与门禁，也不自动执行 Maven。后续业务实现复用适用 YSS 技能，工程命令优先根 `./mvnw`；按任务实际需要验证并报告结果。
+当前生成空模块、POM、机械启动配置、Maven Wrapper 和 `.yss/scaffold.json` 来源收据。教学 reference 按需参考，业务实现后续按需求添加。生成不需要合同、批准或平台资格证据，不生成测试与门禁，也不自动执行 Maven。后续业务实现复用适用 YSS 技能，工程命令优先根 `./mvnw`；按任务实际需要验证并报告结果。
 
 ## 完整研发技能
 

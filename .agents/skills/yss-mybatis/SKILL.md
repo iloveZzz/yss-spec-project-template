@@ -7,6 +7,8 @@ description: 核验、接入或排查 YSS MyBatis/MyBatis-Plus 的 Mapper/Reposi
 
 本 Skill 只维护 `yss-component-persistence` 的组件能力、选择条件和排障顺序。PO、Repository、Convertor、Gateway/Query Adapter 的结构与生成边界由 `yss-repository` 负责。
 
+Boot 4 当前 MP 接入使用 `mybatis-plus-spring-boot4-starter`，JDBC 自动配置类型已移动到 `org.springframework.boot.jdbc.autoconfigure`。实际 YSS Mapper、分页及事务入口见 [Boot 4 索引](references/source-index.boot4-java17.md)，已有工程沿用其平台与持久层。 当前命名数据源绑定按配置后代结构区分标准标量与命名池，空 `spring.datasource.password` 保留标准主池，`password.url` 仍可定义合法同名池。
+
 ## 来源与适用范围
 
 1. 精确类名、方法签名、配置 key、默认值或启用条件先用 [source-index.md](references/source-index.md) 定位，再按 [源码定位策略](../yss-skill-source-index-refresh/references/source-location.md) 读取当前源码。

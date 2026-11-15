@@ -9,6 +9,8 @@ description: "实现或核验 YSS Result、PageResult、PageQuery、CommandDTO�
 
 本 skill 同时负责把中台 DTO 映射到公开 HTTP/JSON 边界。`references/openapi-wire-profile.yaml` 是可复用的机器可读映射源；OpenAPI 治理和 Draft Review 必须消费它，不得各自复制一份 wrapper 或分页字段表。
 
+Boot 4 当前使用 Jackson 3 的 `tools.jackson` databind，JSON 注解仍来自 `com.fasterxml.jackson.annotation`。公开 wire shape 继续消费既有 wire profile，并通过目标 HTTP mapper 核验。
+
 ## 所有权边界
 
 - 对象命名及阿里/COLA 适配消费 `.template-spec/agents/backend-architecture-profiles.md` 的“对象命名与外部规范适配”；外部 DTO/VO 示例不改变当前 wire profile 的包装、默认值、字段或模块归属。

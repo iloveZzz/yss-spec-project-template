@@ -178,6 +178,44 @@
       "spring_cloud_line": "2025.1",
       "openfeign_line": "5.0",
       "spring_cloud_minimum": "2025.1.2"
+    },
+    {
+      "id": "spring-boot-4.1-jdk17",
+      "spring_boot_version": "4.1.2",
+      "java_version": 17,
+      "framework_line": "7.0",
+      "tomcat_line": "11.0",
+      "servlet_version": "6.1",
+      "validation_namespace": "jakarta",
+      "validation_group": "jakarta.validation",
+      "validation_artifact": "jakarta.validation-api",
+      "web_starter": "spring-boot-starter-webmvc",
+      "web_test_starter": "spring-boot-starter-webmvc-test",
+      "aop_starter": "spring-boot-starter-aspectj",
+      "mybatis_plus_starter": "mybatis-plus-spring-boot4-starter",
+      "springdoc_major": 3,
+      "jackson_major": 3,
+      "swagger_artifact": "swagger-annotations-jakarta",
+      "versions": {
+        "mapstruct": "1.6.3",
+        "lombok": "1.18.42",
+        "lombok_mapstruct_binding": "0.2.0",
+        "swagger": "2.2.22",
+        "archunit": "1.4.1",
+        "compiler": "3.14.1",
+        "enforcer": "3.5.0",
+        "surefire": "3.5.4"
+      },
+      "candidate_blockers": [
+        "Candidate evidence uses locally installed source artifacts. Remote artifact publication/resolution and native Windows execution remain unverified",
+        "DDD unmatched routes return HTTP 500/A0101. Startup/listening was observed without business-route success"
+      ],
+      "spring_cloud_line": "2025.1",
+      "openfeign_line": "5.0",
+      "spring_cloud_minimum": "2025.1.2",
+      "spring_cloud_version": "2025.1.4",
+      "spring_cloud_alibaba_version": "2025.1.0.0",
+      "component_platform_line": "boot4-java17"
     }
   ],
   "compatibility": [
@@ -1256,6 +1294,230 @@
         "org.springframework.cloud:spring-cloud-zookeeper-discovery": "4.3.3",
         "org.yaml:snakeyaml": "2.5"
       }
+    },
+    {
+      "id": "yss-cloud-microservice-4.0.0-snapshot-boot-4.1-jdk17",
+      "profile_id": "spring-boot-4.1-jdk17",
+      "spring_boot_version": "4.1.2",
+      "parent": {
+        "group_id": "com.yss.cloud",
+        "artifact_id": "yss-cloud-microservice",
+        "version": "4.0.0-SNAPSHOT"
+      },
+      "bom": {
+        "group_id": "com.yss.cloud",
+        "artifact_id": "yss-components-bom",
+        "version": "4.0.0-SNAPSHOT"
+      },
+      "status": "candidate",
+      "capabilities": [],
+      "component_capabilities": {},
+      "evidence": [
+        {
+          "architecture_family": "layered-mvc",
+          "kind": "local-build-startup",
+          "report_id": "backend4-c2-mvc-local-start-2026-11-16",
+          "digest": "sha256:7607306b73419f788cc9bd30953a20d86a7fc0ea1226dc8441e0fc0328739235"
+        },
+        {
+          "architecture_family": "domain-driven",
+          "kind": "local-build-startup",
+          "report_id": "backend4-c2-ddd-local-start-2026-11-16",
+          "digest": "sha256:74b13c4ef23c374dde42b2f27dd208f64004418c27fde0b0417146a15eb656c2"
+        },
+        {
+          "kind": "local-consumer-tests",
+          "report_id": "backend4-c2-h2-postgresql-2026-11-16",
+          "digest": "sha256:53c1a8ff9bff9c3a15fb72ac32d9ec4f5f0d60391afe0855477bd64ac1351fc0"
+        }
+      ],
+      "blockers": [
+        "Remote artifact publication and cross-platform native execution are unverified",
+        "DDD missing-route response remains HTTP 500/A0101 under existing GlobalExceptionAdvice"
+      ],
+      "verification_scope": {
+        "architectures": [
+          "domain-driven",
+          "layered-mvc"
+        ],
+        "java_version": 17,
+        "spring_boot_version": "4.1.2",
+        "status": "candidate",
+        "empty_build": "passed",
+        "empty_runtime": "startup-and-http-listening-observed",
+        "limits": [
+          "Local source-built 4.0.0-SNAPSHOT artifacts on macOS ARM64 with Corretto 17.0.16; remote publication and Windows-native execution are unverified",
+          "Empty MVC and DDD startup and HTTP listening observed under scaffold-local; undeclared GET / returned MVC 404 and DDD 500/A0101",
+          "DDD GlobalExceptionAdvice maps missing-resource NoResourceFoundException to generic 500; missing-route behavior is not a successful business endpoint check",
+          "Five representative consumer behaviors passed on H2 and a real PostgreSQL 16 container; whole-API, other database dialects, production deployment and external registry integration are unverified",
+          "Selected source reactor had 420 test cases, 418 executed and two existing private-workbook cases skipped; no new component-wide adoption verification is implied",
+          "Original reports are retained in this source-validation workspace; installed profiles may contain only catalog metadata"
+        ],
+        "component_source_install": {
+          "status": "passed",
+          "reactor_modules": 17,
+          "tests": 420,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 2,
+          "executed": 418,
+          "scope": "selected component reactor and dependencies"
+        },
+        "source_state": "working-tree",
+        "source_commit": "ad2642dd05527c073eb1da1213843b1130b44703",
+        "source_content_sha256": "sha256:ab507485a5ff5451302b72e30a4a0e8887151a9491c85434d44a9ebff07f0b72",
+        "artifact_resolution": "local-install",
+        "environment": {
+          "os": "macOS",
+          "architecture": "ARM64",
+          "java_runtime": "Corretto 17.0.16"
+        },
+        "empty_runtime_observations": {
+          "layered-mvc": {
+            "startup": "observed",
+            "http_listening": "observed",
+            "request": "GET /",
+            "http_status": 404,
+            "business_endpoint": "not-declared",
+            "jar_sha256": "sha256:ddadf9dd74e7c744a3d342ec6d5ec75ece7392103332ceaeec5bde9c53f7c41c"
+          },
+          "domain-driven": {
+            "startup": "observed",
+            "http_listening": "observed",
+            "request": "GET /",
+            "http_status": 500,
+            "business_endpoint": "not-declared",
+            "jar_sha256": "sha256:84b0920a2d0cd0d59b90e4befbc2bc529ece186c0e5b7de4f0ecee25343c4f52",
+            "known_limit": "GlobalExceptionAdvice maps NoResourceFoundException for unmatched route to generic HTTP 500"
+          }
+        },
+        "consumer_tests": {
+          "scope": "Business HTTP exercised in-process through Spring MockMvc with real H2/PostgreSQL databases; socket HTTP observations cover only GET / on the original MVC and DDD applications",
+          "tests": 10,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "databases": {
+            "h2": 5,
+            "postgresql-16-container": 5
+          },
+          "behaviors": [
+            "systemFailureUsesSanitizedHttpContract",
+            "singleUsesCanonicalWireContract",
+            "mapperWritesQueriesAndPagesActualDatabase",
+            "transactionalServiceRollsBackActualMapperWrite",
+            "emptyCollectionSerializesAsArray"
+          ],
+          "probe_configuration": {
+            "mapper_scan": "explicit",
+            "sql_initialization": "explicit",
+            "db_type": "explicit for each database",
+            "pagehelper": "disabled"
+          }
+        },
+        "observed_warnings": [
+          "Existing MyBatis Plus JDBC URL inference warnings for h2/postgresql dialect values",
+          "Existing unrecognized MapStruct annotation-processor options",
+          "Existing component-root Maven settings blocked-tag recognition warning"
+        ]
+      },
+      "platform_artifact_bindings": {
+        "parent": {
+          "role": "parent",
+          "status": "local-installed-pom",
+          "group_id": "com.yss.cloud",
+          "artifact_id": "yss-cloud-microservice",
+          "declared_version": "4.0.0-SNAPSHOT",
+          "resolved_version": "4.0.0-SNAPSHOT",
+          "published_at": null,
+          "pom_sha256": "sha256:57cf2619ba118c89d8bf99c9c4fee0784e07842573d2d2dab3aeb1767308fb74",
+          "jar_sha256": null,
+          "source_tree": null,
+          "source_commit": "ad2642dd05527c073eb1da1213843b1130b44703",
+          "source_state": "working-tree",
+          "source_content_sha256": "sha256:ab507485a5ff5451302b72e30a4a0e8887151a9491c85434d44a9ebff07f0b72",
+          "resolution": "local-install"
+        },
+        "bom": {
+          "role": "bom",
+          "status": "local-installed-pom",
+          "group_id": "com.yss.cloud",
+          "artifact_id": "yss-components-bom",
+          "declared_version": "4.0.0-SNAPSHOT",
+          "resolved_version": "4.0.0-SNAPSHOT",
+          "published_at": null,
+          "pom_sha256": "sha256:bdc7a61153352abf186f9e4da29cc00dc3af0c994ed901d83dd0e3d90c64ed83",
+          "jar_sha256": null,
+          "source_tree": null,
+          "source_commit": "ad2642dd05527c073eb1da1213843b1130b44703",
+          "source_state": "working-tree",
+          "source_content_sha256": "sha256:ab507485a5ff5451302b72e30a4a0e8887151a9491c85434d44a9ebff07f0b72",
+          "resolution": "local-install"
+        }
+      },
+      "artifact_resolution_evidence": {
+        "report_id": "backend4-c2-local-install-2026-11-16",
+        "source_commit": "ad2642dd05527c073eb1da1213843b1130b44703",
+        "source_state": "working-tree",
+        "source_content_sha256": "sha256:ab507485a5ff5451302b72e30a4a0e8887151a9491c85434d44a9ebff07f0b72",
+        "resolution": "local-install",
+        "published_at": null,
+        "artifact_count": 41,
+        "source_target_installed_comparisons": 45,
+        "artifact_manifest_sha256": "sha256:4d74c69ab4b093d66bec855fae618bbaa18db403d0c79bce6109602865640e05",
+        "artifact_provenance_sha256": "sha256:a3a3e9bc9e32f5dbe2f918c1e813dd1f15922160035cb1955ee4e99551e5db12",
+        "artifacts": {
+          "com/yss/cloud/yss-cloud-microservice/4.0.0-SNAPSHOT/yss-cloud-microservice-4.0.0-SNAPSHOT.pom": "sha256:57cf2619ba118c89d8bf99c9c4fee0784e07842573d2d2dab3aeb1767308fb74",
+          "com/yss/cloud/yss-component-audit-log/4.0.0-SNAPSHOT/yss-component-audit-log-4.0.0-SNAPSHOT-sources.jar": "sha256:6d8b7d0c895e7095533f5f222beaeca0b228e5895b3a68e99d9912cd713fe8ad",
+          "com/yss/cloud/yss-component-audit-log/4.0.0-SNAPSHOT/yss-component-audit-log-4.0.0-SNAPSHOT.jar": "sha256:762c1b23b45c7c30d2158b7669d716dfd7c57bf9d03e8ece87cf275d752845f3",
+          "com/yss/cloud/yss-component-audit-log/4.0.0-SNAPSHOT/yss-component-audit-log-4.0.0-SNAPSHOT.pom": "sha256:6be7da289e0570434a954c5cd427558698312b4d6a371b9fc64849c29e01cb80",
+          "com/yss/cloud/yss-component-cache-parent/4.0.0-SNAPSHOT/yss-component-cache-parent-4.0.0-SNAPSHOT.pom": "sha256:7141bb7ff546bd06890558565989ebd5abbc69af519fc63a1bb9593adaea5042",
+          "com/yss/cloud/yss-component-cache-starter/4.0.0-SNAPSHOT/yss-component-cache-starter-4.0.0-SNAPSHOT-sources.jar": "sha256:ebb80b66678400ff3c7dbe3c881ab3d8b515247d1030a67c5551374b2e55458e",
+          "com/yss/cloud/yss-component-cache-starter/4.0.0-SNAPSHOT/yss-component-cache-starter-4.0.0-SNAPSHOT.jar": "sha256:b7c8497771582c707f5af46282707d1f91b66d02f7f2ac8019e988e82f83b63a",
+          "com/yss/cloud/yss-component-cache-starter/4.0.0-SNAPSHOT/yss-component-cache-starter-4.0.0-SNAPSHOT.pom": "sha256:d594ad1578068a2ad1188d942ef945bf99c3ada7bbc4caffc366eadfbad86a1b",
+          "com/yss/cloud/yss-component-caffeine-cache/4.0.0-SNAPSHOT/yss-component-caffeine-cache-4.0.0-SNAPSHOT-sources.jar": "sha256:b28bed9b01255f09b2b1b192e082894207e1fb2dcf79fe0d98eccf9c9da39f96",
+          "com/yss/cloud/yss-component-caffeine-cache/4.0.0-SNAPSHOT/yss-component-caffeine-cache-4.0.0-SNAPSHOT.jar": "sha256:e82d7e1df25e85e08c7d13510f4dd2e70d65d9f78f1e3877f374e5857a8130ef",
+          "com/yss/cloud/yss-component-caffeine-cache/4.0.0-SNAPSHOT/yss-component-caffeine-cache-4.0.0-SNAPSHOT.pom": "sha256:373e0a8ce74ef8e37a18aee45547a92b700b0eaef98f5804c5586fb500f40c3c",
+          "com/yss/cloud/yss-component-dto/4.0.0-SNAPSHOT/yss-component-dto-4.0.0-SNAPSHOT-sources.jar": "sha256:23df30e89061eebb8d7a945e34b60e7e9d9449708be4690fbe119f881afdb14e",
+          "com/yss/cloud/yss-component-dto/4.0.0-SNAPSHOT/yss-component-dto-4.0.0-SNAPSHOT.jar": "sha256:af7886c49a2cf9e8bcc4ee99eb177dfeda84f76764a4e51890a3fa1b46f0f7fb",
+          "com/yss/cloud/yss-component-dto/4.0.0-SNAPSHOT/yss-component-dto-4.0.0-SNAPSHOT.pom": "sha256:3bc84ef550c3410bf26f1ee63e933a851598ae24322c3d66dd8bbd00e451d8f9",
+          "com/yss/cloud/yss-component-exception/4.0.0-SNAPSHOT/yss-component-exception-4.0.0-SNAPSHOT-sources.jar": "sha256:65b68ed2eaafcdaab9dfdd97014948aac1ea207d8dc19ac187c6ef400aae784b",
+          "com/yss/cloud/yss-component-exception/4.0.0-SNAPSHOT/yss-component-exception-4.0.0-SNAPSHOT.jar": "sha256:d587f6a9839c0191f5916f13302b94eb35faf1d6eb34c1849fe285c1c241220e",
+          "com/yss/cloud/yss-component-exception/4.0.0-SNAPSHOT/yss-component-exception-4.0.0-SNAPSHOT.pom": "sha256:2900e0ebe1647e381e237a66a0bf95438b5977d9426a31700069cb61a3b1aad9",
+          "com/yss/cloud/yss-component-hazelcast-cache/4.0.0-SNAPSHOT/yss-component-hazelcast-cache-4.0.0-SNAPSHOT-sources.jar": "sha256:3e4af125c971a3bcd2d1e8d2a71bb6b20e6285a428c8b431f26b1fa9327dd69f",
+          "com/yss/cloud/yss-component-hazelcast-cache/4.0.0-SNAPSHOT/yss-component-hazelcast-cache-4.0.0-SNAPSHOT.jar": "sha256:6728b67caef9ec902e0e5444c7baafa5a09b200e9c8209ffb7bd383f96eb3b8f",
+          "com/yss/cloud/yss-component-hazelcast-cache/4.0.0-SNAPSHOT/yss-component-hazelcast-cache-4.0.0-SNAPSHOT.pom": "sha256:0008a1c66a02a075eaae979e173e27958db12139dcb458e4c44f745243157785",
+          "com/yss/cloud/yss-component-mybatis-mapper/4.0.0-SNAPSHOT/yss-component-mybatis-mapper-4.0.0-SNAPSHOT-sources.jar": "sha256:96762b76e7de9fedce191f25deb742be3ee914caee8b31fcf42cd697ba78af97",
+          "com/yss/cloud/yss-component-mybatis-mapper/4.0.0-SNAPSHOT/yss-component-mybatis-mapper-4.0.0-SNAPSHOT.jar": "sha256:de8c83a45115b6a66b84fc5edd4eca685917b6e446151cc85f50b798b8296fd9",
+          "com/yss/cloud/yss-component-mybatis-mapper/4.0.0-SNAPSHOT/yss-component-mybatis-mapper-4.0.0-SNAPSHOT.pom": "sha256:772fc24cc99858cfb07dbe0a5a02acb77293f19ecb8d108a3175abbc8512f35f",
+          "com/yss/cloud/yss-component-mybatis-plus-starter/4.0.0-SNAPSHOT/yss-component-mybatis-plus-starter-4.0.0-SNAPSHOT-sources.jar": "sha256:4de9891aef4c219f1e1699e4be5828e4c40aa65a279c5a15c5bc5fbcf7d31067",
+          "com/yss/cloud/yss-component-mybatis-plus-starter/4.0.0-SNAPSHOT/yss-component-mybatis-plus-starter-4.0.0-SNAPSHOT.jar": "sha256:728d4f104c1429577c41046f59057b612af1858682845c4f70c1ea9935907e18",
+          "com/yss/cloud/yss-component-mybatis-plus-starter/4.0.0-SNAPSHOT/yss-component-mybatis-plus-starter-4.0.0-SNAPSHOT.pom": "sha256:2903aca8b7f7a9262c809a63354d0370c321f314a68017f53b8feb6a4ef89e02",
+          "com/yss/cloud/yss-component-persistence-common/4.0.0-SNAPSHOT/yss-component-persistence-common-4.0.0-SNAPSHOT-sources.jar": "sha256:452df5606a0cbc171f366382c3fca4476e92fc7e99a38bc8e702de24ea627f05",
+          "com/yss/cloud/yss-component-persistence-common/4.0.0-SNAPSHOT/yss-component-persistence-common-4.0.0-SNAPSHOT.jar": "sha256:ed60685916958e0490e03440583d51deb6adf34f0f554f0f25f511dc8f461379",
+          "com/yss/cloud/yss-component-persistence-common/4.0.0-SNAPSHOT/yss-component-persistence-common-4.0.0-SNAPSHOT.pom": "sha256:8c909b6c29508865081f9269484c7e9408bd0c368702187455e2e86b20937426",
+          "com/yss/cloud/yss-component-persistence/4.0.0-SNAPSHOT/yss-component-persistence-4.0.0-SNAPSHOT.pom": "sha256:767d0be95bc081aa667208cdc21623470fd971e488c608ab59f8e02c94526b9d",
+          "com/yss/cloud/yss-component-redis-cache/4.0.0-SNAPSHOT/yss-component-redis-cache-4.0.0-SNAPSHOT-sources.jar": "sha256:1dc84107acad58f7d7ef75dcbba9a6af7aca29697aa1becc1f4346e9b03c03fa",
+          "com/yss/cloud/yss-component-redis-cache/4.0.0-SNAPSHOT/yss-component-redis-cache-4.0.0-SNAPSHOT.jar": "sha256:58c14b2052392e14c210d3ef8823a298e2b67f4a395062755965d0202e3b8788",
+          "com/yss/cloud/yss-component-redis-cache/4.0.0-SNAPSHOT/yss-component-redis-cache-4.0.0-SNAPSHOT.pom": "sha256:6e05c0a69be9b9e3b97a2d0d8aa291a56ea497c85ade94d785d0776ed4d9bfb2",
+          "com/yss/cloud/yss-component-spring-cache/4.0.0-SNAPSHOT/yss-component-spring-cache-4.0.0-SNAPSHOT-sources.jar": "sha256:7d921f7a002612f3af81e6f2e5f68701bc5c18a65c87c7293837f9250143c871",
+          "com/yss/cloud/yss-component-spring-cache/4.0.0-SNAPSHOT/yss-component-spring-cache-4.0.0-SNAPSHOT.jar": "sha256:d3ef77ae23d970d8faac60785caf980a2e3115de6e7a9e331a63df6098a61e31",
+          "com/yss/cloud/yss-component-spring-cache/4.0.0-SNAPSHOT/yss-component-spring-cache-4.0.0-SNAPSHOT.pom": "sha256:d4c5c2c9528322e4682a6cfcfb26ae4f3cc9763f3027dce1008db1c134b1d3dc",
+          "com/yss/cloud/yss-component-userinfo-starter/4.0.0-SNAPSHOT/yss-component-userinfo-starter-4.0.0-SNAPSHOT-sources.jar": "sha256:92bec08d3b28f134e37fdd075b522c99f0788c30f0a53fad9cd889fb7236cc78",
+          "com/yss/cloud/yss-component-userinfo-starter/4.0.0-SNAPSHOT/yss-component-userinfo-starter-4.0.0-SNAPSHOT.jar": "sha256:86f95252c66cde97525d29310d3b132043ee5d0ede2f4c1407fc9340b72b87a2",
+          "com/yss/cloud/yss-component-userinfo-starter/4.0.0-SNAPSHOT/yss-component-userinfo-starter-4.0.0-SNAPSHOT.pom": "sha256:b01ddc2b75a96b6f454e6364997daaaa1027a7e065666852b47fb992be9be899",
+          "com/yss/cloud/yss-components-bom/4.0.0-SNAPSHOT/yss-components-bom-4.0.0-SNAPSHOT.pom": "sha256:bdc7a61153352abf186f9e4da29cc00dc3af0c994ed901d83dd0e3d90c64ed83",
+          "com/yss/cloud/yss-microservice-components/4.0.0-SNAPSHOT/yss-microservice-components-4.0.0-SNAPSHOT.pom": "sha256:10067db08f0f01332e870098610298070991a566b965659849572d7dd9db3bb1"
+        },
+        "effective_model_sha256": "sha256:02f2b2f72bb287d609892ea59960bbca894e199a22066fc36be9e3b24da47650",
+        "packaged_artifact_provenance_sha256": {
+          "mvc": "sha256:08a6666a58e08e9da311ea04b48121a4eb08dbb258701684c9fd3c1b46fb70e8",
+          "ddd": "sha256:c5499640a3a73defa263db443da0d1af81501e4afe87d98d284fc78d7fc7fca9"
+        },
+        "artifact_content_sha256": "sha256:157011848bfe260c63273cdc34fdefed91259ec7e6cc0ca5a9a71d737597b190",
+        "verification_summary_sha256": "sha256:0bc2ded656cf1516ac3418209ce095c8a76ac72419ead775dedb4461e5385b26",
+        "source_report_sha256": "sha256:dfeb2cf988a2817870a51dd3d43408b0cd893fae8249e4ab37ca1d602f90a9bb"
+      }
     }
   ],
   "component_retirement_policy": {
@@ -1267,5 +1529,6 @@
       "runtime-bean-and-configuration-scan",
       "30-90-day-zero-usage-window"
     ]
-  }
+  },
+  "default_recipe_id": "yss-cloud-microservice-4.0.0-snapshot-boot-4.1-jdk17"
 }

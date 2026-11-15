@@ -24,19 +24,19 @@ description: "审查、迁移或排查既有 YSS 加解密、JWT/JWK、密码编
 1. 识别任务是新接入、既有故障、风险止血还是迁移；新接入直接按上述准入结论阻断。
 2. 读取 `references/source-index.md`，再按需检查 `CryptoType`、`SecurityCryptoUtil`、`KeyGeneratorUtils` 和 `DefaultJwtConfiguration`，记录实际算法、模式、编码、key id、密钥来源、调用方和持久化数据范围。
 3. 对既有使用先完成暴露面和兼容盘点：源码/配置中的密钥材料、JWT 签发与验签方、密码散列格式、密文格式、历史数据、下游消费者及回滚要求。
-4. 在 `boot3-java17` 中，`Jwks.generateRsa()`、`generateEc()` 和 `generateSecret()` 是 deprecated fail-closed 入口：它们不生成、不解码密钥，必须抛出错误并要求 managed `JWKSource`。Boot 2 中可能存在的硬编码/临时密钥实现只用于风险盘点，不得迁入 Boot 3。
+4. 在 `boot3-java17` / `boot4-java17` 中，`Jwks.generateRsa()`、`generateEc()` 和 `generateSecret()` 是 deprecated fail-closed 入口：它们不生成、不解码密钥，必须抛出错误并要求 managed `JWKSource`。Boot 2 中可能存在的硬编码/临时密钥实现只用于风险盘点，不得迁入 Boot 3/4。
 5. `SecurityCryptoUtil` 是兼容 facade，只有显式安装获批 `SecurityCryptoProvider` 后才委派 encrypt/decrypt；未配置 provider 时 fail closed。provider 必须是外部 KMS / Secret Provider 或经批准的托管加密适配器。
 6. `RsaEcbOAEPWithSHA` 保留 deprecated 的 public constructor、`TextEncryptor` 类型和实例 `encrypt` / `decrypt` 签名作为二进制/源码兼容适配器；实现只委派 `SecurityCryptoUtil`，不得恢复内置私钥或自行执行遗留加密。
 7. 迁移目标必须使用批准的外部 KMS / Secret Manager 或等价受控密钥服务，应用只保存 key reference/version；密钥材料不得进入源码、普通配置、日志、证据文件或聊天记录。
 8. 设计分阶段轮换：冻结新旧写入边界，建立新 key version，双读/多版本解密或离线重加密，验证存量数据和 JWT 消费者，再撤销旧 key；不得直接覆盖旧密钥导致数据或令牌不可恢复。
-9. Boot 3 默认密码 Bean 与兼容 public static factory 都调用 `PasswordEncoderFactories.createDelegatingPasswordEncoder()`；不得把 delegating encoder 的默认 id 改回 `noop`。密码迁移仍需兼容升级策略。
+9. Boot 3/4 默认密码 Bean 与兼容 public static factory 都调用 `PasswordEncoderFactories.createDelegatingPasswordEncoder()`；不得把 delegating encoder 的默认 id 改回 `noop`。密码迁移仍需兼容升级策略。
 10. JWT 必须验证 signature、issuer、audience、expiry 和允许算法，payload parsing 不能充当认证。
 11. 输出迁移清单、数据/调用方影响、回滚点、验证结果和安全审查引用；缺任一生产前提时保持 `blocked-for-production`。
 
 ## 安全与兼容
 
-- Boot 2 历史实现中的硬编码 RSA 私钥、固定 key id、临时 JWK 与 noop 默认值必须视为已暴露风险并进入轮换/撤销盘点；不得把这些历史事实误写成 Boot 3 当前实现。
-- Boot 3 `Jwks` fail closed，`DefaultJwtConfiguration` 只提供 `PasswordEncoderFactories` 的 delegating encoder；JWT/JWK 必须由应用安全层或外部 KMS 提供。
+- Boot 2 历史实现中的硬编码 RSA 私钥、固定 key id、临时 JWK 与 noop 默认值必须视为已暴露风险并进入轮换/撤销盘点；不得把这些历史事实误写成 Boot 3/4 当前实现。
+- Boot 3/4 `Jwks` fail closed，`DefaultJwtConfiguration` 只提供 `PasswordEncoderFactories` 的 delegating encoder；JWT/JWK 必须由应用安全层或外部 KMS 提供。
 - 兼容适配器只保留公开类型和方法契约，不恢复旧密钥、旧密文解密或隐式 provider。存量兼容仍需代表性 ciphertext/JWT/password fixtures、回滚点和安全责任人审查。
 - 可部署实现消费批准的受控密钥服务和 key reference，不从示例推导密钥来源。
 - API 合同明确明文/密文、编码格式和密钥类型。

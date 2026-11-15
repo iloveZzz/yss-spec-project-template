@@ -21,10 +21,11 @@ description: "接入或排查 YSS 统一异常、错误码、异常处理器与 
 6. `target-domain-model` 的稳定错误含义与参数归 Domain，不直接依赖 YSS `BizException` 或 HTTP；先验证组件 handler 优先级，再在 Web 边界翻译。
 7. MVC Profile 的稳定业务错误归 service/core；Repository 保留 cause；server 持有 HTTP 映射与脱敏。不要为了复用错误码引入 Domain 层或让 core 依赖 client。分层依据 `.template-spec/agents/backend-architecture-profiles.md`。
 
-## Boot 3 行为
+## Boot 3/4 行为
 
-- 以下当前行为针对 `boot3-java17`；Boot 2 旧工程必须读取其独立索引，旧行为只用于迁移识别。
+- 以下行为在当前 `boot4-java17` 源码中保留，Boot 3 按其索引核验；Boot 2 旧工程必须读取其独立索引，旧行为只用于迁移识别。
 - `GlobalExceptionAdvice` 将 `BizException` 映射到 HTTP 400；未知 `Exception`、`RuntimeException` 和 `NullPointerException` 映射到 HTTP 500，返回脱敏的 `SysException` 与 `ResultErrorCode.INTERNAL_ERROR`，不返回异常原文。
+- Boot 4 当前 `NoResourceFoundException` 进入通用500/A0101映射，原样DDD未声明的 `GET /` 已观察到此响应。路由缺失和业务端点成功分别核验。
 - `MaxUploadSizeExceededException` 映射到 HTTP 413（`PAYLOAD_TOO_LARGE`）与 `ResultErrorCode.MAX_UPLOAD_SIZE_EXCEEDED`。
 - 系统和未知失败使用 SLF4J logger；`yss.exception.level=debug` 增加 logger debug 堆栈，不调用 `Throwable#printStackTrace()`。
 - 每个处理响应在 MDC 中附加或复用 trace id，并通过 `X-Trace-Id` 响应头公开；正文不含原始 localized exception 或堆栈。
@@ -41,7 +42,7 @@ description: "接入或排查 YSS 统一异常、错误码、异常处理器与 
 - 核验所需依赖或 starter 已进入实际工程。
 - 错误码与消息对 API 消费方有明确含义。
 - 公开消息已脱敏，不暴露原始 RuntimeException 或 localized exception 细节。
-- 对受影响的 `boot3-java17` HTTP seam 验证业务 4xx、未知/runtime 5xx 与 trace header；仅上传限制影响验证 413。Boot 2 使用其独立源码与既有接口约定，不引入 Boot 3 断言。
+- 对受影响的 `boot3-java17` / `boot4-java17` HTTP seam 验证业务 4xx、未知/runtime 5xx 与 trace header；仅上传限制影响验证 413。Boot 2 使用其独立源码与既有接口约定，不引入其他平台断言。
 - 业务校验失败不归为未知系统错误。
 - 未知/系统失败的堆栈保留在结构化日志中，不直接打印 stderr 或序列化给客户端。
 - 重试建议与异常类型及实际用例一致。

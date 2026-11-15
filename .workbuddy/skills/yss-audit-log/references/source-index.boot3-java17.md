@@ -10,6 +10,20 @@ Indexed source root: resolved at refresh time; set `YSS_SOURCE_ROOT_BOOT3_JAVA17
 
 Paths are relocatable source hints. Exact guidance comes from the current readable source; indexed commits, tree hashes and worktree status describe the indexing time, not prerequisites for investigation. Explain relevant local changes without requiring a clean checkout or index refresh.
 
+## 2026-11-15 局部核对
+
+本次仅核对下列当前源码与相关配置，保留上方 2026-09-18 快照身份以及下方历史 GAV、树与文件哈希。未执行全量索引刷新。核对来源为 `yss-cloud-microservice` 的 `3d287faba5e10b0784ae23eeb58278825af105e5` 基线与本轮未提交候选工作树，当前组件版本为 `3.2.0-SNAPSHOT`。本次源码核对不证明已发布构件能力。
+
+当前模块相对路径为 `yss-microservice-components/yss-component-audit-log`，按源码定位策略解析实际工程根后读取以下入口。
+
+- `src/main/java/com/yss/cloud/audit/AuditLog.java` 的 `detailPaths()` 显式选择安全标量。`isNeedArgs`、`isNeedResult` 为弃用 API。
+- `src/main/java/com/yss/cloud/audit/configuration/AuditDetailExtractor.java` 负责路径、敏感字段、标量及长度校验，最多 16 路径。字符串限 128 字符。`args[n]` 直接标量要求安全的真实参数名，字段选择单独核验字段名。
+- `src/main/java/com/yss/cloud/audit/configuration/AuditLogAspect.java` 使用 `@AfterReturning` 采集，SpEL 只读取白名单中的 `args` / `result`。身份来自 `CurrentUserProvider`。
+- `src/main/java/com/yss/cloud/audit/subscriber/YssAuditPublishService.java` 的入口为 `publish(AuditMessage)`，使用进程内有界队列。队列拒绝和订阅失败有指标，当前无事务提交后钩子、持久队列或失败重试，退出可能丢失消息。
+- `src/main/java/com/yss/cloud/audit/configuration/AuditConfiguration.java` 与 `AuditConfigurationProperties.java` 中，`yss.audit.enabled`、`auditLogPrintEnabled`、`sendSysManageEnabled` 默认均为 false。启用相应条件后才注册切面、发布器及默认订阅器。
+
+技能 `assets/*.java` 继续保留 Boot 2 历史资料身份。接入示例与投递边界见 [技能正文](../SKILL.md)。
+
 ## Component Path Hints
 
 - `yss-microservice-components/yss-component-audit-log` (existed when indexed)

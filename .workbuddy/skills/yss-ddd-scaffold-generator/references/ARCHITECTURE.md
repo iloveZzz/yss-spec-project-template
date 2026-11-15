@@ -1,6 +1,6 @@
-# YSS DDD Target Profile
+# YSS DDD 分层职责
 
-本文定义 `architecture=target-domain-model` 的唯一目标结构。历史 `core/client/repository`、DTO 型 Gateway、client-in-domain 以及其他旧架构全部为 `unsupported`，不存在 legacy Profile 或回退分支。
+新建 DDD 空工程使用现装 CLI 支持的 `scaffold ddd`。本文说明后续实现的职责与依赖，已有工程维护先读取其实际架构并增量编辑。
 
 ### Domain
 
@@ -41,21 +41,21 @@
 
 - 实现 Domain Gateway 和 Application Query Port。
 - MyBatis-Plus Repository、PO、SQL、数据源配置和 `PO <-> Domain Model` MapStruct 转换位于本层。
-- 首个受支持 Profile 是 `persistence=mybatis-plus`；其他持久化方案必须先通过独立 fixture。
+- 持久化技术沿用工程基线与当前需求，具体映射和 SQL 按实际依赖实现。
 - 事务边界由 Application 持有，不在 GatewayImpl 重复制造边界。
 
 ### Adapter/Web
 
 - HTTP Request/Response、校验、Controller、WebConvertor 和异常到 HTTP/YSS Result 的映射。
-- Request 字段来自当前 OpenAPI/批准 allowlist，不从数据库 metadata 全量推导。
+- Request 字段来自当前 API 需求和适用 OpenAPI，保留业务输入与权限边界。
 - WebConvertor 使用 `@Mapper(componentModel = "spring")` 和构造器注入。
-- DTO 物理位置固定为 Web；独立 client module 为 `unsupported`。如未来确需发布复用制品，必须另行设计并批准新的 Target Profile。
+- HTTP DTO 位于 Web。需要独立客户端制品时按当前需求另行设计公开契约与依赖。
 - Web 不直接依赖 Infrastructure，不把 Domain Model 作为 Controller seam。
 
 ### Bootstrap
 
 - 组合 Web 和 Infrastructure，提供机械 Spring Boot 入口与环境配置。
-- 默认配置使用 INFO；DEBUG 和 MyBatis stdout SQL 仅存在于 `application-local.yml`。
+- 默认配置使用 INFO。DEBUG 和 MyBatis stdout SQL 仅存在于 `application-local.yml`。
 
 ## 2. 依赖方向
 
@@ -73,7 +73,7 @@ Bootstrap -> Web + Infrastructure
 - Domain Gateway 接收 HTTP DTO、返回 Web VO/PageResult
 - Repository 把 PO 直接返回给 Application/Web
 
-上述规则由生成工程的 `ArchitectureRulesTest` 执行，不只依赖文档约定。
+实现或审查时核对上述依赖方向。当前 CLI 生成空骨架，架构测试按实际需求另行添加。
 
 ## 3. 调用链
 
@@ -100,6 +100,6 @@ Domain Error -> Application propagation/translation -> Web Exception Translator
 
 ## 4. 生成与演进
 
-由 Agent 按当前需求和保留的模板直接创建模块、POM、Wrapper 与必要配置。既有工程增量编辑，保留用户内容；不生成 Manifest 资格、架构检查器或测试套件。
+现装 CLI 支持时生成空模块、POM、机械启动配置、Maven Wrapper 和 `.yss/scaffold.json` 来源收据。`assets/reference` 保留为教学资料，业务实现按当前需求继续。CLI 能力缺口按 [资产使用边界](standalone-generation.md) 评估，已有工程增量维护并保留用户文件。
 
-文件生成、构建和实际运行分别报告，不用完成等级或阶段状态代替事实。后续业务实现按当前需求继续，无需首切片验证器。
+文件生成、构建和实际运行分别报告，工程命令按任务需要使用根 `./mvnw`。

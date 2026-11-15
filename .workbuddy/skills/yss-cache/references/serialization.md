@@ -2,7 +2,7 @@
 
 当前存在两条不同数据路径：
 
-- 框架 `RedisTemplate` 使用 Jackson JSON serializer。
+- 框架 `RedisTemplate` 使用 Jackson JSON serializer。Boot 4 当前源码使用 `tools.jackson.databind` 的 `JsonMapper` 和 `JacksonJsonRedisSerializer`，保留字段顺序及Date时间戳策略。Jackson代际变化后的存量字节兼容需通过实际迁移用例确认。
 - Spring `RedisCacheManager` 沿用默认 JDK value serialization。
 
 两者的数据不可假设互相可读。`RedisTemplate` 的历史泛型声明与通用 JSON 行为也不完全一致，修改前必须检查消费方注入类型和实际操作。

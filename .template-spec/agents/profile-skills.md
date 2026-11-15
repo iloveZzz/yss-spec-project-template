@@ -74,7 +74,7 @@ Backend 在共用 5 项之外预装以下 37 项。较完整的后端研发由 `
 | `to-tickets` | 明确要求后端拆分，或完整交付确需细化时，组织研发实现切片；沿业务行为贯通实际技术层，不先补业务票 |
 | `yss-ddd-scaffold-generator`、`yss-layered-mvc-scaffold-generator` | 仅在新工程需要时，依据实际选定架构生成脚手架；共享生成资源不意味着选择 DDD |
 | `alibaba-java-code-style`、`lombok`、`mapstruct` | 分别支撑适用 Java 规范、对象代码生成与模型映射；按本次代码和实际版本选用 |
-| `yss-domain`、`yss-application` | 在已确认 DDD 边界内实现领域行为与用例编排；MVC 保留现有 Service 职责 |
+| `yss-domain`、`yss-application` | DDD 分别实现领域行为与用例编排；MVC 由 `implement → yss-application` 在现有 Service 中处理规则、事务与幂等，按需协作持久化和 Web 技能 |
 | `yss-repository`、`yss-mybatis` | 分别处理持久化职责实现、MyBatis 组件用法与兼容性；读取已有模型、Mapper 和实际依赖 |
 | `yss-web-controller`、`yss-dto`、`yss-openapi-governance` | 分别实现 Web 边界、统一传输模型、维护实际 API 契约与兼容性；与前端消费的接口保持一致 |
 | `yss-validation`、`yss-exception` | 在涉及输入约束、错误码和错误处理时使用，保留业务校验与错误语义 |
@@ -139,6 +139,10 @@ flowchart LR
 | 整理发给供应商的待答问题 | `grilling` 的第三方问题方法，复用已知事实 | 不向当前用户逐项索要供应商答案，不自动发送 |
 | 设计数据库或从元信息生成说明书 | `database-analysis-docs`，按需结合已有业务资料 | 不查询业务记录、不自动建库或迁移；宿主缺工具时报告限制 |
 | 后端为已有行为补集成测试 | `yss-backend-testing`，按需使用 `implement` | 不因预装 `tdd` 而改为测试优先，不自动提交 |
+| 修复已有 MVC Service 重复提交 | `implement → yss-application` 的 MVC 分支，按需配合持久化与验证 | 沿用 Service、Repository、Controller，不重新生成工程或新增 Domain/Gateway |
+| 按明确规则开发 DDD 聚合 | `yss-domain`，按用例需要协作 `yss-application`、`yss-repository`、`yss-web-controller` | 不索要退役合同或架构登记；真正缺少业务决定时澄清 |
+| 排查分页或缓存失效 | `yss-mybatis` 或 `yss-cache`，核对当前组件版本、配置和调用路径 | 不因组件存在就假定代理命中或配置生效，不重生成持久层 |
+| 评估或执行 Boot 2→3 迁移 | 按需使用 `yss-up-springboot3`，核对实际依赖、Jakarta、Cloud 与受影响组件 | 不要求 Manifest、Slice 或合同编译器，不外推 Boot 4 兼容 |
 | 审查当前未提交改动 | `code-review` 读取完整候选与关联行为 | 不转实现，不漏掉相关未跟踪文件，不覆盖用户修改 |
 | 前端只改一处按钮文案和间距 | `yss-frontend-application` 的局部修改方法 | 不加载 Vue 状态、composable、脚手架或产品设计方法 |
 | 在新目录开发前端应用 | 必要时脚手架，再由应用技能实现；命中 Vue 行为时使用相应技能 | 不重做已经确认的产品设计，不替后端设计数据库 |

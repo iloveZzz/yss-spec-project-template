@@ -1,6 +1,6 @@
 # YSS Domain Target Profile 指南
 
-本指南的目录和生成布局只定义新 DDD `target-domain-model`。既有 DDD 通过 [既有工程边界](existing-project.md) 应用领域语义规则；历史目录或贫血对象不能单凭名称判违规。HTTP DTO/VO 穿入领域端口仍须按登记职责检查。架构迁移不属于生成器。
+本指南的目录和生成布局只定义新 DDD `target-domain-model`。既有 DDD 通过 [既有工程边界](existing-project.md) 应用领域语义规则，历史目录或贫血对象不能单凭名称判违规。HTTP DTO/VO 穿入领域端口按实际职责检查，架构迁移按当前授权评估范围。
 
 ## 1. Domain 所有权
 
@@ -40,7 +40,7 @@ DTO/VO 位于 `{base_package}.rest.dto`。独立 client Maven module 对当前 T
 
 Gateway 描述领域能力，只交换 Domain Model、领域值和领域标识。例如：
 
-Gateway interface 的签名由当前领域模型决定，并由 `yss-domain` 唯一创建和维护；Infrastructure / `yss-repository` 只能实现该接口。若实现所需能力超出既有签名，返回 `new_impacts` 并重路由，不得从 DDL 反向扩写 Domain 合同。
+Gateway interface 的签名由当前领域模型决定，并由 `yss-domain` 创建和维护，Infrastructure / `yss-repository` 实现该接口。实现需要扩展能力时，核实业务规则与真实调用方，在授权范围内同步接口、实现及调用方。聚合边界或业务决定有缺口时定点澄清，不能从 DDL 反向编造领域能力。
 
 ```java
 package com.yss.quality.domain.template.gateway;
@@ -82,7 +82,7 @@ public final class QualityTemplateNameConflict extends RuntimeException {
 }
 ```
 
-Web Exception Translator 再将它映射为批准的状态码、错误码和消毒消息。Domain 不直接依赖 YSS `BizException`。
+Web Exception Translator 再按现有 API 约定映射状态码、错误码和消毒消息。Domain 不直接依赖 YSS `BizException`。
 
 ## 6. 依赖参考
 
@@ -92,14 +92,14 @@ Web Exception Translator 再将它映射为批准的状态码、错误码和消�
 - Domain 不依赖 YSS DTO/Exception、Jackson、Swagger 或 Validation。
 - 负例 fixture 中的 Domain → Web DTO 引用会使验证失败。
 
-## 7. 生命周期证据
+## 7. 实现范围与验证
 
-- 新聚合、不变量、状态机或跨上下文影响进入 `new_impacts` 并暂停。
-- 旧布局不走 scaffold 生成分支；既有 DDD 按登记整改。需改变架构或公开契约时单独评估并批准。
+- 已明确规则的新聚合、不变量、状态机或跨上下文协作按当前授权实现，核实受影响调用方、持久化和公开接口。真正缺少业务决定时澄清相关问题，已知部分继续推进。
+- 既有 DDD 沿用当前布局增量维护。改变架构或公开接口时评估兼容性、数据影响和验证范围，超出当前授权的部分需取得对应授权。
 
 ## 聚合创建与重建
 
-- 创建入口执行当前创建规则；持久化重建入口恢复已批准状态并校验结构不变量，不重复发送创建事件、生成身份或执行外部调用。两者不得通过公开任意 setter 混为一体。
+- 创建入口执行当前创建规则，持久化重建入口恢复已保存状态并校验结构不变量，不重复发送创建事件、生成身份或执行外部调用。两者不得通过公开任意 setter 混为一体。
 - 值对象按值相等；聚合按稳定身份相等。集合对外只读，修改经业务方法；Java 8 使用普通类与防御性复制，不从示例推导 record 等高版本语法。
 - 领域错误携带稳定标识与参数；公开消息和 HTTP 状态由 Web 翻译。测试通过公开行为覆盖非法状态、重复动作和重建后语义一致性。
 - 为业务决策加载一个或一组聚合仍可使用 Domain Gateway；展示列表、分页、排序、统计和投影走 Application Query Port。返回 List 本身不是违规，须按调用目的判定。
