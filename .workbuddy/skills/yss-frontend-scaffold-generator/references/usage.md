@@ -20,6 +20,10 @@ yss attach --root /absolute/output/my-frontend --profile frontend --installation
 
 技能安装不复制 starter。已有 README/DESIGN、应用源码、package/lock 和 .gitignore 保留；旧收据不会自动迁移 ownership，本地修改/删除由 doctor 显示。遇冲突按诊断处理，不覆盖来强行通过。
 
+只有本次确有技能接入需求时执行 attach；已授权同时生成和接入时可连续完成。支持 nextSteps 的开发构建在生成成功报告中给出 command.program/args，program 仅为调用名；实际使用本轮核实的程序路径和原样参数数组，路径中的空格、引号或美元符号保持字面值。预览不会给成功指引，旧版缺少字段不影响上述已支持的命令。
+
+scaffold 成功而 attach 失败属于部分成功：保留源码、`.yss/scaffold.json` 和自定义入口，说明具体冲突路径与尚未安装的技能，不重新生成、不回退默认 project。若有已核实的上游 Home/规格，在已有 README 规格来源区增量维护入口，再让 AGENTS 引用该位置；已有等价导航直接复用，无上游或无目标仓写入授权时不补写。
+
 需要运行时，先看父目录 package.json / pnpm-workspace.yaml 的实际范围，防止安装落入其他 workspace。使用声明的环境执行 `pnpm install --frozen-lockfile`、`pnpm lint`、`pnpm typecheck`、`pnpm build`、`pnpm dev`；验证页面与键盘焦点。只执行本次所需检查，不要求新增脚本/套件。页面用 `views/<Page>/{index.vue,components,hooks,schemas}`，通用 hooks 在 `src/hooks`。
 
 JSON 输出使用现有 yss.output 信封。失败的 phase/stagingPath/targetPath/cleanup 表示实际阶段和残留；renameApplied=true、phase=published 表示目标已发布但后续检查失败。保留目标并说明状态，不把非事务暂存目录交给 recover，也不声称已安全回滚。

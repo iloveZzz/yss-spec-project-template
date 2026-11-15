@@ -21,6 +21,10 @@
 
 CLI 3.2.0 的项目选择支持 `--profile spec|backend|frontend`、`--installation project|skills`。frontend 需要对应 Bundle，3.1.4 及以前不支持；先确认实际版本与帮助。`init`、`attach`、`sync`、`skills ensure`、`scaffold` 和 `upgrade` 使用 `--dry-run` 预览；实际参数以对应帮助为准。前端接入见 [Frontend](tutorial-frontend.md)。
 
+安装先区分三种职责与范围：spec 承载业务规格、产品设计和产品 Home 入口，backend/frontend 承载专业工程；project 为新安装默认范围，skills 安装技能、宿主入口及必要引用，二者都不生成应用源码。sync 沿用原 Profile 和范围，只有显式 installation 才改变范围。
+
+支持 nextSteps 的开发构建在 init/attach 或 scaffold 成功后提供后续指引；旧版以实际帮助为准。指引不自动执行命令或创建仓库地图；dry-run、sync 和 skills ensure 不给新仓成功建议。command 使用独立 args 数组，由 Agent 沿用本次已核验的程序路径，不拼接 shell 或重新选用 PATH 旧版。
+
 在线升级指定 `upgrade --to <版本> --tool-root <工具目录>`；离线升级指定 `upgrade --artifact <归档> --sha256 <摘要> --tool-root <工具目录>`。不要将两组来源混用。恢复操作按 `recover --help` 选择实际支持的项目或工具目录参数。
 
 此接口不提供旧 plan/apply、生命周期、合同、证据、门禁、插件或脚本执行入口。

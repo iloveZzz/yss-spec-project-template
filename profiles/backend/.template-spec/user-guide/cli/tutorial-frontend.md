@@ -40,3 +40,9 @@ yss attach --root /absolute/output/my-frontend --profile frontend --installation
 最小工程包含 Vue 3、VueUse、TypeScript、Vite、Tailwind、Button/Input 和 ESLint；Node/pnpm 要求以 catalog/package.json 为准。安装前检查父 workspace 范围，随后按 README 冻结安装、lint、typecheck、build、dev 并验证入口。请求/useRequest/Axios/Orval 按任务接入，业务页面交应用技能实现。
 
 attach skills 保留既有源码、package/lock、README/DESIGN 和 .gitignore。新建缺失 .gitignore 记为 user-owned；旧 managed 收据不自动迁移，本地修改/删除后 sync 保留现状，doctor 返回实际差异。不要覆盖来强行通过接入。
+
+## 连接产品 Home
+
+Profile 表达仓库职责，project/skills 表达安装范围，scaffold 单独生成源码；新安装仍默认 project。用户只要源码时不额外 attach，明确需要项目技能时沿用同一已核验的 CLI 完成上述 skills 接入。支持 nextSteps 的开发构建返回独立 command.args；核对目标后按参数数组执行，不拼接 shell，旧版按实际帮助操作。
+
+生成成功后 attach 冲突，保留源码、生成收据和原入口，明确技能接入未完成，不删除工程或退回 project。若有上游 Home/规格且允许修改本仓，优先在已有 README 的规格来源区补充真实入口，再让 AGENTS 引用；已有等价导航继续使用，无上游不造关系。独立技能沿原来源更新，不因加入 Home 转成受管安装。

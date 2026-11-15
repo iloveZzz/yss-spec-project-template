@@ -51,6 +51,10 @@ yss sync --root <受管目录> --installation project
 
 `init` 只用于新目录或空目录；普通已有目录使用 `attach`，已有受管项目使用 `sync`。`skills ensure` 的技能名是位置参数，只安装所选技能及必要资源。`sync` 默认沿用原安装范围，只有显式 `--installation project|skills` 才切换。模板与技能来自该 CLI 的内嵌 Bundle，不会另拉模板 main；需要新 Bundle 时先升级 CLI。
 
+先根据本次目标选择职责、安装范围和是否生成源码：新 Home 使用 spec/project；仅在原仓使用 Spec 方法可选 spec/skills；已有前后端需要项目技能时使用对应 Profile 的 skills。project 继续支持工程资料安装；skills 也包含宿主入口，不能承诺与自定义 AGENTS 等文件无冲突。独立技能目录沿原安装来源，不先转换为受管项目。
+
+支持 `nextSteps` 的开发构建会在成功安装或生成后提供指引；以实际报告核实，不能声称旧版已有该字段。读取 command 时先确认目标、Profile 和范围符合本次任务，沿用本轮已核验的二进制绝对路径，将 args 作为独立参数数组执行，不拼接 shell 字符串。program 只是调用名，不表示 PATH 中同名程序已核验；command 缺失时按文字指引处理。旧版没有 nextSteps 时，仍可按实际帮助使用已有命令。
+
 ## 配置产品 Home
 
 用户要求配置 Home，或本次初始化已经包含产品及其关联工程的协调目标时，使用[仓库地图模板](references/repositories-template.md)。先读取已有 README 索引、仓库地图、交接资料和用户提供的位置；已有等价地图继续使用，只补缺失事实并在 Home 的 AGENTS 中引用实际位置。需要独立地图时创建根 `REPOSITORIES.md`，按真实 Git 身份和资料核实内容，未知关系保留未知。
@@ -59,7 +63,9 @@ yss sync --root <受管目录> --installation project
 
 直接执行 `init/attach` 只分发入口、技能与地图模板，不自动填充真实产品关系。仅安装 `skills` 不创建地图或业务文档，也不把现有工程改成产品 Home；明确配置 Home 时才按已有授权补齐入口和关系。
 
-旧项目先使用包含新内容的 Bundle 再 `sync`，保留原 Profile 和安装范围。核对 `skills list` 与实际文件中是否已有 `implement`；缺少时按当前 CLI 支持的 `skills ensure implement --root <Home目录>` 补齐，不手改收据。地图中的项目事实由项目维护；README、AGENTS 等入口的本地定制遵守实际安装记录的同步冲突保护，不假设能自动合并或覆盖。需要更新地图或已有入口定制时先读取并增量修改，不强制覆盖。独立或用户级技能仍通过原安装来源更新，不接管为受管项目。
+需要工程侧上游导航且该仓写入属于本次范围时，优先在已有 README 的规格来源区增量记录已核实的 Home/规格入口，再由 AGENTS 引用实际位置；已有等价导航继续使用。没有已知上游不补造链接；仅有 Home 写入授权时，目标工程保持只读，说明反向导航尚未配置。
+
+旧项目先使用包含新内容的 Bundle 再 `sync`，保留原 Profile 和安装范围。同步成功或确认本次无需同步后，核对 `skills list` 与实际文件中是否已有 `implement`；缺少且补装属于本次范围时按当前 CLI 支持的 `skills ensure implement --root <Home目录>` 补齐，不手改收据。sync 已报冲突时先保留现场并处理实际差异，不能用 ensure 绕过整次同步冲突。地图中的项目事实由项目维护；README、AGENTS 等入口的本地定制遵守实际安装记录的同步冲突保护，不假设能自动合并或覆盖。需要更新地图或已有入口定制时先读取并增量修改，不强制覆盖。独立或用户级技能仍通过原安装来源更新，不接管为受管项目。
 
 ## 独立或用户级 Skills
 
@@ -87,6 +93,8 @@ yss scaffold frontend --project-name <小写kebab-case工程名> --output-dir <�
 ```
 
 父目录须已存在，目标工程目录必须不存在，包括已有空目录。加 `--dry-run` 只预览；生成复制内嵌 starter 并修改 package.name，不安装依赖或启动服务。只要求源码就交付源码与运行说明；需要项目技能时另行执行 `attach --profile frontend --installation skills`。`.yss/scaffold.json` 记录生成来源，不授予 `sync` 管理应用源码的权利。已有工程改造交给应用工程技能，不能用生成命令覆盖。
+
+用户已要求生成源码并安装项目技能时，核实参数后连续完成 scaffold → attach skills，无需逐命令重复确认。DDD/MVC 对应 backend，Vue 对应 frontend；沿用同一已核验的 CLI。生成成功但 attach 冲突时分别报告“源码已生成、技能接入未完成”，保留生成源码及原入口，读取双方内容提出具体整合差异，不删除工程、不改用默认 project 重试覆盖。导航只在已有关系与写入范围内补充。
 
 运行 Vue 工程前，按实际 catalog、package.json 和锁文件核对 Node/pnpm；它们与 Rust CLI 本体、skills 安装工具的运行要求分别判断。依赖安装、工程检查和启动遵循本次任务范围，不从源码生成请求推导这些动作已获授权。
 

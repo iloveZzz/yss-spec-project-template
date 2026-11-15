@@ -19,3 +19,11 @@
 12 项按需技能为 `to-spec`、`yss-stage-decision`、`triage`、`wayfinder`、`llm-wiki`、`yss-backend-spec-review`、`yss-up-springboot3`、`yss-security-algorithm`、`setup-matt-pocock-skills`、`maintaining-skills`、`writing-for-agents`、`publish-skills-sh`。历史安全算法组件仍禁止新生产接入；提交、交接和来源索引维护保持显式调用及原授权边界。
 
 数据库设计、结构审查、元信息说明书及 DDL 使用默认技能 `database-analysis-docs`。Backend 版本只分发技能说明和参考，采集、表格和 SQL 核对使用实际可用的宿主工具；保留逻辑关系与必要基础约束，不默认创建外键、自增或特殊数据库机制。安装技能不授权连接未指定的数据库或执行 DDL。
+
+## 从源码生成接入专业技能
+
+源码生成、方法安装和 Home 关系是三项独立结果。仅要源码时生成即结束；用户已要求项目技能时，使用同一已核验的 CLI，继续 `attach --root <生成目录> --profile backend --installation skills`。新安装默认 project 继续支持完整资料，源码后接入建议显式 skills，避免把已有 README 当作待覆盖模板。
+
+支持 nextSteps 的开发构建会给出 attach 的参数数组；不要拼成 shell，也不因 program=yss 改用 PATH 中未经核实的旧版。attach 冲突时保留源码及原入口，说明技能接入未完成，不删除工程或退回 project。已有自定义 .gitignore/AGENTS 等仍可能冲突，按实际内容处理。
+
+若有上游 Home/规格且允许维护本仓入口，优先复用 README 的规格来源区，再让 AGENTS 引用实际位置。已有等价导航不重复建立；无上游不造链接，只有 Home 写入权限时不修改工程。
