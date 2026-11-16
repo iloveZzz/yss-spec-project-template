@@ -26,7 +26,7 @@
 
 既有 yss CLI 的安装包和内置行为独立于本仓，本次目录变化不会改写已安装的二进制。新模板与具体 CLI 版本的安装、同步兼容性须以实际使用结果为准。
 
-Template 5.7.0 为新建 Backend 工程默认选择 YSS `4.0.0-SNAPSHOT`、Spring Boot `4.1.2` 和 Java `17`，支持显式选择其他版本，并新增 11 项 Boot4 组件来源索引。产品 Home 的初始化与工程接入由 setup 按真实授权衔接源码生成、skills 安装和仓库导航，复用已有地图，接入失败时保留已生成源码。Backend/Frontend 入口与教程提供上游导航，项目地图由项目维护。三个 Profile 的默认技能集合为 Spec 17 项、Backend 42 项、Frontend 13 项，供 CLI 3.7.0 打包使用。[技能地图](.template-spec/agents/profile-skills.md)
+Template 5.8.0 增强 llm-wiki 的知识综合、证据维护、来源变化与巡检方法，提供可选 QMD 检索指引；数据库分析技能统一同源模型、精炼说明和浅色 Excel 规范，兼容既有模型。新建 Backend 继续默认选择 YSS `4.0.0-SNAPSHOT`、Spring Boot `4.1.2` 和 Java `17`，支持显式选择其他版本。产品 Home 的初始化与工程接入按真实授权衔接源码生成、skills 安装和仓库导航。三个 Profile 的默认技能集合为 Spec 17 项、Backend 42 项、Frontend 13 项，供 CLI 3.8.0 打包使用。[技能地图](.template-spec/agents/profile-skills.md)
 
 `scaffold frontend` 从 CLI 3.3.0 起支持。Frontend Profile 从 CLI 3.2.0 开始支持，3.1.4 及以前不支持。参见 [Frontend 接入](.template-spec/user-guide/cli/tutorial-frontend.md)。GitLab CI 固定 CLI 配套构建源码 `f2e0a952123fbd9f12d3703b8df2b03d02b670cb`，版本为 3.7.0。该提交用于构建工具，正式 CLI 的最终源码与模板来源以 Release 产物记录为准。实际远程执行结果以对应流水线为准。
 
