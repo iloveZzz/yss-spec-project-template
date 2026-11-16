@@ -2,6 +2,8 @@
 
 Backend 的 project / skills 两种安装均默认预装 42 项研发技能，可用库共 54 项；实际集合以当前 CLI 的 Bundle 为准。任务按当前需求直接开展，入口见 [AGENTS.md](AGENTS.md)。
 
+全团队工作方式见[用户手册](.template-spec/user-guide/用户手册.md)，团队讲义、演示和练习见[培训材料](.template-spec/user-guide/培训材料.md)，后端日常路径见[后端手册](.template-spec/user-guide/后端子项目用户手册.md)。
+
 - 技能：`.agents/skills/`；宿主副本按安装记录同步。数据库设计、元信息说明书和 DDL 使用默认技能 `database-analysis-docs`。
 - 业务词汇：`CONTEXT.md`；相关资料：`.template-spec/`。
 - 支持本版接口的 CLI 可用 `yss sync --root . --dry-run` 预览、`yss sync --root .` 更新，`yss doctor --root .` 查看本地差异。

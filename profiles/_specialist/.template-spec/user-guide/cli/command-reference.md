@@ -1,24 +1,118 @@
 # 命令参考
 
-命令支持以所装版本帮助为准。先运行 `yss version` 和 `yss help`，仅使用该版本实际支持的命令；模板更新不改变旧二进制能力，也不代表当前程序是最新发行。
+本页以 Rust CLI `3.8.0` 与其内嵌 Template `5.8.0` 为操作基线。先运行 `yss version` 和 `yss --help`，核对实际版本、源码来源与 Bundle 摘要。模板源码可以继续更新，项目取得的模板和技能由当前程序内嵌 Bundle 决定。
 
-| 命令 | 用途 |
-|---|---|
-| `init` | 初始化项目入口与所选资产 |
-| `attach` | 接管已有工程，保护用户文件 |
-| `sync` | 同步受管资产；安装方式转换用该版本帮助列出的开关 |
-| `skills list` / `skills ensure` | 列举或补装所选技能与依赖资源 |
-| `scaffold catalog` | 查看平台和生成参数 |
-| `scaffold ddd` / `scaffold mvc` | 在全新目标目录生成后端骨架 |
-| `upgrade` | 在线或离线升级 CLI |
-| `doctor` | 诊断受管文件、冲突与安装状态 |
-| `recover` | 恢复未完成事务，保护后续用户修改 |
-| `version` / `help` | 查看实际版本、来源与帮助 |
+## 按场景选择命令
 
-项目选择使用 `--profile spec|backend`、`--installation project|skills`。`init`、`attach`、`sync`、`skills ensure`、`scaffold` 和 `upgrade` 使用 `--dry-run` 预览；实际参数以对应帮助为准。
+| 场景 | 命令 | 目标或结果 |
+| --- | --- | --- |
+| 新建方法项目或 Home | `init` | 不存在的目录或空目录 |
+| 接入已有普通工程 | `attach` | 尚未接入 YSS 的已有目录 |
+| 更新受管模板与技能 | `sync` | 已接入 YSS 的安装根 |
+| 查看技能 | `skills list` | 当前 Profile 的可用技能和实际安装状态 |
+| 补装技能 | `skills ensure <名称...>` | 所选技能、依赖与资源 |
+| 查看生成配方 | `scaffold catalog` | Java 平台、版本、证据和 Frontend 环境声明 |
+| 生成 Java 骨架 | `scaffold ddd` / `scaffold mvc` | 全新目标工程目录 |
+| 生成 Vue 骨架 | `scaffold frontend` | 已有父目录中的全新目标工程目录 |
+| 升级 CLI 程序 | `upgrade` | 独立工具目录 |
+| 诊断项目或工具安装 | `doctor` | 安装来源、文件差异、冲突和事务状态 |
+| 恢复未完成事务 | `recover` | 未完成写入的恢复或已提交事务的安全清理 |
+| 打开个人 Spec 工作台 | `workbench` | 本机浏览器界面 |
+| 登记或刷新主 Spec | `workbench register` | 主文件及其关联资源、问题 |
+| 读取 Agent 续办要求 | `workbench request` | 已保存答复与材料上下文 |
+| 保存真实答复或延期 | `workbench respond` | 答复记录和供回写使用的答复 ID |
+| 查看个人状态与来源健康 | `workbench snapshot` | 只读快照 |
+| 筛选 Spec 或已有任务 | `workbench query` | 只读查询结果 |
+| 查看八阶段与历史 | `workbench lifecycle` | 指定 Spec 的阶段、任务和真实历史 |
+| 核对程序与用法 | `version` / `help` | 实际版本、来源与帮助 |
 
-在线升级指定 `upgrade --to <版本> --tool-root <工具目录>`；离线升级指定 `upgrade --artifact <归档> --sha256 <摘要> --tool-root <工具目录>`。不要将两组来源混用。恢复操作按 `recover --help` 选择实际支持的项目或工具目录参数。
+写入命令默认直接执行。需要预览时，在同一条命令加 `--dry-run`，查看后再决定是否执行。init、attach、sync、skills ensure、scaffold 生成、upgrade 和 recover 支持预览。预览只读取和校验本次输入，在线升级预览仍访问发行信息。
 
-此接口不提供旧 plan/apply、生命周期、合同、证据、门禁、插件或脚本执行入口。
+## Profile 与安装范围
 
-CLI 3.0.3 起，在线升级默认 GitHub `iloveZzz/yss-cli`，GitLab 为次级选择：先确认 `upgrade --help` 支持 `--source`，再用 `upgrade --source gitlab --to <版本> --tool-root <目录>` 显式选择，并提供该来源要求的 CA 与鉴权。来源失败不自动切换；离线归档不与 `--source` 混用。旧程序不会随模板文档自动获得这些行为。
+| 参数 | 值 | 用途 |
+| --- | --- | --- |
+| `--profile` | `spec` | 业务规格、产品设计与产品 Home 工程会话入口 |
+| `--profile` | `backend` | Java 后端工程 |
+| `--profile` | `frontend` | Vue 前端工程 |
+| `--installation` | `project` | 技能、宿主入口及必要项目资料，新安装默认值 |
+| `--installation` | `skills` | 项目内技能、宿主入口及必要引用资源 |
+
+init 和 attach 必须指定 root 与 profile。sync 默认沿用原 Profile、安装范围和项目变量，显式 `--installation project|skills` 才切换安装范围。sync 的 `--profile` 用于校验原身份。一个安装根保持一个 Profile。
+
+```text
+yss init --root ./my-home --profile spec --installation project
+yss attach --root ./existing-service --profile backend --installation skills
+yss attach --root ./existing-web --profile frontend --installation skills
+yss skills list --root ./my-home
+yss skills ensure implement --root ./my-home
+yss sync --root ./my-home --dry-run
+yss sync --root ./my-home
+```
+
+以上示例按各自场景选择执行。init 要求目标不存在或为空，目标不存在时父目录须已存在。已有普通项目用 attach，已有受管项目用 sync。project 和 skills 都安装方法资源，应用源码由 scaffold 单独生成。skills 仍属于项目内安装，用户级独立技能沿原安装来源更新。
+
+CLI `3.6.0` 起在 init、attach 和 scaffold 成功后返回 `nextSteps`。Spec project 的指引要求 Agent 核实 Home 工程关系，真实地图由项目维护。scaffold 的指引可包含 attach skills 命令。`command.args` 是独立参数数组，Agent 沿用本次已核验的程序绝对路径执行。dry-run、sync 和 skills ensure 的 nextSteps 为 `[]`。Home 配置示例见 [Spec / Home 教程](tutorial-spec.md)。
+
+## 生成源码
+
+```text
+yss scaffold catalog --json
+yss scaffold mvc --project-name sample-api --base-package com.example.sample --output-dir . --group-id com.example --project-version 1.0.0-SNAPSHOT --dry-run
+yss scaffold frontend --project-name sample-web --output-dir . --dry-run
+```
+
+Java 默认配方为 YSS `4.0.0-SNAPSHOT`、Spring Boot `4.1.2`、Java `17`。工程名、基础包、输出父目录、groupId 与工程版本五项必填，技术参数按 catalog 约束补齐。catalog 中的验证状态和范围限定配方证据，生成后按目标工程验证构建与运行。Vue 所需 Node/pnpm 从 catalog.frontend 和生成的 package.json 读取。目标工程必须不存在，包括已有空目录。实际生成时父目录须已存在，Frontend 预览也要求父目录存在。完整操作见 [Backend](tutorial-backend.md) 和 [Frontend](tutorial-frontend.md)。
+
+## 升级、诊断与恢复
+
+```text
+yss upgrade --to <正式版本> --tool-root <工具目录> --dry-run
+yss upgrade --artifact <归档绝对路径> --sha256 <实测SHA-256> --tool-root <工具目录> --dry-run
+yss doctor --root <项目或工具目录> --json
+yss recover --root <项目或工具目录> --dry-run
+```
+
+在线升级默认从 GitHub `iloveZzz/yss-cli` 读取正式 Release，可用 `--source gitlab` 显式选择固定 GitLab 来源。GitLab 需要 `YSS_GITLAB_CA_FILE` 和有读取权限的 `YSS_GITLAB_TOKEN`。来源失败后保留错误并由用户或 Agent 处理，离线归档与 `--source` 分开使用。首次安装、摘要校验与工具目录要求见 [安装与升级](install-and-verify.md)，文件冲突及事务处理见 [维护与恢复](tutorial-maintenance.md)。
+
+## 输出与帮助
+
+```text
+yss help sync
+yss workbench query --help
+yss version --json
+```
+
+`--json` 返回 `format: "yss.output"`、`formatVersion: 1` 的单对象信封。成功时 status 为 ok，业务结果在 result，error 为 null。失败时 status 为 error，result 为 null，error 提供错误码、中文消息及可用上下文。普通成功报告同样是 JSON 业务对象。帮助支持 `-h` 与 `--help`，程序版本支持 `version` 与单独运行的 `--version`。旧 plan/apply、合同、门禁和插件执行接口已退役。
+
+## 工作台查询与续办
+
+```text
+yss workbench
+yss workbench --no-open --port 0
+yss workbench snapshot --json
+yss workbench query --entity spec --status doing --status blocked --json
+yss workbench query --entity spec --activity all --include-closed --json
+yss workbench query --entity task --stage verification --json
+yss workbench lifecycle --spec <SpecID> --json
+yss workbench register --root <项目绝对路径> --source <主Spec项目相对路径> --json
+yss workbench request --spec-id <SpecID> --json
+```
+
+工作台默认监听 127.0.0.1，按 Ctrl-C 停止服务。持续服务使用普通输出，读取快照使用 snapshot --json。snapshot、query、lifecycle 和 request 为只读命令，register 与 respond 写入个人数据，项目来源保持只读。浏览器提供 Spec 列表、状态或阶段看板、个人阶段进度、答复和确认操作。已有任务与历史可通过 CLI 查询。
+
+query 的 project、spec、stage、status 可重复，同一条件内为 OR，条件间为 AND。默认只看启用记录并隐藏终态，显式选择 done/canceled 时会包括相应终态。`--activity active|inactive|all` 选择启用范围，`--include-closed` 包括终态，`--source-problems` 仅看来源异常，`--q` 搜索文字，`--sort updatedDesc|titleAsc` 选择排序。lifecycle 展示调研、分析、规格、原型、交接、实施、验证、交付八阶段，当前关注阶段、Spec 状态与阶段进度分别维护。
+
+个人数据保存在项目和 Git 工作树之外的独立目录，自定义 data-dir 使用真实绝对路径。当前使用 workbench.sqlite3。旧 JSON v1/v2/v3 的只读查询继续读取原文件，首次启动新版工作台或写入时先备份并迁入 SQLite。迁移后的 state.json 保存存储标记。备份时退出工作台并复制完整个人数据目录，恢复和旧版本使用限制见 [维护与恢复](tutorial-maintenance.md)。
+
+register 从主文件的 `yss-spec` JSON 元数据读取范围、关联资源和问题。更新时复用同一登记。登记失败时保留源文件，修复具体错误后重试同一主文件。登记、答复保存、内容就绪和用户确认分别记录。
+
+### 主文件、附件与答复兼容规则
+
+刷新或再次 `register` 已登记的主 Spec 时，保留用户设置的启用／停用状态（`active`）。新需求无约定时使用固定创建日期与具体英文主题组成 key，主文件为 `docs/spec/<key>/<key>-spec.md`。支持新命名识别的 CLI 只归并同目录同 key、无自身元数据且被主文档 resources 明确本地引用的 `<key>-interaction.md`（kind=interaction）或 `<key>-design.md`（kind=supplement/other）。旧 `spec.md + interaction.md` 的无元数据推断保留。旧主文件有元数据时须明确本地引用交互说明，兼容原 kind。自身有效元数据保持独立，其他参考文件不因引用而停用。个人资源和正文链接不代表新附件归属，资源模型没有 owner。主文件 register/refresh 才停用符合条件的旧附件记录，单独刷新附件不合并。发现错误会告警并跳过候选。上述兼容性须用实际程序核验，模板更新和同名命令帮助不会使旧二进制获得新行为。
+
+已有路径继续维护，不自动迁移。明确改名时，先核实原数据目录、Spec ID 和新路径是否被启用/停用记录占用。安全改名并更新正文链接、来源与个人资源后，先编辑原 Spec 的“主规格相对路径”，再 register 新路径并核对仍为原 ID。不能先新建登记再合并，停用不释放路径。改路径指向已归属附件会被拒绝。答复与历史保留，但路径参与摘要，纯改名后仍须重新核对确认。中途失败修复同一记录，不覆盖并发改动或创建补偿 Spec。
+
+先从已有启动信息或续办文本核实工作台数据目录。使用自定义目录时，所有命令均以 `workbench --data-dir <已核实的绝对路径> ...` 执行，只有确认使用默认目录时才省略，不能在默认库另建登记。当前 web 资源会阻塞确认，需将相应资源项替换为已核验的项目内本地快照（`targetType: "local"`）。原链接可保留在正文来源中，同时保留 web 资源项仍会阻塞。
+
+先查 `workbench respond --help`。支持时，答复使用 `respond --spec-id <ID> --question-id <原问题ID> --question-digest <当前摘要> --kind answer --answer <实际答复> --json`。延期使用 `--kind defer --reason <原因> --impact <影响> --excluded-scope <排除范围>`，并提供 `--review-at YYYY-MM-DD --review-utc-offset-minutes <当地UTC偏移分钟>`（中国为 `480`）或 `--review-when <复查条件>`。`request` 的 `result.text` 中问题 JSON 数组通过每项的 `question.id` 识别原问题，当前摘要和已保存答复 ID 分别在该项的 `digest`、`response.id`。实际答复 ID 也由 `respond` 的 `result.responseId` 返回。不要猜测 ID 或把旧答复应用到已变化问题。延期回写须在原问题同时写入 `status: "deferred"`、说明延期依据的非空 `resolution` 和本次真实延期答复 ID 对应的 `appliedDecisionId`。缺一仍为待回写，不能改成 resolved。用户原文须安全传参，保存答复不会自动回写规格或解决问题。

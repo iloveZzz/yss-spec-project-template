@@ -2,6 +2,8 @@
 
 Frontend 项目入口见 [AGENTS.md](AGENTS.md)。默认安装 13 项工程与协作技能；设计、原型复核、逻辑原型及业务词汇维护按需补装，可用库共 17 项。
 
+全团队工作方式见[用户手册](.template-spec/user-guide/用户手册.md)，团队讲义、演示和练习见[培训材料](.template-spec/user-guide/培训材料.md)，前端接入见[Frontend 教程](.template-spec/user-guide/cli/tutorial-frontend.md)。
+
 - 技能：`.agents/skills/`；业务词汇：`CONTEXT.md`；方法参考：`.template-spec/`。
 - 使用 `yss-frontend-application` 承接本次选定的规格、高保真原型与交互说明，优先复用既有工程和组件。
 - 前端命令优先 `pnpm`，依赖、启动和构建命令以实际工程为准；此安装只提供技能与入口，不生成 Vue 应用。

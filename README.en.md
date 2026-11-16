@@ -2,6 +2,8 @@
 
 A collection of skills and reference assets for requirements, product design, Java backend and Vue frontend development. Start with AGENTS.md and select the skills relevant to the task.
 
+The Chinese [user manual](.template-spec/user-guide/用户手册.md), [training materials](.template-spec/user-guide/培训材料.md) and [guide index](.template-spec/user-guide/用户手册索引.md) cover the full team workflow. Command examples use CLI 3.8.0 with its embedded Template 5.8.0. Current main additions are identified in the relevant sections.
+
 This repository does not maintain script directories, test suites or automatic hooks. GitLab CI builds the Rust CLI on Linux with the current template and checks project installation, synchronization and scaffold generation; it does not package or publish Linux releases. Runners tagged `yss-linux` must use the same architecture to share the built executable. Agents create projects, synchronize skill copies, prepare exports and handle authorized releases directly. Existing CLIs may be used for capabilities they actually support. Builds, tests and reviews are task-specific choices, not universal prerequisites.
 
 Shared content lives in .agents/skills. Backend-specific content lives in profiles/backend; profiles/frontend selects shared skills through an explicit allowlist. Frontend installs 13 skills by default, with 17 available. Claude uses linked shared skills and WorkBuddy uses ordinary file copies. Keep affected copies and distribution lists aligned when changing canonical content; see .template-source/agents/skills-maintenance.md.

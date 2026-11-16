@@ -2,6 +2,8 @@
 
 本项目使用 YSS 技能与参考资料，承载产品定义、业务规格和原型，并作为关联工程的默认 Home 会话入口。任务按当前目标直接开展，入口见 [AGENTS.md](AGENTS.md)；工程技术方案、实现与验证保存在各自仓库。
 
+全团队工作方式见[用户手册](.template-spec/user-guide/用户手册.md)，讲义、演示和练习见[培训材料](.template-spec/user-guide/培训材料.md)，专题入口见[手册索引](.template-spec/user-guide/用户手册索引.md)。
+
 - 技能：`.agents/skills/`；宿主副本按安装记录同步。
 - 业务词汇：`CONTEXT.md`；相关资料：`.template-spec/`。
 - 工程关系：沿用本项目已有仓库地图或 README 索引；需要独立地图时由 `setup-yss-harness` 按真实资料创建 `REPOSITORIES.md`。CLI 安装只提供方法与模板，不自动配置真实关系。
