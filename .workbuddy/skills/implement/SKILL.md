@@ -11,6 +11,8 @@ Keep the observable goal, actual repository and paths, interface dependencies, a
 
 When entering an engineering repository from Home, working across repositories or submodules, or resolving an unclear project root, read [repository scope and protection](references/repository-scope.md). Follow the actual target repository's rules and effective skills; changing the shell directory does not reload host instructions. A read-only investigation does not authorize implementation writes; the current request determines which repositories and actions are allowed.
 
+用户要求 PR/MR 修复、持续跟进或合并，或明确要求交付后继续跟进时，读取 [PR/MR 持续跟进](references/pr-mr-followup.md)，在当前会话内处理反馈、CI 与版本变化，直到指定结果或明确受阻。复用已有动作授权，按实际版本与平台结果判断完成；普通研发和只读审查不自动转为长期跟进。
+
 Select the engineering skills needed for the work. Do not require lifecycle routing, a formal contract, TDD, a test report or a review package to start or finish. Run tests or request a review when the user asks or the particular task needs it; report only observed results.
 
 Preserve user changes and error handling. Reuse existing authorization for local work; commit, push, publish and deploy only within the authorization for those actions. On resumption, inspect existing changes and command results before continuing.

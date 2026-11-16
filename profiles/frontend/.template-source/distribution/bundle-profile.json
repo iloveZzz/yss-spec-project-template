@@ -77,7 +77,8 @@
       ".template-spec/design/templates/interaction-spec-template.md",
       ".template-spec/design/templates/state-matrix-template.md",
       ".template-spec/design/templates/prototype-review-checklist.md",
-      ".claude/skills"
+      ".claude/skills",
+      ".agents/skills/implement/references/pr-mr-followup.md"
     ],
     "excludeRootEntries": [
       ".git",
@@ -312,7 +313,8 @@
       "skillReferences": {
         "setup-yss-harness": [],
         "yss-frontend-application": [
-          ".template-spec/agents/frontend-skills-adaptation.md"
+          ".template-spec/agents/frontend-skills-adaptation.md",
+          ".agents/skills/implement/references/pr-mr-followup.md"
         ],
         "vue-best-practices": [
           ".template-spec/agents/frontend-skills-adaptation.md"
@@ -412,7 +414,8 @@
       "skillReferences": {
         "setup-yss-harness": [],
         "yss-frontend-application": [
-          ".template-spec/agents/frontend-skills-adaptation.md"
+          ".template-spec/agents/frontend-skills-adaptation.md",
+          ".agents/skills/implement/references/pr-mr-followup.md"
         ],
         "vue-best-practices": [
           ".template-spec/agents/frontend-skills-adaptation.md"

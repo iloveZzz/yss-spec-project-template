@@ -13,6 +13,8 @@ Keep the observable goal, actual repository and paths, interface dependencies, a
 
 For multiple repositories, submodules or an unclear project root, read [repository scope and protection](references/repository-scope.md). A read-only investigation does not authorize implementation writes; the current request determines which repositories and actions are allowed.
 
+用户要求 PR/MR 修复、持续跟进或合并，或明确要求交付后继续跟进时，读取 [PR/MR 持续跟进](references/pr-mr-followup.md)，在当前会话内处理反馈、CI 与版本变化，直到指定结果或明确受阻。复用已有动作授权，按实际版本与平台结果判断完成；普通研发和只读审查不自动转为长期跟进。
+
 按当前任务选择方法：完整研发交付承接 Spec 的规则、验收与产品原型说明，覆盖必要的拆分、设计、脚手架、实现和测试；已有清晰的小任务直接完成受影响部分。业务决定缺失时定点澄清，不重做产品设计，不要求先创建票据。
 
 - 确需拆分时使用 `to-tickets` 细化实现任务，保留原验收和实现顺序；远程建票仍需要对应授权。

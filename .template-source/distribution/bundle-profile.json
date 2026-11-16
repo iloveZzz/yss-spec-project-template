@@ -467,7 +467,8 @@
         "yss-validation": [],
         "yss-web-controller": [],
         "yss-frontend-application": [
-          ".template-spec/agents/frontend-skills-adaptation.md"
+          ".template-spec/agents/frontend-skills-adaptation.md",
+          ".agents/skills/implement/references/pr-mr-followup.md"
         ],
         "vue-best-practices": [
           ".template-spec/agents/frontend-skills-adaptation.md"
@@ -657,7 +658,8 @@
         "yss-validation": [],
         "yss-web-controller": [],
         "yss-frontend-application": [
-          ".template-spec/agents/frontend-skills-adaptation.md"
+          ".template-spec/agents/frontend-skills-adaptation.md",
+          ".agents/skills/implement/references/pr-mr-followup.md"
         ],
         "vue-best-practices": [
           ".template-spec/agents/frontend-skills-adaptation.md"

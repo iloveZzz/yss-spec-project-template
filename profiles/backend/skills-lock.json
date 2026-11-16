@@ -130,7 +130,7 @@
         "source": "mattpocock/skills",
         "sourceType": "github",
         "skillPath": "skills/engineering/implement/SKILL.md",
-        "effectiveHash": "56af3a7f5ab66cfd38b09c48c9cbbd89f2408c9878e02c1ec52abef5fa770d7a",
+        "effectiveHash": "4e7ce420c2dddd01a0b6506683fe7b9f39cefb9e7c7e06cbfd4289fa0f24c884",
         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
         "upstreamHash": "b49a049477c7eec7f8dd90745dbc3f27bf75617b832d5b5f33c55aab7638a12e",
         "adaptationRef": ".template-spec/agents/matt-skills-adaptation.md",
