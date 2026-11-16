@@ -153,7 +153,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/llm-wiki/SKILL.md",
-        "effectiveHash": "572632c7c47186fec931ed930a0c9a40f2d125969789e8a14395c25d0e5e5837",
+        "effectiveHash": "efd61da7807bf9b019e34496df8a9eebea2cd5de31947524b211d31a57082513",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"
