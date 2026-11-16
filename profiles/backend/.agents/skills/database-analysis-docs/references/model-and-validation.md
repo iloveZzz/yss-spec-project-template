@@ -28,16 +28,19 @@
 
 ## Table
 
-必须包含 `id, schema, name, title, domain, fields, pk, unique, indexes, foreign_keys, checks, rules, sources`。
+必须包含 `id, schema, name, title, domain, fields, pk, unique, indexes, foreign_keys, checks, rules, sources`，推荐包含 `comment`（一句话表职责说明）。
 
 - `id`：唯一非空字符串，供关系引用；`schema` 可为空字符串；`name` 是完整真实表名，不强制前缀或字符长度。`schema+name` 不重复。
-- `title, domain`：字符串，分别表示业务名称与范围。
+- `title, domain`：字符串，分别表示业务名称与所属域；可选 `comment` 是一句话表职责说明，供目录和详情页摘要读取。
 - `fields`：非空 Field 数组，字段名在表内唯一。
 - `pk`：有序字段名数组。现状没有声明主键可用 `[]`，应报告并核对；不自动补 id。
-- `unique, indexes`：`{name:字符串, columns:有序字段名数组}` 数组。无法确认实际索引名称可用空字符串，在规则注明；不代表已执行。
+- `unique, indexes`：`{name:字符串, columns:有序字段名数组, comment?:字符串}` 数组。可选 `comment` 写明具体业务唯一规则或查询／排序条件（如 `"按分类与状态筛选笔记"`），不填套话。无法确认实际索引名称可用空字符串，在规则注明；不代表已执行。
 - `foreign_keys`：`{name, columns, target, references, on_delete, on_update}` 数组。target为目标表ID；columns和references为对应字段名数组，数量相同且非空；动作是字符串或null。
 - `checks`：`{kind:"sql"或"business", text:字符串}` 数组，分别展示 SQL 声明与自然语言规则；sql不意味着已执行验证。
 - `rules`：业务规则字符串数组；`sources`：来源ID数组。
+- **文本精炼与同源驱动原则**：同源 JSON 的业务文案直接驱动产物，不在生成逻辑中另设业务字典。新写的说明简明克制；业务文案不混入内部来源标签与代码细节，原始定义、证据定位及已有库原注释如实保留。
+
+以上新增说明字段保持版本 1 向后兼容。旧模型缺少 `table.comment` 时可展示已有 `title`；缺少 `field.note` 或索引用途时留空或在必要处标为待确认，不猜拆旧 `comment`、不根据索引名编造用途。关系缺少 `columns` 时，仅从已确认的列映射补入模型；无依据则标为待确认。生成前把已确认的补充写回目标模型。
 
 新设计默认以 `relationships` 的 business 关系和关联字段表达业务引用，`foreign_keys` 填 `[]`，不主动加入 SQL CHECK；业务规则仍写入 `rules` 或 business checks。根据已知规则设计 `pk`、可空性和必要的 `unique`，不凭字段名推断必填或唯一。主键 ID 默认由写入方提供；类型、生成责任和具体方式沿用项目事实，未知时记入待确认，不自动指定发号组件。
 
@@ -45,7 +48,9 @@
 
 ## Field 与默认值
 
-必填 `name:字符串, type:字符串或null, nullable:布尔或null, comment:字符串`。可选 `source_ids:来源ID数组` 和 `default`。
+必填 `name:字符串, type:字符串或null, nullable:布尔或null, comment:字符串`。可选 `note:字符串`、`source_ids:来源ID数组` 和 `default`。
+- `comment` 写精炼的字段业务名称或含义（如 `"内容状态"`、`"所属分类目录 ID"`）；
+- `note` 写枚举取值、长度／范围约束或逻辑关联目标（如 `"DRAFT 草稿 / COMPLETED 已完成 / ARCHIVED 已归档"`、`"关联 kb_category.id；NULL 表示未归类"`，无额外备注时可省略或填 `""`），在生成 Markdown／Excel 时直接对应「字段说明」与「约束与备注」两列，无需靠标点猜拆。
 
 | 输入 | 意义／显示 |
 |---|---|
@@ -60,7 +65,7 @@
 
 ## Relation 的方向
 
-必填 `from, to, from_min, from_max, to_min, to_max, kind, description, sources`。from/to是表ID，kind为business或physical，description字符串，sources来源ID数组。
+必填 `from, to, from_min, from_max, to_min, to_max, kind, description, sources`，推荐包含 `columns:字符串数组`（记录关联字段映射，如 `["kb_note.category_id -> kb_category.id"]` 或 `["kb_note.category_id"]`）。from/to是表ID，kind为business或physical，description字符串，sources来源ID数组。
 
 - **from_min/from_max**：每个 to 对象可以关联多少个 from 对象。
 - **to_min/to_max**：每个 from 对象可以关联多少个 to 对象。

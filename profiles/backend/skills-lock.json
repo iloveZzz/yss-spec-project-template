@@ -605,7 +605,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/database-analysis-docs/SKILL.md",
-        "effectiveHash": "257e7429b56545567d4446f178ffbe4bb1270bbddce69ce42986fd80055d1d54",
+        "effectiveHash": "d246909e1e7bcce87926d7f00c2e91211f8f88951a9c306d03bd05d07c889e64",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"
