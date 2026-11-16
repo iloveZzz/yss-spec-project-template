@@ -219,3 +219,13 @@ Spec 同时承载产品上游和产品研发默认会话入口。本次本地适
 仓库范围参考补充地图消费、实际 checkout/worktree、目标规则与同名技能来源、未提交输入、来源变化、跨仓责任和逐仓结果。setup 增加项目地图模板及 Home 配置方法；实际地图由项目维护，不进入 CLI 收据，不改变既有 Profile 或 Workbench 数据结构。
 
 本次内容核验、候选 Bundle 和宿主演练结果分别记录，不能从文件复制推断调用成功。原始 sourceRevision/upstreamHash 保持，Backend 仅重算受影响的 implement/setup 有效树哈希。
+
+## 2026-11-16 工程方法与受控对照适配
+
+本轮参考 pstack 研究修订五个现有参考，分别补充条件式来源采用依据、项目验证入口接续和技能行为前后比较。共享方法由 `.agents/skills` 维护，Backend 的运行说明保留专有源。原始 Matt 来源锁字段继续保留，Backend 仅更新 implement、setup-yss-harness、i-have-adhd 的既有有效树摘要。
+
+本次比较的上游为 poteto pstack 0.15.42 的 `bf0c7cd80abdbf7fe47b634978a7d1b4071f71a7` 与独立项目 phthomas/pstack 2.3.1 的 `faa4e9fb22e5cd19ac85ca094f6056ba89eaa701`。本地方法按 YSS 授权和分发规则整理，上游来源可查固定版本的[验证方法](https://github.com/cursor/plugins/blob/bf0c7cd80abdbf7fe47b634978a7d1b4071f71a7/pstack/skills/create-verification-skill/SKILL.md)及[评估方法](https://github.com/cursor/plugins/blob/bf0c7cd80abdbf7fe47b634978a7d1b4071f71a7/pstack/skills/poteto-mode/playbooks/eval.md)。
+
+候选 Bundle `1764b936578af366b29dbcbd3ae8322cabdb7a6f7a35ab80db87c862b83867f9` 经对应内嵌临时 CLI 完成三种 Profile 的 project、skills 六组合安装。11 个 WorkBuddy 副本、Backend 完整有效树、安装收据及四份去除默认集合的 implement 资源视图分别核对。新增宿主参考由四处 skillReferences 显式携带。
+
+Codex 的来源观察见随包的 `.agents/skills/setup-yss-harness/references/host-compatibility.md`。本次项目接续、产物遗漏、人工纠正与成本结果保留在执行任务资料中，按实际宿主、版本和场景陈述。该候选后写回的观察记录具有独立快照，记录性更新另作分发核对。真实项目收益与跨宿主运行效果仍需相应观察。

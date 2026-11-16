@@ -363,6 +363,7 @@
           ".template-spec/templates/examples/lifecycle-writing-examples.md"
         ],
         "implement": [
+          ".agents/skills/setup-yss-harness/references/host-compatibility.md",
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "java-backend-commit": [],
@@ -552,6 +553,7 @@
           ".template-spec/templates/examples/lifecycle-writing-examples.md"
         ],
         "implement": [
+          ".agents/skills/setup-yss-harness/references/host-compatibility.md",
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "java-backend-commit": [],
