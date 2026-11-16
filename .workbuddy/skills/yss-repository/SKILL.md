@@ -9,9 +9,11 @@ description: 按已确认的 YSS 架构与持久化输入实现或重构 PO、Re
 
 - DDD 保持 Domain Gateway / Application Query Port 与实现分离；MVC 沿用 Service/Repository 职责。
 - 持久化对象覆盖主键、空值、逻辑删除、审计字段、枚举/值对象及敏感字段映射。
+- 明确每个用例实际加载和允许更新的字段；部分加载的模型按操作字段白名单保存，不把未加载资料当作 NULL 或默认值回写。多租户且采用版本并发控制时，更新携带单位、ID 和原版本并核对影响行数，当前状态与历史保持同一用例事务。
 - SQL 使用参数绑定；动态排序、分组、过滤使用明确白名单，不把原始输入拼进 SQL。
+- 新增或变更引用时，按已确认的来源、目标及适用范围核验，沿用所选事务与并发保护协议；同单位存在不等于引用有效或操作者有权，单侧先查后写不能证明并发完整性。
 - 事务位于实际用例边界；不要让数据库异常或凭据泄漏给接口调用方。
-- 使用 yss-mybatis 处理分页、批量、扫描、XML 与数据源；使用 mapstruct、lombok 和 alibaba-java-code-style 处理相应细节。
+- 使用 yss-mybatis 选择单表 Java DSL、多表 Mapper XML、数据库方言、参数绑定、分页、批量、扫描与数据源；使用 mapstruct、lombok 和 alibaba-java-code-style 处理相应细节。
 - 主键策略按已有工程与需求选择，YSS 分布式 ID 使用 yss-distributed-id；不擅自改变算法。
 
 同步受影响的接口、映射和配置。需要运行工程时优先 ./mvnw；只报告实际结果，不为交付创建测试证据包。

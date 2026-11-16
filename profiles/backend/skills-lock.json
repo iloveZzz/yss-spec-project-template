@@ -452,7 +452,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-mybatis/SKILL.md",
-        "effectiveHash": "2133d3fe7eea5a90adb05d2f530eddc5f260d977fa252f321b1bd00a0c4a1b20",
+        "effectiveHash": "68d0582794aeb27b56667271aa85617b022a6e5ad04630c77f3fd8cd69199841",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"
@@ -472,7 +472,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-repository/SKILL.md",
-        "effectiveHash": "c507c980f80bbfdb77ba959e1ddeefb9b62852d1edf32c04b41f300ddedfa11d",
+        "effectiveHash": "8ea6ad6cf1f4962f8488d498bf2a7466d6e2f5f04fc2d278a493f07e1f9bfc2d",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"
@@ -595,7 +595,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-backend-testing/SKILL.md",
-        "effectiveHash": "8445e043b0d81f95d0ababda75ba92b7cca817415016c6e6018f9732a059b46c",
+        "effectiveHash": "703c9d57515256687749cb7e943936a09985fcfc77aaef447f16d0177fd716af",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"

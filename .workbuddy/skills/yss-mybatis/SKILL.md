@@ -29,6 +29,13 @@ Boot 4 当前 MP 接入使用 `mybatis-plus-spring-boot4-starter`，JDBC 自动�
 <a id="mybatis.transaction"></a>
 - 事务边界归当前 Application 用例或 MVC service/core；Repository 不临时声明新的业务事务。
 
+## 查询组织与多数据库
+
+- 沿用工程实际持久层模式，用户及项目的明确规范优先；默认写法只约束新增或本次重写的语句，不扩为无关存量迁移。
+- 采用 MyBatis-Plus 时，简单单表查询使用 `Wrappers.lambdaQuery(PO.class)`，更新使用 `Wrappers.lambdaUpdate(PO.class)`，投影、筛选、排序和更新列使用 getter 方法引用；普通主键 CRUD 复用现有 Mapper 能力。
+- 涉及两张及以上表的复杂 JOIN、EXISTS 或子查询放入 Mapper XML，复用公共 SQL 片段并显式映射结果；单表条件不为统一形式改成 XML，复杂 SQL 不堆入注解字符串。
+- 涉及方言、JSON 绑定或 Profile 组合时读取 [查询与方言](references/query-and-dialect.md)，核对最终 `DbType`、`databaseId`、实际 JDBC 厂商及 handler 作用域，不把一个配置项当作全部兼容能力。
+
 ## 能力选择记录
 
 | 既有工程调用 seam | 选择与核验 |
@@ -52,7 +59,7 @@ Boot 4 当前 MP 接入使用 `mybatis-plus-spring-boot4-starter`，JDBC 自动�
 ## 排障顺序
 
 1. 依赖与 Profile：starter、组件版本、MyBatis/MyBatis-Plus 模式是否与当前工程选择一致。
-2. 装配与开关：自动配置、条件属性、Mapper 扫描和 XML location 是否真实生效。
+2. 最终配置与装配：激活的 Profile/group、配置来源、最终方言值、自动配置、Mapper 扫描和 XML location 是否真实生效。
 3. 调用 seam：代理是否命中、分页参数位置/类型、分页插件链和 total 回填责任。
 4. 映射：接口签名、XML namespace、resultMap、字段、逻辑删除和主键策略。
 5. 批量：是否调用当前公开批量入口、分批与方言是否匹配、是否退化为循环单条；核对 batch size 在多个应用上下文中的作用域。
