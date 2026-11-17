@@ -24,6 +24,7 @@
 | 查看个人状态与来源健康 | `workbench snapshot` | 只读快照 |
 | 筛选 Spec 或已有任务 | `workbench query` | 只读查询结果 |
 | 查看八阶段与历史 | `workbench lifecycle` | 指定 Spec 的阶段、任务和真实历史 |
+| 保存目标、阶段证据与真实用户决定 | `workbench progress` | CLI 3.12.0 的目标版本、报告、确认及重新核对接口 |
 | 核对程序与用法 | `version` / `help` | 实际版本、来源与帮助 |
 
 写入命令默认直接执行。需要预览时，在同一条命令加 `--dry-run`，查看后再决定是否执行。init、attach、sync、skills ensure、scaffold 生成、upgrade 和 recover 支持预览。预览只读取和校验本次输入，在线升级预览仍访问发行信息。
@@ -108,6 +109,8 @@ query 的 project、spec、stage、status 可重复，同一条件内为 OR，�
 个人数据保存在项目和 Git 工作树之外的独立目录，自定义 data-dir 使用真实绝对路径。当前使用 workbench.sqlite3。旧 JSON v1/v2/v3 的只读查询继续读取原文件，首次启动新版工作台或写入时先备份并迁入 SQLite。迁移后的 state.json 保存存储标记。CLI `3.11.0` 的设置页可在线生成一致备份并恢复到新的或空的个人数据目录。纯 CLI 或旧版可退出服务后复制完整目录，维护说明列出适用范围及恢复步骤。[维护与恢复](tutorial-maintenance.md)
 
 register 从主文件的 `yss-spec` JSON 元数据读取范围、关联资源和问题。更新时复用同一登记。登记失败时保留源文件，修复具体错误后重试同一主文件。登记、答复保存、内容就绪和用户确认分别记录。
+
+CLI `3.12.0` 提供 `workbench progress set-goal`、`report`、`confirm` 与 `reconcile`。工作台作业、日常研发和 PR/MR 跟进沿用同一 `dataDir`、`specId`、目标版本与真实工程版本上报；用户确认关联实际答复与展示证据，材料变化后重新核对适用性。先核对各子命令帮助，JSON 字段与保存顺序见[生命周期进度上报](../../agents/workbench-progress.md)。
 
 ### 浏览器操作顺序
 

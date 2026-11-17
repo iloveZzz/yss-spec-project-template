@@ -30,7 +30,7 @@
 
 既有 yss CLI 的安装包和内置行为独立于本仓，本次目录变化不会改写已安装的二进制。新模板与具体 CLI 版本的安装、同步兼容性须以实际使用结果为准。
 
-Template 5.11.0 配套 CLI 3.11.0，补齐复杂研发任务的责任、跨仓依赖、集成验收与环境反馈接续方法。三个 Profile 沿已有工作项组织必要任务，关联各仓源码与制品、环境结果、恢复依据和下一责任人。新增客户跟进全生命周期 Demo，贯穿三仓 DDD 主线、MVC 对照、测试环境发布和业务验收。工作台指南覆盖工程维护、Home 地图导入、隔离 Codex 运行、草稿与确认版本恢复、在线一致备份。
+Template 5.12.0 配套 CLI 3.12.0，统一工作台作业、日常研发、PR/MR 与 CI 的生命周期进度上报方法。三个 Profile 按同一 Spec、目标版本和真实工程版本记录阶段证据、用户确认与变化影响；操作说明见[生命周期进度上报](.template-spec/agents/workbench-progress.md)。后端技能补齐 POJO + Lombok、中文 Javadoc、领域创建与重建、HTTP 边界、部分更新及事实与业务规则的分层约定，保留既有工程的明确基线。
 
 三个 Profile 默认集合为 Spec 17 项、Backend 42 项、Frontend 15 项，Frontend 可用库为 19 项。安装内嵌新版模板的 CLI 后，按项目实际范围同步。[技能地图](.template-spec/agents/profile-skills.md)
 
