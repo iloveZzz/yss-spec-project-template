@@ -373,7 +373,8 @@
           ".template-spec/agents/matt-skills-adaptation.md",
           ".template-spec/agents/issue-tracker.md",
           ".template-spec/agents/issue-tracker-operations.md",
-          ".agents/skills/to-tickets/references/engineering-tickets.md"
+          ".agents/skills/to-tickets/references/engineering-tickets.md",
+          ".template-spec/agents/workbench-progress.md"
         ],
         "java-backend-commit": [],
         "llm-wiki": [],
@@ -410,7 +411,8 @@
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "to-spec": [
-          ".template-spec/agents/matt-skills-adaptation.md"
+          ".template-spec/agents/matt-skills-adaptation.md",
+          ".template-spec/agents/workbench-progress.md"
         ],
         "to-tickets": [
           ".template-spec/templates/business-ticket-template.md",
@@ -471,7 +473,8 @@
           ".template-spec/agents/issue-tracker.md",
           ".template-spec/templates/spec-template.md",
           ".agents/skills/grilling/SKILL.md",
-          ".template-spec/agents/issue-tracker-operations.md"
+          ".template-spec/agents/issue-tracker-operations.md",
+          ".template-spec/agents/workbench-progress.md"
         ],
         "yss-repository": [
           ".template-spec/agents/backend-architecture-profiles.md"
@@ -500,7 +503,8 @@
           ".agents/skills/implement/references/pr-mr-followup.md",
           ".template-spec/agents/issue-tracker.md",
           ".template-spec/agents/issue-tracker-operations.md",
-          ".agents/skills/to-tickets/references/engineering-tickets.md"
+          ".agents/skills/to-tickets/references/engineering-tickets.md",
+          ".template-spec/agents/workbench-progress.md"
         ],
         "vue-best-practices": [
           ".template-spec/agents/frontend-skills-adaptation.md"
@@ -591,7 +595,8 @@
           ".template-spec/agents/matt-skills-adaptation.md",
           ".template-spec/agents/issue-tracker.md",
           ".template-spec/agents/issue-tracker-operations.md",
-          ".agents/skills/to-tickets/references/engineering-tickets.md"
+          ".agents/skills/to-tickets/references/engineering-tickets.md",
+          ".template-spec/agents/workbench-progress.md"
         ],
         "java-backend-commit": [],
         "llm-wiki": [],
@@ -628,7 +633,8 @@
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "to-spec": [
-          ".template-spec/agents/matt-skills-adaptation.md"
+          ".template-spec/agents/matt-skills-adaptation.md",
+          ".template-spec/agents/workbench-progress.md"
         ],
         "to-tickets": [
           ".template-spec/templates/business-ticket-template.md",
@@ -689,7 +695,8 @@
           ".template-spec/agents/issue-tracker.md",
           ".template-spec/templates/spec-template.md",
           ".agents/skills/grilling/SKILL.md",
-          ".template-spec/agents/issue-tracker-operations.md"
+          ".template-spec/agents/issue-tracker-operations.md",
+          ".template-spec/agents/workbench-progress.md"
         ],
         "yss-repository": [
           ".template-spec/agents/backend-architecture-profiles.md"
@@ -718,7 +725,8 @@
           ".agents/skills/implement/references/pr-mr-followup.md",
           ".template-spec/agents/issue-tracker.md",
           ".template-spec/agents/issue-tracker-operations.md",
-          ".agents/skills/to-tickets/references/engineering-tickets.md"
+          ".agents/skills/to-tickets/references/engineering-tickets.md",
+          ".template-spec/agents/workbench-progress.md"
         ],
         "vue-best-practices": [
           ".template-spec/agents/frontend-skills-adaptation.md"

@@ -12,6 +12,8 @@
 
 ## 对象与事实
 
+跟进已登记 Spec 的 PR/MR 或 CI 时，按项目根读取 `.template-spec/agents/workbench-progress.md`，沿同一 dataDir、specId、Spec 摘要及 goalVersion 上报真实进展。候选 SHA、run/pipeline ID、实际检查及联调版本组合随报告证据保存，范围和验收继续引用原任务。用户手工更正和确认按其适用版本接续，接口能力缺失时在原任务结果说明工作台待同步。
+
 优先使用可用平台连接器，其次使用已配置的 gh/glab，保留 GitLab 实例和 fork 身份。操作能力以实际版本帮助、接口和项目配置为准，不新增私有 HTTP 客户端。每轮核实与目标有关的事实，记录可放在原任务中。
 
 | 对象 | 核实内容 |

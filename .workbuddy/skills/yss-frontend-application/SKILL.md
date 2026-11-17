@@ -42,6 +42,8 @@ description: Use when implementing, engineering, or reviewing Vue 3 frontend app
 
 ## 工作方式
 
+接续已登记 Spec 的前端研发、日常终端任务、工作台作业及 PR/MR/CI 进展时，按项目根读取 `.template-spec/agents/workbench-progress.md`。沿用同一 dataDir、specId、实际 Spec 摘要及目标版本，关联实际前端、后端等参与工程和采用版本，按原验收上报实现、视觉/交互检查及联调证据。本次完成终点按用户要求接续，业务验收和最终交付沿用户实际确认保存；能力缺失时继续原授权研发并在原任务注明工作台待同步。
+
 明确开发请求指向 Issue URL，需要恢复、关联、更新已有 Issue，组织明确的复杂研发请求，或接续跨仓集成、环境交付与运行反馈时，按项目根读取 `.template-spec/agents/issue-tracker-operations.md`，使用统一的定位、读取、恢复、关系与更新方法。有 Issue 时读取当前任务及讨论，再沿链接读取源 Spec、原型和接口依据；前端工程仍由本技能承接。普通局部开发不要求先建票，远程建票、评论或状态更新按对应动作的真实授权执行。
 
 收到明确的复杂研发请求或实现范围确需拆分时，直接读取项目根 `.agents/skills/to-tickets/references/engineering-tickets.md`，检查责任、依赖和接续需要，主动复用或组织必要工作。设计与工程输入继续按 [设计交接与还原](references/design-handoff.md) 接续。

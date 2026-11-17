@@ -11,6 +11,8 @@ Implement the user's goal in the authorized repository using the current request
 
 Keep the observable goal, actual repository and paths, UI/API dependencies, FR/AC or existing acceptance references, source version, applicable skills and the requested completion endpoint in the existing task. For YSS work, use yss-domain / yss-application for DDD behavior and orchestration. Use yss-application's MVC guidance for use cases, transactions and idempotency at the existing Service boundary. Use yss-repository / yss-web-controller for persistence and HTTP boundaries. Do not create a parallel implementation contract.
 
+接续已登记 Spec 的研发、日常终端任务、工作台作业及 PR/MR/CI 进展时，按项目根读取 `.template-spec/agents/workbench-progress.md`。沿用同一 dataDir、specId、实际 Spec 摘要及目标版本，关联真实参与工程、采用版本和原验收，报告实际阶段证据。按本次本地实现、合并或环境验证目标完成，关键需求、业务验收及最终交付沿用户实际确认接续。能力缺失时继续原授权研发并在原任务注明工作台待同步。
+
 涉及模型或分层时，按项目根读取 `.template-spec/agents/backend-architecture-profiles.md`，再结合工程已确认约定选择落点。按本次影响补齐专项方法：HTTP 绑定与输出使用 yss-web-controller / yss-dto，并联查 validation / exception 的实际接线；模型及转换使用 lombok / mapstruct；持久化使用 yss-repository / yss-mybatis；写入顺序使用 yss-application，DDD 规则使用 yss-domain。用户不必逐项点名技能，也不因技能存在而接入所有组件。已有实现先区分符合、确有缺口和未验证，避免重复整改。
 
 结构重构先在当前任务中记下受影响的公开字段、缺失/null/空值、权限先后、错误标识、版本、锁、事务、幂等及副作用顺序，再沿真实入口检查迁移结果。只列本次涉及项，不新建合同或扩大业务范围。按工程现有检查入口验证这些约束，编译或格式通过不能替代行为证据。

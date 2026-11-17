@@ -253,6 +253,17 @@ Frontend 的 project/skills 默认集合由 13 项增为 15 项，可用库由 1
 
 配套 CLI 源码只细化 init/attach/scaffold 成功后的接入提示和帮助，保留既有命令、结构化 attach 参数及 dry-run 边界；Git、托管项目和 Issue 操作仍由 Agent 按实际能力和授权执行。模板修改、CLI 候选构建、项目同步、公开技能发布与真实宿主行为是不同结果，未发行或未更新的程序不会自动获得这些变化。实际构建与临时验证范围见本次维护任务结果，不将文本核对当作原生发现或真实业务闭环证据。
 
+
+## 2026-11-17 生命周期进度接续
+
+本轮按用户已确认范围新增共享 `.template-spec/agents/workbench-progress.md`，将已登记 Spec 的工作台作业、日常 Codex/终端与 PR/MR/CI 进展关联到同一 dataDir、specId、实际 Spec 摘要及目标版本。目标保留原验收引用、实际完成终点、适用阶段和多工程身份，报告关联采用版本、候选 SHA、pipeline 与实际检查及联调组合。后台汇总确定事实，Agent 的覆盖和影响判断附实际证据，未知信息保留待核实。
+
+共享与 Backend implement、Frontend 应用技能及 Spec 共享规格方法在实际消费点引用统一方法，PR/MR 叶子同步接续。关键需求、业务验收与最终交付确认关联用户真实答复、完整目标范围、目标版本与证据摘要，手工更正按当前版本优先，历史成果及受影响项分别保留。原会话或作业沿已有授权继续，新增范围由用户触发。原任务、实际 Issue 与业务正文维持各自来源及责任，目标与报告随实际工作补齐。
+
+三 Profile 的 project、skills 模式通过相关技能的 skillReferences 携带共享方法，Frontend 显式白名单补入该叶子，实际消费共享方法的 to-spec 同步携带。共享源、Backend 专有覆盖与实际 WorkBuddy 副本随本轮同步，Backend implement 仅更新既有 effectiveHash，原始 sourceRevision/upstreamHash、技能元数据、许可证和默认成员沿用。新接口按实际 CLI 帮助和 JSON 契约使用，旧程序能力缺失时继续授权工作，在原任务标明工作台待同步并在升级后复核补报。
+
+本节记录本地模板与技能适配，命令字段及来源/投影核对按当前任务实际结果说明。宿主自然发现、用户实例同步、远程 PR/MR/CI 联调及公开发行的结果分别以相应执行证据为准。
+
 ## 2026-11-17 后端模型与职责防复发
 
 本轮依据 SCRM 后端真实重构复盘，区分已有规则未落实、通用示例误导、项目约定未持久化及检查遗漏。PO/Domain 的 POJO + Lombok 与中文 Javadoc 作为 YSS 后端默认约定，保留既有工程明确例外。HTTP 嵌套与泛型、领域身份和不变量、事实/规则/编排、每个 SqlSessionFactory 的扫描责任及生成链同步统一在 backend-architecture-profiles 中维护，相关技能按影响引用。

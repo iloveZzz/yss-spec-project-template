@@ -1,0 +1,149 @@
+# 生命周期进度上报
+
+已登记的 Spec 在工作台作业、日常 Codex/终端研发、PR/MR 与 CI 跟进中共用本方法。沿原任务或实际 Issue 保留目标、授权、验收引用和工程结果。业务规则继续由原 Spec、文件或本身作为来源的 Issue 正文维护，工作台汇总实际进展及证据。
+
+## 定位同一 Spec 与本次目标
+
+接手、续办或交接时，从实际启动信息、既有续办文本和登记结果核实下列身份，保留在当前任务中。
+
+- 工作台 `dataDir` 与 `specId`。自定义数据目录沿用已核实的绝对路径，所有工作台命令使用同一 `--data-dir`。主文件改名仍接续原 Spec 身份。
+- 当前主 Spec 及实际关联产物的 `specDigest`，采用材料的 commit、工作树摘要或读取时点。首次登记目标时，从 `snapshot --json` 返回的 `result.specs` 中选择 `record.id` 等于本次 `specId` 的条目，取其 `content.artifactDigest`。来源变化后重新读取。
+- 本次目标与完成终点，使用本地实现 `local`、合并 `merged` 或环境验证 `environment` 的实际目标，附具体范围与目标引用。
+- 本次适用的阶段及理由。阶段名为 `research`、`analysis`、`spec`、`prototype`、`handoff`、`implementation`、`verification`、`delivery`，按当前范围选择适用项。
+- 参与工程的真实 `projectId`、角色和名称。角色为 `spec`、`backend`、`frontend`、`integration`，可包含多个 Backend、多个 Frontend 及集成工程。采用版本分别关联各工程。
+- 原 FR/AC、章节、实际 task/Issue 或既有验收链接，以及仍有效的动作授权。
+
+将已核实目标写入 `set-goal`，核对响应的 `revision` 与 `specId`，再调用 `lifecycle --spec <实际Spec ID> --json`，从 `result.progress.goalVersion` 读取保存后的目标版本。目标版本由范围、终点、适用阶段、参与工程、验收引用及 Spec 摘要共同确定。已有目标的采用摘要位于 `result.progress.goal.specDigest`，当前产物摘要位于 `result.spec.content.artifactDigest`，开始依赖工作时核对两者。相同目标复用既有版本，Spec 摘要或其他目标字段变化时核对差异并保存对应新版本。工程实际版本继续随报告证据关联。授权研发直接开始，目标与报告随实际工作补齐。
+
+## 上报阶段进展
+
+工作台作业和日常终端使用同一 Spec 身份上报。开始或恢复时读取当前目标，取得实质进展、遇到阻塞、验证结果变化、PR/MR 或 CI 状态变化以及达到本次终点时更新相应阶段。重复执行使用稳定请求身份，先核对上次结果再重试。
+
+每项 `report` 绑定 `specId`、`goalVersion`、`specDigest`、阶段和参与工程，说明真实进度、摘要、阻塞、下一步、原范围引用、实际采用的工程版本及证据。进度与适用性分别填写。
+
+| 字段 | 含义 |
+| --- | --- |
+| `progress` | `unmarked` 未标记，`todo` 待开始，`doing` 进行中，`blocked` 阻塞，`done` 已完成，`skipped` 本次跳过 |
+| `validity` | `current` 对当前版本有效，`unverified` 待核实，`needsSync` 待同步，`needsReview` 待复核 |
+| `versions` | 按 `projectId` 关联实际参与工程，采用当前 `lifecycle` 返回的 `result.progress.currentVersions` 中对应的 `commit` 与 `workingTreeDigest` |
+| `evidence` | 实际文件、产物、命令、测试、合并、环境或验收引用，并附实际结果 |
+
+后台依据已保存目标、报告、确认和当前产物确定性汇总阶段与整体进展。Agent 判断业务覆盖、验收含义、变更影响或环境结果时，在摘要中说明判断依据并附可核对证据。缺失凭据、材料不可读或检查结果未知时使用待核实，并写明具体缺口。核实时间取实际读取或执行时间，无法取得时保留未知。
+
+证据应足以恢复结果及其适用版本。
+
+- 本地实现关联真实工程与受影响路径、采用版本、实际命令及结果。未提交内容可用实际工作树摘要关联。
+- PR/MR 关联实际候选 SHA、目标版本、run/pipeline ID、attempt/job、实际检出或测试的提交组合及必要检查结果。源提交、临时合并提交和队列组合沿平台事实记录。
+- 联调与环境验证关联各参与工程的实际版本组合、契约或配置版本、环境及执行结果。分仓检查和组合检查分别保留实际证据。
+- 失败、跳过、取消、允许失败、模拟验证及访问不完整保留真实含义。原验收中仍未验证的范围继续展示。
+
+PR/MR 的持续处理沿项目已有跟进方法执行。达到本地实现、合并或环境验证中的本次指定终点后，按原验收报告实际结果及剩余范围。任务完成可使用已有阶段证据，后续新目标由用户触发。
+
+## 用户确认与版本变化
+
+关键需求确认、业务验收和最终交付确认使用用户明确表达的决定，关联实际展示的范围、`goalVersion`、`evidenceDigest` 与原始答复来源。先通过 `lifecycle` 读取当前汇总，从 `result.progress.evidenceDigest` 取得本次展示的证据摘要，再按真实答复保存 `confirm` 或 `reject`。确认阶段分别使用 `spec`、`verification`、`delivery`。当前接口确认整个目标范围，`scope` 与当前目标逐字一致。用户仅确认部分范围时在原任务保留真实决定，按用户明确范围调整相应目标，展示对应范围与证据后关联确认。Agent 的内容就绪判断、代码完成、CI 通过或合并结果各自保留其证据与含义。
+
+确认保存后，后台在决定记录中生成 `stageEvidenceDigest`，用于核对后续变化对该阶段确认的影响。`lifecycle` 的 `result.progressHistory.decisions` 保留这一记录及实际确认输入，提交确认时填写当前整体 `evidenceDigest`。
+
+当前版本内的用户手工更正优先用于展示，保留更正原因和版本。后续 Agent 报告接续该决定并处理实际冲突。用户撤销更正后按现有证据重新汇总。
+
+Spec、目标、参与工程、代码、配置或环境变化后运行 `reconcile` 并核对影响。旧版本成果、报告和确认保留原范围与版本，受影响项标记待同步或待复核，未受影响的成果按实际依据复用。旧确认的适用范围由对应用户决定及版本证据确定。
+
+当前 Agent 会话或作业继续原已授权工作，处理本次范围内的反馈、验证和可恢复失败。范围扩大、额外终点或新的业务取舍交由用户明确决定。续办文本保留尚在执行的操作及下一步，宿主实际停止后的执行情况按可取得事实说明。
+
+## CLI 能力与保存顺序
+
+先查看实际安装版本及子命令帮助，再采用支持的接口。
+
+```sh
+yss version
+yss workbench --help
+yss workbench snapshot --help
+yss workbench lifecycle --help
+yss workbench progress --help
+yss workbench progress set-goal --help
+yss workbench progress report --help
+yss workbench progress confirm --help
+yss workbench progress reconcile --help
+```
+
+本方法随模板分发，具体命令以正在运行的 CLI 为准。缺少接口或权限时核实实际帮助和错误，继续完成原授权研发，在原任务结果注明工作台待同步。升级后读取同一数据目录与 Spec，核对当前版本再补报。
+
+主 Spec、交互说明或原型保存/更新后，继续通过已有 `workbench register` 接口登记同一主 Spec，再读取真实摘要和进度。`set-goal` 保存目标，`report` 保存阶段证据，`confirm` 保存真实用户决定，`reconcile` 重新核对现有事实。前三项使用 `--input <文件路径|->` 读取 JSON，四项写入均使用稳定 `--request-id` 和 `--json` 返回，保留真实响应。输入文件属于本次临时命令材料，原任务、原验收和业务来源持续沿用。
+
+### JSON 输入与命令示例
+
+以下为字段示例。将占位文本替换为当前工作台、原任务与实际执行取得的值，`stages` 按本次范围选择至少一项，`participants` 只列真实工程。初始 `specDigest` 取当前 SpecView 的 `content.artifactDigest`，保存目标后通过 `lifecycle` 读取 `result.progress.goalVersion`，确认前取 `result.progress.evidenceDigest`。
+
+`goal.json` 保存本次目标。
+
+```json
+{
+  "specId": "<实际Spec ID>",
+  "scope": "<本次已授权范围原文>",
+  "target": {"kind": "local", "label": "<本次本地实现终点>"},
+  "stages": [
+    {"stage": "implementation", "applicable": true, "reason": "<适用依据>"},
+    {"stage": "verification", "applicable": true, "reason": "<适用依据>"}
+  ],
+  "participants": [
+    {"projectId": "<实际后端工程ID>", "role": "backend", "label": "<工程名称>"}
+  ],
+  "acceptanceRefs": ["<原任务或FR/AC的实际引用>"],
+  "specDigest": "<当前实际Spec摘要>"
+}
+```
+
+`report.json` 保存一次实际观察。`id` 为本次观察分配稳定身份，相同内容重试沿用该 ID，新观察使用新 ID。`versions` 从 `result.progress.currentVersions` 选择本次实际参与工程并保留 `projectId`、`commit`、`workingTreeDigest`，版本缺失时标明待核实。证据 `kind` 使用 `document`、`artifact`、`command`、`test`、`merge`、`environment`、`acceptance` 或 `other`，`outcome` 使用 `passed`、`failed` 或 `observed`。
+
+```json
+{
+  "id": "<本次观察的稳定ID>",
+  "specId": "<同一实际Spec ID>",
+  "goalVersion": "<lifecycle的result.progress.goalVersion>",
+  "specDigest": "<本次采用的实际Spec摘要>",
+  "stage": "implementation",
+  "projectId": "<实际后端工程ID>",
+  "role": "backend",
+  "progress": "doing",
+  "validity": "current",
+  "summary": "<已取得的实际进展>",
+  "blocker": "<实际阻塞，无则空字符串>",
+  "nextAction": "<本次范围内的下一步>",
+  "scopeRefs": ["<原FR/AC或验收章节>"],
+  "versions": [{"projectId": "<实际后端工程ID>", "commit": "<currentVersions中的实际提交>", "workingTreeDigest": "<currentVersions中的实际工作树摘要>"}],
+  "evidence": [{"kind": "command", "label": "<实际命令及结果>", "reference": "<可核对的实际日志或任务引用>", "outcome": "observed"}]
+}
+```
+
+`confirmation.json` 只填用户已明确表达的实际决定，`source` 指向确认人及原始答复出处。按具体确认事项选择适用 `stage`，决定值为 `confirm` 或 `reject`。
+
+```json
+{
+  "specId": "<同一实际Spec ID>",
+  "goalVersion": "<当前目标版本>",
+  "stage": "verification",
+  "scope": "<与当前goal.scope逐字相同的已展示范围>",
+  "evidenceDigest": "<用户本次核对的result.progress.evidenceDigest>",
+  "source": "<实际用户答复出处>",
+  "decision": "confirm"
+}
+```
+
+命令中的 `YSS_PROGRESS_DATA_DIR`、`YSS_PROGRESS_SPEC_ID` 和各请求 ID 变量取自本次已核实上下文。以下命令分别用于对应操作，执行 `confirm` 前先核对适用阶段的真实证据、当前摘要和用户答复。每个操作使用各自稳定的请求 ID，相同请求重试沿用原值。相同 ID 配不同内容会冲突，响应未知时先核实已有结果。
+
+```sh
+yss workbench --data-dir "$YSS_PROGRESS_DATA_DIR" snapshot --json
+yss workbench --data-dir "$YSS_PROGRESS_DATA_DIR" progress set-goal --input goal.json --request-id "$YSS_PROGRESS_GOAL_REQUEST_ID" --json
+yss workbench --data-dir "$YSS_PROGRESS_DATA_DIR" lifecycle --spec "$YSS_PROGRESS_SPEC_ID" --json
+yss workbench --data-dir "$YSS_PROGRESS_DATA_DIR" progress report --input report.json --request-id "$YSS_PROGRESS_REPORT_REQUEST_ID" --json
+yss workbench --data-dir "$YSS_PROGRESS_DATA_DIR" lifecycle --spec "$YSS_PROGRESS_SPEC_ID" --json
+yss workbench --data-dir "$YSS_PROGRESS_DATA_DIR" progress confirm --input confirmation.json --request-id "$YSS_PROGRESS_CONFIRM_REQUEST_ID" --json
+yss workbench --data-dir "$YSS_PROGRESS_DATA_DIR" progress reconcile --spec-id "$YSS_PROGRESS_SPEC_ID" --request-id "$YSS_PROGRESS_RECONCILE_REQUEST_ID" --json
+```
+
+## 交接与 Agent 续办请求
+
+Spec 交接、工作台生成的 `agent_request` 和人工续办提示共用已核实的 `dataDir`、`specId`、`specDigest` 与 `goalVersion`，附主 Spec/原型/交互说明的实际位置和采用版本、参与工程身份及采用版本、原验收引用、完成终点、当前进展、缺口和下一步。自定义目录放在受控续办上下文中，分发模板使用占位项。
+
+接收方先读取当前材料及工作台记录，核对来源变化和已完成工作，再在原授权范围继续。保存或修改产物后仍登记原主 Spec，阶段报告继续写回同一数据目录及 Spec。已有聊天答复与用户确认沿实际来源接续，缺失关联信息写明待核实并保留已有决定。
