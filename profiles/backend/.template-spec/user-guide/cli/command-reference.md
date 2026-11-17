@@ -1,6 +1,6 @@
 # 命令参考
 
-本页以 Rust CLI `3.8.0` 与其内嵌 Template `5.8.0` 为操作基线。先运行 `yss version` 和 `yss --help`，核对实际版本、源码来源与 Bundle 摘要。模板源码可以继续更新，项目取得的模板和技能由当前程序内嵌 Bundle 决定。本轮工作台增强与新增查询参数对应 CLI `3.10.0` 源码开发构建，尚未正式发行，采用前核对实际程序。
+本页以 Rust CLI `3.8.0` 与其内嵌 Template `5.8.0` 为操作基线。先运行 `yss version` 和 `yss --help`，核对实际版本、源码来源与 Bundle 摘要。模板源码可以继续更新，项目取得的模板和技能由当前程序内嵌 Bundle 决定。本轮工作台增强与新增查询参数随 CLI `3.11.0` 提供，采用前核对实际程序。
 
 ## 按场景选择命令
 
@@ -101,11 +101,11 @@ yss workbench register --root <项目绝对路径> --source <主Spec项目相对
 yss workbench request --spec-id <SpecID> --json
 ```
 
-工作台默认监听 127.0.0.1。关闭浏览器后服务和活动作业继续运行，按 Ctrl-C 或退出 CLI 会停止服务并中断作业。持续服务使用普通输出，读取快照使用 snapshot --json。snapshot、query、lifecycle 和 request 为只读命令，register 与 respond 写入个人数据。当前源码的浏览器还提供工程维护、隔离 Codex 运行及按文件接收成果，操作使用所选目标与实际授权。已有任务与历史可通过 CLI 查询。
+工作台默认监听 127.0.0.1。关闭浏览器后服务和活动作业继续运行，按 Ctrl-C 或退出 CLI 会停止服务并中断作业。持续服务使用普通输出，读取快照使用 snapshot --json。snapshot、query、lifecycle 和 request 为只读命令，register 与 respond 写入个人数据。CLI `3.11.0` 的浏览器还提供工程维护、隔离 Codex 运行及按文件接收成果，操作使用所选目标与实际授权。已有任务与历史可通过 CLI 查询。
 
 query 的 project、spec、stage、status 可重复，同一条件内为 OR，条件间为 AND。默认只看启用记录并隐藏终态，显式选择 done/canceled 时会包括相应终态。`--activity active|inactive|all` 选择启用范围，`--include-closed` 包括终态，`--source-problems` 仅看来源异常，`--q` 搜索文字，`--sort updatedDesc|titleAsc` 选择排序。本轮源码新增可重复的 `--content-status unmarked|draft|ready|confirmed`、`--reminder decision|research|overdue|writeback|ready` 及 `--needs-reconfirmation`，用于 Spec 内容状态、提醒和确认后产物变化筛选。lifecycle 展示调研、分析、规格、原型、交接、实施、验证、交付八阶段，当前关注阶段、Spec 状态与阶段进度分别维护。
 
-个人数据保存在项目和 Git 工作树之外的独立目录，自定义 data-dir 使用真实绝对路径。当前使用 workbench.sqlite3。旧 JSON v1/v2/v3 的只读查询继续读取原文件，首次启动新版工作台或写入时先备份并迁入 SQLite。迁移后的 state.json 保存存储标记。当前源码的设置页可在线生成一致备份并恢复到新的或空的个人数据目录。纯 CLI 或旧版可退出服务后复制完整目录，维护说明列出适用范围及恢复步骤。[维护与恢复](tutorial-maintenance.md)
+个人数据保存在项目和 Git 工作树之外的独立目录，自定义 data-dir 使用真实绝对路径。当前使用 workbench.sqlite3。旧 JSON v1/v2/v3 的只读查询继续读取原文件，首次启动新版工作台或写入时先备份并迁入 SQLite。迁移后的 state.json 保存存储标记。CLI `3.11.0` 的设置页可在线生成一致备份并恢复到新的或空的个人数据目录。纯 CLI 或旧版可退出服务后复制完整目录，维护说明列出适用范围及恢复步骤。[维护与恢复](tutorial-maintenance.md)
 
 register 从主文件的 `yss-spec` JSON 元数据读取范围、关联资源和问题。更新时复用同一登记。登记失败时保留源文件，修复具体错误后重试同一主文件。登记、答复保存、内容就绪和用户确认分别记录。
 

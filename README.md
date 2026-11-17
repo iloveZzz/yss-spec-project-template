@@ -30,7 +30,9 @@
 
 既有 yss CLI 的安装包和内置行为独立于本仓，本次目录变化不会改写已安装的二进制。新模板与具体 CLI 版本的安装、同步兼容性须以实际使用结果为准。
 
-Template 5.10.0 配套 CLI 3.10.0，统一 Spec、Ticket/Issue 与研发实现的来源、验收和接续方法。完整工程接入补齐 Git、远程仓库、Issue tracker 与 Home 关系；Frontend 默认加入共享 `implement` 和 `to-tickets`，按实际请求区分业务票与工程票，小任务仍可直接实现。三个 Profile 默认集合为 Spec 17 项、Backend 42 项、Frontend 15 项，Frontend 可用库为 19 项；保留 Backend4 配方、Home 多项目协调及既有数据库指引。需要安装内嵌新版模板的 CLI，再按项目实际范围同步。[技能地图](.template-spec/agents/profile-skills.md)
+Template 5.11.0 配套 CLI 3.11.0，补齐复杂研发任务的责任、跨仓依赖、集成验收与环境反馈接续方法。三个 Profile 沿已有工作项组织必要任务，关联各仓源码与制品、环境结果、恢复依据和下一责任人。新增客户跟进全生命周期 Demo，贯穿三仓 DDD 主线、MVC 对照、测试环境发布和业务验收。工作台指南覆盖工程维护、Home 地图导入、隔离 Codex 运行、草稿与确认版本恢复、在线一致备份。
+
+三个 Profile 默认集合为 Spec 17 项、Backend 42 项、Frontend 15 项，Frontend 可用库为 19 项。安装内嵌新版模板的 CLI 后，按项目实际范围同步。[技能地图](.template-spec/agents/profile-skills.md)
 
 `scaffold frontend` 从 CLI 3.3.0 起支持。Frontend Profile 从 CLI 3.2.0 开始支持，3.1.4 及以前不支持。参见 [Frontend 接入](.template-spec/user-guide/cli/tutorial-frontend.md)。GitLab CI 固定 CLI 配套构建源码 `f2e0a952123fbd9f12d3703b8df2b03d02b670cb`，版本为 3.7.0。该提交用于构建工具，正式 CLI 的最终源码与模板来源以 Release 产物记录为准。实际远程执行结果以对应流水线为准。
 
