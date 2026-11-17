@@ -27,12 +27,13 @@ Domain 不拥有：
 └── event
 ```
 
-DTO/VO 位于 `{base_package}.rest.dto`。独立 client Maven module 对当前 Target Profile 为 `unsupported`；不得放回 Domain module。
+HTTP DTO/VO 位于 `{base_package}.rest.dto`，领域值对象仍归 Domain。独立 client Maven module 对当前 Target Profile 为 `unsupported`；不得放回 Domain module。
 
 ## 3. Aggregate 与行为
 
 - Aggregate Root 是一致性边界，不按表数量机械拆分。
 - Entity identity 使用明确类型；Value Object 按值相等并尽量不可变。
+- POJO/Lombok、中文 Javadoc 及嵌套 State/Fact/值对象遵守项目根 `.template-spec/agents/backend-architecture-profiles.md`，不从 Java 版本推导默认使用 record。
 - 对外暴露业务动作，例如 `publish()`、`cancel()`，不要让 Application 任意修改状态字段。
 - 没有真实行为时保持简单模型，不为了“看起来像 DDD”制造空 Domain Service。
 
@@ -58,7 +59,7 @@ public interface QualityTemplateGateway {
 禁止在 Domain Gateway 中出现：
 
 - `*AddCmd`、`*UpdateCmd`、HTTP request。
-- `*VO`、`PageResult`、Repository PO。
+- HTTP `*VO`、`PageResult`、Repository PO；领域值对象不因名称相似被误判。
 - MyBatis、Spring MVC、Jackson、Swagger 类型。
 
 展示分页、列表和投影查询由 Application Query Port 定义，Infrastructure 实现。
@@ -68,16 +69,16 @@ public interface QualityTemplateGateway {
 领域错误携带稳定标识和参数，不决定 HTTP 行为：
 
 ```java
+/** 模板名称冲突的领域错误，不携带公开 HTTP 消息。 */
+@Getter
 public final class QualityTemplateNameConflict extends RuntimeException {
+    /** 发生冲突的模板名称，公开展示由 Web 决定。 */
     private final String templateName;
 
+    /** 保留稳定错误标识及用于翻译的业务参数。 */
     public QualityTemplateNameConflict(String templateName) {
         super("quality-template-name-conflict");
         this.templateName = templateName;
-    }
-
-    public String templateName() {
-        return templateName;
     }
 }
 ```
@@ -100,6 +101,6 @@ Web Exception Translator 再按现有 API 约定映射状态码、错误码和�
 ## 聚合创建与重建
 
 - 创建入口执行当前创建规则，持久化重建入口恢复已保存状态并校验结构不变量，不重复发送创建事件、生成身份或执行外部调用。两者不得通过公开任意 setter 混为一体。
-- 值对象按值相等；聚合按稳定身份相等。集合对外只读，修改经业务方法；Java 8 使用普通类与防御性复制，不从示例推导 record 等高版本语法。
+- 值对象按值相等；聚合按稳定身份相等。集合入参与出参防御性复制，修改经业务方法；普通类与必要 Lombok 为默认实现，既有明确约定按根规范兼容。
 - 领域错误携带稳定标识与参数；公开消息和 HTTP 状态由 Web 翻译。测试通过公开行为覆盖非法状态、重复动作和重建后语义一致性。
 - 为业务决策加载一个或一组聚合仍可使用 Domain Gateway；展示列表、分页、排序、统计和投影走 Application Query Port。返回 List 本身不是违规，须按调用目的判定。

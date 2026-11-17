@@ -6,7 +6,9 @@
 
 采用 MyBatis-Plus 的新增或本次重写代码，单表查询使用 `Wrappers.lambdaQuery(PO.class)`，更新使用 `Wrappers.lambdaUpdate(PO.class)`，列由 PO getter 引用。只选择本次所需列，保留原租户、版本、过滤及排序条件；明确 NULL 的更新不得被默认忽略策略吞掉。普通主键 CRUD 使用已选 Mapper 的现有入口，不再包装空 Repository。
 
-复杂多表 JOIN、EXISTS 和关联子查询放入 Mapper XML，列表、总数和详情复用同一权限及租户条件。值用参数绑定，动态标识符使用已确认白名单。返回 record 或不可变对象时，按实际 Java／MyBatis 能力显式映射构造器，核对参数类型、次序和空值语义。同步 namespace、方法参数及资源加载路径，检查最终包内确实包含 XML。
+复杂多表 JOIN、EXISTS 和关联子查询放入 Mapper XML，列表、总数和详情复用同一权限及租户条件。值用参数绑定，动态标识符使用已确认白名单。结果为允许使用 record 的 Application 读投影，或工程已有明确不可变返回约定时，按实际 Java／MyBatis 能力显式映射构造器，核对参数类型、次序和空值语义；不据此把新 PO/Domain 改为 record。同步 namespace、方法参数及资源加载路径，检查最终包内确实包含 XML。
+
+Mapper 扫描、XML 加载及数据源绑定由各 `SqlSessionFactory` 的配置所有者统一管理，避免启动类与业务配置重叠注册同一 Mapper；多工厂可各有配置。范围按业务责任及真实绑定划分，MapStruct Convertor 不属于 SQL Mapper，完整约定见项目根 `.template-spec/agents/backend-architecture-profiles.md`。
 
 通用 SQL 共用片段，只把真实方言差异放进对应 `databaseId` 语句或片段。不要复制整个查询主体，也不为了展示兼容而制造差异。分页沿用当前唯一责任者，不能在手写 LIMIT 与分页插件间叠加处理。
 

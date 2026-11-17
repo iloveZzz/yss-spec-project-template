@@ -58,8 +58,9 @@ public interface QualityRuleWebConvertor {
 
 - 使用构造器注入，不定义静态 `INSTANCE`。
 - Request → Application Command/Query；Application Result → Response。
+- 嵌套对象、集合元素与泛型参数逐层遵守相同方向；缺失、null 和空值按项目根 `.template-spec/agents/backend-architecture-profiles.md` 与具体接口约定处理。
 - 不导入 Domain Model 或 Repository PO。
-- 父 POM 必须配置 MapStruct processor、Lombok 与 `lombok-mapstruct-binding`，验证生成实现真实编译。
+- 按当前父 POM 的处理器配置核验 MapStruct processor、Lombok 与适用的 `lombok-mapstruct-binding`，验证生成实现真实编译。
 
 ## 5. Exception Translator
 

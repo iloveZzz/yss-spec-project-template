@@ -98,7 +98,8 @@
       ".workbuddy/skills/implement",
       ".agents/skills/to-tickets",
       ".workbuddy/skills/to-tickets",
-      ".template-spec/templates/business-ticket-template.md"
+      ".template-spec/templates/business-ticket-template.md",
+      ".template-spec/agents/backend-architecture-profiles.md"
     ],
     "excludeRootEntries": [
       ".git",
@@ -364,7 +365,8 @@
           ".template-spec/agents/frontend-skills-adaptation.md"
         ],
         "code-review": [
-          ".template-spec/agents/matt-skills-adaptation.md"
+          ".template-spec/agents/matt-skills-adaptation.md",
+          ".template-spec/agents/backend-architecture-profiles.md"
         ],
         "diagnosing-bugs": [
           ".template-spec/agents/matt-skills-adaptation.md"
@@ -486,7 +488,8 @@
           ".template-spec/agents/frontend-skills-adaptation.md"
         ],
         "code-review": [
-          ".template-spec/agents/matt-skills-adaptation.md"
+          ".template-spec/agents/matt-skills-adaptation.md",
+          ".template-spec/agents/backend-architecture-profiles.md"
         ],
         "diagnosing-bugs": [
           ".template-spec/agents/matt-skills-adaptation.md"

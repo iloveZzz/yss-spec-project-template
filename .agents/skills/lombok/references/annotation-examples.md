@@ -1,302 +1,127 @@
-# lombok 条件参考
+# Lombok 条件参考
 
-## Maven Configuration
+示例说明注解的适用职责，省略 import；类型、字段和业务行为使用中文 Javadoc。架构、PO/Domain 的 POJO 默认形态及既有工程例外以项目根 `.template-spec/agents/backend-architecture-profiles.md` 为准，不能从注解示例反推模块或业务规则。
 
-复用工程父 POM 中已批准的 Lombok 版本与编译插件配置。Lombok 依赖按工程策略使用 provided 或 optional；使用显式注解处理器路径的项目，将 Lombok 放入 `annotationProcessorPaths`。
+## Common Annotations
 
-与 MapStruct 共用时，在同一处理器配置中核验 Lombok、MapStruct processor 和适用的 lombok-mapstruct-binding；binding 不作为业务依赖单独引入。具体配置参见 [MapStruct 配置示例](../../mapstruct/references/annotation-examples.md#maven-configuration)，示例版本仍由当前工程基线替换。
+| 注解 | 使用边界 |
+|---|---|
+| `@Getter` / `@Setter` | PO 可按映射需要使用；Domain Entity 只暴露所需读取与业务行为，不增加任意 setter。 |
+| `@RequiredArgsConstructor` | 适合 Spring Bean 的 final 依赖构造器注入；不等于领域创建规则。 |
+| `@NoArgsConstructor` / `@AllArgsConstructor` | 按持久化/序列化工具实际需要选可见性；不为 Domain 默认开放无效状态或全参入口。 |
+| `@Data` | 会组合访问器、相等、日志表示等行为；仅在这些行为均符合对象职责时选择，不作为 PO/Entity 的机械模板。 |
+| `@Value` | 适合值相等且成员不可变的普通类；含集合、数组或可变元素时仍需防御性复制。 |
+| `@Builder` / `@With` | 不得绕过领域工厂与不变量。Builder 默认值必须已有接口或业务依据，不能用 `@Builder.Default` 掩盖遗漏映射。 |
+| `@ToString` / `@EqualsAndHashCode` | 分别按日志边界与身份/值语义选择字段；排除敏感信息及不应遍历的关联。 |
 
-### @Data (All-in-One)
+### PO Pattern
 
-```java
-@Data
-public class User {
-    private Long id;
-    private String name;
-    private String email;
-}
-
-// Generates:
-// - @Getter for all fields
-// - @Setter for all non-final fields
-// - @ToString
-// - @EqualsAndHashCode
-// - @RequiredArgsConstructor
-```
-
-### @Getter / @Setter
+以下为 DDD Infrastructure 或 MVC repository 中的数据库映射对象；表、主键和审计注解按实际 MyBatis 基线补充，示例不决定发号策略。
 
 ```java
-public class User {
-    @Getter @Setter
-    private String name;
-
-    @Getter // Read-only
-    private final String email;
-
-    @Setter(AccessLevel.PROTECTED)
-    private String internalId;
-}
-```
-
-### @NoArgsConstructor / @AllArgsConstructor / @RequiredArgsConstructor
-
-```java
+/** 用户表的持久化映射，不承担用户业务规则。 */
+@Getter
+@Setter
 @NoArgsConstructor
-@AllArgsConstructor
-public class User {
+public class UserPO {
+    /** 用户主键，发号方式沿用数据库及写入方约定。 */
     private Long id;
+
+    /** 用户名称，空值约束与数据库及业务模型保持一致。 */
     private String name;
 }
-
-@RequiredArgsConstructor
-public class UserService {
-    private final UserRepository userRepository; // Included in constructor
-    private final UserMapper userMapper;         // Included in constructor
-    private String cacheName;                    // NOT included
-}
-```
-
-### @Builder
-
-```java
-@Data
-@Builder
-public class User {
-    private Long id;
-    private String name;
-    private String email;
-    @Builder.Default
-    private UserStatus status = UserStatus.ACTIVE;
-}
-
-// Usage
-User user = User.builder()
-    .name("John")
-    .email("john@example.com")
-    .build();
-
-// With toBuilder for updates
-User updated = user.toBuilder()
-    .name("Jane")
-    .build();
-```
-
-### @Value (Immutable)
-
-```java
-@Value
-public class UserResponse {
-    Long id;
-    String name;
-    String email;
-    LocalDateTime createdAt;
-}
-
-// Generates:
-// - All fields are private final
-// - @AllArgsConstructor
-// - @Getter (no setters)
-// - @ToString
-// - @EqualsAndHashCode
 ```
 
 ## Entity Pattern
 
+以下为 DDD Domain，使用调用方已提供的稳定身份，示例业务规则是新建/改名时名称不得全由 Java 空白或 Unicode 空格分隔符组成；重建仅检查必需结构，不重放创建过程。Domain 不带 JPA/MyBatis 注解。
+
 ```java
-@Entity
-@Table(name = "users")
+/** 以用户标识维持身份，通过业务方法修改名称的领域实体。 */
 @Getter
-@Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Builder
-@EntityListeners(AuditingEntityListener.class)
-public class User {
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+public final class UserEntity {
+    /** 已分配且不可改变的用户标识。 */
+    @EqualsAndHashCode.Include
+    private final Long id;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(nullable = false)
+    /** 已保存的用户名称。 */
     private String name;
 
-    @Column(unique = true, nullable = false)
-    private String email;
+    private UserEntity(Long id, String name) {
+        this.id = Objects.requireNonNull(id, "id");
+        this.name = Objects.requireNonNull(name, "name");
+    }
 
-    @Enumerated(EnumType.STRING)
-    @Builder.Default
-    private UserStatus status = UserStatus.ACTIVE;
+    /** 使用已分配身份创建用户，并执行当前名称规则。 */
+    public static UserEntity create(Long id, String name) {
+        requireName(name);
+        return new UserEntity(id, name);
+    }
 
-    @CreatedDate
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
+    /** 恢复已保存的身份和状态，不生成新身份或发送创建事件。 */
+    public static UserEntity reconstitute(Long id, String name) {
+        return new UserEntity(id, name);
+    }
 
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
+    /** 修改名称；拒绝空白值并保持用户身份不变。 */
+    public void rename(String name) {
+        requireName(name);
+        this.name = name;
+    }
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "department_id")
-    private Department department;
+    /** 名称规则的示例；实际错误类型及标识沿用当前领域。 */
+    private static void requireName(String name) {
+        if (name == null || name.codePoints()
+                .allMatch(c -> Character.isWhitespace(c) || Character.isSpaceChar(c))) {
+            throw new IllegalArgumentException("user-name-required");
+        }
+    }
 }
 ```
 
-JPA/DDD entities must not default to `@Data`; choose equality and `toString` deliberately from stable identity and exclude lazy, relationship, and sensitive fields.
+- 嵌套 State、Fact、值对象同样采用普通类与必要 Lombok，不因只是辅助类型就省略业务注释。
+- 集合在构造入口复制，输出只读副本；可变元素还需逐项复制或转换成不可变值。不能只对调用方集合套只读视图后继续保留别名。
+- 文本规则先确认空白集合和长度单位，不将 `trim`、`isBlank` 或某个校验注解的默认范围当作业务定义。上述示例保留合法文本原样，覆盖非断行空格；不据此禁止全部不可见字符或擅自做文本归一化。
+- 已采用 JPA 的工程，其持久化实体按 ORM 的构造器、代理、主键及关联要求维护，不能照搬上面的 final 类或身份实现；更不能把 JPA `@Entity`、全量 setter、延迟关联引入独立 DDD Domain。数据库生成身份未赋值时的相等行为须单独考虑。
 
 ## Service Pattern with Constructor Injection
 
+以下为 DDD Application 的依赖声明片段，HTTP DTO 转换留在 Web；MVC Service 则注入实际 Repository，沿用其既有分层。
+
 ```java
+/** 编排用户用例，领域规则由用户实体执行。 */
 @Service
 @RequiredArgsConstructor
-@Slf4j
-public class UserServiceImpl implements UserService {
-
-    private final UserRepository userRepository;
-    private final UserMapper userMapper;
-    private final PasswordEncoder passwordEncoder;
-
-    @Override
-    public UserResponse create(CreateUserRequest dto) {
-        log.info("Creating user");
-        User user = userMapper.toEntity(dto);
-        return userMapper.toResponse(userRepository.save(user));
-    }
-}
-```
-
-## Logging
-
-```java
-@Slf4j  // SLF4J logger
 public class UserService {
-    public void process() {
-        log.info("Processing...");
-        log.debug("Processing completed");
-        log.error("Error occurred", exception);
-    }
+    /** 用户聚合的持久化端口。 */
+    private final UserGateway userGateway;
+    // 用例方法按当前需求实现。
 }
-
-@Log4j2  // Log4j2 logger
-@CommonsLog  // Apache Commons Logging
-@JBossLog  // JBoss Logging
 ```
 
 ## DTO Pattern
 
-```java
-// Request DTO
-@Getter
-@Setter
-@ToString(onlyExplicitlyIncluded = true)
-public class CreateUserRequest {
-    @NotBlank
-    private String name;
-    @Email
-    private String email;
-    @Size(min = 8)
-    private String password;
-}
+HTTP Request/Response 与 Application Command/Result 按各自序列化、校验和映射要求选择访问器或构造器；不得为复用示例让 Service 接收 Request 或直接生成 Entity。敏感输入不进入 `toString`，请求缺失与 null 的区别不由 Lombok 默认值替代。
 
-// Response DTO (immutable)
-@Value
-@Builder
-public class UserResponse {
-    Long id;
-    String name;
-    String email;
-    UserStatus status;
-    LocalDateTime createdAt;
-}
-```
+## Maven Configuration
 
-## @Cleanup
+复用工程父 POM 的 Lombok 版本与编译插件配置，按工程策略选择 provided 或 optional。使用显式注解处理器路径时核验 Lombok、MapStruct processor 和适用的 lombok-mapstruct-binding；binding 是处理器协作配置，不作为业务依赖。
 
-```java
-public void readFile(String path) throws IOException {
-    @Cleanup InputStream in = new FileInputStream(path);
-    // in.close() called automatically
-}
-```
-
-## @SneakyThrows
-
-```java
-@SneakyThrows  // Wraps checked exception
-public String readConfig() {
-    return new String(Files.readAllBytes(Paths.get("config.json")), StandardCharsets.UTF_8);
-}
-```
-
-## @Synchronized
-
-```java
-public class Counter {
-    @Synchronized
-    public void increment() {
-        // Thread-safe
-    }
-}
-```
-
-## @With (Immutable Updates)
-
-```java
-@Value
-@With
-public class Point {
-    int x;
-    int y;
-}
-
-Point p1 = new Point(1, 2);
-Point p2 = p1.withX(5);  // Point(5, 2)
-```
-
-## Key Annotations
-
-| Annotation | Purpose |
-|------------|---------|
-| `@Data` | Getter, Setter, ToString, Equals, Constructor |
-| `@Value` | Immutable class |
-| `@Builder` | Builder pattern |
-| `@RequiredArgsConstructor` | Constructor for final fields |
-| `@Slf4j` | Logger field |
-| `@ToString.Exclude` | Exclude from toString |
-| `@EqualsAndHashCode.Exclude` | Exclude from equals/hashCode |
-
----
-
-## Anti-Patterns
-
-| Anti-Pattern | Why It's Bad | Correct Approach |
-|--------------|--------------|------------------|
-| @Data on JPA entities | toString/equals issues | Use @Getter/@Setter selectively |
-| Not excluding lazy relations | LazyInitializationException | Use @ToString.Exclude |
-| @EqualsAndHashCode on entities | Proxy issues | Use @EqualsAndHashCode(onlyExplicitlyIncluded = true) |
-| @SneakyThrows everywhere | Hides exceptions | Use proper exception handling |
-| @Builder without @Default | Null fields | Add @Builder.Default |
-| @Value with mutable fields | Breaks immutability | Use only immutable types |
-| Mixing @Data and manual methods | Confusing API | Be consistent |
-| Not configuring in lombok.config | Inconsistent behavior | Use lombok.config file |
-
----
+具体检查使用项目根 `.agents/skills/mapstruct/references/annotation-examples.md` 的 Maven Configuration。不把处理器列表顺序当作兼容性证明；编译受影响模块并检查实际生成代码。
 
 ## Quick Troubleshooting
 
-| Issue | Cause | Solution |
-|-------|-------|----------|
-| "Cannot find symbol" for getters | IDE not processing | Enable annotation processing |
-| LazyInitializationException | toString on lazy relation | Add @ToString.Exclude |
-| MapStruct not working | Wrong processor order | Lombok before MapStruct |
-| Builder missing fields | No @Builder.Default | Add defaults or check config |
-| StackOverflowError in equals | Circular reference | Exclude relation fields |
-| IDE shows errors but compiles | IDE cache | Invalidate caches/restart |
-| @Slf4j logger not found | SLF4J not in classpath | Add SLF4J dependency |
-| Generated code not visible | delombok needed | Run delombok task |
-
----
+| 现象 | 优先检查 |
+|---|---|
+| getter 或构造器未生成 | 编译器的注解处理器配置、Lombok/Java 兼容性与实际编译错误；仅 IDE 报错时再核对 IDE 配置。 |
+| MapStruct 看不到属性 | 同一编译链的 Lombok、MapStruct processor、适用 binding 和生成源码。 |
+| Builder 字段为 null | 输入、字段初始化、`@Builder.Default` 的实际生成行为与业务依据；不自动补业务默认值。 |
+| equals/hashCode 或 toString 递归/泄漏 | 稳定身份、关联字段、可变成员和敏感字段范围；不以全字段注解修复。 |
+| `@Value` 对象仍被外部改变 | 构造入参、返回值及嵌套元素是否保留可变引用。 |
 
 ## Reference Documentation
-- [Lombok Documentation](https://projectlombok.org/features/)
-- [Stable Features](https://projectlombok.org/features/all)
-- [Configuration](https://projectlombok.org/features/configuration)
+
+- [Lombok 官方注解说明](https://projectlombok.org/features/)
+- [`@Value` 的生成范围](https://projectlombok.org/features/Value)
+- [`@Builder` 与默认值](https://projectlombok.org/features/Builder)

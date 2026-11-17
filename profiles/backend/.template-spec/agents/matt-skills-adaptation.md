@@ -252,3 +252,13 @@ Codex 的来源观察见随包的 `.agents/skills/setup-yss-harness/references/h
 Frontend 的 project/skills 默认集合由 13 项增为 15 项，可用库由 17 项增为 19 项，新增共享 `implement` 与 `to-tickets`；不新增 Frontend 主源覆盖。Spec 17 项与 Backend 42 项保持。清单、注册表、来源记录、资源闭包和平台副本随本地候选更新；原始上游版本和摘要不变，前文历史数量保留当时语境。
 
 配套 CLI 源码只细化 init/attach/scaffold 成功后的接入提示和帮助，保留既有命令、结构化 attach 参数及 dry-run 边界；Git、托管项目和 Issue 操作仍由 Agent 按实际能力和授权执行。模板修改、CLI 候选构建、项目同步、公开技能发布与真实宿主行为是不同结果，未发行或未更新的程序不会自动获得这些变化。实际构建与临时验证范围见本次维护任务结果，不将文本核对当作原生发现或真实业务闭环证据。
+
+## 2026-11-17 后端模型与职责防复发
+
+本轮依据 SCRM 后端真实重构复盘，区分已有规则未落实、通用示例误导、项目约定未持久化及检查遗漏。PO/Domain 的 POJO + Lombok 与中文 Javadoc 作为 YSS 后端默认约定，保留既有工程明确例外。HTTP 嵌套与泛型、领域身份和不变量、事实/规则/编排、每个 SqlSessionFactory 的扫描责任及生成链同步统一在 backend-architecture-profiles 中维护，相关技能按影响引用。
+
+Lombok、MapStruct 示例按模型职责修订，Backend implement、testing 与共享 review 明确真实类型/调用链和实际执行证据。已有正确 ID 接入及合法 Application Port 实现不重复整改，多数据源和调度输入入口按实际职责判断。日常与发布测试节奏由工程决定，不把 SCRM 的约定变成全部项目的实库禁令。
+
+工程自动检查留在 SCRM 既有测试和工具入口，模板只维护规则、方法和必要引用。受影响平台副本、单项安装的资源闭包与已有 effectiveHash 同步更新，原始 sourceRevision/upstreamHash 保留。修改、分发、隔离演练和真实宿主发现分别报告，目录一致或编译通过不证明真实任务收益。
+
+首轮隔离对照使用相同阅读提醒任务及三个只读反例。两组均完成 HTTP 与领域实现、自测及反例审查，统一外部探针发现候选产物遗漏非断行空格标题，一些非领域模型注释也不完整；该失败保留，不以自测通过或文档修订宣称效果提升。随后修正 Lombok 文本示例并补充 yss-validation 的边界核验提醒，后续案例与首轮结果分开记录。这些是子代理演练，不能外推宿主原生发现、生产效果或稳定收益。

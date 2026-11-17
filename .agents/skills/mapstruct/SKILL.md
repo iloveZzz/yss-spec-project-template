@@ -14,6 +14,8 @@ description: "实现或排查 MapStruct DTO、PO、Domain 映射及 Lombok 集�
 
 优先复用工程已有 MapperConfig。新增目标字段须显式映射或按合同忽略，不能用全局 `ReportingPolicy.IGNORE` 消除遗漏。局部更新与全量替换的 null 语义来自合同，不能从示例推断。
 
+按项目根 `.template-spec/agents/backend-architecture-profiles.md` 确定层与转换方向；Web/Server 只做 Request → 用例输入、用例结果 → Response，嵌套和泛型同样分离。持久化转换归 Infrastructure/repository；转换器不查库、不决定资格/状态、不生成身份/时间或补造业务默认值。MapStruct 接口不属于 MyBatis 扫描范围。
+
 按变更验证字段覆盖、null、更新和边界值；处理器调整需实际编译。不要把所有参考示例当作必跑清单。
 
 查第三方行为时使用 `yss-research`，来源为 [MapStruct 官方文档](https://mapstruct.org/documentation/stable/reference/html/)；不假定某个 MCP 工具已安装。

@@ -18,6 +18,7 @@ description: "接入或排查 YSS Bean Validation、校验消息与校验错误�
 3. 当前组件仓不存在历史 `yss-component-validation-engine-parent`；表达式、LiteFlow EL 或 `ExpressParserFactory` 请求返回 `blocked`，先确认真实组件来源和生命周期影响，不以旧索引或通用知识生成实现。
 4. 校验失败映射保持当前工程的 service/API 错误合同。
 5. 消费工程基线选择 javax/jakarta，不自行升级 Java/Boot。MVC 输入校验放在 server/client，业务不变量由 service/core 验证；不生成 DDD Domain。HTTP 失败形态由 server 的合同测试验证。
+6. 文本限制按业务定义核对空白范围、长度单位及是否允许归一化。Java 的 `trim`、`isBlank` 和 provider 注解不保证覆盖同一集合；例如全空白需包含非断行空格时，核验 U+00A0、U+2007、U+202F，不能只测 ASCII 空格。通过真实绑定与领域入口检查拒绝行为，合法文本仍按合同保留，不把全部不可见字符一律判非法。
 
 ## 能力边界
 
@@ -40,6 +41,7 @@ description: "接入或排查 YSS Bean Validation、校验消息与校验错误�
 - 不将类、parser 或配置归给不存在的历史模块。
 - 校验错误保留中文业务用户可理解的消息。
 - 新增包装前先复用工程既有约定。
+- 自测通过后仍按本次规则选代表性边界，区分字段未提供、显式 null、合法空值和非法值。输入注解通过不能替代领域创建、重建与更新的不变量验证。
 
 ## 修改边界
 

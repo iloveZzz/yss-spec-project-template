@@ -288,7 +288,8 @@
           ".template-spec/agents/backend-architecture-profiles.md"
         ],
         "code-review": [
-          ".template-spec/agents/matt-skills-adaptation.md"
+          ".template-spec/agents/matt-skills-adaptation.md",
+          ".template-spec/agents/backend-architecture-profiles.md"
         ],
         "codebase-design": [
           ".template-spec/agents/matt-skills-adaptation.md"
@@ -316,15 +317,21 @@
           ".template-spec/templates/build-deploy-guide-template.md",
           ".template-spec/agents/issue-tracker.md",
           ".template-spec/agents/issue-tracker-operations.md",
-          ".agents/skills/to-tickets/references/engineering-tickets.md"
+          ".agents/skills/to-tickets/references/engineering-tickets.md",
+          ".template-spec/agents/backend-architecture-profiles.md"
         ],
         "java-backend-commit": [],
         "llm-wiki": [],
-        "lombok": [],
+        "lombok": [
+          ".template-spec/agents/backend-architecture-profiles.md",
+          ".agents/skills/mapstruct/references/annotation-examples.md"
+        ],
         "maintaining-skills": [
           ".agents/skills/i-have-adhd/references/pr-and-retro.md"
         ],
-        "mapstruct": [],
+        "mapstruct": [
+          ".template-spec/agents/backend-architecture-profiles.md"
+        ],
         "prototype": [
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
@@ -369,7 +376,9 @@
           ".agents/skills/i-have-adhd/references/pr-and-retro.md",
           ".agents/skills/maintaining-skills/references/authoring.md"
         ],
-        "yss-application": [],
+        "yss-application": [
+          ".template-spec/agents/backend-architecture-profiles.md"
+        ],
         "yss-audit-log": [],
         "yss-backend-spec-review": [],
         "yss-cache": [],
@@ -378,7 +387,9 @@
           ".template-spec/engineering/backend-platforms.json"
         ],
         "yss-distributed-id": [],
-        "yss-domain": [],
+        "yss-domain": [
+          ".template-spec/agents/backend-architecture-profiles.md"
+        ],
         "yss-dto": [
           ".template-spec/agents/backend-architecture-profiles.md"
         ],
@@ -389,7 +400,9 @@
         "yss-layered-mvc-scaffold-generator": [
           ".template-spec/agents/backend-architecture-profiles.md"
         ],
-        "yss-mybatis": [],
+        "yss-mybatis": [
+          ".template-spec/agents/backend-architecture-profiles.md"
+        ],
         "yss-openapi-governance": [],
         "yss-repository": [
           ".template-spec/agents/backend-architecture-profiles.md"
@@ -412,7 +425,9 @@
         ],
         "yss-userinfo": [],
         "yss-validation": [],
-        "yss-web-controller": [],
+        "yss-web-controller": [
+          ".template-spec/agents/backend-architecture-profiles.md"
+        ],
         "yss-backend-testing": [
           ".agents/skills/implement/references/spec-feedback.md"
         ],
@@ -550,7 +565,8 @@
           ".template-spec/agents/backend-architecture-profiles.md"
         ],
         "code-review": [
-          ".template-spec/agents/matt-skills-adaptation.md"
+          ".template-spec/agents/matt-skills-adaptation.md",
+          ".template-spec/agents/backend-architecture-profiles.md"
         ],
         "codebase-design": [
           ".template-spec/agents/matt-skills-adaptation.md"
@@ -578,15 +594,21 @@
           ".template-spec/templates/build-deploy-guide-template.md",
           ".template-spec/agents/issue-tracker.md",
           ".template-spec/agents/issue-tracker-operations.md",
-          ".agents/skills/to-tickets/references/engineering-tickets.md"
+          ".agents/skills/to-tickets/references/engineering-tickets.md",
+          ".template-spec/agents/backend-architecture-profiles.md"
         ],
         "java-backend-commit": [],
         "llm-wiki": [],
-        "lombok": [],
+        "lombok": [
+          ".template-spec/agents/backend-architecture-profiles.md",
+          ".agents/skills/mapstruct/references/annotation-examples.md"
+        ],
         "maintaining-skills": [
           ".agents/skills/i-have-adhd/references/pr-and-retro.md"
         ],
-        "mapstruct": [],
+        "mapstruct": [
+          ".template-spec/agents/backend-architecture-profiles.md"
+        ],
         "prototype": [
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
@@ -631,7 +653,9 @@
           ".agents/skills/i-have-adhd/references/pr-and-retro.md",
           ".agents/skills/maintaining-skills/references/authoring.md"
         ],
-        "yss-application": [],
+        "yss-application": [
+          ".template-spec/agents/backend-architecture-profiles.md"
+        ],
         "yss-audit-log": [],
         "yss-backend-spec-review": [],
         "yss-cache": [],
@@ -640,7 +664,9 @@
           ".template-spec/engineering/backend-platforms.json"
         ],
         "yss-distributed-id": [],
-        "yss-domain": [],
+        "yss-domain": [
+          ".template-spec/agents/backend-architecture-profiles.md"
+        ],
         "yss-dto": [
           ".template-spec/agents/backend-architecture-profiles.md"
         ],
@@ -651,7 +677,9 @@
         "yss-layered-mvc-scaffold-generator": [
           ".template-spec/agents/backend-architecture-profiles.md"
         ],
-        "yss-mybatis": [],
+        "yss-mybatis": [
+          ".template-spec/agents/backend-architecture-profiles.md"
+        ],
         "yss-openapi-governance": [],
         "yss-repository": [
           ".template-spec/agents/backend-architecture-profiles.md"
@@ -674,7 +702,9 @@
         ],
         "yss-userinfo": [],
         "yss-validation": [],
-        "yss-web-controller": [],
+        "yss-web-controller": [
+          ".template-spec/agents/backend-architecture-profiles.md"
+        ],
         "yss-backend-testing": [
           ".agents/skills/implement/references/spec-feedback.md"
         ],

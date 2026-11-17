@@ -13,7 +13,7 @@ Boot 4 当前使用 Jackson 3 的 `tools.jackson` databind，JSON 注解仍来�
 
 ## 所有权边界
 
-- 对象命名及阿里/COLA 适配消费 `.template-spec/agents/backend-architecture-profiles.md` 的“对象命名与外部规范适配”；外部 DTO/VO 示例不改变当前 wire profile 的包装、默认值、字段或模块归属。
+- 对象命名、嵌套/泛型边界和转换方向消费项目根 `.template-spec/agents/backend-architecture-profiles.md`；外部 DTO/VO 示例不改变当前 wire profile 的包装、默认值、字段或模块归属，PO/Domain 的实现形态不扩为 HTTP DTO 禁用 record。
 - 先辨认实际工程架构：DDD 的 HTTP DTO 在 Web；通用 MVC 私有 DTO 在 server、已批准公开 DTO 在 client；数据分析 MVC 公开 DTO 在 client。service/core 自有内部 Command/Query/Result，不依赖 client DTO；server 用 MapStruct 转换。共用 wire profile 不意味着共用模块路径。
 - `Result` / `SingleResult` / `MultiResult` / `PageResult`、`CommandDTO` / `QueryDTO` / `PageQuery` 的 canonical package、工厂方法、字段语义、默认值、枚举和禁用字段由本 skill 及 `references/openapi-wire-profile.yaml` 唯一持有。
 - OpenAPI skill 只把该 profile 组合进 endpoint schema；不得从 Java getter 或本地常量反向建立第二份 wire 协议。
@@ -60,7 +60,8 @@ Boot 4 当前使用 Jackson 3 的 `tools.jackson` databind，JSON 注解仍来�
 <a id="dto.wire-evidence"></a>
 - Java getter、Lombok、`@JsonIgnore` 或默认 Jackson 结果都不是目标 HTTP wire fact；精确 wire 结论应由目标 mapper、代表性序列化案例和接口测试或等价 HTTP 观察支持；没有这些观察就说明未验证，不要求先建立冻结记录。
 <a id="dto.boundary"></a>
-- DTO 只表达接口契约，不承载 Repository PO 或领域对象的持久化细节。
+- DTO 只表达接口契约；嵌套对象、集合元素及泛型参数也不承载 Domain Model、Repository PO 或 Application 内部模型。Request 转用例输入、用例结果转 Response，不能只换顶层包装仍复用内部对象。
+- 按请求方向区分字段缺失、显式 null、空字符串、空集合及合法零值；按响应方向声明可空与空集合形状。部分更新需区分“保持/清空”时保留字段存在性，不能靠 `IGNORE null` 或默认 `[]` 替代接口语义。
 
 ## 检查清单
 

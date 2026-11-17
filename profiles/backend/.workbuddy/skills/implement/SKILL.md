@@ -11,6 +11,10 @@ Implement the user's goal in the authorized repository using the current request
 
 Keep the observable goal, actual repository and paths, UI/API dependencies, FR/AC or existing acceptance references, source version, applicable skills and the requested completion endpoint in the existing task. For YSS work, use yss-domain / yss-application for DDD behavior and orchestration. Use yss-application's MVC guidance for use cases, transactions and idempotency at the existing Service boundary. Use yss-repository / yss-web-controller for persistence and HTTP boundaries. Do not create a parallel implementation contract.
 
+涉及模型或分层时，按项目根读取 `.template-spec/agents/backend-architecture-profiles.md`，再结合工程已确认约定选择落点。按本次影响补齐专项方法：HTTP 绑定与输出使用 yss-web-controller / yss-dto，并联查 validation / exception 的实际接线；模型及转换使用 lombok / mapstruct；持久化使用 yss-repository / yss-mybatis；写入顺序使用 yss-application，DDD 规则使用 yss-domain。用户不必逐项点名技能，也不因技能存在而接入所有组件。已有实现先区分符合、确有缺口和未验证，避免重复整改。
+
+结构重构先在当前任务中记下受影响的公开字段、缺失/null/空值、权限先后、错误标识、版本、锁、事务、幂等及副作用顺序，再沿真实入口检查迁移结果。只列本次涉及项，不新建合同或扩大业务范围。按工程现有检查入口验证这些约束，编译或格式通过不能替代行为证据。
+
 For multiple repositories, submodules or an unclear project root, read [repository scope and protection](references/repository-scope.md). A read-only investigation does not authorize implementation writes; the current request determines which repositories and actions are allowed.
 
 用户要求 PR/MR 修复、持续跟进或合并，或明确要求交付后继续跟进时，读取 [PR/MR 持续跟进](references/pr-mr-followup.md)，在当前会话内处理反馈、CI 与版本变化，直到指定结果或明确受阻。复用已有动作授权，按实际版本与平台结果判断完成；普通研发和只读审查不自动转为长期跟进。

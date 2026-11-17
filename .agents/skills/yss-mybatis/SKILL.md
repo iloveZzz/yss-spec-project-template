@@ -19,6 +19,7 @@ Boot 4 当前 MP 接入使用 `mybatis-plus-spring-boot4-starter`，JDBC 自动�
 
 <a id="mybatis.binding"></a>
 - 基类、Mapper 注解、XML 位置和扫描范围以当前工程配置、当前工程基线及当前组件源码共同决定；不得在既有体系外再造 Mapper 抽象。
+- 持久化组织与扫描所有权采用项目根 `.template-spec/agents/backend-architecture-profiles.md`：每个 `SqlSessionFactory` 明确扫描所有者、Mapper/XML 范围和数据源绑定，避免重叠扫描；多数据源允许多个扫描配置。区分 `org.apache.ibatis.annotations.Mapper` 与 `org.mapstruct.Mapper`，不把 MapStruct Convertor 扫成 SQL Mapper。
 <a id="mybatis.pagination"></a>
 - 一条查询 seam 只能有一个分页责任模型。核对实际插件/切面开关、拦截范围、参数绑定条件和返回 total 的责任，不以“依赖已引入”代替行为验证。
 <a id="mybatis.batch"></a>

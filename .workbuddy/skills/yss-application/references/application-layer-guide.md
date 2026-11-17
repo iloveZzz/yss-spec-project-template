@@ -8,6 +8,7 @@
 - 编排 Domain Model、Domain Service 和 Domain Gateway。
 - 定义写用例事务边界、幂等和事件发布时点。
 - 为分页、列表和投影查询定义 Application Query Port。
+- 事实、规则与编排的归属遵守项目根 `.template-spec/agents/backend-architecture-profiles.md`；允许 Infrastructure 实现本层 Port，不允许其调用具体用例 Service。
 - 传播或转换领域错误语义，但不决定 HTTP status 和公开消息。
 
 Application 不接收 HTTP Request DTO，不返回 Web VO，不依赖 Infrastructure/Web，也不处理 Repository PO。
@@ -33,9 +34,9 @@ public class QualityTemplateService {
 
     @Transactional(rollbackFor = Exception.class)
     public QualityTemplateId create(QualityTemplateCreateCommand command) {
-        QualityTemplateEntity aggregate = QualityTemplateEntity.create(command.name());
+        QualityTemplateEntity aggregate = QualityTemplateEntity.create(command.getName());
         gateway.save(aggregate);
-        return aggregate.id();
+        return aggregate.getId();
     }
 }
 ```

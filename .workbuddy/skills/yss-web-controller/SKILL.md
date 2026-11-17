@@ -9,7 +9,7 @@ description: 按当前 API 需求与用例接口实现或重构 YSS Controller�
 
 DDD 的 Web 调用 Application，MVC 的 Server 调用 Service；不把业务编排和数据库访问放进 Controller。DDD 细节参考 [Web 分层](references/web-adapter-layer-guide.md)，MVC 按 references/profiles 中的实际结构处理。
 
-- HTTP 模型与 Domain Entity、持久化 PO 分离，字段、null、分页和响应包装参考 yss-dto 的 wire 约定。
+- 按项目根 `.template-spec/agents/backend-architecture-profiles.md` 的 HTTP 边界检查嵌套字段、集合和泛型；Request → 用例 Command/Query、用例 Result → Response，不能穿透 Domain Entity 或 PO。字段缺失、null、空值、分页和响应包装参考 yss-dto 及当前接口约定。
 - 请求只暴露 API 允许字段，不将内部 PageQuery 协作字段开放为客户端输入。
 - 使用项目匹配的 javax/jakarta 校验注解，保留认证、授权、输入校验和错误脱敏。
 - 转换使用现有 MapStruct 约定与构造器注入，避免反射式通用复制；Lombok 按对象身份选择范围。

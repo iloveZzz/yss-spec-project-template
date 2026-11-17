@@ -10,6 +10,7 @@ description: 实现或排查 YSS 用例编排、事务边界、跨聚合协作�
 DDD 的 Application 协调 Domain 与 Gateway，管理事务和跨聚合协作，领域规则留在 Domain。MVC 的 Service 承担用例规则与事务，不另造 DDD 层。按架构需要读取 references/profiles 中的对应资料；DDD 细节见 [分层说明](references/application-layer-guide.md)。
 
 - 明确用例输入、输出、失败处理、事务范围和幂等行为。
+- 事实、规则和编排按项目根 `.template-spec/agents/backend-architecture-profiles.md` 分工：Application 获取事实并调用领域规则，Infrastructure 可实现本层 Query/事实 Port，但不得回调具体用例 Service 或承接编排。该规范不限制本层模型按既有约定使用 record。
 - Web DTO 与内部 Command/Result 的转换归 Web，持久化转换归 Repository/Infrastructure；确有独立用例模型转换时使用 mapstruct。
 - 事务提交后的消息、缓存和审计副作用按实际一致性要求安排；不为未发生的需求创建空端口、空事务或补偿框架。
 - 内部模型不复用 HTTP DTO 或持久化 PO；Spring Bean 优先构造器注入。
