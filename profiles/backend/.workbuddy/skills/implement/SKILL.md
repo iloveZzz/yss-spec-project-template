@@ -7,7 +7,7 @@ Implement the user's goal in the authorized repository using the current request
 
 当用户给出 Spec、业务票或原型，或在工程中读到本次需求依据（如 spec.md）时，先读取 [规格接收与反馈](references/spec-feedback.md)，再确定实现与验证范围；发现来源变化或业务差异时也使用该方法。沿原规则说明结果和缺口，常规技术决定按授权继续。
 
-接手或续办真实 Issue/Ticket 时，按项目根读取 `.template-spec/agents/issue-tracker-operations.md`，使用其中的实例与项目定位、内容与讨论读取、依赖核对、已有工作检查和授权方法。以真实标题及链接指代工作项；assignee 不代表独占锁，先衔接已有工作树、分支或 PR/MR，不重复开发。只有裸编号无法唯一定位时才询问定位信息；访问失败不等于条目不存在，已有输入支持的独立工作继续。
+接手或续办真实 Issue/Ticket、组织明确的复杂研发请求，或接续跨仓集成、环境交付与运行反馈时，按项目根读取 `.template-spec/agents/issue-tracker-operations.md`，使用其中的实例与项目定位、内容与讨论读取、依赖核对、已有工作检查和授权方法。以真实标题及链接指代工作项；assignee 不代表独占锁，先衔接已有工作树、分支或 PR/MR，不重复开发。只有裸编号无法唯一定位时才询问定位信息；访问失败不等于条目不存在，已有输入支持的独立工作继续。
 
 Keep the observable goal, actual repository and paths, UI/API dependencies, FR/AC or existing acceptance references, source version, applicable skills and the requested completion endpoint in the existing task. For YSS work, use yss-domain / yss-application for DDD behavior and orchestration. Use yss-application's MVC guidance for use cases, transactions and idempotency at the existing Service boundary. Use yss-repository / yss-web-controller for persistence and HTTP boundaries. Do not create a parallel implementation contract.
 
@@ -17,7 +17,7 @@ For multiple repositories, submodules or an unclear project root, read [reposito
 
 按当前任务选择方法：完整研发交付承接 Spec 的规则、验收与产品原型说明，覆盖必要的拆分、设计、脚手架、实现和测试；已有清晰的小任务直接完成受影响部分。业务决定缺失时定点澄清，不重做产品设计，不要求先创建票据。
 
-- 确需拆分时使用 `to-tickets` 按可观察行为细化实现任务，保留原验收和真实依赖；不按技术层拆票，不强迫先建业务父票。远程建票仍需要对应授权。
+- 收到明确的复杂研发请求或确需拆分时，按项目根读取 `.agents/skills/to-tickets/references/engineering-tickets.md`，检查责任、依赖和接续需要，主动复用或组织必要工作；后端实现切片继续按 `to-tickets` 的专业方法细化，保存与远程操作沿对应授权。
 - 需要架构、方案或详细设计判断时使用 `yss-technical-design`；仅实际 DDD 设计使用 `yss-tactical-design`，MVC 沿用已有 Service 边界，不补 Domain/Gateway。
 - 新建工程才按实际 DDD/MVC 选择对应脚手架，沿用项目 POM、平台和版本；安装了组件技能不等于需要给业务工程添加全部组件。
 - 分页、缓存等组件排障使用对应 `yss-mybatis`、`yss-cache` 等技能核实工程实际依赖、配置与源码版本；明确规则的 DDD/MVC 开发直接沿现有边界完成。

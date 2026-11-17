@@ -314,7 +314,8 @@
           ".template-spec/agents/matt-skills-adaptation.md",
           ".template-spec/templates/build-deploy-guide-template.md",
           ".template-spec/agents/issue-tracker.md",
-          ".template-spec/agents/issue-tracker-operations.md"
+          ".template-spec/agents/issue-tracker-operations.md",
+          ".agents/skills/to-tickets/references/engineering-tickets.md"
         ],
         "java-backend-commit": [],
         "llm-wiki": [],
@@ -575,7 +576,8 @@
           ".template-spec/agents/matt-skills-adaptation.md",
           ".template-spec/templates/build-deploy-guide-template.md",
           ".template-spec/agents/issue-tracker.md",
-          ".template-spec/agents/issue-tracker-operations.md"
+          ".template-spec/agents/issue-tracker-operations.md",
+          ".agents/skills/to-tickets/references/engineering-tickets.md"
         ],
         "java-backend-commit": [],
         "llm-wiki": [],
