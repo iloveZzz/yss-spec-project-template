@@ -28,7 +28,7 @@
 
 既有 yss CLI 的安装包和内置行为独立于本仓，本次目录变化不会改写已安装的二进制。新模板与具体 CLI 版本的安装、同步兼容性须以实际使用结果为准。
 
-Template 5.9.0 增加来源核验、项目接续、技能改版对照和 PR/MR 持续跟进，补充全生命周期用户手册与团队培训材料。数据库技能明确单表 DSL、复杂 XML、实际方言与 JSON 绑定、部分加载更新及引用并发保护，并补充多数据库验证方法。新建 Backend 继续默认选择 YSS `4.0.0-SNAPSHOT`、Spring Boot `4.1.2` 和 Java `17`，支持显式选择其他版本。该发行时三个 Profile 的默认集合为 Spec 17 项、Backend 42 项、Frontend 13 项。本地新增 Issue 衔接与共享研发入口后，Frontend 候选集合为默认 15 项、可用 19 项；需要重新构建并安装包含这些变化的 CLI Bundle。[技能地图](.template-spec/agents/profile-skills.md)
+Template 5.10.0 配套 CLI 3.10.0，统一 Spec、Ticket/Issue 与研发实现的来源、验收和接续方法。完整工程接入补齐 Git、远程仓库、Issue tracker 与 Home 关系；Frontend 默认加入共享 `implement` 和 `to-tickets`，按实际请求区分业务票与工程票，小任务仍可直接实现。三个 Profile 默认集合为 Spec 17 项、Backend 42 项、Frontend 15 项，Frontend 可用库为 19 项；保留 Backend4 配方、Home 多项目协调及既有数据库指引。需要安装内嵌新版模板的 CLI，再按项目实际范围同步。[技能地图](.template-spec/agents/profile-skills.md)
 
 `scaffold frontend` 从 CLI 3.3.0 起支持。Frontend Profile 从 CLI 3.2.0 开始支持，3.1.4 及以前不支持。参见 [Frontend 接入](.template-spec/user-guide/cli/tutorial-frontend.md)。GitLab CI 固定 CLI 配套构建源码 `f2e0a952123fbd9f12d3703b8df2b03d02b670cb`，版本为 3.7.0。该提交用于构建工具，正式 CLI 的最终源码与模板来源以 Release 产物记录为准。实际远程执行结果以对应流水线为准。
 
