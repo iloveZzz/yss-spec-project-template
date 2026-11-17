@@ -4,6 +4,8 @@ Frontend 项目入口见 [AGENTS.md](AGENTS.md)。默认安装 15 项工程与�
 
 全团队工作方式见[用户手册](.template-spec/user-guide/用户手册.md)，团队讲义、演示和练习见[培训材料](.template-spec/user-guide/培训材料.md)，前端接入见[Frontend 教程](.template-spec/user-guide/cli/tutorial-frontend.md)。
 
+完整案例见[客户跟进项目 Demo](.template-spec/user-guide/客户跟进项目全生命周期Demo.md)，沿同一项目学习技能协作、研发、问题修复与测试环境交付。
+
 - 技能：`.agents/skills/`；业务词汇：`CONTEXT.md`；方法参考：`.template-spec/`。
 - 明确研发由 `implement` 协调，显式拆票由 `to-tickets` 按业务或工程意图组织；局部开发和只读 review 可直接进入专业技能。
 - 使用 `yss-frontend-application` 承接本次选定的规格、高保真原型与交互说明，优先复用既有工程和组件。

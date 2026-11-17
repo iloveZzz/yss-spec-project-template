@@ -326,7 +326,8 @@
         ".template-spec/user-guide/用户手册索引.md",
         ".template-spec/user-guide/培训材料.md",
         ".template-spec/user-guide/阶段接入与产物复用使用手册.md",
-        ".template-spec/user-guide/技术设计用户指南.md"
+        ".template-spec/user-guide/技术设计用户指南.md",
+        ".template-spec/user-guide/客户跟进项目全生命周期Demo.md"
       ],
       "skillDependencies": {
         "yss-repository": [

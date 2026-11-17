@@ -213,7 +213,8 @@
         ".template-spec/user-guide/技术设计用户指南.md",
         ".template-spec/user-guide/cli/daily-and-targets.md",
         ".template-spec/user-guide/cli/error-index.md",
-        ".template-spec/user-guide/cli/tutorial-daily-governed.md"
+        ".template-spec/user-guide/cli/tutorial-daily-governed.md",
+        ".template-spec/user-guide/客户跟进项目全生命周期Demo.md"
       ],
       "skillDependencies": {
         "java-backend-commit": [

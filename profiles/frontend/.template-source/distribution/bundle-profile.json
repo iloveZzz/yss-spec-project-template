@@ -91,6 +91,7 @@
       ".template-spec/user-guide/cli/tutorial-daily-governed.md",
       ".template-spec/user-guide/cli/tutorial-maintenance.md",
       ".template-spec/user-guide/cli/tutorial-spec.md",
+      ".template-spec/user-guide/客户跟进项目全生命周期Demo.md",
       ".template-spec/agents/issue-tracker.md",
       ".template-spec/agents/issue-tracker-operations.md",
       ".agents/skills/implement",
@@ -334,7 +335,8 @@
         ".template-spec/user-guide/cli/tutorial-backend.md",
         ".template-spec/user-guide/cli/tutorial-daily-governed.md",
         ".template-spec/user-guide/cli/tutorial-maintenance.md",
-        ".template-spec/user-guide/cli/tutorial-spec.md"
+        ".template-spec/user-guide/cli/tutorial-spec.md",
+        ".template-spec/user-guide/客户跟进项目全生命周期Demo.md"
       ],
       "skillDependencies": {
         "yss-design-system": [
