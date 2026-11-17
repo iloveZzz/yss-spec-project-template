@@ -1,11 +1,13 @@
 ---
 name: setup-yss-harness
-description: 安装或升级 YSS CLI，配置项目或用户级 Skills、产品 Home 仓库关系，初始化、接管、同步项目并处理安装冲突。
+description: 安装或升级 YSS CLI 与 Skills；初始化或接入工程时配置 Git、远程仓库、Issue tracker 和产品 Home 关系，并处理同步冲突。
 ---
 
 # 安装与同步 YSS
 
 先区分程序安装、项目受管技能、用户级技能与工程同步，复用目标路径和已有授权。只要求查询时保持只读；不要因为调用本技能就升级程序、同步工程或改用户级配置。
+
+用户要求完整初始化系统工程时，将 Git 边界、远程仓库与 Issue tracker 一并纳入本次接入，按[工程初始化与协作配置](references/project-onboarding.md)完成；只安装 CLI 或独立技能时不创建业务仓库。已有配置优先复用，缺少关键目标时只澄清该部分，已能完成的工作继续。
 
 本技能面向纯 Rust YSS CLI，不兼容旧 Go 安装记录或旧插件。先读实际 `yss version`、`yss help` 和目标命令帮助，按安装程序真实能力操作；模板与 Skills 更新不会替换已有二进制。是否正式发布以所选来源的实际 Release 为准，尚未发布的版本或功能必须称开发构建。
 
@@ -51,7 +53,7 @@ yss sync --root <受管目录> --installation project
 
 `init` 只用于新目录或空目录；普通已有目录使用 `attach`，已有受管项目使用 `sync`。`skills ensure` 的技能名是位置参数，只安装所选技能及必要资源。`sync` 默认沿用原安装范围，只有显式 `--installation project|skills` 才切换。模板与技能来自该 CLI 的内嵌 Bundle，不会另拉模板 main；需要新 Bundle 时先升级 CLI。
 
-需要建立工程 Git 边界、向团队共享已安装方法或在新 clone 中继续维护时，读取[Git 接入与 Skills 共享](references/project-portability.md)。保留完整技能、引用资源和有效项目收据；Profile 和技能安装本身不代表创建独立 Git 仓。
+完整新建或接入系统工程时，先按[工程初始化与协作配置](references/project-onboarding.md)核实 Git、remote 和 tracker，再按目录现状安排 init/attach/scaffold 的顺序；这些协调动作由 Agent 完成，不虚构 CLI 参数。只向现有项目补装技能时不扩大为工程初始化。向团队共享方法或从新 clone 维护时，读取[Git 接入与 Skills 共享](references/project-portability.md)，保留完整技能、引用资源和有效项目收据。
 
 从 Home 协调多个工程、续办任务或处理同仓多安装根时，也按上述参考核实工程身份、输入版本和运行资源。涉及 Codex、Claude Code、Pi、DeepSeek Harness、WorkBuddy 的加载与外部技能时，读取[宿主发现与跨工程技能](references/host-compatibility.md)，分别确认文件分发、原生发现、实际来源和工具能力。
 
@@ -98,7 +100,7 @@ yss scaffold frontend --project-name <小写kebab-case工程名> --output-dir <�
 
 父目录须已存在，目标工程目录必须不存在，包括已有空目录。加 `--dry-run` 只预览；生成复制内嵌 starter 并修改 package.name，不安装依赖或启动服务。只要求源码就交付源码与运行说明；需要项目技能时另行执行 `attach --profile frontend --installation skills`。`.yss/scaffold.json` 记录生成来源，不授予 `sync` 管理应用源码的权利。已有工程改造交给应用工程技能，不能用生成命令覆盖。
 
-用户已要求生成源码并安装项目技能时，核实参数后连续完成 scaffold → attach skills，无需逐命令重复确认。DDD/MVC 对应 backend，Vue 对应 frontend；沿用同一已核验的 CLI。生成成功但 attach 冲突时分别报告“源码已生成、技能接入未完成”，保留生成源码及原入口，读取双方内容提出具体整合差异，不删除工程、不改用默认 project 重试覆盖。导航只在已有关系与写入范围内补充。
+用户已要求生成源码并安装项目技能时，核实参数后连续完成 scaffold → attach skills，无需逐命令重复确认；若目标是完整工程初始化，接续本技能的 Git、remote 与 tracker 配置。已知远程仓库须在生成前核实是否非空，已有内容优先 clone/定位 checkout 后接入，不能先造独立历史再强推。DDD/MVC 对应 backend，Vue 对应 frontend；沿用同一已核验的 CLI。生成成功但 attach 冲突时分别报告“源码已生成、技能接入未完成”，保留生成源码及原入口，读取双方内容提出具体整合差异，不删除工程、不改用默认 project 重试覆盖。导航只在已有关系与写入范围内补充。
 
 运行 Vue 工程前，按实际 catalog、package.json 和锁文件核对 Node/pnpm；它们与 Rust CLI 本体、skills 安装工具的运行要求分别判断。依赖安装、工程检查和启动遵循本次任务范围，不从源码生成请求推导这些动作已获授权。
 

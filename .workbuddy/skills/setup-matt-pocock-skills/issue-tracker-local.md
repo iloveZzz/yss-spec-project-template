@@ -10,6 +10,8 @@ tracker:
 
 # Issue tracker: Local Markdown
 
+接票、依赖、续办、写入恢复及完成判断以项目根 `.template-spec/agents/issue-tracker-operations.md` 为共用方法。本参考保留本地配置与 Wayfinder 字段差异，不复制整段方法到项目配置正文；普通使用无需安装本 setup 技能。
+
 实际 `.template-spec/agents/issue-tracker.md` 的 frontmatter 是权威配置。以下 `.work/` 仅是新项目示例；已有项目使用 `tracker.root`，Git remote 不改变 tracker。历史目录可只读诊断；重复资产只暂停冲突写入，不自动搬迁、合并或覆盖。
 
 按当前需求创建文件，不预建 gates、verification 或整个生命周期目录。已有规格通常为 `<root>/<feature>/spec.md`；业务票和实现 Slice 沿用项目现有目录及 ID，多个票各有文件。普通讨论无需保存。只有用户要求保存、更新或发布到本地 tracker 时写入对应文件。

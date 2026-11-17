@@ -229,3 +229,26 @@ Spec 同时承载产品上游和产品研发默认会话入口。本次本地适
 候选 Bundle `1764b936578af366b29dbcbd3ae8322cabdb7a6f7a35ab80db87c862b83867f9` 经对应内嵌临时 CLI 完成三种 Profile 的 project、skills 六组合安装。11 个 WorkBuddy 副本、Backend 完整有效树、安装收据及四份去除默认集合的 implement 资源视图分别核对。新增宿主参考由四处 skillReferences 显式携带。
 
 Codex 的来源观察见随包的 `.agents/skills/setup-yss-harness/references/host-compatibility.md`。本次项目接续、产物遗漏、人工纠正与成本结果保留在执行任务资料中，按实际宿主、版本和场景陈述。该候选后写回的观察记录具有独立快照，记录性更新另作分发核对。真实项目收益与跨宿主运行效果仍需相应观察。
+
+## 2026-11-17 Issue 工作项接续
+
+本轮比较 Matt Skills `5863806dd4e15c63174bee4e7515a4256792ecfa` 的 [to-tickets](https://github.com/mattpocock/skills/blob/5863806dd4e15c63174bee4e7515a4256792ecfa/skills/engineering/to-tickets/SKILL.md) 与 [implement](https://github.com/mattpocock/skills/blob/5863806dd4e15c63174bee4e7515a4256792ecfa/skills/engineering/implement/SKILL.md)，以及 poteto pstack `2f87c854fe3e2fcda44ca86b46ede35aad3c46b7` 的[可验证单元](https://github.com/cursor/plugins/blob/2f87c854fe3e2fcda44ca86b46ede35aad3c46b7/pstack/skills/principle-sequence-verifiable-units/SKILL.md)与[续办方法](https://github.com/cursor/plugins/blob/2f87c854fe3e2fcda44ca86b46ede35aad3c46b7/pstack/skills/poteto-mode/playbooks/session-pickup.md)。这是本轮方法比较版本，不覆盖原始引入的 sourceRevision/upstreamHash。
+
+采纳稳定工作项、真实依赖、按行为拆分和产物续办；保留 YSS 的 Spec 业务边界、小任务直接研发与真实动作授权。Ticket 是工作项、Issue 是载体，不强制双层票、逐阶段批准、TDD、自动提交或固定并行数量，也不移植 watcher 脚本。
+
+共享运行方法位于 `.template-spec/agents/issue-tracker-operations.md`，项目持久配置保留在 `issue-tracker.md`。首批适配由 Spec 与 Backend 的既有入口、Frontend 应用技能按需引用，当时 Frontend 未新增 implement/to-tickets；后续共享入口扩展见下文。两种安装模式分别声明配置与方法资源，Backend 补齐配置保护。更新适用平台副本及已有有效树摘要，不改变默认技能集合或新增技能。
+
+旧项目采用时保留实例、仓库、root 与用户定制；双边变更可能触发 CLI 冲突，声明 manual 不表示自动合并 frontmatter。源码、候选 Bundle、临时安装、宿主行为与真实 tracker 联调分别说明；本适配记录不证明远程权限、跨仓业务闭环或已发行，实际执行范围见当前维护任务结果。
+
+同日按用户要求补齐 setup-yss-harness 的工程初始化衔接：完整工程包含 Git、已确认 remote 与 tracker 配置，程序安装和独立技能安装仍单独处理。新工程已核实唯一代码项目且没有既有 tracker 时默认关联该项目的 Issues；已有配置、集中管理、monorepo/worktree/submodule 边界保持。初始化方法置于技能内自含参考，受管模式另声明两项 tracker 资源，公开导出说明区分包内方法与消费工程配置。没有给 CLI 增加 Git/Issue 命令，也不从配置授权推导提交、推送或远程建票；本轮为用户要求的本地适配，不改变上述上游引入版本。
+
+
+## 2026-11-17 共享研发入口与 Frontend 默认能力
+
+同日按用户继续实施的要求，共享 `implement` 改为统筹明确研发请求的来源、范围、多仓协作、恢复与结果；前端应用技能负责高保真还原、Vue、接口和验证，Backend 保留专业覆盖。前端局部修改与只读审查仍可直接使用应用技能，不要求先调用协调入口或建立 Ticket。
+
+共享 `to-tickets` 保持显式拆票触发，按请求目标选择业务票或工程票；Profile 不决定请求意图。业务分支保留 Spec 边界；工程方法独立为 `references/engineering-tickets.md`，供已授权实现任务按需读取，以可观察增量、真实来源与验收组织工作，不按组件、hooks 或技术层机械拆票，也不由方法读取获得远程写入授权。
+
+Frontend 的 project/skills 默认集合由 13 项增为 15 项，可用库由 17 项增为 19 项，新增共享 `implement` 与 `to-tickets`；不新增 Frontend 主源覆盖。Spec 17 项与 Backend 42 项保持。清单、注册表、来源记录、资源闭包和平台副本随本地候选更新；原始上游版本和摘要不变，前文历史数量保留当时语境。
+
+配套 CLI 源码只细化 init/attach/scaffold 成功后的接入提示和帮助，保留既有命令、结构化 attach 参数及 dry-run 边界；Git、托管项目和 Issue 操作仍由 Agent 按实际能力和授权执行。模板修改、CLI 候选构建、项目同步、公开技能发布与真实宿主行为是不同结果，未发行或未更新的程序不会自动获得这些变化。实际构建与临时验证范围见本次维护任务结果，不将文本核对当作原生发现或真实业务闭环证据。

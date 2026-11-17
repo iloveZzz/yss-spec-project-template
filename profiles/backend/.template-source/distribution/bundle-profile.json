@@ -89,13 +89,27 @@
         {
           "ownership": "user-owned",
           "pattern": ".work/**"
+        },
+        {
+          "pattern": ".template-spec/agents/issue-tracker.md",
+          "ownership": "managed-customizable"
         }
       ],
       "version": 1
     },
     "renderPaths": [
       "README.md"
-    ]
+    ],
+    "customizationPolicy": {
+      "version": 1,
+      "defaultStrategy": "replace-with-force",
+      "rules": [
+        {
+          "pattern": ".template-spec/agents/issue-tracker.md",
+          "strategy": "manual"
+        }
+      ]
+    }
   },
   "retiredSkills": {
     "yss-openapi-draft-review": {
@@ -298,7 +312,9 @@
         "implement": [
           ".agents/skills/setup-yss-harness/references/host-compatibility.md",
           ".template-spec/agents/matt-skills-adaptation.md",
-          ".template-spec/templates/build-deploy-guide-template.md"
+          ".template-spec/templates/build-deploy-guide-template.md",
+          ".template-spec/agents/issue-tracker.md",
+          ".template-spec/agents/issue-tracker-operations.md"
         ],
         "java-backend-commit": [],
         "llm-wiki": [],
@@ -317,9 +333,13 @@
         "setup-matt-pocock-skills": [
           ".template-spec/agents/issue-tracker.md",
           ".template-spec/agents/triage-labels.md",
-          ".template-spec/agents/matt-skills-adaptation.md"
+          ".template-spec/agents/matt-skills-adaptation.md",
+          ".template-spec/agents/issue-tracker-operations.md"
         ],
-        "setup-yss-harness": [],
+        "setup-yss-harness": [
+          ".template-spec/agents/issue-tracker.md",
+          ".template-spec/agents/issue-tracker-operations.md"
+        ],
         "tdd": [
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
@@ -329,7 +349,10 @@
         "to-tickets": [
           ".template-spec/templates/vertical-slice-ticket-template.md",
           ".template-spec/agents/matt-skills-adaptation.md",
-          ".agents/skills/implement/references/spec-feedback.md"
+          ".agents/skills/implement/references/spec-feedback.md",
+          ".template-spec/agents/issue-tracker.md",
+          ".template-spec/agents/issue-tracker-operations.md",
+          ".template-spec/templates/business-ticket-template.md"
         ],
         "triage": [
           ".template-spec/agents/triage-labels.md",
@@ -550,7 +573,9 @@
         "implement": [
           ".agents/skills/setup-yss-harness/references/host-compatibility.md",
           ".template-spec/agents/matt-skills-adaptation.md",
-          ".template-spec/templates/build-deploy-guide-template.md"
+          ".template-spec/templates/build-deploy-guide-template.md",
+          ".template-spec/agents/issue-tracker.md",
+          ".template-spec/agents/issue-tracker-operations.md"
         ],
         "java-backend-commit": [],
         "llm-wiki": [],
@@ -569,9 +594,13 @@
         "setup-matt-pocock-skills": [
           ".template-spec/agents/issue-tracker.md",
           ".template-spec/agents/triage-labels.md",
-          ".template-spec/agents/matt-skills-adaptation.md"
+          ".template-spec/agents/matt-skills-adaptation.md",
+          ".template-spec/agents/issue-tracker-operations.md"
         ],
-        "setup-yss-harness": [],
+        "setup-yss-harness": [
+          ".template-spec/agents/issue-tracker.md",
+          ".template-spec/agents/issue-tracker-operations.md"
+        ],
         "tdd": [
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
@@ -581,7 +610,10 @@
         "to-tickets": [
           ".template-spec/templates/vertical-slice-ticket-template.md",
           ".template-spec/agents/matt-skills-adaptation.md",
-          ".agents/skills/implement/references/spec-feedback.md"
+          ".agents/skills/implement/references/spec-feedback.md",
+          ".template-spec/agents/issue-tracker.md",
+          ".template-spec/agents/issue-tracker-operations.md",
+          ".template-spec/templates/business-ticket-template.md"
         ],
         "triage": [
           ".template-spec/agents/triage-labels.md",

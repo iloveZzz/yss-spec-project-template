@@ -13,9 +13,9 @@ yss sync --root <受管目录> --dry-run
 yss sync --root <受管目录>
 ```
 
-`init` 只用于新目录或空目录。`attach` 保护既有文件，冲突时不覆盖。`sync` 不改变 Profile，需要另一类 Profile 时另建明确目标。不要改收据绕过保护。两种安装都提供 13 项默认技能，可选库共 17 项。`skills` 仅装技能、宿主入口及所需参考，`project` 另装项目资料。安装不会创建应用源码、安装依赖或启动服务。
+`init` 只用于新目录或空目录。`attach` 保护既有文件，冲突时不覆盖。`sync` 不改变 Profile，需要另一类 Profile 时另建明确目标。不要改收据绕过保护。上述 3.8.0 基线为默认 13 项、可用库 17 项；本地候选增加共享 `implement` 和 `to-tickets` 后为默认 15 项、可用库 19 项，需使用包含这些变化的 CLI Bundle，旧程序不会随文档更新。`skills` 仅装技能、宿主入口及所需参考，`project` 另装项目资料。安装不会创建应用源码、安装依赖或启动服务。
 
-工程入口为 `yss-frontend-application`。提供或定位本次采用的规格、原型、交互说明、设计规范与版本。工作树未提交内容也属于选定输入时，保留实际文件与差异。先读应用 `package.json`、锁文件、入口和项目约定，再按受影响范围实施。
+候选 Bundle 由 `implement` 统筹明确研发，`to-tickets` 按显式请求拆业务票或工程票，具体实现使用 `yss-frontend-application`。局部修改与只读 review 可直接使用应用技能，不要求先建票。提供或定位本次采用的规格、原型、交互说明、设计规范与版本。工作树未提交内容也属于选定输入时，保留实际文件与差异。先读应用 `package.json`、锁文件、入口和项目约定，再按受影响范围实施。
 
 Vue 逻辑使用 `vue-best-practices`，独立状态或可复用接口使用 `create-adaptable-composable`。纯文案与样式不因此引入 composable。设计、原型复核、逻辑原型和词汇维护可分别补装 `yss-design-system`、`prototype-review`、`prototype`、`domain-modeling`。不一次加载全部技能，不把可选设计方法变成开发前置。
 

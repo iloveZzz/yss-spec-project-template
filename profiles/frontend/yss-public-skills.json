@@ -4,6 +4,8 @@
   "canonical_root": ".agents/skills",
   "skills": [
     "setup-yss-harness",
+    "implement",
+    "to-tickets",
     "yss-frontend-application",
     "vue-best-practices",
     "create-adaptable-composable",
@@ -27,6 +29,8 @@
       "description": "Vue 工程、逻辑与设计还原方法；发布需单独授权。",
       "skills": [
         "setup-yss-harness",
+        "implement",
+        "to-tickets",
         "yss-frontend-application",
         "vue-best-practices",
         "create-adaptable-composable",

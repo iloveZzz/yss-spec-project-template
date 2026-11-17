@@ -90,7 +90,14 @@
       ".template-spec/user-guide/cli/tutorial-backend.md",
       ".template-spec/user-guide/cli/tutorial-daily-governed.md",
       ".template-spec/user-guide/cli/tutorial-maintenance.md",
-      ".template-spec/user-guide/cli/tutorial-spec.md"
+      ".template-spec/user-guide/cli/tutorial-spec.md",
+      ".template-spec/agents/issue-tracker.md",
+      ".template-spec/agents/issue-tracker-operations.md",
+      ".agents/skills/implement",
+      ".workbuddy/skills/implement",
+      ".agents/skills/to-tickets",
+      ".workbuddy/skills/to-tickets",
+      ".template-spec/templates/business-ticket-template.md"
     ],
     "excludeRootEntries": [
       ".git",
@@ -284,6 +291,8 @@
     "project": {
       "skills": [
         "setup-yss-harness",
+        "implement",
+        "to-tickets",
         "yss-frontend-application",
         "yss-frontend-scaffold-generator",
         "vue-best-practices",
@@ -335,10 +344,16 @@
         ]
       },
       "skillReferences": {
-        "setup-yss-harness": [],
+        "setup-yss-harness": [
+          ".template-spec/agents/issue-tracker.md",
+          ".template-spec/agents/issue-tracker-operations.md"
+        ],
         "yss-frontend-application": [
           ".template-spec/agents/frontend-skills-adaptation.md",
-          ".agents/skills/implement/references/pr-mr-followup.md"
+          ".agents/skills/implement/references/pr-mr-followup.md",
+          ".template-spec/agents/issue-tracker.md",
+          ".template-spec/agents/issue-tracker-operations.md",
+          ".agents/skills/to-tickets/references/engineering-tickets.md"
         ],
         "vue-best-practices": [
           ".template-spec/agents/frontend-skills-adaptation.md"
@@ -399,6 +414,19 @@
         ],
         "yss-frontend-scaffold-generator": [
           ".template-spec/agents/frontend-skills-adaptation.md"
+        ],
+        "implement": [
+          ".agents/skills/setup-yss-harness/references/host-compatibility.md",
+          ".template-spec/agents/matt-skills-adaptation.md",
+          ".template-spec/agents/issue-tracker.md",
+          ".template-spec/agents/issue-tracker-operations.md",
+          ".agents/skills/to-tickets/references/engineering-tickets.md"
+        ],
+        "to-tickets": [
+          ".template-spec/templates/business-ticket-template.md",
+          ".template-spec/agents/matt-skills-adaptation.md",
+          ".template-spec/agents/issue-tracker.md",
+          ".template-spec/agents/issue-tracker-operations.md"
         ]
       },
       "entries": {
@@ -411,6 +439,8 @@
     "skills": {
       "skills": [
         "setup-yss-harness",
+        "implement",
+        "to-tickets",
         "yss-frontend-application",
         "yss-frontend-scaffold-generator",
         "vue-best-practices",
@@ -436,10 +466,16 @@
         ]
       },
       "skillReferences": {
-        "setup-yss-harness": [],
+        "setup-yss-harness": [
+          ".template-spec/agents/issue-tracker.md",
+          ".template-spec/agents/issue-tracker-operations.md"
+        ],
         "yss-frontend-application": [
           ".template-spec/agents/frontend-skills-adaptation.md",
-          ".agents/skills/implement/references/pr-mr-followup.md"
+          ".agents/skills/implement/references/pr-mr-followup.md",
+          ".template-spec/agents/issue-tracker.md",
+          ".template-spec/agents/issue-tracker-operations.md",
+          ".agents/skills/to-tickets/references/engineering-tickets.md"
         ],
         "vue-best-practices": [
           ".template-spec/agents/frontend-skills-adaptation.md"
@@ -500,6 +536,19 @@
         ],
         "yss-frontend-scaffold-generator": [
           ".template-spec/agents/frontend-skills-adaptation.md"
+        ],
+        "implement": [
+          ".agents/skills/setup-yss-harness/references/host-compatibility.md",
+          ".template-spec/agents/matt-skills-adaptation.md",
+          ".template-spec/agents/issue-tracker.md",
+          ".template-spec/agents/issue-tracker-operations.md",
+          ".agents/skills/to-tickets/references/engineering-tickets.md"
+        ],
+        "to-tickets": [
+          ".template-spec/templates/business-ticket-template.md",
+          ".template-spec/agents/matt-skills-adaptation.md",
+          ".template-spec/agents/issue-tracker.md",
+          ".template-spec/agents/issue-tracker-operations.md"
         ]
       },
       "entries": {

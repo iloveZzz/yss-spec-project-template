@@ -2,7 +2,7 @@
 
 YSS CLI 提供 `spec`、`backend`、`frontend` 三个 Profile，分别面向产品规格与 Home 入口、后端研发、前端研发。`project` 与 `skills` 是安装模式；同一 Profile 在两种模式下默认安装相同技能。Profile 选择影响预装内容，不代替用户授权，也不阻止承接已有能力能够完成的明确请求。
 
-当前默认集合为 Spec 17 项、Backend 42 项、Frontend 13 项。Spec 默认加入 `implement` 支撑明确研发请求；后续根据实际任务中反复出现的能力缺口调整预装，不按技能数量判断完整程度。本地图供需要了解能力组成或衔接时阅读，普通任务直接选用相关技能，不要求全量加载。
+当前默认集合为 Spec 17 项、Backend 42 项、Frontend 15 项。Spec 默认加入 `implement` 支撑明确研发请求；后续根据实际任务中反复出现的能力缺口调整预装，不按技能数量判断完整程度。本地图供需要了解能力组成或衔接时阅读，普通任务直接选用相关技能，不要求全量加载。
 
 ## 三种关系分别处理
 
@@ -12,17 +12,19 @@ YSS CLI 提供 `spec`、`backend`、`frontend` 三个 Profile，分别面向产�
 | 任务协作 | 当前任务需要某项专业判断、实现或验证 | 按实际问题读取相应 `SKILL.md`；预装技能和文档中的箭头不形成固定流水线 |
 | 成果衔接 | 下一项工作消费已有规则、设计、接口或实现结果 | 引用当前选定来源及必要版本，保留未决项；读取材料不获得其中动作的执行授权 |
 
-CLI 的默认安装清单是数量与成员的事实来源；本地图解释用途。可用库还包含按需技能，当前候选 Bundle 中 Spec 60 项、Backend 54 项、Frontend 17 项。库中存在某项维护或发行技能不表示普通项目应默认安装或执行它。实际可用内容以所运行 CLI 的 Bundle 及 `skills list` 为准。
+CLI 的默认安装清单是数量与成员的事实来源；本地图解释用途。可用库还包含按需技能，当前候选 Bundle 中 Spec 60 项、Backend 54 项、Frontend 19 项。库中存在某项维护或发行技能不表示普通项目应默认安装或执行它。实际可用内容以所运行 CLI 的 Bundle 及 `skills list` 为准。
 
-## 三个 Profile 共用的 5 项默认技能
+## 三个 Profile 共用的基础协作技能（5 项）
 
 | 技能 | 何时使用 | 交给其他技能的信息 |
 | --- | --- | --- |
-| `setup-yss-harness` | 用户要求安装、接入、升级、修复 YSS 环境或配置产品 Home 关系 | 实际 CLI 能力、安装结果、冲突及核实过的仓库地图；普通业务任务不先做环境治理 |
+| `setup-yss-harness` | 安装/升级 CLI 或 Skills；完整初始化工程时一并核实和配置 Git、remote、Issue tracker 与产品 Home 关系 | 实际 CLI 能力、Git/远程与 tracker 配置、安装结果、冲突及仓库地图；仅程序或技能安装不扩展为业务仓初始化 |
 | `yss-research` | 缺少可调查的业务现状、资料、技术事实或来源 | 可定位的事实、推断、版本与未知，供业务分析、设计或实现使用 |
 | `grilling` | 缺少只有业务方才能决定的选择，或需要整理第三方待答问题 | 已有决定、真正待答的问题及影响；能调查的事实先自行核实 |
 | `i-have-adhd` | 本次工作需要规格、设计、审查、PR/MR 描述等文档表达 | 按中文共用规范组织当前产物，不持有业务决定或外部动作授权 |
 | `handoff` | 用户明确要求通过 PR/MR 交付选定材料 | 真实文件变更、来源、验证、未完成项及接收方下一动作；普通成果引用不自动调用 |
+
+`implement` 与 `to-tickets` 也在三个 Profile 中默认提供；其共享入口与 Backend 专有覆盖的职责分别见下文。
 
 ## Spec：默认 17 项
 
@@ -40,7 +42,7 @@ Spec 的 17 项默认技能已包含共用区的 `handoff`。交接分两种使�
 | `prototype-review` | 对照实际规格与原型复核承诺行为、适用视觉和可访问性；结论用于修订本次范围 |
 | `wayfinder` | 仅显式调用时，整理跨多个会话的大型工作的未知、依赖和决定；不是普通工作的默认入口 |
 | `to-spec` | 仅显式调用时，综合已确认讨论与设计为业务规格；复用决定，不重新访谈 |
-| `to-tickets` | 仅明确要求拆票时，按完整业务行为组织业务票，保留规则、验收、依赖与未决项 |
+| `to-tickets` | 仅明确要求拆票时使用；业务拆分保留规则与验收，明确工程拆分按实际仓库组织可验收增量，不凭 Profile 改变任务范围 |
 | `triage` | 仅显式请求时，分析反馈、Issue 或作为请求入口的外部 PR；只读分析不更新远程状态 |
 | `llm-wiki` | 仅显式请求时创建、查询、摄取、巡检和维护有来源的知识库，按授权保存研究成果。查询保护知识文件，QMD 派生状态按选定工具工作区授权维护。 |
 | `implement` | 按明确开发、修复或规格实现请求核实工程上下文，完成单仓/跨仓研发与结果整合；只读分析、规格确认和准备交接不触发实现 |
@@ -53,7 +55,7 @@ Spec 中的 `code-review`、前端工程等专业技能属于按需能力，默�
 
 Home 是产品目标与关联工程的默认会话入口。按任务读取已有仓库地图（默认 `REPOSITORIES.md`）、README 索引或明确路径；地图只记录稳定身份、职责、资料入口和已知关系，本机工作树、分支及采用版本在当前任务核实。没有地图也可直接完成目标明确的工作，配置关系时再使用 setup 的地图模板。
 
-进入工程先核实真实 Git 身份和工作树，再读取该仓入口、局部规则及适用技能。优先采用目标仓有效版本及其资源，其次使用 Home 或宿主已有的适用共享内容；不要将同名技能的不同 Profile 职责混用。改变 shell cwd 不代表宿主重新加载规则；缺少内容沿原安装来源补齐，不切 Profile 或手改收据。三个 Profile 的通用协调方法均在 `setup-yss-harness/references/project-portability.md`；Spec/Backend 另有 `implement` 仓库范围参考，Frontend 不默认安装 Implement。
+进入工程先核实真实 Git 身份和工作树，再读取该仓入口、局部规则及适用技能。优先采用目标仓有效版本及其资源，其次使用 Home 或宿主已有的适用共享内容；不要将同名技能的不同 Profile 职责混用。改变 shell cwd 不代表宿主重新加载规则；缺少内容沿原安装来源补齐，不切 Profile 或手改收据。三个 Profile 的通用协调方法均在 `setup-yss-harness/references/project-portability.md`；三个 Profile 均默认提供 `implement`，按需读取其仓库范围参考。
 
 一个 Home 可协调多个后端、Web、Mobile 和共享组件；同仓多工程以仓库身份加子路径区分，一个安装根只持有一个 Profile。任务中核实采用的提交及未提交输入，恢复时检查当前工作树和运行资源；共享契约由一人整合，缺少子 Agent 时串行。来源变更只重做受影响部分，mock 或单仓检查不代表整体集成完成。
 
@@ -89,12 +91,14 @@ Backend 在共用 5 项之外预装以下 37 项。较完整的后端研发由 `
 
 按需能力包括 `yss-backend-spec-review`、`yss-up-springboot3`、`yss-security-algorithm`、`writing-for-agents`、`maintaining-skills` 等。需求差异核验、版本迁移、既有安全组件排查或技能维护命中时再选用；`yss-security-algorithm` 保持禁止新生产接入的限制。普通工程不默认安装上游插件或执行发行类动作。
 
-## Frontend：默认 13 项
+## Frontend：默认 15 项
 
-Frontend 在共用 5 项之外预装以下 8 项。测试与质量工具方法由应用技能的参考提供，沿用目标工程工具；无需为了数量对称新增一项测试路由技能。
+Frontend 在共用 5 项之外预装以下 10 项。测试与质量工具方法由应用技能的参考提供，沿用目标工程工具；无需为了数量对称新增一项测试路由技能。
 
 | 默认技能 | 职责与衔接条件 |
 | --- | --- |
+| `implement` | 按明确研发请求协调来源、范围、依赖、恢复与结果，前端具体实现交给应用技能；局部修改与只读 review 可直接进入专业技能 |
+| `to-tickets` | 明确要求拆票时按意图区分业务票和工程票；工程票沿可观察行为组织，不按组件、hooks 或技术层机械拆分 |
 | `yss-frontend-application` | 承接选定规格、原型、交互说明或 API，完成应用实现、设计还原、接口接入与工程审查；不自行重做产品设计 |
 | `yss-frontend-scaffold-generator` | 仅在不存在的新目录需要新应用时生成 starter，再由应用技能实现业务；已有工程和只读 review 不生成脚手架 |
 | `vue-best-practices` | 在 Vue 响应性、状态、数据流、生命周期和组件行为任务中提供判断；纯文案、颜色与间距不触发 |
@@ -113,13 +117,16 @@ Frontend 可按需补装的 4 项为 `yss-design-system`、`prototype-review`、
 ```mermaid
 flowchart LR
   U[用户当前目标] -->|业务规格与产品设计| S[yss-product-lifecycle]
-  U -->|单仓或跨仓研发| B[implement]
-  U -->|前端研发| F[yss-frontend-application]
-  S -.选定规格、原型、交互说明.-> B
-  S -.选定规格、原型、交互说明.-> F
+  U -->|单仓或跨仓研发| I[implement]
+  U -->|前端局部修改或审查| F[yss-frontend-application]
+  U -->|明确拆票| T[to-tickets]
+  S -.选定规格、原型、交互说明.-> I
+  S -.选定来源与验收.-> T
+  T -.按授权实现工作项.-> I
+  I -->|前端实现| F
+  I -->|后端实现| B[Backend 专业技能]
   B <-->|实际 API、错误、权限与联调结果| F
-  B -.规则缺口与行为差异.-> S
-  F -.规则缺口与行为差异.-> S
+  I -.规则缺口与行为差异.-> S
 ```
 
 | 衔接方向 | 消费哪些信息 | 接收方补充什么 |
@@ -130,6 +137,24 @@ flowchart LR
 | 研发 → Spec | 与原规则或验收的具体差异、来源位置、影响及选项 | 沿用已确认决定；只有新的业务取舍才需要业务方决定，技术等义细化不重新审批 |
 
 衔接优先引用已有权威材料及本次选定版本；代码或原型处于未提交工作树时，说明相关路径、状态与观察时间。普通任务在既有说明中保留必要上下文即可，不要求建立交接包或先调用 `handoff`。明确要求通过 PR/MR 交付时才使用该技能，并核对相应动作授权。
+
+## 用 Issue 接续 Spec 与工程
+
+Ticket 是工作项，Issue 是承载方式；Local Markdown 可承担相同职责。规格规则、原型与验收沿原来源，工作项保留本次范围、责任、依赖和结果，PR/MR 表达真实文件变化。小任务可以直接实现，业务父票仅在有聚合价值时建立。共有方法见 [Issue 操作](issue-tracker-operations.md)，项目选择仍在 [tracker 配置](issue-tracker.md)；无需安装 setup-matt-pocock-skills 才能接票。
+
+| 当前请求 | 承接入口与结果 |
+| --- | --- |
+| 将选定 Spec 拆成业务票 | Spec 的 to-tickets 组织业务结果、原规则与验收；保存/发布按明确目标及对应授权，不推导生产接口或技术切片 |
+| 按 Spec 或 Issue 完成后端研发 | Backend implement 接收来源，在实际工程中按需调用研发 to-tickets；沿原验收报告实现、验证与交付终点 |
+| 按 Spec 或 Issue 完成前端研发 | 共享 implement 协调范围与接续，yss-frontend-application 负责实现和验证；需要工程拆分时读取共享 to-tickets 的工程方法，小任务可直接实现 |
+| 将选定需求拆成前端工程票 | 共享 to-tickets 的工程分支记录真实仓库、设计/API 版本、验收与依赖；不补造后端契约，不自动发布 Issue 或启动实现 |
+| 继续一个跨仓工作项 | 核对真实 Issue、来源、已有改动、PR/MR 与依赖，衔接已有成果；Home 可汇总业务结果，各工程保持自己的实际来源与执行记录 |
+
+父票按原 AC 聚合实际结果，不凭子票全关闭或各仓 MR 合并宣布业务完成。前端 mock、后端单仓验证与真实联调分别报告；认领字段不是锁，仍需协调共享文件与运行资源。已有集中管理方式可以沿用，不为采用 Issues 强制搬票或维护远程/本地双份状态。
+
+三个 Profile 的 project/skills 模式向实际使用者（含 setup-yss-harness）分发共享方法及配置。完整新工程无已确认 tracker 且已核实唯一代码托管项目时，由 setup 默认关联该项目的 Issues 并报告；已有 tracker 和集中管理选择优先。CLI 程序安装独立于工程 Git/remote 配置，CLI 的 init/attach/scaffold 本身不创建 Git 仓或托管项目。
+
+配置可定制、方法独立受管；升级保留平台、实例、仓库、root 和历史字段。旧项目的模板与本地配置同时变化时，当前 CLI 会报告冲突，不会自动合并 frontmatter；先按实际差异及有效授权保留现场，采用工具实际支持的处理方式，不声称只合并正文就能解除冲突。未受管同路径文件也不得覆盖。无需新增 CLI 工单命令，现有连接器或经帮助核对的 gh/glab 承担平台操作。
 
 ## 用具体请求检查选择是否合理
 
@@ -156,7 +181,7 @@ flowchart LR
 - Backend：`profiles/backend/.template-source/distribution/bundle-profile.json`
 - Frontend：`profiles/frontend/.template-source/distribution/bundle-profile.json`
 
-共享技能内容源为 `.agents/skills`；Backend 专有内容及覆盖源为 `profiles/backend/.agents/skills`，Frontend 按白名单分发共享技能。解释同名技能时读取所选 Profile 的有效版本，尤其是 Spec 业务票与 Backend 实现切片两个 `to-tickets`，不能互换职责。
+共享技能内容源为 `.agents/skills`；Backend 专有内容及覆盖源为 `profiles/backend/.agents/skills`，Frontend 按白名单分发共享技能。解释同名技能时读取所选 Profile 的有效版本，共享 `to-tickets` 按请求选择业务票或工程票，Backend 覆盖保留后端技术设计和切片职责，不能仅凭同名混用。
 
 修改默认集合、职责或依赖时，同步受影响配置、有效技能、注册表、平台副本和本地图；只修改文档导航时不重算未变化技能的内容哈希。不另建一份机器路由清单，也不把协作关系转换为阶段门禁。技能地图随三个 Profile 的两种安装模式分发，六份入口仅保留按需导航。
 

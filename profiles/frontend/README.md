@@ -4,7 +4,7 @@
 
 Frontend 承接 Spec 的业务规格、高保真原型与交互说明，完成 Vue 应用工程、设计还原、接口接入和验证。Spec 继续负责产品设计，Backend 继续负责服务端实现；不恢复独立 Design Profile，也不新增阶段审批。
 
-`project` 与 `skills` 两种安装默认提供 13 项技能，可用库共 17 项。主入口是 `yss-frontend-application`，Vue 与 composable 方法按逻辑职责选择；设计、原型复核、逻辑原型和业务词汇维护四项按需补装。安装不会生成业务页面或自动加载全部技能。
+`project` 与 `skills` 两种安装默认提供 15 项技能，可用库共 19 项。`implement` 负责明确研发的协调，`to-tickets` 负责显式拆票，`yss-frontend-application` 负责前端专业实现与审查；局部修改可直接进入应用技能。Vue 与 composable 方法按逻辑职责选择；设计、原型复核、逻辑原型和业务词汇维护四项按需补装。安装不会生成业务页面或自动加载全部技能。
 
 技能共享源统一位于根 `.agents/skills`，本覆盖层按白名单选择并分发；`.workbuddy/skills` 是对应的普通文件副本。安装后的具体集合以所用 CLI 内嵌 Bundle 为准。
 

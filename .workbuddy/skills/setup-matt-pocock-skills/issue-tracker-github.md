@@ -1,5 +1,7 @@
 # Issue tracker: GitHub
 
+接票、依赖、续办、写入恢复及完成判断以项目根 `.template-spec/agents/issue-tracker-operations.md` 为共用方法。本参考保留 GitHub 配置与工具差异，不复制到项目配置正文；普通使用无需安装本 setup 技能。下列示例按实际帮助核实后使用，不构成预先授予的操作权限。
+
 用户当前明确的 Ticket URL 或仓库/实例决定本次目标；与已存配置不同时说明差异即可，不重复确认、不改持久配置，也不扩大动作授权。当前请求未明确目标时沿用配置；仅在多个候选确实无法消歧时询问。访问失败报告缺口，不回退到默认仓库找同号票。所有 CLI 使用 `--repo OWNER/REPO`（企业实例用 `HOST/OWNER/REPO`）；API 使用明确 `--hostname HOST` 与 `repos/OWNER/REPO/...`。不依赖当前目录、fork 或默认 remote。优先使用能力足够的连接器，CLI 参数以当前帮助为准。
 
 ## 读取

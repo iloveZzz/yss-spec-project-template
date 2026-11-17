@@ -1,0 +1,5 @@
+interface:
+  display_name: "业务与工程拆票"
+  short_description: "明确要求时按实际目标组织业务票或工程票，保留来源与验收"
+policy:
+  allow_implicit_invocation: false

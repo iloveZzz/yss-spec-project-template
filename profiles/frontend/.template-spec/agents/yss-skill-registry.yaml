@@ -7,6 +7,8 @@ instance_distribution:
   schema_version: 1
   initial_skills:
   - setup-yss-harness
+  - implement
+  - to-tickets
   - yss-frontend-application
   - yss-frontend-scaffold-generator
   - vue-best-practices
@@ -25,6 +27,20 @@ instance_distribution:
     workbuddy: .workbuddy/skills
   initial_example_docs: false
 skills:
+- id: to-tickets
+  layer: compatibility
+  maturity: supported
+  instance_default_discoverable: true
+  aliases: []
+  impacts:
+  - lifecycle
+- id: implement
+  layer: core
+  maturity: supported
+  instance_default_discoverable: true
+  aliases: []
+  impacts:
+  - lifecycle
 - id: yss-frontend-scaffold-generator
   layer: specialist
   maturity: supported

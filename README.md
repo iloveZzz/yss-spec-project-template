@@ -2,7 +2,7 @@
 
 面向中文研发团队的业务分析、规格、产品设计、Java 后端和 Vue 前端技能集合。按当前任务选择必要技能与技术参考，由 Agent 直接完成实现和资料整理。
 
-源码、Issue 和 PR 默认在 [GitHub](https://github.com/iloveZzz/yss-spec-project-template) 管理；`origin` 为主远端，GitLab 保留为显式选择的次级协作入口。不自动双向同步或双发。新项目优先 GitHub tracker，远程目标需要单独明确，不能把模板源码仓当成业务项目仓；已有项目沿用其已确认配置。
+源码、Issue 和 PR 默认在 [GitHub](https://github.com/iloveZzz/yss-spec-project-template) 管理；`origin` 为主远端，GitLab 保留为显式选择的次级协作入口。不自动双向同步或双发。完整新工程没有已确认 tracker 且已核实唯一 GitHub/GitLab 代码项目时，默认关联该项目的 Issues 并报告；已有项目沿用已确认配置。不能把模板源码仓当成业务项目仓。
 
 ## 使用
 
@@ -17,7 +17,7 @@
 - `.agents/skills/`：共享技能内容源、参考资料和模板资产。
 - `.claude/skills/`：共享技能链接；`.workbuddy/skills/`：普通文件副本。
 - `profiles/backend/`：Backend 技能与资料覆盖层。
-- `profiles/frontend/`：Frontend 技能与资料覆盖层；默认 13 项，可用 17 项，按需加载。
+- `profiles/frontend/`：Frontend 技能与资料覆盖层；默认 15 项，可用 19 项，按需加载。
 - `.template-spec/`：业务、设计和工程参考。
 - `.template-source/distribution/`：分发清单与客户端入口。
 - `skills-lock.json`：技能来源和安装目录信息；`yss-public-skills.json`：公开技能清单。
@@ -28,7 +28,7 @@
 
 既有 yss CLI 的安装包和内置行为独立于本仓，本次目录变化不会改写已安装的二进制。新模板与具体 CLI 版本的安装、同步兼容性须以实际使用结果为准。
 
-Template 5.9.0 增加来源核验、项目接续、技能改版对照和 PR/MR 持续跟进，补充全生命周期用户手册与团队培训材料。数据库技能明确单表 DSL、复杂 XML、实际方言与 JSON 绑定、部分加载更新及引用并发保护，并补充多数据库验证方法。新建 Backend 继续默认选择 YSS `4.0.0-SNAPSHOT`、Spring Boot `4.1.2` 和 Java `17`，支持显式选择其他版本。三个 Profile 的默认技能集合为 Spec 17 项、Backend 42 项、Frontend 13 项，供 CLI 3.9.0 打包使用。[技能地图](.template-spec/agents/profile-skills.md)
+Template 5.9.0 增加来源核验、项目接续、技能改版对照和 PR/MR 持续跟进，补充全生命周期用户手册与团队培训材料。数据库技能明确单表 DSL、复杂 XML、实际方言与 JSON 绑定、部分加载更新及引用并发保护，并补充多数据库验证方法。新建 Backend 继续默认选择 YSS `4.0.0-SNAPSHOT`、Spring Boot `4.1.2` 和 Java `17`，支持显式选择其他版本。该发行时三个 Profile 的默认集合为 Spec 17 项、Backend 42 项、Frontend 13 项。本地新增 Issue 衔接与共享研发入口后，Frontend 候选集合为默认 15 项、可用 19 项；需要重新构建并安装包含这些变化的 CLI Bundle。[技能地图](.template-spec/agents/profile-skills.md)
 
 `scaffold frontend` 从 CLI 3.3.0 起支持。Frontend Profile 从 CLI 3.2.0 开始支持，3.1.4 及以前不支持。参见 [Frontend 接入](.template-spec/user-guide/cli/tutorial-frontend.md)。GitLab CI 固定 CLI 配套构建源码 `f2e0a952123fbd9f12d3703b8df2b03d02b670cb`，版本为 3.7.0。该提交用于构建工具，正式 CLI 的最终源码与模板来源以 Release 产物记录为准。实际远程执行结果以对应流水线为准。
 

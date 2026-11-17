@@ -368,7 +368,10 @@
         ],
         "implement": [
           ".agents/skills/setup-yss-harness/references/host-compatibility.md",
-          ".template-spec/agents/matt-skills-adaptation.md"
+          ".template-spec/agents/matt-skills-adaptation.md",
+          ".template-spec/agents/issue-tracker.md",
+          ".template-spec/agents/issue-tracker-operations.md",
+          ".agents/skills/to-tickets/references/engineering-tickets.md"
         ],
         "java-backend-commit": [],
         "llm-wiki": [],
@@ -389,9 +392,13 @@
         "setup-matt-pocock-skills": [
           ".template-spec/agents/issue-tracker.md",
           ".template-spec/agents/triage-labels.md",
-          ".template-spec/agents/matt-skills-adaptation.md"
+          ".template-spec/agents/matt-skills-adaptation.md",
+          ".template-spec/agents/issue-tracker-operations.md"
         ],
-        "setup-yss-harness": [],
+        "setup-yss-harness": [
+          ".template-spec/agents/issue-tracker.md",
+          ".template-spec/agents/issue-tracker-operations.md"
+        ],
         "tdd": [
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
@@ -400,7 +407,9 @@
         ],
         "to-tickets": [
           ".template-spec/templates/business-ticket-template.md",
-          ".template-spec/agents/matt-skills-adaptation.md"
+          ".template-spec/agents/matt-skills-adaptation.md",
+          ".template-spec/agents/issue-tracker.md",
+          ".template-spec/agents/issue-tracker-operations.md"
         ],
         "triage": [
           ".template-spec/agents/triage-labels.md",
@@ -448,7 +457,8 @@
         "yss-product-lifecycle": [
           ".template-spec/agents/issue-tracker.md",
           ".template-spec/templates/spec-template.md",
-          ".agents/skills/grilling/SKILL.md"
+          ".agents/skills/grilling/SKILL.md",
+          ".template-spec/agents/issue-tracker-operations.md"
         ],
         "yss-repository": [
           ".template-spec/agents/backend-architecture-profiles.md"
@@ -472,7 +482,10 @@
         "yss-web-controller": [],
         "yss-frontend-application": [
           ".template-spec/agents/frontend-skills-adaptation.md",
-          ".agents/skills/implement/references/pr-mr-followup.md"
+          ".agents/skills/implement/references/pr-mr-followup.md",
+          ".template-spec/agents/issue-tracker.md",
+          ".template-spec/agents/issue-tracker-operations.md",
+          ".agents/skills/to-tickets/references/engineering-tickets.md"
         ],
         "vue-best-practices": [
           ".template-spec/agents/frontend-skills-adaptation.md"
@@ -559,7 +572,10 @@
         ],
         "implement": [
           ".agents/skills/setup-yss-harness/references/host-compatibility.md",
-          ".template-spec/agents/matt-skills-adaptation.md"
+          ".template-spec/agents/matt-skills-adaptation.md",
+          ".template-spec/agents/issue-tracker.md",
+          ".template-spec/agents/issue-tracker-operations.md",
+          ".agents/skills/to-tickets/references/engineering-tickets.md"
         ],
         "java-backend-commit": [],
         "llm-wiki": [],
@@ -580,9 +596,13 @@
         "setup-matt-pocock-skills": [
           ".template-spec/agents/issue-tracker.md",
           ".template-spec/agents/triage-labels.md",
-          ".template-spec/agents/matt-skills-adaptation.md"
+          ".template-spec/agents/matt-skills-adaptation.md",
+          ".template-spec/agents/issue-tracker-operations.md"
         ],
-        "setup-yss-harness": [],
+        "setup-yss-harness": [
+          ".template-spec/agents/issue-tracker.md",
+          ".template-spec/agents/issue-tracker-operations.md"
+        ],
         "tdd": [
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
@@ -591,7 +611,9 @@
         ],
         "to-tickets": [
           ".template-spec/templates/business-ticket-template.md",
-          ".template-spec/agents/matt-skills-adaptation.md"
+          ".template-spec/agents/matt-skills-adaptation.md",
+          ".template-spec/agents/issue-tracker.md",
+          ".template-spec/agents/issue-tracker-operations.md"
         ],
         "triage": [
           ".template-spec/agents/triage-labels.md",
@@ -639,7 +661,8 @@
         "yss-product-lifecycle": [
           ".template-spec/agents/issue-tracker.md",
           ".template-spec/templates/spec-template.md",
-          ".agents/skills/grilling/SKILL.md"
+          ".agents/skills/grilling/SKILL.md",
+          ".template-spec/agents/issue-tracker-operations.md"
         ],
         "yss-repository": [
           ".template-spec/agents/backend-architecture-profiles.md"
@@ -663,7 +686,10 @@
         "yss-web-controller": [],
         "yss-frontend-application": [
           ".template-spec/agents/frontend-skills-adaptation.md",
-          ".agents/skills/implement/references/pr-mr-followup.md"
+          ".agents/skills/implement/references/pr-mr-followup.md",
+          ".template-spec/agents/issue-tracker.md",
+          ".template-spec/agents/issue-tracker-operations.md",
+          ".agents/skills/to-tickets/references/engineering-tickets.md"
         ],
         "vue-best-practices": [
           ".template-spec/agents/frontend-skills-adaptation.md"

@@ -16,6 +16,19 @@
 
 保留实际使用资源的第三方许可、来源与归属，增量维护已有 THIRD-PARTY-NOTICES.md；投影方法不在目标仓独立改写，也不把外部内容重新标成分发仓自身许可。独立包完整性按实际引用核对，不以全量预装掩盖缺失。
 
+## setup 的项目配置与包内方法
+
+setup-yss-harness 的 `references/project-onboarding.md` 随技能目录完整导出，可独立完成 Git、remote 和 tracker 初始配置。导出需要共享 Issue 运行方法时，按以下映射补齐包内资源：
+
+| 唯一内容源 | setup 独立包中的路径 |
+| --- | --- |
+| `.template-spec/agents/issue-tracker.md` | `references/shared/template/agents/issue-tracker.md`，仅作为初始化模板 |
+| `.template-spec/agents/issue-tracker-operations.md` | `references/shared/template/agents/issue-tracker-operations.md`，作为方法资源 |
+
+将读取模板/方法的入口改成包内相对引用，并保留两文件间的相对链接。消费工程的持久配置仍位于 `<工程根>/.template-spec/agents/issue-tracker.md`；不要将正文中定位或写入项目配置的路径替换为包内模板路径，不读取空模板冒充实际配置，也不把业务配置写回用户级技能目录。只有配置任务已授权才增量创建消费工程配置，保留已有字段，不手造 CLI 收据。缺目标时说明缺口，不能使用模板仓或登录默认仓。
+
+该投影仅在实际导出时创建并记录；模板源的维护不代表公开包、已安装技能或 CLI 已更新。
+
 ## 独立消费者的图解参考
 
 `yss-product-lifecycle`、`yss-design-system` 等消费者使用 `.agents/skills/i-have-adhd/references/visual-explanation.md`。项目安装已有共享技能时直接引用，不在每个源技能中复制。独立导出且不能保证安装了 `i-have-adhd` 时，在选定包中整理下列资源：
