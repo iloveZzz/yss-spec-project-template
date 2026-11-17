@@ -1,5 +1,7 @@
 # Issue tracker: GitLab
 
+接票、依赖、续办、写入恢复及完成判断以项目根 `.template-spec/agents/issue-tracker-operations.md` 为共用方法。本参考保留 GitLab 配置与工具差异，不复制到项目配置正文；普通使用无需安装本 setup 技能。下列示例按实际帮助核实后使用，不构成预先授予的操作权限。
+
 用户当前明确的 Ticket URL 或 HTTPS host/完整 project 决定本次目标；与已存配置不同时说明差异即可，不重复确认、不改持久配置，也不扩大动作授权。当前请求未明确目标时沿用配置；仅在多个候选确实无法消歧时询问。访问失败报告缺口，不回退到默认项目找同号条目。CLI 使用 `--repo https://HOST/GROUP/PROJECT`；API 使用 `--hostname HOST` 和明确项目数字 ID 或 URL 编码项目路径，不依赖默认实例/remote 或 `:id` 隐式解析。优先能力足够的连接器，命令先核对实际帮助。
 
 ## 读取

@@ -2,7 +2,7 @@
 
 只问当前写入所需、且用户或已有配置尚未确定的内容。推荐项放在问题前，肯定回答表示接受推荐；已有决定不再询问。
 
-- 平台支持 `local-markdown`、`github`、`gitlab`。当前请求未明确目标时沿用已有配置；用户要初始化但无偏好时默认推荐 GitHub，GitLab 为显式选择的次级平台，Local Markdown 仍可明确选择（新项目根 `.work`）。GitHub repository 未配置时只补齐本次必需目标，不把模板仓、fork 或登录默认仓当成业务仓；Git remote 不自动改写已有 tracker。
+- 平台支持 `local-markdown`、`github`、`gitlab`。当前请求未明确目标时沿用已有配置；完整新工程无已确认 tracker 且已核实唯一 GitHub/GitLab 代码项目时，默认使用该项目的 Issues 并报告。模板中空 repository 不算已确认目标；没有工程目标或偏好时才推荐 GitHub，Local Markdown 仍可明确选择（新项目根 `.work`）。只补齐本次必需目标，不把模板仓、fork 或登录默认仓当成业务仓；Git remote 不自动改写已有 tracker。
 - GitHub 使用明确 `repository: owner/repo`；GitLab 使用明确 `host: https://实例` 和完整 `project`。用户当前明确的 URL、仓库或实例用于本次动作，与配置不同时说明差异即可，不重复确认或自动改持久配置。只有多个候选确实无法消歧时才问；访问失败不回退到默认目标找同号条目，本次目标选择也不扩大动作授权。
 - local 根缺失且确需保存新资料时使用新项目默认 `.work` 并说明；已有用户根保持不变。远程目标或真实路径有歧义时仅暂停该写入，当前对话分析继续。
 - triage 已安装且需要配置标签时，复用既有表；无表时采用 [三条默认标签](../triage-labels.md)，用户已明确偏好就不另问。不自动创建远程标签。

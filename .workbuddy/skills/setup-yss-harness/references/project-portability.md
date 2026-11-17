@@ -1,15 +1,15 @@
 # Git 接入与 Skills 共享
 
-适用于工程 Git 接入、团队共享已安装方法、从新 clone 继续使用 YSS。普通技能调用无需先做迁移；操作沿用当前任务授权，不自动提交、推送或修改关联仓。
+适用于工程 Git 接入、团队共享已安装方法、从新 clone 继续使用 YSS。完整初始化工程的 Git、remote 和 Issue 配置先读本包 [工程初始化与协作配置](project-onboarding.md)；本文负责共享与续办。普通技能调用无需先做迁移；操作沿用当前任务授权，不自动提交、推送或修改关联仓。
 
 ## 确认工程边界
 
 Profile 选择能力，project/skills 选择安装范围，scaffold 生成源码；三者都不独立决定 Git 仓库边界。
 
 - 先核实真实 Git 根、remote、worktree 和已有内容。已有独立仓沿用身份；monorepo 子工程沿用父仓，不因安装 Backend/Frontend 而创建嵌套 `.git`。
-- 当前任务明确创建独立新仓时，才把本地 Git 初始化纳入接入动作。CLI 的 init/attach/scaffold 不执行 Git 初始化、remote 设置或提交。
+- 完整初始化独立新工程时，将缺失的本地 Git、已确认 remote 与 tracker 纳入 Agent 接入动作；仅安装 CLI 或补装技能不创建业务仓。CLI 的 init/attach/scaffold 本身仍不执行 Git 初始化、remote 设置或提交。
 - 已有 `.git` 的目录不满足 init 的空目录要求，使用 attach；scaffold 已生成源码的目录同样使用 attach skills。受管项目继续使用 sync。
-- remote 使用已核实的真实工程地址；没有 remote 或暂时未知时明确注明。地图中的路径只用于定位，实际工作树在本次任务核实。
+- remote 使用已核实的真实工程地址；没有 remote 或暂时未知时明确注明。新建前先核实远程是否已有内容，非空远程优先复用 checkout/clone 后接入。tracker 的首次目标选择与既有配置保护按初始化参考处理，不从 remote 变更自动迁移。地图中的路径只用于定位，实际工作树在本次任务核实。
 
 一个 YSS 安装根只使用一个 Profile，`skills` 也不能把多个 Profile 合并进同一收据。一个产品 Home 可以关联多个 Backend、Web、Mobile 和共享组件工程；优先采用并列目录，各工程加入其所属 Git 仓，Home 只保存自身资料与导航。
 

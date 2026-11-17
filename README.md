@@ -10,6 +10,8 @@
 
 全团队使用路径见[用户手册](.template-spec/user-guide/用户手册.md)，讲义、演示步骤和实操练习见[培训材料](.template-spec/user-guide/培训材料.md)，专题入口见[手册索引](.template-spec/user-guide/用户手册索引.md)。文档命令基线为 CLI 3.8.0 与内置 Template 5.8.0，当前 main 的来源核验、运行接续和 PR/MR 跟进增量在相关章节注明。
 
+从一个项目理解完整研发过程，阅读[客户跟进项目 Demo](.template-spec/user-guide/客户跟进项目全生命周期Demo.md)，包含三仓 DDD 主线、MVC 对照、技能选择与问题处理，以及测试环境发布和业务验收。
+
 本仓不维护脚本目录、测试套件和自动钩子。GitLab CI 在 Linux 上构建当前模板对应的 Rust CLI，并验证项目安装、同步和脚手架生成，不生成或发布 Linux 发行包；使用 `yss-linux` 标签的 Runner 需要采用相同架构，以便复用构建产物。生成工程、同步技能、整理导出和准备发布由 Agent 直接操作保留的资产；安装或发布也可使用现有 CLI 的实际能力。后端工程命令优先 ./mvnw，前端优先 pnpm；是否运行构建、测试或审查由当前任务决定。
 
 ## 内容与维护
