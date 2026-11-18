@@ -1,4 +1,4 @@
 interface:
-  display_name: "yss-userinfo"
-  short_description: "YSS component skill for yss-userinfo"
+  display_name: "获取当前用户上下文"
+  short_description: "接入或排查已认证的用户上下文、受信网关头与后台身份"
   default_prompt: "Use yss-userinfo for this YSS backend component task."

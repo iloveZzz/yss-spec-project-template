@@ -1,0 +1,3 @@
+interface:
+  display_name: "安装与接入 YSS 工程"
+  short_description: "安装或升级 CLI 与 Skills，核对 Git、Issue tracker 和产品 Home 接入"

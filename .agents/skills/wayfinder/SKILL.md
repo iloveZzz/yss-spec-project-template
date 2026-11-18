@@ -1,6 +1,6 @@
 ---
 name: wayfinder
-description: "显式调用时，为跨多个会话的大型工作建立决策地图，逐项澄清未知与依赖。"
+description: 显式用于跨会话的大型工作。从模糊目标建立或接续决策地图，梳理已知、未知和依赖，暂时问不清的问题可以留白。
 disable-model-invocation: true
 ---
 

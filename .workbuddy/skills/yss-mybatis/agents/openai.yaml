@@ -1,5 +1,5 @@
 version: 1
 interface:
-  display_name: "YSS MyBatis"
-  short_description: "MyBatis 组件能力、配置、分页、批量与数据源排障"
+  display_name: "接入与排查 MyBatis"
+  short_description: "核对 MyBatis 或 MyBatis-Plus 的基类、分页、批量 SQL、扫描与数据源"
   default_prompt: "Use $yss-mybatis to verify or troubleshoot current YSS MyBatis capabilities and configuration; route persistence structure work to $yss-repository."

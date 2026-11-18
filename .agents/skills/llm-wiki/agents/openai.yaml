@@ -1,2 +1,5 @@
+interface:
+  display_name: "维护项目知识库"
+  short_description: "显式创建、查询或维护有来源的项目知识库，保护既有资料"
 policy:
   allow_implicit_invocation: false

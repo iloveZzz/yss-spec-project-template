@@ -1,3 +1,3 @@
 interface:
-  display_name: "Grilling"
-  short_description: "澄清真实决策，或整理第三方待答问题清单"
+  display_name: "澄清业务取舍"
+  short_description: "与业务方澄清待定选项，或为指定第三方整理待答问题"

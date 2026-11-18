@@ -1,6 +1,6 @@
 interface:
-  display_name: "YSS Skill Source Index Refresh"
-  short_description: "Locate sources and refresh YSS skill indexes"
+  display_name: "刷新技能来源索引"
+  short_description: "在明确要求时刷新技能来源索引，记录可核验的来源变化"
   default_prompt: "Refresh YSS skill indexes from yss-cloud-microservice and YSS UI docs."
 
 policy:

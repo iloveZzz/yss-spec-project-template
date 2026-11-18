@@ -1,0 +1,3 @@
+interface:
+  display_name: "实现与审查 Vue 3"
+  short_description: "实现或审查 Vue 3 响应式、组件数据流和组合式函数"

@@ -1,6 +1,6 @@
 ---
 name: handoff
-description: 手动将会话进展和选定产物交接到 GitHub PR 或 GitLab MR。
+description: 在明确交接时，通过 GitHub PR 或 GitLab MR 把选定成果、阶段进展和未完成事项交给指定接收方。
 argument-hint: "交接对象、产物和目标 PR/MR"
 disable-model-invocation: true
 ---

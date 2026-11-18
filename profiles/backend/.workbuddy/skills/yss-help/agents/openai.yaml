@@ -1,0 +1,6 @@
+interface:
+  display_name: "选择技能与编写提示词"
+  short_description: "按当前工程推荐一个技能，给出可复制的中文提示词"
+  default_prompt: "使用 $yss-help，按我当前想完成的事推荐一个技能，并给我一句可以直接发送的中文提示词。"
+policy:
+  allow_implicit_invocation: true

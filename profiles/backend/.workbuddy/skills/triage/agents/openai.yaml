@@ -1,5 +1,5 @@
 interface:
-  display_name: "Triage"
-  short_description: "整理反馈与 Issue，核验事实并建议处理"
+  display_name: "整理与分类 Issue"
+  short_description: "核对反馈与 Issue 的来源，整理分类、待答问题和处理建议"
 policy:
   allow_implicit_invocation: false

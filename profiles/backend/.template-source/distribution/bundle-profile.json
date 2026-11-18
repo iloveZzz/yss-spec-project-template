@@ -136,12 +136,19 @@
         "implement"
       ],
       "reason": "工程识别、只读调查与子模块保护已并入 implement。"
+    },
+    "i-have-adhd": {
+      "replacements": [
+        "yss-write-docs"
+      ],
+      "reason": "研发文档写作入口已更名为 yss-write-docs。"
     }
   },
   "installations": {
     "project": {
       "skills": [
         "setup-yss-harness",
+        "yss-help",
         "implement",
         "to-tickets",
         "code-review",
@@ -150,7 +157,7 @@
         "tdd",
         "java-backend-commit",
         "git-commit-core",
-        "i-have-adhd",
+        "yss-write-docs",
         "handoff",
         "using-git-worktrees",
         "resolving-merge-conflicts",
@@ -307,7 +314,7 @@
         "handoff": [
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
-        "i-have-adhd": [
+        "yss-write-docs": [
           ".template-spec/process/document-writing.md",
           ".template-spec/templates/examples/lifecycle-writing-examples.md"
         ],
@@ -328,7 +335,7 @@
           ".agents/skills/mapstruct/references/annotation-examples.md"
         ],
         "maintaining-skills": [
-          ".agents/skills/i-have-adhd/references/pr-and-retro.md"
+          ".agents/skills/yss-write-docs/references/pr-and-retro.md"
         ],
         "mapstruct": [
           ".template-spec/agents/backend-architecture-profiles.md"
@@ -375,7 +382,7 @@
         ],
         "writing-for-agents": [
           ".template-spec/agents/matt-skills-adaptation.md",
-          ".agents/skills/i-have-adhd/references/pr-and-retro.md",
+          ".agents/skills/yss-write-docs/references/pr-and-retro.md",
           ".agents/skills/maintaining-skills/references/authoring.md"
         ],
         "yss-application": [
@@ -412,6 +419,9 @@
         "yss-research": [
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
+        "yss-help": [
+          ".template-spec/agents/profile-skills.md"
+        ],
         "yss-resilience4j": [],
         "yss-security-algorithm": [],
         "yss-skill-source-index-refresh": [],
@@ -445,6 +455,7 @@
     "skills": {
       "skills": [
         "setup-yss-harness",
+        "yss-help",
         "implement",
         "to-tickets",
         "code-review",
@@ -453,7 +464,7 @@
         "tdd",
         "java-backend-commit",
         "git-commit-core",
-        "i-have-adhd",
+        "yss-write-docs",
         "handoff",
         "using-git-worktrees",
         "resolving-merge-conflicts",
@@ -586,7 +597,7 @@
         "handoff": [
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
-        "i-have-adhd": [
+        "yss-write-docs": [
           ".template-spec/process/document-writing.md",
           ".template-spec/templates/examples/lifecycle-writing-examples.md"
         ],
@@ -607,7 +618,7 @@
           ".agents/skills/mapstruct/references/annotation-examples.md"
         ],
         "maintaining-skills": [
-          ".agents/skills/i-have-adhd/references/pr-and-retro.md"
+          ".agents/skills/yss-write-docs/references/pr-and-retro.md"
         ],
         "mapstruct": [
           ".template-spec/agents/backend-architecture-profiles.md"
@@ -654,7 +665,7 @@
         ],
         "writing-for-agents": [
           ".template-spec/agents/matt-skills-adaptation.md",
-          ".agents/skills/i-have-adhd/references/pr-and-retro.md",
+          ".agents/skills/yss-write-docs/references/pr-and-retro.md",
           ".agents/skills/maintaining-skills/references/authoring.md"
         ],
         "yss-application": [
@@ -690,6 +701,9 @@
         ],
         "yss-research": [
           ".template-spec/agents/matt-skills-adaptation.md"
+        ],
+        "yss-help": [
+          ".template-spec/agents/profile-skills.md"
         ],
         "yss-resilience4j": [],
         "yss-security-algorithm": [],

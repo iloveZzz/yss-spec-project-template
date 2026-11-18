@@ -1,5 +1,5 @@
 interface:
-  display_name: "Wayfinder"
-  short_description: "Map a large effort as decision tickets"
+  display_name: "从模糊目标建立决策地图"
+  short_description: "从模糊目标起步，梳理已知、未知与依赖，允许留白，也可接续已有地图"
 policy:
   allow_implicit_invocation: false

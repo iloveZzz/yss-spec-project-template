@@ -99,7 +99,7 @@ capability_contract:
   - none
 capabilities:
 - id: writing.lifecycle-document
-  primary_skill: i-have-adhd
+  primary_skill: yss-write-docs
   provider:
     kind: none
   task_modes:
@@ -546,23 +546,23 @@ recipes:
   - quality.java-code-style
 skill_dependencies:
   to-spec:
-  - skill: i-have-adhd
+  - skill: yss-write-docs
     type: context-required
   java-backend-commit:
   - skill: git-commit-core
     type: context-required
   code-review:
-  - skill: i-have-adhd
+  - skill: yss-write-docs
     type: context-conditional
     when: lifecycle-document-output
   yss-openapi-governance:
-  - skill: i-have-adhd
+  - skill: yss-write-docs
     type: context-conditional
     when: lifecycle-document-output
   - skill: yss-dto
     type: context-required
   yss-research:
-  - skill: i-have-adhd
+  - skill: yss-write-docs
     type: context-conditional
     when: lifecycle-document-output
   yss-ddd-scaffold-generator:
@@ -659,7 +659,7 @@ skill_dependencies:
   - skill: yss-skill-source-index-refresh
     type: context-required
   yss-technical-design:
-  - skill: i-have-adhd
+  - skill: yss-write-docs
     type: context-conditional
     when: lifecycle-document-output
   - skill: yss-tactical-design
@@ -671,15 +671,15 @@ skill_dependencies:
   - skill: code-review
     type: review-only
   setup-yss-harness:
-  - skill: i-have-adhd
+  - skill: yss-write-docs
     type: context-conditional
     when: lifecycle-document-output
   implement:
-  - skill: i-have-adhd
+  - skill: yss-write-docs
     type: context-conditional
     when: lifecycle-document-output
   yss-backend-testing:
-  - skill: i-have-adhd
+  - skill: yss-write-docs
     type: context-conditional
     when: lifecycle-document-output
   - skill: tdd
@@ -743,7 +743,7 @@ invocation_contract:
       exclusion_conditions:
       - ordinary-query-or-production-operation
       primary_output: database-design-documents
-    i-have-adhd:
+    yss-write-docs:
       invocation_mode: model
       trigger_conditions:
       - lifecycle-document-output
@@ -922,7 +922,7 @@ skills:
   aliases: []
   impacts:
   - lifecycle
-- id: i-have-adhd
+- id: yss-write-docs
   layer: core
   maturity: supported
   instance_default_discoverable: true
@@ -1140,6 +1140,13 @@ skills:
   aliases: []
   impacts:
   - backend
+- id: yss-help
+  layer: core
+  maturity: supported
+  instance_default_discoverable: true
+  aliases: []
+  impacts:
+  - discovery
 - id: yss-research
   layer: core
   maturity: supported

@@ -1,0 +1,3 @@
+interface:
+  display_name: "编写可复用 Vue 组合式函数"
+  short_description: "为库编写可接收普通值、ref 或 getter 的可复用 Vue 组合式函数"

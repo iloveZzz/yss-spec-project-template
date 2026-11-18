@@ -1,2 +1,5 @@
+interface:
+  display_name: "设计 DDD 战术模型"
+  short_description: "在已确定的 DDD 工程中设计聚合、实体、行为、事件与 Gateway"
 policy:
   allow_implicit_invocation: true

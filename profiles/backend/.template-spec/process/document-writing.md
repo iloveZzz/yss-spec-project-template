@@ -8,31 +8,31 @@
 
 适用于研究结论、Plan、Spec、产品设计说明、工程契约的解释正文、Ticket、审查、PR / MR 描述、发布和复盘。聊天中的进度通知按第 4 节处理。
 
-共用的事实、约束与未决项保留规则见 [技能内共用规范](../../.agents/skills/i-have-adhd/references/document-writing.md)。
+共用的事实、约束与未决项保留规则见 [技能内共用规范](../../.agents/skills/yss-write-docs/references/document-writing.md)。
 
 ## 2. 共用写法
 
-正文唯一来源为 [中文文档共用规范](../../.agents/skills/i-have-adhd/references/document-writing.md)。以下锚点保留作兼容入口。
+正文唯一来源为 [中文文档共用规范](../../.agents/skills/yss-write-docs/references/document-writing.md)。以下锚点保留作兼容入口。
 
 ### 先回答读者当前需要判断的问题
 
-见 [共用规范相同章节](../../.agents/skills/i-have-adhd/references/document-writing.md#先回答读者当前需要判断的问题)。
+见 [共用规范相同章节](../../.agents/skills/yss-write-docs/references/document-writing.md#先回答读者当前需要判断的问题)。
 
 ### 用主体、条件和结果表达需求
 
-见 [共用规范相同章节](../../.agents/skills/i-have-adhd/references/document-writing.md#用主体、条件和结果表达需求)。
+见 [共用规范相同章节](../../.agents/skills/yss-write-docs/references/document-writing.md#用主体、条件和结果表达需求)。
 
 ### 让确定程度与证据一致
 
-见 [共用规范相同章节](../../.agents/skills/i-have-adhd/references/document-writing.md#让确定程度与证据一致)。
+见 [共用规范相同章节](../../.agents/skills/yss-write-docs/references/document-writing.md#让确定程度与证据一致)。
 
 ### 让每段承担一项用途
 
-见 [共用规范相同章节](../../.agents/skills/i-have-adhd/references/document-writing.md#让每段承担一项用途)。
+见 [共用规范相同章节](../../.agents/skills/yss-write-docs/references/document-writing.md#让每段承担一项用途)。
 
 ### 复用上游事实，交代本阶段新增内容
 
-见 [共用规范相同章节](../../.agents/skills/i-have-adhd/references/document-writing.md#复用上游事实，交代本阶段新增内容)。
+见 [共用规范相同章节](../../.agents/skills/yss-write-docs/references/document-writing.md#复用上游事实，交代本阶段新增内容)。
 
 ## 3. 各类文档怎么写
 
@@ -49,15 +49,15 @@
 
 ### PR / MR 描述
 
-见 [技能内 PR / MR 方法](../../.agents/skills/i-have-adhd/references/pr-and-retro.md#pr--mr-描述)，普通 PR 写作即可使用。
+见 [技能内 PR / MR 方法](../../.agents/skills/yss-write-docs/references/pr-and-retro.md#pr--mr-描述)，普通 PR 写作即可使用。
 
 ### 复盘中的改进与沉淀
 
-见 [技能内复盘方法](../../.agents/skills/i-have-adhd/references/pr-and-retro.md#复盘中的改进与沉淀)。
+见 [技能内复盘方法](../../.agents/skills/yss-write-docs/references/pr-and-retro.md#复盘中的改进与沉淀)。
 
 ### 真实任务观察与反馈关闭
 
-见 [技能内真实观察方法](../../.agents/skills/i-have-adhd/references/pr-and-retro.md#真实任务观察与反馈关闭)。
+见 [技能内真实观察方法](../../.agents/skills/yss-write-docs/references/pr-and-retro.md#真实任务观察与反馈关闭)。
 
 ### 解释历史编号与实际状态
 
@@ -73,4 +73,4 @@
 
 ## 5. 起草与修订时的检查
 
-按 [共用检查](../../.agents/skills/i-have-adhd/references/document-writing.md#起草与修订时的检查) 核对原意、范围、引用与正文一致性；自检不代表业务批准。保留历史记录和用户内容，不为普通文档新建阅读包、manifest、阶段检查或证据资产。
+按 [共用检查](../../.agents/skills/yss-write-docs/references/document-writing.md#起草与修订时的检查) 核对原意、范围、引用与正文一致性；自检不代表业务批准。保留历史记录和用户内容，不为普通文档新建阅读包、manifest、阶段检查或证据资产。

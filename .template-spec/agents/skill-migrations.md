@@ -161,7 +161,7 @@ DDD 脚手架的 Parent 工程约束由 `yss-ddd-scaffold-generator/references/e
 
 | 旧入口 | 承接位置 |
 |---|---|
-| wait-what | 普通解释对话，按文档写作规范或 i-have-adhd 调整表达 |
+| wait-what | 普通解释对话，按文档写作规范或 yss-write-docs 调整表达 |
 | to-questionnaire | 当前生命周期外部输入问卷，保留 external-input-required 与答案回流合同 |
 | improve-codebase-architecture | codebase-design 显式架构审计模式及可选 HTML 报告 |
 

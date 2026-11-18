@@ -1,5 +1,5 @@
 interface:
-  display_name: "Handoff"
-  short_description: "手动将选定产物交接到 PR 或 MR"
+  display_name: "交接选定成果与进展"
+  short_description: "把选定材料、已完成与未完成事项，通过 GitHub PR 或 GitLab MR 交给接收方"
 policy:
   allow_implicit_invocation: false

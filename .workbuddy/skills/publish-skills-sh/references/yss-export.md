@@ -31,13 +31,13 @@ setup-yss-harness 的 `references/project-onboarding.md` 随技能目录完整�
 
 ## 独立消费者的图解参考
 
-`yss-product-lifecycle`、`yss-design-system` 等消费者使用 `.agents/skills/i-have-adhd/references/visual-explanation.md`。项目安装已有共享技能时直接引用，不在每个源技能中复制。独立导出且不能保证安装了 `i-have-adhd` 时，在选定包中整理下列资源：
+`yss-product-lifecycle`、`yss-design-system` 等消费者使用 `.agents/skills/yss-write-docs/references/visual-explanation.md`。项目安装已有共享技能时直接引用，不在每个源技能中复制。独立导出且不能保证安装了 `yss-write-docs` 时，在选定包中整理下列资源：
 
 | 唯一内容源 | 独立包中的路径 |
 |---|---|
-| `.agents/skills/i-have-adhd/references/visual-explanation.md` | `references/shared/visual-explanation.md` |
-| `.agents/skills/i-have-adhd/references/show-me-LICENSE.txt` | `references/shared/show-me-LICENSE.txt` |
-| `.agents/skills/i-have-adhd/references/yss-adaptation.md` 的 ShowMe 来源信息 | `references/shared/show-me-source.md`，只记录来源、固定提交、访问日期、适配范围和投影关系 |
+| `.agents/skills/yss-write-docs/references/visual-explanation.md` | `references/shared/visual-explanation.md` |
+| `.agents/skills/yss-write-docs/references/show-me-LICENSE.txt` | `references/shared/show-me-LICENSE.txt` |
+| `.agents/skills/yss-write-docs/references/yss-adaptation.md` 的 ShowMe 来源信息 | `references/shared/show-me-source.md`，只记录来源、固定提交、访问日期、适配范围和投影关系 |
 
 从实际消费者正文和模板追踪引用，将图解链接改成相对上述包内路径；方法与许可保持源字节，方法中的许可相对链接保持有效。`show-me-source.md` 链接同目录的方法和许可，不依赖原仓适配说明。主技能的调用权限和对外授权边界保持不变，不因复制参考创建 ShowMe 入口或强制补装共享技能。
 

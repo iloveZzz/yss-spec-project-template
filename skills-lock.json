@@ -117,13 +117,13 @@
           ".workbuddy/skills"
         ]
       },
-      "i-have-adhd": {
+      "yss-write-docs": {
         "source": "ayghri/i-have-adhd",
         "sourceType": "git",
         "skillPath": "skills/i-have-adhd/SKILL.md",
         "sourceRevision": "839872f9d1cd634fed642b4589ce7226199cc15f",
         "upstreamHash": "4c88635cbcb4765b63528d608d27589596840708e89607fda9c9fa5726c11f7e",
-        "adaptationRef": ".agents/skills/i-have-adhd/references/yss-adaptation.md",
+        "adaptationRef": ".agents/skills/yss-write-docs/references/yss-adaptation.md",
         "targets": [
           ".agents/skills",
           ".claude/skills",
@@ -529,6 +529,16 @@
         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
         "upstreamHash": "75b7f9bbd7ccff6755a006f8b25d319a46ecbf6bd4b4c3323965ed9cb65e78ff",
         "adaptationRef": ".template-spec/agents/matt-skills-adaptation.md",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".workbuddy/skills"
+        ]
+      },
+      "yss-help": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-help/SKILL.md",
         "targets": [
           ".agents/skills",
           ".claude/skills",

@@ -1,0 +1,3 @@
+interface:
+  display_name: "配置与排查 Lombok"
+  short_description: "配置 Lombok 注解、构造器、Builder 和注解处理器，核对生成范围"

@@ -1,4 +1,4 @@
 interface:
-  display_name: "yss-resilience4j"
-  short_description: "YSS component skill for yss-resilience4j"
+  display_name: "配置限流与熔断"
+  short_description: "接入或排查 Resilience4j 的限流、降级、断路器与网关配置"
   default_prompt: "Use yss-resilience4j for this YSS backend component task."

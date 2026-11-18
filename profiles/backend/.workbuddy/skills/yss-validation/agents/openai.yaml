@@ -1,4 +1,4 @@
 interface:
-  display_name: "yss-validation"
-  short_description: "YSS component skill for yss-validation"
+  display_name: "校验后端输入"
+  short_description: "接入 Bean Validation，核对校验消息与错误映射"
   default_prompt: "Use yss-validation for this YSS backend component task."

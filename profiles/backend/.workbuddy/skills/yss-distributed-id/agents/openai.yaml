@@ -1,5 +1,5 @@
 version: 1
 interface:
-  display_name: "YSS Distributed ID"
-  short_description: "Leaf Segment、Snowflake 与主键注入排障"
+  display_name: "接入与排查分布式 ID"
+  short_description: "核对 Segment、Snowflake 与主键注入，协助分布式 ID 接入或迁移"
   default_prompt: "Use $yss-distributed-id to configure or debug platform-bound Leaf Segment, Snowflake, and MyBatis ID injection; treat CosId and remote modes as legacy migration cases."

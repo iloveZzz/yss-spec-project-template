@@ -1,5 +1,5 @@
 version: 1
 interface:
-  display_name: "YSS DDD Scaffold"
-  short_description: "新建 DDD Java 空工程，已有工程增量维护"
+  display_name: "生成 DDD 后端工程"
+  short_description: "在新目录生成 YSS DDD 多模块 Java 空工程"
   default_prompt: "使用 $yss-ddd-scaffold-generator。先区分新建工程、已有工程维护和仅安装 Backend 技能。新建时读取 yss --version、yss scaffold catalog --json、yss scaffold ddd --help，收集真实项目、平台和 Maven 参数，现装 CLI 支持时用 scaffold ddd 写入不存在的目标目录。CLI 缺失先用 setup-yss-harness 安装，能力缺口按 references/standalone-generation.md 评估资产 fallback，保留版本兼容、路径和文件保护。已有工程按分层增量维护，技能安装使用 init/attach --profile backend --installation skills。当前产物是空骨架、POM、启动配置、Wrapper 和来源收据，教学资料按需读取。构建按任务需要执行并如实报告。"

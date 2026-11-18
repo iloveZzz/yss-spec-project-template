@@ -1,0 +1,3 @@
+interface:
+  display_name: "隔离并行工作"
+  short_description: "为并行工作建立或复用独立的 Git 工作树，保留已有修改"

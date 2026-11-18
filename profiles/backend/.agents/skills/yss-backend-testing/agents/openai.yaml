@@ -1,2 +1,5 @@
+interface:
+  display_name: "验证后端行为"
+  short_description: "按当前后端任务补充或核验接口、集成和回归测试"
 policy:
   allow_implicit_invocation: true

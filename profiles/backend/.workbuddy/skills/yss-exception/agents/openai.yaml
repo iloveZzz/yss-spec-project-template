@@ -1,4 +1,4 @@
 interface:
-  display_name: "yss-exception"
-  short_description: "YSS component skill for yss-exception"
+  display_name: "处理统一异常"
+  short_description: "接入异常处理器与统一错误码，排查异常映射和 starter 配置"
   default_prompt: "Use yss-exception for this YSS backend component task."

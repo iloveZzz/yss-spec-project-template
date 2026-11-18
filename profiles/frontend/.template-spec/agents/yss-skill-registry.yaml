@@ -6,6 +6,7 @@ canonical_content_root: .agents/skills
 instance_distribution:
   schema_version: 1
   initial_skills:
+  - yss-help
   - setup-yss-harness
   - implement
   - to-tickets
@@ -17,7 +18,7 @@ instance_distribution:
   - diagnosing-bugs
   - yss-research
   - grilling
-  - i-have-adhd
+  - yss-write-docs
   - handoff
   - using-git-worktrees
   - resolving-merge-conflicts
@@ -94,6 +95,13 @@ skills:
   aliases: []
   impacts:
   - quality
+- id: yss-help
+  layer: core
+  maturity: supported
+  instance_default_discoverable: true
+  aliases: []
+  impacts:
+  - discovery
 - id: yss-research
   layer: core
   maturity: supported
@@ -109,7 +117,7 @@ skills:
   aliases: []
   impacts:
   - discovery
-- id: i-have-adhd
+- id: yss-write-docs
   layer: core
   maturity: supported
   instance_default_discoverable: true

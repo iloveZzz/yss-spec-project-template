@@ -49,6 +49,8 @@ init/attach 成功后的 nextSteps 提供后续行动。Spec project 需由 Agen
 
 ## 升级程序与同步项目
 
+含新版技能的 Bundle 将 `i-have-adhd` 更名为 `yss-write-docs`。当前工程同步后可问 `yss-help` 取得新写法。仍在旧版工程工作时按已装名称调用。新旧对应关系见[技能地图](../../agents/profile-skills.md#技能改名)。
+
 程序升级和项目同步分别执行。在线升级默认使用 GitHub 正式 Release，选择固定版本后执行。
 
 ```text

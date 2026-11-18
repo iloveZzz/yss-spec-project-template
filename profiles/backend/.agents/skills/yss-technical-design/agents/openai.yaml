@@ -1,2 +1,5 @@
+interface:
+  display_name: "设计后端技术方案"
+  short_description: "根据实际后端工程选择 DDD 或 MVC，给出架构、技术方案及详细设计"
 policy:
   allow_implicit_invocation: true

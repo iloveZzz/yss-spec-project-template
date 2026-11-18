@@ -1,0 +1,3 @@
+interface:
+  display_name: "实现与排查 MapStruct 映射"
+  short_description: "实现 DTO、PO、领域模型的 MapStruct 映射，核验字段与更新语义"

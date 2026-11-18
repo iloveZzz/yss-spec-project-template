@@ -1,4 +1,4 @@
 interface:
-  display_name: "YSS OpenAPI Governance"
-  short_description: "审查或维护 OpenAPI YAML，按需导出 JSON"
+  display_name: "审查与维护 OpenAPI"
+  short_description: "审查或维护 OpenAPI 3.1 YAML，核对接口兼容性并按需导出 JSON"
   default_prompt: "使用 $yss-openapi-governance 按当前请求审查或维护 OpenAPI 3.1；只读审查不修改文件，需要时安全导出 JSON，并说明实际兼容性问题和验证范围。"

@@ -1,6 +1,6 @@
 # __YSS_PROJECT_NAME__
 
-Backend 的 project / skills 两种安装均默认预装 42 项研发技能，可用库共 54 项；实际集合以当前 CLI 的 Bundle 为准。任务按当前需求直接开展，入口见 [AGENTS.md](AGENTS.md)。
+Backend 的 project / skills 两种安装均默认预装 43 项研发技能，可用库共 55 项；实际集合以当前 CLI 的 Bundle 为准。任务按当前需求直接开展，入口见 [AGENTS.md](AGENTS.md)。
 
 全团队工作方式见[用户手册](.template-spec/user-guide/用户手册.md)，团队讲义、演示和练习见[培训材料](.template-spec/user-guide/培训材料.md)，后端日常路径见[后端手册](.template-spec/user-guide/后端子项目用户手册.md)。
 

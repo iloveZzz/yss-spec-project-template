@@ -33,9 +33,10 @@
       ".agents/skills/create-adaptable-composable",
       ".agents/skills/code-review",
       ".agents/skills/diagnosing-bugs",
+      ".agents/skills/yss-help",
       ".agents/skills/yss-research",
       ".agents/skills/grilling",
-      ".agents/skills/i-have-adhd",
+      ".agents/skills/yss-write-docs",
       ".agents/skills/handoff",
       ".agents/skills/using-git-worktrees",
       ".agents/skills/resolving-merge-conflicts",
@@ -49,9 +50,10 @@
       ".workbuddy/skills/create-adaptable-composable",
       ".workbuddy/skills/code-review",
       ".workbuddy/skills/diagnosing-bugs",
+      ".workbuddy/skills/yss-help",
       ".workbuddy/skills/yss-research",
       ".workbuddy/skills/grilling",
-      ".workbuddy/skills/i-have-adhd",
+      ".workbuddy/skills/yss-write-docs",
       ".workbuddy/skills/handoff",
       ".workbuddy/skills/using-git-worktrees",
       ".workbuddy/skills/resolving-merge-conflicts",
@@ -289,11 +291,19 @@
       ]
     }
   },
-  "retiredSkills": {},
+  "retiredSkills": {
+    "i-have-adhd": {
+      "replacements": [
+        "yss-write-docs"
+      ],
+      "reason": "研发文档写作入口已更名为 yss-write-docs。"
+    }
+  },
   "installations": {
     "project": {
       "skills": [
         "setup-yss-harness",
+        "yss-help",
         "implement",
         "to-tickets",
         "yss-frontend-application",
@@ -304,7 +314,7 @@
         "diagnosing-bugs",
         "yss-research",
         "grilling",
-        "i-have-adhd",
+        "yss-write-docs",
         "handoff",
         "using-git-worktrees",
         "resolving-merge-conflicts"
@@ -376,10 +386,13 @@
         "yss-research": [
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
+        "yss-help": [
+          ".template-spec/agents/profile-skills.md"
+        ],
         "grilling": [
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
-        "i-have-adhd": [
+        "yss-write-docs": [
           ".template-spec/process/document-writing.md",
           ".template-spec/templates/examples/lifecycle-writing-examples.md",
           ".template-spec/templates/examples/plan-spec/complex-defective.md",
@@ -446,6 +459,7 @@
     "skills": {
       "skills": [
         "setup-yss-harness",
+        "yss-help",
         "implement",
         "to-tickets",
         "yss-frontend-application",
@@ -456,7 +470,7 @@
         "diagnosing-bugs",
         "yss-research",
         "grilling",
-        "i-have-adhd",
+        "yss-write-docs",
         "handoff",
         "using-git-worktrees",
         "resolving-merge-conflicts"
@@ -501,10 +515,13 @@
         "yss-research": [
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
+        "yss-help": [
+          ".template-spec/agents/profile-skills.md"
+        ],
         "grilling": [
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
-        "i-have-adhd": [
+        "yss-write-docs": [
           ".template-spec/process/document-writing.md",
           ".template-spec/templates/examples/lifecycle-writing-examples.md",
           ".template-spec/templates/examples/plan-spec/complex-defective.md",
