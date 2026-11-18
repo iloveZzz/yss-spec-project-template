@@ -145,7 +145,7 @@ skills:
   aliases: []
   impacts:
   - quality
-- id: yss-design-system
+- id: yss-design-ui
   layer: core
   maturity: supported
   instance_default_discoverable: false
@@ -160,7 +160,7 @@ skills:
   aliases: []
   impacts:
   - prototype
-- id: prototype
+- id: yss-prototype-logic
   layer: core
   maturity: supported
   instance_default_discoverable: false
@@ -175,10 +175,10 @@ skills:
   impacts:
   - discovery
 skill_dependencies:
-  yss-design-system:
+  yss-design-ui:
   - skill: prototype-review
     type: context-required
-  - skill: prototype
+  - skill: yss-prototype-logic
     type: context-required
   - skill: yss-research
     type: context-required

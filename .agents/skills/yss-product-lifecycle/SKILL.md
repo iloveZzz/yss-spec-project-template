@@ -10,9 +10,9 @@ description: 组织 Spec 研究、业务分析、规格与产品原型；在准�
 按缺口选择负责人，不运行固定技能流水线：
 
 - 事实与来源：`.agents/skills/yss-research/SKILL.md`。
-- 业务关系、场景、规则、范围和方案影响：`.agents/skills/yss-stage-decision/SKILL.md`。
+- 业务关系、场景、规则、范围和方案影响：`.agents/skills/yss-analyze-business/SKILL.md`。
 - 真实业务取舍：`.agents/skills/grilling/SKILL.md`；术语及责任歧义：`.agents/skills/domain-modeling/SKILL.md`。
-- 产品设计与 UI 原型：`.agents/skills/yss-design-system/SKILL.md`；无 UI 或限定状态问题：`.agents/skills/prototype/SKILL.md`。
+- 产品设计与 UI 原型：`.agents/skills/yss-design-ui/SKILL.md`；无 UI 或限定状态问题：`.agents/skills/yss-prototype-logic/SKILL.md`。
 - 产物复核：`.agents/skills/prototype-review/SKILL.md`；当前中文文档表达：`.agents/skills/yss-write-docs/SKILL.md`。
 
 解释某技能的前提、例外或决定跳过步骤前，先读取其实际入口；只展示候选时不加载全部正文。调用遵循宿主真实能力；读取显式技能仅用于了解方法，不等于获得执行或对外操作授权。

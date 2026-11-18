@@ -10,7 +10,7 @@
 | yss-frontend-application | 将选定规格、高保真设计、原型和 OpenAPI 接入 Vue 3 工程 | 只读 review 不转实现；开发授权不包含提交、推送或部署 |
 | vue-best-practices | Vue 响应性、组件数据流、生命周期与职责拆分 | 按受影响逻辑读取参考，纯文案/样式不触发 |
 | create-adaptable-composable | 确有需要的响应式/普通输入接口 | Vue 3.3+；不为简单局部状态新增抽象 |
-| yss-design-system 等可用协作技能 | 产品设计、交互说明及事实核对 | 按需发现；缺少辅助技能不自动安装或中断已能完成的工作 |
+| yss-design-ui 等可用协作技能 | 产品设计、交互说明及事实核对 | 按需发现；缺少辅助技能不自动安装或中断已能完成的工作 |
 
 本版本保留 SKILL、references、agents 与必要示例：前端交接模板、OpenAPI 配置/transport、精确版本的 vue-hooks-plus 补丁。应用 starter 由 Frontend Bundle 提供，轻量 scaffold 技能调用原生 CLI；技能安装不复制资源。应用技能不携带 evals、测试用例或检查脚本，新工程与存量接入按 [工程准备](bootstrap.md) 分流。
 

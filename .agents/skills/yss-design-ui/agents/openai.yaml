@@ -1,0 +1,5 @@
+version: 1
+interface:
+  display_name: "设计产品界面与交互原型"
+  short_description: "设计页面流程、操作与反馈，制作产品 UI 原型和交互说明"
+  default_prompt: "使用 $yss-design-ui，依据已有规格设计页面流程与关键交互，制作可操作原型并说明异常反馈。"

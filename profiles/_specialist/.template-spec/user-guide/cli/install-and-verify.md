@@ -49,6 +49,8 @@ init/attach 成功后的 nextSteps 提供后续行动。Spec project 需由 Agen
 
 ## 升级程序与同步项目
 
+写作、业务分析、UI 设计与逻辑原型的旧称和新 ID 可查[技能地图](../../agents/profile-skills.md#技能改名)。新版 CLI 的技能库和工程当前启用的入口可能不同。默认技能随项目同步更新。曾手动补装的技能请核对新名，按需要用 `yss skills ensure <新ID> --root <工程>` 补装。
+
 程序升级和项目同步分别执行。在线升级默认使用 GitHub 正式 Release，选择固定版本后执行。
 
 ```text

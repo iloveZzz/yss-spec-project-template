@@ -76,13 +76,13 @@
       ".template-spec/design/README.md",
       ".template-spec/engineering/backend-platforms.json",
       ".template-spec/agents/backend-architecture-profiles.md",
-      ".agents/skills/yss-design-system/SKILL.md",
-      ".agents/skills/yss-design-system/references/high-fidelity-default-theme.md",
-      ".claude/skills/yss-design-system/SKILL.md",
-      ".claude/skills/yss-design-system/references/high-fidelity-default-theme.md",
+      ".agents/skills/yss-design-ui/SKILL.md",
+      ".agents/skills/yss-design-ui/references/high-fidelity-default-theme.md",
+      ".claude/skills/yss-design-ui/SKILL.md",
+      ".claude/skills/yss-design-ui/references/high-fidelity-default-theme.md",
       "yss-project.yaml",
-      ".workbuddy/skills/yss-design-system/SKILL.md",
-      ".workbuddy/skills/yss-design-system/references/high-fidelity-default-theme.md"
+      ".workbuddy/skills/yss-design-ui/SKILL.md",
+      ".workbuddy/skills/yss-design-ui/references/high-fidelity-default-theme.md"
     ],
     "exampleDocPaths": [],
     "initExcludeRootEntries": [],
@@ -271,6 +271,24 @@
         "yss-write-docs"
       ],
       "reason": "研发文档写作入口已更名为 yss-write-docs。"
+    },
+    "yss-stage-decision": {
+      "replacements": [
+        "yss-analyze-business"
+      ],
+      "reason": "业务分析入口已更名为 yss-analyze-business。"
+    },
+    "yss-design-system": {
+      "replacements": [
+        "yss-design-ui"
+      ],
+      "reason": "产品界面与交互原型设计入口已更名为 yss-design-ui。"
+    },
+    "prototype": {
+      "replacements": [
+        "yss-prototype-logic"
+      ],
+      "reason": "逻辑与状态原型试验入口已更名为 yss-prototype-logic。"
     }
   },
   "installations": {
@@ -280,13 +298,13 @@
         "yss-help",
         "yss-product-lifecycle",
         "yss-research",
-        "yss-stage-decision",
+        "yss-analyze-business",
         "grilling",
         "domain-modeling",
         "wayfinder",
         "to-spec",
-        "yss-design-system",
-        "prototype",
+        "yss-design-ui",
+        "yss-prototype-logic",
         "prototype-review",
         "to-tickets",
         "triage",
@@ -395,7 +413,7 @@
         "mapstruct": [
           ".template-spec/agents/backend-architecture-profiles.md"
         ],
-        "prototype": [
+        "yss-prototype-logic": [
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "prototype-review": [],
@@ -450,7 +468,7 @@
           ".template-spec/engineering/backend-platforms.md",
           ".template-spec/engineering/backend-platforms.json"
         ],
-        "yss-design-system": [
+        "yss-design-ui": [
           ".template-spec/design/tokens/variables.css",
           ".agents/skills/yss-frontend-application/references/component-engineering.md",
           ".template-spec/design/templates/interaction-spec-template.md",
@@ -495,7 +513,7 @@
         "yss-resilience4j": [],
         "yss-security-algorithm": [],
         "yss-skill-source-index-refresh": [],
-        "yss-stage-decision": [
+        "yss-analyze-business": [
           ".agents/skills/grilling/SKILL.md"
         ],
         "yss-tactical-design": [],
@@ -539,13 +557,13 @@
         "yss-help",
         "yss-product-lifecycle",
         "yss-research",
-        "yss-stage-decision",
+        "yss-analyze-business",
         "grilling",
         "domain-modeling",
         "wayfinder",
         "to-spec",
-        "yss-design-system",
-        "prototype",
+        "yss-design-ui",
+        "yss-prototype-logic",
         "prototype-review",
         "to-tickets",
         "triage",
@@ -621,7 +639,7 @@
         "mapstruct": [
           ".template-spec/agents/backend-architecture-profiles.md"
         ],
-        "prototype": [
+        "yss-prototype-logic": [
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "prototype-review": [],
@@ -676,7 +694,7 @@
           ".template-spec/engineering/backend-platforms.md",
           ".template-spec/engineering/backend-platforms.json"
         ],
-        "yss-design-system": [
+        "yss-design-ui": [
           ".template-spec/design/tokens/variables.css",
           ".agents/skills/yss-frontend-application/references/component-engineering.md",
           ".template-spec/design/templates/interaction-spec-template.md",
@@ -721,7 +739,7 @@
         "yss-resilience4j": [],
         "yss-security-algorithm": [],
         "yss-skill-source-index-refresh": [],
-        "yss-stage-decision": [
+        "yss-analyze-business": [
           ".agents/skills/grilling/SKILL.md"
         ],
         "yss-tactical-design": [],

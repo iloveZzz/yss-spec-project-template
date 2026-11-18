@@ -43,8 +43,8 @@
       ".work",
       ".agents/skills/release-yss-cli",
       ".agents/skills/prototype-review",
-      ".agents/skills/prototype/LOGIC.md",
-      ".agents/skills/yss-design-system",
+      ".agents/skills/yss-prototype-logic/LOGIC.md",
+      ".agents/skills/yss-design-ui",
       ".agents/skills/yss-product-lifecycle",
       ".template-spec/process/process-glossary.md",
       ".template-spec/agents/digital-human-roles.md",
@@ -142,6 +142,18 @@
         "yss-write-docs"
       ],
       "reason": "研发文档写作入口已更名为 yss-write-docs。"
+    },
+    "yss-stage-decision": {
+      "replacements": [
+        "yss-analyze-business"
+      ],
+      "reason": "业务分析入口已更名为 yss-analyze-business。"
+    },
+    "prototype": {
+      "replacements": [
+        "yss-prototype-logic"
+      ],
+      "reason": "逻辑与状态原型试验入口已更名为 yss-prototype-logic。"
     }
   },
   "installations": {
@@ -168,7 +180,7 @@
         "domain-modeling",
         "yss-research",
         "grilling",
-        "prototype",
+        "yss-prototype-logic",
         "alibaba-java-code-style",
         "lombok",
         "mapstruct",
@@ -340,7 +352,7 @@
         "mapstruct": [
           ".template-spec/agents/backend-architecture-profiles.md"
         ],
-        "prototype": [
+        "yss-prototype-logic": [
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "publish-skills-sh": [],
@@ -425,7 +437,7 @@
         "yss-resilience4j": [],
         "yss-security-algorithm": [],
         "yss-skill-source-index-refresh": [],
-        "yss-stage-decision": [
+        "yss-analyze-business": [
           ".agents/skills/grilling/SKILL.md"
         ],
         "yss-tactical-design": [],
@@ -475,7 +487,7 @@
         "domain-modeling",
         "yss-research",
         "grilling",
-        "prototype",
+        "yss-prototype-logic",
         "alibaba-java-code-style",
         "lombok",
         "mapstruct",
@@ -623,7 +635,7 @@
         "mapstruct": [
           ".template-spec/agents/backend-architecture-profiles.md"
         ],
-        "prototype": [
+        "yss-prototype-logic": [
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "publish-skills-sh": [],
@@ -708,7 +720,7 @@
         "yss-resilience4j": [],
         "yss-security-algorithm": [],
         "yss-skill-source-index-refresh": [],
-        "yss-stage-decision": [
+        "yss-analyze-business": [
           ".agents/skills/grilling/SKILL.md"
         ],
         "yss-tactical-design": [],

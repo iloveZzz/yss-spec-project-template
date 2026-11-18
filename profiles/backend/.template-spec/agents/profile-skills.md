@@ -9,8 +9,13 @@ YSS CLI 提供 `spec`、`backend`、`frontend` 三个 Profile，分别面向产�
 | 旧称 | 现用 ID | 可复制的中文提示词 |
 | --- | --- | --- |
 | `i-have-adhd` | `yss-write-docs` | 使用 yss-write-docs，按已有记录把这段内容改成研发周报，分别说明本周完成、待验证和下周动作。缺少的事实保留为未知。 |
+| `yss-stage-decision` | `yss-analyze-business` | `$yss-analyze-business 请根据已有退款需求，梳理角色、允许退款的条件、例外和可观察的验收标准。` |
+| `yss-design-system` | `yss-design-ui` | `$yss-design-ui 请根据已确认的退款规则，设计申请页和审核页的操作流程，制作高保真交互原型并说明失败反馈。` |
+| `prototype` | `yss-prototype-logic` | `$yss-prototype-logic 请用可重复的状态试验验证退款退回后能否再次提交，覆盖重复操作并记录观察结果。` |
 
-旧版工程以本地已安装的名称为准。业务取舍仍使用 `grilling`，本地地图的 `Type: grilling` 和远端票的 `wayfinder:grilling` 均沿用。
+旧版工程以实际启用的名称为准。表中的 `$技能名` 是 Codex 的显式调用写法。旧工程曾手动补装某个入口时，升级后用 `yss skills list --root <工程> --json` 核对新名。仍需该能力且新名尚未安装时，可用 `yss skills ensure <新ID> --root <工程>` 补装。补装成功后，`diagnostics` 仍可能列出旧名的 `retired` 记录。用新名的 `installed` 状态和目标宿主的菜单确认当前入口。
+
+业务取舍沿用 `grilling`。本地地图和远端票保留原类型 `Type: grilling`、`wayfinder:grilling`、`Type: prototype` 和 `wayfinder:prototype`。恢复原型类决定时，逻辑和状态试验用 `yss-prototype-logic`，产品界面问题按实际工程选择 UI 设计方法。
 
 ## 三种关系分别处理
 
@@ -44,10 +49,10 @@ Spec 的 18 项默认技能已包含共用区的 `handoff`。交接分两种使�
 | 技能 | 职责与衔接条件 |
 | --- | --- |
 | `yss-product-lifecycle` | 面对较完整的 Spec 工作，按缺口选择研究、业务分析、设计与表达；局部任务可以直接使用相关技能，不要求先路由 |
-| `yss-stage-decision` | 分析目标、场景、范围、责任、权限、状态、规则与验收缺口；事实缺口交给研究，真实取舍使用 `grilling` |
+| `yss-analyze-business` | 分析目标、场景、范围、责任、权限、状态、规则与验收缺口；事实缺口交给研究，真实取舍使用 `grilling` |
 | `domain-modeling` | 统一业务词汇、关系、边界与关键决定，为规则和原型提供一致含义；不据此生成生产库表 |
-| `yss-design-system` | 根据本次选定规则设计产品 UI、交互和高保真原型；具体业务逻辑试验可使用 `prototype` |
-| `prototype` | 用代表输入验证业务行为、状态和异常组合；试验结果不自动成为生产实现 |
+| `yss-design-ui` | 根据本次选定规则设计产品 UI、交互和高保真原型；具体业务逻辑试验可使用 `yss-prototype-logic` |
+| `yss-prototype-logic` | 用代表输入验证业务行为、状态和异常组合；试验结果不自动成为生产实现 |
 | `prototype-review` | 对照实际规格与原型复核承诺行为、适用视觉和可访问性；结论用于修订本次范围 |
 | `wayfinder` | 显式为跨会话的大型工作从模糊目标起图，梳理已有决定、未知与依赖，暂时问不清的保留为空白 |
 | `to-spec` | 仅显式调用时，综合已确认讨论与设计为业务规格；复用决定，不重新访谈 |
@@ -81,7 +86,7 @@ Backend 在共用 6 项之外预装以下 37 项。较完整的后端研发由 `
 | `database-analysis-docs` | 负责数据库结构审查、设计说明书、只读元信息采集和可审阅 DDL；默认逻辑关联与写入方提供 ID，保留必要主键、非空和唯一性；已有库如实记录，不自动执行 DDL |
 | `yss-tactical-design` | 仅在 DDD 任务需要时设计聚合、不变量、行为和 Gateway，再交给相应实现技能；MVC 不补这一层 |
 | `codebase-design`、`domain-modeling` | 分别处理模块接口与封装、业务词汇与边界；不重复替代技术设计或既有业务决定 |
-| `prototype` | 对技术假设做有限的逻辑或接口试验；不制作产品 UI，不自动把试验代码迁入生产 |
+| `yss-prototype-logic` | 对技术假设做有限的逻辑或接口试验；不制作产品 UI，不自动把试验代码迁入生产 |
 | `to-tickets` | 明确要求后端拆分，或完整交付确需细化时，组织研发实现切片；沿业务行为贯通实际技术层，不先补业务票 |
 | `yss-ddd-scaffold-generator`、`yss-layered-mvc-scaffold-generator` | 仅在新工程需要时，依据实际选定架构生成脚手架；共享生成资源不意味着选择 DDD |
 | `alibaba-java-code-style`、`lombok`、`mapstruct` | 分别支撑适用 Java 规范、对象代码生成与模型映射；按本次代码和实际版本选用 |
@@ -115,7 +120,7 @@ Frontend 在共用 6 项之外预装以下 10 项。测试与质量工具方法�
 | `code-review`、`diagnosing-bugs` | 分别审查前端候选及关联行为、诊断故障或性能问题；按实际涉及的 Vue 和应用行为选用专业技能 |
 | `using-git-worktrees`、`resolving-merge-conflicts` | 分别处理确需隔离的并发工作、实际 Git 冲突；保留已有未提交修改 |
 
-Frontend 可按需补装的 4 项为 `yss-design-system`、`prototype-review`、`prototype`、`domain-modeling`。补装设计技能时，Bundle 同时补齐其声明的原型、复核与研究依赖；安装不等于执行。只有本次任务确实包含产品设计、原型或业务概念分析时才使用，不要求研发重新做已经确认的设计。
+Frontend 可按需补装的 4 项为 `yss-design-ui`、`prototype-review`、`yss-prototype-logic`、`domain-modeling`。补装设计技能时，Bundle 同时补齐其声明的原型、复核与研究依赖；安装不等于执行。只有本次任务确实包含产品设计、原型或业务概念分析时才使用，不要求研发重新做已经确认的设计。
 
 应用技能负责选择适用工程检查、同条件视觉对比、关键交互和接口验证。模拟数据、生成客户端、构建通过分别说明其实际意义，不能合并声称完成真实联调。
 
@@ -178,6 +183,9 @@ Ticket 是工作项，Issue 是承载方式；Local Markdown 可承担相同职�
 | 周报写乱了，帮我写一句请 Agent 修订的提示词 | 推荐 `yss-write-docs`，提示词带上已有记录、待验证事项及本周要交付的结果 | 直接要求改稿时就在当前请求中交付修订文本 |
 | 只有一个方向，还说不清要决定什么，用哪个技能？ | 已装时推荐显式使用 `wayfinder`，参考该技能的 `references/chart-map.md`。本候选中 Spec 默认安装，Backend 可补装，Frontend 可直接用普通建图提示词 | 用户选定后梳理已知、未知及依赖，允许留白 |
 | 有两个业务选项，需要我来定 | `grilling` 澄清取舍，复用已经确定的答案 | 可调查的事实先核实 |
+| 退款需求有哪些业务规则、例外、验收缺口？ | `yss-analyze-business` 梳理业务行为 | 确需业务方决定的取舍再交给 `grilling` |
+| 想看看退款页怎样提交、失败后怎样恢复 | `yss-design-ui` 制作页面和交互原型 | 沿用已有产品规则 |
+| 想验证退回后能否再次提交、重复操作会怎样 | `yss-prototype-logic` 用代表输入试验状态与规则 | 界面只辅助观察试验 |
 | 从一个想法推进规格与原型 | `yss-product-lifecycle` 按当前缺口组织业务分析、规格与产品原型 | 按本次请求确定交付范围 |
 | 讨论已定，把规则与设计综合成规格 | 显式使用 `to-spec`，沿用已有决定 | 已确认内容直接复用 |
 | 规格要交给后端，帮我写一段接棒提示词 | 使用 `yss-product-lifecycle` 的 `references/spec-workflow.md` 整理材料、未决项和下一动作 | 在当前对话交付文本 |

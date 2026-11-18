@@ -31,7 +31,7 @@ setup-yss-harness 的 `references/project-onboarding.md` 随技能目录完整�
 
 ## 独立消费者的图解参考
 
-`yss-product-lifecycle`、`yss-design-system` 等消费者使用 `.agents/skills/yss-write-docs/references/visual-explanation.md`。项目安装已有共享技能时直接引用，不在每个源技能中复制。独立导出且不能保证安装了 `yss-write-docs` 时，在选定包中整理下列资源：
+`yss-product-lifecycle`、`yss-design-ui` 等消费者使用 `.agents/skills/yss-write-docs/references/visual-explanation.md`。项目安装已有共享技能时直接引用，不在每个源技能中复制。独立导出且不能保证安装了 `yss-write-docs` 时，在选定包中整理下列资源：
 
 | 唯一内容源 | 独立包中的路径 |
 |---|---|

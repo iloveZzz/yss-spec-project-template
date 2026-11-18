@@ -1,0 +1,4 @@
+interface:
+  display_name: "验证业务逻辑与状态"
+  short_description: "用代表输入和异常组合验证业务规则与状态转换"
+  default_prompt: "使用 $yss-prototype-logic，用代表输入验证这条业务规则，给出操作、观察和仍未验证的情况。"

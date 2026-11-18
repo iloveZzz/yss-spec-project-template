@@ -44,7 +44,7 @@ skill_scope:
   - yss-antd-design
   - yss-api-integration
   - yss-components
-  - yss-design-system
+  - yss-design-ui
   - yss-formily
   - yss-formily-schema-generator
   - yss-frontend-scaffold-generator
@@ -61,7 +61,7 @@ skill_scope:
     default_distributed: false
     activation: explicit-need
     reason: 独立业务规格整理；正常研发复用上游结果。
-  - id: yss-stage-decision
+  - id: yss-analyze-business
     default_distributed: false
     activation: explicit-need
     reason: 业务方案专题；不作为研发前置。

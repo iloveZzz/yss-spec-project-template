@@ -161,7 +161,7 @@ flowchart TB
 | 对应脚手架生成的骨架、配置与来源收据 | `implement` 和各分层技能 | 在真实生成结构中继续实现当前业务 |
 | Backend `to-tickets` 组织的可观察行为与依赖 | 实现者和集成负责人 | “完成回访”贯通所需层次，并保留原 AC 与验证办法 |
 
-DDD 内部设计按需要细化，MVC 的对应规则、事务和幂等放在既有 Service。需要验证技术假设时使用 Backend `prototype`，结论回到本次技术方案。
+DDD 内部设计按需要细化，MVC 的对应规则、事务和幂等放在既有 Service。需要验证技术假设时使用 Backend `yss-prototype-logic`，结论回到本次技术方案。
 
 ### 后端辅助技能落在哪些代码边界
 
@@ -209,10 +209,10 @@ flowchart LR
 | 当前问题 | 主要技能 | 本例期望得到什么 |
 | --- | --- | --- |
 | 现有工作怎样做、资料说了什么 | `yss-research` | 可定位的材料事实、推断与未知 |
-| 本版做哪些行为、规则是否完整 | `yss-stage-decision` | 场景、角色、权限、状态和验收缺口 |
+| 本版做哪些行为、规则是否完整 | `yss-analyze-business` | 场景、角色、权限、状态和验收缺口 |
 | 未分配时谁能操作 | `grilling` | 业务方作出的明确选择及影响 |
 | 联系人、跟进记录、回访任务怎样区分 | `domain-modeling` | 一致业务语言与责任 |
-| 页面怎样操作、状态怎样表现 | `yss-design-system`、`prototype-review` | 选定原型、交互说明与复核发现 |
+| 页面怎样操作、状态怎样表现 | `yss-design-ui`、`prototype-review` | 选定原型、交互说明与复核发现 |
 | 多仓怎样完成同一需求 | `implement`、`yss-frontend-application` | 各工程实现与必要集成结果 |
 | 事务、状态、SQL、HTTP 分别放哪里 | `yss-application`、`yss-domain`、`yss-repository`、`yss-mybatis`、`yss-web-controller` | 对应职责的实现、调用方与边界 |
 | 怎样验证、为什么失败 | `yss-backend-testing`、`yss-frontend-application`、`diagnosing-bugs`、`code-review` | 实际结果、原因依据和修复去向 |
@@ -254,7 +254,7 @@ flowchart LR
 
 ```text
 请使用 yss-research 阅读这些给定资料，整理材料事实、推断和仍待决定事项。
-再按 yss-stage-decision 分析客户跟进的目标、范围、角色、状态和验收。
+再按 yss-analyze-business 分析客户跟进的目标、范围、角色、状态和验收。
 能从材料调查的内容先核实，业务取舍集中交给业务负责人。
 本次在 Home 完成分析。
 ```
@@ -280,7 +280,7 @@ flowchart LR
 
 ```text
 请使用 to-spec，综合已确认的教学资料和 FR-01 到 FR-08，形成业务规格。
-再使用 yss-design-system 制作高保真可操作原型与交互说明。
+再使用 yss-design-ui 制作高保真可操作原型与交互说明。
 覆盖建档、首次分配、记录跟进、安排和完成回访、查看进度，
 以及无权限、空白输入、重复提交、结果待核实和查询失败。
 使用相同联系人与任务数据，给出查看、运行和重置方法。
@@ -310,7 +310,7 @@ Spec 主文件保存目标、范围、FR/AC、未决问题和关联产物。稳�
 | 我的回访任务 | 查看待回访与逾期，完成、重复操作反馈、超时核实 | FR-04 至 FR-07，AC-03 至 AC-06 |
 | 团队进度 | 在权限范围内查看待回访、逾期、已完成 | FR-08，AC-07 |
 
-设计技能将业务规则落实为页面、输入、反馈和恢复。`prototype` 可单独验证逾期计算或重复提交的状态模型，产品页面由 `yss-design-system` 制作。按当前技能使用 Vue 与 shadcn-vue，前端工程后续采用同一选定体验。
+设计技能将业务规则落实为页面、输入、反馈和恢复。`yss-prototype-logic` 可单独验证逾期计算或重复提交的状态模型，产品页面由 `yss-design-ui` 制作。按当前技能使用 Vue 与 shadcn-vue，前端工程后续采用同一选定体验。
 
 ```text
 请使用 prototype-review 对照本次 Spec 和实际原型，检查完整业务闭环、
@@ -865,7 +865,7 @@ Wiki 写入先复读当前页面，遇到他人新改动先整合。涉及 Spec�
 
 `prototype-review` 先把差异定位到状态、筛选或统计口径，说明哪一步使 AC-07 无法成立。它消费实际产物并报告影响，规则冲突交回业务确认。
 
-本例已有唯一规则，制作方可在原型修改授权内用 `yss-design-system` 修正页面、交互说明和模拟行为。Spec 的 `prototype` 可用于验证 todo 与逾期条件的组合，产品 UI 由 `yss-design-system` 承担。
+本例已有唯一规则，制作方可在原型修改授权内用 `yss-design-ui` 修正页面、交互说明和模拟行为。Spec 的 `yss-prototype-logic` 可用于验证 todo 与逾期条件的组合，产品 UI 由 `yss-design-ui` 承担。
 
 - 待回访筛选包含所有 todo。
 - 逾期筛选包含 todo 且 dueAt 小于 serverNow 的任务。

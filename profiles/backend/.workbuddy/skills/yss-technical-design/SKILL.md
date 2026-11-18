@@ -9,6 +9,6 @@ description: 在后端任务需要架构、技术方案或详细设计判断时�
 
 按复杂度阅读 [架构、方案与详细设计方法](references/design-method.md)，在同一份权威说明中展开必要深度，不要求三份文档。设计请求只交付设计；包含实现的任务才继续改代码。局部修改只说明受影响的行为和取舍，不扩为全工程重构。
 
-DDD 聚合内部设计按需使用 `yss-tactical-design`；MVC 保留 Controller/Service/Repository，不增加 Domain/Gateway。模块接口与封装问题可用 `codebase-design`；实际实现选择对应分层技能。技术假设确需试验时使用 Backend `prototype`，只验证算法、状态或接口，不制作产品 UI，也不自动将试验迁入生产。
+DDD 聚合内部设计按需使用 `yss-tactical-design`；MVC 保留 Controller/Service/Repository，不增加 Domain/Gateway。模块接口与封装问题可用 `codebase-design`；实际实现选择对应分层技能。技术假设确需试验时使用 Backend `yss-prototype-logic`，只验证算法、状态或接口，不制作产品 UI，也不自动将试验迁入生产。
 
 平台与精确组件 API 以 POM、当前源码和可读资料为依据，未知兼容性如实说明。不把设计完成当成运行成功，不要求技术合同、阶段批准或门禁回执。

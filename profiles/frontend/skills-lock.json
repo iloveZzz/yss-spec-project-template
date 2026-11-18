@@ -161,10 +161,10 @@
           ".workbuddy/skills"
         ]
       },
-      "yss-design-system": {
+      "yss-design-ui": {
         "source": "project",
         "sourceType": "local",
-        "skillPath": ".agents/skills/yss-design-system/SKILL.md",
+        "skillPath": ".agents/skills/yss-design-ui/SKILL.md",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"
@@ -179,7 +179,7 @@
           ".workbuddy/skills"
         ]
       },
-      "prototype": {
+      "yss-prototype-logic": {
         "source": "mattpocock/skills",
         "sourceType": "github",
         "skillPath": "skills/engineering/prototype/SKILL.md",

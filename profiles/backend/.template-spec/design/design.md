@@ -1,6 +1,6 @@
 # YSS 主题规范与实现映射
 
-亮色映射来源于 [Spec 模板的 DESIGN.md](https://github.com/iloveZzz/yss-spec-project-template/blob/main/DESIGN.md)。Backend 安装不分发根 `DESIGN.md` 或 `yss-design-system`，仅保留此处的主题映射参考；当前项目已有的设计规范优先，模板默认不构成迁移授权。
+亮色映射来源于 [Spec 模板的 DESIGN.md](https://github.com/iloveZzz/yss-spec-project-template/blob/main/DESIGN.md)。Backend 安装不分发根 `DESIGN.md` 或 `yss-design-ui`，仅保留此处的主题映射参考；当前项目已有的设计规范优先，模板默认不构成迁移授权。
 
 ## 当前标准
 

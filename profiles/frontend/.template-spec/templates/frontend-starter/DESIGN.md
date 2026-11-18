@@ -383,7 +383,7 @@ components:
 
 # YSS 标准亮色主题
 
-本文件是模板的视觉规范源，适用于数据、表单和流程密集的企业后台。没有项目设计基线时，`yss-design-system` 默认采用此主题；已有项目沿用其实际 `DESIGN.md`、品牌和组件约定，明确要求迁移时才替换。默认只承诺亮色，不自动启用历史暗色或生产 compact 算法。
+本文件是模板的视觉规范源，适用于数据、表单和流程密集的企业后台。没有项目设计基线时，`yss-design-ui` 默认采用此主题；已有项目沿用其实际 `DESIGN.md`、品牌和组件约定，明确要求迁移时才替换。默认只承诺亮色，不自动启用历史暗色或生产 compact 算法。
 
 YAML 保持 [Google design.md alpha 格式](https://github.com/google-labs-code/design.md/blob/main/docs/spec.md)：`colors`、`typography`、`rounded`、`spacing` 和 `components` 存机器可读值，正文说明使用规则。当前 schema 未覆盖的断点、阴影、动效写在正文，不伪造顶层字段。业务规则、权限、数据格式和状态流转留在 Spec 与交互说明。原型框架使用 Vue + shadcn-vue，不据此决定生产组件库。
 

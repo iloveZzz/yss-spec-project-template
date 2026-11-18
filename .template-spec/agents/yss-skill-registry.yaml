@@ -10,13 +10,13 @@ instance_distribution:
   - setup-yss-harness
   - yss-product-lifecycle
   - yss-research
-  - yss-stage-decision
+  - yss-analyze-business
   - grilling
   - domain-modeling
   - wayfinder
   - to-spec
-  - yss-design-system
-  - prototype
+  - yss-design-ui
+  - yss-prototype-logic
   - prototype-review
   - to-tickets
   - triage
@@ -763,7 +763,7 @@ skill_dependencies:
   - skill: yss-write-docs
     type: context-conditional
     when: lifecycle-document-output
-  yss-stage-decision:
+  yss-analyze-business:
   - skill: yss-write-docs
     type: context-conditional
     when: lifecycle-document-output
@@ -775,26 +775,26 @@ skill_dependencies:
   - skill: yss-write-docs
     type: context-conditional
     when: lifecycle-document-output
-  yss-design-system:
+  yss-design-ui:
   - skill: yss-write-docs
     type: context-conditional
     when: lifecycle-document-output
   - skill: prototype-review
     type: context-required
-  - skill: prototype
+  - skill: yss-prototype-logic
     type: context-conditional
     when: logic-or-state-prototype
   yss-product-lifecycle:
   - skill: yss-research
     type: context-conditional
     when: fact-gap
-  - skill: yss-stage-decision
+  - skill: yss-analyze-business
     type: context-conditional
     when: business-analysis
-  - skill: yss-design-system
+  - skill: yss-design-ui
     type: context-conditional
     when: product-ui-design
-  - skill: prototype
+  - skill: yss-prototype-logic
     type: context-conditional
     when: non-ui-or-logic-question
   - skill: prototype-review
@@ -997,7 +997,7 @@ invocation_contract:
       exclusion_conditions:
       - no-commit-related-request
       primary_output: backend-commit-guidance
-    prototype:
+    yss-prototype-logic:
       invocation_mode: both
       trigger_conditions:
       - prototype-request
@@ -1036,7 +1036,7 @@ invocation_contract:
       invocation_mode: user
     llm-wiki:
       invocation_mode: user
-    yss-stage-decision:
+    yss-analyze-business:
       invocation_mode: both
       trigger_conditions:
       - business-analysis-request
@@ -1164,7 +1164,7 @@ skills:
   impacts:
   - backend
   stack: java
-- id: prototype
+- id: yss-prototype-logic
   layer: core
   maturity: supported
   instance_default_discoverable: true
@@ -1310,7 +1310,7 @@ skills:
   impacts:
   - backend
   stack: java
-- id: yss-design-system
+- id: yss-design-ui
   layer: core
   maturity: supported
   instance_default_discoverable: true
@@ -1412,7 +1412,7 @@ skills:
   impacts:
   - backend
   stack: java
-- id: yss-stage-decision
+- id: yss-analyze-business
   layer: core
   maturity: supported
   instance_default_discoverable: true

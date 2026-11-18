@@ -40,9 +40,9 @@
       ".agents/skills/handoff",
       ".agents/skills/using-git-worktrees",
       ".agents/skills/resolving-merge-conflicts",
-      ".agents/skills/yss-design-system",
+      ".agents/skills/yss-design-ui",
       ".agents/skills/prototype-review",
-      ".agents/skills/prototype",
+      ".agents/skills/yss-prototype-logic",
       ".agents/skills/domain-modeling",
       ".workbuddy/skills/setup-yss-harness",
       ".workbuddy/skills/yss-frontend-application",
@@ -57,9 +57,9 @@
       ".workbuddy/skills/handoff",
       ".workbuddy/skills/using-git-worktrees",
       ".workbuddy/skills/resolving-merge-conflicts",
-      ".workbuddy/skills/yss-design-system",
+      ".workbuddy/skills/yss-design-ui",
       ".workbuddy/skills/prototype-review",
-      ".workbuddy/skills/prototype",
+      ".workbuddy/skills/yss-prototype-logic",
       ".workbuddy/skills/domain-modeling",
       ".template-spec/templates/examples/plan-spec/complex-defective.md",
       ".template-spec/templates/examples/plan-spec/complex-source.md",
@@ -297,6 +297,18 @@
         "yss-write-docs"
       ],
       "reason": "研发文档写作入口已更名为 yss-write-docs。"
+    },
+    "yss-design-system": {
+      "replacements": [
+        "yss-design-ui"
+      ],
+      "reason": "产品界面与交互原型设计入口已更名为 yss-design-ui。"
+    },
+    "prototype": {
+      "replacements": [
+        "yss-prototype-logic"
+      ],
+      "reason": "逻辑与状态原型试验入口已更名为 yss-prototype-logic。"
     }
   },
   "installations": {
@@ -351,9 +363,9 @@
         ".template-spec/user-guide/客户跟进项目全生命周期Demo.md"
       ],
       "skillDependencies": {
-        "yss-design-system": [
+        "yss-design-ui": [
           "prototype-review",
-          "prototype",
+          "yss-prototype-logic",
           "yss-research"
         ]
       },
@@ -415,7 +427,7 @@
         "resolving-merge-conflicts": [
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
-        "yss-design-system": [
+        "yss-design-ui": [
           ".template-spec/design/tokens/variables.css",
           ".agents/skills/prototype-review/references/review-method.md",
           ".agents/skills/yss-frontend-application/references/component-engineering.md",
@@ -425,7 +437,7 @@
           ".agents/skills/grilling/SKILL.md"
         ],
         "prototype-review": [],
-        "prototype": [
+        "yss-prototype-logic": [
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "domain-modeling": [
@@ -480,9 +492,9 @@
         ".gitignore"
       ],
       "skillDependencies": {
-        "yss-design-system": [
+        "yss-design-ui": [
           "prototype-review",
-          "prototype",
+          "yss-prototype-logic",
           "yss-research"
         ]
       },
@@ -544,7 +556,7 @@
         "resolving-merge-conflicts": [
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
-        "yss-design-system": [
+        "yss-design-ui": [
           ".template-spec/design/tokens/variables.css",
           ".agents/skills/prototype-review/references/review-method.md",
           ".agents/skills/yss-frontend-application/references/component-engineering.md",
@@ -554,7 +566,7 @@
           ".agents/skills/grilling/SKILL.md"
         ],
         "prototype-review": [],
-        "prototype": [
+        "yss-prototype-logic": [
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "domain-modeling": [

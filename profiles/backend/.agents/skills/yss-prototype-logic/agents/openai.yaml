@@ -1,0 +1,4 @@
+interface:
+  display_name: "验证后端技术假设"
+  short_description: "用有限的算法、状态或接口试验验证技术假设"
+  default_prompt: "使用 $yss-prototype-logic，用当前工程最小可运行的试验验证这个技术假设，说明观察与局限。"

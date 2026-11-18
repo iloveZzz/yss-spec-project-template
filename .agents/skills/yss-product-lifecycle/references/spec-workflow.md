@@ -4,7 +4,7 @@
 
 综合目标时保留来源中的对象、范围和确定程度，不因某个环节已有功能或更容易测量就缩小业务目标。细化指标、统计起止事件或目标值属于建议时，明确标为建议或待确认；来源已明确的口径直接沿用，不重复询问。
 
-事实缺口使用 `.agents/skills/yss-research/SKILL.md`，业务分析使用 `.agents/skills/yss-stage-decision/SKILL.md`，真实取舍与词义问题分别使用 `.agents/skills/grilling/SKILL.md` 和 `.agents/skills/domain-modeling/SKILL.md`。可调查事实先调查；复用有效确认，多个来源冲突不静默改范围。
+事实缺口使用 `.agents/skills/yss-research/SKILL.md`，业务分析使用 `.agents/skills/yss-analyze-business/SKILL.md`，真实取舍与词义问题分别使用 `.agents/skills/grilling/SKILL.md` 和 `.agents/skills/domain-modeling/SKILL.md`。可调查事实先调查；复用有效确认，多个来源冲突不静默改范围。
 
 ## 保存位置与命名
 
@@ -61,7 +61,7 @@ yss workbench respond --spec-id <实际ID> --question-id <原问题ID> --questio
 ## 完整产品 Spec 的三类内容
 
 1. **业务规格**：按 `.template-spec/templates/spec-template.md` 或当前适用结构说明问题、目标、角色场景、范围、规则、权限、状态异常、非目标、业务质量约束、可观察验收、重要来源和决定。量词、数值、边界保持来源一致；未知值列未决项。
-2. **高保真交互原型**：有 UI 的需求用 `.agents/skills/yss-design-system/SKILL.md` 表达用户如何完成任务；核心操作/状态变化可实际操作，纯展示可交高保真静态设计。低保真草稿可支持探索，不能单独称为完整交付。无 UI 使用 `.agents/skills/prototype/SKILL.md` 的业务逻辑或状态原型，不虚构页面，不以文字声明“原型不适用”省略它。
+2. **高保真交互原型**：有 UI 的需求用 `.agents/skills/yss-design-ui/SKILL.md` 表达用户如何完成任务；核心操作/状态变化可实际操作，纯展示可交高保真静态设计。低保真草稿可支持探索，不能单独称为完整交付。无 UI 使用 `.agents/skills/yss-prototype-logic/SKILL.md` 的业务逻辑或状态原型，不虚构页面，不以文字声明“原型不适用”省略它。
 3. **交互说明**：规则和 AC 与页面/状态的对应、查看/运行方法、入口与退出、动作结果、校验与权限、失败/恢复、模拟范围、实际检查和未覆盖项。可与规格共用文件，不强制三个文件或额外包。
 
 按任务选择适用原型形式，按风险选择覆盖范围和必要状态；完整有 UI 交付的高保真要求不以风险低为由省略。限定规则试验可辅助，但不替代产品 UI 原型。原型框架、演示代码和模拟数据不构成生产技术选型或契约，技术架构、接口、数据库和实现切片留给研发。
@@ -70,7 +70,7 @@ yss workbench respond --spec-id <实际ID> --question-id <原问题ID> --questio
 
 采用增强规格结构时，先明确本次范围和采用材料的版本/读取时点；业务信息、角色数据范围及完整任务按实际复杂度使用短段落或对应表格，未知列未决，不要求简单需求填空表。AC 关联同一规则、初始角色/数据、操作、结果及不变项；交互说明定位实际场景、进入与重置方式。先列范围内任务和页面，再选择状态与验证深度，制作覆盖不能替代实际验证。
 
-贯通写法可按需查看 `.agents/skills/yss-design-system/assets/spec-delivery-example/README.md`；它只提供教学输入、Spec、原型与说明的对应，不提供真实产品事实。局部改稿只更新受影响规则/AC/页面及采用版本，不自动补建完整产物。
+贯通写法可按需查看 `.agents/skills/yss-design-ui/assets/spec-delivery-example/README.md`；它只提供教学输入、Spec、原型与说明的对应，不提供真实产品事实。局部改稿只更新受影响规则/AC/页面及采用版本，不自动补建完整产物。
 
 业务票仅在用户明确要求拆票时作为规格的组织形式输出，保留原 FR/AC，不是第四类交付物；普通 Spec 完成不自动拆票。“确认 Spec”“准备交给研发”不授权技术设计。用户明确要求技术设计或开发时作为研发任务按授权承接，分别说明成果与缺口，不以 profile 标签拒绝或新增阶段审批。
 

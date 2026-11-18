@@ -767,7 +767,7 @@ invocation_contract:
       exclusion_conditions:
       - no-commit-related-request
       primary_output: backend-commit-guidance
-    prototype:
+    yss-prototype-logic:
       invocation_mode: both
       trigger_conditions:
       - prototype-request
@@ -806,7 +806,7 @@ invocation_contract:
       invocation_mode: user
     llm-wiki:
       invocation_mode: user
-    yss-stage-decision:
+    yss-analyze-business:
       invocation_mode: user
     yss-technical-design:
       invocation_mode: both
@@ -978,7 +978,7 @@ skills:
   aliases: []
   impacts:
   - backend
-- id: prototype
+- id: yss-prototype-logic
   layer: maintainer-only
   maturity: supported
   instance_default_discoverable: true
@@ -1236,7 +1236,7 @@ skills:
   aliases: []
   impacts:
   - lifecycle
-- id: yss-stage-decision
+- id: yss-analyze-business
   layer: core
   maturity: draft
   instance_default_discoverable: false

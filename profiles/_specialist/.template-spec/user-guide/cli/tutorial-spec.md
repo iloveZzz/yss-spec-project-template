@@ -121,6 +121,6 @@ Agent 会从已有启动信息或续办文本核实工作台数据目录。自�
 
 ## 默认技能
 
-`project` 和 `skills` 在本候选中默认安装的 18 个入口包括 setup-yss-harness、yss-help、yss-product-lifecycle、yss-research、yss-stage-decision、grilling、domain-modeling、wayfinder、to-spec、yss-design-system、prototype、prototype-review、to-tickets、triage、llm-wiki、yss-write-docs、handoff、implement。研究归 yss-research，产品设计与 UI 原型归 yss-design-system。implement 可按明确研发请求选用，code-review 和具体工程技能按需取得。默认协调方法不代表全部专业能力已经安装。
+`project` 和 `skills` 在本候选中默认安装的 18 个入口包括 setup-yss-harness、yss-help、yss-product-lifecycle、yss-research、yss-analyze-business、grilling、domain-modeling、wayfinder、to-spec、yss-design-ui、yss-prototype-logic、prototype-review、to-tickets、triage、llm-wiki、yss-write-docs、handoff、implement。研究归 yss-research，产品设计与 UI 原型归 yss-design-ui。implement 可按明确研发请求选用，code-review 和具体工程技能按需取得。默认协调方法不代表全部专业能力已经安装。
 
 预装不自动执行显式入口或对外写入。没有 tracker 仍可完成授权草稿。只有截图或未运行原型时，如实说明交互尚未验证，不能宣称完整交付已完成。

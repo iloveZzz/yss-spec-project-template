@@ -1,6 +1,6 @@
 ---
 name: yss-frontend-application
-description: Use when implementing, engineering, or reviewing Vue 3 frontend applications from high-fidelity designs, prototypes, page code, or OpenAPI contracts（前端工程化、设计还原、接口生成与工程审查）；纯产品设计或原型改稿使用 yss-design-system。
+description: Use when implementing, engineering, or reviewing Vue 3 frontend applications from high-fidelity designs, prototypes, page code, or OpenAPI contracts（前端工程化、设计还原、接口生成与工程审查）；纯产品设计或原型改稿使用 yss-design-ui。
 ---
 
 # YSS 前端应用工程
@@ -32,7 +32,7 @@ description: Use when implementing, engineering, or reviewing Vue 3 frontend app
 | 路由/共享状态 | 多页面使用 Vue Router；确需跨页面状态时使用 Pinia | 保留既有入口和状态归属，迁移受影响调用者时才调整 |
 | 接口契约 | 任务需要时接入 OpenAPI 3 + Orval 8，生成普通异步函数与 DTO 类型 | 复用真实契约与统一 transport，生成代码和手写代码分开 |
 
-修改 Vue 逻辑时，使用可用的 `vue-best-practices`；有独立状态职责或可复用 composable 接口时再用 `create-adaptable-composable`。产品流程或视觉缺口由可用的 `yss-design-system` 协作；事实缺口可交给 `yss-research`。按技能名在当前环境发现它们，不假定仓库路径、不自动安装。缺少辅助技能时，本技能的边界仍适用，依据项目源码和官方资料继续可完成的部分。
+修改 Vue 逻辑时，使用可用的 `vue-best-practices`；有独立状态职责或可复用 composable 接口时再用 `create-adaptable-composable`。产品流程或视觉缺口由可用的 `yss-design-ui` 协作；事实缺口可交给 `yss-research`。按技能名在当前环境发现它们，不假定仓库路径、不自动安装。缺少辅助技能时，本技能的边界仍适用，依据项目源码和官方资料继续可完成的部分。
 
 精选规范随本技能内置，按任务读取：通用交互/hook 用 [VueUse](references/vueuse.md)，组件/表单/弹层用 [组件工程](references/component-engineering.md)，测试与工具接入用 [质量工具](references/quality-tooling.md)，复杂表格/表单/共享状态等用 [可选能力](references/optional-capabilities.md)。上游技能的 AUTO、强制表单库、目录偏好或嵌入 CLI 不覆盖项目约定，不要求整包安装。
 

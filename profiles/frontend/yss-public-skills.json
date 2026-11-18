@@ -17,9 +17,9 @@
     "handoff",
     "using-git-worktrees",
     "resolving-merge-conflicts",
-    "yss-design-system",
+    "yss-design-ui",
     "prototype-review",
-    "prototype",
+    "yss-prototype-logic",
     "domain-modeling",
     "yss-frontend-scaffold-generator"
   ],
@@ -42,9 +42,9 @@
         "handoff",
         "using-git-worktrees",
         "resolving-merge-conflicts",
-        "yss-design-system",
+        "yss-design-ui",
         "prototype-review",
-        "prototype",
+        "yss-prototype-logic",
         "domain-modeling",
         "yss-frontend-scaffold-generator"
       ]

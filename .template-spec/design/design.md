@@ -1,10 +1,10 @@
 # YSS 主题规范与实现映射
 
-模板的视觉规范源是仓库根 `DESIGN.md`。`yss-design-system/assets/DESIGN.md` 是供技能独立安装使用的同内容副本；`.template-spec/design/tokens/variables.css` 是当前标准亮色角色的 CSS 投影。已有项目优先沿用自己的设计基线，模板默认不构成迁移授权。
+模板的视觉规范源是仓库根 `DESIGN.md`。`yss-design-ui/assets/DESIGN.md` 是供技能独立安装使用的同内容副本；`.template-spec/design/tokens/variables.css` 是当前标准亮色角色的 CSS 投影。已有项目优先沿用自己的设计基线，模板默认不构成迁移授权。
 
 ## 当前标准
 
-无基线的企业后台采用 YSS 标准亮色主题；具体色值、排版、尺寸、图标、响应式、动效与图表规则均从根规范读取。本文件不另抄一套值表。设计和 UI 原型由 `yss-design-system` 承担，业务行为、权限与异常恢复仍由 Spec 和交互说明承载。
+无基线的企业后台采用 YSS 标准亮色主题；具体色值、排版、尺寸、图标、响应式、动效与图表规则均从根规范读取。本文件不另抄一套值表。设计和 UI 原型由 `yss-design-ui` 承担，业务行为、权限与异常恢复仍由 Spec 和交互说明承载。
 
 ## 资源关系
 
