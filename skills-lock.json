@@ -502,10 +502,10 @@
           ".workbuddy/skills"
         ]
       },
-      "yss-product-lifecycle": {
+      "yss-build-spec": {
         "source": "project",
         "sourceType": "local",
-        "skillPath": ".agents/skills/yss-product-lifecycle/SKILL.md",
+        "skillPath": ".agents/skills/yss-build-spec/SKILL.md",
         "targets": [
           ".agents/skills",
           ".claude/skills",

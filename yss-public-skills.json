@@ -17,7 +17,7 @@
     "yss-layered-mvc-scaffold-generator",
     "yss-mybatis",
     "yss-openapi-governance",
-    "yss-product-lifecycle",
+    "yss-build-spec",
     "yss-repository",
     "yss-resilience4j",
     "yss-security-algorithm",
@@ -73,7 +73,7 @@
       "title": "Spec 研究、设计与交付",
       "description": "用于研究、业务分析、澄清、完整规格、原型及说明；显式入口遵循原调用政策。",
       "skills": [
-        "yss-product-lifecycle",
+        "yss-build-spec",
         "yss-research",
         "yss-analyze-business",
         "grilling",

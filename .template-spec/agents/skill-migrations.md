@@ -5,6 +5,8 @@
 
 本轮技能改名与当前可用写法见[技能地图](profile-skills.md#技能改名)。
 
+- `yss-product-lifecycle` → `yss-build-spec`（编制产品规格与原型）。
+
 ## 当前入口调整（2026-11-01）
 
 | 旧入口 | 当前承接 |

@@ -8,7 +8,7 @@ instance_distribution:
   initial_skills:
   - yss-help
   - setup-yss-harness
-  - yss-product-lifecycle
+  - yss-build-spec
   - yss-research
   - yss-analyze-business
   - grilling
@@ -745,7 +745,7 @@ recipes:
   - quality.java-code-style
 skill_dependencies:
   to-spec:
-  - skill: yss-product-lifecycle
+  - skill: yss-build-spec
     type: context-required
   java-backend-commit:
   - skill: git-commit-core
@@ -784,7 +784,7 @@ skill_dependencies:
   - skill: yss-prototype-logic
     type: context-conditional
     when: logic-or-state-prototype
-  yss-product-lifecycle:
+  yss-build-spec:
   - skill: yss-research
     type: context-conditional
     when: fact-gap
@@ -1389,7 +1389,7 @@ skills:
   aliases: []
   impacts:
   - api
-- id: yss-product-lifecycle
+- id: yss-build-spec
   layer: core
   maturity: supported
   instance_default_discoverable: true

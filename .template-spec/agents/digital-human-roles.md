@@ -21,7 +21,7 @@
 
 专业审查按 YAML `review_capabilities` 和检查策略的 `capability_ids` 选择具备能力的独立执行者；角色是职责边界，不能用另一个职称替代能力或独立身份。正式 v1 审查任务的 `review_context` 绑定当前检查 / 能力、候选、策略、范围、依据摘要和审查 / 起草主体；`skill_source.review_skills` 从能力表编译，只供 Reviewer / Verifier 只读审查，角色核心技能和禁止技能不变。能力定义不在本文重复维护。
 
-`paused-human-gate` 表示等待指定会签人；`user_decision_policy` 命中的关键决定同时强制真实用户回复，数字人审查不能代答。请求展示、原始回复证据、复用和恢复规则见 [用户决定协议](../../.agents/skills/yss-product-lifecycle/references/user-decisions.md)。
+`paused-human-gate` 表示等待指定会签人；`user_decision_policy` 命中的关键决定同时强制真实用户回复，数字人审查不能代答。请求展示、原始回复证据、复用和恢复规则见 [用户决定协议](../../.agents/skills/yss-build-spec/references/user-decisions.md)。
 
 专业等待由主控自主派发、等待并继续无依赖工作；验证失败修复或路由。未知影响先调查，缺真实决定或新授权才展示材料后询问。首轮覆盖全部适用检查；修复后按差异、受影响结论 / 行为及依赖定向复审并绑定当前候选，不因摘要变化、UI 影响或 `new_impacts` 默认重跑全轴。
 

@@ -1,0 +1,4 @@
+interface:
+  display_name: "编制产品规格与原型"
+  short_description: "根据产品目标和现有材料编制业务规格、交互原型与交互说明，也可准备给研发的接棒提示"
+  default_prompt: "$yss-build-spec 根据已确认的退款规则，编制业务规格、高保真交互原型和交互说明，标出仍待确定的例外。"

@@ -58,7 +58,7 @@
       ".template-source/agents/strategic-design-skills-integration.md",
       ".template-source/agents/yss-ui-skills-integration.md",
       ".work",
-      ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+      ".agents/skills/yss-build-spec/references/orchestration-contract.yaml",
       ".template-spec/agents/digital-human-roles.md"
     ],
     "excludePathSuffixes": [
@@ -289,6 +289,12 @@
         "yss-prototype-logic"
       ],
       "reason": "逻辑与状态原型试验入口已更名为 yss-prototype-logic。"
+    },
+    "yss-product-lifecycle": {
+      "replacements": [
+        "yss-build-spec"
+      ],
+      "reason": "产品规格与原型入口已更名为 yss-build-spec。"
     }
   },
   "installations": {
@@ -296,7 +302,7 @@
       "skills": [
         "setup-yss-harness",
         "yss-help",
-        "yss-product-lifecycle",
+        "yss-build-spec",
         "yss-research",
         "yss-analyze-business",
         "grilling",
@@ -494,7 +500,7 @@
           ".template-spec/agents/backend-architecture-profiles.md"
         ],
         "yss-openapi-governance": [],
-        "yss-product-lifecycle": [
+        "yss-build-spec": [
           ".template-spec/agents/issue-tracker.md",
           ".template-spec/templates/spec-template.md",
           ".agents/skills/grilling/SKILL.md",
@@ -555,7 +561,7 @@
       "skills": [
         "setup-yss-harness",
         "yss-help",
-        "yss-product-lifecycle",
+        "yss-build-spec",
         "yss-research",
         "yss-analyze-business",
         "grilling",
@@ -720,7 +726,7 @@
           ".template-spec/agents/backend-architecture-profiles.md"
         ],
         "yss-openapi-governance": [],
-        "yss-product-lifecycle": [
+        "yss-build-spec": [
           ".template-spec/agents/issue-tracker.md",
           ".template-spec/templates/spec-template.md",
           ".agents/skills/grilling/SKILL.md",

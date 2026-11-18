@@ -8,6 +8,7 @@ YSS CLI 提供 `spec`、`backend`、`frontend` 三个 Profile，分别面向产�
 
 | 旧称 | 现用 ID | 可复制的中文提示词 |
 | --- | --- | --- |
+| `yss-product-lifecycle` | `yss-build-spec` | `$yss-build-spec 根据已确认的退款规则，编制业务规格、高保真交互原型和交互说明，标出仍待确定的例外。` |
 | `i-have-adhd` | `yss-write-docs` | `$yss-write-docs 把下面的研发记录改成周报，分清已完成、待验证和下一步，保留原始事实。` |
 | `yss-stage-decision` | `yss-analyze-business` | `$yss-analyze-business 请根据已有退款需求，梳理角色、允许退款的条件、例外和可观察的验收标准。` |
 | `yss-design-system` | `yss-design-ui` | `$yss-design-ui 请根据已确认的退款规则，设计申请页和审核页的操作流程，制作高保真交互原型并说明失败反馈。` |
@@ -44,11 +45,11 @@ CLI 的默认安装清单是数量与成员的事实来源；本地图解释用�
 
 Spec 在共用 6 项之外预装以下 12 项，覆盖事实与规则分析、产品设计、规格表达、明确研发及请求的组织工作。
 
-Spec 的 18 项默认技能已包含共用区的 `handoff`。交接分两种使用场景：完整 Spec 交付、准备交接或要求交接提示词时，由 `yss-product-lifecycle` 整理交接要点与提示词；明确要求通过 PR/MR 交付选定规格、原型及交互说明时，使用 `handoff` 形成真实文件变更并按授权完成交付。交接不自动启动研发、合并或部署。
+Spec 的 18 项默认技能已包含共用区的 `handoff`。交接分两种使用场景：完整 Spec 交付、准备交接或要求交接提示词时，由 `yss-build-spec` 整理交接要点与提示词；明确要求通过 PR/MR 交付选定规格、原型及交互说明时，使用 `handoff` 形成真实文件变更并按授权完成交付。交接不自动启动研发、合并或部署。
 
 | 技能 | 职责与衔接条件 |
 | --- | --- |
-| `yss-product-lifecycle` | 面对较完整的 Spec 工作，按缺口选择研究、业务分析、设计与表达；局部任务可以直接使用相关技能，不要求先路由 |
+| `yss-build-spec` | 面对较完整的 Spec 工作，按缺口选择研究、业务分析、设计与表达；局部任务可以直接使用相关技能，不要求先路由 |
 | `yss-analyze-business` | 分析业务需求与验收规则，梳理场景、范围、责任、权限、状态与例外；事实缺口交给研究，真实取舍使用 `grilling` |
 | `domain-modeling` | 统一业务词汇、关系、边界与关键决定，为规则和原型提供一致含义；不据此生成生产库表 |
 | `yss-design-ui` | 根据本次选定规则设计产品 UI、交互和高保真原型；具体业务逻辑试验可使用 `yss-prototype-logic` |
@@ -130,7 +131,7 @@ Frontend 可按需补装的 4 项为 `yss-design-ui`、`prototype-review`、`yss
 
 ```mermaid
 flowchart LR
-  U[用户当前目标] -->|业务规格与产品设计| S[yss-product-lifecycle]
+  U[用户当前目标] -->|业务规格与产品设计| S[yss-build-spec]
   U -->|单仓或跨仓研发| I[implement]
   U -->|前端局部修改或审查| F[yss-frontend-application]
   U -->|明确拆票| T[to-tickets]
@@ -186,9 +187,9 @@ Ticket 是工作项，Issue 是承载方式；Local Markdown 可承担相同职�
 | 退款需求有哪些业务规则、例外、验收缺口？ | `yss-analyze-business` 梳理业务行为 | 确需业务方决定的取舍再交给 `grilling` |
 | 想看看退款页怎样提交、失败后怎样恢复 | `yss-design-ui` 制作页面和交互原型 | 沿用已有产品规则 |
 | 想验证退回后能否再次提交、重复操作会怎样 | `yss-prototype-logic` 用代表输入试验状态与规则 | 界面只辅助观察试验 |
-| 从一个想法推进规格与原型 | `yss-product-lifecycle` 按当前缺口组织业务分析、规格与产品原型 | 按本次请求确定交付范围 |
+| 从一个想法推进规格与原型 | `yss-build-spec` 按当前缺口组织业务分析、规格与产品原型 | 按本次请求确定交付范围 |
 | 讨论已定，把规则与设计综合成规格 | 显式使用 `to-spec`，沿用已有决定 | 已确认内容直接复用 |
-| 规格要交给后端，帮我写一段接棒提示词 | 使用 `yss-product-lifecycle` 的 `references/spec-workflow.md` 整理材料、未决项和下一动作 | 在当前对话交付文本 |
+| 规格要交给后端，帮我写一段接棒提示词 | 使用 `yss-build-spec` 的 `references/spec-workflow.md` 整理材料、未决项和下一动作 | 在当前对话交付文本 |
 | 查某个字段当前含义及来源 | 读取现有资料；确需调查时用 `yss-research` | 不重新访谈、不建决策地图或 wiki |
 | 整理发给供应商的待答问题 | `grilling` 的第三方问题方法，复用已知事实 | 不向当前用户逐项索要供应商答案，不自动发送 |
 | 设计数据库或从元信息生成说明书 | `database-analysis-docs`，按需结合已有业务资料 | 不查询业务记录、不自动建库或迁移；宿主缺工具时报告限制 |

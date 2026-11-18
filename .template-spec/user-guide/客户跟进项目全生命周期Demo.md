@@ -113,7 +113,7 @@ FR-07 定义拒绝、写入失败和结果待核实的处理。状态图与下�
 
 ```mermaid
 flowchart LR
-  S["yss-product-lifecycle"] -->|选定规则、FR/AC、原型| I["implement"]
+  S["yss-build-spec"] -->|选定规则、FR/AC、原型| I["implement"]
   S -->|选定体验与交互| F["yss-frontend-application"]
   I --> T["yss-technical-design"]
   I --> A["yss-application"]
