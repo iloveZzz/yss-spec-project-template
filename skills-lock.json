@@ -104,7 +104,7 @@
           ".workbuddy/skills"
         ]
       },
-      "handoff": {
+      "yss-deliver-pr-mr": {
         "source": "mattpocock/skills",
         "sourceType": "github",
         "skillPath": "skills/productivity/handoff/SKILL.md",

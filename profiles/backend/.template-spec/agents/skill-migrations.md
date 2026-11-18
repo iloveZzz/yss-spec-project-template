@@ -5,6 +5,7 @@
 
 本轮技能改名与当前可用写法见[技能地图](profile-skills.md#技能改名)。
 
+- `handoff` → `yss-deliver-pr-mr`（通过 PR/MR 交付材料）。
 - `wayfinder` → `yss-map-decisions`（梳理大型任务的决策与依赖）。
 
 ## 当前入口调整（2026-11-01）

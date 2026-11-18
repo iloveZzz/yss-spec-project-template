@@ -795,7 +795,7 @@ invocation_contract:
       exclusion_conditions:
       - outside-authorized-scope
       primary_output: source-index-evidence
-    handoff:
+    yss-deliver-pr-mr:
       invocation_mode: user
       trigger_conditions:
       - explicit-handoff-request
@@ -915,7 +915,7 @@ skills:
   aliases: []
   impacts:
   - discovery
-- id: handoff
+- id: yss-deliver-pr-mr
   layer: core
   maturity: supported
   instance_default_discoverable: true

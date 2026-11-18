@@ -37,7 +37,7 @@
       ".agents/skills/yss-research",
       ".agents/skills/grilling",
       ".agents/skills/yss-write-docs",
-      ".agents/skills/handoff",
+      ".agents/skills/yss-deliver-pr-mr",
       ".agents/skills/using-git-worktrees",
       ".agents/skills/resolving-merge-conflicts",
       ".agents/skills/yss-design-ui",
@@ -54,7 +54,7 @@
       ".workbuddy/skills/yss-research",
       ".workbuddy/skills/grilling",
       ".workbuddy/skills/yss-write-docs",
-      ".workbuddy/skills/handoff",
+      ".workbuddy/skills/yss-deliver-pr-mr",
       ".workbuddy/skills/using-git-worktrees",
       ".workbuddy/skills/resolving-merge-conflicts",
       ".workbuddy/skills/yss-design-ui",
@@ -309,6 +309,12 @@
         "yss-prototype-logic"
       ],
       "reason": "逻辑与状态原型试验入口已更名为 yss-prototype-logic。"
+    },
+    "handoff": {
+      "replacements": [
+        "yss-deliver-pr-mr"
+      ],
+      "reason": "PR/MR 材料交付入口已更名为 yss-deliver-pr-mr。"
     }
   },
   "installations": {
@@ -327,7 +333,7 @@
         "yss-research",
         "grilling",
         "yss-write-docs",
-        "handoff",
+        "yss-deliver-pr-mr",
         "using-git-worktrees",
         "resolving-merge-conflicts"
       ],
@@ -420,7 +426,7 @@
           ".template-spec/templates/examples/plan-spec/ordinary-source.md",
           ".template-spec/templates/examples/plan-spec/ordinary-valid.md"
         ],
-        "handoff": [
+        "yss-deliver-pr-mr": [
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "using-git-worktrees": [],
@@ -483,7 +489,7 @@
         "yss-research",
         "grilling",
         "yss-write-docs",
-        "handoff",
+        "yss-deliver-pr-mr",
         "using-git-worktrees",
         "resolving-merge-conflicts"
       ],
@@ -549,7 +555,7 @@
           ".template-spec/templates/examples/plan-spec/ordinary-source.md",
           ".template-spec/templates/examples/plan-spec/ordinary-valid.md"
         ],
-        "handoff": [
+        "yss-deliver-pr-mr": [
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "using-git-worktrees": [],

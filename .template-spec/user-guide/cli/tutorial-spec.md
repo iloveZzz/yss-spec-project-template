@@ -106,7 +106,7 @@ Agent 会从已有启动信息或续办文本核实工作台数据目录。自�
 
 业务票仅按明确拆票请求组织，不是第四类必交付物。Spec 的 to-tickets 不生成 DDL/索引、生产 API 契约或实现切片。业务概念与有来源的技术约束可表达，原型模拟不构成生产承诺。明确技术设计或开发请求按研发任务承接，不强制切换 profile 或增加审批。
 
-完整 Spec 交付（包括显式调用 `to-spec`）或准备交接时，Agent 会结合实际成果提供交接要点和可复制提示词。也可随时要求“为这份 Spec 生成 Backend 交接提示词”。缺少目标工程或链接时保留占位项，区分当前 Agent 的实际读取结果和接收方访问是否已验证。未指定研发动作时提示接收方先分析，不自动改生产代码。需要通过 PR/MR 以文件变更交付时，明确提出交付请求即可，`handoff` 的调用遵循宿主支持的入口。仅分享提示词或现有链接无需 PR/MR。交接提示不自动传递材料或授权研发、提交、推送和部署。
+完整 Spec 交付（包括显式调用 `to-spec`）或准备交接时，Agent 会结合实际成果提供交接要点和可复制提示词。也可随时要求“为这份 Spec 生成 Backend 交接提示词”。缺少目标工程或链接时保留占位项，区分当前 Agent 的实际读取结果和接收方访问是否已验证。未指定研发动作时提示接收方先分析，不自动改生产代码。需要通过 PR/MR 以文件变更交付时，明确提出交付请求即可，`yss-deliver-pr-mr` 的调用遵循宿主支持的入口。仅分享提示词或现有链接无需 PR/MR。交接提示不自动传递材料或授权研发、提交、推送和部署。
 
 以下是 Backend 分析提示词示例，使用前替换占位项，并补充实际已知的版本、未决项和验证限制。
 
@@ -121,6 +121,6 @@ Agent 会从已有启动信息或续办文本核实工作台数据目录。自�
 
 ## 默认技能
 
-`project` 和 `skills` 在本候选中默认安装的 18 个入口包括 setup-yss-harness、yss-help、yss-build-spec、yss-research、yss-analyze-business、grilling、domain-modeling、yss-map-decisions、to-spec、yss-design-ui、yss-prototype-logic、prototype-review、to-tickets、triage、llm-wiki、yss-write-docs、handoff、implement。研究归 yss-research，产品设计与 UI 原型归 yss-design-ui。implement 可按明确研发请求选用，code-review 和具体工程技能按需取得。默认协调方法不代表全部专业能力已经安装。
+`project` 和 `skills` 在本候选中默认安装的 18 个入口包括 setup-yss-harness、yss-help、yss-build-spec、yss-research、yss-analyze-business、grilling、domain-modeling、yss-map-decisions、to-spec、yss-design-ui、yss-prototype-logic、prototype-review、to-tickets、triage、llm-wiki、yss-write-docs、yss-deliver-pr-mr、implement。研究归 yss-research，产品设计与 UI 原型归 yss-design-ui。implement 可按明确研发请求选用，code-review 和具体工程技能按需取得。默认协调方法不代表全部专业能力已经安装。
 
 预装不自动执行显式入口或对外写入。没有 tracker 仍可完成授权草稿。只有截图或未运行原型时，如实说明交互尚未验证，不能宣称完整交付已完成。

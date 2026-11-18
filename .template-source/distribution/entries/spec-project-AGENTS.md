@@ -6,7 +6,7 @@
 - 技能位于 .agents/skills，规格与产品设计参考位于 .template-spec；宿主技能副本由安装记录管理。
 - 明确研发请求可使用默认的 `implement` 或适用工程技能。从 Home 进入工程时先读 [仓库范围方法](.agents/skills/implement/references/repository-scope.md)，按已有地图（默认 `REPOSITORIES.md`）、README 索引或明确路径核实实际工程、工作树和目标规则；无地图不阻止明确任务，切换目录不等于宿主已加载目标技能。跨仓结果按实际仓库汇总。
 - 用户问“用哪个技能”或“提示词怎么写”时，使用 `yss-help` 和[技能地图](.template-spec/agents/profile-skills.md)给出推荐及中文提示词。明确做事的请求直接使用相应技能。有明确接收方、影响结果的待决分支，或用户问下一步时，给一段结合已有材料的提示词。单项任务完成即收尾。
-- Spec 默认包含 `handoff`：交接要点与提示词由 `yss-build-spec` 整理；明确要求通过 PR/MR 交付选定规格、原型及交互说明时使用 `handoff`，按对应动作授权执行。
+- Spec 默认包含 `yss-deliver-pr-mr`：交接要点与提示词由 `yss-build-spec` 整理；明确要求通过 PR/MR 交付选定规格、原型及交互说明时使用 `yss-deliver-pr-mr`，按对应动作授权执行。
 - 不要求生命周期路由、阶段批准、checkpoint、检查计划或测试报告。免除流程审批不扩大当前任务范围；检查按实际需要开展。
 - 保留权限、业务输入校验、错误处理与用户文件保护。提交、推送和发布使用对应授权。
 - 使用已安装 CLI 的实际帮助。支持本版接口时，sync 更新文件，--dry-run 仅预览；doctor 查看差异，recover 处理未完成文件事务。

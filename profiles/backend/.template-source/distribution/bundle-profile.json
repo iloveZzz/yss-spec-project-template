@@ -160,6 +160,12 @@
         "yss-map-decisions"
       ],
       "reason": "决策地图入口已更名为 yss-map-decisions。"
+    },
+    "handoff": {
+      "replacements": [
+        "yss-deliver-pr-mr"
+      ],
+      "reason": "PR/MR 材料交付入口已更名为 yss-deliver-pr-mr。"
     }
   },
   "installations": {
@@ -176,7 +182,7 @@
         "java-backend-commit",
         "git-commit-core",
         "yss-write-docs",
-        "handoff",
+        "yss-deliver-pr-mr",
         "using-git-worktrees",
         "resolving-merge-conflicts",
         "yss-technical-design",
@@ -329,7 +335,7 @@
         "grilling": [
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
-        "handoff": [
+        "yss-deliver-pr-mr": [
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "yss-write-docs": [
@@ -483,7 +489,7 @@
         "java-backend-commit",
         "git-commit-core",
         "yss-write-docs",
-        "handoff",
+        "yss-deliver-pr-mr",
         "using-git-worktrees",
         "resolving-merge-conflicts",
         "yss-technical-design",
@@ -612,7 +618,7 @@
         "grilling": [
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
-        "handoff": [
+        "yss-deliver-pr-mr": [
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "yss-write-docs": [

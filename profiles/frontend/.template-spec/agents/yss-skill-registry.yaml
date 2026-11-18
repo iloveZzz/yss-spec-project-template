@@ -19,7 +19,7 @@ instance_distribution:
   - yss-research
   - grilling
   - yss-write-docs
-  - handoff
+  - yss-deliver-pr-mr
   - using-git-worktrees
   - resolving-merge-conflicts
   runtimes:
@@ -124,7 +124,7 @@ skills:
   aliases: []
   impacts:
   - writing
-- id: handoff
+- id: yss-deliver-pr-mr
   layer: core
   maturity: supported
   instance_default_discoverable: true

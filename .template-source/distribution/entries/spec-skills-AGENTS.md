@@ -7,7 +7,7 @@
 - 技能位于 .agents/skills，宿主副本由安装记录管理；已有项目规则与业务约束继续适用。
 - 明确研发请求可使用默认 `implement` 或适用工程技能。从 Home 进入工程时先读 [仓库范围方法](.agents/skills/implement/references/repository-scope.md)，按已有地图（默认 `REPOSITORIES.md`）、README 索引或明确路径核实目标工作树、规则与技能，逐仓汇总真实结果；不要求先补地图或切换 Profile。
 - 用户问“用哪个技能”或“提示词怎么写”时，使用 `yss-help` 和[技能地图](.template-spec/agents/profile-skills.md)给出推荐及中文提示词。明确做事的请求直接使用相应技能。有明确接收方、影响结果的待决分支，或用户问下一步时，给一段结合已有材料的提示词。单项任务完成即收尾。
-- Spec 默认包含 `handoff`：交接要点与提示词由 `yss-build-spec` 整理；明确要求通过 PR/MR 交付选定规格、原型及交互说明时使用 `handoff`，按对应动作授权执行。
+- Spec 默认包含 `yss-deliver-pr-mr`：交接要点与提示词由 `yss-build-spec` 整理；明确要求通过 PR/MR 交付选定规格、原型及交互说明时使用 `yss-deliver-pr-mr`，按对应动作授权执行。
 - 后端工程命令优先 ./mvnw，前端优先 pnpm。构建、测试和审查按当前任务需要开展，不作为统一前置。
 - 保留权限、业务输入校验、错误处理和文件保护；不覆盖无关用户修改，不把子模块当普通目录。
 - 使用 CLI 实际帮助中的安装与同步能力；支持本版时用 sync 更新、--dry-run 预览，skills ensure 补装指定技能。

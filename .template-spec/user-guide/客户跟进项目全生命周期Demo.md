@@ -193,7 +193,7 @@ flowchart LR
 
 修复根据根因回到相应实现。事务范围进入 `yss-application`，状态不变量进入 `yss-domain`，保存字段或适配进入 `yss-repository`，SQL、方言、分页和事务绑定进入 `yss-mybatis`，公开接口接线进入 `yss-web-controller` 及相关边界技能。
 
-具备提交授权时，Backend 的 `java-backend-commit` 与共享 `git-commit-core` 组织本次改动。确需并行隔离时使用 `using-git-worktrees`，出现实际合并冲突时使用 `resolving-merge-conflicts`。PR/MR 交付按明确请求使用 `handoff`，持续跟进由 `implement` 的相应参考处理，直到用户指定结果或具体阻塞。
+具备提交授权时，Backend 的 `java-backend-commit` 与共享 `git-commit-core` 组织本次改动。确需并行隔离时使用 `using-git-worktrees`，出现实际合并冲突时使用 `resolving-merge-conflicts`。PR/MR 交付按明确请求使用 `yss-deliver-pr-mr`，持续跟进由 `implement` 的相应参考处理，直到用户指定结果或具体阻塞。
 
 ### 怎样提出请求
 
@@ -204,7 +204,7 @@ flowchart LR
 先复用已知资料，给出会影响本版范围的选项与建议。
 ```
 
-`to-spec`、Spec 的 `to-tickets`、`yss-map-decisions`、`triage` 和 `llm-wiki` 保持用户显式调用。`handoff` 用于明确的 PR/MR 交付请求。下面在相应教学请求中点名它们。完整能力地图用于按需查找更多方法。
+`to-spec`、Spec 的 `to-tickets`、`yss-map-decisions`、`triage` 和 `llm-wiki` 保持用户显式调用。`yss-deliver-pr-mr` 用于明确的 PR/MR 交付请求。下面在相应教学请求中点名它们。完整能力地图用于按需查找更多方法。
 
 | 当前问题 | 主要技能 | 本例期望得到什么 |
 | --- | --- | --- |
@@ -617,9 +617,9 @@ sequenceDiagram
 
 ### 将选定成果交到真实 PR/MR
 
-用户明确要求 PR/MR 交付时调用 `handoff`，普通文档完成不会自动触发它。
+用户明确要求 PR/MR 交付时调用 `yss-deliver-pr-mr`，普通文档完成不会自动触发它。
 
-> 请使用 handoff，将 <已选定的规格、原型、代码或验证材料路径> 交到 <实际仓库> 的 <源分支和目标分支>。已有 PR/MR 时填写实际链接，首次交付按本次授权创建并回读链接。保留已有正文，核对选定产物确实进入平台展示的文件变更，说明来源版本、完成与未完成项、实际验证和接收方下一动作。本次授权 <明确填写提交、推送、创建或更新PR/MR的范围>。
+> 请使用 yss-deliver-pr-mr，将 <已选定的规格、原型、代码或验证材料路径> 交到 <实际仓库> 的 <源分支和目标分支>。已有 PR/MR 时填写实际链接，首次交付按本次授权创建并回读链接。保留已有正文，核对选定产物确实进入平台展示的文件变更，说明来源版本、完成与未完成项、实际验证和接收方下一动作。本次授权 <明确填写提交、推送、创建或更新PR/MR的范围>。
 
 Home 仓的依据可通过可读链接引用。需要把材料放入 diff 时，只复制本次选定且获授权的内容，并标明来源与读取版本。创建响应超时后先查询同仓、同分支的实际结果，避免重复创建。
 

@@ -1,0 +1,6 @@
+interface:
+  display_name: "通过 PR/MR 交付材料"
+  short_description: "把选定文件通过指定的 GitHub PR 或 GitLab MR 交给接收方，核对实际变更与未决项"
+  default_prompt: "$yss-deliver-pr-mr 把我选定的退款规格和交互说明交给目标 MR 的后端负责人，限这两份文件，列出变更、未决项和接收方下一步。"
+policy:
+  allow_implicit_invocation: false

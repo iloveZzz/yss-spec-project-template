@@ -14,7 +14,7 @@
 | `diagnosing-bugs` | 故障与性能诊断 | 已适配；文本与结构已核对 | `.agents/skills/diagnosing-bugs/SKILL.md` |
 | `domain-modeling` | 根 CONTEXT 与业务词汇 | 已适配；文本与结构已核对 | `.agents/skills/domain-modeling/SKILL.md` |
 | `grilling` | 围绕真实分歧逐项提问 | 已适配；文本与结构已核对 | `.agents/skills/grilling/SKILL.md` |
-| `handoff` | PR/MR 文件交付 | 保留本地差异，已核对 | `.agents/skills/handoff/SKILL.md` |
+| `yss-deliver-pr-mr`（上游 `handoff`） | PR/MR 文件交付 | 保留本地差异，已核对 | `.agents/skills/yss-deliver-pr-mr/SKILL.md` |
 | `implement` | 承接明确 Ticket 或当前需求 | 已适配；文本与结构已核对 | `.agents/skills/implement/SKILL.md` |
 | `yss-prototype-logic`（上游 `prototype`） | 临时逻辑实验；Backend 保留后端边界 | 已适配；文本与结构已核对 | `.agents/skills/yss-prototype-logic/SKILL.md` |
 | `resolving-merge-conflicts` | 保护用户修改的冲突解决 | 保留本地差异，已核对 | `.agents/skills/resolving-merge-conflicts/SKILL.md` |

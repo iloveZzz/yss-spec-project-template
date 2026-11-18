@@ -301,6 +301,12 @@
         "yss-map-decisions"
       ],
       "reason": "决策地图入口已更名为 yss-map-decisions。"
+    },
+    "handoff": {
+      "replacements": [
+        "yss-deliver-pr-mr"
+      ],
+      "reason": "PR/MR 材料交付入口已更名为 yss-deliver-pr-mr。"
     }
   },
   "installations": {
@@ -322,7 +328,7 @@
         "triage",
         "llm-wiki",
         "yss-write-docs",
-        "handoff",
+        "yss-deliver-pr-mr",
         "implement"
       ],
       "files": [
@@ -398,7 +404,7 @@
         "grilling": [
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
-        "handoff": [
+        "yss-deliver-pr-mr": [
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "yss-write-docs": [
@@ -581,7 +587,7 @@
         "triage",
         "llm-wiki",
         "yss-write-docs",
-        "handoff",
+        "yss-deliver-pr-mr",
         "implement"
       ],
       "files": [
@@ -624,7 +630,7 @@
         "grilling": [
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
-        "handoff": [
+        "yss-deliver-pr-mr": [
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "yss-write-docs": [

@@ -39,7 +39,7 @@
     "triage",
     "llm-wiki",
     "yss-write-docs",
-    "handoff",
+    "yss-deliver-pr-mr",
     "yss-frontend-application",
     "vue-best-practices",
     "create-adaptable-composable",
@@ -87,7 +87,7 @@
         "triage",
         "llm-wiki",
         "yss-write-docs",
-        "handoff"
+        "yss-deliver-pr-mr"
       ]
     },
     {
