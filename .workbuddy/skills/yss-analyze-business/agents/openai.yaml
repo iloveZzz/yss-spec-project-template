@@ -1,5 +1,5 @@
 interface:
-  display_name: "分析业务规则与验收"
+  display_name: "分析业务需求与验收规则"
   short_description: "梳理角色、业务规则、状态、例外和验收缺口"
   default_prompt: "使用 $yss-analyze-business，根据已有需求梳理业务规则、异常场景和验收缺口，列出仍需决定的事项。"
 policy:

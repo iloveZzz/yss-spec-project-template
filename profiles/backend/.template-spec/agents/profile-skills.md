@@ -8,7 +8,7 @@ YSS CLI 提供 `spec`、`backend`、`frontend` 三个 Profile，分别面向产�
 
 | 旧称 | 现用 ID | 可复制的中文提示词 |
 | --- | --- | --- |
-| `i-have-adhd` | `yss-write-docs` | 使用 yss-write-docs，按已有记录把这段内容改成研发周报，分别说明本周完成、待验证和下周动作。缺少的事实保留为未知。 |
+| `i-have-adhd` | `yss-write-docs` | `$yss-write-docs 把下面的研发记录改成周报，分清已完成、待验证和下一步，保留原始事实。` |
 | `yss-stage-decision` | `yss-analyze-business` | `$yss-analyze-business 请根据已有退款需求，梳理角色、允许退款的条件、例外和可观察的验收标准。` |
 | `yss-design-system` | `yss-design-ui` | `$yss-design-ui 请根据已确认的退款规则，设计申请页和审核页的操作流程，制作高保真交互原型并说明失败反馈。` |
 | `prototype` | `yss-prototype-logic` | `$yss-prototype-logic 请用可重复的状态试验验证退款退回后能否再次提交，覆盖重复操作并记录观察结果。` |
@@ -34,8 +34,8 @@ CLI 的默认安装清单是数量与成员的事实来源；本地图解释用�
 | `yss-help` | 问“用哪个技能、提示词怎么写、旧称现在叫什么” | 按当前工程给一个首选、一句理由、一段可复制的中文提示词 |
 | `setup-yss-harness` | 安装/升级 CLI 或 Skills；完整初始化工程时一并核实和配置 Git、remote、Issue tracker 与产品 Home 关系 | 实际 CLI 能力、Git/远程与 tracker 配置、安装结果、冲突及仓库地图；仅程序或技能安装不扩展为业务仓初始化 |
 | `yss-research` | 缺少可调查的业务现状、资料、技术事实或来源 | 可定位的事实、推断、版本与未知，供业务分析、设计或实现使用 |
-| `grilling` | 缺少只有业务方才能决定的选择，或需要整理第三方待答问题 | 已有决定、真正待答的问题及影响；能调查的事实先自行核实 |
-| `yss-write-docs` | 本次工作需要规格、设计、审查、PR/MR 描述等文档表达 | 按中文共用规范组织当前产物，不持有业务决定或外部动作授权 |
+| `grilling` | 澄清业务取舍，或为指定第三方整理待答问题 | 已有决定、真正待答的问题及影响；能调查的事实先自行核实 |
+| `yss-write-docs` | 编写与修改研发文档，如规格、周报、审查或 PR/MR 描述 | 按中文共用规范组织当前产物，不持有业务决定或外部动作授权 |
 | `handoff` | 用户明确要求通过 PR/MR 交付选定材料 | 真实文件变更、来源、验证、未完成项及接收方下一动作；普通成果引用不自动调用 |
 
 `implement` 与 `to-tickets` 也在三个 Profile 中默认提供；其共享入口与 Backend 专有覆盖的职责分别见下文。
@@ -49,7 +49,7 @@ Spec 的 18 项默认技能已包含共用区的 `handoff`。交接分两种使�
 | 技能 | 职责与衔接条件 |
 | --- | --- |
 | `yss-product-lifecycle` | 面对较完整的 Spec 工作，按缺口选择研究、业务分析、设计与表达；局部任务可以直接使用相关技能，不要求先路由 |
-| `yss-analyze-business` | 分析目标、场景、范围、责任、权限、状态、规则与验收缺口；事实缺口交给研究，真实取舍使用 `grilling` |
+| `yss-analyze-business` | 分析业务需求与验收规则，梳理场景、范围、责任、权限、状态与例外；事实缺口交给研究，真实取舍使用 `grilling` |
 | `domain-modeling` | 统一业务词汇、关系、边界与关键决定，为规则和原型提供一致含义；不据此生成生产库表 |
 | `yss-design-ui` | 根据本次选定规则设计产品 UI、交互和高保真原型；具体业务逻辑试验可使用 `yss-prototype-logic` |
 | `yss-prototype-logic` | 用代表输入验证业务行为、状态和异常组合；试验结果不自动成为生产实现 |

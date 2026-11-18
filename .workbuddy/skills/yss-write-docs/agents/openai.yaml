@@ -1,5 +1,5 @@
 interface:
-  display_name: "起草与修订研发文档"
+  display_name: "编写与修改研发文档"
   short_description: "起草或修订规格、周报、PR/MR 描述与复盘，保留事实、证据和未决项"
   default_prompt: "使用 $yss-write-docs，按已给材料修订当前研发文档，保留业务规则、证据、未决项和实际验证情况。"
 policy:

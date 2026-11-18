@@ -1,5 +1,5 @@
 interface:
-  display_name: "分析业务边界与下游影响"
+  display_name: "分析业务需求与验收规则"
   short_description: "分析业务责任、协作与规则变化对下游的影响"
   default_prompt: "使用 $yss-analyze-business，根据已有需求梳理业务边界、规则和下游影响，沿用已确认的决定。"
 policy:

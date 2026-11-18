@@ -4,7 +4,7 @@ description: 在研发文档起草、修订、审查报告、PR/MR 描述、复�
 license: MIT
 ---
 
-# 起草与修订研发文档
+# 编写与修改研发文档
 
 先为当前产物读取 [中文文档共用规范](references/document-writing.md)，这是共用中文写法的唯一正文来源，随技能分发。PR/MR 描述、复盘或实际返工回看直接读取 [PR 与复盘方法](references/pr-and-retro.md)，不要求治理目录、阶段批准或专门证据包。需要文档类型对照时按需读 `.template-spec/process/document-writing.md`，具体样例按需读 `.template-spec/templates/examples/lifecycle-writing-examples.md`；普通文档可仅用技能内参考。本技能约束表达，不持有业务决定或动作授权。
 

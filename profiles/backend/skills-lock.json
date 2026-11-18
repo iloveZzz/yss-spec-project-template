@@ -91,7 +91,7 @@
         "source": "mattpocock/skills",
         "sourceType": "github",
         "skillPath": "skills/productivity/grilling/SKILL.md",
-        "effectiveHash": "ea93f640c18d4b99419663caa98242cb2b6a3a3c3d69cb36cade687125d8b0c5",
+        "effectiveHash": "51e248729cd49b315f48ebdad35e30746e9a2afe073e3c5cac73c526b7f6b14e",
         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
         "upstreamHash": "0ca4cfe5105d79c6ef6755491492e056c43e88b82666376d8ecd7fac695d96e6",
         "adaptationRef": ".template-spec/agents/matt-skills-adaptation.md",
@@ -117,7 +117,7 @@
         "source": "ayghri/i-have-adhd",
         "sourceType": "git",
         "skillPath": "skills/i-have-adhd/SKILL.md",
-        "effectiveHash": "722e115c6dbc4b9c6bae35fe115478b5a0a973acc1c70320e90cdc28d3e129a8",
+        "effectiveHash": "29a3297c6ca08fc6910476655bab38de85df81ad1cb405864eb8b066eff96324",
         "sourceRevision": "839872f9d1cd634fed642b4589ce7226199cc15f",
         "upstreamHash": "4c88635cbcb4765b63528d608d27589596840708e89607fda9c9fa5726c11f7e",
         "adaptationRef": ".agents/skills/yss-write-docs/references/yss-adaptation.md",
@@ -495,7 +495,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-help/SKILL.md",
-        "effectiveHash": "e988b312c66318f999c4750898d75bdede739d79ba50eea82e47b9576ffe4d7a",
+        "effectiveHash": "8d18bc40a64031aca0b36ec63b5fd6e250d51504548a08ea8361c7093817afe2",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"
@@ -535,7 +535,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-analyze-business/SKILL.md",
-        "effectiveHash": "d5bd889aea79809da0e2ce88bd897d451b51b46e5e65f6783f8f095cbe40374d",
+        "effectiveHash": "fb2db8b702a9665bdd946f07b115419de42fb61e07ae380da97fb14174bb49b9",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"

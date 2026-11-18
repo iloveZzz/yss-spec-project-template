@@ -1,3 +1,4 @@
 interface:
   display_name: "澄清业务取舍"
   short_description: "与业务方澄清待定选项，或为指定第三方整理待答问题"
+  default_prompt: "$grilling 已确定允许退款。请帮我澄清超时申请应拒绝还是允许人工审批，列出两种做法的影响，让业务方确认。"
