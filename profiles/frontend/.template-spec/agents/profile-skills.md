@@ -8,6 +8,7 @@ YSS CLI 提供 `spec`、`backend`、`frontend` 三个 Profile，分别面向产�
 
 | 旧称 | 现用 ID | 可复制的中文提示词 |
 | --- | --- | --- |
+| `wayfinder` | `yss-map-decisions` | `$yss-map-decisions 我们想优化退款，目前只确定原路退回。请列出已知决定、开放问题和依赖，暂时说不清的留白。` |
 | `yss-product-lifecycle` | `yss-build-spec` | `$yss-build-spec 根据已确认的退款规则，编制业务规格、高保真交互原型和交互说明，标出仍待确定的例外。` |
 | `i-have-adhd` | `yss-write-docs` | `$yss-write-docs 把下面的研发记录改成周报，分清已完成、待验证和下一步，保留原始事实。` |
 | `yss-stage-decision` | `yss-analyze-business` | `$yss-analyze-business 请根据已有退款需求，梳理角色、允许退款的条件、例外和可观察的验收标准。` |
@@ -55,7 +56,7 @@ Spec 的 18 项默认技能已包含共用区的 `handoff`。交接分两种使�
 | `yss-design-ui` | 根据本次选定规则设计产品 UI、交互和高保真原型；具体业务逻辑试验可使用 `yss-prototype-logic` |
 | `yss-prototype-logic` | 用代表输入验证业务行为、状态和异常组合；试验结果不自动成为生产实现 |
 | `prototype-review` | 对照实际规格与原型复核承诺行为、适用视觉和可访问性；结论用于修订本次范围 |
-| `wayfinder` | 显式为跨会话的大型工作从模糊目标起图，梳理已有决定、未知与依赖，暂时问不清的保留为空白 |
+| `yss-map-decisions` | 显式为跨会话的大型工作从模糊目标起图，梳理已有决定、未知与依赖，暂时问不清的保留为空白 |
 | `to-spec` | 仅显式调用时，综合已确认讨论与设计为业务规格；复用决定，不重新访谈 |
 | `to-tickets` | 仅明确要求拆票时使用；业务拆分保留规则与验收，明确工程拆分按实际仓库组织可验收增量，不凭 Profile 改变任务范围 |
 | `triage` | 仅显式请求时，分析反馈、Issue 或作为请求入口的外部 PR；只读分析不更新远程状态 |
@@ -182,7 +183,7 @@ Ticket 是工作项，Issue 是承载方式；Local Markdown 可承担相同职�
 | 用户请求 | 应选能力 | 不因此扩展的工作 |
 | --- | --- | --- |
 | 周报写乱了，帮我写一句请 Agent 修订的提示词 | 推荐 `yss-write-docs`，提示词带上已有记录、待验证事项及本周要交付的结果 | 直接要求改稿时就在当前请求中交付修订文本 |
-| 只有一个方向，还说不清要决定什么，用哪个技能？ | 已装时推荐显式使用 `wayfinder`，参考该技能的 `references/chart-map.md`。本候选中 Spec 默认安装，Backend 可补装，Frontend 可直接用普通建图提示词 | 用户选定后梳理已知、未知及依赖，允许留白 |
+| 只有一个方向，还说不清要决定什么，用哪个技能？ | 已装时推荐显式使用 `yss-map-decisions`，参考该技能的 `references/chart-map.md`。本候选中 Spec 默认安装，Backend 可补装，Frontend 可直接用普通建图提示词 | 用户选定后梳理已知、未知及依赖，允许留白 |
 | 有两个业务选项，需要我来定 | `grilling` 澄清取舍，复用已经确定的答案 | 可调查的事实先核实 |
 | 退款需求有哪些业务规则、例外、验收缺口？ | `yss-analyze-business` 梳理业务行为 | 确需业务方决定的取舍再交给 `grilling` |
 | 想看看退款页怎样提交、失败后怎样恢复 | `yss-design-ui` 制作页面和交互原型 | 沿用已有产品规则 |

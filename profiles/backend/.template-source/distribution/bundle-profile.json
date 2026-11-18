@@ -154,6 +154,12 @@
         "yss-prototype-logic"
       ],
       "reason": "逻辑与状态原型试验入口已更名为 yss-prototype-logic。"
+    },
+    "wayfinder": {
+      "replacements": [
+        "yss-map-decisions"
+      ],
+      "reason": "决策地图入口已更名为 yss-map-decisions。"
     }
   },
   "installations": {
@@ -389,7 +395,7 @@
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "using-git-worktrees": [],
-        "wayfinder": [
+        "yss-map-decisions": [
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "writing-for-agents": [
@@ -672,7 +678,7 @@
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "using-git-worktrees": [],
-        "wayfinder": [
+        "yss-map-decisions": [
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "writing-for-agents": [

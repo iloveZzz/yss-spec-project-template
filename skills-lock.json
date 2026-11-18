@@ -336,7 +336,7 @@
           ".workbuddy/skills"
         ]
       },
-      "wayfinder": {
+      "yss-map-decisions": {
         "source": "mattpocock/skills",
         "sourceType": "github",
         "skillPath": "skills/engineering/wayfinder/SKILL.md",

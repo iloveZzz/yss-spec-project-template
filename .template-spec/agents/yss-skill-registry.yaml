@@ -13,7 +13,7 @@ instance_distribution:
   - yss-analyze-business
   - grilling
   - domain-modeling
-  - wayfinder
+  - yss-map-decisions
   - to-spec
   - yss-design-ui
   - yss-prototype-logic
@@ -959,7 +959,7 @@ invocation_contract:
       primary_output: verified-repository-implementation
     triage:
       invocation_mode: user
-    wayfinder:
+    yss-map-decisions:
       invocation_mode: user
     to-tickets:
       invocation_mode: user
@@ -1256,7 +1256,7 @@ skills:
   aliases: []
   impacts:
   - setup
-- id: wayfinder
+- id: yss-map-decisions
   layer: maintainer-only
   maturity: supported
   instance_default_discoverable: true

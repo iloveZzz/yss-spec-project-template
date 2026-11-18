@@ -1034,7 +1034,7 @@ skills:
   aliases: []
   impacts:
   - setup
-- id: wayfinder
+- id: yss-map-decisions
   layer: maintainer-only
   maturity: supported
   instance_default_discoverable: false

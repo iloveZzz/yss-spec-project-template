@@ -23,7 +23,7 @@
 | `to-spec` | 复用讨论综合规格；Backend 保留研发定位 | 已适配；文本与结构已核对 | `.agents/skills/to-spec/SKILL.md` |
 | `to-tickets` | Spec 显式拆业务票；Backend 按真实输入拆实现 Slice | 已适配；文本与结构已核对 | `.agents/skills/to-tickets/SKILL.md` |
 | `triage` | 已有条目的分析与授权更新 | 已适配；文本与结构已核对 | `.agents/skills/triage/SKILL.md` |
-| `wayfinder` | 决策地图与依赖前沿 | 已适配；文本与结构已核对 | `.agents/skills/wayfinder/SKILL.md` |
+| `yss-map-decisions`（上游 `wayfinder`） | 决策地图与依赖前沿 | 已适配；文本与结构已核对 | `.agents/skills/yss-map-decisions/SKILL.md` |
 | `writing-for-agents` | 条件引用与清晰指令 | 已适配；文本与结构已核对 | `.agents/skills/writing-for-agents/SKILL.md` |
 | `yss-research` | 事实研究与竞品研究路由 | 保留本地差异，已核对 | `.agents/skills/yss-research/SKILL.md` |
 

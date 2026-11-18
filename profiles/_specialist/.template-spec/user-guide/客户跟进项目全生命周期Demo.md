@@ -204,7 +204,7 @@ flowchart LR
 先复用已知资料，给出会影响本版范围的选项与建议。
 ```
 
-`to-spec`、Spec 的 `to-tickets`、`wayfinder`、`triage` 和 `llm-wiki` 保持用户显式调用。`handoff` 用于明确的 PR/MR 交付请求。下面在相应教学请求中点名它们。完整能力地图用于按需查找更多方法。
+`to-spec`、Spec 的 `to-tickets`、`yss-map-decisions`、`triage` 和 `llm-wiki` 保持用户显式调用。`handoff` 用于明确的 PR/MR 交付请求。下面在相应教学请求中点名它们。完整能力地图用于按需查找更多方法。
 
 | 当前问题 | 主要技能 | 本例期望得到什么 |
 | --- | --- | --- |
@@ -272,7 +272,7 @@ flowchart LR
 | Agent 使用 `domain-modeling` 统一三类对象 | Contact 保存联系人与归属，FollowupRecord 保存一次已发生记录，FollowupTask 保存计划与完成结果。 |
 | Agent 回写 FR-01、FR-02 和 AC-01 | 同步建档、分配、列表可见性与操作条件。 |
 
-演练收到已有明确答案时直接复用。只有新的业务取舍再使用 `grilling`。多会话大型工作确需决定地图时，可以明确调用 `wayfinder` 组织未知与依赖。
+演练收到已有明确答案时直接复用。只有新的业务取舍再使用 `grilling`。多会话大型工作确需决定地图时，可以明确调用 `yss-map-decisions` 组织未知与依赖。
 
 ## 第三步 形成同一份规格与高保真原型
 

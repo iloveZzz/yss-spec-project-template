@@ -1,0 +1,6 @@
+interface:
+  display_name: "梳理大型任务的决策与依赖"
+  short_description: "方向模糊、还列不全问题时即可开始，沿用已有决定，梳理开放问题和依赖，允许留白"
+  default_prompt: "$yss-map-decisions 我们想优化退款，目前只确定原路退回。请列出已知决定、开放问题和依赖，暂时说不清的留白。"
+policy:
+  allow_implicit_invocation: false

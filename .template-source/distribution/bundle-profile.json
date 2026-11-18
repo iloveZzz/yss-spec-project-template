@@ -295,6 +295,12 @@
         "yss-build-spec"
       ],
       "reason": "产品规格与原型入口已更名为 yss-build-spec。"
+    },
+    "wayfinder": {
+      "replacements": [
+        "yss-map-decisions"
+      ],
+      "reason": "决策地图入口已更名为 yss-map-decisions。"
     }
   },
   "installations": {
@@ -307,7 +313,7 @@
         "yss-analyze-business",
         "grilling",
         "domain-modeling",
-        "wayfinder",
+        "yss-map-decisions",
         "to-spec",
         "yss-design-ui",
         "yss-prototype-logic",
@@ -456,7 +462,7 @@
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "using-git-worktrees": [],
-        "wayfinder": [
+        "yss-map-decisions": [
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "writing-for-agents": [
@@ -566,7 +572,7 @@
         "yss-analyze-business",
         "grilling",
         "domain-modeling",
-        "wayfinder",
+        "yss-map-decisions",
         "to-spec",
         "yss-design-ui",
         "yss-prototype-logic",
@@ -682,7 +688,7 @@
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "using-git-worktrees": [],
-        "wayfinder": [
+        "yss-map-decisions": [
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "writing-for-agents": [

@@ -1,6 +1,6 @@
 ---
-name: wayfinder
-description: 显式用于跨会话的大型工作。从模糊目标建立或接续决策地图，梳理已知、未知和依赖，暂时问不清的问题可以留白。
+name: yss-map-decisions
+description: 显式为大型任务建立或接续决策地图。方向模糊、还列不全问题时即可开始，复用已定事项，梳理开放问题与依赖，允许留白。
 disable-model-invocation: true
 ---
 

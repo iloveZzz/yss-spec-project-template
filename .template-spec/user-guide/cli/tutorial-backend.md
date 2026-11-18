@@ -41,7 +41,7 @@ yss attach --root ./sample-api --profile backend --installation skills
 
 完整交付维护有源码依据的构建部署手册，优先更新已有 README/运维说明，结构参考 `.template-spec/templates/build-deploy-guide-template.md`。部署当前仅交付说明。未知平台、健康入口和回滚限制如实注明，不执行部署、建设 CI/CD 或云资源。构建、测试、启动和部署的实际结果分别说明。
 
-12 项按需技能为 `to-spec`、`yss-analyze-business`、`triage`、`wayfinder`、`llm-wiki`、`yss-backend-spec-review`、`yss-up-springboot3`、`yss-security-algorithm`、`setup-matt-pocock-skills`、`maintaining-skills`、`writing-for-agents`、`publish-skills-sh`。历史安全算法组件仍禁止新生产接入。提交、交接和来源索引维护保持显式调用及原授权边界。
+12 项按需技能为 `to-spec`、`yss-analyze-business`、`triage`、`yss-map-decisions`、`llm-wiki`、`yss-backend-spec-review`、`yss-up-springboot3`、`yss-security-algorithm`、`setup-matt-pocock-skills`、`maintaining-skills`、`writing-for-agents`、`publish-skills-sh`。历史安全算法组件仍禁止新生产接入。提交、交接和来源索引维护保持显式调用及原授权边界。
 
 数据库设计、结构审查、元信息说明书及 DDL 使用默认技能 `database-analysis-docs`。Backend 版本只分发技能说明和参考，采集、表格和 SQL 核对使用实际可用的宿主工具。保留逻辑关系与必要基础约束，不默认创建外键、自增或特殊数据库机制。安装技能不授权连接未指定的数据库或执行 DDL。
 

@@ -10,4 +10,4 @@
 
 当 skill 提及某个 Ticket 状态时，使用表中对应的 Tracker 标签。批准来源与审查方式由当前 Profile 政策和用户决定确定，不由本表指定。
 
-Local Markdown 主 tracker 不调用远程标签：在 Ticket 文件顶部使用同名 `Status:` 值记录 Ticket 状态。Wayfinder 的 `claimed` / `resolved` 仅是临时工作状态，不属于本表五态；进入交付 Ticket 前必须转换为标准 `Status:`。
+Local Markdown 主 tracker 不调用远程标签：在 Ticket 文件顶部使用同名 `Status:` 值记录 Ticket 状态。决策地图的 `claimed` / `resolved` 仅是临时工作状态，不属于本表五态；进入交付 Ticket 前必须转换为标准 `Status:`。
