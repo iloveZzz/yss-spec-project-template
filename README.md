@@ -30,7 +30,9 @@
 
 既有 yss CLI 的安装包和内置行为独立于本仓，本次目录变化不会改写已安装的二进制。新模板与具体 CLI 版本的安装、同步兼容性须以实际使用结果为准。
 
-Template 5.13.0 配套 CLI 3.13.0，加入 `yss-help` 中文技能导航，统一业务分析、产品规格、界面设计、逻辑试验、文档、决策建图与 PR/MR 交付入口。七个技能的新旧名称和升级写法见[技能地图](.template-spec/agents/profile-skills.md#技能改名)。编制或修改规格、交互说明和原型前先说明 Spec 归属；仅委托修订指定原型时，写入范围限于该原型。后端 `yss-repository` 新增标准库 Python PO/Mapper 生成工具，复用已审阅模型和显式工程配置，保护已有不同内容的文件。
+Template 5.14.0 配套 CLI 3.14.0。Spec 分别记录「业务规格与验收」和「原型与交互说明」的确认范围、采用版本和用户答复。依赖 Spec 的研发写入核对这两项确认及范围内的未决问题，首次写入和委派写入均核对目标 Git 仓库、分支与相关改动。Frontend 的两个安装范围均提供共享的仓库核对指南。
+
+Template 5.13.0 加入 `yss-help` 中文技能导航，统一业务分析、产品规格、界面设计、逻辑试验、文档、决策建图与 PR/MR 交付入口。七个技能的新旧名称和升级写法见[技能地图](.template-spec/agents/profile-skills.md#技能改名)。编制或修改规格、交互说明和原型前先说明 Spec 归属。仅委托修订指定原型时，写入范围限于该原型。后端 `yss-repository` 新增标准库 Python PO/Mapper 生成工具，复用已审阅模型和显式工程配置，保护已有不同内容的文件。
 
 本版三个 Profile 默认集合为 Spec 18 项、Backend 43 项、Frontend 16 项，Frontend 可用库为 20 项。安装内嵌新版模板的 CLI 后，按项目实际范围同步。[技能地图](.template-spec/agents/profile-skills.md)
 
