@@ -7,6 +7,12 @@ description: 设计信息结构、流程、内容与视觉，制作产品 UI 原
 
 承担产品设计和 UI 原型制作。先读已有规格、业务决定、DESIGN.md、页面与组件约定，按 [设计方法](references/spec-design.md) 明确任务、信息结构、操作及状态。缺少事实交给 `.agents/skills/yss-research/SKILL.md`；业务取舍交给用户，不用视觉选择替代业务决定。
 
+写入交互说明、原型或相关工作台记录前，先按[设计方法](references/spec-design.md)核对本轮归属。
+
+- 材料将本次要修订的业务行为标为归属待定，或仍有多个实际归属候选时，本轮只在普通会话问一个能决定归属的问题，结束本轮并等用户答复。答复前相关原型、交互说明、OQ 和工作台记录只供查阅。并列展示候选、补待定占位和写草稿也属于写入。共用原型和当前 Spec 登记提供查阅线索。
+- 归属明确后，先在会话发出一条用户可见消息，说清沿用或新建的 Spec 标题及业务依据，再按本轮授权写入。只有本轮已经发出同一归属说明时才复用。
+- 仅受托修订指定原型时，直至交付的写入范围均限于该原型。规格正文、元数据、问题状态和工作台登记用作查阅依据。登记、内容状态或确认范围的缺项提示留给对应规格的维护任务。查无关联 Spec 时，在写前消息里说明查阅结果和本次修改依据，再按本轮授权继续。
+
 完整 Spec 交付只包含业务规格、高保真交互原型及交互说明。完整有 UI 交付需高保真，核心操作或状态变化提供可操作闭环；纯展示可用高保真静态设计；无 UI 由 `.agents/skills/yss-prototype-logic/SKILL.md` 提供业务逻辑或状态原型。覆盖范围与必要状态按风险选择，低保真草稿支持探索但不能单独算完整交付。普通查询、局部改稿只完成当前范围，不自动扩成完整产品设计。
 
 按需读取 [产品原型与说明](references/product-prototype.md)。产品 UI 的低保真草稿和完善版统一使用 [Vue + shadcn-vue](references/shadcn-vue-prototype.md)，在同一页面与场景上逐步完善。无设计基线的企业后台默认采用 [YSS Tesla Light 亮色主题](references/high-fidelity-default-theme.md)，其完整值与使用规则见 [默认 DESIGN.md](assets/DESIGN.md)；建立项目规范时据此裁剪，主题 CSS 与文档保持一致；列表与销售机会提炼的页签、组合筛选、双月日期、团队选择、视图切换和阶段看板按 [标准页面模式](references/standard-theme-patterns.md) 选用。已有项目沿用实际规范，明确要求迁移时才替换；营销、品牌展示等非后台任务按实际目标设计。页面组合见 [页面模式](references/business-patterns.md)、[组件配方](references/component-recipes.md) 和 [页面组织](references/page-composition.md)。有实质方向取舍时用 [方案比较](references/concept-comparison.md)，不强制多方案。
