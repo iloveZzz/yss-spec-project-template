@@ -3,6 +3,8 @@ name: implement
 description: 在用户要求后端开发、修复或按 Spec/Ticket 完成研发交付时使用；只读分析不自动转为实现。
 ---
 
+首次研发写入及委派写入前，按 [写入前核对](references/repository-scope.md#写入前核对) 核对本次采用的确认和目标 Git 信息。续办时如输入或目标改变，重新核对受影响部分。
+
 Implement the user's goal in the authorized repository using the current request, spec or tickets. Read the relevant code, map the accepted behavior to concrete changes and finish the affected callers and configuration.
 
 当用户给出 Spec、业务票或原型，或在工程中读到本次需求依据（如 spec.md）时，先读取 [规格接收与反馈](references/spec-feedback.md)，再确定实现与验证范围；发现来源变化或业务差异时也使用该方法。沿原规则说明结果和缺口，常规技术决定按授权继续。
@@ -11,7 +13,7 @@ Implement the user's goal in the authorized repository using the current request
 
 Keep the observable goal, actual repository and paths, UI/API dependencies, FR/AC or existing acceptance references, source version, applicable skills and the requested completion endpoint in the existing task. For YSS work, use yss-domain / yss-application for DDD behavior and orchestration. Use yss-application's MVC guidance for use cases, transactions and idempotency at the existing Service boundary. Use yss-repository / yss-web-controller for persistence and HTTP boundaries. Do not create a parallel implementation contract.
 
-接续已登记 Spec 的研发、日常终端任务、工作台作业及 PR/MR/CI 进展时，按项目根读取 `.template-spec/agents/workbench-progress.md`。沿用同一 dataDir、specId、实际 Spec 摘要及目标版本，关联真实参与工程、采用版本和原验收，报告实际阶段证据。按本次本地实现、合并或环境验证目标完成，关键需求、业务验收及最终交付沿用户实际确认接续。能力缺失时继续原授权研发并在原任务注明工作台待同步。
+接续已登记 Spec 的研发、日常终端任务、工作台作业及 PR/MR/CI 进展时，按项目根读取 `.template-spec/agents/workbench-progress.md`。沿用同一 dataDir、specId、实际 Spec 摘要及目标版本，关联真实参与工程、采用版本和原验收，报告实际阶段证据。按本次本地实现、合并或环境验证目标完成，关键需求、业务验收及最终交付沿用户实际确认接续。仅工作台同步能力缺失且写入条件已齐备时，继续原授权研发并在原任务注明工作台待同步。
 
 涉及模型或分层时，按项目根读取 `.template-spec/agents/backend-architecture-profiles.md`，再结合工程已确认约定选择落点。按本次影响补齐专项方法：HTTP 绑定与输出使用 yss-web-controller / yss-dto，并联查 validation / exception 的实际接线；模型及转换使用 lombok / mapstruct；持久化使用 yss-repository / yss-mybatis；写入顺序使用 yss-application，DDD 规则使用 yss-domain。用户不必逐项点名技能，也不因技能存在而接入所有组件。已有实现先区分符合、确有缺口和未验证，避免重复整改。
 

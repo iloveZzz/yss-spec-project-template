@@ -11,6 +11,8 @@ description: Use when implementing, engineering, or reviewing Vue 3 frontend app
 
 共享 `implement` 负责明确研发请求的来源与范围、单仓或跨仓协调、恢复与结果；本技能负责前端高保真还原、交互、Vue、API 接入和验证。已由 `implement` 接收的任务沿用其范围和当前事实，不重复建立任务记录。前端局部开发、修复及只读 review 可直接进入本技能，不要求先调用 `implement`；只读分析、Spec 确认或准备交接不会自动转为实现，当前 profile 也不扩大可写仓库或动作授权。
 
+前端源码写入前，直接读取项目根的 `.agents/skills/implement/references/repository-scope.md` 中的「写入前核对」。任务、票据或用户明确指定 Spec 的，局部样式、文案或 mock 也要先核对业务规格与验收、原型与交互的确认。有缺项时停下相关源码写入并说明需补的内容。直接使用本技能也适用，只读审查照常。
+
 ## 高保真还原的必需约束
 
 适用于已有设计的页面实现、迁移及修复，局部任务只覆盖受影响部分：

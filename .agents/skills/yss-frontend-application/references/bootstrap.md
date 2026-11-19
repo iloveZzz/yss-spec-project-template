@@ -12,7 +12,7 @@
 
 ## 全新目录生成
 
-- 新建应用使用 `yss-frontend-scaffold-generator`；先核对实际 `yss version`、`yss scaffold frontend --help` 与 catalog。新命令未随新版发行，旧 CLI 不支持时说明能力缺口，不回退旧 Node 生成器。
+- 新建应用使用 `yss-frontend-scaffold-generator`；先核对实际 `yss version`、`yss scaffold frontend --help` 与 catalog。实际 CLI 支持时使用该命令。旧 CLI 不支持时说明能力缺口，不回退旧 Node 生成器。
 - 输出父目录必须存在，工程目录必须不存在，包括拒绝已有空目录。已有业务资产按存量流程处理，不删除/清空目录来满足生成条件。
 - 生成最小 Vue 3 + TypeScript + ESM + Vite + pnpm 工程，附 VueUse、Tailwind、Button/Input 与 ESLint。请求/useRequest/Axios/Orval 按实际任务接入；需要导航或共享状态再引入 Router/Pinia。
 - 生成只修改 package.name，资源由 Bundle 提供；生成收据不管理后续应用源码。需要技能时在生成后单独 `attach --profile frontend --installation skills`，仅安装技能不生成 starter。

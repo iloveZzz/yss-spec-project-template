@@ -5,7 +5,8 @@
 这些能力支持产品规格、原型及从产品 Home 发起的研发任务。已有工程规则继续适用；仅安装技能不自动改变项目定位或创建仓库地图。产品成果留在上游，技术方案、代码与验证进入相应工程。
 
 - 技能位于 .agents/skills，宿主副本由安装记录管理；已有项目规则与业务约束继续适用。
-- 明确研发请求可使用默认 `implement` 或适用工程技能。从 Home 进入工程时先读 [仓库范围方法](.agents/skills/implement/references/repository-scope.md)，按已有地图（默认 `REPOSITORIES.md`）、README 索引或明确路径核实目标工作树、规则与技能，逐仓汇总真实结果；不要求先补地图或切换 Profile。
+- 分析、编制规格或设计原型时先核实事实和已有答复。仍影响本次交付、且只有业务方能决定的问题，当轮用 `grilling` 向用户提出可直接作答的问题，说明影响和建议。只列待确认项不足以完成澄清。
+- 明确研发请求可使用默认 `implement` 或适用工程技能。从 Home 发起研发时先读 [写入前核对](.agents/skills/implement/references/repository-scope.md#写入前核对)，核对本次采用的确认与目标 Git 信息后再写入或委派写入，并按已有地图（默认 `REPOSITORIES.md`）、README 索引或明确路径核实目标工作树、规则与技能，逐仓汇总真实结果；不要求先补地图或切换 Profile。
 - 用户问“用哪个技能”或“提示词怎么写”时，使用 `yss-help` 和[技能地图](.template-spec/agents/profile-skills.md)给出推荐及中文提示词。明确做事的请求直接使用相应技能。有明确接收方、影响结果的待决分支，或用户问下一步时，给一段结合已有材料的提示词。单项任务完成即收尾。
 - Spec 默认包含 `yss-deliver-pr-mr`：交接要点与提示词由 `yss-build-spec` 整理；明确要求通过 PR/MR 交付选定规格、原型及交互说明时使用 `yss-deliver-pr-mr`，按对应动作授权执行。
 - 后端工程命令优先 ./mvnw，前端优先 pnpm。构建、测试和审查按当前任务需要开展，不作为统一前置。

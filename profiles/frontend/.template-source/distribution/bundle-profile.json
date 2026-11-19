@@ -381,6 +381,7 @@
           ".template-spec/agents/issue-tracker-operations.md"
         ],
         "yss-frontend-application": [
+          ".agents/skills/implement/references/repository-scope.md",
           ".template-spec/agents/frontend-skills-adaptation.md",
           ".agents/skills/implement/references/pr-mr-followup.md",
           ".template-spec/agents/issue-tracker.md",
@@ -510,6 +511,7 @@
           ".template-spec/agents/issue-tracker-operations.md"
         ],
         "yss-frontend-application": [
+          ".agents/skills/implement/references/repository-scope.md",
           ".template-spec/agents/frontend-skills-adaptation.md",
           ".agents/skills/implement/references/pr-mr-followup.md",
           ".template-spec/agents/issue-tracker.md",

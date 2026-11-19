@@ -2,6 +2,7 @@
 
 使用简体中文。当前目录安装前端工程技能与必要参考，不自动建立产品流程或业务代码。
 
+- 首次研发写入和委派写入前先按 [写入前核对](.agents/skills/implement/references/repository-scope.md#写入前核对) 检查本次依据及目标 Git 信息，直接调用专业技能也适用。任务已指定 Spec 时，先核对两项确认，即使只改局部状态、文案或 mock。续办时核对影响写入的变化。
 - 若有上游 Home 或规格，按已有导航读取本次选定资料；工程约束、技术实现与验证在本仓执行。没有已知上游时无需补造关系。
 - 明确研发或 Spec/Ticket 实现使用 `implement` 协调来源、范围、恢复与结果，具体前端工作使用 `yss-frontend-application`；明确要求拆票时使用共享 `to-tickets`，按请求区分业务票与工程票，不强制先建票。
 - 应用实现、设计还原与工程审查用 `yss-frontend-application`；Vue 逻辑用 `vue-best-practices`，独立状态职责与复用接口用 `create-adaptable-composable`。纯样式与文案不触发逻辑重构。

@@ -72,7 +72,7 @@ Spec 中的 `code-review`、前端工程等专业技能属于按需能力，默�
 
 Home 是产品目标与关联工程的默认会话入口。按任务读取已有仓库地图（默认 `REPOSITORIES.md`）、README 索引或明确路径；地图只记录稳定身份、职责、资料入口和已知关系，本机工作树、分支及采用版本在当前任务核实。没有地图也可直接完成目标明确的工作，配置关系时再使用 setup 的地图模板。
 
-进入工程先核实真实 Git 身份和工作树，再读取该仓入口、局部规则及适用技能。优先采用目标仓有效版本及其资源，其次使用 Home 或宿主已有的适用共享内容；不要将同名技能的不同 Profile 职责混用。改变 shell cwd 不代表宿主重新加载规则；缺少内容沿原安装来源补齐，不切 Profile 或手改收据。三个 Profile 的通用协调方法均在 `setup-yss-harness/references/project-portability.md`；三个 Profile 均默认提供 `implement`，按需读取其仓库范围参考。
+进入工程先核实真实 Git 身份和工作树，再读取该仓入口、局部规则及适用技能。优先采用目标仓有效版本及其资源，其次使用 Home 或宿主已有的适用共享内容；不要将同名技能的不同 Profile 职责混用。改变 shell cwd 不代表宿主重新加载规则；缺少内容沿原安装来源补齐，不切 Profile 或手改收据。三个 Profile 的通用协调方法均在 `setup-yss-harness/references/project-portability.md`；三个 Profile 均默认提供 `implement`。首次研发写入及委派写入前按 [写入前核对](../../.agents/skills/implement/references/repository-scope.md#写入前核对) 核对实际 Git 目标。依据 Spec 时同时核对业务规格与验收、原型与交互的确认及范围内未决项。
 
 一个 Home 可协调多个后端、Web、Mobile 和共享组件；同仓多工程以仓库身份加子路径区分，一个安装根只持有一个 Profile。任务中核实采用的提交及未提交输入，恢复时检查当前工作树和运行资源；共享契约由一人整合，缺少子 Agent 时串行。来源变更只重做受影响部分，mock 或单仓检查不代表整体集成完成。
 
