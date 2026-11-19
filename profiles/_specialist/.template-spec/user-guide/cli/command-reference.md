@@ -53,6 +53,8 @@ yss sync --root ./my-home
 
 以上示例按各自场景选择执行。init 要求目标不存在或为空，目标不存在时父目录须已存在。已有普通项目用 attach，已有受管项目用 sync。project 和 skills 都安装方法资源，应用源码由 scaffold 单独生成。skills 仍属于项目内安装，用户级独立技能沿原安装来源更新。
 
+CLI `3.13.0` 内嵌 Template `5.13.0`，默认加入 `yss-help` 并采用新版技能名称。已有工程先升级 CLI，再预览和执行 `sync`，随后用 `skills list` 与目标宿主菜单核对实际入口。曾手动补装旧名时，仍需该能力且新名尚未安装的，可用 `skills ensure <新ID> --root <安装根>` 补装；旧名的 `retired` 诊断与新名安装状态分别核对。新旧名称、职责及提示词见[技能改名](../../agents/profile-skills.md#技能改名)。
+
 CLI `3.6.0` 起在 init、attach 和 scaffold 成功后返回 `nextSteps`。Spec project 的指引要求 Agent 核实 Home 工程关系，真实地图由项目维护。scaffold 的指引可包含 attach skills 命令。`command.args` 是独立参数数组，Agent 沿用本次已核验的程序绝对路径执行。dry-run、sync 和 skills ensure 的 nextSteps 为 `[]`。Home 配置示例见 [Spec / Home 教程](tutorial-spec.md)。
 
 ## 生成源码

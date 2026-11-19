@@ -35,7 +35,7 @@ yss attach --root ./sample-api --profile backend --installation skills
 
 ## 完整研发技能
 
-本基线的 CLI 在 Backend `project` / `skills` 两种安装下均默认安装 42 项，库中另有 12 项可按需补装，共 54 项。含 `yss-help` 的候选 Bundle 默认 43 项，可用 55 项。以 `skills list` 的实际结果为准。模板改动不会更新已经安装的二进制。
+本基线的 CLI 在 Backend `project` / `skills` 两种安装下均默认安装 42 项，库中另有 12 项可按需补装，共 54 项。CLI 3.13.0 内嵌的 Template 5.13.0 加入 `yss-help`，默认 43 项，可用 55 项。以 `skills list` 的实际结果为准。模板改动不会更新已经安装的二进制。
 
 `implement` 承接 Spec/明确需求，按需使用 `to-tickets` 细化研发实现切片、`yss-technical-design` 完成架构/方案/详细设计、对应脚手架与分层技能实现，再用 `yss-backend-testing` 选择并解释实际验证。切片依据真实工程、技术栈与适用设计，不猜测已确认方案，不要求先补业务票。缺失事实列明影响。DDD 建模才使用 `yss-tactical-design`。MVC 沿用 Service，普通测试不强制 TDD。一次安装具备完整能力，不等于每个任务执行全部技能。
 

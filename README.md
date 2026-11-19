@@ -19,7 +19,7 @@
 - `.agents/skills/`：共享技能内容源、参考资料和模板资产。
 - `.claude/skills/`：共享技能链接；`.workbuddy/skills/`：普通文件副本。
 - `profiles/backend/`：Backend 技能与资料覆盖层。
-- `profiles/frontend/`：Frontend 技能与资料覆盖层；候选默认 16 项，可用 20 项，按需加载。
+- `profiles/frontend/`：Frontend 技能与资料覆盖层；默认 16 项，可用 20 项，按需加载。
 - `.template-spec/`：业务、设计和工程参考。
 - `.template-source/distribution/`：分发清单与客户端入口。
 - `skills-lock.json`：技能来源和安装目录信息；`yss-public-skills.json`：公开技能清单。
@@ -30,9 +30,9 @@
 
 既有 yss CLI 的安装包和内置行为独立于本仓，本次目录变化不会改写已安装的二进制。新模板与具体 CLI 版本的安装、同步兼容性须以实际使用结果为准。
 
-Template 5.12.0 配套 CLI 3.12.0，统一工作台作业、日常研发、PR/MR 与 CI 的生命周期进度上报方法。三个 Profile 按同一 Spec、目标版本和真实工程版本记录阶段证据、用户确认与变化影响；操作说明见[生命周期进度上报](.template-spec/agents/workbench-progress.md)。后端技能补齐 POJO + Lombok、中文 Javadoc、领域创建与重建、HTTP 边界、部分更新及事实与业务规则的分层约定，保留既有工程的明确基线。
+Template 5.13.0 配套 CLI 3.13.0，加入 `yss-help` 中文技能导航，统一业务分析、产品规格、界面设计、逻辑试验、文档、决策建图与 PR/MR 交付入口。七个技能的新旧名称和升级写法见[技能地图](.template-spec/agents/profile-skills.md#技能改名)。编制或修改规格、交互说明和原型前先说明 Spec 归属；仅委托修订指定原型时，写入范围限于该原型。后端 `yss-repository` 新增标准库 Python PO/Mapper 生成工具，复用已审阅模型和显式工程配置，保护已有不同内容的文件。
 
-5.12.0 的默认集合为 Spec 17 项、Backend 42 项、Frontend 15 项。当前候选加入 `yss-help` 后，三个 Profile 默认分别为 18、43、16 项，Frontend 可用库为 20 项。安装内嵌新版模板的 CLI 后，按项目实际范围同步。[技能地图](.template-spec/agents/profile-skills.md)
+本版三个 Profile 默认集合为 Spec 18 项、Backend 43 项、Frontend 16 项，Frontend 可用库为 20 项。安装内嵌新版模板的 CLI 后，按项目实际范围同步。[技能地图](.template-spec/agents/profile-skills.md)
 
 `scaffold frontend` 从 CLI 3.3.0 起支持。Frontend Profile 从 CLI 3.2.0 开始支持，3.1.4 及以前不支持。参见 [Frontend 接入](.template-spec/user-guide/cli/tutorial-frontend.md)。GitLab CI 固定 CLI 配套构建源码 `f2e0a952123fbd9f12d3703b8df2b03d02b670cb`，版本为 3.7.0。该提交用于构建工具，正式 CLI 的最终源码与模板来源以 Release 产物记录为准。实际远程执行结果以对应流水线为准。
 
