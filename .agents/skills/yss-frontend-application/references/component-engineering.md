@@ -4,7 +4,7 @@
 
 ## 组件目录与可用状态
 
-[官方目录](https://shadcn-vue.com/docs/components)用于发现组件。组件通过源码进入项目，实际文件、导出、依赖与当前版本决定能否使用；官网有组件不代表项目已经安装。
+前端工程先使用 Profile 随附的 `shadcn-vue` 技能。已配置项目使用当前 CLI 支持的 `info --json` 确认解析后的 UI 目录、别名与样式入口，再检查该目录的实际文件、导出和调用方。用 `docs`、`search` 或 `view` 查询候选组件的文档、注册表条目与依赖。命令以正在使用的 CLI 帮助为准。单独使用本参考的设计原型、缺少 CLI 或技能的工程，可直接读取 `components.json`、本地源码与[官方组件目录](https://shadcn-vue.com/docs/components)。
 
 | 状态 | 判定依据 | 处理 |
 | --- | --- | --- |
@@ -30,7 +30,7 @@
 
 1. **检查现有实现。** 读取当前变更、页面/状态、DESIGN、components.json（若有）、别名、组件源码/导出/调用方、package/lock、CSS 入口与父 workspace。复用现有组件、状态和请求所有者。没有 components.json 可按实际目录复制固定源码，或补齐能准确描述项目且不改主题的元数据；不以 init 重置工程。
 2. **确定兼容来源。** 优先项目已记录的 revision/style，再看可用固定快照与清单。没有历史来源时由 Agent 调查本地 API、Vue/Tailwind/Reka 与依赖锁。核对 imports、props/emits/slots、peer/依赖范围、CSS/动画及跨组件引用，版本号本身不证明兼容。原 revision 缺少所需组件时可选择另一兼容的官方固定 revision，说明原因；改变既有 style/API 基线先按下表处理。
-3. **取得并审阅源码。** 固定 CLI 包版本不等于固定 registry 内容。写入追溯到官方不可变 revision 或可核对的固定资源；不把 @latest、可变默认 registry 或最新文档当成本地 API 依据。先在任务临时位置取得并读取文件，核对来源与依赖，保留许可和版权，再合入所需部分。使用 CLI 前查实际版本与帮助；无法控制来源/写入范围时使用固定源码复制，不猜测 dry-run、merge 或 overwrite 参数。社区来源需有本次任务的明确选用依据。
+3. **取得并审阅源码。** 优先用已核验版本的 shadcn-vue CLI 读取固定的 registry item，在临时工程中用 `add` 生成所需组件，检查组件、依赖及样式差异后合入目标。CLI 版本和组件来源分别记录，组件内容可追溯到官方 revision 或可核对的固定资源。项目已有固定快照或 CLI 无法解析相应来源时，使用登记的兼容源码，核对依赖并保留许可与版权。社区来源需有本次任务的选用依据。
 4. **补齐工程与适配。** 补齐必要包、导入、导出、别名和支持资源，按项目包管理器更新 package/lock，再验证冻结安装；不手改锁摘要、不改全局工具或父 workspace。消费已有 tokens、尺寸、图标与 variants，适配限定在本次组件范围，不以 preset/default theme 重画。模板固定 vendor 保持原样，目标项目的必要适配另记差异与摘要，不冒充上游原始字节。
 5. **验证并交付。** 运行受影响范围的类型检查、构建和关键交互，必要时执行项目实际 lint 与冻结安装；设计还原保留同条件视觉对照。记录仓库、revision/style、源路径、原始摘要、适配、实际依赖/配置变化与检查结果，沿用已有 provenance 或开发说明，不新建来源管理系统。原型只更新目标原型记录，不自动扩充模板快照、清单或锁。
 
@@ -70,4 +70,4 @@ Dialog/Sheet 等应有可访问名称；需要隐藏标题时保留辅助技术�
 
 组件默认能力不代表页面通过：实际检查表单关联、焦点可见、错误恢复、窄屏与长内容；有动画时尊重 reduced-motion。截图检查视觉，浏览器动作检查交互，axe 检查自动可识别项；任一证据不代替其余证据。
 
-依据：[shadcn-vue 官方技能](https://www.shadcn-vue.com/docs/skills)、[Reka Select](https://reka-ui.com/docs/components/select)、[Reka 可访问性](https://www.reka-ui.com/docs/overview/accessibility)、[MDN top layer](https://developer.mozilla.org/en-US/docs/Glossary/Top_layer)、[WAI-ARIA Dialog](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/)。规则摘取和适配，未复制完整上游 Skill 或自动执行其嵌入命令。
+相关资料见 [shadcn-vue 官方技能](https://www.shadcn-vue.com/docs/skills)、[Reka Select](https://reka-ui.com/docs/components/select)、[Reka 可访问性](https://www.reka-ui.com/docs/overview/accessibility)、[MDN top layer](https://developer.mozilla.org/en-US/docs/Glossary/Top_layer) 和 [WAI-ARIA Dialog](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/)。

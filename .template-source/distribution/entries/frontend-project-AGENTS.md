@@ -6,7 +6,7 @@
 - 若有上游 Home 或规格，按已有导航读取本次选定资料；工程约束、技术实现与验证在本仓执行。没有已知上游时无需补造关系。
 - 新目录生成优先使用 `yss-frontend-scaffold-generator`，再由应用技能实现页面；已有工程和只读 review 直接处理。仅安装技能不创建应用。
 - 明确研发或 Spec/Ticket 实现使用 `implement` 协调来源、范围、恢复与结果，具体前端工作使用 `yss-frontend-application`；明确要求拆票时使用共享 `to-tickets`，按请求区分业务票与工程票，不强制先建票。
-- 应用实现与工程审查优先使用 `yss-frontend-application`；Vue 状态、数据流与生命周期使用 `vue-best-practices`，需要独立状态职责或可复用接口时使用 `create-adaptable-composable`。纯文案、颜色与间距修改不因此加载逻辑技能。
+- 页面工程与设计还原用 `yss-frontend-application`。UI 组件以 `shadcn-vue` 为底座，按项目别名与本地源码组合。Vue 3 状态和组件行为用 `vue-best-practices`，浏览器交互、防抖及计时用 `vueuse-functions`，抽取可接收 ref 或 getter 的公共 hook 时用 `create-adaptable-composable`。
 - 产品设计与原型使用按需安装的 `yss-design-ui`，原型复核使用 `prototype-review`。沿用本次选定的设计版本、资源与交互，不把当前实现或旧快照当作新的设计依据。
 - 先读目标工程的入口、依赖锁、scripts 和约定，前端命令优先 `pnpm`。新工程采用 Vue 3、TypeScript、ESM 与本地 shadcn-vue 组件；存量工程只处理本次授权范围，不自动重搭或全量迁移。
 - 真实接口与模拟数据明确区分；不把演示模型升级为生产 API，不替 Backend 设计数据库。保留权限、输入校验、错误恢复、请求竞争处理、键盘与焦点行为。

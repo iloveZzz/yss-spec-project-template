@@ -41,6 +41,8 @@
     "yss-write-docs",
     "yss-deliver-pr-mr",
     "yss-frontend-application",
+    "shadcn-vue",
+    "vueuse-functions",
     "vue-best-practices",
     "create-adaptable-composable",
     "yss-frontend-scaffold-generator"
@@ -48,7 +50,7 @@
   "groupings": [
     {
       "title": "安装与任务协作",
-      "description": "用于 CLI、Skills 安装、规格任务整理与技能来源维护。",
+      "description": "安装或升级 YSS CLI 和技能，维护技能来源索引。",
       "skills": [
         "setup-yss-harness",
         "yss-skill-source-index-refresh"
@@ -121,9 +123,11 @@
     },
     {
       "title": "Vue 前端工程与原型逻辑",
-      "description": "用于 Vue 应用工程、设计还原，以及状态、数据流、生命周期与 composable 方法。",
+      "description": "实现 Vue 应用、还原界面设计，处理状态、数据流、生命周期和组合式函数。",
       "skills": [
         "yss-frontend-application",
+        "shadcn-vue",
+        "vueuse-functions",
         "vue-best-practices",
         "create-adaptable-composable",
         "yss-frontend-scaffold-generator"

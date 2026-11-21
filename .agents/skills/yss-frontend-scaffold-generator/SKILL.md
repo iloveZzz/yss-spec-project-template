@@ -1,6 +1,6 @@
 ---
 name: yss-frontend-scaffold-generator
-description: 在不存在的新目录生成 YSS Vue 3 最小前端工程；需要新建应用脚手架时使用，已有工程改造、只读 review 或仅安装技能不触发生成。
+description: 新建 YSS 前端应用时，在尚不存在的目录生成最小 Vue 3 工程。
 ---
 
 # YSS 前端脚手架
@@ -17,6 +17,6 @@ description: 在不存在的新目录生成 YSS Vue 3 最小前端工程；需�
 
 用户已要求源码与项目技能时，生成后继续 `attach --profile frontend --installation skills`。实际报告含 nextSteps.command 时，核实目标和范围后使用本轮已核验的二进制绝对路径执行其 args 数组；不重新依赖 PATH，不拼接 shell。旧版缺少指引字段时按实际帮助使用已有命令，非 UTF-8 路径缺少 command 时保留文字指引。attach 失败保留生成源码及原入口，明确技能尚未接入，不删除工程或改用 project 覆盖。若有已知上游 Home/规格且允许修改工程入口，复用 README 等已有导航，再在 AGENTS 引用其实际位置；无上游不造关系。
 
-starter 的 `components.json` 只描述已有组件 style、Tailwind/CSS 与别名，不表示其余官方组件已安装。生成不访问 registry 或执行 shadcn-vue init/apply；页面开发缺少组件时交由应用技能按兼容固定来源自主补齐、适配和验证。大版本升级、已有定制或全局主题变更先提供具体影响方案，由用户决定。
+starter 以 shadcn-vue 为 UI 底座。`components.json` 描述 style、Tailwind/CSS 与别名，本地组件以实际源码和导出为准。生成后的页面开发交给 `yss-frontend-application`，由 Frontend Profile 的 `shadcn-vue` 技能指导组件发现、组合和按需接入。脚手架生成使用 Bundle 内的静态资源。
 
 说明实际结果、未执行检查及来源。提交、推送、发布和部署遵循对应授权。适配与许可见 [来源](references/source-adaptation.md)。

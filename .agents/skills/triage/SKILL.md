@@ -1,6 +1,6 @@
 ---
 name: triage
-description: 显式整理需求、反馈和 Issue，核验事实并给出分类、处理建议与简报。
+description: 按明确请求核实需求、反馈、工单或外部合并请求，整理分类、处理建议和简报。
 disable-model-invocation: true
 ---
 

@@ -29,7 +29,7 @@
         "source": "mattpocock/skills",
         "sourceType": "github",
         "skillPath": "skills/engineering/code-review/SKILL.md",
-        "effectiveHash": "9b21f774ef1e8740f82067d6dbf6a6979b11c4f9808a3b9679972a9ace7bf18e",
+        "effectiveHash": "98a7a7cc6294bb2f4e114286da2690096082b24b90b4669f74dba8230cab6837",
         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
         "upstreamHash": "12daafb9c4f77deb3c3303dc2e6f8a3c2a0ff7928fc004af959ba18b8bd38068",
         "adaptationRef": ".template-spec/agents/matt-skills-adaptation.md",
@@ -130,7 +130,7 @@
         "source": "mattpocock/skills",
         "sourceType": "github",
         "skillPath": "skills/engineering/implement/SKILL.md",
-        "effectiveHash": "98c6efd2b58e606a30ffa03f93ffb5550adf97ed14c4b19c5e6d529235bea248",
+        "effectiveHash": "1b9afddbdbf215f7c5ad71741f7d35b206799b61d2b7081a21cf003b261562cd",
         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
         "upstreamHash": "b49a049477c7eec7f8dd90745dbc3f27bf75617b832d5b5f33c55aab7638a12e",
         "adaptationRef": ".template-spec/agents/matt-skills-adaptation.md",
@@ -143,7 +143,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/java-backend-commit/SKILL.md",
-        "effectiveHash": "44b44ad29aa36cbef149b4bb635063f6838d16cc9d6445829595b2978303a77b",
+        "effectiveHash": "a123fcdeddc934e13593b0cfbe9b0924b1fec2024d0f690351831dcbb0ccee6a",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"
@@ -174,7 +174,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/maintaining-skills/SKILL.md",
-        "effectiveHash": "afdf6e59db4576e94566afb98606a2743a1150f16981d25058aee2acbb83cced",
+        "effectiveHash": "3347e448e0af1be88fa71823461fd66a2d4669dab1ad9d8010c75f637531010b",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"
@@ -184,7 +184,7 @@
         "source": "claude-dev-suite/claude-dev-suite",
         "sourceType": "github",
         "skillPath": "skills/languages/mapstruct/SKILL.md",
-        "effectiveHash": "94ae99ce3694fe01a47f8538774f87f7b2f466ae4d0244cee4f8c72fdc6f4dda",
+        "effectiveHash": "82983a640b1db767802805a9bc97fe828cd420bf7166bb5c6e39affca2caafc3",
         "upstreamHash": "50dcb3a41a92bb42b6714e8ab9fd1e7149fa89774a05c6e21c7711368dbb6443",
         "targets": [
           ".agents/skills",
@@ -208,7 +208,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/publish-skills-sh/SKILL.md",
-        "effectiveHash": "c68c1838536c6f64dc3182e26e3eb7d5c4099b151fedd512a4f23e78ec260b85",
+        "effectiveHash": "1f22b62aef2d639e68c8c3a4e898bea3eb9c479a724d92807fae671cff724fea",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"
@@ -218,7 +218,7 @@
         "source": "mattpocock/skills",
         "sourceType": "github",
         "skillPath": "skills/engineering/resolving-merge-conflicts/SKILL.md",
-        "effectiveHash": "80bbb3f844f883d7be946086fae5a8c21cfccb4d576451b079da3b2c0b245d8e",
+        "effectiveHash": "dfe7aeb10847fc83a01995eec1bfd702ff1993c3776f6dffe343d1b30859e980",
         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
         "upstreamHash": "310fa72a34cddd1dd1a9790f9ebc17bf2c83caeae5cdf87e2485be8b1abec90e",
         "adaptationRef": ".template-spec/agents/matt-skills-adaptation.md",
@@ -244,7 +244,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/setup-yss-harness/SKILL.md",
-        "effectiveHash": "40418f9f4bbc2f2f9a29f881910983f8627999f8239dbd47f6d844e173df0603",
+        "effectiveHash": "74ab681b997357e687f8705d45e539c50a32e3aacedb62c308f76752a9736e47",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"
@@ -254,7 +254,7 @@
         "source": "mattpocock/skills",
         "sourceType": "github",
         "skillPath": "skills/engineering/tdd/SKILL.md",
-        "effectiveHash": "713afdf95ed1d382f7d2a67e47d3a918b02bfbd7fc6658caf2ae0b8f7b00bb6e",
+        "effectiveHash": "0059d35ccc92a5094131b2198b383d369306a53e32a93edf698dc6c770da0643",
         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
         "upstreamHash": "28b5e430968370f51b03b88b4b4a046286192733d2f45bd5b8049e16f45fd234",
         "adaptationRef": ".template-spec/agents/matt-skills-adaptation.md",
@@ -280,7 +280,7 @@
         "source": "mattpocock/skills",
         "sourceType": "github",
         "skillPath": "skills/engineering/to-tickets/SKILL.md",
-        "effectiveHash": "37d2dbca9985bb623b7877481997b398ea3316ad1f05b89d3702521cf17e2b54",
+        "effectiveHash": "f41544f9ca2430d81cb041be04f4095c9739c87c4a452205c76acfbb454c4588",
         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
         "upstreamHash": "597a1a0af4f7391ab459a02a3f33576109b6bc61ecdc5e7e05149336858b4f29",
         "adaptationRef": ".template-spec/agents/matt-skills-adaptation.md",
@@ -293,7 +293,7 @@
         "source": "mattpocock/skills",
         "sourceType": "github",
         "skillPath": "skills/engineering/triage/SKILL.md",
-        "effectiveHash": "58ee8ea4734a429db3e26613029c018c34009cd67b06359aa540f10efe58312e",
+        "effectiveHash": "283d4b46122c03b5d8e51d6f8afdec11ff33fec6bb189903a91604b29f674771",
         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
         "upstreamHash": "461668611d1bd0eeb0533f347c11690a556c966a75938363a171914dcc42481a",
         "adaptationRef": ".template-spec/agents/matt-skills-adaptation.md",
@@ -372,7 +372,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-cache/SKILL.md",
-        "effectiveHash": "879d9233a4530b71b3bc9ea5bc53f108f77470a1914af7c003502ea9033a0c27",
+        "effectiveHash": "c5f0c0d5458f9613507c4b97f1ac760e7bb233a0be76060dc3c47375b1a4622f",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"
@@ -402,7 +402,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-domain/SKILL.md",
-        "effectiveHash": "2c2fca40d5ed910d662c0c3f2b46f02ed566b3c5b8ab60d667117d82684de163",
+        "effectiveHash": "83ab445f6ccf1c1158be07262fabdb030aa33ac9656ab32a4c22620978bf7592",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"
@@ -412,7 +412,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-dto/SKILL.md",
-        "effectiveHash": "cb28783364af67046e220fd4112cde5d19bf192af08817e419faf693ad31e06f",
+        "effectiveHash": "59db3a6108214006352477806a46a59499972d468ec852a3402ef72b54e15b79",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"
@@ -432,7 +432,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-exception/SKILL.md",
-        "effectiveHash": "8058698e189ba7b61677d998a1b89262aa8d4a59e305ec320eaf874e3a26304c",
+        "effectiveHash": "90def58a079d9a9f1ae0381a4e3cde68f1970be7f38ed32f667670e5c9227464",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"
@@ -442,7 +442,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-layered-mvc-scaffold-generator/SKILL.md",
-        "effectiveHash": "477d64f924ec6d77813b3a53499b29cfb5040793c515c87f2f7c5203d9b0c95c",
+        "effectiveHash": "37ffabc9334f898ba6204021eca13c43f8847f3403ad6a28dba374d2e56c479c",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"
@@ -452,7 +452,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-mybatis/SKILL.md",
-        "effectiveHash": "7b9bbfc4afacf15ebc109e3a5566411a37fc77ccfc3161f6293ba8c146366c5a",
+        "effectiveHash": "86c5033d0804c33cd5cd85fd29dfa4fe460b4b2d20cda486de54c6333a832644",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"
@@ -472,7 +472,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-repository/SKILL.md",
-        "effectiveHash": "4b00c755cc81eef681117320bad1a718ebe68f82acce290b77cefcbf8f76e921",
+        "effectiveHash": "0a8aedb693f2792aeccd33add9d32e404056b5357359941ca5b247b1e083c24b",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"
@@ -495,7 +495,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-help/SKILL.md",
-        "effectiveHash": "d27b4db1e3876d0ee1477777cbd20317d7c939dcf593af84d7b84ffbd00ca1cd",
+        "effectiveHash": "67ad1773eb4e69757e240f76e08abb2e2601f1fac1dadd7bfd4afc50557b8258",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"
@@ -505,7 +505,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-resilience4j/SKILL.md",
-        "effectiveHash": "3309961800720e80fea74e87cf6757b76daef7fe7a040ebfc7deebebb7f11645",
+        "effectiveHash": "e9f7b2181d1537532d6fb37053e6af016354949d169c83f3f5738e36af615114",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"
@@ -515,7 +515,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-security-algorithm/SKILL.md",
-        "effectiveHash": "dd78e336f90f8883cdcf783b110b7b95f861a5237c392418769d82fa1a2d6cd6",
+        "effectiveHash": "de6c57c25b145b5e0a5eeab6738ea1adcf20b72d3d8223f92745fd3178f82d71",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"
@@ -545,7 +545,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-tactical-design/SKILL.md",
-        "effectiveHash": "427500962cb798bcc9b83a92a1b01dfeabf52130d88d26b412d9411b0686a9da",
+        "effectiveHash": "fa9496f12a95fa0bb77e102047bf94caee0b6a3ca4a22de08aa343c76c25c00b",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"
@@ -575,7 +575,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-userinfo/SKILL.md",
-        "effectiveHash": "667ee535e4a2c5a8e17d05cbd5b5581ae01929ab68a0df97f187634d2393331f",
+        "effectiveHash": "595fc616b436a6267d625abce2d988e33131f323eda348f7f9b128cf4128cd88",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"
@@ -595,7 +595,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-web-controller/SKILL.md",
-        "effectiveHash": "2610cf5cbd9320e805a64847faff70f99222edfa9e37003c0e4a94391bf62021",
+        "effectiveHash": "3dd1b812dc39af6609b72efab3d65fcd8c77db0cf3f373d308ccb99181f4d214",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"

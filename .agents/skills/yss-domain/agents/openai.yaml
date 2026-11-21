@@ -1,5 +1,5 @@
 version: 1
 interface:
   display_name: "实现领域行为"
-  short_description: "按已确认的领域边界实现不变量、状态变化与 Gateway"
+  short_description: "按既定领域边界实现不变量、状态转换和领域网关"
   default_prompt: 使用 $yss-domain 按当前用户目标和已有工程资料完成任务，保留用户文件并如实说明实际结果。

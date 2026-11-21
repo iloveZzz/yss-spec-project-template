@@ -1,6 +1,6 @@
 ---
 name: publish-skills-sh
-description: 将选定 Agent 技能直接整理并发布到指定公开分发仓。
+description: 整理选定的技能及配套资源，按授权发布到指定的公开技能仓库。
 disable-model-invocation: true
 ---
 

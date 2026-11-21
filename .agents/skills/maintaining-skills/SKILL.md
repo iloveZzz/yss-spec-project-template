@@ -13,4 +13,4 @@ Report actual changes and unresolved limitations. Testing or a separate review i
 
 When changing triggers or behavior, select representative requests, neighboring non-triggers and relevant authorization counterexamples. For actual observations and their limits, read `.agents/skills/yss-write-docs/references/pr-and-retro.md` from the project root. Use existing task records or clearly labeled rehearsals; ordinary copy edits and business tasks do not need an evaluation or report first.
 
-For authoring and invocation boundaries, read [authoring notes](references/authoring.md). In this template source repository, follow `.template-source/agents/skills-maintenance.md` for projection and source-record maintenance; installed skill use does not require that source-only file.
+For description language, catalog summaries and invocation boundaries, read the [authoring notes](references/authoring.md). In this template source repository, follow `.template-source/agents/skills-maintenance.md` for projection and source-record maintenance; installed skill use does not require that source-only file.

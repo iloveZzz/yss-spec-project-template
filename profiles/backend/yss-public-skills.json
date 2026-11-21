@@ -29,7 +29,7 @@
   "groupings": [
     {
       "title": "安装与任务协作",
-      "description": "用于 CLI、Skills 安装、规格任务整理与技能来源维护。",
+      "description": "安装或升级 YSS CLI 和技能，维护技能来源索引。",
       "skills": [
         "setup-yss-harness",
         "yss-skill-source-index-refresh"

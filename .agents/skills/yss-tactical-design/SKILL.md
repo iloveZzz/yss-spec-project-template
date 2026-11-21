@@ -1,6 +1,6 @@
 ---
 name: yss-tactical-design
-description: 依据业务规则设计 DDD 聚合、实体、行为、不变量、事件与 Gateway。
+description: 依据业务规则设计 DDD 聚合、实体、领域行为、不变量、领域事件与领域网关。
 disable-model-invocation: true
 ---
 

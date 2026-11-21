@@ -1,6 +1,6 @@
 ---
 name: yss-mybatis
-description: 核验、接入或排查 YSS MyBatis/MyBatis-Plus 的 Mapper/Repository 基类、分页、批量 SQL、扫描与数据源；不生成持久层结构。
+description: 接入或核验 YSS MyBatis/MyBatis-Plus 的映射与仓储基类，排查分页、批量 SQL、映射器扫描和数据源问题。
 ---
 
 # yss-mybatis

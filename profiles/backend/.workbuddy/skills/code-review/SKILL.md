@@ -1,6 +1,6 @@
 ---
 name: code-review
-description: 审查分支、PR、固定候选或工作树改动，按仓库规范、Spec 及适用 UI 还原要求报告有证据的缺陷。
+description: 审查分支、合并请求、指定版本或工作树的改动，对照仓库规范、规格及适用的界面设计，指出缺陷及其依据。
 ---
 
 Review the requested diff against the user's acceptance criteria and the relevant engineering guidance. Keep the review read-only unless fixes are also requested.

@@ -1,6 +1,6 @@
 # YSS 前端应用
 
-Vue 3 + TypeScript + Vite + Tailwind CSS，包含 Button/Input、VueUse 与共享设计起点。生成源码完成后，仍需安装并验证运行。
+Vue 3 + TypeScript + Vite，以 shadcn-vue、Tailwind CSS 4 和 Reka UI 为组件底座，内含本地 Button、Input、VueUse 与 YSS 主题。
 
 使用 package.json 声明的 Node 与 pnpm；安装前检查父目录 workspace 是否会包含当前工程。确认环境后运行：
 
@@ -16,6 +16,6 @@ pnpm dev
 
 读取 DESIGN.md，并沿用项目确认的原型和规范。来源与许可见 [provenance](provenance/README.md)。
 
-`components.json` 描述现有 Tailwind 4、new-york-v4 组件源码、CSS 入口与别名，便于后续工具识别；`composables` 指向既有 `src/hooks`。其中 baseColor 是 registry 元数据，实际颜色继续来自 YSS tokens。生成时不执行 shadcn-vue init/apply，不预装 CLI 或其他组件；开发需要缺失组件时由应用技能按固定兼容来源补齐依赖、配置、适配与验证，保留项目定制及主题。
+`components.json` 声明 new-york-v4 风格、CSS 入口和别名，其中 `ui` 指向 `src/components/ui`，`composables` 指向 `src/hooks`。Frontend Profile 的 `shadcn-vue` 技能指导组件开发。新增组件时用兼容版本的 shadcn-vue CLI 运行 `info --json`，核对本地组件与导出，按需从 registry 添加。用 `src/styles/theme.css` 将组件需要的语义色映射到 YSS tokens。
 
 如需 YSS 技能，先确认当前 CLI 支持 Frontend Profile，再在本目录单独执行 `yss attach --root . --profile frontend --installation skills`。这一步不接管应用源码；`.yss/scaffold.json` 只记录生成来源。

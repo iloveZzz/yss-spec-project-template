@@ -1,6 +1,6 @@
 ---
 name: implement
-description: 在用户要求后端开发、修复或按 Spec/Ticket 完成研发交付时使用；只读分析不自动转为实现。
+description: 按用户明确的开发或修复请求，将需求、规格或工单落实为后端改动并验证。
 ---
 
 首次研发写入及委派写入前，按 [写入前核对](references/repository-scope.md#写入前核对) 核对本次采用的确认和目标 Git 信息。续办时如输入或目标改变，重新核对受影响部分。

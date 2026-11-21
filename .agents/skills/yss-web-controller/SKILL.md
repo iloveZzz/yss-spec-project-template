@@ -1,6 +1,6 @@
 ---
 name: yss-web-controller
-description: 按当前 API 需求与用例接口实现或重构 YSS Controller、请求 DTO、响应 VO 和 Web Convertor。
+description: 按接口需求与用例实现或重构 YSS 控制器、请求 DTO、响应 VO 及其模型转换。
 ---
 
 # YSS Web 适配

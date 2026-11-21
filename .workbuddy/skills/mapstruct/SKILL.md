@@ -1,6 +1,6 @@
 ---
 name: mapstruct
-description: "实现或排查 MapStruct DTO、PO、Domain 映射及 Lombok 集成；核验字段完整性与更新语义。"
+description: "用 MapStruct 映射 DTO、持久化对象和领域模型，核对字段和更新行为，排查 Lombok 集成问题。"
 ---
 # MapStruct Object Mapping
 

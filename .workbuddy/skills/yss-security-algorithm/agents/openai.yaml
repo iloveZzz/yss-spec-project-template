@@ -1,4 +1,4 @@
 interface:
   display_name: "yss-security-algorithm"
-  short_description: "YSS component skill for yss-security-algorithm"
+  short_description: "盘点既有加解密、令牌和密钥用法，排查故障或协助迁移，禁止新生产接入"
   default_prompt: "Use yss-security-algorithm for this YSS backend component task."

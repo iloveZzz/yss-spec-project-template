@@ -1,6 +1,6 @@
 ---
 name: yss-resilience4j
-description: "接入或排查 YSS Resilience4j starter、网关熔断、限流降级与断路器配置。"
+description: "接入或排查 YSS Resilience4j 组件，核对网关熔断、限流和降级配置。"
 ---
 
 # yss-resilience4j

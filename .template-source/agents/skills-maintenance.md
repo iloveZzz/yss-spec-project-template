@@ -1,6 +1,6 @@
 # Skills 维护
 
-`.agents/skills` 是共享内容源，包括前端应用与 Vue 技能；`profiles/backend/.agents/skills` 保存后端专有内容。Frontend 按显式白名单选择共享技能分发，不另存同内容主源。只修改实际需要的技能和参考，保留名称、描述、来源及运行时元数据。
+`.agents/skills` 是共享内容源，包括前端应用与 Vue 技能；`profiles/backend/.agents/skills` 保存后端专有内容。Frontend 按显式白名单选择共享技能分发，不另存同内容主源。新增或修订技能描述时，按[主描述与菜单短描述](../../.agents/skills/maintaining-skills/references/authoring.md#主描述与菜单短描述)选择语言、说明用途，保留既有技能名称、来源和运行时策略。
 
 Profile 默认能力和衔接说明维护在 `.template-spec/agents/profile-skills.md`，Backend、Frontend 分发同内容副本。默认成员与安装依赖仍以三份 `bundle-profile.json` 为准；修改集合或职责时同步地图、适用注册表和平台内容，修改导航不重算未变化技能的哈希。地图由三个 Profile 的两种安装模式直接分发，六份入口按需引用，不要求每项任务先读地图。
 

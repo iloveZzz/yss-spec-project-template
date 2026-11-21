@@ -1,0 +1,18 @@
+{
+  "source": "https://github.com/unovue/shadcn-vue",
+  "catalog": "https://skills.sh/unovue/shadcn-vue/shadcn-vue",
+  "sourceRevision": "39cb0b277f009e47de2dc62c4217755fb9a27eec",
+  "sourceTag": "v2.9.0",
+  "skillPath": "skills/shadcn-vue",
+  "upstreamHash": "a5a9b576670e98117b103e966dccb833386d4a616cd7e42d338ea8fa7c3f32fe",
+  "license": "MIT",
+  "localChanges": {
+    "SKILL.md": "适配 Frontend Profile 的组件实现与只读审查入口，改为按需读取项目上下文并保留既有设计与定制。",
+    "cli.md": "命令示例使用项目本地 CLI，补充固定来源与已有 preset 处理方式。",
+    "customization.md": "命令示例使用项目本地 CLI，补充全局主题影响。",
+    "mcp.md": "命令示例使用项目本地 CLI，说明 MCP 配置的适用范围。",
+    "rules/forms.md": "按控件语义选择 ToggleGroup 等组件，简单表单沿用现有状态。",
+    "rules/composition.md": "Card 区域按实际内容选择。",
+    "LICENSE": "从同一提交的仓库根目录随包分发。"
+  }
+}

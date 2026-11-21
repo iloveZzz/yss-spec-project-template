@@ -1,6 +1,6 @@
 ---
 name: yss-userinfo
-description: "接入或排查 YSS CurrentUserProvider、已认证 SecurityContext、受信网关头适配与后台用户上下文。"
+description: "接入或排查 YSS 已认证用户上下文，核对 CurrentUserProvider、受信网关请求头与后台任务身份。"
 ---
 
 # yss-userinfo

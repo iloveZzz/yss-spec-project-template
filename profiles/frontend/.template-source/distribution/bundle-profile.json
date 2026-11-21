@@ -29,6 +29,8 @@
       ".template-spec/templates/examples/lifecycle-writing-examples.md",
       ".agents/skills/setup-yss-harness",
       ".agents/skills/yss-frontend-application",
+      ".agents/skills/shadcn-vue",
+      ".agents/skills/vueuse-functions",
       ".agents/skills/vue-best-practices",
       ".agents/skills/create-adaptable-composable",
       ".agents/skills/code-review",
@@ -46,6 +48,8 @@
       ".agents/skills/domain-modeling",
       ".workbuddy/skills/setup-yss-harness",
       ".workbuddy/skills/yss-frontend-application",
+      ".workbuddy/skills/shadcn-vue",
+      ".workbuddy/skills/vueuse-functions",
       ".workbuddy/skills/vue-best-practices",
       ".workbuddy/skills/create-adaptable-composable",
       ".workbuddy/skills/code-review",
@@ -326,6 +330,8 @@
         "to-tickets",
         "yss-frontend-application",
         "yss-frontend-scaffold-generator",
+        "shadcn-vue",
+        "vueuse-functions",
         "vue-best-practices",
         "create-adaptable-composable",
         "code-review",
@@ -388,6 +394,12 @@
           ".template-spec/agents/issue-tracker-operations.md",
           ".agents/skills/to-tickets/references/engineering-tickets.md",
           ".template-spec/agents/workbench-progress.md"
+        ],
+        "shadcn-vue": [
+          ".template-spec/agents/frontend-skills-adaptation.md"
+        ],
+        "vueuse-functions": [
+          ".template-spec/agents/frontend-skills-adaptation.md"
         ],
         "vue-best-practices": [
           ".template-spec/agents/frontend-skills-adaptation.md"
@@ -488,6 +500,8 @@
         "to-tickets",
         "yss-frontend-application",
         "yss-frontend-scaffold-generator",
+        "shadcn-vue",
+        "vueuse-functions",
         "vue-best-practices",
         "create-adaptable-composable",
         "code-review",
@@ -523,6 +537,12 @@
           ".template-spec/agents/issue-tracker-operations.md",
           ".agents/skills/to-tickets/references/engineering-tickets.md",
           ".template-spec/agents/workbench-progress.md"
+        ],
+        "shadcn-vue": [
+          ".template-spec/agents/frontend-skills-adaptation.md"
+        ],
+        "vueuse-functions": [
+          ".template-spec/agents/frontend-skills-adaptation.md"
         ],
         "vue-best-practices": [
           ".template-spec/agents/frontend-skills-adaptation.md"

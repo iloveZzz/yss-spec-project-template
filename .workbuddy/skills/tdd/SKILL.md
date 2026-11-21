@@ -1,6 +1,6 @@
 ---
 name: tdd
-description: 仅在用户明确要求 TDD、测试优先开发或 red-green-refactor 时使用；普通补测或集成测试请求不触发。
+description: 用户明确要求测试驱动开发（TDD）或测试优先时，先写失败测试，再实现功能并重构。
 ---
 
 # 测试优先开发

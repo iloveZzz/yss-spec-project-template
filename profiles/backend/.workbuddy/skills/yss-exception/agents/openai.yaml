@@ -1,4 +1,4 @@
 interface:
   display_name: "处理统一异常"
-  short_description: "接入异常处理器与统一错误码，排查异常映射和 starter 配置"
+  short_description: "接入统一异常处理器，排查自动配置、错误码与响应映射"
   default_prompt: "Use yss-exception for this YSS backend component task."

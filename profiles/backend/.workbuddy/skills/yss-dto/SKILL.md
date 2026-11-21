@@ -1,6 +1,6 @@
 ---
 name: yss-dto
-description: "实现或核验 YSS Result、PageResult、PageQuery、CommandDTO、QueryDTO 及 wire 边界。"
+description: "实现或核验 YSS 命令、查询、分页与结果 DTO 及其公开的 HTTP 请求和响应格式。"
 ---
 
 # yss-dto

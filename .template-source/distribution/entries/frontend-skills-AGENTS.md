@@ -5,7 +5,7 @@
 - 首次研发写入和委派写入前先按 [写入前核对](.agents/skills/implement/references/repository-scope.md#写入前核对) 检查本次依据及目标 Git 信息，直接调用专业技能也适用。任务已指定 Spec 时，先核对两项确认，即使只改局部状态、文案或 mock。续办时核对影响写入的变化。
 - 若有上游 Home 或规格，按已有导航读取本次选定资料；工程约束、技术实现与验证在本仓执行。没有已知上游时无需补造关系。
 - 明确研发或 Spec/Ticket 实现使用 `implement` 协调来源、范围、恢复与结果，具体前端工作使用 `yss-frontend-application`；明确要求拆票时使用共享 `to-tickets`，按请求区分业务票与工程票，不强制先建票。
-- 应用实现、设计还原与工程审查用 `yss-frontend-application`；Vue 逻辑用 `vue-best-practices`，独立状态职责与复用接口用 `create-adaptable-composable`。纯样式与文案不触发逻辑重构。
+- 页面工程与设计还原用 `yss-frontend-application`。UI 组件以 `shadcn-vue` 为底座，按项目别名与本地源码组合。Vue 3 状态和组件行为用 `vue-best-practices`，浏览器交互、防抖及计时用 `vueuse-functions`，抽取可接收 ref 或 getter 的公共 hook 时用 `create-adaptable-composable`。
 - 以本次选定的规格、原型、说明及其版本或工作树为准；产品设计与原型复核按需使用 `yss-design-ui`、`prototype-review`。不要求重做已确认设计。
 - 沿用目标工程约定与真实锁文件，前端命令优先 `pnpm`。权限、校验、失败处理、请求清理、键盘与焦点不能因模拟或工程迁移省略。
 - 设计还原完成需要适用工程检查、同条件视觉对比与关键交互证据；模拟结果标注待联调，未验证的路径如实说明。局部任务不运行无关全量套件，不补审批和固定报告。

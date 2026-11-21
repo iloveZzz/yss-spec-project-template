@@ -1,6 +1,6 @@
 ---
 name: to-spec
-description: 显式将已确认讨论、业务分析和设计综合为完整非技术 Spec，按授权保存或发布。
+description: 按明确请求，将已确认的讨论、业务分析和设计整理为完整的业务规格，按授权保存或发布。
 disable-model-invocation: true
 ---
 

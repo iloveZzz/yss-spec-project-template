@@ -1,0 +1,22 @@
+{
+  "source": "https://github.com/vueuse/skills",
+  "sourceRevision": "004812b4aa0815f5745ac30a6a7dc4927aec7b3d",
+  "skillPath": "skills/vueuse-functions",
+  "license": "MIT",
+  "localChanges": {
+    "SKILL.md": "按 Vue 3 工程场景组织函数选择及清理方法，按需分发 DOM、浏览器交互和时间相关函数参考。",
+    "references/useMediaQuery.md": "补齐 SSR 示例的 onMounted 导入，将 provideSSRWidth 链接指向官方函数页。",
+    "references/useClipboard.md": "补齐 ref、函数与可选组件的显式导入，校正 text 的含义，移除上游站点的课程推广。",
+    "references/useCountdown.md": "按 VueUse 15.0.0 实现区分 start、reset 与无参数 resume。",
+    "references/useDocumentVisibility.md": "组件用法示例显式导入可选的 @vueuse/components。",
+    "references/useEventListener.md": "补齐条件属性和 onMounted 导入，将 NodeList 转为支持的多目标数组。",
+    "references/useIntersectionObserver.md": "为单次触发示例提供 DOM 模板引用。",
+    "references/useNow.md": "组件用法示例显式导入可选的 @vueuse/components。",
+    "references/useResizeObserver.md": "为指令示例补齐 ref 导入及回调参数类型。",
+    "references/useThrottleFn.md": "补齐 useEventListener 的显式导入。",
+    "references/useTimeoutPoll.md": "补齐 ref 导入，说明串行轮询、异常及暂停恢复的在途边界。",
+    "references/useDebounceFn.md": "等待防抖执行完成后展示 isPending 状态变化。"
+  },
+  "catalog": "https://skills.sh/vueuse/skills/vueuse-functions",
+  "upstreamHash": "898b0286e6c5eefab0d5cf010925d3911b2e127ea776adbf17027e2eca059888"
+}

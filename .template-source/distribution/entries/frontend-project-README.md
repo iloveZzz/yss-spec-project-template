@@ -1,6 +1,6 @@
 # __YSS_PROJECT_NAME__
 
-Frontend 项目入口见 [AGENTS.md](AGENTS.md)。默认安装 16 项工程与协作技能；设计、原型复核、逻辑原型及业务词汇维护按需补装，可用库共 20 项。
+Frontend 项目入口见 [AGENTS.md](AGENTS.md)。默认安装 18 项工程与协作技能；设计、原型复核、逻辑原型及业务词汇维护按需补装，可用库共 22 项。
 
 全团队工作方式见[用户手册](.template-spec/user-guide/用户手册.md)，团队讲义、演示和练习见[培训材料](.template-spec/user-guide/培训材料.md)，前端接入见[Frontend 教程](.template-spec/user-guide/cli/tutorial-frontend.md)。
 
@@ -8,7 +8,7 @@ Frontend 项目入口见 [AGENTS.md](AGENTS.md)。默认安装 16 项工程与�
 
 - 技能：`.agents/skills/`；业务词汇：`CONTEXT.md`；方法参考：`.template-spec/`。
 - 明确研发由 `implement` 协调，显式拆票由 `to-tickets` 按业务或工程意图组织；局部开发和只读 review 可直接进入专业技能。
-- 使用 `yss-frontend-application` 承接本次选定的规格、高保真原型与交互说明，优先复用既有工程和组件。
+- 使用 `yss-frontend-application` 承接本次选定的规格、高保真原型与交互说明，以 `shadcn-vue` 复用项目组件，浏览器交互和时间处理按需选用 `vueuse-functions`。
 - 前端命令优先 `pnpm`，依赖、启动和构建命令以实际工程为准；此安装只提供技能与入口，不生成 Vue 应用。
 - 支持 frontend 的 CLI 可用 `yss skills list --root .` 查询，`yss skills ensure yss-design-ui --root .` 补装设计能力，`yss sync --root . --dry-run` 预览同步。
 

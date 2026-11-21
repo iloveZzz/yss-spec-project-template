@@ -43,7 +43,7 @@ OpenAPI 补充核对：参考锁文件为 Orval 7.10.0，配置的 `client: 'axi
 
 ## 精选规范的来源快照（2026-11-05）
 
-下列技能是研究输入，不是原样执行的指令；精选参考使用 YSS 自有表述，未打包完整上游 Skill/手册。原型/组件快照的版权和来源清单独立保留。更新指导不等于更新组件。
+下表记录当时编写精选参考所用的研究输入。Frontend Profile 现单独分发 `shadcn-vue` 与 `vueuse-functions`，其来源以当前技能锁记录为准。原型和组件源码使用各自的来源清单与许可。
 
 | 来源 | 核对提交/版本 | 采纳及限制 |
 |---|---|---|
@@ -63,7 +63,7 @@ OpenAPI 补充核对：参考锁文件为 Orval 7.10.0，配置的 `client: 'axi
 
 ## 官方组件复用方法（2026-11-08）
 
-本次依据用户确认的自主接入范围和[官方组件目录](https://shadcn-vue.com/docs/components)、[配置](https://shadcn-vue.com/docs/components-json)、[CLI](https://shadcn-vue.com/docs/cli)完善组件参考。另核对官方 Skill 的 `d9aec43ae5eb258d62d532cc788c0f693c07bd5b` 来源，保留上表原始引入记录；本地方法适配不冒充上游升级，不复制完整 Skill 或继承其自动命令、强制表单库及 preset 政策。
+当时依据用户确认的自主接入范围和[官方组件目录](https://shadcn-vue.com/docs/components)、[配置](https://shadcn-vue.com/docs/components-json)、[CLI](https://shadcn-vue.com/docs/cli)完善组件参考，并核对官方 Skill 的 `d9aec43ae5eb258d62d532cc788c0f693c07bd5b` 来源。
 
 共享组件参考可作为叶子随设计技能分发，按实际任务选择本地/固定清单/官方固定源码。CLI 精确版本和组件 revision 分别核验；不因官方目录扩充而下载全部组件。本次方法变化不更新固定组件、许可或应用依赖锁；运行和宿主发现的实际结果应按当前任务说明。
 

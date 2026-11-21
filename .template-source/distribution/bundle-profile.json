@@ -559,6 +559,12 @@
           ".agents/skills/to-tickets/references/engineering-tickets.md",
           ".template-spec/agents/workbench-progress.md"
         ],
+        "shadcn-vue": [
+          ".template-spec/agents/frontend-skills-adaptation.md"
+        ],
+        "vueuse-functions": [
+          ".template-spec/agents/frontend-skills-adaptation.md"
+        ],
         "vue-best-practices": [
           ".template-spec/agents/frontend-skills-adaptation.md"
         ],
@@ -791,6 +797,12 @@
           ".template-spec/agents/issue-tracker-operations.md",
           ".agents/skills/to-tickets/references/engineering-tickets.md",
           ".template-spec/agents/workbench-progress.md"
+        ],
+        "shadcn-vue": [
+          ".template-spec/agents/frontend-skills-adaptation.md"
+        ],
+        "vueuse-functions": [
+          ".template-spec/agents/frontend-skills-adaptation.md"
         ],
         "vue-best-practices": [
           ".template-spec/agents/frontend-skills-adaptation.md"

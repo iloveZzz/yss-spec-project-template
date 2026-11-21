@@ -29,7 +29,7 @@
 
 补充 `assets/patches/VUE-HOOKS-PLUS-LICENSE.txt`，来源为同一 scrm-frontend HEAD 的 `.agents/skills/yss-frontend-scaffold-generator/assets/template/provenance/VUE-HOOKS-PLUS-LICENSE.txt`，保留 MIT 与 `Copyright (c) 2022 YongGit` 原文。仅取许可文件，不导入脚手架。复制或分发补丁时一并保留该许可证。
 
-初次导入未纳入 `yss-frontend-scaffold-generator`，后续重新引入见下文；仍不导入原版 `shadcn-vue` 技能。组件复用与生成遵循实际锁定版本、本地组件、Tailwind 4 与 Reka；不采用上游 AUTO、`@latest`、强制表单库或嵌入 CLI 对项目授权的扩张。保留 pnpm、Vue 3、TypeScript、按需 VueUse/useRequest、现有工程保护与取消不等于撤销的边界。
+初次导入未纳入 `yss-frontend-scaffold-generator`，后续重新引入见下文。当时的组件规则由应用技能内置，2026-11-21 起按下文分发独立的 `shadcn-vue`。组件复用与生成遵循实际锁定版本、本地组件、Tailwind 4 与 Reka；不采用上游 AUTO、`@latest`、强制表单库或嵌入 CLI 对项目授权的扩张。保留 pnpm、Vue 3、TypeScript、按需 VueUse/useRequest、现有工程保护与取消不等于撤销的边界。
 
 ## 副本与证据边界
 
@@ -58,3 +58,14 @@
 Frontend 应用技能与共享 implement 按需读取 `.template-spec/agents/workbench-progress.md`，在日常终端、工作台作业及 PR/MR/CI 跟进中沿同一 Spec 身份与目标版本上报实际前端、后端和集成版本及证据。前端工程、视觉/交互验证和真实联调各自关联实际结果，确认与手工更正接续其适用范围及版本。既有任务及原验收继续使用，新增目标沿用户实际决定处理。
 
 本轮同步根与 Frontend 的应用技能和共享 implement WorkBuddy 副本、PR/MR 叶子、两模式 skillReferences、共享进度方法白名单及来源说明副本。保留单一共享主源、默认成员、发现元数据和许可证，新 CLI 接口使用实际帮助核实后的契约。此处记录模板本地适配，实际安装、自然发现、浏览器与接口联调结果沿各次执行证据说明。
+
+## 2026-11-21 前端组件与 hooks 基座
+
+Frontend 的 `project` 和 `skills` 默认安装以下两个 skills.sh 技能。Spec 可按需补装。来源锁定上游提交，`skills-lock.json` 的 `upstreamHash` 记录 skills.sh CLI 针对原技能返回的摘要。YSS 维护的入口、参考与许可随 Bundle 分发。
+
+| 技能 | 来源与版本 | YSS 分发内容 |
+| --- | --- | --- |
+| `shadcn-vue` | [skills.sh 目录](https://skills.sh/unovue/shadcn-vue/shadcn-vue) · [unovue/shadcn-vue v2.9.0](https://github.com/unovue/shadcn-vue/tree/39cb0b277f009e47de2dc62c4217755fb9a27eec/skills/shadcn-vue) | 保留组件组合、样式、CLI、MCP 和 registry 方法及 MIT 许可证。按需读取工程配置；安装和更新参考贴合本地组件、定制和实际 CLI。 |
+| `vueuse-functions` | [skills.sh 目录](https://skills.sh/vueuse/skills/vueuse-functions) · [vueuse/skills 固定提交](https://github.com/vueuse/skills/tree/004812b4aa0815f5745ac30a6a7dc4927aec7b3d/skills/vueuse-functions) | 从该提交所用的 VueUse 15.0.0 文档精选 14 份函数参考，按浏览器交互、防抖节流、倒计时、串行轮询和日期显示组织入口。附技能和函数文档的 MIT 许可证。 |
+
+Vue 3 组件行为与可适配的自定义 hook 继续使用已适配的 [vue-best-practices](https://skills.sh/vuejs-ai/skills/vue-best-practices) 和 [create-adaptable-composable](https://skills.sh/vuejs-ai/skills/create-adaptable-composable)。两项均通过 skills.sh 的 `skills add` 在临时工程按原始提交核对，保留上文记录的本地适配。技能安装与应用的 npm 依赖各自按需处理。

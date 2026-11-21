@@ -1,6 +1,6 @@
 ---
 name: yss-layered-mvc-scaffold-generator
-description: 在新目录生成 YSS 分层 MVC Java 空工程。已有工程按现有 Service 和持久层增量维护。
+description: 在新目录生成 YSS 分层 MVC Java 空工程。已有工程沿用服务层和持久层增量维护。
 ---
 
 # YSS 分层 MVC 工程生成

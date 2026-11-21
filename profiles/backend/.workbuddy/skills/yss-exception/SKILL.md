@@ -1,6 +1,6 @@
 ---
 name: yss-exception
-description: "接入或排查 YSS 统一异常、错误码、异常处理器与 exception starter。"
+description: "接入 YSS 统一异常处理组件，排查自动配置、错误码及异常到 HTTP 响应的映射。"
 ---
 
 # yss-exception

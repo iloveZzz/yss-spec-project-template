@@ -1,6 +1,6 @@
 ---
 name: setup-yss-harness
-description: 安装或升级 YSS CLI 与 Skills；初始化或接入工程时配置 Git、远程仓库、Issue tracker 和产品 Home 关系，并处理同步冲突。
+description: 安装或升级 YSS CLI 和技能，处理同步冲突。初始化或接入工程时配置 Git 仓库和工单跟踪，关联产品规格与实现工程。
 ---
 
 # 安装与同步 YSS

@@ -6,7 +6,7 @@
 
 - 先查看 Git 状态、入口、`package.json`、锁文件、Node/pnpm 版本约定、路由、HTTP 客户端、样式入口及现成组件。保留未提交改动，不通过重建目录、覆盖配置或更新锁文件消除问题。
 - 实际 scripts 优先。参考工程 `yss-frontend-ui` 的 `lint` 带 `--fix`，另有 `lint:check`；不能把脚本名当成只读保证，也不能假定目标项目有相同脚本。
-- VueUse、vue-hooks-plus、shadcn-vue 按任务所需接入。复用符合当前技术基线的能力；迁移时检查受影响调用方与行为，删除已被替代的实现、配置、导出和测试，不保留双栈兼容层。只处理本次范围。
+- UI 工程以 shadcn-vue 为底座。存量工程先识别已有组件体系，在明确的迁移范围内替换受影响的实现、调用和测试。VueUse 与 vue-hooks-plus 按实际交互和请求需求接入。
 - `components/ui` 或对应别名下已有组件时先读源码与用法。shadcn-vue 生成的本地源码可能经过业务定制，新增组件不等于允许覆盖旧组件。
 - 新依赖前核对 `engines`、`peerDependencies`、现有 Vue/TypeScript/Vite/Tailwind 版本及锁文件解析结果；不要用强制忽略 peer 冲突掩盖不兼容。
 
@@ -14,7 +14,7 @@
 
 - 新建应用使用 `yss-frontend-scaffold-generator`；先核对实际 `yss version`、`yss scaffold frontend --help` 与 catalog。实际 CLI 支持时使用该命令。旧 CLI 不支持时说明能力缺口，不回退旧 Node 生成器。
 - 输出父目录必须存在，工程目录必须不存在，包括拒绝已有空目录。已有业务资产按存量流程处理，不删除/清空目录来满足生成条件。
-- 生成最小 Vue 3 + TypeScript + ESM + Vite + pnpm 工程，附 VueUse、Tailwind、Button/Input 与 ESLint。请求/useRequest/Axios/Orval 按实际任务接入；需要导航或共享状态再引入 Router/Pinia。
+- 生成最小 Vue 3 + TypeScript + ESM + Vite + pnpm 工程，含 shadcn-vue 的 `components.json`、本地 Button/Input、Tailwind 4、VueUse 与 ESLint。请求/useRequest/Axios/Orval 按实际任务接入；需要导航或共享状态再引入 Router/Pinia。
 - 生成只修改 package.name，资源由 Bundle 提供；生成收据不管理后续应用源码。需要技能时在生成后单独 `attach --profile frontend --installation skills`，仅安装技能不生成 starter。
 - 安装前检查父级 pnpm-workspace.yaml 的真实匹配范围，确认依赖命令不会进入其他 workspace。按 packageManager/engines 使用冻结锁安装，检查已有 lint/typecheck/build 并运行入口；不把源码生成当作运行通过。
 
@@ -24,7 +24,7 @@
 
 ## shadcn-vue 接入
 
-- 先核对 [Vite 安装说明](https://www.shadcn-vue.com/docs/installation/vite) 与本项目版本。CLI 的 `init`/`add` 会写文件，使用已核验的精确 CLI 版本，只生成所需组件并审阅差异。
+- 按 Frontend Profile 的 `shadcn-vue` 技能核对项目配置与本地组件，缺失组件按[组件工程](component-engineering.md)接入。首次装配 Vite 项目时核对项目版本与[官方安装说明](https://www.shadcn-vue.com/docs/installation/vite)。
 - 有 `components.json` 时沿用其样式、CSS 入口、别名与组件输出目录，不重复初始化。没有时按当前目录布局建立；不要另造第二套 `cn` 工具或全局样式入口。
 - TypeScript 实际参与检查的配置与 Vite 解析配置必须指向同一别名；存在 `tsconfig.app.json` 等引用配置时核对生效位置，不能只改根配置让编辑器通过。
 - 使用 Tailwind 4 与 `@tailwindcss/vite`，按实际入口装配 CSS。迁移完成的范围删除不再消费的 Tailwind 3/PostCSS 配置，不保留两套样式管线。

@@ -1,6 +1,6 @@
 ---
 name: yss-cache
-description: "接入或排查 YSS QueryCache、UpdateCache、ClearCache、TTL、缓存后端与一致性问题。"
+description: "接入 YSS 缓存查询、更新与清理注解，排查过期策略、存储后端与一致性问题。"
 ---
 
 # yss-cache

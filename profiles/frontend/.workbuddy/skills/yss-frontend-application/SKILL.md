@@ -1,6 +1,6 @@
 ---
 name: yss-frontend-application
-description: Use when implementing, engineering, or reviewing Vue 3 frontend applications from high-fidelity designs, prototypes, page code, or OpenAPI contracts（前端工程化、设计还原、接口生成与工程审查）；纯产品设计或原型改稿使用 yss-design-ui。
+description: 使用 shadcn-vue 组件底座将高保真设计、交互原型或 OpenAPI 契约接入 Vue 3 前端工程，承接页面实现、局部修复及工程审查。纯产品设计或原型改稿使用 yss-design-ui。
 ---
 
 # YSS 前端应用工程
@@ -30,15 +30,17 @@ description: Use when implementing, engineering, or reviewing Vue 3 frontend app
 | 应用 | Vue 3、TypeScript、ESM、Vite、pnpm，`<script setup lang="ts">` | 先读实际版本、scripts、锁文件和约定；只迁移当前明确范围 |
 | Vue hooks | Composition API 的 composables；通用浏览器/交互能力优先 VueUse 15（`@vueuse/core`） | “vue hooks”不是唯一 npm 包名；查现有 import，明确具体包后使用 |
 | 请求状态 | 需要异步状态能力时使用 `vue-hooks-plus/useRequest`（从 `vue-hooks-plus` 导入） | 与已有请求管理器选择一个状态所有者；不叠加轮询、缓存或重试 |
-| UI | shadcn-vue 本地组件 + Tailwind 4 + Reka | 复用符合基线的 `components/ui`、tokens、variants，不以默认主题重画 |
+| UI | 以 shadcn-vue 本地组件为底座，使用 Tailwind 4 和 Reka UI | 通过 `components.json` 的实际别名找到项目持有的组件，复用定制、tokens 与 variants |
 | 路由/共享状态 | 多页面使用 Vue Router；确需跨页面状态时使用 Pinia | 保留既有入口和状态归属，迁移受影响调用者时才调整 |
 | 接口契约 | 任务需要时接入 OpenAPI 3 + Orval 8，生成普通异步函数与 DTO 类型 | 复用真实契约与统一 transport，生成代码和手写代码分开 |
 
-修改 Vue 逻辑时，使用可用的 `vue-best-practices`；有独立状态职责或可复用 composable 接口时再用 `create-adaptable-composable`。产品流程或视觉缺口由可用的 `yss-design-ui` 协作；事实缺口可交给 `yss-research`。按技能名在当前环境发现它们，不假定仓库路径、不自动安装。缺少辅助技能时，本技能的边界仍适用，依据项目源码和官方资料继续可完成的部分。
+修改 Vue 3 响应性、SFC 数据流与生命周期时，使用 `vue-best-practices`。编写浏览器交互、防抖或计时 hooks 时，先用 Frontend Profile 的 `vueuse-functions` 选用项目版本支持的组合式函数；抽取需要接收普通值、ref 或 getter 的公共 hook 时，使用 `create-adaptable-composable`。产品流程或视觉缺口由可用的 `yss-design-ui` 协作，事实缺口可交给 `yss-research`。按技能名在当前环境发现它们，单项安装缺少协作技能时依据项目源码和官方资料继续。
 
-精选规范随本技能内置，按任务读取：通用交互/hook 用 [VueUse](references/vueuse.md)，组件/表单/弹层用 [组件工程](references/component-engineering.md)，测试与工具接入用 [质量工具](references/quality-tooling.md)，复杂表格/表单/共享状态等用 [可选能力](references/optional-capabilities.md)。上游技能的 AUTO、强制表单库、目录偏好或嵌入 CLI 不覆盖项目约定，不要求整包安装。
+Frontend Profile 默认分发按 YSS 工程约定适配的官方 `shadcn-vue` 技能。实现或审查 UI 组件时，先用该技能识别项目配置、查找组件并核对组合方式。以本地导出和调用方确认实际 API，用 [组件工程](references/component-engineering.md) 衔接设计 tokens、业务状态、键盘交互和来源记录。单项安装缺少该技能时，按同一参考和官方文档工作。
 
-缺少官方 shadcn-vue 组件时，在已有开发授权内按组件工程参考自主完成兼容来源获取、必要依赖/配置补齐、现有主题与尺寸适配、类型检查/构建及关键交互验证。大版本升级、改动已有定制组件或全局主题时，先给出具体影响与处理方案，由用户决定；不能把缺少组件转成默认重建、整包安装或反复请求普通接入许可。
+已有开发授权涵盖按需引入兼容组件、补齐依赖、适配现有主题与验证。涉及大版本升级、改变已有定制组件或全局主题时，复用本次已确认的范围；超出时先说明具体影响，由用户决定。只读审查以现有文件和查询结果为据。
+
+通用交互和 hooks 见 [VueUse](references/vueuse.md)，测试与工具接入见 [质量工具](references/quality-tooling.md)，复杂表格、表单和共享状态见 [可选能力](references/optional-capabilities.md)。
 
 纯文案、颜色或间距修改沿用现有设计规则，不因文件为 `.vue` 就加载逻辑技能、引入新依赖或新增逻辑测试。
 

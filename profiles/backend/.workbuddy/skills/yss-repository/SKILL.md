@@ -1,6 +1,6 @@
 ---
 name: yss-repository
-description: 按已确认的 YSS 架构与持久化输入实现或重构 PO、Repository、Convertor、Gateway/Query Adapter；不提供可照抄的业务代码。
+description: 按既定架构和数据模型实现或重构持久化对象、仓储及转换器，适配领域网关与查询接口。
 ---
 
 # YSS 持久化实现

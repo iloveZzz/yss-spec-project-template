@@ -1,6 +1,6 @@
 # 前端技能整合与分发边界
 
-本页记录从 SCRM 前端技能适配到 YSS 共享技能库的取舍。四个前端技能的主源均位于根 `.agents/skills`；Frontend 按白名单默认分发，Spec 按需使用，Backend 不分发。仅在维护或追溯时读取；不是普通页面任务的固定流程。
+本页记录 YSS 前端工程技能的分工。共享源位于根 `.agents/skills`，Frontend 按白名单分发。各 Profile 的实际安装集合以对应的 Bundle 清单为准。
 
 ## 职责
 
@@ -8,7 +8,9 @@
 |---|---|---|
 | yss-frontend-scaffold-generator | 在不存在的新目录调用原生 CLI 生成最小 Vue 工程 | 不处理存量工程、只读 review 或仅技能安装；不隐式安装请求栈 |
 | yss-frontend-application | 将选定规格、高保真设计、原型和 OpenAPI 接入 Vue 3 工程 | 只读 review 不转实现；开发授权不包含提交、推送或部署 |
+| shadcn-vue | UI 工程底座，识别项目配置，查找、组合和定制本地组件 | 工程技能补充设计还原、存量定制和兼容来源要求 |
 | vue-best-practices | Vue 响应性、组件数据流、生命周期与职责拆分 | 按受影响逻辑读取参考，纯文案/样式不触发 |
+| vueuse-functions | 按功能选择 VueUse hooks，例如防抖、倒计时、事件监听 | 按项目锁定版本确认 API 与作用域，沿用已有请求调度 |
 | create-adaptable-composable | 确有需要的响应式/普通输入接口 | Vue 3.3+；不为简单局部状态新增抽象 |
 | yss-design-ui 等可用协作技能 | 产品设计、交互说明及事实核对 | 按需发现；缺少辅助技能不自动安装或中断已能完成的工作 |
 
@@ -23,10 +25,8 @@
 - 页面普通 TypeScript schemas、hooks 与组件分别承担真实职责；复杂表单、表格和全局状态能力按需使用，不强制全量安装。
 - 上游 AUTO、全任务必读、`@latest`、强制表单库或嵌入 CLI 不覆盖当前仓库约定与用户授权。
 
-前一轮导入仅核对文档与副本。本轮最小 starter 已执行冻结安装、lint、类型检查、构建和入口浏览器检查；这些结果不代表具体业务页面、接口生成或联调通过。历史来源与版本观察见 [来源与适配](source-adaptation.md)，不能据此声明当前目标工程已验证。
+最小 starter 首次整合时执行过冻结安装、lint、类型检查、构建和入口浏览器检查。当前任务的交付依据目标工程的实际结果。历史来源与版本观察见 [来源与适配](source-adaptation.md)。
 
-## 官方组件按需接入（2026-11-08）
+## 工程与原型如何复用组件指导
 
-设计与应用共用 `references/component-engineering.md` 的组件发现、兼容获取、适配和验证方法。设计技能只通过 Spec/Frontend 的两种安装模式分发这个自包含叶子，不依赖完整应用技能或 starter；同名平台副本从共享源同步。没有新增技能或扩大默认安装集合。
-
-已有页面/原型任务可自主补齐兼容官方组件；大版本升级、已有定制改动和全局主题变化先交付具体方案，由用户决定。官方 Skill/MCP 仅为按需查询辅助，安装它们不构成前置。starter 只增加描述已有结构的组件配置；组件快照、上游版本身份、运行依赖及主题保持原基线。
+设计与应用共用 `references/component-engineering.md` 的来源核对、设计适配和验证方法。设计技能可单独使用这个自包含参考。Frontend Profile 在此基础上分发 `shadcn-vue` 和 `vueuse-functions`，供组件工程和 Vue hooks 开发分别调用。MCP 按项目实际配置使用。

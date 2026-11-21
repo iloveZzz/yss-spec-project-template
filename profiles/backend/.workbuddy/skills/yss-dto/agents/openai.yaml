@@ -1,5 +1,5 @@
 version: 1
 interface:
   display_name: "实现与核验 DTO"
-  short_description: "实现或核验 Result、分页、命令与查询 DTO 及传输边界"
+  short_description: "实现或核验命令、查询、分页与结果 DTO 的公开接口格式"
   default_prompt: "Use $yss-dto to define YSS-style DTOs, page queries, commands, unified response models, and their OpenAPI HTTP/JSON wire shapes."

@@ -1,6 +1,6 @@
 ---
 name: yss-tactical-design
-description: 在实际 DDD 工程需要设计聚合、实体、行为、不变量、事件或 Gateway 时使用；MVC 任务不适用。
+description: 按业务规则设计 DDD 工程的聚合边界、实体行为、不变量、领域事件与领域网关。
 ---
 
 # DDD 战术设计

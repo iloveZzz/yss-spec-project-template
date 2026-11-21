@@ -1,6 +1,6 @@
 ---
 name: yss-domain
-description: 在已确认的 DDD 边界内实现或重构领域行为、不变量、状态机与 Gateway；不起草领域设计。
+description: 在已确认的 DDD 边界内实现或重构领域行为、不变量、状态机与领域网关。
 ---
 
 # YSS 领域实现

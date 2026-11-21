@@ -15,6 +15,12 @@
     },
     "vuejs-ai/skills": {
       "revision": "198f0cd8f7f9c0a3d9b566ccc16de6677519ee78"
+    },
+    "unovue/shadcn-vue": {
+      "revision": "39cb0b277f009e47de2dc62c4217755fb9a27eec"
+    },
+    "vueuse/skills": {
+      "revision": "004812b4aa0815f5745ac30a6a7dc4927aec7b3d"
     }
   },
   "skills": {
@@ -649,6 +655,32 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-frontend-application/SKILL.md",
+        "adaptationRef": ".template-spec/agents/frontend-skills-adaptation.md",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".workbuddy/skills"
+        ]
+      },
+      "shadcn-vue": {
+        "source": "unovue/shadcn-vue",
+        "sourceType": "github",
+        "skillPath": "skills/shadcn-vue/SKILL.md",
+        "sourceRevision": "39cb0b277f009e47de2dc62c4217755fb9a27eec",
+        "upstreamHash": "a5a9b576670e98117b103e966dccb833386d4a616cd7e42d338ea8fa7c3f32fe",
+        "adaptationRef": ".template-spec/agents/frontend-skills-adaptation.md",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".workbuddy/skills"
+        ]
+      },
+      "vueuse-functions": {
+        "source": "vueuse/skills",
+        "sourceType": "github",
+        "skillPath": "skills/vueuse-functions/SKILL.md",
+        "sourceRevision": "004812b4aa0815f5745ac30a6a7dc4927aec7b3d",
+        "upstreamHash": "898b0286e6c5eefab0d5cf010925d3911b2e127ea776adbf17027e2eca059888",
         "adaptationRef": ".template-spec/agents/frontend-skills-adaptation.md",
         "targets": [
           ".agents/skills",

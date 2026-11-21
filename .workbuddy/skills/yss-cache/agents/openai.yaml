@@ -1,5 +1,5 @@
 version: 1
 interface:
   display_name: "接入与排查缓存"
-  short_description: "接入或排查查询缓存、更新与清理、TTL 和一致性"
+  short_description: "配置缓存查询、更新与清理，排查过期策略和数据一致性"
   default_prompt: "Use $yss-cache to configure or diagnose YSS cache annotations, Redis topology, fallback, TTL, and serialization behavior."
