@@ -29,7 +29,7 @@
         "source": "mattpocock/skills",
         "sourceType": "github",
         "skillPath": "skills/engineering/code-review/SKILL.md",
-        "effectiveHash": "253f0690c526804d6695043e9b137b0fb9ee3c4c8725def64f5305b074eeb4ca",
+        "effectiveHash": "9b21f774ef1e8740f82067d6dbf6a6979b11c4f9808a3b9679972a9ace7bf18e",
         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
         "upstreamHash": "12daafb9c4f77deb3c3303dc2e6f8a3c2a0ff7928fc004af959ba18b8bd38068",
         "adaptationRef": ".template-spec/agents/matt-skills-adaptation.md",
@@ -68,7 +68,7 @@
         "source": "mattpocock/skills",
         "sourceType": "github",
         "skillPath": "skills/engineering/domain-modeling/SKILL.md",
-        "effectiveHash": "2b82a0b15a1eca6f5801fac8a0c76839d688159df918362d8d16c652601c6630",
+        "effectiveHash": "cb4eaee20800969f16e3dd0f55aaf63f6288b45426238579427163d56b4cc9e3",
         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
         "upstreamHash": "2bc3bb0a64ea9c6f5c3bcf78fc17f0fcdc7c062edc547ef006441de0b576d248",
         "adaptationRef": ".template-spec/agents/matt-skills-adaptation.md",
@@ -91,7 +91,7 @@
         "source": "mattpocock/skills",
         "sourceType": "github",
         "skillPath": "skills/productivity/grilling/SKILL.md",
-        "effectiveHash": "51e248729cd49b315f48ebdad35e30746e9a2afe073e3c5cac73c526b7f6b14e",
+        "effectiveHash": "8efa457494df18c132250ea7ca65573c2e2303a8f88aac5ea2555e5dc1524ef1",
         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
         "upstreamHash": "0ca4cfe5105d79c6ef6755491492e056c43e88b82666376d8ecd7fac695d96e6",
         "adaptationRef": ".template-spec/agents/matt-skills-adaptation.md",
@@ -130,7 +130,7 @@
         "source": "mattpocock/skills",
         "sourceType": "github",
         "skillPath": "skills/engineering/implement/SKILL.md",
-        "effectiveHash": "68cba9cefe9836bb3621ec0d057b801829a18663750a04a905fbbbe7fe8c82d8",
+        "effectiveHash": "98c6efd2b58e606a30ffa03f93ffb5550adf97ed14c4b19c5e6d529235bea248",
         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
         "upstreamHash": "b49a049477c7eec7f8dd90745dbc3f27bf75617b832d5b5f33c55aab7638a12e",
         "adaptationRef": ".template-spec/agents/matt-skills-adaptation.md",
@@ -280,7 +280,7 @@
         "source": "mattpocock/skills",
         "sourceType": "github",
         "skillPath": "skills/engineering/to-tickets/SKILL.md",
-        "effectiveHash": "e7d68d73ed0e79868b139c908d0e070ad47a2796a407b4561317957a53887b74",
+        "effectiveHash": "37d2dbca9985bb623b7877481997b398ea3316ad1f05b89d3702521cf17e2b54",
         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
         "upstreamHash": "597a1a0af4f7391ab459a02a3f33576109b6bc61ecdc5e7e05149336858b4f29",
         "adaptationRef": ".template-spec/agents/matt-skills-adaptation.md",
@@ -535,7 +535,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-analyze-business/SKILL.md",
-        "effectiveHash": "fb2db8b702a9665bdd946f07b115419de42fb61e07ae380da97fb14174bb49b9",
+        "effectiveHash": "5cf1871c7dc04912d8053502caaad45c16472ff2323efe7ad812b5f13ff24132",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"
@@ -545,7 +545,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-tactical-design/SKILL.md",
-        "effectiveHash": "e7169cd0199fdd65789cf2775c154d07359e090049677d60e9413bdb1a80152a",
+        "effectiveHash": "427500962cb798bcc9b83a92a1b01dfeabf52130d88d26b412d9411b0686a9da",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"
@@ -555,7 +555,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-technical-design/SKILL.md",
-        "effectiveHash": "b6badb51a5a15fca5fe9f0dc4354bfcf2528d0ba56dbf06675f259169d0a7dd6",
+        "effectiveHash": "3033147fdd65308ee2efd808b1e1758cb51253c0563b62febab38ea86622f963",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"

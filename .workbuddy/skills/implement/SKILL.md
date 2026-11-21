@@ -13,6 +13,8 @@ When accepting or resuming work from a Ticket URL, number or existing tracker it
 
 Keep the observable goal, actual repository and paths, interface dependencies, acceptance and applicable skills in the existing task. Business rules stay in their original source: a source file remains authoritative, and an Issue body is authoritative only when the Issue is itself the source. When using a tracker, keep current execution status there and link the actual engineering results without creating a parallel rule set, status ledger or implementation contract.
 
+改动共用权限、状态或契约时，从实际消费者查到仍适用的原 FR/AC 和采用版本。沿现有用例入口核对本次行为和受影响的原验收，记录拒绝或失败后应保留的数据，说明模拟结果与实际执行结果。
+
 接续已登记 Spec 的研发、日常终端任务、工作台作业及 PR/MR/CI 进展时，按项目根读取 `.template-spec/agents/workbench-progress.md`。沿用同一 dataDir、specId、实际 Spec 摘要及目标版本，关联真实参与工程、采用版本和原验收，报告实际阶段证据。按本次本地实现、合并或环境验证目标完成，关键需求、业务验收及最终交付沿用户实际确认接续。仅工作台同步能力缺失且写入条件已齐备时，继续原授权研发并在原任务注明工作台待同步。
 
 For an explicit request for complex engineering work, or when the engineering scope needs decomposition, read `.agents/skills/to-tickets/references/engineering-tickets.md` from the project root. Follow its method to check ownership, dependencies and continuation needs, reuse or organize the minimum necessary work items, and continue within the current authorization. Read the leaf directly without installing or invoking the whole `to-tickets` skill. Persist remote work items only within the authorization for those operations.

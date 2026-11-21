@@ -144,6 +144,8 @@ yss workbench --data-dir "$YSS_PROGRESS_DATA_DIR" progress reconcile --spec-id "
 
 ## 交接与 Agent 续办请求
 
-Spec 交接、工作台生成的 `agent_request` 和人工续办提示共用已核实的 `dataDir`、`specId`、`specDigest` 与 `goalVersion`，附主 Spec/原型/交互说明的实际位置和采用版本、参与工程身份及采用版本、原验收引用、完成终点、当前进展、缺口和下一步。自定义目录放在受控续办上下文中，分发模板使用占位项。
+Spec 交接先核实同一 `dataDir` 和 `specId`，附实际采用的主 Spec、关联产物、工程版本、原验收、完成终点及当前缺口。自定义目录放在受控续办上下文中，分发模板使用占位项。
+
+终端 `request` 和工作台可复制续办文本将主文件的「来源摘要」与生命周期上报上下文分开。上报使用后者的 `specDigest`，关联已登记目标时读取其中的 `progress.goalVersion`。续办文本缺少这些数据时，按上文的 `snapshot` 和 `lifecycle` 只读核实。Pi 的隔离作业通过工作台关联实际进度，绑定目标时会附本次运行的目标版本和摘要。
 
 接收方先读取当前材料及工作台记录，核对来源变化和已完成工作，再在原授权范围继续。保存或修改产物后仍登记原主 Spec，阶段报告继续写回同一数据目录及 Spec。已有聊天答复与用户确认沿实际来源接续，缺失关联信息写明待核实并保留已有决定。

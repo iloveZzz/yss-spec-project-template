@@ -398,11 +398,15 @@
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "domain-modeling": [
-          ".template-spec/agents/matt-skills-adaptation.md"
+          ".template-spec/agents/matt-skills-adaptation.md",
+          ".template-spec/agents/issue-tracker.md",
+          ".template-spec/agents/issue-tracker-operations.md"
         ],
         "git-commit-core": [],
         "grilling": [
-          ".template-spec/agents/matt-skills-adaptation.md"
+          ".template-spec/agents/matt-skills-adaptation.md",
+          ".template-spec/agents/issue-tracker.md",
+          ".template-spec/agents/issue-tracker-operations.md"
         ],
         "yss-deliver-pr-mr": [
           ".template-spec/agents/matt-skills-adaptation.md"
@@ -516,6 +520,7 @@
           ".template-spec/agents/issue-tracker.md",
           ".template-spec/templates/spec-template.md",
           ".agents/skills/grilling/SKILL.md",
+          ".agents/skills/yss-analyze-business/references/business-analysis.md",
           ".template-spec/agents/issue-tracker-operations.md",
           ".template-spec/agents/workbench-progress.md"
         ],
@@ -626,11 +631,15 @@
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "domain-modeling": [
-          ".template-spec/agents/matt-skills-adaptation.md"
+          ".template-spec/agents/matt-skills-adaptation.md",
+          ".template-spec/agents/issue-tracker.md",
+          ".template-spec/agents/issue-tracker-operations.md"
         ],
         "git-commit-core": [],
         "grilling": [
-          ".template-spec/agents/matt-skills-adaptation.md"
+          ".template-spec/agents/matt-skills-adaptation.md",
+          ".template-spec/agents/issue-tracker.md",
+          ".template-spec/agents/issue-tracker-operations.md"
         ],
         "yss-deliver-pr-mr": [
           ".template-spec/agents/matt-skills-adaptation.md"
@@ -744,6 +753,7 @@
           ".template-spec/agents/issue-tracker.md",
           ".template-spec/templates/spec-template.md",
           ".agents/skills/grilling/SKILL.md",
+          ".agents/skills/yss-analyze-business/references/business-analysis.md",
           ".template-spec/agents/issue-tracker-operations.md",
           ".template-spec/agents/workbench-progress.md"
         ],

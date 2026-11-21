@@ -410,7 +410,9 @@
           ".agents/skills/setup-yss-harness/references/host-compatibility.md"
         ],
         "grilling": [
-          ".template-spec/agents/matt-skills-adaptation.md"
+          ".template-spec/agents/matt-skills-adaptation.md",
+          ".template-spec/agents/issue-tracker.md",
+          ".template-spec/agents/issue-tracker-operations.md"
         ],
         "yss-write-docs": [
           ".template-spec/process/document-writing.md",
@@ -449,7 +451,9 @@
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "domain-modeling": [
-          ".template-spec/agents/matt-skills-adaptation.md"
+          ".template-spec/agents/matt-skills-adaptation.md",
+          ".template-spec/agents/issue-tracker.md",
+          ".template-spec/agents/issue-tracker-operations.md"
         ],
         "yss-frontend-scaffold-generator": [
           ".template-spec/agents/frontend-skills-adaptation.md"
@@ -541,7 +545,9 @@
           ".agents/skills/setup-yss-harness/references/host-compatibility.md"
         ],
         "grilling": [
-          ".template-spec/agents/matt-skills-adaptation.md"
+          ".template-spec/agents/matt-skills-adaptation.md",
+          ".template-spec/agents/issue-tracker.md",
+          ".template-spec/agents/issue-tracker-operations.md"
         ],
         "yss-write-docs": [
           ".template-spec/process/document-writing.md",
@@ -580,7 +586,9 @@
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "domain-modeling": [
-          ".template-spec/agents/matt-skills-adaptation.md"
+          ".template-spec/agents/matt-skills-adaptation.md",
+          ".template-spec/agents/issue-tracker.md",
+          ".template-spec/agents/issue-tracker-operations.md"
         ],
         "yss-frontend-scaffold-generator": [
           ".template-spec/agents/frontend-skills-adaptation.md"

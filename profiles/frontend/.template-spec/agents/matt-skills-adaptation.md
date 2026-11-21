@@ -1,6 +1,6 @@
 # Matt skills 来源与本地适配
 
-首次核验日期：2026-10-31；本次修订日期：2026-11-13。此文件记录来源与本地差异，不是技能使用前置或执行授权。
+首次核验日期为 2026-10-31，下列上游版本比较记录于 2026-11-13。各次本地适配另外注明范围。日常使用技能无需预读本文件，执行权限沿本次任务已有授权。
 
 - 原始来源：[mattpocock/skills](https://github.com/mattpocock/skills)，引入提交 `0ab1b63a410a03d3627979a109c8695de27af954`。
 - 本次比较提交：`5863806dd4e15c63174bee4e7515a4256792ecfa`（插件 1.3.2，2026-11-13 查询）；相对此前比较提交 `4ae2317ddb22b046e26455e4f9c9b3aaaf62212d` 仅有实验性 software-factory 的文字修订，Spec 核心无新增变化。比较不表示整包升级或重新引入。
@@ -12,8 +12,8 @@
 | `code-review` | 有证据的只读审查 | 已适配；文本与结构已核对 | `.agents/skills/code-review/SKILL.md` |
 | `codebase-design` | 模块边界与接口备选 | 已适配；文本与结构已核对 | `.agents/skills/codebase-design/SKILL.md` |
 | `diagnosing-bugs` | 故障与性能诊断 | 已适配；文本与结构已核对 | `.agents/skills/diagnosing-bugs/SKILL.md` |
-| `domain-modeling` | 根 CONTEXT 与业务词汇 | 已适配；文本与结构已核对 | `.agents/skills/domain-modeling/SKILL.md` |
-| `grilling` | 围绕真实分歧逐项提问 | 已适配；文本与结构已核对 | `.agents/skills/grilling/SKILL.md` |
+| `domain-modeling` | 根 CONTEXT 与业务词汇，按适用范围复用已有裁决 | 2026-11-21 补充按需查到本项目已关闭工单的方法 | `.agents/skills/domain-modeling/SKILL.md` |
+| `grilling` | 用能区分结果的场景澄清真实分歧 | 2026-11-21 补充单独使用时找回已有决定的方法 | `.agents/skills/grilling/SKILL.md` |
 | `yss-deliver-pr-mr`（上游 `handoff`） | PR/MR 文件交付 | 保留本地差异，已核对 | `.agents/skills/yss-deliver-pr-mr/SKILL.md` |
 | `implement` | 承接明确 Ticket 或当前需求 | 已适配；文本与结构已核对 | `.agents/skills/implement/SKILL.md` |
 | `yss-prototype-logic`（上游 `prototype`） | 临时逻辑实验；Backend 保留后端边界 | 已适配；文本与结构已核对 | `.agents/skills/yss-prototype-logic/SKILL.md` |
@@ -273,3 +273,7 @@ Lombok、MapStruct 示例按模型职责修订，Backend implement、testing 与
 工程自动检查留在 SCRM 既有测试和工具入口，模板只维护规则、方法和必要引用。受影响平台副本、单项安装的资源闭包与已有 effectiveHash 同步更新，原始 sourceRevision/upstreamHash 保留。修改、分发、隔离演练和真实宿主发现分别报告，目录一致或编译通过不证明真实任务收益。
 
 首轮隔离对照使用相同阅读提醒任务及三个只读反例。两组均完成 HTTP 与领域实现、自测及反例审查，统一外部探针发现候选产物遗漏非断行空格标题，一些非领域模型注释也不完整；该失败保留，不以自测通过或文档修订宣称效果提升。随后修正 Lombok 文本示例并补充 yss-validation 的边界核验提醒，后续案例与首轮结果分开记录。这些是子代理演练，不能外推宿主原生发现、生产效果或稳定收益。
+
+## 2026-11-21 业务前提与旧验收
+
+对照上游 `abeeaf9` 的 [领域建模与上下文关系](https://github.com/mattpocock/skills/blob/abeeaf95660ba9e8b7c753eb38f441ca707a8823/skills/engineering/domain-modeling/GLOSSARY-FORMAT.md#L32) 和 [wayfinder 的决定索引](https://github.com/mattpocock/skills/blob/abeeaf95660ba9e8b7c753eb38f441ca707a8823/skills/engineering/wayfinder/SKILL.md#L19)。YSS 在原 OQ 记下影响答案的前提，按原 Spec 写清跨责任区事实的维护和消费方式，并将受影响的旧 FR/AC 接到工程拆分、实现及审查。稳定词义沿根 `CONTEXT.md` 和已有 `ContextId`。分发保持原技能入口及来源身份，生效情况见本次实际安装和演练记录。
