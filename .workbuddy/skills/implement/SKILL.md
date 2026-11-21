@@ -17,6 +17,8 @@ Keep the observable goal, actual repository and paths, interface dependencies, a
 
 For an explicit request for complex engineering work, or when the engineering scope needs decomposition, read `.agents/skills/to-tickets/references/engineering-tickets.md` from the project root. Follow its method to check ownership, dependencies and continuation needs, reuse or organize the minimum necessary work items, and continue within the current authorization. Read the leaf directly without installing or invoking the whole `to-tickets` skill. Persist remote work items only within the authorization for those operations.
 
+复杂拆分、跨仓集成、跨会话续办或执行已有计划时，读取 [实现计划与执行](references/implementation-plan.md)，按原验收安排工作，用实际证据推进和续办。清晰的小改动直接完成。
+
 When a parent business ticket exists, aggregate actual results against its AC and identify unmet or unverified acceptance. Child tickets being closed or PRs/MRs being merged do not establish business completion. Engineering completion, business acceptance and permission to update or close the parent are separate facts; report only the facts supported by results and the current authorization.
 
 When entering an engineering repository from Home, working across repositories or submodules, or resolving an unclear project root, read [repository scope and protection](references/repository-scope.md). Follow the actual target repository's rules and effective skills; changing the shell directory does not reload host instructions. A read-only investigation does not authorize implementation writes; the current request determines which repositories and actions are allowed.

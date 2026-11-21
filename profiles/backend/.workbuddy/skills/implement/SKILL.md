@@ -26,6 +26,7 @@ For multiple repositories, submodules or an unclear project root, read [reposito
 按当前任务选择方法：完整研发交付承接 Spec 的规则、验收与产品原型说明，覆盖必要的拆分、设计、脚手架、实现和测试；已有清晰的小任务直接完成受影响部分。业务决定缺失时定点澄清，不重做产品设计，不要求先创建票据。
 
 - 收到明确的复杂研发请求或确需拆分时，按项目根读取 `.agents/skills/to-tickets/references/engineering-tickets.md`，检查责任、依赖和接续需要，主动复用或组织必要工作；后端实现切片继续按 `to-tickets` 的专业方法细化，保存与远程操作沿对应授权。
+- 复杂拆分、跨仓集成、跨会话续办或执行已有计划时，读取 [实现计划与执行](references/implementation-plan.md)，按原验收安排工作，用实际证据推进和续办。
 - 需要架构、方案或详细设计判断时使用 `yss-technical-design`；仅实际 DDD 设计使用 `yss-tactical-design`，MVC 沿用已有 Service 边界，不补 Domain/Gateway。
 - 新建工程才按实际 DDD/MVC 选择对应脚手架，沿用项目 POM、平台和版本；安装了组件技能不等于需要给业务工程添加全部组件。
 - 分页、缓存等组件排障使用对应 `yss-mybatis`、`yss-cache` 等技能核实工程实际依赖、配置与源码版本；明确规则的 DDD/MVC 开发直接沿现有边界完成。
