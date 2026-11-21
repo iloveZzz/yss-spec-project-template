@@ -406,7 +406,8 @@
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "yss-help": [
-          ".template-spec/agents/profile-skills.md"
+          ".template-spec/agents/profile-skills.md",
+          ".agents/skills/setup-yss-harness/references/host-compatibility.md"
         ],
         "grilling": [
           ".template-spec/agents/matt-skills-adaptation.md"
@@ -536,7 +537,8 @@
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "yss-help": [
-          ".template-spec/agents/profile-skills.md"
+          ".template-spec/agents/profile-skills.md",
+          ".agents/skills/setup-yss-harness/references/host-compatibility.md"
         ],
         "grilling": [
           ".template-spec/agents/matt-skills-adaptation.md"

@@ -1,0 +1,1042 @@
+{
+  "date": "2026-11-21",
+  "scope": "本地合成退款样本。宿主验证使用相同的最终模板，CLI 另补退役入口诊断后使用旧收据复核。现场路径保留在会话原文中。",
+  "builds": {
+    "上次交付": {
+      "version": "3.14.0",
+      "target": "aarch64-apple-darwin",
+      "source": {
+        "commit": "74f3f5c5c8f67bc1526ae5e0de64e2d2346ee2b9",
+        "state": "working-tree",
+        "snapshot": "73cb1ec9fa91ae3345c8fe8328ea0d9c4743a42c9c5adf41ce1baa50b24bf2e1"
+      },
+      "bundleDigest": "7439649375bf3998f4e11c89acd8b9d0ccb8da2c72a1671d6259134567d9a54c"
+    },
+    "本轮首次工作台复验": {
+      "version": "3.14.0",
+      "target": "aarch64-apple-darwin",
+      "source": {
+        "commit": "74f3f5c5c8f67bc1526ae5e0de64e2d2346ee2b9",
+        "state": "working-tree",
+        "snapshot": "856a148a02d50ef8c59e17e0139f792920767131a69249c32f422d3689b314cd"
+      },
+      "bundleDigest": "ec53a1fd2365c0986b58890a8db97bf9533256543b4a23a325bd76f2c518ab58"
+    },
+    "最终模板宿主及分发复验": {
+      "version": "3.14.0",
+      "target": "aarch64-apple-darwin",
+      "source": {
+        "commit": "74f3f5c5c8f67bc1526ae5e0de64e2d2346ee2b9",
+        "state": "working-tree",
+        "snapshot": "925cabc0d1f404de2b1bf6e406ec1e4788e969c8dad75b678d5551ce5f707c28"
+      },
+      "bundleDigest": "9bf05a1a9ed8b9c0f84a02aec8db7af2c6367638cb8e99105472d9135ee6c317"
+    },
+    "最终两仓候选": {
+      "version": "3.14.0",
+      "target": "aarch64-apple-darwin",
+      "source": {
+        "commit": "74f3f5c5c8f67bc1526ae5e0de64e2d2346ee2b9",
+        "state": "working-tree",
+        "snapshot": "90e31eb467a5f0be524bac38e316b5ccb68c5113e156849b84e2fa630a01d9d0"
+      },
+      "bundleDigest": "9bf05a1a9ed8b9c0f84a02aec8db7af2c6367638cb8e99105472d9135ee6c317"
+    }
+  },
+  "finalTemplate": {
+    "effectiveHash": "bd31b48fc30324148cac3503f2e615c749fffe5b00b866c046ff10ccc53fd422",
+    "helpSHA256": "6782399df3c0dff090b8ca696ee64846548e1e55ef29d31b621a742ac4b7c584",
+    "mapSHA256": "4a2a49be7ad457c82fd1989705ff755b079468b78bfcf3eda01392b9b9c9f7eb"
+  },
+  "distributions": [
+    {
+      "profile": "spec",
+      "mode": "project",
+      "help": "installed",
+      "helpFiles": {
+        "SKILL.md": "6782399df3c0dff090b8ca696ee64846548e1e55ef29d31b621a742ac4b7c584",
+        "agents/openai.yaml": "7e8e8ebeb12fc9f8863c6faf95ff34ecc77aca11edce80916b49b16da1261e9a"
+      },
+      "mapSHA256": "4a2a49be7ad457c82fd1989705ff755b079468b78bfcf3eda01392b9b9c9f7eb",
+      "frontend": "not-installed",
+      "dryRunEntries": [
+        ".agents/skills/yss-frontend-application/SKILL.md",
+        ".claude/skills/yss-frontend-application/SKILL.md",
+        ".workbuddy/skills/yss-frontend-application/SKILL.md"
+      ]
+    },
+    {
+      "profile": "spec",
+      "mode": "skills",
+      "help": "installed",
+      "helpFiles": {
+        "SKILL.md": "6782399df3c0dff090b8ca696ee64846548e1e55ef29d31b621a742ac4b7c584",
+        "agents/openai.yaml": "7e8e8ebeb12fc9f8863c6faf95ff34ecc77aca11edce80916b49b16da1261e9a"
+      },
+      "mapSHA256": "4a2a49be7ad457c82fd1989705ff755b079468b78bfcf3eda01392b9b9c9f7eb",
+      "frontend": "not-installed",
+      "dryRunEntries": [
+        ".agents/skills/yss-frontend-application/SKILL.md",
+        ".claude/skills/yss-frontend-application/SKILL.md",
+        ".workbuddy/skills/yss-frontend-application/SKILL.md"
+      ]
+    },
+    {
+      "profile": "backend",
+      "mode": "project",
+      "help": "installed",
+      "helpFiles": {
+        "SKILL.md": "6782399df3c0dff090b8ca696ee64846548e1e55ef29d31b621a742ac4b7c584",
+        "agents/openai.yaml": "7e8e8ebeb12fc9f8863c6faf95ff34ecc77aca11edce80916b49b16da1261e9a"
+      },
+      "mapSHA256": "4a2a49be7ad457c82fd1989705ff755b079468b78bfcf3eda01392b9b9c9f7eb",
+      "frontend": null
+    },
+    {
+      "profile": "backend",
+      "mode": "skills",
+      "help": "installed",
+      "helpFiles": {
+        "SKILL.md": "6782399df3c0dff090b8ca696ee64846548e1e55ef29d31b621a742ac4b7c584",
+        "agents/openai.yaml": "7e8e8ebeb12fc9f8863c6faf95ff34ecc77aca11edce80916b49b16da1261e9a"
+      },
+      "mapSHA256": "4a2a49be7ad457c82fd1989705ff755b079468b78bfcf3eda01392b9b9c9f7eb",
+      "frontend": null
+    },
+    {
+      "profile": "frontend",
+      "mode": "project",
+      "help": "installed",
+      "helpFiles": {
+        "SKILL.md": "6782399df3c0dff090b8ca696ee64846548e1e55ef29d31b621a742ac4b7c584",
+        "agents/openai.yaml": "7e8e8ebeb12fc9f8863c6faf95ff34ecc77aca11edce80916b49b16da1261e9a"
+      },
+      "mapSHA256": "4a2a49be7ad457c82fd1989705ff755b079468b78bfcf3eda01392b9b9c9f7eb",
+      "frontend": "installed"
+    },
+    {
+      "profile": "frontend",
+      "mode": "skills",
+      "help": "installed",
+      "helpFiles": {
+        "SKILL.md": "6782399df3c0dff090b8ca696ee64846548e1e55ef29d31b621a742ac4b7c584",
+        "agents/openai.yaml": "7e8e8ebeb12fc9f8863c6faf95ff34ecc77aca11edce80916b49b16da1261e9a"
+      },
+      "mapSHA256": "4a2a49be7ad457c82fd1989705ff755b079468b78bfcf3eda01392b9b9c9f7eb",
+      "frontend": "installed"
+    }
+  ],
+  "cli": {
+    "samples": {
+      "bad-body": {
+        "status": "unmanaged",
+        "helpStatus": "installed",
+        "queryPreservedTree": true,
+        "receiptUnchanged": true,
+        "before": "unmanaged",
+        "codex": {
+          "entries": [],
+          "loadErrors": [
+            "missing YAML frontmatter delimited by ---"
+          ]
+        }
+      },
+      "complete": {
+        "status": "installed",
+        "helpStatus": "installed",
+        "queryPreservedTree": true,
+        "receiptUnchanged": true,
+        "before": "installed",
+        "codex": {
+          "entries": [
+            {
+              "name": "yss-frontend-application",
+              "enabled": true,
+              "path": "complete/.agents/skills/yss-frontend-application/SKILL.md",
+              "scope": "repo"
+            }
+          ],
+          "loadErrors": []
+        }
+      },
+      "custom": {
+        "status": "unmanaged",
+        "helpStatus": "installed",
+        "queryPreservedTree": true,
+        "receiptUnchanged": true,
+        "before": "unmanaged",
+        "codex": {
+          "entries": [
+            {
+              "name": "yss-frontend-application",
+              "enabled": true,
+              "path": "custom/.agents/skills/yss-frontend-application/SKILL.md",
+              "scope": "repo"
+            }
+          ],
+          "loadErrors": []
+        }
+      },
+      "large-custom": {
+        "status": "unmanaged",
+        "helpStatus": "installed",
+        "queryPreservedTree": true,
+        "receiptUnchanged": true,
+        "before": {
+          "queryError": "UNSAFE_PATH"
+        }
+      },
+      "managed-broken": {
+        "status": "missing",
+        "helpStatus": "installed",
+        "queryPreservedTree": true,
+        "receiptUnchanged": true,
+        "before": "modified",
+        "codex": {
+          "entries": [],
+          "loadErrors": []
+        }
+      },
+      "managed-dir": {
+        "status": "missing",
+        "helpStatus": "installed",
+        "queryPreservedTree": true,
+        "receiptUnchanged": true,
+        "ensurePreview": "preserved",
+        "before": "modified",
+        "codex": {
+          "entries": [],
+          "loadErrors": []
+        }
+      },
+      "managed-dir-link": {
+        "status": "missing",
+        "helpStatus": "installed",
+        "queryPreservedTree": true,
+        "receiptUnchanged": true,
+        "before": {
+          "queryError": "UNSAFE_PATH"
+        },
+        "codex": {
+          "entries": [
+            {
+              "name": "yss-frontend-application",
+              "enabled": true,
+              "path": "managed-dir-link/owned-skill/SKILL.md",
+              "scope": "repo"
+            }
+          ],
+          "loadErrors": []
+        }
+      },
+      "managed-ref-dir": {
+        "status": "missing",
+        "helpStatus": "installed",
+        "queryPreservedTree": true,
+        "receiptUnchanged": true,
+        "before": "modified",
+        "codex": {
+          "entries": [
+            {
+              "name": "yss-frontend-application",
+              "enabled": true,
+              "path": "managed-ref-dir/.agents/skills/yss-frontend-application/SKILL.md",
+              "scope": "repo"
+            }
+          ],
+          "loadErrors": []
+        }
+      },
+      "nested-ref-link": {
+        "status": "missing",
+        "helpStatus": "installed",
+        "queryPreservedTree": true,
+        "receiptUnchanged": true,
+        "before": {
+          "queryError": "UNSAFE_PATH"
+        },
+        "codex": {
+          "entries": [
+            {
+              "name": "yss-frontend-application",
+              "enabled": true,
+              "path": "nested-ref-link/.agents/skills/yss-frontend-application/SKILL.md",
+              "scope": "repo"
+            }
+          ],
+          "loadErrors": []
+        }
+      },
+      "no-entry": {
+        "status": "not-installed",
+        "helpStatus": "installed",
+        "queryPreservedTree": true,
+        "receiptUnchanged": true,
+        "before": "not-installed",
+        "codex": {
+          "entries": [],
+          "loadErrors": []
+        }
+      },
+      "read-only-custom": {
+        "status": "unmanaged",
+        "helpStatus": "installed",
+        "queryPreservedTree": true,
+        "receiptUnchanged": true,
+        "before": {
+          "queryError": "IO"
+        }
+      },
+      "reference-missing": {
+        "status": "missing",
+        "helpStatus": "installed",
+        "queryPreservedTree": true,
+        "receiptUnchanged": true,
+        "before": "missing",
+        "codex": {
+          "entries": [
+            {
+              "name": "yss-frontend-application",
+              "enabled": true,
+              "path": "reference-missing/.agents/skills/yss-frontend-application/SKILL.md",
+              "scope": "repo"
+            }
+          ],
+          "loadErrors": []
+        }
+      },
+      "unmanaged-broken": {
+        "status": "not-installed",
+        "helpStatus": "installed",
+        "queryPreservedTree": true,
+        "receiptUnchanged": true,
+        "before": "unmanaged",
+        "codex": {
+          "entries": [],
+          "loadErrors": []
+        }
+      },
+      "unmanaged-dir": {
+        "status": "not-installed",
+        "helpStatus": "installed",
+        "queryPreservedTree": true,
+        "receiptUnchanged": true,
+        "ensurePreview": "CONFLICT",
+        "before": "unmanaged",
+        "codex": {
+          "entries": [],
+          "loadErrors": []
+        }
+      },
+      "unmanaged-dir-file": {
+        "status": "not-installed",
+        "helpStatus": "installed",
+        "queryPreservedTree": true,
+        "receiptUnchanged": true,
+        "before": {
+          "queryError": "IO"
+        },
+        "codex": {
+          "entries": [],
+          "loadErrors": []
+        }
+      },
+      "unmanaged-dir-link": {
+        "status": "not-installed",
+        "helpStatus": "installed",
+        "queryPreservedTree": true,
+        "receiptUnchanged": true,
+        "ensurePreview": "UNSAFE_PATH",
+        "before": {
+          "queryError": "UNSAFE_PATH"
+        },
+        "codex": {
+          "entries": [
+            {
+              "name": "yss-frontend-application",
+              "enabled": true,
+              "path": "unmanaged-dir-link/owned-skill/SKILL.md",
+              "scope": "repo"
+            }
+          ],
+          "loadErrors": []
+        }
+      },
+      "unmanaged-link": {
+        "status": "not-installed",
+        "helpStatus": "installed",
+        "queryPreservedTree": true,
+        "receiptUnchanged": true,
+        "ensurePreview": "CONFLICT",
+        "before": "unmanaged",
+        "codex": {
+          "entries": [],
+          "loadErrors": []
+        }
+      }
+    },
+    "olderReceipts": {
+      "spec-skills": "not-installed",
+      "spec-project": "not-installed",
+      "own": "unmanaged",
+      "lost-entry": "missing",
+      "lost-ref": "missing",
+      "theme": "modified",
+      "full": "installed",
+      "front": "installed"
+    },
+    "nestedGitBoundary": "UNSAFE_PATH",
+    "doctorForEntryDirectory": {
+      "path": ".agents/skills/yss-frontend-application/SKILL.md",
+      "action": "modified"
+    }
+  },
+  "retiredPaths": {
+    "existing-link": {
+      "before": "UNSAFE_PATH",
+      "otherSkill": "installed",
+      "diagnostic": {
+        "skill": "i-have-adhd",
+        "status": "retired",
+        "reason": "研发文档写作入口已更名为 yss-write-docs。",
+        "replacements": [
+          "yss-write-docs"
+        ],
+        "paths": [
+          ".claude/skills/i-have-adhd"
+        ]
+      },
+      "ensureRetiredCode": "SKILL_RETIRED",
+      "treeUnchanged": true
+    },
+    "dangling": {
+      "before": "UNSAFE_PATH",
+      "otherSkill": "installed",
+      "diagnostic": {
+        "skill": "i-have-adhd",
+        "status": "retired",
+        "reason": "研发文档写作入口已更名为 yss-write-docs。",
+        "replacements": [
+          "yss-write-docs"
+        ],
+        "paths": [
+          ".claude/skills/i-have-adhd"
+        ]
+      },
+      "ensureRetiredCode": "SKILL_RETIRED",
+      "treeUnchanged": true
+    },
+    "file": {
+      "before": "listed",
+      "otherSkill": "installed",
+      "diagnostic": {
+        "skill": "i-have-adhd",
+        "status": "retired",
+        "reason": "研发文档写作入口已更名为 yss-write-docs。",
+        "replacements": [
+          "yss-write-docs"
+        ],
+        "paths": [
+          ".claude/skills/i-have-adhd/SKILL.md"
+        ]
+      },
+      "ensureRetiredCode": "SKILL_RETIRED",
+      "treeUnchanged": true
+    },
+    "managed-link": {
+      "before": "UNSAFE_PATH",
+      "otherSkill": "installed",
+      "diagnostic": {
+        "skill": "i-have-adhd",
+        "status": "retired",
+        "reason": "研发文档写作入口已更名为 yss-write-docs。",
+        "replacements": [
+          "yss-write-docs"
+        ],
+        "paths": [
+          ".claude/skills/i-have-adhd",
+          ".claude/skills/i-have-adhd/SKILL.md"
+        ]
+      },
+      "ensureRetiredCode": "SKILL_RETIRED",
+      "syncManagedLink": "UNSAFE_PATH",
+      "treeUnchanged": true
+    }
+  },
+  "workbench": {
+    "initialQueryErrorOnLinkedDirectory": "UNSAFE_PATH",
+    "browserRows": [
+      {
+        "project": "unmanaged-dir",
+        "skill": "yss-frontend-application",
+        "inspect": "未安装",
+        "query": "未安装"
+      },
+      {
+        "project": "managed-dir",
+        "skill": "yss-frontend-application",
+        "inspect": "文件缺失",
+        "query": "文件缺失"
+      },
+      {
+        "project": "managed-ref-dir",
+        "skill": "yss-frontend-application",
+        "inspect": "文件缺失",
+        "query": "文件缺失"
+      },
+      {
+        "project": "unmanaged-dir-link",
+        "skill": "yss-frontend-application",
+        "inspect": "未安装",
+        "query": "未安装"
+      },
+      {
+        "project": "managed-dir-link",
+        "skill": "yss-frontend-application",
+        "inspect": "文件缺失",
+        "query": "文件缺失"
+      },
+      {
+        "project": "nested-ref-link",
+        "skill": "yss-frontend-application",
+        "inspect": "文件缺失",
+        "query": "文件缺失"
+      },
+      {
+        "project": "custom",
+        "skill": "yss-frontend-application",
+        "inspect": "工程自行维护",
+        "query": "工程自行维护"
+      },
+      {
+        "project": "complete",
+        "skill": "yss-frontend-application",
+        "inspect": "已安装",
+        "query": "已安装"
+      },
+      {
+        "project": "legacy-link",
+        "skill": "yss-frontend-application",
+        "inspect": "未安装",
+        "query": "未安装"
+      }
+    ],
+    "queryJobs": {
+      "stableQuery": "completed",
+      "changedQuery": "failed",
+      "changedQueryCode": "CONCURRENT_CHANGE",
+      "ensureConflict": "UNSAFE_PATH"
+    }
+  },
+  "hosts": {
+    "Codex": "0.167.2 / gpt-6.2-astra / medium，独立临时会话，只读工程",
+    "Pi": "1.5.2 / openai / gpt-6.1-sol，独立临时会话。页面样本开启已配置的本地 Chrome 操作，措辞会话限读取工具。",
+    "Claude Code": "2.1.319，非交互请求返回 Not logged in",
+    "PiOtherAttempts": [
+      "agent-plan / ark-code-latest 返回 InvalidSubscription",
+      "openai / gpt-4.1-mini 返回 model_not_found",
+      "deepseek / deepseek-flash 返回 Insufficient Balance"
+    ],
+    "WorkBuddy": "核对安装文件及内容摘要，未运行原生会话"
+  },
+  "codexAvailability": {
+    "disabled": {
+      "request": "我想按本工程的前端规范修复退款失败后的重试按钮。现在这个 Codex 会话能用工程自己的 yss-frontend-application 吗？请给我一句可以直接发送的提示词，另用一句话说明依据。",
+      "catalog": {
+        "entries": [
+          {
+            "name": "yss-frontend-application",
+            "enabled": false,
+            "path": "disabled/workspace/.agents/skills/yss-frontend-application/SKILL.md",
+            "scope": "repo"
+          }
+        ],
+        "loadErrors": []
+      },
+      "before": {
+        "inputSHA256": "4059fb11fb17c3c428de105a08b285cf32c2b809aeb88ef86cc64fcd76ff04b6",
+        "replySHA256": "ae71fd7f2289ea8740e477674e82550bedd60d3377f4f3b7c18e4a9de015664b",
+        "seconds": 35.69,
+        "treeUnchanged": true,
+        "indexUnchanged": true,
+        "skillNamesInReadCommands": [
+          "yss-help",
+          "yss-frontend-application"
+        ],
+        "reply": "当前 Codex 会话不能直接调用 `yss-frontend-application`，因为工程里有该技能的 `SKILL.md`，但本会话的可用技能清单未列出它。\n\n> 请参照本工程的 `.agents/skills/yss-frontend-application/SKILL.md`，复现并修复退款失败后的重试按钮问题，再沿同一路径触发失败、点击“重试”，验证是否重新发起退款请求并报告实际结果。"
+      },
+      "candidate": {
+        "inputSHA256": "4059fb11fb17c3c428de105a08b285cf32c2b809aeb88ef86cc64fcd76ff04b6",
+        "replySHA256": "3eb604c896800691377b446443afba9dea75c203d77cf3e56ece434ded9be24d",
+        "seconds": 52.37,
+        "treeUnchanged": true,
+        "indexUnchanged": true,
+        "skillNamesInReadCommands": [
+          "yss-help"
+        ],
+        "reply": "当前 Codex 会话无法调用工程版 `yss-frontend-application`，因为工程中虽有该技能的 `SKILL.md`，但本会话的已启用技能清单未列出它。\n\n> 请按本工程的前端规范，在退款页复现退款失败后点击“重试”的问题，修复后沿同一路径验证一次点击只发起一次重试请求，并说明页面反馈和实际验证结果。"
+      }
+    },
+    "other-source": {
+      "request": "我的 Codex 技能菜单里看到 yss-frontend-application。我想用本工程自己的前端规范修复退款失败后的重试按钮，应该发哪句话？请给可直接发送的提示词，再用一句说明实际会用到哪份技能。",
+      "catalog": {
+        "entries": [
+          {
+            "name": "yss-frontend-application",
+            "enabled": true,
+            "path": "other-source/home/.agents/skills/yss-frontend-application/SKILL.md",
+            "scope": "user"
+          }
+        ],
+        "loadErrors": []
+      },
+      "before": {
+        "inputSHA256": "5be439b14c28340129bd3e797f8e79f0d52ad0576dcc388f794835fd17b04bbb",
+        "replySHA256": "c5dfe2b6962ca88a24e2b86053ffb09697293587d72ee0e229cd7050c158e67d",
+        "seconds": 34.8,
+        "treeUnchanged": true,
+        "indexUnchanged": true,
+        "skillNamesInReadCommands": [
+          "yss-frontend-application",
+          "yss-help"
+        ],
+        "reply": "> 请按本工程的 `.agents/skills/yss-frontend-application/references/component-engineering.md` 修复退款失败后的“重试”按钮：先复现问题，修复后沿同一路径再次触发退款失败，点击“重试”，报告是否发起重试请求以及页面如何反馈。\n\n这条提示词直接引用工程内的组件规范；工程里只有这份参考文件，Codex 菜单中的同名技能来自用户目录，实际用途是整理会议周报。"
+      },
+      "candidate": {
+        "inputSHA256": "5be439b14c28340129bd3e797f8e79f0d52ad0576dcc388f794835fd17b04bbb",
+        "replySHA256": "accee47b2615cb55b6811d8e0a8d3f9fc5b11c9179d0e674ac7978b0769284a7",
+        "seconds": 52.09,
+        "treeUnchanged": true,
+        "indexUnchanged": true,
+        "skillNamesInReadCommands": [
+          "yss-help",
+          "yss-frontend-application"
+        ],
+        "reply": "> 请参照本工程的 `.agents/skills/yss-frontend-application/references/component-engineering.md`，在退款页面复现并修复失败后的“重试”按钮问题，再按相同步骤触发退款失败，点击“重试”，确认是否重新发起退款请求，并报告实际结果。\n\n这句话直接使用工程内的组件规范；本工程只有这份参考文件，Codex 菜单里的 `yss-frontend-application` 来自个人技能目录，实际用途是把会议记录整理成周报。"
+      }
+    },
+    "personal-ok": {
+      "request": "这里的菜单有我个人维护的 yss-frontend-application，我想用这份个人技能修复退款失败后的重试按钮，应该怎么发？请给一句可发送的提示词，说明是哪个来源。",
+      "catalog": {
+        "entries": [
+          {
+            "name": "yss-frontend-application",
+            "enabled": true,
+            "path": "personal-ok/home/.agents/skills/yss-frontend-application/SKILL.md",
+            "scope": "user"
+          }
+        ],
+        "loadErrors": []
+      },
+      "before": {
+        "inputSHA256": "c4626f1cb7689112c65c64a5637146143f1cd06e53f2dfee1565343b0573f4c6",
+        "replySHA256": "bba5a5e057b5d69de1f1cc32f46fbad38136599d404af62674062d5a896e65fa",
+        "seconds": 46.45,
+        "treeUnchanged": true,
+        "indexUnchanged": true,
+        "skillNamesInReadCommands": [
+          "yss-frontend-application",
+          "yss-help"
+        ],
+        "reply": "`$yss-frontend-application 请使用我个人维护的技能（来源为 ~/.agents/skills/yss-frontend-application/SKILL.md），复现并修复退款失败后的重试按钮问题，保留页面其他交互，再沿同一路径触发退款失败，点击“重试”，报告是否成功发起了新的退款请求。`"
+      },
+      "candidate": {
+        "inputSHA256": "c4626f1cb7689112c65c64a5637146143f1cd06e53f2dfee1565343b0573f4c6",
+        "replySHA256": "7bff9d9fdeb8835a5674158a6f7601193393c0b9c5370d2bf7c57e4305b70fe2",
+        "seconds": 54.92,
+        "treeUnchanged": true,
+        "indexUnchanged": true,
+        "skillNamesInReadCommands": [
+          "yss-frontend-application",
+          "yss-help"
+        ],
+        "reply": "> `$yss-frontend-application` 请使用我在个人技能目录 `~/.agents/skills/yss-frontend-application/` 维护的版本，复现并修复退款失败后的重试按钮问题，保留页面已有交互，再沿同一失败路径点击“重试”，报告是否成功发起了新的退款请求。"
+      }
+    },
+    "project-link": {
+      "request": "工程里的 yss-frontend-application 目录是个链接，Codex 菜单里也有同名项。我想用这个工程自己的修复方法处理退款失败后的重试按钮，能点名用吗？请给一段可发送的提示词，简要说明来源。",
+      "catalog": {
+        "entries": [
+          {
+            "name": "yss-frontend-application",
+            "enabled": true,
+            "path": "unmanaged-dir-link/owned-skill/SKILL.md",
+            "scope": "repo"
+          }
+        ],
+        "loadErrors": []
+      },
+      "before": {
+        "inputSHA256": "b1ff79afcf0e81be13c3b78d2c645ad7e79f37dfcc5373f8fe7bdab5ac02ca53",
+        "replySHA256": "c33703705634ccf2923e94b10d01056f6ada8bfcb491c9339f1cceb44a279e63",
+        "seconds": 29.15,
+        "treeUnchanged": true,
+        "indexUnchanged": true,
+        "skillNamesInReadCommands": [
+          "yss-help"
+        ],
+        "reply": "可以。在当前工程的 Codex 会话里，用 `$yss-frontend-application` 就能点名工程自己的技能。当前会话登记的入口指向工程内的 [owned-skill/SKILL.md](/private/tmp/yss-help-review.BHypqy/before/unmanaged-dir-link/owned-skill/SKILL.md)，描述为“项目局部修复”。YSS 安装记录在该目录下只列了一份组件参考文件，技能正文由工程自管。\n\n可直接发送：\n\n> $yss-frontend-application 请按当前工程 `owned-skill/SKILL.md` 的局部修复方法，处理退款失败后的“重试”按钮。先在测试环境触发退款失败，记录按钮状态和点击后的实际表现，再按工程已有的退款重试规则修复。修后沿同一路径再次触发失败并点击“重试”，说明改了哪里、是否实际发起重试，以及页面如何反馈结果。"
+      },
+      "candidate": {
+        "inputSHA256": "b1ff79afcf0e81be13c3b78d2c645ad7e79f37dfcc5373f8fe7bdab5ac02ca53",
+        "replySHA256": "015f1d8b6c10499b04af8c4ce930953f131cf5d7031a44e3d2f32ab4b0403a54",
+        "seconds": 66.49,
+        "treeUnchanged": true,
+        "indexUnchanged": true,
+        "skillNamesInReadCommands": [
+          "yss-help"
+        ],
+        "reply": "可以。在当前工程的 Codex 会话里，`$yss-frontend-application` 对应工程目录中的链接，实际读取的是工程自己的 [owned-skill/SKILL.md](/private/tmp/yss-help-review.BHypqy/final/unmanaged-dir-link/owned-skill/SKILL.md)，职责写的是“项目局部修复”。YSS CLI 显示 `not-installed`，安装记录只管理 `references/component-engineering.md`。这里能点名的依据是 Codex 列出的工程入口及其实际指向。\n\n可直接发送：\n\n> $yss-frontend-application 请使用当前工程 `owned-skill/SKILL.md` 对应的局部修复方法，处理退款失败后的“重试”按钮。先在退款页面复现失败，记录按钮当时的状态和点击结果，按工程已有的退款流程修复。修复后沿同一路径再次触发失败并点击“重试”，确认能否重新发起退款，说明改动位置和实际验证结果。"
+      }
+    }
+  },
+  "handoffs": {
+    "business": {
+      "naturalRequest": "请帮我写一段直接发给旁边 refund-spec 新会话的提示。按我现在选定的该工程 docs/refunds.md 的 AC-3，整理业务票草案，只在对话中给我看。",
+      "selected": "# 退款\n\n## AC-3\n\n退款失败后，客户可以看到失败原因，并可再次发起退款。重复提交如何处理，待业务决定。\n",
+      "sourceAtReceipt": "# 退款\n\n## AC-3\n\n退款失败后，客户可以看到失败原因。只有客服可以再次发起退款。重复提交如何处理，待业务决定。\n",
+      "variant": "重试角色发生实质变更",
+      "versionOnDisk": "c9b45a3e69d207a274c0a5d48ba7a42e08e98576",
+      "before": {
+        "sender": {
+          "inputSHA256": "97450635e2f316bde4b02c9146ca3f32ebc9a56c0d611f7087ed1df930c3f9b0",
+          "replySHA256": "17851fefa3a1848fa51aaae1c39a04cc1c35d8b1a432777e3e9370907b9e685a",
+          "seconds": 28.33,
+          "treeUnchanged": true,
+          "indexUnchanged": true,
+          "skillNamesInReadCommands": [
+            "yss-help",
+            "to-tickets"
+          ],
+          "reply": "> $to-tickets 请按 `refund-spec` 工程 `main` 工作区中 `docs/refunds.md` 的 AC-3 整理业务票草案。采用我选定的未提交版本（文件内容哈希 `3cf1511`）。已确认的规则是：退款失败后，客户可以看到失败原因，并可再次发起退款。请为每张票写明业务目标、客户在什么条件下可以做什么，以及怎样观察结果并按 AC-3 验收。重复提交如何处理仍待业务决定，请标为待定，先整理已明确的部分。草案只在本次对话中展示，不写文件、不创建 Issue。"
+        },
+        "recipient": {
+          "inputSHA256": "17851fefa3a1848fa51aaae1c39a04cc1c35d8b1a432777e3e9370907b9e685a",
+          "replySHA256": "91b913826ee2bcf840aab611e83a237e7570cf6861a78f7acf8c35c99fbaad2b",
+          "seconds": 42.51,
+          "treeUnchanged": true,
+          "indexUnchanged": true,
+          "skillNamesInReadCommands": [
+            "to-tickets"
+          ]
+        },
+        "exactTransfer": true
+      },
+      "intermediate": {
+        "sender": {
+          "inputSHA256": "97450635e2f316bde4b02c9146ca3f32ebc9a56c0d611f7087ed1df930c3f9b0",
+          "replySHA256": "6ccf6b28b10420f511fe75a0a823e0db3e29a59f619edea4e92698a457b3527e",
+          "seconds": 48.67,
+          "treeUnchanged": true,
+          "indexUnchanged": true,
+          "skillNamesInReadCommands": [
+            "yss-help",
+            "to-tickets"
+          ]
+        },
+        "recipient": {
+          "inputSHA256": "6ccf6b28b10420f511fe75a0a823e0db3e29a59f619edea4e92698a457b3527e",
+          "replySHA256": "c51bcfe2ddb9d2b3cfcfa2cf7650ee971a54f09a03e858c9ef8bbd197aded890",
+          "seconds": 28.08,
+          "treeUnchanged": true,
+          "indexUnchanged": true,
+          "skillNamesInReadCommands": [
+            "to-tickets"
+          ]
+        },
+        "exactTransfer": true
+      },
+      "candidate": {
+        "sender": {
+          "inputSHA256": "97450635e2f316bde4b02c9146ca3f32ebc9a56c0d611f7087ed1df930c3f9b0",
+          "replySHA256": "2589c0f14003bd58f3f6ff4eb7ab1368aa043ad5f6e1562a74b32271f5c7a6b4",
+          "seconds": 60.98,
+          "treeUnchanged": true,
+          "indexUnchanged": true,
+          "skillNamesInReadCommands": [
+            "yss-help",
+            "to-tickets"
+          ],
+          "reply": "> $to-tickets 请按 `refund-spec` 工程中 `docs/refunds.md` 的 AC-3 整理业务票草案，只在本次对话中展示。我选定的是 2026 年 11 月 21 日读到的未提交工作树版本，原文是：“退款失败后，客户可以看到失败原因，并可再次发起退款。重复提交如何处理，待业务决定。”\n>\n> 请在草案中注明来源 `docs/refunds.md#AC-3`，写清退款失败后，怎样验收客户能看到失败原因、能再次发起退款。将重复提交的处理方式保留为业务待定项，并标明哪些验收需要等该规则确定。若接手时文件中的业务规则已有变化，请指出具体差异，本次草案仍按上述引文整理。"
+        },
+        "recipient": {
+          "inputSHA256": "2589c0f14003bd58f3f6ff4eb7ab1368aa043ad5f6e1562a74b32271f5c7a6b4",
+          "replySHA256": "0df611cd47f998137f6e00913936ac506e1bf8fb85996c200c73dbcc9a7f01a7",
+          "seconds": 45.42,
+          "treeUnchanged": true,
+          "indexUnchanged": true,
+          "skillNamesInReadCommands": [
+            "to-tickets"
+          ],
+          "reply": "## 业务票草案｜客户查看退款失败原因并再次发起退款\n\n**来源与版本差异**　`docs/refunds.md#AC-3`。你选定的 2026 年 11 月 21 日未提交工作树引文允许客户再次发起退款。接手时，文件写的是“只有客服可以再次发起退款”。两版都明确客户可以看到失败原因，也都将重复提交的处理方式留待业务决定。本票按你选定的引文验收。\n\n| 验收场景 | 操作与通过条件 | 规则依赖 |\n| --- | --- | --- |\n| 客户查看失败原因 | 选取一笔失败原因已知的退款，以该客户身份查看退款结果。客户能看到这笔退款失败的具体原因，且与已知原因相符。仅显示“退款失败”不足以通过。 | 可直接验收 |\n| 客户再次发起退款 | 在上一次退款已明确失败后，以该客户身份再次发起退款，只提交一次。核实客户本人已成功发起这次申请。验收到申请发起为止，最终退款结果可以是成功或失败。 | 可直接验收 |\n| 客户重复提交 | 例如，客户再次发起退款后，在该次申请尚未返回结果时又提交一次。需由业务方确定哪些操作算重复提交，以及系统应如何处理。规则确定后，再验收实际受理了几次申请、客户看到了什么结果。 | 等待业务决定 |\n\n草案仅在本次对话中展示。"
+        },
+        "exactTransfer": true
+      }
+    },
+    "technical": {
+      "naturalRequest": "请帮我写一段直接发给旁边 refund-backend 新会话的提示。按我现在选定的旁边 refund-spec 工程 docs/refunds.md 的 AC-3，拆出可独立验收的后端实现项、原验收和依赖，先只在对话中看。",
+      "selected": "# 退款\n\n## AC-3\n\n退款失败后，客户可以看到失败原因，并可再次发起退款。重复提交如何处理，待业务决定。\n",
+      "sourceAtReceipt": "# 退款\n\n## AC-3\n\n- 退款失败后，客户可以看到失败原因，并可再次发起退款。\n- 重复提交如何处理，待业务决定。\n",
+      "variant": "只有 Markdown 列表排版变化",
+      "versionOnDisk": "4fec6bdc1ee6fd850dac378e28ba3bfce06790d3",
+      "before": {
+        "sender": {
+          "inputSHA256": "1d3cf1932852637737b1a4ee19c13f4aad4cb5df2de7400efab2ef954e305cd7",
+          "replySHA256": "81b3e47c5842aa52a55b8f00c79ef8dde4a6b02cda7ac98ba86bf82e009fdc81",
+          "seconds": 39.73,
+          "treeUnchanged": true,
+          "indexUnchanged": true,
+          "skillNamesInReadCommands": [
+            "yss-help",
+            "to-tickets"
+          ],
+          "reply": "```text\n$to-tickets 请在 refund-backend 工程中，只读核对本仓已有实现和可用资料，按我选定的 ../refund-spec/docs/refunds.md 中的 AC-3 拆分后端实现项。规格版本为 refund-spec 的提交 4fec6bd。\n\nAC-3 原文：“退款失败后，客户可以看到失败原因，并可再次发起退款。重复提交如何处理，待业务决定。”\n\n请按可独立验收的后端行为拆分。每项写明它覆盖的原验收条款、预期的后端结果、如何验证，以及有依据的前置依赖。涉及客户可见的结果时，说明后端能独立验证到哪一步，哪一步需要前后端联验。对“重复提交如何处理”，标出受影响的实现项和暂时无法确定的验收条件，其余已明确的部分照常拆分。\n\n本轮只在对话中用表格给出草案，供我先看。请保持文件、代码和 Issue 原样。\n```"
+        },
+        "recipient": {
+          "inputSHA256": "81b3e47c5842aa52a55b8f00c79ef8dde4a6b02cda7ac98ba86bf82e009fdc81",
+          "replySHA256": "b87d74ef7c57611a48e1f3359aa15955302fbd2010e5d43defb6b41b73f49172",
+          "seconds": 37.91,
+          "treeUnchanged": true,
+          "indexUnchanged": true,
+          "skillNamesInReadCommands": [
+            "to-tickets"
+          ]
+        },
+        "exactTransfer": true
+      },
+      "intermediate": {
+        "sender": {
+          "inputSHA256": "1d3cf1932852637737b1a4ee19c13f4aad4cb5df2de7400efab2ef954e305cd7",
+          "replySHA256": "aefdbc6a6c9ec5a5aa6c7f6bf039370e31e2b74c1f2eb7e6871711d127aeb7f8",
+          "seconds": 50.66,
+          "treeUnchanged": true,
+          "indexUnchanged": true,
+          "skillNamesInReadCommands": [
+            "yss-help",
+            "to-tickets"
+          ]
+        },
+        "recipient": {
+          "inputSHA256": "aefdbc6a6c9ec5a5aa6c7f6bf039370e31e2b74c1f2eb7e6871711d127aeb7f8",
+          "replySHA256": "7e03f9861e2a9794dd097adaf2d0ddaa09b34686a7beb7f77bade726bf8f5078",
+          "seconds": 68.82,
+          "treeUnchanged": true,
+          "indexUnchanged": true,
+          "skillNamesInReadCommands": [
+            "to-tickets"
+          ]
+        },
+        "exactTransfer": true
+      },
+      "candidate": {
+        "sender": {
+          "inputSHA256": "1d3cf1932852637737b1a4ee19c13f4aad4cb5df2de7400efab2ef954e305cd7",
+          "replySHA256": "58e03f305b0ee3193dfebf3b405e8afd2b6f2f35b5ab8859ccfe763cae3d0aee",
+          "seconds": 59.78,
+          "treeUnchanged": true,
+          "indexUnchanged": true,
+          "skillNamesInReadCommands": [
+            "yss-help",
+            "to-tickets"
+          ],
+          "reply": "直接粘贴到 `refund-backend` 新会话即可。\n\n> $to-tickets 请在 `refund-backend` 中，按我选定的 `../refund-spec/docs/refunds.md` 的 AC-3 拆分可独立验收的后端实现项。本次采用 `refund-spec` 提交 `4fec6bdc1ee6fd850dac378e28ba3bfce06790d3`，AC-3 原文是“退款失败后，客户可以看到失败原因，并可再次发起退款。重复提交如何处理，待业务决定。”\n>\n> 请按可观察的行为拆分，分别说明怎样验证客户能取得失败原因、怎样验证客户能在退款失败后再次发起退款。只在对话中给一张草案表，每项列出后端要实现的结果、对应的 AC-3 原句、独立验收步骤与预期结果，以及从现有工程能核实的依赖。重复提交的处理保留为待定，只标出它影响的场景和验收判断，其余部分照常拆分。本轮仅做只读分析和对话预览。"
+        },
+        "recipient": {
+          "inputSHA256": "58e03f305b0ee3193dfebf3b405e8afd2b6f2f35b5ab8859ccfe763cae3d0aee",
+          "replySHA256": "c6efda7065669e9da8fbb8b6faba1d7efdbbcfdbce682da4080dea9d32ba2af1",
+          "seconds": 45.58,
+          "treeUnchanged": true,
+          "indexUnchanged": true,
+          "skillNamesInReadCommands": [
+            "to-tickets"
+          ],
+          "reply": "| 后端要实现的结果（`refund-backend` 草案） | AC-3 原文节选（`../refund-spec/docs/refunds.md` @ `4fec6bdc1ee6fd850dac378e28ba3bfce06790d3`） | 独立验收步骤 | 预期结果 | 工程依赖与待定判断 |\n|---|---|---|---|---|\n| **客户能取得本次退款的失败原因** | “退款失败后，客户可以看到失败原因” | 准备一笔属于该客户、已失败且原因已知的退款。以该客户身份获取退款结果，将返回的原因与已知原因核对。 | 客户取得的结果能说明这笔退款为何失败，且与已知原因一致。仅返回“退款失败”不足以通过。 | 验收需要可核对的失败原因和客户可用的退款结果入口。当前工程未见退款业务源码或接口契约，原因来源与读取方式尚无法核实。此项可单独验收。 |\n| **客户能在退款失败后再次发起退款** | “并可再次发起退款。” | 准备一笔属于该客户且已明确失败的退款。以该客户身份针对同一笔款项再次提交一次退款请求，核对后端对本次请求的受理结果。 | 客户能确认本次退款请求已受理。验收终点是再次发起成功，无需等待退款到账。 | 验收需要能确认前次失败，并能观察本次受理结果。当前工程未见可核实的退款发起入口或受理契约。**待定原句**为“重复提交如何处理，待业务决定。”若客户连续点击或同一请求被重发，应受理几次、各次返回什么，均待业务决定；前次已失败后只提交一次的场景可独立验收。 |"
+        },
+        "exactTransfer": true
+      }
+    }
+  },
+  "pi": {
+    "pi-sol-availability": {
+      "request": "我想用这个工程的前端应用技能修复退款失败后的重试按钮。在当前会话该怎么调用？只给我一段可直接发送的话，简要说明依据。",
+      "before": {
+        "inputSHA256": "d8cd3a6413658c0834ae108d0e06850750197db5e94e46dc1ba9d6bd538f7252",
+        "replySHA256": "f60722468e58a25b3a0b12e5c1376d2c42bb06e6b1bb544fa8e0cd796aa20281",
+        "seconds": 38.8,
+        "treeUnchanged": true,
+        "indexUnchanged": true,
+        "skillNamesInReadCommands": [
+          "yss-help",
+          "implement"
+        ]
+      },
+      "candidate": {
+        "inputSHA256": "d8cd3a6413658c0834ae108d0e06850750197db5e94e46dc1ba9d6bd538f7252",
+        "replySHA256": "5c8f1037f26e022240777644896768b178b945fee833388d10b07a2888c8c5a9",
+        "seconds": 36.2,
+        "treeUnchanged": true,
+        "indexUnchanged": true,
+        "skillNamesInReadCommands": [
+          "yss-help"
+        ],
+        "reply": "当前工程的 `yss-frontend-application` 目录只有 `references/component-engineering.md`，没有 `SKILL.md`，当前会话也未注册该入口，因此用普通任务提示即可：「请在当前工程中定位并修复退款失败后的重试按钮问题：先核实目标前端代码位置、已有规则与失败触发路径，再做最小范围修复；沿同一路径实际触发失败并点击重试，验证按钮状态、重试请求和结果反馈，报告修改文件、实际验证结果及未验证范围。保留无关改动，不提交、不推送。」"
+      }
+    },
+    "pi-sol-wording": {
+      "request": "另一个会话只凭构建成功就说退款页已经按原型还原了。我该怎么说，才能让它核实失败后的恢复？请只给我可以发过去的一段话。",
+      "before": {
+        "inputSHA256": "73959ed1d3a32268dc1d8aca1e4d0524d9deece7616ee4952080e96e8c714f46",
+        "replySHA256": "e091f084d6c473a1fcd4fc1cdca215580740c67f49442d15cb890af09345b423",
+        "seconds": 12.4,
+        "treeUnchanged": true,
+        "indexUnchanged": true,
+        "skillNamesInReadCommands": [
+          "yss-help"
+        ]
+      },
+      "candidate": {
+        "inputSHA256": "73959ed1d3a32268dc1d8aca1e4d0524d9deece7616ee4952080e96e8c714f46",
+        "replySHA256": "0d4e42a63966ef0c456d2ccaac2ddf5e6465869d7a937c5b4c3566021bcc95ed",
+        "seconds": 22.2,
+        "treeUnchanged": true,
+        "indexUnchanged": true,
+        "skillNamesInReadCommands": [
+          "yss-help",
+          "yss-frontend-application"
+        ],
+        "reply": "请先不要仅凭构建成功就认定退款页已按原型还原。沿用本次选定的规格、原型与交互说明，注明采用的版本或工作树，在相同视口、数据和初始状态下实际打开原型与正式页面，分别操作“提交退款→触发失败→执行恢复或重试”，对照失败提示、按钮是否恢复可用、实际能否再次提交及重试后的结果；输入内容是否保留等行为若没有明确规则，请记录两边表现并标为待定，不要自行补规则。请附可复核的截图、录屏或操作记录，逐项说明预期、实际结果及差异，构建结果单列；使用 mock 的注明模拟验证、待联调，入口或工具不可用、未实际操作到的路径明确标为待验。此次先核实并报告，不修改代码。"
+      }
+    },
+    "pi-page": {
+      "request": "请现在只读复核退款页。原型与正式页面的入口见本工程 PREVIEW.md，已选 AC-3 规定退款失败后可以重试。请检查两边的失败恢复是否一致，把实际操作和观察结果发在本对话。",
+      "before": {
+        "inputSHA256": "7c455c328257cb914d1683f21d6d756b47b74d899cd093525aa76635405d0f9a",
+        "replySHA256": "b991347174bfe5f85434d41d5f819298d3a63867d6d5855a2d04a635265a135f",
+        "seconds": 89.4,
+        "treeUnchanged": true,
+        "indexUnchanged": true,
+        "skillNamesInReadCommands": [
+          "code-review",
+          "modern-web-guidance",
+          "yss-frontend-application"
+        ]
+      },
+      "candidate": {
+        "inputSHA256": "7c455c328257cb914d1683f21d6d756b47b74d899cd093525aa76635405d0f9a",
+        "replySHA256": "f87eae3e3a43f8b5ef8bf47934df0e2abeae738f44ee90d7f9182e98e3d7cfe4",
+        "seconds": 81.5,
+        "treeUnchanged": true,
+        "indexUnchanged": true,
+        "skillNamesInReadCommands": [
+          "code-review",
+          "modern-web-guidance",
+          "yss-frontend-application"
+        ],
+        "reply": "我会按 AC-3 对照原型与正式页，实际操作“退款失败 → 重试”流程，并在本对话记录观察结果；不修改工程文件。\n\n## 结论\n\n**两边失败恢复不一致：正式页退款失败后没有重试入口，不满足 AC-3“退款失败后可重试”。**\n\n本次按 `PREVIEW.md` 使用已启动的 Chrome 实际操作，样本为 **R-1042 / ¥28.00**，两边视口均为 **1100 × 780**。未修改工程文件。\n\n## 实际操作与观察\n\n| 步骤 | 原型 `/prototype/` | 正式页 `/app/` |\n|---|---|---|\n| 打开入口 | 显示“等待提交”，有“提交退款”按钮 | 相同 |\n| 点击“提交退款” | 显示“退款失败，请重新尝试。”，出现“重试退款”按钮 | 显示相同失败提示，但没有任何可操作按钮 |\n| 尝试重试 | 点击“重试退款”后，仍显示失败提示，且保留重试按钮 | 尝试点击“重试退款”，浏览器定位按钮超时 |\n| 再次读取画面 | 失败状态下仍可操作重试按钮 | 失败状态持续，仍无按钮 |\n\n**缺陷：正式页失败状态形成操作死路。** 提示要求用户重新尝试，却没有提供相应入口；原型则在失败后保留“重试退款”。\n\n### 操作证据\n\n截图由预览工具生成，目录为：\n`/private/tmp/yss-help-review.BHypqy/evidence/browser-actions/final-pi-page/`\n\n- `002.png`：原型首次失败，工具返回“重试退款”按钮。\n- `003.png`：原型点击重试后，仍保留该按钮。\n- `006.png`、`007.png`：正式页失败后，工具返回可操作按钮列表为空。\n- 正式页点击重试的实际错误：`getByRole('button', { name: '重试退款', exact: true })` 等待超时（1800ms）。\n\n**验证边界：**原型的重试按钮已实际点击，但仅凭画面不能证明重新发起了网络请求或退款成功；当前环境禁用图片读取，以上观察依据浏览器返回的画面文字、按钮列表和点击结果，不宣称已完成截图视觉比对。本工程未提供页面源码，暂不能定位缺陷代码行。AC-3 中“重复提交如何处理”仍待业务决定，本次未将其判为缺陷。\n\n### Modern Web Guidance\n我检索了表单错误恢复相关指引；本次仅复核既定 AC 和实际操作，未应用代码改造建议。"
+      },
+      "actions": [
+        {
+          "action": "open",
+          "value": "原型",
+          "surface": "prototype",
+          "controls": [
+            "提交退款"
+          ],
+          "screen": "申请退款\n\n订单 R-1042 · 退款金额 ¥28.00\n\n等待提交\n\n提交退款",
+          "captureSHA256": "64a9568f982d695a100b5dd98572879af754ad2696df14e18e20bc6958ae97aa",
+          "viewport": [
+            1100,
+            780
+          ]
+        },
+        {
+          "action": "click",
+          "value": "提交退款",
+          "surface": "prototype",
+          "controls": [
+            "重试退款"
+          ],
+          "screen": "申请退款\n\n订单 R-1042 · 退款金额 ¥28.00\n\n退款失败，请重新尝试。\n\n重试退款",
+          "captureSHA256": "0304e70ec4508b3605d44f055a79b42beae6a24a01b8728c9bf9aa2f398b2953",
+          "viewport": [
+            1100,
+            780
+          ],
+          "retainedCapture": "prototype-after-failure.png"
+        },
+        {
+          "action": "click",
+          "value": "重试退款",
+          "surface": "prototype",
+          "controls": [
+            "重试退款"
+          ],
+          "screen": "申请退款\n\n订单 R-1042 · 退款金额 ¥28.00\n\n退款失败，请重新尝试。\n\n重试退款",
+          "captureSHA256": "0304e70ec4508b3605d44f055a79b42beae6a24a01b8728c9bf9aa2f398b2953",
+          "viewport": [
+            1100,
+            780
+          ],
+          "retainedCapture": "prototype-after-failure.png"
+        },
+        {
+          "action": "read",
+          "value": "",
+          "surface": "prototype",
+          "controls": [
+            "重试退款"
+          ],
+          "screen": "申请退款\n\n订单 R-1042 · 退款金额 ¥28.00\n\n退款失败，请重新尝试。\n\n重试退款",
+          "captureSHA256": "0304e70ec4508b3605d44f055a79b42beae6a24a01b8728c9bf9aa2f398b2953",
+          "viewport": [
+            1100,
+            780
+          ],
+          "retainedCapture": "prototype-after-failure.png"
+        },
+        {
+          "action": "open",
+          "value": "正式页",
+          "surface": "application",
+          "controls": [
+            "提交退款"
+          ],
+          "screen": "申请退款\n\n订单 R-1042 · 退款金额 ¥28.00\n\n等待提交\n\n提交退款",
+          "captureSHA256": "64a9568f982d695a100b5dd98572879af754ad2696df14e18e20bc6958ae97aa",
+          "viewport": [
+            1100,
+            780
+          ]
+        },
+        {
+          "action": "click",
+          "value": "提交退款",
+          "surface": "application",
+          "controls": [],
+          "screen": "申请退款\n\n订单 R-1042 · 退款金额 ¥28.00\n\n退款失败，请重新尝试。",
+          "captureSHA256": "0c37d9da00c86f21421e167a067190de18479281c1d2ddce913713556bc11cd4",
+          "viewport": [
+            1100,
+            780
+          ],
+          "retainedCapture": "application-after-failure.png"
+        },
+        {
+          "action": "read",
+          "value": "",
+          "surface": "application",
+          "controls": [],
+          "screen": "申请退款\n\n订单 R-1042 · 退款金额 ¥28.00\n\n退款失败，请重新尝试。",
+          "captureSHA256": "0c37d9da00c86f21421e167a067190de18479281c1d2ddce913713556bc11cd4",
+          "viewport": [
+            1100,
+            780
+          ],
+          "retainedCapture": "application-after-failure.png"
+        }
+      ],
+      "buildOutput": "Vite build, exit 0",
+      "order": "R-1042"
+    }
+  }
+}

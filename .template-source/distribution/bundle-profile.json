@@ -526,7 +526,8 @@
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "yss-help": [
-          ".template-spec/agents/profile-skills.md"
+          ".template-spec/agents/profile-skills.md",
+          ".agents/skills/setup-yss-harness/references/host-compatibility.md"
         ],
         "yss-resilience4j": [],
         "yss-security-algorithm": [],
@@ -753,7 +754,8 @@
           ".template-spec/agents/matt-skills-adaptation.md"
         ],
         "yss-help": [
-          ".template-spec/agents/profile-skills.md"
+          ".template-spec/agents/profile-skills.md",
+          ".agents/skills/setup-yss-harness/references/host-compatibility.md"
         ],
         "yss-resilience4j": [],
         "yss-security-algorithm": [],
