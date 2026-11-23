@@ -1,4 +1,4 @@
 interface:
   display_name: "YSS 前端应用工程"
-  short_description: "基于 shadcn-vue 实现与审查 Vue 3 前端应用，还原高保真设计与交互"
-  default_prompt: "使用 $yss-frontend-application，按已有设计与契约完成前端工程任务。涉及 UI 组件时使用 shadcn-vue 技能，核对本地实现并验证受影响的交互。"
+  short_description: "用本地 shadcn-vue 组件落地高保真设计与交互，实施和审查 Vue 3 工程"
+  default_prompt: "使用 $yss-frontend-application，依据选定设计和已有原型复核结论，在目标工程实现已确认的体验。复用工程的 shadcn-vue 组件与设计系统，涉及请求等待或反馈时使用 yss-frontend-loading，验证受影响的工程、视觉和交互。"

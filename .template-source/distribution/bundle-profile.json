@@ -552,12 +552,16 @@
         ],
         "yss-frontend-application": [
           ".agents/skills/implement/references/repository-scope.md",
+          ".agents/skills/prototype-review/references/frontend-handoff.md",
           ".template-spec/agents/frontend-skills-adaptation.md",
           ".agents/skills/implement/references/pr-mr-followup.md",
           ".template-spec/agents/issue-tracker.md",
           ".template-spec/agents/issue-tracker-operations.md",
           ".agents/skills/to-tickets/references/engineering-tickets.md",
           ".template-spec/agents/workbench-progress.md"
+        ],
+        "yss-frontend-loading": [
+          ".template-spec/agents/frontend-skills-adaptation.md"
         ],
         "shadcn-vue": [
           ".template-spec/agents/frontend-skills-adaptation.md"
@@ -791,12 +795,16 @@
         ],
         "yss-frontend-application": [
           ".agents/skills/implement/references/repository-scope.md",
+          ".agents/skills/prototype-review/references/frontend-handoff.md",
           ".template-spec/agents/frontend-skills-adaptation.md",
           ".agents/skills/implement/references/pr-mr-followup.md",
           ".template-spec/agents/issue-tracker.md",
           ".template-spec/agents/issue-tracker-operations.md",
           ".agents/skills/to-tickets/references/engineering-tickets.md",
           ".template-spec/agents/workbench-progress.md"
+        ],
+        "yss-frontend-loading": [
+          ".template-spec/agents/frontend-skills-adaptation.md"
         ],
         "shadcn-vue": [
           ".template-spec/agents/frontend-skills-adaptation.md"

@@ -43,6 +43,16 @@
           ".workbuddy/skills"
         ]
       },
+      "yss-frontend-loading": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-frontend-loading/SKILL.md",
+        "adaptationRef": ".template-spec/agents/frontend-skills-adaptation.md",
+        "targets": [
+          ".agents/skills",
+          ".workbuddy/skills"
+        ]
+      },
       "shadcn-vue": {
         "source": "unovue/shadcn-vue",
         "sourceType": "github",

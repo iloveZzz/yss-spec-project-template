@@ -19,7 +19,7 @@
 - `.agents/skills/`：共享技能内容源、参考资料和模板资产。
 - `.claude/skills/`：共享技能链接；`.workbuddy/skills/`：普通文件副本。
 - `profiles/backend/`：Backend 技能与资料覆盖层。
-- `profiles/frontend/`：Frontend 技能与资料覆盖层；默认 18 项，可用 22 项，按需加载。
+- `profiles/frontend/`：Frontend 技能与资料覆盖层；默认 19 项，可用 23 项，按需加载。
 - `.template-spec/`：业务、设计和工程参考。
 - `.template-source/distribution/`：分发清单与客户端入口。
 - `skills-lock.json`：技能来源和安装目录信息；`yss-public-skills.json`：公开技能清单。
@@ -36,7 +36,7 @@ Template 5.14.0 配套 CLI 3.14.0。Spec 分别记录「业务规格与验收」
 
 Template 5.13.0 加入 `yss-help` 中文技能导航，统一业务分析、产品规格、界面设计、逻辑试验、文档、决策建图与 PR/MR 交付入口。七个技能的新旧名称和升级写法见[技能地图](.template-spec/agents/profile-skills.md#技能改名)。编制或修改规格、交互说明和原型前先说明 Spec 归属。仅委托修订指定原型时，写入范围限于该原型。后端 `yss-repository` 新增标准库 Python PO/Mapper 生成工具，复用已审阅模型和显式工程配置，保护已有不同内容的文件。
 
-当前模板源码默认提供 Spec 18 项、Backend 43 项、Frontend 18 项。Frontend 的 22 项可用技能包含 shadcn-vue 组件与 VueUse hooks。安装内嵌新版模板的 CLI 后，按项目实际范围同步。[技能地图](.template-spec/agents/profile-skills.md)
+当前模板源码默认提供 Spec 18 项、Backend 43 项、Frontend 19 项。Frontend 默认提供前端加载与过渡、官方 shadcn-vue 技能资料及 VueUse hooks，可用库共 23 项。安装内嵌新版模板的 CLI 后，按项目实际范围同步。[技能地图](.template-spec/agents/profile-skills.md)
 
 `scaffold frontend` 从 CLI 3.3.0 起支持。Frontend Profile 从 CLI 3.2.0 开始支持，3.1.4 及以前不支持。参见 [Frontend 接入](.template-spec/user-guide/cli/tutorial-frontend.md)。GitLab CI 固定 CLI 配套构建源码 `f2e0a952123fbd9f12d3703b8df2b03d02b670cb`，版本为 3.7.0。该提交用于构建工具，正式 CLI 的最终源码与模板来源以 Release 产物记录为准。实际远程执行结果以对应流水线为准。
 

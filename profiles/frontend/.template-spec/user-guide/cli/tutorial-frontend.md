@@ -19,6 +19,8 @@ yss sync --root <受管目录>
 
 包含新版前端技能的 Bundle 默认安装 `shadcn-vue` 和 `vueuse-functions`。前者依据工程的 `components.json` 和本地导出实现 UI 组件，后者按场景选择浏览器、倒计时和轮询 hooks。Vue 3 状态与组件逻辑使用 `vue-best-practices`，需要可复用的组合式接口时使用 `create-adaptable-composable`。纯文案与样式不因此引入 composable。设计、原型复核、逻辑原型和词汇维护可分别补装 `yss-design-ui`、`prototype-review`、`yss-prototype-logic`、`domain-modeling`。不一次加载全部技能，不把可选设计方法变成开发前置。
 
+接续已完成的高保真原型时，读取已有 `prototype-review` 结论中实际验证的流程、视觉决定、演示与待验证范围。正式页面用目标工程的组件、主题、路由和服务重建。比如原型用计时器演示表格加载，工程使用 `yss-frontend-loading` 依据实际请求保留可见旧数据、保护关联动作并支持失败重试。仅模拟的状态和真实联调状态分别说明。
+
 已有设计的完成依据是适用工程检查、相同视口/数据/主题/状态下的浏览器对比、关键交互验证。只有构建或旧截图通过不能证明已还原。真实接口缺失时明确“前端已还原（模拟运行，待联调）”，缺少浏览器验证时明确“源码已实现，相关还原验证未完成”。
 
 本 Profile 不分发 SCRM 业务素材、原版 shadcn 自动 CLI、前端生成脚本或测试套件。新建工程使用轻量 `yss-frontend-scaffold-generator`。已有工程与只读 review 直接使用应用技能。

@@ -41,6 +41,7 @@
     "yss-write-docs",
     "yss-deliver-pr-mr",
     "yss-frontend-application",
+    "yss-frontend-loading",
     "shadcn-vue",
     "vueuse-functions",
     "vue-best-practices",
@@ -126,6 +127,7 @@
       "description": "实现 Vue 应用、还原界面设计，处理状态、数据流、生命周期和组合式函数。",
       "skills": [
         "yss-frontend-application",
+        "yss-frontend-loading",
         "shadcn-vue",
         "vueuse-functions",
         "vue-best-practices",

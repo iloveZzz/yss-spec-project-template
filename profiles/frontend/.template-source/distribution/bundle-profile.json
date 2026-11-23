@@ -29,6 +29,7 @@
       ".template-spec/templates/examples/lifecycle-writing-examples.md",
       ".agents/skills/setup-yss-harness",
       ".agents/skills/yss-frontend-application",
+      ".agents/skills/yss-frontend-loading",
       ".agents/skills/shadcn-vue",
       ".agents/skills/vueuse-functions",
       ".agents/skills/vue-best-practices",
@@ -48,6 +49,7 @@
       ".agents/skills/domain-modeling",
       ".workbuddy/skills/setup-yss-harness",
       ".workbuddy/skills/yss-frontend-application",
+      ".workbuddy/skills/yss-frontend-loading",
       ".workbuddy/skills/shadcn-vue",
       ".workbuddy/skills/vueuse-functions",
       ".workbuddy/skills/vue-best-practices",
@@ -330,6 +332,7 @@
         "to-tickets",
         "yss-frontend-application",
         "yss-frontend-scaffold-generator",
+        "yss-frontend-loading",
         "shadcn-vue",
         "vueuse-functions",
         "vue-best-practices",
@@ -388,12 +391,16 @@
         ],
         "yss-frontend-application": [
           ".agents/skills/implement/references/repository-scope.md",
+          ".agents/skills/prototype-review/references/frontend-handoff.md",
           ".template-spec/agents/frontend-skills-adaptation.md",
           ".agents/skills/implement/references/pr-mr-followup.md",
           ".template-spec/agents/issue-tracker.md",
           ".template-spec/agents/issue-tracker-operations.md",
           ".agents/skills/to-tickets/references/engineering-tickets.md",
           ".template-spec/agents/workbench-progress.md"
+        ],
+        "yss-frontend-loading": [
+          ".template-spec/agents/frontend-skills-adaptation.md"
         ],
         "shadcn-vue": [
           ".template-spec/agents/frontend-skills-adaptation.md"
@@ -500,6 +507,7 @@
         "to-tickets",
         "yss-frontend-application",
         "yss-frontend-scaffold-generator",
+        "yss-frontend-loading",
         "shadcn-vue",
         "vueuse-functions",
         "vue-best-practices",
@@ -531,12 +539,16 @@
         ],
         "yss-frontend-application": [
           ".agents/skills/implement/references/repository-scope.md",
+          ".agents/skills/prototype-review/references/frontend-handoff.md",
           ".template-spec/agents/frontend-skills-adaptation.md",
           ".agents/skills/implement/references/pr-mr-followup.md",
           ".template-spec/agents/issue-tracker.md",
           ".template-spec/agents/issue-tracker-operations.md",
           ".agents/skills/to-tickets/references/engineering-tickets.md",
           ".template-spec/agents/workbench-progress.md"
+        ],
+        "yss-frontend-loading": [
+          ".template-spec/agents/frontend-skills-adaptation.md"
         ],
         "shadcn-vue": [
           ".template-spec/agents/frontend-skills-adaptation.md"

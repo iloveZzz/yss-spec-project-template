@@ -1,6 +1,6 @@
 ---
 name: shadcn-vue
-description: 在 Vue 工程中选用、添加、组合或审查 shadcn-vue 组件，定制表单、弹层与主题，排查组件注册表配置。
+description: 在 Vue 工程中初始化 shadcn-vue 或切换 preset（含 --preset 代码），选用、添加、组合或审查组件，定制表单、弹层与主题，排查组件注册表配置。
 license: MIT
 user-invocable: false
 ---
@@ -28,6 +28,8 @@ shadcn-vue 将可维护的 Vue 组件源码放入应用。在 Frontend Profile �
 
 在已有组件开发授权内，从任务选定的官方来源获取当前需要的组件及其依赖。先核对项目既有 revision、style 和本地定制，再核对候选源码、导入别名、依赖与 CSS。官方 CLI 的 `add <组件>` 会写入源码，也可能修改依赖和 CSS；可在临时工程取得并核对文件。CLI 版本与 registry 内容分别固定，如 CLI 无法定位项目采用的快照，可以从相应官方固定提交取得必要源码、核对摘要及许可证后适配。第三方 registry 按任务或项目已选来源使用。
 
+引入 block 或第三方组件后，检查消费包的别名、图标库、子组件、预期样式和依赖。CLI 处理部分导入路径，落入页面、hooks 或其他目录的文件仍需按实际工程核对。
+
 命令示例假设 pnpm 项目已安装兼容 CLI。需要临时运行时，可按实际包管理器选择固定兼容版本，例如 `pnpm dlx shadcn-vue@2.9.0 --help`。新建 YSS 应用沿用 `yss-frontend-scaffold-generator`；已有应用缺少元数据时核对实际路径后按需补齐。MCP 接入方法按需查阅 [MCP 参考](./mcp.md)。
 
 ## Updating Components
@@ -36,4 +38,8 @@ shadcn-vue 将可维护的 Vue 组件源码放入应用。在 Frontend Profile �
 
 按文件合入改动并保留项目已有定制。涉及覆盖定制、变更全局主题或切换 preset 时，说明配置、CSS、依赖及组件的具体影响，沿用用户已选的处理方式。`apply` 可重写组件与主题，`init --force` 会更新配置及 CSS。合入后检查导出、别名、依赖、实际交互和受影响的项目检查。
 
-本技能随附上游七份参考和 MIT 许可证。固定版本、skills.sh 安装摘要与本地适配见 [来源记录](./upstream.json)。
+## 官方资料
+
+需要查询上游组件选型、CLI 与 preset 示例、组合规则或主题时，按需查阅 [shadcn-vue v2.9.0 官方技能](./references/upstream/overview.md)。接入 registry/MCP 时，另有 [上游 MCP 参考](./references/upstream/mcp.md)。以本入口和对应的项目适配参考判断运行环境、命令版本和写入范围。将官方命令示例换成目标工程兼容的调用方式，按任务需要执行。
+
+固定版本、skills.sh 安装摘要、快照路径和本地适配见 [来源记录](./upstream.json)。两套资料沿用随包分发的 [MIT 许可证](./LICENSE)。

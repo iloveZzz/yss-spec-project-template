@@ -12,6 +12,7 @@ instance_distribution:
   - to-tickets
   - yss-frontend-application
   - yss-frontend-scaffold-generator
+  - yss-frontend-loading
   - shadcn-vue
   - vueuse-functions
   - vue-best-practices
@@ -67,6 +68,14 @@ skills:
   - frontend
   stack: vue
   instance_default_discoverable: true
+- id: yss-frontend-loading
+  layer: specialist
+  maturity: supported
+  instance_default_discoverable: true
+  aliases: []
+  impacts:
+  - frontend
+  stack: vue
 - id: shadcn-vue
   layer: specialist
   maturity: supported

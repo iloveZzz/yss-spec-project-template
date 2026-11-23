@@ -69,3 +69,13 @@ Frontend 的 `project` 和 `skills` 默认安装以下两个 skills.sh 技能。
 | `vueuse-functions` | [skills.sh 目录](https://skills.sh/vueuse/skills/vueuse-functions) · [vueuse/skills 固定提交](https://github.com/vueuse/skills/tree/004812b4aa0815f5745ac30a6a7dc4927aec7b3d/skills/vueuse-functions) | 从该提交所用的 VueUse 15.0.0 文档精选 14 份函数参考，按浏览器交互、防抖节流、倒计时、串行轮询和日期显示组织入口。附技能和函数文档的 MIT 许可证。 |
 
 Vue 3 组件行为与可适配的自定义 hook 继续使用已适配的 [vue-best-practices](https://skills.sh/vuejs-ai/skills/vue-best-practices) 和 [create-adaptable-composable](https://skills.sh/vuejs-ai/skills/create-adaptable-composable)。两项均通过 skills.sh 的 `skills add` 在临时工程按原始提交核对，保留上文记录的本地适配。技能安装与应用的 npm 依赖各自按需处理。
+
+## 2026-11-23 加载与过渡及官方技能快照
+
+Frontend 的 `project` 和 `skills` 默认加入 `yss-frontend-loading`。Spec 可按需补装。该技能依据 SCRM 的规格、桌面与移动实现和既有浏览器回归提炼加载范围、旧数据归属、操作约束与失败恢复，从该技能的 `references/scrm-case-study.md` 可查案例与固定版本。分发方法为共享主源、Claude 入口和 WorkBuddy 副本。
+
+`shadcn-vue` 沿用原有默认入口和 v2.9.0 来源锁。随包附上该固定版本的八份官方材料和 MIT 许可证，覆盖组件选型、CLI 与 preset、表单与组合、主题、Registry 和 MCP。官方材料通过本地入口按需读取，按目标项目版本、定制及授权使用命令。上游安装摘要继续表示原始技能内容；快照路径及相对回链的修改见 `shadcn-vue/upstream.json`。
+
+## 高保真原型复核与工程实现接续
+
+`prototype-review` 记录已确认的体验、实际检查与演示边界。项目根 `.agents/skills/prototype-review/references/frontend-handoff.md` 随 `yss-frontend-application` 在 Spec 和 Frontend 的两种安装模式分发，独立复核能力按各 Profile 原有集合提供。应用技能用目标工程的组件、语义主题、路由和服务落实设计决定。`yss-frontend-loading` 从真实请求、权限与回执实现等待及恢复。交付沿本次工程、浏览器视觉及交互证据核对实际结果。

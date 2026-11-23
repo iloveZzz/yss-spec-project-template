@@ -1,0 +1,3 @@
+interface:
+  display_name: "YSS 前端加载与过渡"
+  short_description: "实现或审查页面加载、表格刷新与异步操作反馈"

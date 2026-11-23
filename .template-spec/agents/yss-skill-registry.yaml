@@ -1500,6 +1500,14 @@ skills:
   - frontend
   - api
   stack: vue
+- id: yss-frontend-loading
+  layer: specialist
+  maturity: supported
+  instance_default_discoverable: false
+  aliases: []
+  impacts:
+  - frontend
+  stack: vue
 - id: shadcn-vue
   layer: specialist
   maturity: supported

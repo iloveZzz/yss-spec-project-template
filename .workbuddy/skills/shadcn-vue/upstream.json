@@ -6,8 +6,19 @@
   "skillPath": "skills/shadcn-vue",
   "upstreamHash": "a5a9b576670e98117b103e966dccb833386d4a616cd7e42d338ea8fa7c3f32fe",
   "license": "MIT",
+  "snapshot": {
+    "root": "references/upstream",
+    "entry": "references/upstream/overview.md",
+    "licenseFile": "LICENSE",
+    "usage": "按需查阅官方选型、范例和命令资料。实际执行遵循 SKILL.md 的工程版本、项目约定与授权，使用相应的本地适配参考。",
+    "packagingChanges": {
+      "overview.md": "原始 SKILL.md 原文，改名为资料文件。",
+      "cli.md": "将指向同目录 SKILL.md 的相对链接改为 overview.md。",
+      "customization.md": "将指向同目录 SKILL.md 的相对链接改为 overview.md。"
+    }
+  },
   "localChanges": {
-    "SKILL.md": "适配 Frontend Profile 的组件实现与只读审查入口，改为按需读取项目上下文并保留既有设计与定制。",
+    "SKILL.md": "适配 Frontend Profile 的组件实现与只读审查入口，按需读取项目上下文，保留既有设计与定制，并提供完整官方快照入口。",
     "cli.md": "命令示例使用项目本地 CLI，补充固定来源与已有 preset 处理方式。",
     "customization.md": "命令示例使用项目本地 CLI，补充全局主题影响。",
     "mcp.md": "命令示例使用项目本地 CLI，说明 MCP 配置的适用范围。",
