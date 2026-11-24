@@ -180,6 +180,137 @@
         "server_content": "重新加载的最新内容",
         "outcome": "no-permission"
       }
+    },
+    {
+      "id": "long-list",
+      "label": "长列表与编辑",
+      "state_ref": ".agents/skills/yss-design-ui/references/business-patterns.md",
+      "initial_data": {
+        "rows": [
+          {
+            "id": "L-001",
+            "name": "示例核对资料 01",
+            "owner": "示例编辑员",
+            "status": "待核对",
+            "version": 1
+          },
+          {
+            "id": "L-002",
+            "name": "示例核对资料 02",
+            "owner": "示例编辑员",
+            "status": "已更新",
+            "version": 1
+          },
+          {
+            "id": "L-003",
+            "name": "示例核对资料 03",
+            "owner": "示例编辑员",
+            "status": "待核对",
+            "version": 1
+          },
+          {
+            "id": "L-004",
+            "name": "示例核对资料 04",
+            "owner": "示例编辑员",
+            "status": "已更新",
+            "version": 1
+          },
+          {
+            "id": "L-005",
+            "name": "示例核对资料 05",
+            "owner": "示例编辑员",
+            "status": "待核对",
+            "version": 1
+          },
+          {
+            "id": "L-006",
+            "name": "示例核对资料 06",
+            "owner": "示例编辑员",
+            "status": "已更新",
+            "version": 1
+          },
+          {
+            "id": "L-007",
+            "name": "示例核对资料 07",
+            "owner": "示例编辑员",
+            "status": "待核对",
+            "version": 1
+          },
+          {
+            "id": "L-008",
+            "name": "示例核对资料 08",
+            "owner": "示例编辑员",
+            "status": "已更新",
+            "version": 1
+          },
+          {
+            "id": "L-009",
+            "name": "示例核对资料 09",
+            "owner": "示例编辑员",
+            "status": "待核对",
+            "version": 1
+          }
+        ],
+        "outcome": "success",
+        "server_rows": [
+          {
+            "id": "L-001",
+            "name": "示例核对资料 01（已刷新）",
+            "owner": "示例编辑员",
+            "status": "待核对",
+            "version": 2
+          },
+          {
+            "id": "L-002",
+            "name": "示例核对资料 02（已刷新）",
+            "owner": "示例编辑员",
+            "status": "已更新",
+            "version": 2
+          },
+          {
+            "id": "L-004",
+            "name": "示例核对资料 04（已刷新）",
+            "owner": "示例编辑员",
+            "status": "已更新",
+            "version": 2
+          },
+          {
+            "id": "L-005",
+            "name": "示例核对资料 05（已刷新）",
+            "owner": "示例编辑员",
+            "status": "待核对",
+            "version": 2
+          },
+          {
+            "id": "L-006",
+            "name": "示例核对资料 06（已刷新）",
+            "owner": "示例编辑员",
+            "status": "已更新",
+            "version": 2
+          },
+          {
+            "id": "L-007",
+            "name": "示例核对资料 07（已刷新）",
+            "owner": "示例编辑员",
+            "status": "待核对",
+            "version": 2
+          },
+          {
+            "id": "L-008",
+            "name": "示例核对资料 08（已刷新）",
+            "owner": "示例编辑员",
+            "status": "已更新",
+            "version": 2
+          },
+          {
+            "id": "L-009",
+            "name": "示例核对资料 09（已刷新）",
+            "owner": "示例编辑员",
+            "status": "待核对",
+            "version": 2
+          }
+        ]
+      }
     }
   ]
 }

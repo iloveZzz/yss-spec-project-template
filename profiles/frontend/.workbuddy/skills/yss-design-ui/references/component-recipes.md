@@ -28,6 +28,7 @@
 - Input/Select/Textarea：按[共享表单规范](../../yss-frontend-application/references/component-engineering.md#表单与绑定)保留单边框焦点和高对比回退。InputGroup 附加操作按钮有独立名称和键盘焦点，不把点击说明等同于提交。
 - Sheet/Dialog：标题与说明完整；Escape、关闭和取消路径可用；关闭后回到原触发器。取消按钮可用 `DialogClose as-child` 包裹 `Button`；只为右上角图标关闭按钮设置方形尺寸，文字按钮保留水平内边距。窄屏内容滚动时操作可访问，必要时全宽；不要把复杂多步骤强塞进小弹窗。
 - DropdownMenu：次要操作才收纳；Arrow/Enter/Escape 可操作，禁用项不可执行，关闭焦点返回；关键主操作始终可见。Tooltip 仅补充说明，不能承载唯一错误或权限原因。
+- 有固定工作区的查询列表：让结果区域负责滚动，表头吸顶于同一容器；避免组件内部再截断滚动。验收短/窄视口能到达筛选、结果和分页；空间不足时可回到页面自然滚动，不为保持吸顶牺牲可达性。
 - Pagination：显示结果数、当前页和页数；首尾按钮禁用；筛选导致结果减少时回到合法页；选择范围明确，空结果不出现虚假资料。
 - 所有组件使用当前 DESIGN 角色，compact/comfortable 不修改正文角色。窄屏按当前普通控件变体；点击区域和相邻间距实测，不能以控件名或高度证明无障碍。
 - 场景切换/重置重新初始化局部状态，清除输入、错误、菜单、Sheet/Dialog 与选择。菜单打开时也要通过场景 hash 切换验证清理；初始化确认不代替行为测试。
@@ -35,5 +36,7 @@
 - Select：有限选项使用真实 SelectTrigger/SelectContent/SelectItem；核对 Arrow/Enter/Escape、选中反馈、焦点返回、弹层宽度及窄屏边界。Vue 使用 `v-model` / `update:modelValue` 与 `--reka-select-trigger-width`，不得复制 React 的事件或 Radix 变量。产品页面、草稿和评审工具均使用实际组件；允许结构标签和组件内部原生 DOM，不以相似 CSS 代替组件。
 
 ## 可运行教学与证据
+
+用[查询与详情](../assets/vue-business-patterns/list-detail-standard.config.json)的「长列表与编辑」场景（`#scenario=long-list`）复核工作区：宽高充足时滚动结果区、短窗口或窄屏回归工作区滚动；模拟刷新失败后重试，并在刷新途中换筛选，核对旧请求不覆盖新结果。打开任一「编辑」，提交空名称、模拟保存失败、按 Escape 后继续编辑或确认放弃，核对草稿、错误关联和焦点归还。示例只使用合成数据，加载状态与真实接入仍按目标工程接口约定。
 
 五类模式、搜索/日期变体与组件状态展示按 [Vue 原型方法](shadcn-vue-prototype.md) 组装。`component-states-standard.config.json` 标识组件展示入口；实际检查默认、禁用、错误、加载、选中及浮层，不以文件存在宣称已运行。
