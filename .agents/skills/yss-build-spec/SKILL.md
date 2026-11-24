@@ -1,11 +1,13 @@
 ---
 name: yss-build-spec
-description: 根据产品目标、现有材料与已确认规则编制业务规格、产品原型和交互说明，按需整理给研发的交接提示词。
+description: 编制业务规格、产品原型和交互说明，审查 Spec 正文的业务依据、规则与验收，按需准备研发交接。
 ---
 
 # 编制产品规格与原型
 
 从用户目标、现有材料与已确认决定直接开展工作。完整产品 Spec 只交付业务规格、高保真交互原型及交互说明三类内容；纯展示可用高保真静态稿，无 UI 用业务逻辑或状态原型。研发据此承担技术设计与实现。普通查询、局部修订和模板维护只完成当前范围，不自动补建完整产品资产。
+
+完整 Spec 成稿后、提交用户确认前，按 [Spec 正文审查](references/spec-workflow.md#spec-正文审查) 检查正文和验收。实质修订只检查受影响的规则和验收。用户单独要求审查 Spec 时，同样使用该方法，按只读范围返回发现。
 
 本次会写入规格、交互说明或原型时，先读[保存位置与命名](references/spec-workflow.md#保存位置与命名)。第一次写入相关产物或工作台记录前，先在会话发出一条用户可见消息，说明本轮 Spec 归属及业务依据。归属待决定时先问，再按答复继续。
 
@@ -17,7 +19,7 @@ description: 根据产品目标、现有材料与已确认规则编制业务规�
 - 业务关系、场景、规则、范围和方案影响：`.agents/skills/yss-analyze-business/SKILL.md`。
 - 真实业务取舍：`.agents/skills/grilling/SKILL.md`；术语及责任歧义：`.agents/skills/domain-modeling/SKILL.md`。
 - 产品设计与 UI 原型：`.agents/skills/yss-design-ui/SKILL.md`；无 UI 或限定状态问题：`.agents/skills/yss-prototype-logic/SKILL.md`。
-- 产物复核：`.agents/skills/prototype-review/SKILL.md`；当前中文文档表达：`.agents/skills/yss-write-docs/SKILL.md`。
+- 设计与原型复核：`.agents/skills/prototype-review/SKILL.md`；当前中文文档表达：`.agents/skills/yss-write-docs/SKILL.md`。
 
 解释某技能的前提、例外或决定跳过步骤前，先读取其实际入口；只展示候选时不加载全部正文。调用遵循宿主真实能力；读取显式技能仅用于了解方法，不等于获得执行或对外操作授权。
 

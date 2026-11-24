@@ -799,7 +799,7 @@ skill_dependencies:
     when: non-ui-or-logic-question
   - skill: prototype-review
     type: context-conditional
-    when: artifact-review
+    when: prototype-artifact-review
   - skill: yss-write-docs
     type: context-conditional
     when: lifecycle-document-output
