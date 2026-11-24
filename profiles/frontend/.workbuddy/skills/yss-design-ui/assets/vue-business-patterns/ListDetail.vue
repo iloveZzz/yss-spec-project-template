@@ -133,7 +133,7 @@ function save(fail=false){
   },450)
 }
 onUnmounted(()=>clearTimeout(saveTimer))
-const labels:Record<string,string>={id:'编号',name:'资料名称',owner:'负责人',status:'状态',version:'版本'}
+const labels:Record<string,string>={id:'编号',name:'资料名称',owner:'负责人',status:'状态',version:'版本',notes:'补充说明'}
 </script>
 <template>
  <div :class="['query-workspace',{'with-detail':wide&&detail}]"><div class="query-main">
