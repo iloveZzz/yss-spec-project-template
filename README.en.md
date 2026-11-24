@@ -12,6 +12,8 @@ Preserve business validation, security, error handling and user files. Commits, 
 
 Installed yss CLI binaries are separate products. Check compatibility against the installed version and its embedded template.
 
+Template 5.16.1 aligns text input and select focus with a single border in high-fidelity prototypes and the design preview, while preserving error and high-contrast cues. The Query and Detail example adds a long-list and editing scenario for short viewports, same-query refresh, draft recovery, and focus restoration.
+
 Template 5.16.0 adds the loading and transition skill to the Frontend defaults and includes pinned official shadcn-vue references. Frontend implementation can use high-fidelity prototype review findings while following the target project’s components, theme and request handling. Workbench guidance covers material review, scoped evidence and previously accepted delivery goals.
 
 Template 5.15.0 adds `shadcn-vue` and `vueuse-functions` to the Frontend defaults and aligns the Vue scaffold theme with its component library. Skill descriptions state when to use each skill and what it delivers. Skills authored in English keep their English primary descriptions. `yss-help` recommends skills available in the target project and host. Spec handoffs record the scope of each batch, the decisions it affects, and the implementation plan.
@@ -22,4 +24,4 @@ Template 5.13.0 adds Chinese skill guidance through `yss-help` and renames seven
 
 The current source defaults to 18 skills for Spec, 43 for Backend and 19 for Frontend. Install the CLI with the new embedded template, then synchronize the relevant project scope.
 
-CLI 3.16.0 packages Template 5.16.0. GitLab CI retains the compatible CLI 3.7.0 build source `f2e0a952123fbd9f12d3703b8df2b03d02b670cb`. The final CLI release records its own source and template commits. CLI 3.3.0 adds `scaffold frontend`. The Frontend Profile remains available from CLI 3.2.0, while 3.1.4 and earlier do not support it. Check the actual CLI help and embedded Bundle. Publishing the template does not update installed CLIs or projects. See the [Home validation report](.template-source/design/2026-11-15-spec-home-repo-validation.md) for the observed scope and limits.
+CLI 3.16.1 packages Template 5.16.1. GitLab CI retains the compatible CLI 3.7.0 build source `f2e0a952123fbd9f12d3703b8df2b03d02b670cb`. The final CLI release records its own source and template commits. CLI 3.3.0 adds `scaffold frontend`. The Frontend Profile remains available from CLI 3.2.0, while 3.1.4 and earlier do not support it. Check the actual CLI help and embedded Bundle. Publishing the template does not update installed CLIs or projects. See the [Home validation report](.template-source/design/2026-11-15-spec-home-repo-validation.md) for the observed scope and limits.
