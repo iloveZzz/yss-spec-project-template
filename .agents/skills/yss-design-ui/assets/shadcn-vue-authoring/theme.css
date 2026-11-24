@@ -82,14 +82,17 @@
 [data-slot="field-description"] {margin:0}
 [data-slot="field-error"] {font-size:inherit;color:var(--brand-color-error-active)}
 [data-slot="field-separator"] {margin:0;height:var(--brand-size-lg)}
-[data-slot="input-group"] {height:var(--prototype-control-height);min-height:var(--prototype-control-height);border-radius:var(--brand-border-radius);border-color:var(--brand-color-border);background:var(--brand-color-bg-container);box-shadow:none;gap:0}
-[data-slot="input-group"]:has(>:where([data-slot="input-group-control"]):focus-visible) {border-color:var(--yss-color-primary-control);outline:none;box-shadow:var(--yss-focus-ring)}
+[data-slot="input-group"] {border:1px solid var(--brand-color-border);height:var(--prototype-control-height);min-height:var(--prototype-control-height);border-radius:var(--brand-border-radius);background:var(--brand-color-bg-container);box-shadow:none;gap:0}
+[data-slot="input-group"]:has(>:where([data-slot="input-group-control"]):focus) {border-color:var(--yss-color-primary-control);outline:none;box-shadow:none}
 [data-slot="input-group"]:has([aria-invalid="true"]) {border-color:var(--brand-color-error-active)}
+[data-slot="input-group"]:has(>:where([data-slot="input-group-control"]):focus):has([aria-invalid="true"]) {border-bottom-width:3px;background:var(--yss-colors-surface-editing)}
 [data-slot="input-group"]>[data-slot="input-group-control"] {border:0!important;border-radius:0;box-shadow:none;outline:none;background:transparent;font-size:inherit;height:100%;min-height:0;min-width:0;padding-inline:var(--brand-size-xs)}
 [data-slot="input-group"]:has(>textarea) {height:auto;min-height:calc(var(--prototype-control-height) * 3)}
 [data-slot="input-group"]>[data-slot="input-group-control"]:is(textarea) {padding:var(--brand-size-xs);min-height:calc(var(--prototype-control-height) * 3)}
 [data-slot="input-group-addon"] {margin:0;padding:0 var(--brand-size-xs);font-size:inherit;line-height:inherit;gap:var(--brand-size-xxs);color:var(--brand-color-text-secondary)}
 [data-slot="input-group-addon"]>[data-slot="button"] {height:calc(var(--prototype-control-height) - 2px);min-height:calc(var(--prototype-control-height) - 2px);padding-inline:var(--brand-size-xs)}
+/* Reserve the thicker inside edge without overlapping an inline addon button. */
+[data-slot="input-group"]:has(>:where([data-slot="input-group-control"]):focus):has([aria-invalid="true"])>:where([data-slot="input-group-addon"][data-align^="inline-"])>[data-slot="button"] {height:calc(var(--prototype-control-height) - 4px);min-height:calc(var(--prototype-control-height) - 4px)}
 [data-slot="alert"] {font-size:inherit;line-height:inherit;padding:var(--brand-size-xs) var(--brand-size-sm);border-radius:var(--brand-border-radius);color:var(--brand-color-text)}
 [data-slot="alert-description"] {font-size:inherit;line-height:inherit;color:inherit;gap:var(--brand-size-xxs)}
 [data-slot="empty"] {padding:var(--prototype-surface-padding);gap:var(--brand-size-sm)}
@@ -135,8 +138,7 @@
 
 /* Forced colors can suppress shadows; keep a system-colored keyboard focus cue. */
 @media(forced-colors:active) {
-  :is([data-slot="input"],[data-slot="textarea"],[data-slot="select-trigger"]):focus-visible,
-  [data-slot="input-group"]:has(>:where([data-slot="input-group-control"]):focus-visible) {outline:2px solid Highlight;outline-offset:2px;box-shadow:none}
+  [data-slot="input-group"]:has(>:where([data-slot="input-group-control"]):focus) {outline:2px solid Highlight;outline-offset:2px;box-shadow:none}
   :is([data-slot="select-item"],[data-slot="combobox-item"],[data-slot="dropdown-menu-item"]):focus-visible {outline:1px solid Highlight;outline-offset:-1px;box-shadow:none}
 }
 

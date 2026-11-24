@@ -55,7 +55,12 @@ button:disabled,[data-slot="button"]:disabled {background:var(--yss-colors-surfa
 input:hover:not(:disabled),select:hover:not(:disabled),textarea:hover:not(:disabled),[data-slot="select-trigger"]:hover:not(:disabled) {border-color:var(--yss-color-primary-control)}
 [aria-invalid="true"] {border-color:var(--yss-colors-error-text)!important}
 :focus-visible {outline:2px solid var(--yss-color-primary-control);outline-offset:2px}
-:is([data-slot="input"],[data-slot="textarea"],[data-slot="select-trigger"]):focus-visible {border-color:var(--yss-color-primary-control);outline:none;box-shadow:var(--yss-focus-ring)}
+/* Give text entry and Select one focus perimeter. Choice inputs and actions keep the keyboard outline. */
+:is(input:where(:not([type]),[type="text"],[type="search"],[type="tel"],[type="url"],[type="email"],[type="password"],[type="number"],[type="date"],[type="datetime-local"],[type="month"],[type="week"],[type="time"]),textarea,select,[data-slot="input"],[data-slot="textarea"],[data-slot="select-trigger"]):not(:where([data-slot="input-group-control"],[data-slot="command-input"])):focus {
+  border-color:var(--yss-color-primary-control);outline:none;box-shadow:none;
+  &[aria-invalid="true"] {border-bottom-width:3px;background:var(--yss-colors-surface-editing)}
+  @media(forced-colors:active) {outline:2px solid Highlight;outline-offset:2px}
+}
 textarea,[data-slot="textarea"] {display:block;width:100%;min-height:calc(var(--prototype-control-height) * 3);padding:var(--brand-size-xs);font-size:inherit;color:var(--brand-color-text);background:var(--brand-color-bg-container);border:1px solid var(--brand-color-border);border-radius:var(--brand-border-radius);box-shadow:none}
 .table-scroll,[data-slot="table-container"] {overflow-x:auto;max-width:100%;border:1px solid var(--brand-color-border-secondary);border-radius:var(--brand-border-radius-lg)}
 table,[data-slot="table"] {width:100%;min-width:650px;border-collapse:collapse;font-size:inherit}

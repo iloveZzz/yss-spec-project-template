@@ -51,6 +51,8 @@
 ## 表单与绑定
 
 - 复用 Field/Label/InputGroup 等实际存在的组件，保留可访问 label、错误关联、aria-invalid、disabled 与提交反馈。不能仅靠颜色表示错误。
+- 目标工程有既定设计时遵循其规范；采用 YSS 默认主题的 Input、Textarea 和 Select 触发器，点击或键盘聚焦时只在控件原边界显示 1px 主色边框，不叠加外轮廓、光晕或组件默认 ring。错误边框保持错误色，YSS 默认在同一错误边界加粗底边并用编辑底色辅助区分失焦和聚焦，不再加第二道描边；无光标的 Select 也要能分辨。InputGroup 只由外层画输入边界，子输入不重复描边，附加按钮保留自己的键盘焦点。按钮、链接、Checkbox 等不套用输入规则；强制颜色模式在输入或组合外壳保留可见系统色轮廓。
+- 用一次实际点击和 Tab 核对主题级联后的边框、阴影、轮廓和组合内外层；同一示例覆盖已聚焦与失焦的错误态、附加按钮及强制颜色。保持 Select 展开选项和菜单的键盘焦点、选中状态与返回行为，不把触发器单边框规则扩到菜单项。
 - 简单查询可用 defineModel、普通 TypeScript 校验。复杂动态字段/数组/提交生命周期再按可选能力引入一个表单状态库；不因上游“Form state comes from a form library”强制新增依赖。
 - 页面 schemas 定义字段、选项、列及前端规则，不拥有请求或可变表单状态；DTO 与 service 运行时验证另有职责。
 - 普通 SFC 的 defineModel 优先，但 vendor 的 useVModel/passive/defaultValue 需保留行为。不要根据最新文档批量替换固定组件。
