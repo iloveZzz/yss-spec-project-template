@@ -18,6 +18,9 @@
     "unovue/shadcn-vue": {
       "revision": "39cb0b277f009e47de2dc62c4217755fb9a27eec"
     },
+    "formkit/formkit": {
+      "revision": "922642ee49989216c281e5cc8442ce01dc5986a0"
+    },
     "vueuse/skills": {
       "revision": "004812b4aa0815f5745ac30a6a7dc4927aec7b3d"
     }
@@ -59,6 +62,17 @@
         "skillPath": "skills/shadcn-vue/SKILL.md",
         "sourceRevision": "39cb0b277f009e47de2dc62c4217755fb9a27eec",
         "upstreamHash": "a5a9b576670e98117b103e966dccb833386d4a616cd7e42d338ea8fa7c3f32fe",
+        "adaptationRef": ".template-spec/agents/frontend-skills-adaptation.md",
+        "targets": [
+          ".agents/skills",
+          ".workbuddy/skills"
+        ]
+      },
+      "formkit": {
+        "source": "formkit/formkit",
+        "sourceType": "github",
+        "skillPath": "packages/cli/assets/skills/formkit/SKILL.md",
+        "sourceRevision": "922642ee49989216c281e5cc8442ce01dc5986a0",
         "adaptationRef": ".template-spec/agents/frontend-skills-adaptation.md",
         "targets": [
           ".agents/skills",

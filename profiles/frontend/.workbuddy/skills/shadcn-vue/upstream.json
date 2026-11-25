@@ -22,7 +22,7 @@
     "cli.md": "命令示例使用项目本地 CLI，补充固定来源与已有 preset 处理方式。",
     "customization.md": "命令示例使用项目本地 CLI，补充全局主题影响。",
     "mcp.md": "命令示例使用项目本地 CLI，说明 MCP 配置的适用范围。",
-    "rules/forms.md": "按控件语义选择 ToggleGroup 等组件，简单表单沿用现有状态。",
+    "rules/forms.md": "按控件语义选择 ToggleGroup 等组件，简单表单沿用现有状态，并说明 FormKit 与本地输入组件的接入边界。",
     "rules/composition.md": "Card 区域按实际内容选择。",
     "LICENSE": "从同一提交的仓库根目录随包分发。"
   }

@@ -8,7 +8,7 @@
 - ToggleGroup for toggleable choices
 - FieldSet + FieldLegend for grouping related fields
 - Field validation and disabled states
-- Form libraries: vee-validate, TanStack Form, Formisch
+- Form libraries: vee-validate, TanStack Form, Formisch, and FormKit
 
 ---
 
@@ -216,11 +216,11 @@ Works for all controls: `Input`, `Textarea`, `Select`, `Checkbox`, `RadioGroupIt
 
 ---
 
-## Form libraries: vee-validate, TanStack Form, Formisch
+## Form libraries: vee-validate, TanStack Form, Formisch, and FormKit
 
-Simple forms can keep their existing Vue state. When validation or a complex submission flow warrants a form library, connect the chosen library to `Field`. The old `Form` / `FormField` / `FormItem` components are **no longer actively developed** — don't use them for new forms.
+Simple forms can keep their existing Vue state. For complex validation and submission flows, use the project's selected form library. The old `Form` / `FormField` / `FormItem` components are **no longer actively developed** — don't use them for new forms.
 
-The pattern is the same for every library: the library owns state and validation, shadcn-vue `Field` owns layout, and errors flow into `data-invalid`, `aria-invalid` and `FieldError`.
+The selected library owns state and validation. When using shadcn-vue `Field` for layout, connect its error state to `data-invalid`, `aria-invalid` and `FieldError`.
 
 **vee-validate** (`useForm` + `toTypedSchema` from `@vee-validate/zod`). Alias its `Field` as `VeeField`. Bind `componentField` (not `field`) to `v-model` components like `Input` — `field` binds `value`, which they ignore, so `initialValues` never render:
 
@@ -237,5 +237,7 @@ The pattern is the same for every library: the library owns state and validation
 **TanStack Form** (`useForm` from `@tanstack/vue-form`): render `<form.Field>` and read `field.state.meta` — invalid when `isTouched && !isValid`, errors in `field.state.meta.errors`.
 
 **Formisch** (`useForm` from `@formisch/vue` + Valibot): Formisch ships its own `Field`, so import it as `FormischField`. Errors are strings in `field.errors` (or `null`) — guard before mapping: `<FieldError v-if="field.errors" :errors="field.errors.map(message => ({ message }))" />`.
+
+**FormKit.** When a FormKit field needs the project’s local `Input`, pass a small Vue adapter component to `createInput` from `@formkit/vue`. FormKit owns the value, validation and submit lifecycle. The local `Input` provides the control, styling and keyboard interaction. Read `context._value` for the displayed value, pass control updates to `context.node.input(value)`, and forward blur to `context.handlers.blur`. Preserve the label and help/error associations, disabled state and `aria-invalid`. Use the existing FormKit message section or render those messages once with the project’s `FieldError`. Find the `formkit` skill for Vue and Nuxt guidance for the project’s version. [FormKit custom inputs](https://formkit.com/essentials/custom-inputs.vue.md)
 
 See `https://shadcn-vue.com/docs/forms` for complete examples.

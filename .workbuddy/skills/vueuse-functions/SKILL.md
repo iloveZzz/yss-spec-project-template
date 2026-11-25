@@ -1,6 +1,6 @@
 ---
 name: vueuse-functions
-description: 选用 VueUse 组合式函数处理浏览器事件、元素状态、防抖节流、计时与轮询，并在作用域结束时清理资源。
+description: 在 Vue 3 或 Nuxt 中按需选用 VueUse 组合式函数处理存储、浏览器交互、响应式状态、异步任务和计时，查阅用法与类型。
 license: MIT
 metadata:
     author: SerKo <https://github.com/serkodev>
@@ -10,7 +10,15 @@ compatibility: Requires Vue 3 (or above) or Nuxt 3 (or above) project
 
 # VueUse hooks 选用
 
-先确定要处理的事件、状态或时间语义，以及负责清理的组件或 effect scope。在目标工程的锁文件中核对 `@vueuse/core` 版本，按下面的场景查对应函数。随附的上游参考对应 VueUse 15.0.0，调用签名和默认值以工程已安装的类型为准。
+先确定要处理的事件、状态或时间语义，以及负责清理的组件或 effect scope。在目标工程的锁文件中核对对应 VueUse 包的版本。按下面的常见场景或 [上游函数索引](references/functions.md) 选择函数，再读对应的离线参考。随附参考来自 VueUse 15.0.0 的上游快照，调用签名和默认值以工程已安装的类型为准。
+
+索引保留上游的调用标记。`AUTO` 表示在需求和项目约定适用时可选用。`EXTERNAL` 要先确认工程已有相应依赖，确需新增时遵循项目的依赖变更约定。`EXPLICIT_ONLY` 只在用户明确要求时使用。已有请求层、状态管理或组件实现能满足需求时优先沿用。
+
+在 YSS 工程中，业务请求的状态、缓存、重试和取消由项目现有请求层统一管理。选用 `useFetch`、`useAsyncState` 或 `useAxios` 时遵循这一职责分配，同一请求只设一个状态所有者。搜索防抖、滚动触发和计时可以提供请求参数或触发条件，沿用已有请求入口。异步回调及返回值要写入状态或发出提示时，沿用请求层核对当前请求归属，丢弃过期结果。
+
+已有 shadcn-vue / Reka 弹层时，由当前组件管理焦点、外部点击、关闭和滚动锁。使用 `useStorage` 或 `useColorMode` 处理显示偏好时，沿用工程的主题状态和持久化约定。
+
+SSR 中的用户和租户数据由每次请求独立初始化的 store 持有。模块级 `createGlobalState` 单例会被同一服务端进程中的请求共享。
 
 | 场景 | 选用与实现 |
 | --- | --- |

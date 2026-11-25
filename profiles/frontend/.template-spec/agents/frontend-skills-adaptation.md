@@ -76,6 +76,16 @@ Frontend 的 `project` 和 `skills` 默认加入 `yss-frontend-loading`。Spec �
 
 `shadcn-vue` 沿用原有默认入口和 v2.9.0 来源锁。随包附上该固定版本的八份官方材料和 MIT 许可证，覆盖组件选型、CLI 与 preset、表单与组合、主题、Registry 和 MCP。官方材料通过本地入口按需读取，按目标项目版本、定制及授权使用命令。上游安装摘要继续表示原始技能内容；快照路径及相对回链的修改见 `shadcn-vue/upstream.json`。
 
+## 2026-11-25 VueUse 官方函数参考
+
+Frontend 的 `project` 和 `skills` 默认分发 `vueuse-functions`，随包提供固定上游提交的完整函数索引及 270 份离线参考。索引保留官方调用标记，主入口用常见工程场景引导按需查阅。既有参考的示例修正、MIT 许可和来源摘要继续随包分发，适配见 `vueuse-functions/upstream.json`。实际调用以项目安装的 VueUse 版本为准。
+
+## 2026-11-25 FormKit 官方技能
+
+Frontend 的 `project` 和 `skills` 默认分发官方单项技能 `formkit`，Spec 可按需补装。来源为 `formkit/formkit` v2.10.0 的 `packages/cli/assets/skills/formkit`，使用 MIT 许可证。技能包保留官方文档索引、核心表单、验证、Schema 和自定义输入方法。来源详情见技能目录的 `upstream.json`。[固定 Git 提交](https://github.com/formkit/formkit/tree/922642ee49989216c281e5cc8442ce01dc5986a0/packages/cli/assets/skills/formkit)
+
+使用时先核对工程框架、锁文件和 FormKit 版本，优先采用 Vue 或 Nuxt 的适用资料。输入组件和语义主题沿用工程已有的 shadcn-vue，FormKit npm 依赖按任务采用。此说明随 Spec 与 Frontend 的两种安装模式通过 `skillReferences` 提供。
+
 ## 高保真原型复核与工程实现接续
 
 `prototype-review` 记录已确认的体验、实际检查与演示边界。项目根 `.agents/skills/prototype-review/references/frontend-handoff.md` 随 `yss-frontend-application` 在 Spec 和 Frontend 的两种安装模式分发，独立复核能力按各 Profile 原有集合提供。应用技能用目标工程的组件、语义主题、路由和服务落实设计决定。`yss-frontend-loading` 从真实请求、权限与回执实现等待及恢复。交付沿本次工程、浏览器视觉及交互证据核对实际结果。

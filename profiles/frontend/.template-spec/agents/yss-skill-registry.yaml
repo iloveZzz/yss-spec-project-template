@@ -14,6 +14,7 @@ instance_distribution:
   - yss-frontend-scaffold-generator
   - yss-frontend-loading
   - shadcn-vue
+  - formkit
   - vueuse-functions
   - vue-best-practices
   - create-adaptable-composable
@@ -77,6 +78,14 @@ skills:
   - frontend
   stack: vue
 - id: shadcn-vue
+  layer: specialist
+  maturity: supported
+  instance_default_discoverable: true
+  aliases: []
+  impacts:
+  - frontend
+  stack: vue
+- id: formkit
   layer: specialist
   maturity: supported
   instance_default_discoverable: true

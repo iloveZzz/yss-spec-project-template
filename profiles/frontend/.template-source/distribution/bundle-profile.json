@@ -31,6 +31,7 @@
       ".agents/skills/yss-frontend-application",
       ".agents/skills/yss-frontend-loading",
       ".agents/skills/shadcn-vue",
+      ".agents/skills/formkit",
       ".agents/skills/vueuse-functions",
       ".agents/skills/vue-best-practices",
       ".agents/skills/create-adaptable-composable",
@@ -51,6 +52,7 @@
       ".workbuddy/skills/yss-frontend-application",
       ".workbuddy/skills/yss-frontend-loading",
       ".workbuddy/skills/shadcn-vue",
+      ".workbuddy/skills/formkit",
       ".workbuddy/skills/vueuse-functions",
       ".workbuddy/skills/vue-best-practices",
       ".workbuddy/skills/create-adaptable-composable",
@@ -334,6 +336,7 @@
         "yss-frontend-scaffold-generator",
         "yss-frontend-loading",
         "shadcn-vue",
+        "formkit",
         "vueuse-functions",
         "vue-best-practices",
         "create-adaptable-composable",
@@ -403,6 +406,9 @@
           ".template-spec/agents/frontend-skills-adaptation.md"
         ],
         "shadcn-vue": [
+          ".template-spec/agents/frontend-skills-adaptation.md"
+        ],
+        "formkit": [
           ".template-spec/agents/frontend-skills-adaptation.md"
         ],
         "vueuse-functions": [
@@ -509,6 +515,7 @@
         "yss-frontend-scaffold-generator",
         "yss-frontend-loading",
         "shadcn-vue",
+        "formkit",
         "vueuse-functions",
         "vue-best-practices",
         "create-adaptable-composable",
@@ -551,6 +558,9 @@
           ".template-spec/agents/frontend-skills-adaptation.md"
         ],
         "shadcn-vue": [
+          ".template-spec/agents/frontend-skills-adaptation.md"
+        ],
+        "formkit": [
           ".template-spec/agents/frontend-skills-adaptation.md"
         ],
         "vueuse-functions": [

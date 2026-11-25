@@ -8,6 +8,7 @@
 - 明确研发或 Spec/Ticket 实现使用 `implement` 协调来源、范围、恢复与结果，具体前端工作使用 `yss-frontend-application`；明确要求拆票时使用共享 `to-tickets`，按请求区分业务票与工程票，不强制先建票。
 - 承接高保真原型时，读取选定 Spec、交互说明、设计版本和已有 `prototype-review` 结论，沿用确认过的行为与关键视觉。用目标工程的组件、语义主题、路由和数据边界实现页面，禁止整份搬入原型页面、样式和演示逻辑。需要复核原型时按任务使用 `prototype-review`。
 - 页面工程与设计还原用 `yss-frontend-application`。UI 组件以 `shadcn-vue` 为底座，按项目别名与本地源码组合。Vue 3 状态和组件行为用 `vue-best-practices`，浏览器交互、防抖及计时用 `vueuse-functions`，抽取可接收 ref 或 getter 的公共 hook 时用 `create-adaptable-composable`。
+- FormKit 表单、验证、Schema 或自定义输入使用 `formkit`。按工程实际版本优先查阅 Vue 或 Nuxt 用法，沿用项目已有的 shadcn-vue 组件与主题，FormKit npm 依赖按任务采用。
 - 启动、切页、表格刷新、移动追加及异步提交使用 `yss-frontend-loading`，按真实请求、权限和回执实现等待、失败及恢复。
 - 产品设计与原型制作按需使用 `yss-design-ui`。以本次选定的设计材料为还原基准。
 - 先读目标工程的入口、依赖锁、scripts 和约定，前端命令优先 `pnpm`。新工程采用 Vue 3、TypeScript、ESM 与本地 shadcn-vue 组件；存量工程只处理本次授权范围，不自动重搭或全量迁移。

@@ -1516,6 +1516,14 @@ skills:
   impacts:
   - frontend
   stack: vue
+- id: formkit
+  layer: specialist
+  maturity: supported
+  instance_default_discoverable: false
+  aliases: []
+  impacts:
+  - frontend
+  stack: vue
 - id: vueuse-functions
   layer: specialist
   maturity: supported

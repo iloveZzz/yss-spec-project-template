@@ -17,7 +17,9 @@ yss sync --root <受管目录>
 
 工程入口为 `yss-frontend-application`。提供或定位本次采用的规格、原型、交互说明、设计规范与版本。工作树未提交内容也属于选定输入时，保留实际文件与差异。先读应用 `package.json`、锁文件、入口和项目约定，再按受影响范围实施。
 
-包含新版前端技能的 Bundle 默认安装 `shadcn-vue` 和 `vueuse-functions`。前者依据工程的 `components.json` 和本地导出实现 UI 组件，后者按场景选择浏览器、倒计时和轮询 hooks。Vue 3 状态与组件逻辑使用 `vue-best-practices`，需要可复用的组合式接口时使用 `create-adaptable-composable`。纯文案与样式不因此引入 composable。设计、原型复核、逻辑原型和词汇维护可分别补装 `yss-design-ui`、`prototype-review`、`yss-prototype-logic`、`domain-modeling`。不一次加载全部技能，不把可选设计方法变成开发前置。
+当前模板源码的 Frontend `project` 和 `skills` 两种模式均默认提供 20 项技能，可用库 24 项。组件工程使用 `shadcn-vue`，以工程的 `components.json` 和本地导出为准。`vueuse-functions` 提供官方函数索引及离线参考，按项目版本选用组合式函数。Vue 3 状态与组件逻辑使用 `vue-best-practices`，需要可复用的组合式接口时使用 `create-adaptable-composable`。纯文案与样式不因此引入 composable。设计、原型复核、逻辑原型和词汇维护可分别补装 `yss-design-ui`、`prototype-review`、`yss-prototype-logic`、`domain-modeling`。不一次加载全部技能，不把可选设计方法变成开发前置。
+
+涉及 FormKit 表单、验证、Schema 或自定义输入时，使用两种模式均默认提供的 `formkit`。先读依赖锁及项目中的 FormKit 配置，按工程版本优先查 Vue 或 Nuxt 官方用法。表单视觉沿用项目已有的 shadcn-vue 组件和主题，FormKit npm 依赖按任务采用。
 
 已有设计的完成依据是适用工程检查、相同视口/数据/主题/状态下的浏览器对比、关键交互验证。只有构建或旧截图通过不能证明已还原。真实接口缺失时明确“前端已还原（模拟运行，待联调）”，缺少浏览器验证时明确“源码已实现，相关还原验证未完成”。
 

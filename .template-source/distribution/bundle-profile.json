@@ -566,6 +566,9 @@
         "shadcn-vue": [
           ".template-spec/agents/frontend-skills-adaptation.md"
         ],
+        "formkit": [
+          ".template-spec/agents/frontend-skills-adaptation.md"
+        ],
         "vueuse-functions": [
           ".template-spec/agents/frontend-skills-adaptation.md"
         ],
@@ -807,6 +810,9 @@
           ".template-spec/agents/frontend-skills-adaptation.md"
         ],
         "shadcn-vue": [
+          ".template-spec/agents/frontend-skills-adaptation.md"
+        ],
+        "formkit": [
           ".template-spec/agents/frontend-skills-adaptation.md"
         ],
         "vueuse-functions": [

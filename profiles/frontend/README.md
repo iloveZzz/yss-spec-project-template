@@ -6,7 +6,9 @@ Frontend 承接 Spec 的业务规格、高保真原型与交互说明，完成 V
 
 已有 `prototype-review` 结论可随选定设计直接接续。应用技能沿用确认过的流程、交互和关键视觉，使用目标工程的组件、主题、路由和服务实现。`yss-frontend-loading` 按真实请求与回执补齐等待、失败和恢复。
 
-`project` 与 `skills` 两种安装默认提供 19 项技能，可用库共 23 项。`implement` 负责明确研发的协调，`to-tickets` 负责显式拆票，`yss-frontend-application` 负责前端专业实现与审查；局部修改可直接进入应用技能。加载与异步反馈使用 `yss-frontend-loading`，组件工程使用随包附官方资料的 `shadcn-vue`。Vue 3 逻辑、自定义 composable 与 VueUse 时间及交互 hooks 按职责选择。设计、原型复核、逻辑原型和业务词汇维护四项按需补装。安装不会生成业务页面或自动加载全部技能。
+`project` 与 `skills` 两种安装默认提供 20 项技能，可用库共 24 项。`implement` 负责明确研发的协调，`to-tickets` 负责显式拆票，`yss-frontend-application` 负责前端专业实现与审查。局部修改可直接进入应用技能。加载与异步反馈使用 `yss-frontend-loading`，组件工程使用随包附官方资料的 `shadcn-vue`。`vueuse-functions` 默认携带官方函数索引及离线参考，按项目版本和需求查用。设计、原型复核、逻辑原型和业务词汇维护四项按需补装。安装不会生成业务页面或自动加载全部技能。
+
+Vue 或 Nuxt 工程使用 FormKit 实现表单、验证、Schema 或自定义输入时，按目标项目版本查阅 `formkit`。组件与样式沿用工程已有的 shadcn-vue 和主题，FormKit npm 依赖按任务采用。
 
 技能共享源统一位于根 `.agents/skills`，本覆盖层按白名单选择并分发；`.workbuddy/skills` 是对应的普通文件副本。安装后的具体集合以所用 CLI 内嵌 Bundle 为准。
 
