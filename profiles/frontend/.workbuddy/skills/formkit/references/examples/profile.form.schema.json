@@ -1,0 +1,28 @@
+[
+  {
+    "$cmp": "FormKit",
+    "props": {
+      "id": "$displayNameId",
+      "type": "$textInput",
+      "name": "displayName",
+      "label": "显示名称（必填）",
+      "aria-required": "true",
+      "validation": "required",
+      "validationVisibility": "submit",
+      "validationMessages": {
+        "required": "请输入显示名称。"
+      }
+    }
+  },
+  {
+    "$cmp": "FormKit",
+    "if": "$showRemark",
+    "props": {
+      "id": "$remarkId",
+      "type": "$textInput",
+      "name": "remark",
+      "label": "备注",
+      "readonly": "$remarkReadOnly"
+    }
+  }
+]

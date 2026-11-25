@@ -122,7 +122,7 @@ Frontend 在共用 6 项之外预装以下 14 项。测试与质量工具方法�
 | `yss-frontend-scaffold-generator` | 仅在不存在的新目录需要新应用时生成 starter，再由应用技能实现业务；已有工程和只读 review 不生成脚手架 |
 | `yss-frontend-loading` | 按真实请求、权限及回执实现或审查冷启动、导航、分区加载、表格刷新、追加和异步写入的用户反馈及恢复 |
 | `shadcn-vue` | 随包分发固定版本的官方技能资料，以目标包的配置、官方 registry 和本地源码选用、组合与定制组件 |
-| `formkit` | FormKit 表单、验证、Schema 和自定义输入先核对工程版本，再查官方 Vue 或 Nuxt 用法。沿用已有 shadcn-vue 组件及主题，FormKit npm 依赖按任务采用 |
+| `formkit` | 已选 FormKit 的 Vue 或 Nuxt 表单推荐用独立 `*.form.schema.json` 管理渲染结构，按工程版本接入本地 shadcn-vue 控件、应用校验及写入恢复 |
 | `vueuse-functions` | 随包提供 VueUse 官方函数索引及离线参考，按项目版本选择交互、存储、异步任务与计时所需的组合式函数 |
 | `vue-best-practices` | 在 Vue 响应性、状态、数据流、生命周期和组件行为任务中提供判断；纯文案、颜色与间距不触发 |
 | `create-adaptable-composable` | 需要独立状态职责或可复用组合式接口时使用；不为普通页面强制抽取 composable |

@@ -39,7 +39,7 @@ description: 按目标工程的 shadcn-vue 组件与 Vue 3 约定落地高保真
 
 Frontend Profile 默认分发按 YSS 工程约定适配的官方 `shadcn-vue` 技能。实现或审查 UI 组件时，先用该技能识别项目配置、查找组件并核对组合方式。以本地导出和调用方确认实际 API，用 [组件工程](references/component-engineering.md) 衔接设计 tokens、业务状态、键盘交互和来源记录。单项安装缺少该技能时，按同一参考和官方文档工作。
 
-实现或审查表单时，先定位目标工程已有表单栈。简单表单可用 Vue 局部状态。有动态字段、字段数组或 Schema 驱动需求时，按 [可选能力](references/optional-capabilities.md) 评估。已有或本次明确选定 FormKit 时，按技能名查阅 `formkit`，依项目锁定版本实现，沿用本地 shadcn-vue 组件和主题。
+实现或审查表单时，先定位目标工程已有表单栈，简单存量表单沿用现状。复杂表单按 [选型与实现](references/optional-capabilities.md#表单选型与实现) 处理。项目已采用或本次选定 FormKit 时，对新建或纳入本次改造范围的 Vue 表单推荐用 `schemas/<name>.form.schema.json` 管理渲染结构。按技能名查阅 `formkit`，沿用项目锁定版本、本地 shadcn-vue 组件和主题。
 
 启动、路由、首读、分区等待、表格刷新或异步动作影响用户交互时，按需使用 Frontend Profile 的 `yss-frontend-loading`。单项安装缺少该技能时，沿用 [工程实现约定](references/engineering.md) 中的状态和请求保护。
 

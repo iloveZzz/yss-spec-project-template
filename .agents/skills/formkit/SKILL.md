@@ -12,6 +12,7 @@ Use this skill when you are building, debugging, or refactoring FormKit forms, i
 - YSS distributes this skill with the Frontend profile. Its [source record](upstream.json) identifies the pinned upstream release.
 - Check the target package's manifest, lockfile, FormKit config, and installed version before applying examples. Use Vue or Nuxt docs for YSS Vue projects.
 - Follow the project's existing form stack, component conventions, and theme. Add FormKit or migrate an existing form only within the requested scope. For an authorized installation, use the project's package manager and the official installation page for its runtime and version.
+- For a new or reworked YSS Vue or Nuxt form already using FormKit, prefer a separate `schemas/<name>.form.schema.json` as the source of its rendering structure. Let `FormKitSchema` render it and provide runtime values, components, and actions from application code. Use the [JSON schema guide](references/yss-formkit-schema.md) for local files and server-defined fields.
 
 ## Runtime selection
 
@@ -48,11 +49,11 @@ Use this skill when you are building, debugging, or refactoring FormKit forms, i
 
 ## Best practices
 
-- Keep validation co-located with the inputs that own it.
+- Keep field-specific FormKit rules with their field definitions. When the project owns validation, parse the complete submitted snapshot with its existing validator and submit the parsed data.
 - Prefer `form`, `group`, and `list` composition over manual object or array assembly.
 - Prefer node APIs, props, and derived FormKit state over DOM queries or duplicate framework state.
 - For cross-field behavior, model the relationship in the FormKit tree before introducing custom event plumbing.
-- For backend validation or submission failures, prefer a small adapter/helper that maps the backend error payload into FormKit form errors plus keyed input errors.
+- Map backend errors to registered, visible fields and route unmatched errors to the form summary. Reuse the project's field feedback when it owns error presentation.
 - Normalize backend field paths into FormKit addresses such as `email`, `group.name`, or `group.list.2.name`, then pass them to `node.setErrors()` or framework `setErrors()`.
 - Clear the previous submission's messages from the same source before retrying, including fields absent from the new response. In FormKit 2.10.0, distinct non-ASCII messages can generate the same key. Combine multiple messages into one per node or render them with stable distinct keys.
 - For nested groups and lists, prefer dot-notation addresses over one-off manual field wiring in submit handlers.
@@ -64,9 +65,9 @@ Use this skill when you are building, debugging, or refactoring FormKit forms, i
 
 1. Inspect the existing runtime, form tree, config, and validation rules.
 2. Pick the runtime-specific markdown page from `references/docs-index.md`.
-3. Prefer the smallest declarative change that keeps behavior inside FormKit.
+3. For a YSS Vue or Nuxt form, use the separate rendering schema when organizing a new or reworked FormKit form. Compile server field definitions into restricted nodes with a local component registry.
 4. If multiple fields interact, model that through `form`, `group`, `list`, validation, schema, or node state before adding listeners.
-5. If backend errors are involved, add or reuse one adapter that converts the server response into FormKit form errors and dot-notation input-error keys.
+5. Connect the collected values to the project's validation and write flow. Reuse one error adapter, and preserve the existing operation identity and recovery semantics.
 
 ## Pulling specific docs
 
@@ -78,6 +79,7 @@ Use this skill when you are building, debugging, or refactoring FormKit forms, i
   - `/getting-started/installation`
   - `/essentials/architecture`
   - `/essentials/forms`
+  - `/essentials/schema`
   - `/essentials/validation`
   - `/essentials/styling`
   - `/guides/create-a-tailwind-theme`

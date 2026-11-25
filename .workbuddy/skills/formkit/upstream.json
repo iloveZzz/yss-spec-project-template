@@ -5,8 +5,10 @@
   "skillPath": "packages/cli/assets/skills/formkit",
   "license": "MIT",
   "localChanges": {
-    "SKILL.md": "保留官方表单、校验、Schema 与节点树方法，按目标工程的运行时和实际版本使用。以 YSS 分发说明替换官方技能安装器指引，接入 FormKit、Pro 或主题按项目需求与授权处理，并补充服务端错误回填与固定版本的消息键限制。",
+    "SKILL.md": "保留官方表单、校验、Schema 与节点树方法，按目标工程的运行时和实际版本使用。以 YSS 分发说明替换官方技能安装器指引，补充独立 JSON、既有校验、服务端错误回填与固定版本的消息键限制。",
     "LICENSE": "从同一提交的仓库根目录随包分发。",
-    "references/yss-vue-integration.md": "YSS 本地示例，演示 Vue 3、shadcn-vue 控件与现有服务的衔接。"
+    "references/yss-vue-integration.md": "YSS 本地示例，演示 Vue 3、shadcn-vue 控件、局部 Provider、已有校验和写入恢复。",
+    "references/yss-formkit-schema.md": "YSS 本地指南，说明独立 JSON 的使用、动态字段映射及写入边界。",
+    "references/examples/profile.form.schema.json": "YSS 本地示例，供 Vue 的 FormKitSchema 消费。"
   }
 }

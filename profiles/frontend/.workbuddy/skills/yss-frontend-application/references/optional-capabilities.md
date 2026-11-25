@@ -15,10 +15,16 @@
 
 TanStack Table 官方 skills 随已安装包分发时，按实际包的 skills 入口读取，不额外安装 Intent CLI 才能工作；不假设不同大版本 API 一致。官网当前 Table 9 示例使用 useTable/tableFeatures，应用必须绑定实际选定版本。Table 不要求同时引入 Query/Form/Store 的全部生态。
 
-工程已用或本次明确选定 FormKit 时，按技能名查阅 `formkit`，先核对 Vue 或 Nuxt、锁文件和配置。按已有数据结构选择 FormKit 的 `group`、`list` 或 Schema，界面沿用本地 shadcn-vue 组件和主题。工程若已用 vee-validate 等方案，先判断当前任务能否在原有栈完成。[FormKit Vue 文档](https://formkit.com/inputs/form.vue.md)
-
-表单规则和网络 DTO 运行时验证不是同一层。只有确有复杂验证需求时才评估 Zod 或 Valibot 等一种方案；不能为了 TypeScript DTO 已生成就宣称输入可信，也不能因为目录叫 schemas 就安装运行时库。
-
 TanStack Query 暂不默认引入：它会与现有 useRequest 职责重叠。将来确有跨组件服务端缓存等需求时，先设计替换与迁移边界，不能在同一请求上叠加管理器。
+
+## 表单选型与实现
+
+工程已用或本次明确选定 FormKit 时，按技能名查阅 `formkit`，先核对 Vue 或 Nuxt、锁文件和配置。单项安装缺少该技能时，按实际依赖和官方资料处理。工程已有其他表单栈时，优先复用能满足任务的现有方案。
+
+已选 FormKit 的 Vue 表单在新建或本次改造时，推荐使用 `schemas/<name>.form.schema.json` 管理分组、字段、顺序与声明式展示条件。Vue 入口装配 `FormKitSchema`、本地组件库及所需数据，在代码中连接表单值、提交和业务操作。控件沿用目标工程的 shadcn-vue 组件和主题。既有简单表单沿用项目写法。
+
+远端业务字段定义经过运行时校验，由本地适配器按允许的组件、属性和条件运算符生成渲染结构。原文中的组件名、事件、表达式和 HTML 保持数据身份，只有本地定义的映射可进入渲染器。仅给渲染器传所需的数据和经审查的回调。影响写入的配置无法安全解释时，提示配置异常并暂停该表单的写入。
+
+渲染结构描述页面。运行时输入校验沿用项目的 Zod、Valibot 或现有等价机制。OpenAPI 生成 DTO 表达接口格式。写入投影根据实际动作和权限选择字段，保留接口的省略、清空与只读语义；提交与错误回填继续经过既有 service 和状态所有者。[FormKit Vue Schema 文档](https://formkit.com/essentials/schema.vue.md)
 
 依据：[Vue Router](https://router.vuejs.org/guide/)、[Pinia](https://pinia.vuejs.org/core-concepts/)、[Table Vue](https://tanstack.com/table/latest/docs/framework/vue/quick-start)、[Table 官方技能](https://tanstack.com/table/latest/docs/agent-skills)、[Vue Virtual](https://tanstack.com/virtual/latest/docs/framework/vue/vue-virtual)、[VeeValidate](https://vee-validate.logaretm.com/v5/)、[Storybook Vue/Vite](https://storybook.js.org/docs/get-started/frameworks/vue3-vite)。可选工具未预装，其文档能力不是当前项目已验证的事实。

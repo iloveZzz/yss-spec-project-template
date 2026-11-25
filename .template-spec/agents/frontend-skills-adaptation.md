@@ -86,6 +86,10 @@ Frontend 的 `project` 和 `skills` 默认分发官方单项技能 `formkit`，S
 
 使用时先核对工程框架、锁文件和 FormKit 版本，优先采用 Vue 或 Nuxt 的适用资料。输入组件和语义主题沿用工程已有的 shadcn-vue，FormKit npm 依赖按任务采用。此说明随 Spec 与 Frontend 的两种安装模式通过 `skillReferences` 提供。
 
+已采用 FormKit 的新建或改造表单推荐使用独立 `schemas/<name>.form.schema.json`。包内的 `references/yss-formkit-schema.md` 和 JSON 示例说明本地渲染定义、受限动态字段及应用校验与写入的边界。Vue 接入参考补充了局部 Provider、既有校验和按接口契约恢复写入的方法。
+
+本地适配参考 SCRM `scrm-frontend` 在 `96f972d` 基线上的试点工作树。获客来源展示局部 Provider、本地控件、Zod 4 和原请求恢复，患者模板以自动化对照验证 `FormKitSchema` 渲染与既有提交投影的接线。获客来源的独立 JSON 当时属于后续接线设计，随技能提供的独立 JSON 为 YSS 本地示例。
+
 ## 高保真原型复核与工程实现接续
 
 `prototype-review` 记录已确认的体验、实际检查与演示边界。项目根 `.agents/skills/prototype-review/references/frontend-handoff.md` 随 `yss-frontend-application` 在 Spec 和 Frontend 的两种安装模式分发，独立复核能力按各 Profile 原有集合提供。应用技能用目标工程的组件、语义主题、路由和服务落实设计决定。`yss-frontend-loading` 从真实请求、权限与回执实现等待及恢复。交付沿本次工程、浏览器视觉及交互证据核对实际结果。

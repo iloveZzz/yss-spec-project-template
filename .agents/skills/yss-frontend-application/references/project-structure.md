@@ -31,8 +31,8 @@ src/
 - `main.ts` 装配应用；`App.vue` 组合页面或已有 RouterView。页面入口统一为 `views/**/index.vue`，不把页面散落在 `src` 根或业务分组中。
 - `index.vue` 组合页面区块、页面 hook 和必要的上下文；私有组件负责呈现、交互、焦点和组件局部状态。不为行数指标拆分，不把全部职责转移到一个万能 hook。
 - 页面 `hooks` 管理有独立职责的状态、业务动作与副作用，保留真实请求取消及清理。新工程统一命名 `hooks`，不另建同义 `composables` 树。
-- 页面 `schemas` 用普通 TypeScript 存放查询/表单字段、列、选项和前端校验规则，必须由实际代码消费；不放请求、可变状态或临时草稿。没有业务来源的校验规则不能自行添加。
-- 页面 schema 不等于 Schema 渲染框架，不默认引入 Formily、Zod 或其他依赖。OpenAPI 的 `api/generated/schemas` 是传输 DTO，保持独立；业务 service 的运行时响应校验也不搬到页面 UI schema。
+- 页面 `schemas` 存放实际组件消费的查询字段、列、选项和校验定义，普通页面可继续用 TypeScript。已选 FormKit 的 Vue 表单在新建或本次改造时推荐将渲染结构放在 `schemas/<name>.form.schema.json`，Vue 入口负责装配。简单存量表单沿用原约定。适用条件与装配见 [表单选型与实现](optional-capabilities.md#表单选型与实现)。
+- 页面 UI schema、运行时输入校验、OpenAPI 生成 DTO 和写入投影各自维护。`schemas` 内的文件由实际入口消费，请求、可变状态和草稿归现有组件、hook 或 service。依赖按选定技术方案采用，校验规则以真实业务与接口契约为准。
 - 类型就近定义；页面可以引用共享层，共享组件、hook、service 不反向引用页面私有目录。多页面复用时提取到真正的共享责任层，不从另一页的内部路径借用实现。
 
 ## 校验和完成条件

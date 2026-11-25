@@ -238,6 +238,11 @@ The selected library owns state and validation. When using shadcn-vue `Field` fo
 
 **Formisch** (`useForm` from `@formisch/vue` + Valibot): Formisch ships its own `Field`, so import it as `FormischField`. Errors are strings in `field.errors` (or `null`) — guard before mapping: `<FieldError v-if="field.errors" :errors="field.errors.map(message => ({ message }))" />`.
 
-**FormKit.** When a FormKit field needs the project’s local `Input`, pass a small Vue adapter component to `createInput` from `@formkit/vue`. FormKit owns the value, validation and submit lifecycle. The local `Input` provides the control, styling and keyboard interaction. Read `context._value` for the displayed value, pass control updates to `context.node.input(value)`, and forward blur to `context.handlers.blur`. Preserve the label and help/error associations, disabled state and `aria-invalid`. Use the existing FormKit message section or render those messages once with the project’s `FieldError`. Find the `formkit` skill for Vue and Nuxt guidance for the project’s version. [FormKit custom inputs](https://formkit.com/essentials/custom-inputs.vue.md)
+**FormKit.** Find the `formkit` skill when the project has selected FormKit. Reuse the local shadcn-vue controls and theme. Assign one owner per responsibility. FormKit can register fields and collect their values while the project keeps its existing validation, error mapping and submit flow.
+
+- **FormKit field layout.** Pass a Vue control adapter to `createInput` from `@formkit/vue` to retain FormKit’s label, help and message sections. The adapter renders the project’s local `Input` or other control.
+- **Project field layout.** When the project already uses shadcn-vue `Field`, `FieldLabel` and `FieldError`, use a FormKit component input definition with a local Vue component. That component renders the project’s field layout and maps FormKit or existing external validation results into its single error region and invalid attributes. Keep field text and accessible associations in the component that renders them.
+
+In both layouts, read `context._value` for the displayed value, send control updates to `context.node.input(value)`, and forward blur to `context.handlers.blur`. Pass the input ID, disabled state, invalid state and descriptions to the actual control. When a form uses the project’s existing non-FormKit engine, keep its bindings. [FormKit custom inputs](https://formkit.com/essentials/custom-inputs.vue.md)
 
 See `https://shadcn-vue.com/docs/forms` for complete examples.

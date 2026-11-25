@@ -20,7 +20,7 @@
 
 新工程与新增页面采用 [项目与页面目录规范](project-structure.md)。根组件为 `App.vue`，页面进入 `views/<可选业务分组>/<页面名>/index.vue`，每页必须保留 `components`、`hooks`、`schemas` 三目录。新工程统一使用 `hooks`，不创建并行的 `composables` 树；无内容目录以 `.gitkeep` 保留，不造无用逻辑。存量页面只有在明确迁移范围内才调整。
 
-按实际文件检查目录、职责与调用方向；已有结构检查时复用，不要求新增脚本或修改构建前置。`schemas` 为普通 TypeScript 页面定义与校验，和 OpenAPI 生成 DTO 分开。
+按实际文件检查目录、职责与调用方向；已有结构检查时复用，不要求新增脚本或修改构建前置。普通页面定义与校验可使用 TypeScript。已选 FormKit 的新建或本次改造表单按 [目录规范](project-structure.md) 放置独立渲染 Schema。OpenAPI 生成 DTO 沿用独立目录。
 
 ## shadcn-vue 接入
 

@@ -29,7 +29,7 @@ OpenAPI 补充核对：参考锁文件为 Orval 7.10.0，配置的 `client: 'axi
 
 ## 页面目录参考
 
-目录规范另参考 `yss-valuation-outsourced/valuation-outsourced-frontend/packages/src` 中的 `FileSyncWorkbench`、`QualityWorkOrder/ClosedLoop` 页面：采纳入口编排、页面私有 components/hooks/schemas 和共享层分离。参考工程并非所有页面都有三个目录，命名也不统一；每页三目录与 PascalCase 是用户确认的新规范。保留该组织方式，不移植其 AntD、Less、Formily、150 行限制或旧兼容入口；页面 schema 改用普通 TypeScript 定义，见 [目录规范](project-structure.md)。参考工程仅只读，不成为生成运行依赖。
+目录规范另参考 `yss-valuation-outsourced/valuation-outsourced-frontend/packages/src` 中的 `FileSyncWorkbench`、`QualityWorkOrder/ClosedLoop` 页面：采纳入口编排、页面私有 components/hooks/schemas 和共享层分离。参考工程并非所有页面都有三个目录，命名也不统一；每页三目录与 PascalCase 是用户确认的新规范。保留该组织方式，不移植其 AntD、Less、Formily、150 行限制或旧兼容入口；最初用普通 TypeScript 表达页面定义，现行的页面 schema 约定见 [目录规范](project-structure.md)。参考工程仅只读，不成为生成运行依赖。
 
 ## 官方技术依据
 
