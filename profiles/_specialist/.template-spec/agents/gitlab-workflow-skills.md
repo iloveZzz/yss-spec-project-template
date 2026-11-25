@@ -1,8 +1,8 @@
-# 工程协作：GitHub 默认，GitLab 可选
+# YSS 源码与业务工程协作
 
-YSS CLI 与模板源码默认在 GitHub 管理代码、Issue、PR 和发行。当前仓库的 `origin` 指向对应 GitHub 仓库；默认拉取和推送使用该远端。GitLab remote 保留为显式选择的次级入口，不自动推送镜像、创建 MR 或触发 Pipeline。
+YSS CLI 与模板源码默认在 GitHub 管理代码、Issue、PR 和发行。这两类源码仓库默认通过指向 GitHub 的 `origin` 拉取和推送。GitLab remote 保留为显式选择的次级入口，不自动推送镜像、创建 MR 或触发 Pipeline。
 
-业务 Spec、Ticket 和 triage 使用 [tracker 配置](issue-tracker.md)。新项目优先 GitHub，已有合法配置和用户当前明确的目标优先；不能因存在 GitLab remote、登录凭据或历史 MR 就改选平台。GitHub 目标明确 `owner/repo`，GitLab 目标明确 HTTPS host 与完整项目路径。
+业务 Spec、Ticket 和 triage 使用目标工程的 [tracker 配置](issue-tracker.md)。沿用已有配置，用户明确提供的目标用于本次操作。完整新工程尚无 tracker 且已核实唯一 GitHub 或 GitLab 托管项目时，使用该项目的 Issues。Local Markdown 按用户明确选择配置。
 
 GitHub 操作优先已连接工具，其次使用 `gh` 并明确 `--repo owner/repo`。只有当前目标是 GitLab 时使用对应连接器或 `glab`，先核对实际帮助和实例地址。不要调用已移除的 workflow 脚本或假定某个旧插件已安装。
 

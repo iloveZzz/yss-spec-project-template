@@ -152,7 +152,7 @@
         },
         {
           "pattern": ".template-spec/agents/issue-tracker.md",
-          "ownership": "managed-customizable"
+          "ownership": "user-owned"
         },
         {
           "pattern": "yss-project.yaml",
@@ -198,10 +198,6 @@
       "rules": [
         {
           "pattern": ".gitignore",
-          "strategy": "manual"
-        },
-        {
-          "pattern": ".template-spec/agents/issue-tracker.md",
           "strategy": "manual"
         },
         {

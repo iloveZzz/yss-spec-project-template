@@ -6,9 +6,9 @@ disable-model-invocation: true
 
 # 工程技能配置
 
-配置 tracker、标签与业务文档导航。已有合法配置及本次明确目标优先；完整新工程且已核实唯一代码托管项目时按该项目初始化 Issues，无工程目标且无偏好时才推荐 GitHub。普通分析不以运行 setup 为前置。
+配置 tracker、标签与业务文档导航。沿用已有有效配置，首次配置采用用户明确选择的工程目标。普通分析可直接开始。
 
-先读现有 `.template-spec/agents/issue-tracker.md`、相关 AGENTS 区块和标签表，复用用户已给的目标。核实过的唯一代码项目可以用于完整新工程的首次配置，fork、多个 remote 或 remote 变更均不自动决定或迁移已有 tracker。`.work/` 是新项目示例，已有项目沿用 `tracker.root`。历史根只读查找，不自动搬迁或覆盖。
+先读现有 `.template-spec/agents/issue-tracker.md`、相关 AGENTS 区块和标签表，复用用户已给的目标。完整新工程尚未配置 tracker 且已核实唯一 GitHub 或 GitLab 托管项目时，可以使用该项目的 Issues。`.work/` 是新项目示例，已有项目沿用 `tracker.root`。历史根只读查找，不自动搬迁或覆盖。
 
 缺少真实决定时读 [配置决定](references/configuration-decisions.md)，只问影响本次写入的缺口；目标、标签和位置已明确时直接处理。缺 CONTEXT 不阻断 tracker 配置，不为 setup 自动创建业务词汇或 ADR。
 

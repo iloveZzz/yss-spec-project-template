@@ -100,7 +100,7 @@
         },
         {
           "pattern": ".template-spec/agents/issue-tracker.md",
-          "ownership": "managed-customizable"
+          "ownership": "user-owned"
         }
       ],
       "version": 1
@@ -111,12 +111,7 @@
     "customizationPolicy": {
       "version": 1,
       "defaultStrategy": "replace-with-force",
-      "rules": [
-        {
-          "pattern": ".template-spec/agents/issue-tracker.md",
-          "strategy": "manual"
-        }
-      ]
+      "rules": []
     }
   },
   "retiredSkills": {

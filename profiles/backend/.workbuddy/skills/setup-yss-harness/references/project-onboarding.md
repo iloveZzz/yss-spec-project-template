@@ -34,26 +34,26 @@
 
 Git remote 与 tracker 是两个配置对象，首次接入可以关联，但之后不自动互相覆盖。使用以下顺序确定持久目标：
 
-1. 已有有效 tracker 继续沿用，包括集中项目、Local Markdown、root、历史字段与用户正文；本次明确要求更改持久配置时才改。
-2. 本次已明确 tracker 的平台、项目或本地根时，按该选择配置。一次提供的 Issue URL 仅定位本次动作，不自动成为永久配置。
-3. 完整新工程尚无已确认 tracker，且已核实唯一的 GitHub/GitLab 代码托管项目时，默认使用该项目的 Issues，并明确报告采用的实例和项目；空 repository 的模板占位不算已确认目标。多仓 Home、多个候选、集中管理意图或平台身份不明时，不从某个 remote 猜目标。
-4. 仍无工程目标时说明缺少什么；GitHub 只可作为无偏好时的候选，不能把登录默认仓、YSS CLI 发行仓或模板仓填入业务配置。用户明确选择本地时才使用 Local Markdown，不因远程失败自动改投。
+1. 沿用已有有效 tracker，包括集中项目、Local Markdown、root、历史字段与用户正文。用户明确要求更改持久配置时再修改。
+2. 尚未配置时，采用用户明确选择的 GitHub 仓库、GitLab 项目或 Local Markdown 根。一次提供的 Issue URL 仅用于定位本次操作。
+3. 完整新工程尚未配置 tracker，且已核实唯一的 GitHub 或 GitLab 代码托管项目时，使用该项目的 Issues，并报告采用的实例和项目。`tracker: {}` 及旧模板中 GitHub 的空 `repository` 占位均表示尚未配置。
+4. 多仓 Home、多个候选、集中管理意图或平台身份不明时，保留未配置状态并说明需要确认的目标。平台登录默认仓、YSS CLI 发行仓和模板仓均不作为业务工程目标。Local Markdown 仅按用户明确选择配置。
 
 平台身份及 Web 项目地址通过用户明确资料、已有配置或托管工具核实；SSH 别名和 remote 文本本身不足以推断实例、平台及 API host。使用连接器或已配置 CLI 只读检查项目和 Issues 可访问性，工具参数先查帮助。项目存在、Issues 已启用、能读和能写分别判断；不能用创建测试 Issue 证明权限，也不为初始化自动创建标签、看板或父票。
 
-持久配置写在目标工程 `.template-spec/agents/issue-tracker.md` 的 tracker frontmatter；该路径始终属于消费工程，不是技能安装目录。读取当前内容后增量修改、保留无关字段，写后回读。只填写已核实值，以下是字段结构，不是实际项目：
+持久配置写在目标工程 `.template-spec/agents/issue-tracker.md` 的 `tracker` frontmatter，由工程维护。读取当前内容后增量修改，保留无关字段，写后回读。只填写已核实的值。
 
 | 选择 | 必要字段 | 按需保留 |
 | --- | --- | --- |
-| GitHub | platform: github；repository: owner/repo | 企业实例的明确 host；本地草稿 root |
-| GitLab | platform: gitlab；host: https://实例；project: group/project | 多级 group 的完整路径；本地草稿 root |
-| Local Markdown | platform: local-markdown；root: 已选目录 | 既有稳定 ID、历史位置与说明 |
+| GitHub | `platform: github`、`repository: owner/repo` | 企业实例的明确 `host`、本地草稿 `root` |
+| GitLab | `platform: gitlab`、HTTPS `host`、完整 `project`，如 `group/subgroup/project` | 本地草稿 `root` |
+| Local Markdown | `platform: local-markdown`、选定的 `root` | 既有稳定 ID、历史位置与说明 |
 
-模板示例 root 为 `.work`，已有路径优先；不保存 token、密码、当前工作树或任务状态。独立技能在明确配置任务下可创建此本地文件，但不能将其宣称为 CLI 已受管文件，也不手造或修改 `.yss/project.json` 收据。
+`.work` 是新工程的 Local Markdown 根目录示例，已有路径优先。填写用户选定的目录。配置仅保存工程目标，凭据留在选定的凭据存储中。独立技能收到明确配置请求时可新建该工程文件，CLI 安装收据由 CLI 维护。
 
 受管安装应随 setup 分发项目配置与 `.template-spec/agents/issue-tracker-operations.md`。后续接票、拆票、依赖、续办和写回读取目标工程的这份共享运行方法，初始化不复制整套规则到配置正文。独立或用户级技能可以仅用本参考完成 Git/remote/初始配置，不要求目标工程已存在 `.template-spec`；若运行方法尚未分发，说明该缺口，完整 Issues 接续需要采用实际包含资源的 Bundle 或既有可用方法，不能声称旧版 CLI 已提供新能力。
 
-升级保留用户定制；双边配置冲突或已有未受管同路径文件先保持现场，按实际工具能力处理。不用默认配置覆盖、不手改收据或删除文件来绕过冲突，也不声称人工合并正文就能让不支持该行为的 CLI 自动接受。
+使用将 tracker 标为项目自有文件的 Bundle 时，安装补齐缺失配置，升级保留已有文件。旧版工具若报告冲突，保留工程文件，按当前 CLI 和 Bundle 实际支持的方式处理。
 
 ## 回读结果与交付
 
