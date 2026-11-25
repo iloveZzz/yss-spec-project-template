@@ -41,6 +41,8 @@
       ".agents/skills/yss-research",
       ".agents/skills/grilling",
       ".agents/skills/yss-write-docs",
+      ".agents/skills/pr",
+      ".agents/skills/retro",
       ".agents/skills/yss-deliver-pr-mr",
       ".agents/skills/using-git-worktrees",
       ".agents/skills/resolving-merge-conflicts",
@@ -62,6 +64,8 @@
       ".workbuddy/skills/yss-research",
       ".workbuddy/skills/grilling",
       ".workbuddy/skills/yss-write-docs",
+      ".workbuddy/skills/pr",
+      ".workbuddy/skills/retro",
       ".workbuddy/skills/yss-deliver-pr-mr",
       ".workbuddy/skills/using-git-worktrees",
       ".workbuddy/skills/resolving-merge-conflicts",
@@ -345,6 +349,7 @@
         "yss-research",
         "grilling",
         "yss-write-docs",
+        "pr",
         "yss-deliver-pr-mr",
         "using-git-worktrees",
         "resolving-merge-conflicts"
@@ -455,8 +460,15 @@
           ".template-spec/templates/examples/plan-spec/ordinary-source.md",
           ".template-spec/templates/examples/plan-spec/ordinary-valid.md"
         ],
+        "pr": [
+          ".agents/skills/yss-write-docs/references/pr-and-retro.md"
+        ],
+        "retro": [
+          ".agents/skills/yss-write-docs/references/pr-and-retro.md"
+        ],
         "yss-deliver-pr-mr": [
-          ".template-spec/agents/matt-skills-adaptation.md"
+          ".template-spec/agents/matt-skills-adaptation.md",
+          ".agents/skills/yss-write-docs/references/pr-and-retro.md"
         ],
         "using-git-worktrees": [],
         "resolving-merge-conflicts": [
@@ -524,6 +536,7 @@
         "yss-research",
         "grilling",
         "yss-write-docs",
+        "pr",
         "yss-deliver-pr-mr",
         "using-git-worktrees",
         "resolving-merge-conflicts"
@@ -607,8 +620,15 @@
           ".template-spec/templates/examples/plan-spec/ordinary-source.md",
           ".template-spec/templates/examples/plan-spec/ordinary-valid.md"
         ],
+        "pr": [
+          ".agents/skills/yss-write-docs/references/pr-and-retro.md"
+        ],
+        "retro": [
+          ".agents/skills/yss-write-docs/references/pr-and-retro.md"
+        ],
         "yss-deliver-pr-mr": [
-          ".template-spec/agents/matt-skills-adaptation.md"
+          ".template-spec/agents/matt-skills-adaptation.md",
+          ".agents/skills/yss-write-docs/references/pr-and-retro.md"
         ],
         "using-git-worktrees": [],
         "resolving-merge-conflicts": [

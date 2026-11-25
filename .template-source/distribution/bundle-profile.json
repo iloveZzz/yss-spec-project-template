@@ -328,6 +328,8 @@
         "triage",
         "llm-wiki",
         "yss-write-docs",
+        "pr",
+        "retro",
         "yss-deliver-pr-mr",
         "implement"
       ],
@@ -408,8 +410,15 @@
           ".template-spec/agents/issue-tracker.md",
           ".template-spec/agents/issue-tracker-operations.md"
         ],
+        "pr": [
+          ".agents/skills/yss-write-docs/references/pr-and-retro.md"
+        ],
+        "retro": [
+          ".agents/skills/yss-write-docs/references/pr-and-retro.md"
+        ],
         "yss-deliver-pr-mr": [
-          ".template-spec/agents/matt-skills-adaptation.md"
+          ".template-spec/agents/matt-skills-adaptation.md",
+          ".agents/skills/yss-write-docs/references/pr-and-retro.md"
         ],
         "yss-write-docs": [
           ".template-spec/process/document-writing.md",
@@ -607,6 +616,8 @@
         "triage",
         "llm-wiki",
         "yss-write-docs",
+        "pr",
+        "retro",
         "yss-deliver-pr-mr",
         "implement"
       ],
@@ -654,8 +665,15 @@
           ".template-spec/agents/issue-tracker.md",
           ".template-spec/agents/issue-tracker-operations.md"
         ],
+        "pr": [
+          ".agents/skills/yss-write-docs/references/pr-and-retro.md"
+        ],
+        "retro": [
+          ".agents/skills/yss-write-docs/references/pr-and-retro.md"
+        ],
         "yss-deliver-pr-mr": [
-          ".template-spec/agents/matt-skills-adaptation.md"
+          ".template-spec/agents/matt-skills-adaptation.md",
+          ".agents/skills/yss-write-docs/references/pr-and-retro.md"
         ],
         "yss-write-docs": [
           ".template-spec/process/document-writing.md",

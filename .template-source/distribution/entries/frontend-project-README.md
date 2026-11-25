@@ -1,6 +1,6 @@
 # __YSS_PROJECT_NAME__
 
-Frontend 项目入口见 [AGENTS.md](AGENTS.md)。默认安装 20 项工程与协作技能，可用库共 24 项。设计、原型复核、逻辑原型及业务词汇维护按需补装。
+Frontend 项目入口见 [AGENTS.md](AGENTS.md)。默认安装 21 项工程与协作技能，可用库共 26 项。设计、原型复核、逻辑原型和业务词汇维护按需补装。
 
 全团队工作方式见[用户手册](.template-spec/user-guide/用户手册.md)，团队讲义、演示和练习见[培训材料](.template-spec/user-guide/培训材料.md)，前端接入见[Frontend 教程](.template-spec/user-guide/cli/tutorial-frontend.md)。
 
@@ -8,6 +8,7 @@ Frontend 项目入口见 [AGENTS.md](AGENTS.md)。默认安装 20 项工程与�
 
 - 技能：`.agents/skills/`；业务词汇：`CONTEXT.md`；方法参考：`.template-spec/`。
 - 明确研发由 `implement` 协调，显式拆票由 `to-tickets` 按业务或工程意图组织；局部开发和只读 review 可直接进入专业技能。
+- PR/MR 正文草稿使用默认技能 `pr`，通过 PR/MR 交付选定材料使用 `yss-deliver-pr-mr`。用户明确要求复盘 Agent 会话时可补装 `retro`。
 - 使用 `yss-frontend-application` 承接选定规格、高保真原型及已有 `prototype-review` 结论，按项目的 `shadcn-vue` 组件、主题和服务实现已确认的体验。加载与过渡使用 `yss-frontend-loading`，按实际请求与回执实现。`vueuse-functions` 随包提供官方函数索引及离线参考，可按项目版本选用组合式函数。
 - Vue 或 Nuxt 工程的 FormKit 表单、验证、Schema 和自定义输入使用 `formkit`，按目标项目版本查阅官方资料，沿用已有的 shadcn-vue 组件和主题。FormKit npm 依赖按任务采用。
 - 前端命令优先 `pnpm`，依赖、启动和构建命令以实际工程为准；此安装只提供技能与入口，不生成 Vue 应用。

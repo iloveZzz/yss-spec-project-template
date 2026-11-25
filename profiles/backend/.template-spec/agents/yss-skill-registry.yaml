@@ -795,6 +795,22 @@ invocation_contract:
       exclusion_conditions:
       - outside-authorized-scope
       primary_output: source-index-evidence
+    pr:
+      invocation_mode: both
+      trigger_conditions:
+      - pr-mr-description-draft-or-revision-request
+      exclusion_conditions:
+      - pr-mr-status-or-review-only
+      - pr-mr-delivery-only
+      primary_output: pr-mr-description-draft
+    retro:
+      invocation_mode: both
+      trigger_conditions:
+      - explicit-agent-session-retrospective-request
+      exclusion_conditions:
+      - project-retrospective-only
+      - routine-task-rework
+      primary_output: evidence-based-agent-session-retrospective
     yss-deliver-pr-mr:
       invocation_mode: user
       trigger_conditions:
@@ -915,6 +931,20 @@ skills:
   aliases: []
   impacts:
   - discovery
+- id: pr
+  layer: core
+  maturity: supported
+  instance_default_discoverable: true
+  aliases: []
+  impacts:
+  - writing
+- id: retro
+  layer: core
+  maturity: supported
+  instance_default_discoverable: false
+  aliases: []
+  impacts:
+  - writing
 - id: yss-deliver-pr-mr
   layer: core
   maturity: supported

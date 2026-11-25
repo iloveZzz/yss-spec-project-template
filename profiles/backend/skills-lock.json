@@ -100,11 +100,31 @@
           ".workbuddy/skills"
         ]
       },
+      "pr": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/pr/SKILL.md",
+        "effectiveHash": "95f41706910003d6438b0925ea22fbfd897903008d604ef37047ff585a55df39",
+        "targets": [
+          ".agents/skills",
+          ".workbuddy/skills"
+        ]
+      },
+      "retro": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/retro/SKILL.md",
+        "effectiveHash": "73261e037e7078bc6ade88db164fefb33a96dd1e2c15d08710f30b9218a7c495",
+        "targets": [
+          ".agents/skills",
+          ".workbuddy/skills"
+        ]
+      },
       "yss-deliver-pr-mr": {
         "source": "mattpocock/skills",
         "sourceType": "github",
         "skillPath": "skills/productivity/handoff/SKILL.md",
-        "effectiveHash": "d0c47f6de28a8d3ae5cf23caa123dc59963cd563a470f91b1fb42eff183fa19e",
+        "effectiveHash": "5a6a42cd207acf6029708acfbcf298d86e2a66cc3ce962298ebe3c71c46cec81",
         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
         "upstreamHash": "e5a44fccc710f5402deee06beaf5178397885765773375f186aefd179565f23f",
         "adaptationRef": ".template-spec/agents/matt-skills-adaptation.md",
@@ -117,7 +137,7 @@
         "source": "ayghri/i-have-adhd",
         "sourceType": "git",
         "skillPath": "skills/i-have-adhd/SKILL.md",
-        "effectiveHash": "29a3297c6ca08fc6910476655bab38de85df81ad1cb405864eb8b066eff96324",
+        "effectiveHash": "c6e267e80ebf3cadf10eb1b878e1613057cf88ba467ea30b902935dfa6d6124a",
         "sourceRevision": "839872f9d1cd634fed642b4589ce7226199cc15f",
         "upstreamHash": "4c88635cbcb4765b63528d608d27589596840708e89607fda9c9fa5726c11f7e",
         "adaptationRef": ".agents/skills/yss-write-docs/references/yss-adaptation.md",
@@ -482,7 +502,7 @@
         "source": "mattpocock/skills",
         "sourceType": "github",
         "skillPath": "skills/engineering/research/SKILL.md",
-        "effectiveHash": "80f028e97e685c63460c801e6fe5e68a77181d2f804441b7be697e40a0da869f",
+        "effectiveHash": "51ad061c2546efb1c3cb18b2ca94573b940f47faf9a1e5e486b0c0c3783a7fff",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"
@@ -535,7 +555,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-analyze-business/SKILL.md",
-        "effectiveHash": "5cf1871c7dc04912d8053502caaad45c16472ff2323efe7ad812b5f13ff24132",
+        "effectiveHash": "004f4b56d3ef8b34a08e4a7448a182ac53cb807bd5b107ccb1c033efa6559f82",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"

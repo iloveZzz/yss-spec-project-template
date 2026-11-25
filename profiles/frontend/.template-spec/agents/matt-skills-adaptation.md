@@ -277,3 +277,7 @@ Lombok、MapStruct 示例按模型职责修订，Backend implement、testing 与
 ## 2026-11-21 业务前提与旧验收
 
 对照上游 `abeeaf9` 的 [领域建模与上下文关系](https://github.com/mattpocock/skills/blob/abeeaf95660ba9e8b7c753eb38f441ca707a8823/skills/engineering/domain-modeling/GLOSSARY-FORMAT.md#L32) 和 [wayfinder 的决定索引](https://github.com/mattpocock/skills/blob/abeeaf95660ba9e8b7c753eb38f441ca707a8823/skills/engineering/wayfinder/SKILL.md#L19)。YSS 在原 OQ 记下影响答案的前提，按原 Spec 写清跨责任区事实的维护和消费方式，并将受影响的旧 FR/AC 接到工程拆分、实现及审查。稳定词义沿根 `CONTEXT.md` 和已有 `ContextId`。分发保持原技能入口及来源身份，生效情况见本次实际安装和演练记录。
+
+## 2026-11-25 Spec 澄清、续办与审查
+
+本次对照 Cursor pstack 0.15.48 固定提交的 [reframe](https://github.com/cursor/plugins/blob/41e400932eca14f289e7db717a70455256b6d388/pstack/skills/reframe/SKILL.md)、[Session Pickup](https://github.com/cursor/plugins/blob/41e400932eca14f289e7db717a70455256b6d388/pstack/skills/poteto-mode/playbooks/session-pickup.md)、[ketchup](https://github.com/cursor/plugins/blob/41e400932eca14f289e7db717a70455256b6d388/pstack/skills/ketchup/SKILL.md) 和[原型核验](https://github.com/cursor/plugins/blob/41e400932eca14f289e7db717a70455256b6d388/pstack/skills/poteto-mode/playbooks/prototype.md)。YSS 把可区分多种需求解释的证据放进调研和业务分析方法，把材料版本及受影响验收检查放进 Spec 续办，把用户待决事项和可重放反例放进现有进度、审查方法。业务决定沿原问题和真实用户答复记录。该提交是方法比较版本，原始技能来源继续以各锁文件为准。

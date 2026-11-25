@@ -7,6 +7,7 @@
 - 已授权研发满足任务可拆、依赖明确、路径及运行资源可隔离且宿主允许时，由 implement 自行并行并负责集成验证；条件不满足则顺序完成。
 - 优先使用适用的 YSS 技能；后端工程命令优先 ./mvnw，前端优先 pnpm。
 - 技能位于 .agents/skills，业务与工程参考位于 .template-spec；宿主技能副本由安装记录管理。
+- 起草或修订 PR/MR 正文用 `pr`，通过 PR/MR 交付选定材料用 `yss-deliver-pr-mr`。用户明确要求复盘 Agent 会话时，可按需补装 `retro`。
 - 涉及对象或分层时按需读取 `.template-spec/agents/backend-architecture-profiles.md`。YSS 后端默认 PO 与 Domain 模型使用 POJO + Lombok 和中文 Javadoc，保留领域不变量；既有工程的明确约定及实际 DDD/MVC 边界优先，不自动批量迁移。
 - 用户问“用哪个技能”或“提示词怎么写”时，使用 `yss-help` 和[技能地图](.template-spec/agents/profile-skills.md)给出推荐及中文提示词。明确做事的请求直接使用相应技能。有明确接收方、影响结果的待决分支，或用户问下一步时，给一段结合已有材料的提示词。单项任务完成即收尾。
 - 不要求生命周期路由、阶段批准、checkpoint、检查计划或测试报告。构建、测试与审查按当前任务需要开展。

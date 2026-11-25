@@ -6,7 +6,9 @@ Frontend 承接 Spec 的业务规格、高保真原型与交互说明，完成 V
 
 已有 `prototype-review` 结论可随选定设计直接接续。应用技能沿用确认过的流程、交互和关键视觉，使用目标工程的组件、主题、路由和服务实现。`yss-frontend-loading` 按真实请求与回执补齐等待、失败和恢复。
 
-`project` 与 `skills` 两种安装默认提供 20 项技能，可用库共 24 项。`implement` 负责明确研发的协调，`to-tickets` 负责显式拆票，`yss-frontend-application` 负责前端专业实现与审查。局部修改可直接进入应用技能。加载与异步反馈使用 `yss-frontend-loading`，组件工程使用随包附官方资料的 `shadcn-vue`。`vueuse-functions` 默认携带官方函数索引及离线参考，按项目版本和需求查用。设计、原型复核、逻辑原型和业务词汇维护四项按需补装。安装不会生成业务页面或自动加载全部技能。
+`project` 与 `skills` 两种安装默认提供 21 项技能，可用库共 26 项。`implement` 负责明确研发的协调，`to-tickets` 负责显式拆票，`yss-frontend-application` 负责前端专业实现与审查。局部修改可直接进入应用技能。加载与异步反馈使用 `yss-frontend-loading`，组件工程使用随包附官方资料的 `shadcn-vue`。`vueuse-functions` 默认携带官方函数索引及离线参考，按项目版本和需求查用。设计、原型复核、逻辑原型和业务词汇维护按需补装。安装不会生成业务页面或自动加载全部技能。
+
+起草或修订 PR/MR 正文用默认技能 `pr`，通过 PR/MR 交付选定材料用 `yss-deliver-pr-mr`。用户明确要求复盘 Agent 会话时可补装 `retro`。
 
 Vue 或 Nuxt 工程使用 FormKit 实现表单、验证、Schema 或自定义输入时，按目标项目版本查阅 `formkit`。组件与样式沿用工程已有的 shadcn-vue 和主题，FormKit npm 依赖按任务采用。
 

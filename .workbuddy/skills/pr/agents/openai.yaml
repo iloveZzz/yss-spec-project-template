@@ -1,0 +1,4 @@
+interface:
+  display_name: "起草 PR/MR 正文"
+  short_description: "根据改动和验证记录起草或修订 PR/MR 描述草稿"
+  default_prompt: "$pr 根据现有改动和验证记录起草 PR/MR 正文，有目标仓模板时沿用，并标明未核实的事项。"

@@ -182,6 +182,24 @@
           ".workbuddy/skills"
         ]
       },
+      "pr": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/pr/SKILL.md",
+        "targets": [
+          ".agents/skills",
+          ".workbuddy/skills"
+        ]
+      },
+      "retro": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/retro/SKILL.md",
+        "targets": [
+          ".agents/skills",
+          ".workbuddy/skills"
+        ]
+      },
       "yss-deliver-pr-mr": {
         "source": "mattpocock/skills",
         "sourceType": "github",

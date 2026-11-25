@@ -23,6 +23,7 @@ instance_distribution:
   - yss-research
   - grilling
   - yss-write-docs
+  - pr
   - yss-deliver-pr-mr
   - using-git-worktrees
   - resolving-merge-conflicts
@@ -31,6 +32,27 @@ instance_distribution:
   projection_roots:
     workbuddy: .workbuddy/skills
   initial_example_docs: false
+invocation_contract:
+  schema_version: 2
+  runtime_metadata_version: 1
+  scope: discovery-only
+  overrides:
+    pr:
+      invocation_mode: both
+      trigger_conditions:
+      - pr-mr-description-draft-or-revision-request
+      exclusion_conditions:
+      - pr-mr-status-or-review-only
+      - pr-mr-delivery-only
+      primary_output: pr-mr-description-draft
+    retro:
+      invocation_mode: both
+      trigger_conditions:
+      - explicit-agent-session-retrospective-request
+      exclusion_conditions:
+      - project-retrospective-only
+      - routine-task-rework
+      primary_output: evidence-based-agent-session-retrospective
 skills:
 - id: to-tickets
   layer: compatibility
@@ -157,6 +179,20 @@ skills:
   layer: core
   maturity: supported
   instance_default_discoverable: true
+  aliases: []
+  impacts:
+  - writing
+- id: pr
+  layer: core
+  maturity: supported
+  instance_default_discoverable: true
+  aliases: []
+  impacts:
+  - writing
+- id: retro
+  layer: core
+  maturity: supported
+  instance_default_discoverable: false
   aliases: []
   impacts:
   - writing

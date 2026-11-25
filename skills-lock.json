@@ -126,6 +126,26 @@
           ".workbuddy/skills"
         ]
       },
+      "pr": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/pr/SKILL.md",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".workbuddy/skills"
+        ]
+      },
+      "retro": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/retro/SKILL.md",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".workbuddy/skills"
+        ]
+      },
       "yss-write-docs": {
         "source": "ayghri/i-have-adhd",
         "sourceType": "git",

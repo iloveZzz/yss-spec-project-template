@@ -1,0 +1,4 @@
+interface:
+  display_name: "复盘 Agent 会话"
+  short_description: "根据当前或指定会话的记录给出发现与改进建议"
+  default_prompt: "$retro 复盘当前 Agent 会话，说明实际发生了什么、有哪些证据缺口，以及经过核实的改进建议。"

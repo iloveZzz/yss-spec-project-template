@@ -2,7 +2,9 @@
 
 全团队工作方式见[通用用户手册](../../.template-spec/user-guide/用户手册.md)，团队讲义与练习见[培训材料](../../.template-spec/user-guide/培训材料.md)，后端日常路径见[后端手册](.template-spec/user-guide/后端子项目用户手册.md)。
 
-Backend 的 `project` 与 `skills` 两种安装均预装 43 项技能，可用库共 55 项，其余 12 项按需补装。共享源与本目录覆盖按文件合成，安装数量和内容由实际运行 CLI 的 Bundle 决定。
+Backend 的 `project` 与 `skills` 两种安装均预装 44 项技能，可用库共 57 项，其余 13 项按需补装。共享源与本目录覆盖按文件合成，安装数量和内容由实际运行 CLI 的 Bundle 决定。
+
+起草或修订 PR/MR 正文用默认技能 `pr`，通过 PR/MR 交付选定材料用 `yss-deliver-pr-mr`。用户明确要求复盘 Agent 会话时可补装 `retro`。
 
 承接 Spec 的业务规则、验收与产品原型说明，完成所需拆分、架构/技术/详细设计、脚手架、开发、测试和构建部署手册。`implement` 组织当前研发任务，`to-tickets` 细化实现 Slice，`yss-technical-design` 统一设计深度，`database-analysis-docs` 负责数据库分析、设计说明书与可审阅 DDL，`yss-backend-testing` 负责一般测试。DDD 内部建模才使用 `yss-tactical-design`；MVC 保留既有 Service 边界。Backend `yss-prototype-logic` 只验证技术假设，不承担产品 UI。
 
