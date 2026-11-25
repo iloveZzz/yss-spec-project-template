@@ -12,6 +12,8 @@ Preserve business validation, security, error handling and user files. Commits, 
 
 Installed yss CLI binaries are separate products. Check compatibility against the installed version and its embedded template.
 
+Template 5.17.1 updates the documented pairing with CLI 3.17.1. The CLI workbench provides Pi model search and selection for individual runs.
+
 Template 5.17.0 adds a review of the requirements and acceptance criteria before a complete Spec is submitted for confirmation or handed off. The review checks the adopted sources, combinations of business rules and observable outcomes. Both Frontend installation modes include the FormKit skill, a schema guide and a standalone JSON example, along with offline VueUse function references. Spec projects can add the FormKit skill on demand.
 
 Template 5.16.1 aligns text input and select focus with a single border in high-fidelity prototypes and the design preview, while preserving error and high-contrast cues. The Query and Detail example adds a long-list and editing scenario for short viewports, same-query refresh, draft recovery, and focus restoration.
@@ -26,4 +28,4 @@ Template 5.13.0 adds Chinese skill guidance through `yss-help` and renames seven
 
 The current source provides 18 default skills out of 65 available for Spec, 43 out of 55 for Backend, and 20 out of 24 for Frontend. Spec users can add `formkit` on demand. Install the CLI with the new embedded template, then synchronize the relevant project scope.
 
-CLI 3.17.0 packages Template 5.17.0. GitLab CI retains the compatible CLI 3.7.0 build source `f2e0a952123fbd9f12d3703b8df2b03d02b670cb`. The final CLI release records its own source and template commits. CLI 3.3.0 adds `scaffold frontend`. The Frontend Profile remains available from CLI 3.2.0, while 3.1.4 and earlier do not support it. Check the actual CLI help and embedded Bundle. Publishing the template does not update installed CLIs or projects. See the [Home validation report](.template-source/design/2026-11-15-spec-home-repo-validation.md) for the observed scope and limits.
+CLI 3.17.1 packages Template 5.17.1. GitLab CI retains the compatible CLI 3.7.0 build source `f2e0a952123fbd9f12d3703b8df2b03d02b670cb`. The final CLI release records its own source and template commits. CLI 3.3.0 adds `scaffold frontend`. The Frontend Profile remains available from CLI 3.2.0, while 3.1.4 and earlier do not support it. Check the actual CLI help and embedded Bundle. Publishing the template does not update installed CLIs or projects. See the [Home validation report](.template-source/design/2026-11-15-spec-home-repo-validation.md) for the observed scope and limits.
