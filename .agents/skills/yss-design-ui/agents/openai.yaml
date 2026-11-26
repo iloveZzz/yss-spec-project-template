@@ -1,5 +1,5 @@
 version: 1
 interface:
   display_name: "设计产品界面与交互原型"
-  short_description: "设计页面流程、操作与反馈，制作界面原型和交互说明"
-  default_prompt: "使用 $yss-design-ui，依据已有规格设计页面流程与关键交互，制作可操作原型并说明异常反馈。"
+  short_description: "设计或修订界面原型与交互说明，回写已确认采纳的前端体验"
+  default_prompt: "使用 $yss-design-ui，按我的请求和授权范围设计或修订界面原型与交互说明。需要回写时，先核对已确认采纳的正式前端视觉或交互差异和可写范围，再更新相应原型或交互说明。"

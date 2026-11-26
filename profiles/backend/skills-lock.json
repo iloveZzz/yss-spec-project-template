@@ -515,7 +515,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-help/SKILL.md",
-        "effectiveHash": "67ad1773eb4e69757e240f76e08abb2e2601f1fac1dadd7bfd4afc50557b8258",
+        "effectiveHash": "7a1989776129e2cf9844944cf125d241786bcd4c25dcc034422c6feb380b70f6",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"
