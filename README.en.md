@@ -12,6 +12,8 @@ Preserve business validation, security, error handling and user files. Commits, 
 
 Installed yss CLI binaries are separate products. Check compatibility against the installed version and its embedded template.
 
+Template 5.19.0 pairs with CLI 3.19.0. This is a coordinated release: the CLI adds a Tauri desktop app with macOS ARM64 and Windows x64 installers, and the browser workbench remains available through the CLI.
+
 Template 5.18.4 pairs with CLI 3.18.4. The CLI workbench updates the sidebar navigation and the project and Spec entry points, and adds Spec progress verification and read status.
 
 Template 5.18.3 pairs with CLI 3.18.3. The CLI workbench has a compact light frosted-glass layout, Spec lifecycle status and stage confirmation, per-project permissions for Pi runs, and evidence from linked GitLab CI jobs.
