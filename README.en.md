@@ -12,6 +12,8 @@ Preserve business validation, security, error handling and user files. Commits, 
 
 Installed yss CLI binaries are separate products. Check compatibility against the installed version and its embedded template.
 
+Template 5.18.3 pairs with CLI 3.18.3. The CLI workbench has a compact light frosted-glass layout, Spec lifecycle status and stage confirmation, per-project permissions for Pi runs, and evidence from linked GitLab CI jobs.
+
 Template 5.18.2 pairs with CLI 3.18.2. The frontend implementation skill can update affected pages from an approved prototype revision or compare the running frontend with the prototype in a read-only review. Approved changes in the running frontend can be reflected in the prototype and interaction notes. The handoff records the versions used, observed differences and evidence for repeating acceptance checks.
 
 Template 5.18.1 pairs with CLI 3.18.1. Projects own their issue tracker configuration, and synchronization preserves existing settings. The workbench guide shows where to read the registered goal digest for progress reporting and how to record reviews of linked materials.
