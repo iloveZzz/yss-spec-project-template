@@ -12,6 +12,8 @@ Preserve business validation, security, error handling and user files. Commits, 
 
 Installed yss CLI binaries are separate products. Check compatibility against the installed version and its embedded template.
 
+Template 5.18.2 pairs with CLI 3.18.2. The frontend implementation skill can update affected pages from an approved prototype revision or compare the running frontend with the prototype in a read-only review. Approved changes in the running frontend can be reflected in the prototype and interaction notes. The handoff records the versions used, observed differences and evidence for repeating acceptance checks.
+
 Template 5.18.1 pairs with CLI 3.18.1. Projects own their issue tracker configuration, and synchronization preserves existing settings. The workbench guide shows where to read the registered goal digest for progress reporting and how to record reviews of linked materials.
 
 Template 5.18.0 pairs with CLI 3.18.0. All three profiles include `pr` by default, and Spec also includes `retro`. Spec continuations check prototype and interaction-note versions, identify affected acceptance criteria, and carry forward applicable decisions. Review findings with material acceptance impact can include steps to reproduce the issue.
