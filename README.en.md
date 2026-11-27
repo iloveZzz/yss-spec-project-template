@@ -12,6 +12,8 @@ Preserve business validation, security, error handling and user files. Commits, 
 
 Installed yss CLI binaries are separate products. Check compatibility against the installed version and its embedded template.
 
+Template 5.19.2 pairs with CLI 3.19.2. This release updates the paired version information.
+
 Template 5.19.1 pairs with CLI 3.19.1. This release updates the paired version information.
 
 Template 5.19.0 pairs with CLI 3.19.0. This is a coordinated release: the CLI adds a Tauri desktop app with macOS ARM64 and Windows x64 installers, and the browser workbench remains available through the CLI.
