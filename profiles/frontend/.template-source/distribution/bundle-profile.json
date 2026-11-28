@@ -395,6 +395,7 @@
         ],
         "yss-frontend-application": [
           ".agents/skills/implement/references/repository-scope.md",
+          ".agents/skills/implement/references/delivery-results.md",
           ".agents/skills/prototype-review/references/frontend-handoff.md",
           ".template-spec/agents/frontend-skills-adaptation.md",
           ".agents/skills/implement/references/pr-mr-followup.md",
@@ -555,6 +556,7 @@
         ],
         "yss-frontend-application": [
           ".agents/skills/implement/references/repository-scope.md",
+          ".agents/skills/implement/references/delivery-results.md",
           ".agents/skills/prototype-review/references/frontend-handoff.md",
           ".template-spec/agents/frontend-skills-adaptation.md",
           ".agents/skills/implement/references/pr-mr-followup.md",

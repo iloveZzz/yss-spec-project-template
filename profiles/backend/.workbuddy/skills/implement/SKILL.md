@@ -40,6 +40,8 @@ Select the engineering skills needed for the work. Do not require lifecycle rout
 
 Preserve user changes and error handling. Reuse existing authorization for local work; commit, push, publish and deploy only within the authorization for those actions. On resumption, inspect existing changes and command results before continuing.
 
+执行完整 Spec 的约定范围、跨仓联调、指定环境验收、兼容迁移、持久交接、指定报告文件或审计归档确需独立材料，以及上报工作台验证或复用旧证据时，读取本次采用技能随附的交付说明。YSS 工程路径为 `.agents/skills/implement/references/delivery-results.md`。从 Home 或独立技能包采用技能时，沿用其安装来源的参考，并遵循目标工程规则。参考缺失时，在原任务说明实际验收、结果和缺口。普通局部改动在原任务说明实际改动、检查、结果及限制。
+
 交付围绕用户要求的终点和原验收给出实际证据：模拟可用、代码完成、PR/MR 合并与业务验收分别说明。不得由某个状态推定其他状态；父 Issue 仅汇总真实子项结果与剩余缺口，不因子票关闭或 MR 合并自动关闭。
 
 已授权研发采用策略 A：至少两个工作项可独立推进，依赖明确、路径与运行资源可隔离，主控能够集成，且宿主允许并有实际收益时，自行并行，不重复索取已有授权。判断或执行并行时读取 [并行研发与集成](references/parallel-development.md)；条件不满足则顺序完成。只读分析不因此转为开发，模板策略不覆盖宿主限制。

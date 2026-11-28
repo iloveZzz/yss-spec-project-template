@@ -150,7 +150,7 @@
         "source": "mattpocock/skills",
         "sourceType": "github",
         "skillPath": "skills/engineering/implement/SKILL.md",
-        "effectiveHash": "1b9afddbdbf215f7c5ad71741f7d35b206799b61d2b7081a21cf003b261562cd",
+        "effectiveHash": "4a18eb1a5015db48d56ac32ab892cbc27ea215a0b3b9422555f7a9fe5c710824",
         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
         "upstreamHash": "b49a049477c7eec7f8dd90745dbc3f27bf75617b832d5b5f33c55aab7638a12e",
         "adaptationRef": ".template-spec/agents/matt-skills-adaptation.md",
@@ -625,7 +625,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-backend-testing/SKILL.md",
-        "effectiveHash": "c08e68d155a46951e924b8cd535bbb856a5ed397ca416ef36d8a8d93f38f707b",
+        "effectiveHash": "e076819bcb27401191c6cced0a5492fc94131f7df83f71ce46898a65d0d37ad0",
         "targets": [
           ".agents/skills",
           ".workbuddy/skills"

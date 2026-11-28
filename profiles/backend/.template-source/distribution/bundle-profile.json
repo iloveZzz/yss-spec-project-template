@@ -481,7 +481,9 @@
           ".template-spec/agents/backend-architecture-profiles.md"
         ],
         "yss-backend-testing": [
-          ".agents/skills/implement/references/spec-feedback.md"
+          ".agents/skills/implement/references/spec-feedback.md",
+          ".agents/skills/implement/references/delivery-results.md",
+          ".template-spec/agents/workbench-progress.md"
         ],
         "database-analysis-docs": []
       },
@@ -777,7 +779,9 @@
           ".template-spec/agents/backend-architecture-profiles.md"
         ],
         "yss-backend-testing": [
-          ".agents/skills/implement/references/spec-feedback.md"
+          ".agents/skills/implement/references/spec-feedback.md",
+          ".agents/skills/implement/references/delivery-results.md",
+          ".template-spec/agents/workbench-progress.md"
         ],
         "database-analysis-docs": []
       }

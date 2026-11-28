@@ -21,6 +21,8 @@ For an explicit request for complex engineering work, or when the engineering sc
 
 复杂拆分、跨仓集成、跨会话续办或执行已有计划时，读取 [实现计划与执行](references/implementation-plan.md)，按原验收安排工作，用实际证据推进和续办。清晰的小改动直接完成。
 
+执行完整 Spec 的约定范围、跨仓联调、指定环境验收、兼容迁移、持久交接、指定报告文件或审计归档确需独立材料，以及上报工作台验证或复用旧证据时，读取本次采用技能随附的交付说明。YSS 工程路径为 `.agents/skills/implement/references/delivery-results.md`。从 Home 或独立技能包采用技能时，沿用其安装来源的参考，并遵循目标工程规则。参考缺失时，在原任务说明实际验收、结果和缺口。普通局部改动在原任务说明实际改动、检查、结果及限制。
+
 When a parent business ticket exists, aggregate actual results against its AC and identify unmet or unverified acceptance. Child tickets being closed or PRs/MRs being merged do not establish business completion. Engineering completion, business acceptance and permission to update or close the parent are separate facts; report only the facts supported by results and the current authorization.
 
 When entering an engineering repository from Home, working across repositories or submodules, or resolving an unclear project root, read [repository scope and protection](references/repository-scope.md). Follow the actual target repository's rules and effective skills; changing the shell directory does not reload host instructions. A read-only investigation does not authorize implementation writes; the current request determines which repositories and actions are allowed.

@@ -30,7 +30,7 @@ CLI 帮助列出 `progress cancel-goal`、`progress reopen-goal` 时，可以按
 | --- | --- |
 | `progress` | `unmarked` 未标记，`todo` 待开始，`doing` 进行中，`blocked` 阻塞，`done` 已完成，`skipped` 本次跳过 |
 | `validity` | `current` 对当前版本有效，`unverified` 待核实，`needsSync` 待同步，`needsReview` 待复核 |
-| `versions` | 按 `projectId` 关联实际参与工程，采用当前 `lifecycle` 返回的 `result.progress.currentVersions` 中对应的 `commit` 与 `workingTreeDigest` |
+| `versions` | 按 `projectId` 填检查实际使用的提交或工作树摘要。用 `result.progress.currentVersions` 核对这些版本是否仍适用 |
 | `evidence` | 实际文件、产物、命令、测试、合并、环境或验收引用，并附实际结果 |
 
 后台依据已保存目标、报告、确认和当前产物确定性汇总阶段与整体进展。Agent 判断业务覆盖、验收含义、变更影响或环境结果时，在摘要中说明判断依据并附可核对证据。缺失凭据、材料不可读或检查结果未知时使用待核实，并写明具体缺口。核实时间取实际读取或执行时间，无法取得时保留未知。
@@ -42,11 +42,23 @@ CLI 帮助列出 `progress cancel-goal`、`progress reopen-goal` 时，可以按
 - 联调与环境验证关联各参与工程的实际版本组合、契约或配置版本、环境及执行结果。分仓检查和组合检查分别保留实际证据。
 - 失败、跳过、取消、允许失败、模拟验证及访问不完整保留真实含义。原验收中仍未验证的范围继续展示。
 
+### 上报验证结果
+
+从采用的 Spec 或原任务找齐必验项和所需验证层级，再与目标的 `acceptanceRefs` 对照。目标引用为空、遗漏或只指向宽泛章节时，按原验收逐项判断，并在原任务指出登记缺口。参与方或整体阶段只有在本方必验项全部达到要求后才报 `done`。仍有必验项未执行、失败、凭证不足或仅模拟时，报 `doing` 或有具体阻塞时的 `blocked`，已通过部分仍保留实测证据。仅在确实适用跳过且没有待完成的必验项时使用 `skipped`。
+
+跨工程的整体必验项仍有缺口时，先核实工作台里是否已有有效的整体或集成报告记录该缺口。工作台会在每次写入后汇总参与方，引用不完整时仅凭分仓结果也可能完成整体验证。若缺少会保留整体缺口的报告，按已有授权先上报 `stage=verification`、`role=spec` 的主阶段报告（省略 `projectId`），写明整体 `doing` 或 `blocked`，回读生效后再登记可能让整体完成的参与方 `done`。无法保存或核实整体缺口时，在原任务记录各仓已完成的证据和未上报原因。整体获得实际组合凭证后，再按本轮结果更新主阶段报告。
+
+验证完成报告的 `scopeRefs` 和通过凭证只覆盖实际达到所需层级的条目。用于匹配自动覆盖的引用与已登记 `acceptanceRefs` 逐字一致。通过凭证的 `reference` 使用验收引用时，在摘要或其他证据里保留实际产物的可读入口。按阶段及参与方累计其有效证据，每条验收在同一份报告中对应到实际结果。
+
+重试同一写入沿用原报告 ID、请求 ID 和输入，补证或变更内容使用新报告 ID 和请求 ID。回读与实际报告相同的 `goalVersion`、阶段、报告 ID 及确认来源。迟到结果从 `result.progressHistory.reports` 查原报告，另核对当前目标仍按本轮适用的凭证显示。旧候选无法复核而回写失败时，在原任务保留原目标、实测版本、证据和实际错误。
+
 PR/MR 的持续处理沿项目已有跟进方法执行。达到本地实现、合并或环境验证中的本次指定终点后，按原验收报告实际结果及剩余范围。任务完成可使用已有阶段证据，后续新目标由用户触发。
 
 ## 用户确认与版本变化
 
-关键需求确认、业务验收和最终交付确认使用用户明确表达的决定，关联实际展示的范围、`goalVersion`、`evidenceDigest` 与原始答复来源。先通过 `lifecycle` 读取当前汇总，从 `result.progress.evidenceDigest` 取得本次展示的证据摘要，再按真实答复保存 `confirm` 或 `reject`。确认阶段分别使用 `spec`、`verification`、`delivery`。当前接口确认整个目标范围，`scope` 与当前目标逐字一致。用户仅确认部分范围时在原任务保留真实决定，按用户明确范围调整相应目标，展示对应范围与证据后关联确认。Agent 的内容就绪判断、代码完成、CI 通过或合并结果各自保留其证据与含义。
+按真实来源记录自动核实与用户决定。用户或项目明确要求人工业务验收时，即使工作台已有自动核实，原任务仍保留实际待签收范围。没有人工要求时按现有自动核实规则继续。用户仅确认部分范围时，在原任务保留实际决定和其余待验收范围。只有用户另行明确要求调整目标时才调整。
+
+收到覆盖当前完整目标的明确决定且符合接口条件时，通过 `lifecycle` 取得用户实际核对的 `result.progress.evidenceDigest`，记下原始答复来源，按实际决定保存 `confirm` 或 `reject`。规格、业务验收及交付分别使用 `spec`、`verification`、`delivery`，`scope` 与用户已核对的当前目标范围逐字一致，确认绑定实际 `goalVersion`。内容就绪、代码完成、CI 通过和实际合并按各自证据陈述。
 
 确认保存后，后台在决定记录中生成 `stageEvidenceDigest`，用于核对后续变化对该阶段确认的影响。`lifecycle` 的 `result.progressHistory.decisions` 保留这一记录及实际确认输入，提交确认时填写当前整体 `evidenceDigest`。
 
@@ -102,7 +114,7 @@ yss workbench review-materials --help
 }
 ```
 
-`report.json` 保存一次实际观察。`id` 为本次观察分配稳定身份，相同内容重试沿用该 ID，新观察使用新 ID。`versions` 从 `result.progress.currentVersions` 选择本次实际参与工程并保留 `projectId`、`commit`、`workingTreeDigest`，版本缺失时标明待核实。证据 `kind` 使用 `document`、`artifact`、`command`、`test`、`merge`、`environment`、`acceptance` 或 `other`，`outcome` 使用 `passed`、`failed` 或 `observed`。
+`report.json` 保存一次实际观察。`id` 为本次观察分配稳定身份，相同内容重试沿用该 ID，新观察使用新 ID。`versions` 关联每个参与工程的 `projectId` 和执行检查时实际取得的 `commit` 或 `workingTreeDigest`。版本缺失时标明待核实，旧结果保留原候选。证据 `kind` 使用 `document`、`artifact`、`command`、`test`、`merge`、`environment`、`acceptance` 或 `other`，`outcome` 使用 `passed`、`failed` 或 `observed`。
 
 ```json
 {
@@ -119,7 +131,7 @@ yss workbench review-materials --help
   "blocker": "<实际阻塞，无则空字符串>",
   "nextAction": "<本次范围内的下一步>",
   "scopeRefs": ["<原FR/AC或验收章节>"],
-  "versions": [{"projectId": "<实际后端工程ID>", "commit": "<currentVersions中的实际提交>", "workingTreeDigest": "<currentVersions中的实际工作树摘要>"}],
+  "versions": [{"projectId": "<实际后端工程ID>", "commit": "<实际测试的提交>", "workingTreeDigest": "<实际测试的工作树摘要>"}],
   "evidence": [{"kind": "command", "label": "<实际命令及结果>", "reference": "<可核对的实际日志或任务引用>", "outcome": "observed"}]
 }
 ```
@@ -167,9 +179,9 @@ yss workbench --data-dir "$YSS_PROGRESS_DATA_DIR" review-materials --input mater
 
 Spec 交接先核实同一 `dataDir` 和 `specId`，附实际采用的主 Spec、关联产物、工程版本、原验收、完成终点及当前缺口。自定义目录放在受控续办上下文中，分发模板使用占位项。
 
-查询范围限于本次已知的工作台数据目录，使用默认工作台时也要核对记录对应的工程根及主文件。没有匹配记录和其他可信目录依据时，说明记录缺口并用当前工程材料继续。Pi 中按工作区映射核对隔离稿与原工程的对应关系。纯进度询问按只读查询处理，在会话反馈结果。
+查询范围限于本次已知的工作台数据目录，使用默认工作台时也要核对记录对应的工程根及主文件。没有匹配记录和其他可信目录依据时，说明记录缺口并用当前工程材料继续。Pi 若使用隔离稿，按工作区映射核对其与原工程的对应关系。纯进度询问按只读查询处理，在会话反馈结果。
 
-终端 `request` 和工作台可复制续办文本将主文件的「来源摘要」与生命周期上报上下文分开。续办已登记目标时，沿同一 `dataDir` 和 `specId` 用 `lifecycle` 核对 `result.progress.goalVersion` 及 `result.progress.goal.specDigest`，用于阶段上报。用 `result.spec.content.artifactDigest` 核对当前产物。Pi 的隔离作业通过工作台关联实际进度，绑定目标时会附本次运行的目标版本和摘要。
+终端 `request` 和工作台可复制续办文本将主文件的「来源摘要」与生命周期上报上下文分开。续办已登记目标时，沿同一 `dataDir` 和 `specId` 用 `lifecycle` 核对 `result.progress.goalVersion` 及 `result.progress.goal.specDigest`，用于阶段上报。用 `result.spec.content.artifactDigest` 核对当前产物。Pi 作业绑定目标时会附本次运行的目标版本和摘要。作业没有阶段回写能力时，把逐项实测、候选版本和缺口留给原任务按权限补报。作业完成或接收成果只记录对应作业事实，阶段核实使用实际已保存的凭证。
 
 接收方先核对主文件及关联原型、交互说明。主文件来源摘要相同也要检查关联材料：有 `materialChanges` 时结合已确认版本、当前可观察版本和实际可读文件定位差异，有缺项时按可用的 `snapshot` 或 `lifecycle` 只读核实。共享材料可能继续采用已确认快照，此时分别写明当前采用版本和可观察的新版。Pi 隔离续办同时核对隔离稿实际带入的文件，原工程的版本线索只能证明原工程的状态。正文或材料无法读取时，指出具体缺口和受影响的判断。
 
