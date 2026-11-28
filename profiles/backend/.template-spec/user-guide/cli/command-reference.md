@@ -94,8 +94,8 @@ yss version --json
 yss workbench
 yss workbench --no-open --port 0
 yss workbench snapshot --json
-yss workbench query --entity spec --status doing --status blocked --json
-yss workbench query --entity spec --activity all --include-closed --json
+yss workbench query --entity spec --progress-basis effective --status doing --status blocked --json
+yss workbench query --entity spec --progress-basis effective --activity all --include-closed --json
 yss workbench query --entity task --stage verification --json
 yss workbench query --entity spec --content-status draft --reminder writeback --json
 yss workbench query --entity spec --needs-reconfirmation --json
@@ -112,7 +112,7 @@ query 的 project、spec、stage、status 可重复，同一条件内为 OR，�
 
 register 从主文件的 `yss-spec` JSON 元数据读取范围、关联资源和问题。更新时复用同一登记。登记失败时保留源文件，修复具体错误后重试同一主文件。登记、答复保存、内容就绪和用户确认分别记录。
 
-CLI `3.12.0` 提供 `workbench progress set-goal`、`report`、`confirm` 与 `reconcile`。工作台作业、日常研发和 PR/MR 跟进沿用同一 `dataDir`、`specId`、目标版本与真实工程版本上报；用户确认关联实际答复与展示证据，材料变化后重新核对适用性。先核对各子命令帮助，JSON 字段与保存顺序见[生命周期进度上报](../../agents/workbench-progress.md)。
+CLI `3.12.0` 提供 `workbench progress set-goal`、`report`、`confirm` 与 `reconcile`。生命周期查询显式采用 `effective`，旧 `query` 默认继续使用个人标记。当已安装程序的帮助列出 `cancel-goal`、`reopen-goal` 时，可按本轮授权取消或开启独立轮次。工作台作业、日常研发和 PR/MR 跟进沿用同一 `dataDir`、`specId`、实际目标版本与工程版本上报。JSON 字段与保存顺序见[生命周期进度上报](../../agents/workbench-progress.md)。
 
 ### 浏览器操作顺序
 

@@ -7,6 +7,7 @@
 接手、续办或交接时，从实际启动信息、既有续办文本和登记结果核实下列身份，保留在当前任务中。
 
 - 工作台 `dataDir` 与 `specId`。自定义数据目录沿用已核实的绝对路径，所有工作台命令使用同一 `--data-dir`。主文件改名仍接续原 Spec 身份。
+- 生命周期列表用 `yss workbench query --entity spec --progress-basis effective`。按标题或路径定位已关闭及停用项时补 `--activity all --include-closed`，再核对工程根及主文件相对路径。只读核实和建议使用 `spec-status`、`lifecycle-status`、`recommend-status`。未设置目标与读取失败分别处理，纯查询不登记目标。
 - 已登记目标的 `specDigest` 和 `goalVersion` 从同一 Spec 的 `lifecycle --json` 响应读取，分别位于 `result.progress.goal.specDigest` 和 `result.progress.goalVersion`。核对当前产物时读取 `result.spec.content.artifactDigest`，并记录实际采用材料的 commit、工作树摘要或读取时点。新目标采用当前产物时，也可从 `snapshot --json` 的 `result.specs` 找到 `record.id` 等于本次 `specId` 的条目，取其 `content.artifactDigest`。
 - 本次目标与完成终点，使用本地实现 `local`、合并 `merged` 或环境验证 `environment` 的实际目标，附具体范围与目标引用。
 - 本次适用的阶段及理由。阶段名为 `research`、`analysis`、`spec`、`prototype`、`handoff`、`implementation`、`verification`、`delivery`，按当前范围选择适用项。
@@ -15,7 +16,9 @@
 
 工程任务先核对目标仓库和实际关联仓库的规则、工程材料及验收依据。工作台操作查阅实际使用版本的 CLI 帮助和公开使用说明。专门排查 CLI 实现问题时再定位 CLI 源码。
 
-将已核实的新目标写入 `set-goal`，核对响应的 `revision` 与 `specId`，再用 `lifecycle` 读取保存后的目标版本。目标版本由范围、终点、适用阶段、参与工程、验收引用及 Spec 摘要共同确定。相同目标复用既有版本，开始依赖工作时核对已登记目标的采用摘要与当前产物摘要。发现候选 Spec 或共用材料变化时先核实适用性。已有交付确认继续对应其目标，明确启动新一轮后再登记新目标及采用版本。工程实际版本继续随报告证据关联。授权研发直接开始，目标与报告随实际工作补齐。
+将已核实的新目标写入 `set-goal`，核对响应的 `revision` 与 `specId`，再用 `lifecycle` 读取保存后的目标版本。目标版本由范围、终点、适用阶段、参与工程、验收引用及 Spec 摘要共同确定。重复登记当前相同目标时复用既有版本。CLI 返回 `roundId` 时，可用它区分轮次和同轮目标版本。写入始终以实际采用的 `goalVersion` 为准。开始依赖工作时核对已登记目标的采用摘要与当前产物摘要。发现候选 Spec 或共用材料变化时先核实适用性。已有交付确认继续对应其目标，明确启动新一轮后再登记新目标及采用版本。工程实际版本继续随报告证据关联。授权研发直接开始，目标与报告随实际工作补齐。
+
+CLI 帮助列出 `progress cancel-goal`、`progress reopen-goal` 时，可以按用户授权取消目标或开启新一轮。取消保留原因与成果，已启动作业通过各自入口管理。重开保留原 `specId`，即便采用相同范围也取得独立 `goalVersion`。重试沿用原请求 ID 与原输入。收到回执后另外查询当前目标。旧作业和迟到结果沿实际绑定的 `goalVersion` 上报到原轮。引用旧报告前核对其验收、输入、实际工程版本及环境是否仍适用，并在本轮报告记录原报告身份和采用依据。
 
 ## 上报阶段进展
 

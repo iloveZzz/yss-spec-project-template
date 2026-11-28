@@ -69,19 +69,20 @@ yss workbench register --root <Home绝对路径> --source docs/spec/2026-11-14-u
 yss workbench
 ```
 
-在浏览器中查看主 Spec、关联交互文档和已构建的原型，草稿也可阅读。个人状态、当前关注阶段和阶段进度分别维护。八阶段为调研、分析、规格、原型、交接、实施、验证、交付，可并行、回退或重开，受阻与跳过填写说明。实际研发验收、部署和发行结果由相应工程记录。
+在浏览器中查看主 Spec、关联交互文档和已构建的原型，草稿也可阅读。工作台按本轮目标和适用证据展示有效进度。八阶段为调研、分析、规格、原型、交接、实施、验证、交付，按本轮范围采用。没有目标时仍可查看内容及材料。实际研发验收、部署和发行结果由相应工程记录。
 
 按登记结果中的实际 ID 查询快照与生命周期。
 
 ```text
 yss workbench snapshot --json
-yss workbench query --entity spec --status doing --status blocked --json
-yss workbench query --entity spec --activity all --include-closed --json
-yss workbench lifecycle --spec <SpecID> --json
+yss workbench query --entity spec --progress-basis effective --status doing --status blocked --json
+yss workbench query --entity spec --progress-basis effective --activity all --include-closed --json
+yss workbench lifecycle-status --spec-id <SpecID> --json
+yss workbench recommend-status --spec-id <SpecID> --json
 yss workbench request --spec-id <SpecID> --json
 ```
 
-自定义个人目录时，每条命令都在 workbench 后加 `--data-dir <已核实的绝对路径>`。数据目录和 SQLite 备份恢复见 [维护与恢复](tutorial-maintenance.md)。
+自定义个人目录时，每条命令都在 workbench 后加 `--data-dir <已核实的绝对路径>`。标题相同的候选用工程根和主文件路径区分。旧脚本省略 `--progress-basis` 时仍按个人标记查询。以实际安装程序的帮助核对支持的命令。数据目录和 SQLite 备份恢复见 [维护与恢复](tutorial-maintenance.md)。
 
 已经接入工作台时，你可以答复、补充或延期。答复保存后是“待回写”，Agent 会据此更新同一份规格、AC、交互说明和相关原型，核对一致后才解决问题。延期需要说明原因、影响、排除范围以及复查日期或条件。它不等于解决，本次范围的必经路径仍有缺口时不能确认。提醒只在当前聊天或工作台打开/刷新时出现，不提供后台通知。
 
