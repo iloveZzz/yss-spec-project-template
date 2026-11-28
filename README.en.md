@@ -12,6 +12,8 @@ Preserve business validation, security, error handling and user files. Commits, 
 
 Installed yss CLI binaries are separate products. Check compatibility against the installed version and its embedded template.
 
+Template 5.20.0 pairs with CLI 3.20.0. It updates the Spec lifecycle guide and standardizes how engineering acceptance results are recorded and handed off.
+
 Template 5.19.2 pairs with CLI 3.19.2. This release updates the paired version information.
 
 Template 5.19.1 pairs with CLI 3.19.1. This release updates the paired version information.
