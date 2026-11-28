@@ -13,20 +13,22 @@ interface CustomView {
   view: Component
   props: Record<string, unknown>
   children?: unknown[]
+  slotText?: string
 }
 
-type WriteText = (binding: WritableBinding<string>, value: string) => void
+type WriteValue = <T>(binding: WritableBinding<T>, value: T) => void
 
 export interface PrototypeExtension {
   catalog: CatalogApi
-  project(node: ComponentNode, write: WriteText): CustomView
+  check?(node: Record<string, unknown>): void
+  project(node: ComponentNode, write: WriteValue): CustomView
 }
 
 export type ViewNode =
   | { id: string; kind: 'Card' | 'Column'; children: ViewNode[] }
   | { id: string; kind: 'Text'; text: string; caption: boolean }
   | { id: string; kind: 'Button'; label: string; variant: 'default' | 'outline' | 'ghost'; activate: NodeAction }
-  | { id: string; kind: 'custom'; view: Component; props: Record<string, unknown>; children: ViewNode[] }
+  | { id: string; kind: 'custom'; view: Component; props: Record<string, unknown>; children: ViewNode[]; slotText?: string }
 
 const fields: Record<string, readonly string[]> = {
   Card: ['child'], Column: ['children'], Text: ['text', 'variant'], Button: ['child', 'action', 'variant'],
@@ -40,12 +42,14 @@ function isPath(value: unknown) {
   return record(value) && Object.keys(value).length === 1 && typeof value['@path'] === 'string'
 }
 
-function checkComponent(node: Record<string, unknown>, extension?: PrototypeExtension) {
+function checkComponent(node: Record<string, unknown>, extensions: readonly PrototypeExtension[]) {
   const kind = String(node.component)
   if (node['@catalogId'] !== undefined) {
-    if (!extension || node['@catalogId'] !== extension.catalog.id || !extension.catalog.components.has(kind)) {
+    const extension = extensions.find(item => item.catalog.id === node['@catalogId'])
+    if (!extension?.catalog.components.has(kind)) {
       throw new Error('未注册的扩展组件：' + kind)
     }
+    if (extension.check) return extension.check(node)
     for (const [key, value] of Object.entries(node)) {
       if (key.startsWith('@') && key !== '@catalogId') throw new Error('尚未映射扩展属性：' + key)
       if (value !== null && typeof value === 'object' && !isPath(value)) {
@@ -75,14 +79,15 @@ function checkComponent(node: Record<string, unknown>, extension?: PrototypeExte
   }
 }
 
-function project(node: unknown, extension: PrototypeExtension | undefined, write: WriteText): ViewNode {
+function project(node: unknown, extensions: readonly PrototypeExtension[], write: WriteValue): ViewNode {
   if (!isComponentNode(node) || node.state !== 'resolved') throw new Error('组件引用未解析')
   const { componentId: id, type: kind } = node
   const props = getValue(node.props)
-  const childView = (child: unknown) => project(child, extension, write)
-  if (extension?.catalog.components.has(kind)) {
+  const childView = (child: unknown) => project(child, extensions, write)
+  const extension = extensions.find(item => item.catalog.components.get(kind) === node.impl)
+  if (extension) {
     const custom = extension.project(node, write)
-    return { id, kind: 'custom', view: custom.view, props: custom.props, children: (custom.children ?? []).map(childView) }
+    return { id, kind: 'custom', view: custom.view, props: custom.props, slotText: custom.slotText, children: (custom.children ?? []).map(childView) }
   }
   switch (kind) {
     case 'Card': return { id, kind, children: [childView(props.child)] }
@@ -108,7 +113,7 @@ function project(node: unknown, extension: PrototypeExtension | undefined, write
 }
 
 // Each call receives a short, complete local scene transcript starting with createSurface.
-export function usePrototypeSurface(surfaceId: string, onAction: (action: ActionPayload) => void, extension?: PrototypeExtension) {
+export function usePrototypeSurface(surfaceId: string, onAction: (action: ActionPayload) => void, ...extensions: PrototypeExtension[]) {
   const root = shallowRef<ViewNode>()
   const error = ref('')
   let active: MessageProcessor | undefined
@@ -116,7 +121,7 @@ export function usePrototypeSurface(surfaceId: string, onAction: (action: Action
 
   function show(messages: readonly unknown[]) {
     const catalogs: CatalogApi[] = [basicCatalog]
-    if (extension) catalogs.push(extension.catalog)
+    catalogs.push(...extensions.map(extension => extension.catalog))
     const candidate: MessageProcessor = new MessageProcessor(catalogs, action => {
       if (active !== candidate) return
       const outgoing = ActionMessageSchema.safeParse({ version: '1.0', action })
@@ -134,7 +139,7 @@ export function usePrototypeSurface(surfaceId: string, onAction: (action: Action
         if ('createSurface' in packet && packet.createSurface.catalogId !== catalogId) {
           throw new Error('需要 v1.0 Basic Catalog')
         }
-        if ('components' in body) body.components?.forEach(node => checkComponent(node, extension))
+        if ('components' in body) body.components?.forEach(node => checkComponent(node, extensions))
         const errors = candidate.processMessagesWithErrors(packet)
         if (errors.length) throw new Error(errors.map(item => item.error.code).join('、'))
       }
@@ -142,12 +147,12 @@ export function usePrototypeSurface(surfaceId: string, onAction: (action: Action
       if (!surface) throw new Error('场景缺少 createSurface')
       resolver = new NodeResolver(surface)
       const sceneResolver = resolver
-      function write(binding: WritableBinding<string>, value: string) {
+      function write<T>(binding: WritableBinding<T>, value: T) {
         if (active !== candidate) return
         binding.set(value)
-        root.value = project(getValue(sceneResolver.rootNode), extension, write)
+        root.value = project(getValue(sceneResolver.rootNode), extensions, write)
       }
-      const next = project(getValue(sceneResolver.rootNode), extension, write)
+      const next = project(getValue(sceneResolver.rootNode), extensions, write)
       activeResolver?.dispose()
       active?.dispose()
       active = candidate

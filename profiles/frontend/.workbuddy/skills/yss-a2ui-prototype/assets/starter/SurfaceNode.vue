@@ -19,7 +19,9 @@ defineProps<{ node: ViewNode }>()
   <Button v-else-if="node.kind === 'Button'" type="button" :variant="node.variant" @click="node.activate()">
     {{ node.label }}
   </Button>
-  <component :is="node.view" v-else-if="node.kind === 'custom'" v-bind="node.props">
+  <component :is="node.view" v-else-if="node.kind === 'custom' && (node.children.length || node.slotText !== undefined)" v-bind="node.props">
+    <template v-if="node.slotText !== undefined">{{ node.slotText }}</template>
     <SurfaceNode v-for="child in node.children" :key="child.id" :node="child" />
   </component>
+  <component :is="node.view" v-else-if="node.kind === 'custom'" v-bind="node.props" />
 </template>

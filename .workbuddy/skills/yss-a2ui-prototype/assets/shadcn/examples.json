@@ -1,0 +1,2933 @@
+{
+  "accordion": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiAccordion",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/rootProps"
+        },
+        "children": [
+          "root1"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiAccordionItem",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root1Props"
+        },
+        "children": [
+          "root11",
+          "root12"
+        ]
+      },
+      {
+        "id": "root11",
+        "component": "UiAccordionTrigger",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "交付信息"
+      },
+      {
+        "id": "root12",
+        "component": "UiAccordionContent",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "周五下午可取件"
+      }
+    ],
+    "dataModel": {
+      "rootProps": {
+        "type": "single",
+        "collapsible": true
+      },
+      "root1Props": {
+        "value": "delivery"
+      }
+    }
+  },
+  "alert": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiAlert",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root1",
+          "root2"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiAlertTitle",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "同步结束"
+      },
+      {
+        "id": "root2",
+        "component": "UiAlertDescription",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "本地草稿已保存"
+      }
+    ],
+    "dataModel": {}
+  },
+  "alert-dialog": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiAlertDialog",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root1",
+          "root2"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiAlertDialogTrigger",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root1Props"
+        },
+        "children": [
+          "root11"
+        ]
+      },
+      {
+        "id": "root11",
+        "component": "UiButton",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "移除草稿"
+      },
+      {
+        "id": "root2",
+        "component": "UiAlertDialogContent",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root21",
+          "root22"
+        ]
+      },
+      {
+        "id": "root21",
+        "component": "UiAlertDialogHeader",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root211",
+          "root212"
+        ]
+      },
+      {
+        "id": "root211",
+        "component": "UiAlertDialogTitle",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "移除草稿？"
+      },
+      {
+        "id": "root212",
+        "component": "UiAlertDialogDescription",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "此操作仅用于原型。"
+      },
+      {
+        "id": "root22",
+        "component": "UiAlertDialogFooter",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root221",
+          "root222"
+        ]
+      },
+      {
+        "id": "root221",
+        "component": "UiAlertDialogCancel",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "取消"
+      },
+      {
+        "id": "root222",
+        "component": "UiAlertDialogAction",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "确认"
+      }
+    ],
+    "dataModel": {
+      "root1Props": {
+        "asChild": true
+      }
+    }
+  },
+  "aspect-ratio": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiAspectRatio",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/rootProps"
+        },
+        "children": [
+          "root1"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiCard",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root1Props"
+        },
+        "text": "16 : 9"
+      }
+    ],
+    "dataModel": {
+      "rootProps": {
+        "ratio": 1.7777777777777777
+      },
+      "root1Props": {
+        "class": "grid h-full place-items-center bg-muted"
+      }
+    }
+  },
+  "attachment": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiAttachmentGroup",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root1"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiAttachment",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root11"
+        ]
+      },
+      {
+        "id": "root11",
+        "component": "UiAttachmentContent",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root111",
+          "root112"
+        ]
+      },
+      {
+        "id": "root111",
+        "component": "UiAttachmentTitle",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "设计稿.pdf"
+      },
+      {
+        "id": "root112",
+        "component": "UiAttachmentDescription",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "1.2 MB"
+      }
+    ],
+    "dataModel": {}
+  },
+  "avatar": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiAvatar",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root1"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiAvatarFallback",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "林"
+      }
+    ],
+    "dataModel": {}
+  },
+  "badge": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiBadge",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "待确认"
+      }
+    ],
+    "dataModel": {}
+  },
+  "breadcrumb": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiBreadcrumb",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root1"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiBreadcrumbList",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root11",
+          "root12",
+          "root13"
+        ]
+      },
+      {
+        "id": "root11",
+        "component": "UiBreadcrumbItem",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root111"
+        ]
+      },
+      {
+        "id": "root111",
+        "component": "UiBreadcrumbLink",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root111Props"
+        },
+        "text": "工作区"
+      },
+      {
+        "id": "root12",
+        "component": "UiBreadcrumbSeparator",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1"
+      },
+      {
+        "id": "root13",
+        "component": "UiBreadcrumbItem",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root131"
+        ]
+      },
+      {
+        "id": "root131",
+        "component": "UiBreadcrumbPage",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "客户详情"
+      }
+    ],
+    "dataModel": {
+      "root111Props": {
+        "href": "#workspace"
+      }
+    }
+  },
+  "bubble": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiBubbleGroup",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root1"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiBubble",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root11"
+        ]
+      },
+      {
+        "id": "root11",
+        "component": "UiBubbleContent",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "明天下午可以沟通。"
+      }
+    ],
+    "dataModel": {}
+  },
+  "button": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiButton",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "action": {
+          "event": {
+            "name": "saveDraft"
+          }
+        },
+        "text": "保存草稿"
+      }
+    ],
+    "dataModel": {}
+  },
+  "button-group": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiButtonGroup",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root1",
+          "root2"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiButton",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "上一页"
+      },
+      {
+        "id": "root2",
+        "component": "UiButton",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "下一页"
+      }
+    ],
+    "dataModel": {}
+  },
+  "calendar": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiCalendar",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "codec": "date",
+        "options": {
+          "@path": "/rootProps"
+        },
+        "model": {
+          "@path": "/rootValue"
+        }
+      }
+    ],
+    "dataModel": {
+      "rootProps": {
+        "locale": "zh-CN"
+      },
+      "rootValue": "2026-11-28"
+    }
+  },
+  "card": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiCard",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root1",
+          "root2"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiCardHeader",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root11"
+        ]
+      },
+      {
+        "id": "root11",
+        "component": "UiCardTitle",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "需求评审"
+      },
+      {
+        "id": "root2",
+        "component": "UiCardContent",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "下次会议定在周五。"
+      }
+    ],
+    "dataModel": {}
+  },
+  "carousel": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiCarousel",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/rootProps"
+        },
+        "children": [
+          "root1",
+          "root2",
+          "root3"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiCarouselContent",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root11",
+          "root12"
+        ]
+      },
+      {
+        "id": "root11",
+        "component": "UiCarouselItem",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "第一项"
+      },
+      {
+        "id": "root12",
+        "component": "UiCarouselItem",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "第二项"
+      },
+      {
+        "id": "root2",
+        "component": "UiCarouselPrevious",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1"
+      },
+      {
+        "id": "root3",
+        "component": "UiCarouselNext",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1"
+      }
+    ],
+    "dataModel": {
+      "rootProps": {
+        "class": "relative mx-12 w-48"
+      }
+    }
+  },
+  "chart": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiBarChart",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/rootProps"
+        }
+      }
+    ],
+    "dataModel": {
+      "rootProps": {
+        "label": "每周跟进次数",
+        "rows": [
+          {
+            "label": "周一",
+            "value": 10
+          },
+          {
+            "label": "周二",
+            "value": 14
+          },
+          {
+            "label": "周三",
+            "value": 8
+          }
+        ]
+      }
+    }
+  },
+  "checkbox": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiCheckbox",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/rootProps"
+        },
+        "model": {
+          "@path": "/rootValue"
+        }
+      }
+    ],
+    "dataModel": {
+      "rootProps": {
+        "aria-label": "接收提醒"
+      },
+      "rootValue": false
+    }
+  },
+  "code-block": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiCodeBlock",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root1",
+          "root2"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiCodeBlockHeader",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root11"
+        ]
+      },
+      {
+        "id": "root11",
+        "component": "UiCodeBlockTitle",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "配置示例"
+      },
+      {
+        "id": "root2",
+        "component": "UiCodeBlockContent",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root2Props"
+        },
+        "text": "{ \"version\": \"1.0\" }"
+      }
+    ],
+    "dataModel": {
+      "root2Props": {
+        "lineNumbers": true
+      }
+    }
+  },
+  "collapsible": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiCollapsible",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root1",
+          "root2"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiCollapsibleTrigger",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "展开说明"
+      },
+      {
+        "id": "root2",
+        "component": "UiCollapsibleContent",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "可在提交前修改"
+      }
+    ],
+    "dataModel": {}
+  },
+  "combobox": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiCombobox",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root1",
+          "root2"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiComboboxAnchor",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root11",
+          "root12"
+        ]
+      },
+      {
+        "id": "root11",
+        "component": "UiComboboxInput",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root11Props"
+        }
+      },
+      {
+        "id": "root12",
+        "component": "UiComboboxTrigger",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "展开"
+      },
+      {
+        "id": "root2",
+        "component": "UiComboboxList",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root21"
+        ]
+      },
+      {
+        "id": "root21",
+        "component": "UiComboboxGroup",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root211",
+          "root212"
+        ]
+      },
+      {
+        "id": "root211",
+        "component": "UiComboboxItem",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root211Props"
+        },
+        "text": "上海"
+      },
+      {
+        "id": "root212",
+        "component": "UiComboboxItem",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root212Props"
+        },
+        "text": "杭州"
+      }
+    ],
+    "dataModel": {
+      "root11Props": {
+        "placeholder": "选择城市",
+        "aria-label": "城市"
+      },
+      "root211Props": {
+        "value": "上海"
+      },
+      "root212Props": {
+        "value": "杭州"
+      }
+    }
+  },
+  "command": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiCommand",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root1",
+          "root2"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiCommandInput",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root1Props"
+        }
+      },
+      {
+        "id": "root2",
+        "component": "UiCommandList",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root21"
+        ]
+      },
+      {
+        "id": "root21",
+        "component": "UiCommandGroup",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root211"
+        ]
+      },
+      {
+        "id": "root211",
+        "component": "UiCommandItem",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root211Props"
+        },
+        "text": "打开记录"
+      }
+    ],
+    "dataModel": {
+      "root1Props": {
+        "placeholder": "查找操作"
+      },
+      "root211Props": {
+        "value": "open"
+      }
+    }
+  },
+  "context-menu": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiContextMenu",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root1",
+          "root2"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiContextMenuTrigger",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "更多操作"
+      },
+      {
+        "id": "root2",
+        "component": "UiContextMenuContent",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root21"
+        ]
+      },
+      {
+        "id": "root21",
+        "component": "UiContextMenuItem",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "查看记录"
+      }
+    ],
+    "dataModel": {}
+  },
+  "data-table": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiDataTable",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/rootProps"
+        }
+      }
+    ],
+    "dataModel": {
+      "rootProps": {
+        "columns": [
+          {
+            "key": "name",
+            "label": "客户"
+          },
+          {
+            "key": "count",
+            "label": "数量"
+          }
+        ],
+        "rows": [
+          {
+            "name": "青山",
+            "count": 3
+          },
+          {
+            "name": "北岸",
+            "count": 1
+          }
+        ]
+      }
+    }
+  },
+  "date-picker": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiDatePicker",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/rootProps"
+        },
+        "model": {
+          "@path": "/rootValue"
+        }
+      }
+    ],
+    "dataModel": {
+      "rootProps": {
+        "label": "选择交付日期"
+      },
+      "rootValue": "2026-11-28"
+    }
+  },
+  "dialog": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiDialog",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root1",
+          "root2"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiDialogTrigger",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root1Props"
+        },
+        "children": [
+          "root11"
+        ]
+      },
+      {
+        "id": "root11",
+        "component": "UiButton",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "查看详情"
+      },
+      {
+        "id": "root2",
+        "component": "UiDialogContent",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root21",
+          "root22",
+          "root23"
+        ]
+      },
+      {
+        "id": "root21",
+        "component": "UiDialogTitle",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "查看详情"
+      },
+      {
+        "id": "root22",
+        "component": "UiDialogDescription",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "查看本次记录的详细说明。"
+      },
+      {
+        "id": "root23",
+        "component": "UiDialogClose",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "关闭"
+      }
+    ],
+    "dataModel": {
+      "root1Props": {
+        "asChild": true
+      }
+    }
+  },
+  "drawer": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiDrawer",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root1",
+          "root2"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiDrawerTrigger",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root1Props"
+        },
+        "children": [
+          "root11"
+        ]
+      },
+      {
+        "id": "root11",
+        "component": "UiButton",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "查看抽屉"
+      },
+      {
+        "id": "root2",
+        "component": "UiDrawerContent",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root21",
+          "root22",
+          "root23"
+        ]
+      },
+      {
+        "id": "root21",
+        "component": "UiDrawerTitle",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "查看抽屉"
+      },
+      {
+        "id": "root22",
+        "component": "UiDrawerDescription",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "查看本次记录的详细说明。"
+      },
+      {
+        "id": "root23",
+        "component": "UiDrawerClose",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "关闭"
+      }
+    ],
+    "dataModel": {
+      "root1Props": {
+        "asChild": true
+      }
+    }
+  },
+  "dropdown-menu": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiDropdownMenu",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root1",
+          "root2"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiDropdownMenuTrigger",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "更多操作"
+      },
+      {
+        "id": "root2",
+        "component": "UiDropdownMenuContent",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root21"
+        ]
+      },
+      {
+        "id": "root21",
+        "component": "UiDropdownMenuItem",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "查看记录"
+      }
+    ],
+    "dataModel": {}
+  },
+  "empty": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiEmpty",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root1"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiEmptyHeader",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root11",
+          "root12"
+        ]
+      },
+      {
+        "id": "root11",
+        "component": "UiEmptyTitle",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "暂无草稿"
+      },
+      {
+        "id": "root12",
+        "component": "UiEmptyDescription",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "创建后会出现在这里。"
+      }
+    ],
+    "dataModel": {}
+  },
+  "field": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiField",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root1",
+          "root2",
+          "root3"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiFieldLabel",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root1Props"
+        },
+        "text": "名称"
+      },
+      {
+        "id": "root2",
+        "component": "UiInput",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root2Props"
+        }
+      },
+      {
+        "id": "root3",
+        "component": "UiFieldDescription",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "填写显示名称"
+      }
+    ],
+    "dataModel": {
+      "root1Props": {
+        "for": "fieldName"
+      },
+      "root2Props": {
+        "id": "fieldName"
+      }
+    }
+  },
+  "form": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiForm",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root1"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiFormField",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root1Props"
+        },
+        "children": [
+          "root11"
+        ]
+      },
+      {
+        "id": "root11",
+        "component": "UiFormItem",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root111",
+          "root112"
+        ]
+      },
+      {
+        "id": "root111",
+        "component": "UiFormLabel",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "备注"
+      },
+      {
+        "id": "root112",
+        "component": "UiFormControl",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root1121"
+        ]
+      },
+      {
+        "id": "root1121",
+        "component": "UiInput",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root1121Props"
+        }
+      }
+    ],
+    "dataModel": {
+      "root1Props": {
+        "name": "note"
+      },
+      "root1121Props": {
+        "placeholder": "输入备注"
+      }
+    }
+  },
+  "hover-card": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiHoverCard",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root1",
+          "root2"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiHoverCardTrigger",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root1Props"
+        },
+        "text": "客户摘要"
+      },
+      {
+        "id": "root2",
+        "component": "UiHoverCardContent",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "本月联系两次"
+      }
+    ],
+    "dataModel": {
+      "root1Props": {
+        "tabindex": 0
+      }
+    }
+  },
+  "input": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiInput",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/rootProps"
+        },
+        "model": {
+          "@path": "/rootValue"
+        }
+      }
+    ],
+    "dataModel": {
+      "rootProps": {
+        "aria-label": "名称",
+        "placeholder": "客户名称"
+      },
+      "rootValue": ""
+    }
+  },
+  "input-group": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiInputGroup",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root1",
+          "root2"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiInputGroupInput",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root1Props"
+        }
+      },
+      {
+        "id": "root2",
+        "component": "UiInputGroupAddon",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root21"
+        ]
+      },
+      {
+        "id": "root21",
+        "component": "UiInputGroupText",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "搜索"
+      }
+    ],
+    "dataModel": {
+      "root1Props": {
+        "placeholder": "搜索"
+      }
+    }
+  },
+  "input-otp": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiInputOTP",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/rootProps"
+        },
+        "model": {
+          "@path": "/rootValue"
+        },
+        "children": [
+          "root1"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiInputOTPGroup",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root11",
+          "root12",
+          "root13",
+          "root14"
+        ]
+      },
+      {
+        "id": "root11",
+        "component": "UiInputOTPSlot",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root11Props"
+        }
+      },
+      {
+        "id": "root12",
+        "component": "UiInputOTPSlot",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root12Props"
+        }
+      },
+      {
+        "id": "root13",
+        "component": "UiInputOTPSlot",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root13Props"
+        }
+      },
+      {
+        "id": "root14",
+        "component": "UiInputOTPSlot",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root14Props"
+        }
+      }
+    ],
+    "dataModel": {
+      "rootProps": {
+        "maxlength": 4,
+        "aria-label": "验证码"
+      },
+      "rootValue": "",
+      "root11Props": {
+        "index": 0
+      },
+      "root12Props": {
+        "index": 1
+      },
+      "root13Props": {
+        "index": 2
+      },
+      "root14Props": {
+        "index": 3
+      }
+    }
+  },
+  "item": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiItem",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root1"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiItemContent",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root11",
+          "root12"
+        ]
+      },
+      {
+        "id": "root11",
+        "component": "UiItemTitle",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "合同草稿"
+      },
+      {
+        "id": "root12",
+        "component": "UiItemDescription",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "昨天修改"
+      }
+    ],
+    "dataModel": {}
+  },
+  "kbd": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiKbdGroup",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root1",
+          "root2"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiKbd",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "⌘"
+      },
+      {
+        "id": "root2",
+        "component": "UiKbd",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "K"
+      }
+    ],
+    "dataModel": {}
+  },
+  "label": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiLabel",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "联系人"
+      }
+    ],
+    "dataModel": {}
+  },
+  "marker": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiMarker",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root1"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiMarkerContent",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "今天"
+      }
+    ],
+    "dataModel": {}
+  },
+  "menubar": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiMenubar",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root1"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiMenubarMenu",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root11",
+          "root12"
+        ]
+      },
+      {
+        "id": "root11",
+        "component": "UiMenubarTrigger",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "文件"
+      },
+      {
+        "id": "root12",
+        "component": "UiMenubarContent",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root121"
+        ]
+      },
+      {
+        "id": "root121",
+        "component": "UiMenubarItem",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "新建"
+      }
+    ],
+    "dataModel": {}
+  },
+  "message": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiMessage",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root1"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiMessageContent",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "已收到你的更新。"
+      }
+    ],
+    "dataModel": {}
+  },
+  "message-scroller": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiMessageScrollerProvider",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root1"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiMessageScroller",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root11"
+        ]
+      },
+      {
+        "id": "root11",
+        "component": "UiMessageScrollerViewport",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root111"
+        ]
+      },
+      {
+        "id": "root111",
+        "component": "UiMessageScrollerContent",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root1111"
+        ]
+      },
+      {
+        "id": "root1111",
+        "component": "UiMessageScrollerItem",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root1111Props"
+        },
+        "text": "第一条消息"
+      }
+    ],
+    "dataModel": {
+      "root1111Props": {
+        "messageId": "msg1"
+      }
+    }
+  },
+  "native-select": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiNativeSelect",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/rootProps"
+        },
+        "model": {
+          "@path": "/rootValue"
+        },
+        "children": [
+          "root1",
+          "root2"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiNativeSelectOption",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root1Props"
+        },
+        "text": "待确认"
+      },
+      {
+        "id": "root2",
+        "component": "UiNativeSelectOption",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root2Props"
+        },
+        "text": "已确认"
+      }
+    ],
+    "dataModel": {
+      "rootProps": {
+        "aria-label": "状态"
+      },
+      "rootValue": "pending",
+      "root1Props": {
+        "value": "pending"
+      },
+      "root2Props": {
+        "value": "done"
+      }
+    }
+  },
+  "navigation-menu": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiNavigationMenu",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root1"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiNavigationMenuList",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root11"
+        ]
+      },
+      {
+        "id": "root11",
+        "component": "UiNavigationMenuItem",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root111"
+        ]
+      },
+      {
+        "id": "root111",
+        "component": "UiNavigationMenuLink",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root111Props"
+        },
+        "text": "概览"
+      }
+    ],
+    "dataModel": {
+      "root111Props": {
+        "href": "#overview"
+      }
+    }
+  },
+  "number-field": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiNumberField",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/rootProps"
+        },
+        "model": {
+          "@path": "/rootValue"
+        },
+        "children": [
+          "root1"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiNumberFieldContent",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root11",
+          "root12",
+          "root13"
+        ]
+      },
+      {
+        "id": "root11",
+        "component": "UiNumberFieldDecrement",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1"
+      },
+      {
+        "id": "root12",
+        "component": "UiNumberFieldInput",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1"
+      },
+      {
+        "id": "root13",
+        "component": "UiNumberFieldIncrement",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1"
+      }
+    ],
+    "dataModel": {
+      "rootProps": {
+        "min": 0,
+        "aria-label": "数量"
+      },
+      "rootValue": 2
+    }
+  },
+  "pagination": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiPagination",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "modelProp": "page",
+        "options": {
+          "@path": "/rootProps"
+        },
+        "model": {
+          "@path": "/rootValue"
+        },
+        "children": [
+          "root1"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiPaginationContent",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root11",
+          "root12",
+          "root13"
+        ]
+      },
+      {
+        "id": "root11",
+        "component": "UiPaginationPrevious",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1"
+      },
+      {
+        "id": "root12",
+        "component": "UiPaginationItem",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root12Props"
+        },
+        "text": "1"
+      },
+      {
+        "id": "root13",
+        "component": "UiPaginationNext",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1"
+      }
+    ],
+    "dataModel": {
+      "rootProps": {
+        "total": 30,
+        "itemsPerPage": 10
+      },
+      "rootValue": 1,
+      "root12Props": {
+        "value": 1
+      }
+    }
+  },
+  "pin-input": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiPinInput",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/rootProps"
+        },
+        "model": {
+          "@path": "/rootValue"
+        },
+        "children": [
+          "root1"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiPinInputGroup",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root11",
+          "root12",
+          "root13",
+          "root14"
+        ]
+      },
+      {
+        "id": "root11",
+        "component": "UiPinInputSlot",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root11Props"
+        }
+      },
+      {
+        "id": "root12",
+        "component": "UiPinInputSlot",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root12Props"
+        }
+      },
+      {
+        "id": "root13",
+        "component": "UiPinInputSlot",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root13Props"
+        }
+      },
+      {
+        "id": "root14",
+        "component": "UiPinInputSlot",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root14Props"
+        }
+      }
+    ],
+    "dataModel": {
+      "rootProps": {
+        "aria-label": "口令"
+      },
+      "rootValue": [],
+      "root11Props": {
+        "index": 0
+      },
+      "root12Props": {
+        "index": 1
+      },
+      "root13Props": {
+        "index": 2
+      },
+      "root14Props": {
+        "index": 3
+      }
+    }
+  },
+  "popover": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiPopover",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root1",
+          "root2"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiPopoverTrigger",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root1Props"
+        },
+        "children": [
+          "root11"
+        ]
+      },
+      {
+        "id": "root11",
+        "component": "UiButton",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "打开提示"
+      },
+      {
+        "id": "root2",
+        "component": "UiPopoverContent",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "请在截止前提交"
+      }
+    ],
+    "dataModel": {
+      "root1Props": {
+        "asChild": true
+      }
+    }
+  },
+  "progress": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiProgress",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/rootProps"
+        },
+        "model": {
+          "@path": "/rootValue"
+        }
+      }
+    ],
+    "dataModel": {
+      "rootProps": {
+        "aria-label": "完成度",
+        "class": "w-48"
+      },
+      "rootValue": 65
+    }
+  },
+  "questionnaire": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiQuestionnaire",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root1"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiQuestionnaireItem",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root1Props"
+        },
+        "children": [
+          "root11",
+          "root12"
+        ]
+      },
+      {
+        "id": "root11",
+        "component": "UiQuestionnaireTitle",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "希望如何联系？"
+      },
+      {
+        "id": "root12",
+        "component": "UiQuestionnaireChoices",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root121",
+          "root122"
+        ]
+      },
+      {
+        "id": "root121",
+        "component": "UiQuestionnaireChoice",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root121Props"
+        },
+        "text": "邮件"
+      },
+      {
+        "id": "root122",
+        "component": "UiQuestionnaireChoice",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root122Props"
+        },
+        "text": "电话"
+      }
+    ],
+    "dataModel": {
+      "root1Props": {
+        "name": "contact"
+      },
+      "root121Props": {
+        "value": "email"
+      },
+      "root122Props": {
+        "value": "phone"
+      }
+    }
+  },
+  "radio-group": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiRadioGroup",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "model": {
+          "@path": "/rootValue"
+        },
+        "children": [
+          "root1",
+          "root2"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiRadioGroupItem",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root1Props"
+        }
+      },
+      {
+        "id": "root2",
+        "component": "UiRadioGroupItem",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root2Props"
+        }
+      }
+    ],
+    "dataModel": {
+      "rootValue": "phone",
+      "root1Props": {
+        "value": "phone",
+        "aria-label": "电话"
+      },
+      "root2Props": {
+        "value": "email",
+        "aria-label": "邮件"
+      }
+    }
+  },
+  "range-calendar": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiRangeCalendar",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "codec": "dateRange",
+        "options": {
+          "@path": "/rootProps"
+        },
+        "model": {
+          "@path": "/rootValue"
+        }
+      }
+    ],
+    "dataModel": {
+      "rootProps": {
+        "locale": "zh-CN"
+      },
+      "rootValue": {
+        "start": "2026-11-24",
+        "end": "2026-11-28"
+      }
+    }
+  },
+  "resizable": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiResizablePanelGroup",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/rootProps"
+        },
+        "children": [
+          "root1",
+          "root2",
+          "root3"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiResizablePanel",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root1Props"
+        },
+        "text": "左侧"
+      },
+      {
+        "id": "root2",
+        "component": "UiResizableHandle",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1"
+      },
+      {
+        "id": "root3",
+        "component": "UiResizablePanel",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root3Props"
+        },
+        "text": "右侧"
+      }
+    ],
+    "dataModel": {
+      "rootProps": {
+        "direction": "horizontal",
+        "class": "h-20 w-64 border"
+      },
+      "root1Props": {
+        "defaultSize": 50
+      },
+      "root3Props": {
+        "defaultSize": 50
+      }
+    }
+  },
+  "scroll-area": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiScrollArea",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/rootProps"
+        },
+        "children": [
+          "root1"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiTypography",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。待办事项。"
+      }
+    ],
+    "dataModel": {
+      "rootProps": {
+        "class": "h-16 w-48"
+      }
+    }
+  },
+  "select": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiSelect",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "model": {
+          "@path": "/rootValue"
+        },
+        "children": [
+          "root1",
+          "root2"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiSelectTrigger",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root11"
+        ]
+      },
+      {
+        "id": "root11",
+        "component": "UiSelectValue",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root11Props"
+        }
+      },
+      {
+        "id": "root2",
+        "component": "UiSelectContent",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root21",
+          "root22"
+        ]
+      },
+      {
+        "id": "root21",
+        "component": "UiSelectItem",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root21Props"
+        },
+        "text": "待跟进"
+      },
+      {
+        "id": "root22",
+        "component": "UiSelectItem",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root22Props"
+        },
+        "text": "已结束"
+      }
+    ],
+    "dataModel": {
+      "rootValue": "pending",
+      "root11Props": {
+        "placeholder": "选择状态"
+      },
+      "root21Props": {
+        "value": "pending"
+      },
+      "root22Props": {
+        "value": "closed"
+      }
+    }
+  },
+  "separator": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiSeparator",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/rootProps"
+        }
+      }
+    ],
+    "dataModel": {
+      "rootProps": {
+        "class": "w-48"
+      }
+    }
+  },
+  "sheet": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiSheet",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root1",
+          "root2"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiSheetTrigger",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root1Props"
+        },
+        "children": [
+          "root11"
+        ]
+      },
+      {
+        "id": "root11",
+        "component": "UiButton",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "客户档案"
+      },
+      {
+        "id": "root2",
+        "component": "UiSheetContent",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root21",
+          "root22",
+          "root23"
+        ]
+      },
+      {
+        "id": "root21",
+        "component": "UiSheetTitle",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "客户档案"
+      },
+      {
+        "id": "root22",
+        "component": "UiSheetDescription",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "查看本次记录的详细说明。"
+      },
+      {
+        "id": "root23",
+        "component": "UiSheetClose",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "关闭"
+      }
+    ],
+    "dataModel": {
+      "root1Props": {
+        "asChild": true
+      }
+    }
+  },
+  "sidebar": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiSidebarProvider",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/rootProps"
+        },
+        "children": [
+          "root1"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiSidebar",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root1Props"
+        },
+        "children": [
+          "root11"
+        ]
+      },
+      {
+        "id": "root11",
+        "component": "UiSidebarContent",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root111"
+        ]
+      },
+      {
+        "id": "root111",
+        "component": "UiSidebarGroup",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root1111",
+          "root1112"
+        ]
+      },
+      {
+        "id": "root1111",
+        "component": "UiSidebarGroupLabel",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "客户管理"
+      },
+      {
+        "id": "root1112",
+        "component": "UiSidebarMenu",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root11121"
+        ]
+      },
+      {
+        "id": "root11121",
+        "component": "UiSidebarMenuItem",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root111211"
+        ]
+      },
+      {
+        "id": "root111211",
+        "component": "UiSidebarMenuButton",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "客户列表"
+      }
+    ],
+    "dataModel": {
+      "rootProps": {
+        "class": "h-40 min-h-0"
+      },
+      "root1Props": {
+        "collapsible": "none"
+      }
+    }
+  },
+  "skeleton": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiSkeleton",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/rootProps"
+        }
+      }
+    ],
+    "dataModel": {
+      "rootProps": {
+        "class": "h-8 w-48"
+      }
+    }
+  },
+  "slider": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiSlider",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/rootProps"
+        },
+        "model": {
+          "@path": "/rootValue"
+        }
+      }
+    ],
+    "dataModel": {
+      "rootProps": {
+        "min": 0,
+        "max": 100,
+        "class": "w-48",
+        "aria-label": "阈值"
+      },
+      "rootValue": [
+        40
+      ]
+    }
+  },
+  "sonner": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiCard",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root1",
+          "root2"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiSonner",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root1Props"
+        }
+      },
+      {
+        "id": "root2",
+        "component": "UiNotifyButton",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root2Props"
+        },
+        "text": "显示通知"
+      }
+    ],
+    "dataModel": {
+      "root1Props": {
+        "position": "top-center"
+      },
+      "root2Props": {
+        "message": "草稿已保存"
+      }
+    }
+  },
+  "spinner": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiSpinner",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/rootProps"
+        }
+      }
+    ],
+    "dataModel": {
+      "rootProps": {
+        "aria-label": "加载中"
+      }
+    }
+  },
+  "stepper": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiStepper",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root1",
+          "root2"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiStepperItem",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root1Props"
+        },
+        "children": [
+          "root11"
+        ]
+      },
+      {
+        "id": "root11",
+        "component": "UiStepperTrigger",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root111"
+        ]
+      },
+      {
+        "id": "root111",
+        "component": "UiStepperTitle",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "填写资料"
+      },
+      {
+        "id": "root2",
+        "component": "UiStepperItem",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root2Props"
+        },
+        "children": [
+          "root21"
+        ]
+      },
+      {
+        "id": "root21",
+        "component": "UiStepperTrigger",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root211"
+        ]
+      },
+      {
+        "id": "root211",
+        "component": "UiStepperTitle",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "确认信息"
+      }
+    ],
+    "dataModel": {
+      "root1Props": {
+        "step": 1
+      },
+      "root2Props": {
+        "step": 2
+      }
+    }
+  },
+  "switch": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiSwitch",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/rootProps"
+        },
+        "model": {
+          "@path": "/rootValue"
+        }
+      }
+    ],
+    "dataModel": {
+      "rootProps": {
+        "aria-label": "接收通知"
+      },
+      "rootValue": false
+    }
+  },
+  "table": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiTable",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root1",
+          "root2"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiTableHeader",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root11"
+        ]
+      },
+      {
+        "id": "root11",
+        "component": "UiTableRow",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root111"
+        ]
+      },
+      {
+        "id": "root111",
+        "component": "UiTableHead",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "姓名"
+      },
+      {
+        "id": "root2",
+        "component": "UiTableBody",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root21"
+        ]
+      },
+      {
+        "id": "root21",
+        "component": "UiTableRow",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root211"
+        ]
+      },
+      {
+        "id": "root211",
+        "component": "UiTableCell",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "林青"
+      }
+    ],
+    "dataModel": {}
+  },
+  "tabs": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiTabs",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "model": {
+          "@path": "/rootValue"
+        },
+        "children": [
+          "root1",
+          "root2",
+          "root3"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiTabsList",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root11",
+          "root12"
+        ]
+      },
+      {
+        "id": "root11",
+        "component": "UiTabsTrigger",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root11Props"
+        },
+        "text": "概览"
+      },
+      {
+        "id": "root12",
+        "component": "UiTabsTrigger",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root12Props"
+        },
+        "text": "历史"
+      },
+      {
+        "id": "root2",
+        "component": "UiTabsContent",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root2Props"
+        },
+        "text": "当前概览"
+      },
+      {
+        "id": "root3",
+        "component": "UiTabsContent",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root3Props"
+        },
+        "text": "变更历史"
+      }
+    ],
+    "dataModel": {
+      "rootValue": "main",
+      "root11Props": {
+        "value": "main"
+      },
+      "root12Props": {
+        "value": "history"
+      },
+      "root2Props": {
+        "value": "main"
+      },
+      "root3Props": {
+        "value": "history"
+      }
+    }
+  },
+  "tags-input": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiTagsInput",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "model": {
+          "@path": "/rootValue"
+        },
+        "children": [
+          "root1",
+          "root2"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiTagsInputItem",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root1Props"
+        },
+        "children": [
+          "root11",
+          "root12"
+        ]
+      },
+      {
+        "id": "root11",
+        "component": "UiTagsInputItemText",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1"
+      },
+      {
+        "id": "root12",
+        "component": "UiTagsInputItemDelete",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1"
+      },
+      {
+        "id": "root2",
+        "component": "UiTagsInputInput",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root2Props"
+        }
+      }
+    ],
+    "dataModel": {
+      "rootValue": [
+        "重点"
+      ],
+      "root1Props": {
+        "value": "重点"
+      },
+      "root2Props": {
+        "placeholder": "添加标签"
+      }
+    }
+  },
+  "textarea": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiTextarea",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/rootProps"
+        },
+        "model": {
+          "@path": "/rootValue"
+        }
+      }
+    ],
+    "dataModel": {
+      "rootProps": {
+        "aria-label": "跟进备注"
+      },
+      "rootValue": ""
+    }
+  },
+  "toast": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiToastProvider",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root1",
+          "root2"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiToast",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root1Props"
+        },
+        "children": [
+          "root11",
+          "root12"
+        ]
+      },
+      {
+        "id": "root11",
+        "component": "UiToastTitle",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "已保存"
+      },
+      {
+        "id": "root12",
+        "component": "UiToastDescription",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "下次可以继续编辑"
+      },
+      {
+        "id": "root2",
+        "component": "UiToastViewport",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1"
+      }
+    ],
+    "dataModel": {
+      "root1Props": {
+        "defaultOpen": true,
+        "duration": 60000
+      }
+    }
+  },
+  "toggle": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiToggle",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "model": {
+          "@path": "/rootValue"
+        },
+        "text": "重点关注"
+      }
+    ],
+    "dataModel": {
+      "rootValue": false
+    }
+  },
+  "toggle-group": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiToggleGroup",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/rootProps"
+        },
+        "model": {
+          "@path": "/rootValue"
+        },
+        "children": [
+          "root1",
+          "root2"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiToggleGroupItem",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root1Props"
+        },
+        "text": "列表"
+      },
+      {
+        "id": "root2",
+        "component": "UiToggleGroupItem",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root2Props"
+        },
+        "text": "卡片"
+      }
+    ],
+    "dataModel": {
+      "rootProps": {
+        "type": "single"
+      },
+      "rootValue": "list",
+      "root1Props": {
+        "value": "list"
+      },
+      "root2Props": {
+        "value": "cards"
+      }
+    }
+  },
+  "tooltip": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiTooltipProvider",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root1"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiTooltip",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root11",
+          "root12"
+        ]
+      },
+      {
+        "id": "root11",
+        "component": "UiTooltipTrigger",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/root11Props"
+        },
+        "children": [
+          "root111"
+        ]
+      },
+      {
+        "id": "root111",
+        "component": "UiButton",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "帮助"
+      },
+      {
+        "id": "root12",
+        "component": "UiTooltipContent",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "打开操作说明"
+      }
+    ],
+    "dataModel": {
+      "root11Props": {
+        "asChild": true
+      }
+    }
+  },
+  "trace": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiTrace",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root1"
+        ]
+      },
+      {
+        "id": "root1",
+        "component": "UiTraceLine",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "children": [
+          "root11",
+          "root12"
+        ]
+      },
+      {
+        "id": "root11",
+        "component": "UiTraceTitle",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "读取规格"
+      },
+      {
+        "id": "root12",
+        "component": "UiTraceDescription",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "text": "读取完成"
+      }
+    ],
+    "dataModel": {}
+  },
+  "typography": {
+    "components": [
+      {
+        "id": "root",
+        "component": "UiTypography",
+        "@catalogId": "urn:yss:a2ui:shadcn-vue:v1",
+        "options": {
+          "@path": "/rootProps"
+        },
+        "text": "跟进记录"
+      }
+    ],
+    "dataModel": {
+      "rootProps": {
+        "variant": "h2"
+      }
+    }
+  }
+}

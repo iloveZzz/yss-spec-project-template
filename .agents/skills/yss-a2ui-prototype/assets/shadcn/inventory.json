@@ -1,0 +1,1381 @@
+{
+  "repository": "https://github.com/unovue/shadcn-vue",
+  "directoryRevision": "eba11c3b87259a46826c6372bb794ef7fcc98127",
+  "archiveSha256": "cc28e3f9e1d61717e11437e065c6ad2d273d33fbf9eccee7e2d098e2239c5a8d",
+  "packages": {
+    "vue": "3.5.40",
+    "reka-ui": "2.10.1",
+    "@internationalized/date": "3.12.4",
+    "@lucide/vue": "1.28.0",
+    "@vueuse/core": "14.4.0",
+    "class-variance-authority": "0.7.1",
+    "vee-validate": "4.15.1",
+    "embla-carousel-vue": "8.6.0",
+    "vue-input-otp": "0.4.0",
+    "vue-sonner": "2.0.9",
+    "@unovis/vue": "1.6.7",
+    "@unovis/ts": "1.6.7",
+    "cn": "0.4.0",
+    "shiki": "4.4.3",
+    "@tanstack/vue-table": "9.1.2"
+  },
+  "groups": {
+    "accordion": {
+      "exports": [
+        "Accordion",
+        "AccordionContent",
+        "AccordionItem",
+        "AccordionTrigger"
+      ],
+      "requires": [],
+      "packages": [
+        "@lucide/vue",
+        "@vueuse/core",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/accordion"
+    },
+    "alert-dialog": {
+      "exports": [
+        "AlertDialog",
+        "AlertDialogAction",
+        "AlertDialogCancel",
+        "AlertDialogContent",
+        "AlertDialogDescription",
+        "AlertDialogFooter",
+        "AlertDialogHeader",
+        "AlertDialogTitle",
+        "AlertDialogTrigger"
+      ],
+      "requires": [
+        "button"
+      ],
+      "packages": [
+        "@vueuse/core",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/alert-dialog"
+    },
+    "alert": {
+      "exports": [
+        "Alert",
+        "AlertDescription",
+        "AlertTitle"
+      ],
+      "requires": [],
+      "packages": [
+        "class-variance-authority",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/alert"
+    },
+    "aspect-ratio": {
+      "exports": [
+        "AspectRatio"
+      ],
+      "requires": [],
+      "packages": [
+        "reka-ui"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/aspect-ratio"
+    },
+    "attachment": {
+      "exports": [
+        "Attachment",
+        "AttachmentAction",
+        "AttachmentActions",
+        "AttachmentContent",
+        "AttachmentDescription",
+        "AttachmentGroup",
+        "AttachmentMedia",
+        "AttachmentTitle",
+        "AttachmentTrigger"
+      ],
+      "requires": [],
+      "packages": [
+        "class-variance-authority",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/attachment"
+    },
+    "avatar": {
+      "exports": [
+        "Avatar",
+        "AvatarFallback",
+        "AvatarImage"
+      ],
+      "requires": [],
+      "packages": [
+        "@vueuse/core",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/avatar"
+    },
+    "badge": {
+      "exports": [
+        "Badge"
+      ],
+      "requires": [],
+      "packages": [
+        "@vueuse/core",
+        "class-variance-authority",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/badge"
+    },
+    "breadcrumb": {
+      "exports": [
+        "Breadcrumb",
+        "BreadcrumbEllipsis",
+        "BreadcrumbItem",
+        "BreadcrumbLink",
+        "BreadcrumbList",
+        "BreadcrumbPage",
+        "BreadcrumbSeparator"
+      ],
+      "requires": [],
+      "packages": [
+        "@lucide/vue",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/breadcrumb"
+    },
+    "bubble": {
+      "exports": [
+        "Bubble",
+        "BubbleContent",
+        "BubbleGroup",
+        "BubbleReactions"
+      ],
+      "requires": [],
+      "packages": [
+        "class-variance-authority",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/bubble"
+    },
+    "button-group": {
+      "exports": [
+        "ButtonGroup",
+        "ButtonGroupSeparator",
+        "ButtonGroupText"
+      ],
+      "requires": [
+        "separator"
+      ],
+      "packages": [
+        "@vueuse/core",
+        "class-variance-authority",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/button-group"
+    },
+    "button": {
+      "exports": [
+        "Button"
+      ],
+      "requires": [],
+      "packages": [
+        "class-variance-authority",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/button"
+    },
+    "calendar": {
+      "exports": [
+        "Calendar",
+        "CalendarCell",
+        "CalendarCellTrigger",
+        "CalendarGrid",
+        "CalendarGridBody",
+        "CalendarGridHead",
+        "CalendarGridRow",
+        "CalendarHeadCell",
+        "CalendarHeader",
+        "CalendarHeading",
+        "CalendarNextButton",
+        "CalendarPrevButton"
+      ],
+      "requires": [
+        "button",
+        "native-select"
+      ],
+      "packages": [
+        "@internationalized/date",
+        "@lucide/vue",
+        "@vueuse/core",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/calendar",
+      "scrmExports": {
+        "CalendarNext": "reka-ui",
+        "CalendarPrev": "reka-ui",
+        "CalendarRoot": "./CalendarRoot.vue"
+      }
+    },
+    "card": {
+      "exports": [
+        "Card",
+        "CardAction",
+        "CardContent",
+        "CardDescription",
+        "CardFooter",
+        "CardHeader",
+        "CardTitle"
+      ],
+      "requires": [],
+      "packages": [
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/card"
+    },
+    "carousel": {
+      "exports": [
+        "Carousel",
+        "CarouselContent",
+        "CarouselItem",
+        "CarouselNext",
+        "CarouselPrevious"
+      ],
+      "requires": [
+        "button"
+      ],
+      "packages": [
+        "@lucide/vue",
+        "@vueuse/core",
+        "embla-carousel-vue",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/carousel"
+    },
+    "chart": {
+      "exports": [
+        "ChartContainer",
+        "ChartCrosshair",
+        "ChartLegendContent",
+        "ChartTooltip",
+        "ChartTooltipContent"
+      ],
+      "requires": [],
+      "packages": [
+        "@unovis/ts",
+        "@unovis/vue",
+        "@vueuse/core",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/chart",
+      "helpers": [
+        "BarChart"
+      ]
+    },
+    "checkbox": {
+      "exports": [
+        "Checkbox"
+      ],
+      "requires": [],
+      "packages": [
+        "@lucide/vue",
+        "@vueuse/core",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/checkbox"
+    },
+    "code-block": {
+      "exports": [
+        "CodeBlock",
+        "CodeBlockActions",
+        "CodeBlockContent",
+        "CodeBlockCopyButton",
+        "CodeBlockFooter",
+        "CodeBlockHeader",
+        "CodeBlockLine",
+        "CodeBlockTitle",
+        "CodeBlockToken"
+      ],
+      "requires": [
+        "button"
+      ],
+      "packages": [
+        "@lucide/vue",
+        "@vueuse/core",
+        "class-variance-authority",
+        "cn",
+        "reka-ui",
+        "shiki",
+        "vue"
+      ],
+      "revision": "eba11c3b87259a46826c6372bb794ef7fcc98127",
+      "source": "apps/v4/registry/new-york-v4/ui/code-block"
+    },
+    "collapsible": {
+      "exports": [
+        "Collapsible",
+        "CollapsibleContent",
+        "CollapsibleTrigger"
+      ],
+      "requires": [],
+      "packages": [
+        "reka-ui"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/collapsible"
+    },
+    "combobox": {
+      "exports": [
+        "Combobox",
+        "ComboboxAnchor",
+        "ComboboxCancel",
+        "ComboboxEmpty",
+        "ComboboxGroup",
+        "ComboboxInput",
+        "ComboboxItem",
+        "ComboboxItemIndicator",
+        "ComboboxList",
+        "ComboboxSeparator",
+        "ComboboxTrigger",
+        "ComboboxViewport"
+      ],
+      "requires": [],
+      "packages": [
+        "@lucide/vue",
+        "@vueuse/core",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/combobox"
+    },
+    "command": {
+      "exports": [
+        "Command",
+        "CommandDialog",
+        "CommandEmpty",
+        "CommandGroup",
+        "CommandInput",
+        "CommandItem",
+        "CommandList",
+        "CommandSeparator",
+        "CommandShortcut"
+      ],
+      "requires": [
+        "dialog"
+      ],
+      "packages": [
+        "@lucide/vue",
+        "@vueuse/core",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/command"
+    },
+    "context-menu": {
+      "exports": [
+        "ContextMenu",
+        "ContextMenuCheckboxItem",
+        "ContextMenuContent",
+        "ContextMenuGroup",
+        "ContextMenuItem",
+        "ContextMenuLabel",
+        "ContextMenuRadioGroup",
+        "ContextMenuRadioItem",
+        "ContextMenuSeparator",
+        "ContextMenuShortcut",
+        "ContextMenuSub",
+        "ContextMenuSubContent",
+        "ContextMenuSubTrigger",
+        "ContextMenuTrigger"
+      ],
+      "requires": [],
+      "packages": [
+        "@lucide/vue",
+        "@vueuse/core",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/context-menu"
+    },
+    "data-table": {
+      "exports": [
+        "DataTable"
+      ],
+      "requires": [
+        "table",
+        "button"
+      ],
+      "packages": [
+        "@tanstack/vue-table"
+      ],
+      "recipe": true
+    },
+    "date-picker": {
+      "exports": [
+        "DatePicker"
+      ],
+      "requires": [
+        "popover",
+        "calendar",
+        "button"
+      ],
+      "packages": [
+        "@internationalized/date"
+      ],
+      "recipe": true
+    },
+    "dialog": {
+      "exports": [
+        "Dialog",
+        "DialogClose",
+        "DialogContent",
+        "DialogDescription",
+        "DialogFooter",
+        "DialogHeader",
+        "DialogOverlay",
+        "DialogScrollContent",
+        "DialogTitle",
+        "DialogTrigger"
+      ],
+      "requires": [
+        "button"
+      ],
+      "packages": [
+        "@lucide/vue",
+        "@vueuse/core",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/dialog"
+    },
+    "drawer": {
+      "exports": [
+        "Drawer",
+        "DrawerClose",
+        "DrawerContent",
+        "DrawerDescription",
+        "DrawerFooter",
+        "DrawerHeader",
+        "DrawerOverlay",
+        "DrawerTitle",
+        "DrawerTrigger"
+      ],
+      "requires": [],
+      "packages": [
+        "@vueuse/core",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/drawer"
+    },
+    "dropdown-menu": {
+      "exports": [
+        "DropdownMenu",
+        "DropdownMenuCheckboxItem",
+        "DropdownMenuContent",
+        "DropdownMenuGroup",
+        "DropdownMenuItem",
+        "DropdownMenuLabel",
+        "DropdownMenuPortal",
+        "DropdownMenuRadioGroup",
+        "DropdownMenuRadioItem",
+        "DropdownMenuSeparator",
+        "DropdownMenuShortcut",
+        "DropdownMenuSub",
+        "DropdownMenuSubContent",
+        "DropdownMenuSubTrigger",
+        "DropdownMenuTrigger"
+      ],
+      "requires": [],
+      "packages": [
+        "@lucide/vue",
+        "@vueuse/core",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/dropdown-menu"
+    },
+    "empty": {
+      "exports": [
+        "Empty",
+        "EmptyContent",
+        "EmptyDescription",
+        "EmptyHeader",
+        "EmptyMedia",
+        "EmptyTitle"
+      ],
+      "requires": [],
+      "packages": [
+        "class-variance-authority",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/empty"
+    },
+    "field": {
+      "exports": [
+        "Field",
+        "FieldContent",
+        "FieldDescription",
+        "FieldError",
+        "FieldGroup",
+        "FieldLabel",
+        "FieldLegend",
+        "FieldSeparator",
+        "FieldSet",
+        "FieldTitle"
+      ],
+      "requires": [
+        "label",
+        "separator"
+      ],
+      "packages": [
+        "class-variance-authority",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/field"
+    },
+    "form": {
+      "exports": [
+        "Form",
+        "FormControl",
+        "FormDescription",
+        "FormField",
+        "FormFieldArray",
+        "FormItem",
+        "FormLabel",
+        "FormMessage"
+      ],
+      "requires": [
+        "label"
+      ],
+      "packages": [
+        "reka-ui",
+        "vee-validate",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/form"
+    },
+    "hover-card": {
+      "exports": [
+        "HoverCard",
+        "HoverCardContent",
+        "HoverCardTrigger"
+      ],
+      "requires": [],
+      "packages": [
+        "@vueuse/core",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/hover-card"
+    },
+    "input-group": {
+      "exports": [
+        "InputGroup",
+        "InputGroupAddon",
+        "InputGroupButton",
+        "InputGroupInput",
+        "InputGroupText",
+        "InputGroupTextarea"
+      ],
+      "requires": [
+        "button",
+        "input",
+        "textarea"
+      ],
+      "packages": [
+        "class-variance-authority",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/input-group"
+    },
+    "input-otp": {
+      "exports": [
+        "InputOTP",
+        "InputOTPGroup",
+        "InputOTPSeparator",
+        "InputOTPSlot"
+      ],
+      "requires": [],
+      "packages": [
+        "@lucide/vue",
+        "@vueuse/core",
+        "reka-ui",
+        "vue",
+        "vue-input-otp"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/input-otp"
+    },
+    "input": {
+      "exports": [
+        "Input"
+      ],
+      "requires": [],
+      "packages": [
+        "@vueuse/core",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/input"
+    },
+    "item": {
+      "exports": [
+        "Item",
+        "ItemActions",
+        "ItemContent",
+        "ItemDescription",
+        "ItemFooter",
+        "ItemGroup",
+        "ItemHeader",
+        "ItemMedia",
+        "ItemSeparator",
+        "ItemTitle"
+      ],
+      "requires": [
+        "separator"
+      ],
+      "packages": [
+        "class-variance-authority",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/item"
+    },
+    "kbd": {
+      "exports": [
+        "Kbd",
+        "KbdGroup"
+      ],
+      "requires": [],
+      "packages": [
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/kbd"
+    },
+    "label": {
+      "exports": [
+        "Label"
+      ],
+      "requires": [],
+      "packages": [
+        "@vueuse/core",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/label"
+    },
+    "marker": {
+      "exports": [
+        "Marker",
+        "MarkerContent",
+        "MarkerIcon"
+      ],
+      "requires": [],
+      "packages": [
+        "class-variance-authority",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/marker"
+    },
+    "menubar": {
+      "exports": [
+        "Menubar",
+        "MenubarCheckboxItem",
+        "MenubarContent",
+        "MenubarGroup",
+        "MenubarItem",
+        "MenubarLabel",
+        "MenubarMenu",
+        "MenubarRadioGroup",
+        "MenubarRadioItem",
+        "MenubarSeparator",
+        "MenubarShortcut",
+        "MenubarSub",
+        "MenubarSubContent",
+        "MenubarSubTrigger",
+        "MenubarTrigger"
+      ],
+      "requires": [],
+      "packages": [
+        "@lucide/vue",
+        "@vueuse/core",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/menubar"
+    },
+    "message-scroller": {
+      "exports": [
+        "MessageScroller",
+        "MessageScrollerButton",
+        "MessageScrollerContent",
+        "MessageScrollerItem",
+        "MessageScrollerProvider",
+        "MessageScrollerViewport"
+      ],
+      "requires": [
+        "button"
+      ],
+      "packages": [
+        "@lucide/vue",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/message-scroller"
+    },
+    "message": {
+      "exports": [
+        "Message",
+        "MessageAvatar",
+        "MessageContent",
+        "MessageFooter",
+        "MessageGroup",
+        "MessageHeader"
+      ],
+      "requires": [],
+      "packages": [
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/message"
+    },
+    "native-select": {
+      "exports": [
+        "NativeSelect",
+        "NativeSelectOptGroup",
+        "NativeSelectOption"
+      ],
+      "requires": [],
+      "packages": [
+        "@lucide/vue",
+        "@vueuse/core",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/native-select"
+    },
+    "navigation-menu": {
+      "exports": [
+        "NavigationMenu",
+        "NavigationMenuContent",
+        "NavigationMenuIndicator",
+        "NavigationMenuItem",
+        "NavigationMenuLink",
+        "NavigationMenuList",
+        "NavigationMenuTrigger",
+        "NavigationMenuViewport"
+      ],
+      "requires": [],
+      "packages": [
+        "@lucide/vue",
+        "@vueuse/core",
+        "class-variance-authority",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/navigation-menu"
+    },
+    "number-field": {
+      "exports": [
+        "NumberField",
+        "NumberFieldContent",
+        "NumberFieldDecrement",
+        "NumberFieldIncrement",
+        "NumberFieldInput"
+      ],
+      "requires": [],
+      "packages": [
+        "@lucide/vue",
+        "@vueuse/core",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/number-field"
+    },
+    "pagination": {
+      "exports": [
+        "Pagination",
+        "PaginationContent",
+        "PaginationEllipsis",
+        "PaginationFirst",
+        "PaginationItem",
+        "PaginationLast",
+        "PaginationNext",
+        "PaginationPrevious"
+      ],
+      "requires": [
+        "button"
+      ],
+      "packages": [
+        "@lucide/vue",
+        "@vueuse/core",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/pagination"
+    },
+    "pin-input": {
+      "exports": [
+        "PinInput",
+        "PinInputGroup",
+        "PinInputSeparator",
+        "PinInputSlot"
+      ],
+      "requires": [],
+      "packages": [
+        "@lucide/vue",
+        "@vueuse/core",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/pin-input"
+    },
+    "popover": {
+      "exports": [
+        "Popover",
+        "PopoverAnchor",
+        "PopoverContent",
+        "PopoverTrigger"
+      ],
+      "requires": [],
+      "packages": [
+        "@vueuse/core",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/popover",
+      "scrmExports": {
+        "PopoverClose": "reka-ui"
+      }
+    },
+    "progress": {
+      "exports": [
+        "Progress"
+      ],
+      "requires": [],
+      "packages": [
+        "@vueuse/core",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/progress"
+    },
+    "questionnaire": {
+      "exports": [
+        "Questionnaire",
+        "QuestionnaireActions",
+        "QuestionnaireChoice",
+        "QuestionnaireChoiceDescription",
+        "QuestionnaireChoices",
+        "QuestionnaireDescription",
+        "QuestionnaireError",
+        "QuestionnaireInput",
+        "QuestionnaireItem",
+        "QuestionnaireNext",
+        "QuestionnairePrevious",
+        "QuestionnaireProgress",
+        "QuestionnaireSkip",
+        "QuestionnaireSubmit",
+        "QuestionnaireTitle"
+      ],
+      "requires": [
+        "button"
+      ],
+      "packages": [
+        "@lucide/vue",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/questionnaire"
+    },
+    "radio-group": {
+      "exports": [
+        "RadioGroup",
+        "RadioGroupItem"
+      ],
+      "requires": [],
+      "packages": [
+        "@lucide/vue",
+        "@vueuse/core",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/radio-group"
+    },
+    "range-calendar": {
+      "exports": [
+        "RangeCalendar",
+        "RangeCalendarCell",
+        "RangeCalendarCellTrigger",
+        "RangeCalendarGrid",
+        "RangeCalendarGridBody",
+        "RangeCalendarGridHead",
+        "RangeCalendarGridRow",
+        "RangeCalendarHeadCell",
+        "RangeCalendarHeader",
+        "RangeCalendarHeading",
+        "RangeCalendarNextButton",
+        "RangeCalendarPrevButton"
+      ],
+      "requires": [
+        "button"
+      ],
+      "packages": [
+        "@lucide/vue",
+        "@vueuse/core",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/range-calendar",
+      "scrmExports": {
+        "RangeCalendarRoot": "./RangeCalendarRoot.vue"
+      }
+    },
+    "resizable": {
+      "exports": [
+        "ResizableHandle",
+        "ResizablePanel",
+        "ResizablePanelGroup"
+      ],
+      "requires": [],
+      "packages": [
+        "@lucide/vue",
+        "@vueuse/core",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/resizable"
+    },
+    "scroll-area": {
+      "exports": [
+        "ScrollArea",
+        "ScrollBar"
+      ],
+      "requires": [],
+      "packages": [
+        "@vueuse/core",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/scroll-area"
+    },
+    "select": {
+      "exports": [
+        "Select",
+        "SelectContent",
+        "SelectGroup",
+        "SelectItem",
+        "SelectItemText",
+        "SelectLabel",
+        "SelectScrollDownButton",
+        "SelectScrollUpButton",
+        "SelectSeparator",
+        "SelectTrigger",
+        "SelectValue"
+      ],
+      "requires": [],
+      "packages": [
+        "@lucide/vue",
+        "@vueuse/core",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/select"
+    },
+    "separator": {
+      "exports": [
+        "Separator"
+      ],
+      "requires": [],
+      "packages": [
+        "@vueuse/core",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/separator"
+    },
+    "sheet": {
+      "exports": [
+        "Sheet",
+        "SheetClose",
+        "SheetContent",
+        "SheetDescription",
+        "SheetFooter",
+        "SheetHeader",
+        "SheetTitle",
+        "SheetTrigger"
+      ],
+      "requires": [],
+      "packages": [
+        "@lucide/vue",
+        "@vueuse/core",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/sheet"
+    },
+    "sidebar": {
+      "exports": [
+        "Sidebar",
+        "SidebarContent",
+        "SidebarFooter",
+        "SidebarGroup",
+        "SidebarGroupAction",
+        "SidebarGroupContent",
+        "SidebarGroupLabel",
+        "SidebarHeader",
+        "SidebarInput",
+        "SidebarInset",
+        "SidebarMenu",
+        "SidebarMenuAction",
+        "SidebarMenuBadge",
+        "SidebarMenuButton",
+        "SidebarMenuItem",
+        "SidebarMenuSkeleton",
+        "SidebarMenuSub",
+        "SidebarMenuSubButton",
+        "SidebarMenuSubItem",
+        "SidebarProvider",
+        "SidebarRail",
+        "SidebarSeparator",
+        "SidebarTrigger"
+      ],
+      "requires": [
+        "button",
+        "input",
+        "separator",
+        "sheet",
+        "skeleton",
+        "tooltip"
+      ],
+      "packages": [
+        "@lucide/vue",
+        "@vueuse/core",
+        "class-variance-authority",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/sidebar"
+    },
+    "skeleton": {
+      "exports": [
+        "Skeleton"
+      ],
+      "requires": [],
+      "packages": [
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/skeleton"
+    },
+    "slider": {
+      "exports": [
+        "Slider"
+      ],
+      "requires": [],
+      "packages": [
+        "@vueuse/core",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/slider"
+    },
+    "sonner": {
+      "exports": [
+        "Toaster"
+      ],
+      "requires": [
+        "button"
+      ],
+      "packages": [
+        "@lucide/vue",
+        "vue-sonner"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/sonner",
+      "helpers": [
+        "NotifyButton"
+      ]
+    },
+    "spinner": {
+      "exports": [
+        "Spinner"
+      ],
+      "requires": [],
+      "packages": [
+        "@lucide/vue",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/spinner"
+    },
+    "stepper": {
+      "exports": [
+        "Stepper",
+        "StepperDescription",
+        "StepperIndicator",
+        "StepperItem",
+        "StepperSeparator",
+        "StepperTitle",
+        "StepperTrigger"
+      ],
+      "requires": [],
+      "packages": [
+        "@vueuse/core",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/stepper"
+    },
+    "switch": {
+      "exports": [
+        "Switch"
+      ],
+      "requires": [],
+      "packages": [
+        "@vueuse/core",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/switch"
+    },
+    "table": {
+      "exports": [
+        "Table",
+        "TableBody",
+        "TableCaption",
+        "TableCell",
+        "TableEmpty",
+        "TableFooter",
+        "TableHead",
+        "TableHeader",
+        "TableRow"
+      ],
+      "requires": [],
+      "packages": [
+        "@vueuse/core",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/table"
+    },
+    "tabs": {
+      "exports": [
+        "Tabs",
+        "TabsContent",
+        "TabsList",
+        "TabsTrigger"
+      ],
+      "requires": [],
+      "packages": [
+        "@vueuse/core",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/tabs"
+    },
+    "tags-input": {
+      "exports": [
+        "TagsInput",
+        "TagsInputInput",
+        "TagsInputItem",
+        "TagsInputItemDelete",
+        "TagsInputItemText"
+      ],
+      "requires": [],
+      "packages": [
+        "@lucide/vue",
+        "@vueuse/core",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/tags-input"
+    },
+    "textarea": {
+      "exports": [
+        "Textarea"
+      ],
+      "requires": [],
+      "packages": [
+        "@vueuse/core",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/textarea"
+    },
+    "toast": {
+      "exports": [
+        "Toast",
+        "ToastAction",
+        "ToastClose",
+        "ToastDescription",
+        "ToastProvider",
+        "ToastTitle",
+        "ToastViewport",
+        "Toaster"
+      ],
+      "requires": [],
+      "packages": [
+        "@lucide/vue",
+        "@vueuse/core",
+        "class-variance-authority",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "deprecated/www/src/registry/new-york/ui/toast",
+      "scrmExports": {
+        "ToastPortal": "reka-ui",
+        "ToastRoot": "reka-ui"
+      }
+    },
+    "toggle-group": {
+      "exports": [
+        "ToggleGroup",
+        "ToggleGroupItem"
+      ],
+      "requires": [
+        "toggle"
+      ],
+      "packages": [
+        "@vueuse/core",
+        "class-variance-authority",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/toggle-group"
+    },
+    "toggle": {
+      "exports": [
+        "Toggle"
+      ],
+      "requires": [],
+      "packages": [
+        "@vueuse/core",
+        "class-variance-authority",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/toggle"
+    },
+    "tooltip": {
+      "exports": [
+        "Tooltip",
+        "TooltipContent",
+        "TooltipProvider",
+        "TooltipTrigger"
+      ],
+      "requires": [],
+      "packages": [
+        "@vueuse/core",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "67c9a3926dc0a854507b325c6337ff2210d16379",
+      "source": "apps/v4/registry/new-york-v4/ui/tooltip"
+    },
+    "trace": {
+      "exports": [
+        "Trace",
+        "TraceCollapsible",
+        "TraceCollapsibleContent",
+        "TraceCollapsibleTrigger",
+        "TraceDescription",
+        "TraceIcon",
+        "TraceLine",
+        "TraceTitle"
+      ],
+      "requires": [
+        "collapsible"
+      ],
+      "packages": [
+        "@lucide/vue",
+        "@vueuse/core",
+        "cn",
+        "reka-ui",
+        "vue"
+      ],
+      "revision": "eba11c3b87259a46826c6372bb794ef7fcc98127",
+      "source": "apps/v4/registry/new-york-v4/ui/trace"
+    },
+    "typography": {
+      "exports": [
+        "Typography"
+      ],
+      "requires": [],
+      "packages": [],
+      "recipe": true
+    }
+  },
+  "scrmSource": {
+    "project": "scrm-frontend",
+    "revision": "265cc71409dca4bffeeffe085094488a724166c6",
+    "directory": "src/components/ui"
+  }
+}

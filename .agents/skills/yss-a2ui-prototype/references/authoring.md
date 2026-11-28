@@ -28,7 +28,7 @@ pnpm exec vite --host 127.0.0.1
 1. `scenes.ts` 用 `version: "1.0"` 和官方 Basic Catalog ID 创建一个 surface。组件通过稳定 ID 引用，`root` 是内容入口。文案可直接给出，数据用 `{"@path":"/time"}` 绑定。
 2. `updateComponents` 更新已有 ID 或添加节点。切换布局时改父节点的 `children`。从可见树移除一项只需断开父引用。单独修改文案或业务字段使用 `updateDataModel`；更新单个字段时明确给出 `path`。
 3. `surface.ts` 调用官方 v1.0 消息 Schema、Basic Catalog 和 Core。它只接收指定 surface 的三种消息。它在临时处理器中重放从创建开始的短消息序列，整段成功后才替换 Vue 中的可见树。失败保留上次画面与动作，错误通过宿主呈现。这种处理适合本地短场景；长时流式会话需另外处理增量、轮次和生命周期。
-4. `SurfaceNode.vue` 用 Card、Button 及语义布局渲染 Core 解析出的节点。基础子集包括 Card 单子节点、Column 静态子列表、Text 纯文本或路径、带文本标签的 Button 具名事件。可选的 [SCRM 组件目录](scrm-components.md) 演示如何按节点指定 catalog、将单子节点渲染到 Vue 插槽，并把用户输入写回当前数据模型。扩展其他组件时，核对协议字段和项目组件 API。起步素材仅消费原型作者控制的本地消息。
+4. `SurfaceNode.vue` 用 Card、Button 及语义布局渲染 Core 解析出的节点。基础子集包括 Card 单子节点、Column 静态子列表、Text 纯文本或路径、带文本标签的 Button 具名事件。需要表格、日期选择、弹层或其他 shadcn-vue 组件时，从[全量组件目录](shadcn-components.md)选组，并将生成的扩展传给宿主。可选的 [SCRM 组件目录](scrm-components.md) 演示如何按节点指定 catalog、将单子节点渲染到 Vue 插槽，并把用户输入写回当前数据模型。扩展其他组件时，核对协议字段和项目组件 API。起步素材仅消费原型作者控制的本地消息。
 5. 点击按钮执行 Core 给出的动作。Core 解出 `surfaceId`、`sourceComponentId` 和 `context`，通过官方动作 Schema 后交给 `App.vue`。宿主核对当前业务对象和操作条件，再切换场景。需要输入、禁用或错误恢复时，为实际场景补上交互，使用目标项目的组件和主题。
 
 ## 设计与验收
