@@ -62,7 +62,7 @@ Template 5.14.0 配套 CLI 3.14.0。Spec 分别记录「业务规格与验收」
 
 Template 5.13.0 加入 `yss-help` 中文技能导航，统一业务分析、产品规格、界面设计、逻辑试验、文档、决策建图与 PR/MR 交付入口。七个技能的新旧名称和升级写法见[技能地图](.template-spec/agents/profile-skills.md#技能改名)。编制或修改规格、交互说明和原型前先说明 Spec 归属。仅委托修订指定原型时，写入范围限于该原型。后端 `yss-repository` 新增标准库 Python PO/Mapper 生成工具，复用已审阅模型和显式工程配置，保护已有不同内容的文件。
 
-当前模板源码中，Spec 默认 20 项、可用 67 项，Backend 默认 44 项、可用 57 项，Frontend 默认 21 项、可用 26 项。三个 Profile 的 `project` 和 `skills` 模式均默认提供 `pr` 起草或修订 PR/MR 正文。用户明确要求复盘 Agent 会话时用 `retro`，Spec 默认安装，Backend 和 Frontend 可按需补装。实际通过 PR/MR 交付选定材料用 `yss-deliver-pr-mr`。Spec 可按需补装 `formkit`。Frontend 两种安装模式默认提供加载与过渡、官方 shadcn-vue 技能资料、VueUse 函数参考及官方 FormKit 技能。安装内嵌新版模板的 CLI 后，按项目实际范围同步。[技能地图](.template-spec/agents/profile-skills.md)
+当前模板源码中，Spec 默认 20 项、可用 68 项，Backend 默认 44 项、可用 57 项，Frontend 默认 21 项、可用 27 项。三个 Profile 的 `project` 和 `skills` 模式均默认提供 `pr` 起草或修订 PR/MR 正文。用户明确要求复盘 Agent 会话时用 `retro`，Spec 默认安装，Backend 和 Frontend 可按需补装。实际通过 PR/MR 交付选定材料用 `yss-deliver-pr-mr`。Spec 可按需补装 `formkit`。Spec 和 Frontend 可选用 `yss-a2ui-prototype` 制作 A2UI 1.0 交互原型。Frontend 两种安装模式默认提供加载与过渡、官方 shadcn-vue 技能资料、VueUse 函数参考及官方 FormKit 技能。安装内嵌新版模板的 CLI 后，按项目实际范围同步。[技能地图](.template-spec/agents/profile-skills.md)
 
 `scaffold frontend` 从 CLI 3.3.0 起支持。Frontend Profile 从 CLI 3.2.0 开始支持，3.1.4 及以前不支持。参见 [Frontend 接入](.template-spec/user-guide/cli/tutorial-frontend.md)。GitLab CI 固定 CLI 配套构建源码 `f2e0a952123fbd9f12d3703b8df2b03d02b670cb`，版本为 3.7.0。该提交用于构建工具，正式 CLI 的最终源码与模板来源以 Release 产物记录为准。实际远程执行结果以对应流水线为准。
 

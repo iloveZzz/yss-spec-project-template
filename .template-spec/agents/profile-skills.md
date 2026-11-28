@@ -30,7 +30,7 @@ YSS CLI 提供 `spec`、`backend`、`frontend` 三个 Profile，分别面向产�
 | 任务协作 | 当前任务需要某项专业判断、实现或验证 | 按实际问题读取相应 `SKILL.md`；预装技能和文档中的箭头不形成固定流水线 |
 | 成果衔接 | 下一项工作消费已有规则、设计、接口或实现结果 | 引用当前选定来源及必要版本，保留未决项；读取材料不获得其中动作的执行授权 |
 
-CLI 的默认安装清单是数量与成员的事实来源；本地图解释用途。可用库还包含按需技能，当前模板源码中 Spec 67 项、Backend 57 项、Frontend 26 项。库中存在某项维护或发行技能不表示普通项目应默认安装或执行它。实际可用内容以所运行 CLI 的 Bundle 及 `skills list` 为准。
+CLI 的默认安装清单是数量与成员的事实来源；本地图解释用途。可用库还包含按需技能，当前模板源码中 Spec 68 项、Backend 57 项、Frontend 27 项。库中存在某项维护或发行技能不表示普通项目应默认安装或执行它。实际可用内容以所运行 CLI 的 Bundle 及 `skills list` 为准。
 
 ## 三个 Profile 共用的基础协作技能（7 项）
 
@@ -70,7 +70,7 @@ Spec 在共用 7 项之外预装以下 13 项，覆盖事实与规则分析、�
 
 完整 Spec 交付业务规格、高保真交互原型及交互说明，三类内容可以共用文件；纯展示和无 UI 按实际任务选择适用形式。业务票不是第四类必交付物。“确认 Spec”或“准备交研发”不自动拆票、设计生产 API 或开始实现。普通查询、局部修订及模板维护只完成当前范围。
 
-Spec 可按需补装 `code-review`、`formkit` 等工程技能。明确研发请求按已有授权与实际可用能力承接；不得把原型模拟结构当作生产契约，也不因 Profile 标签强制换仓。需要的技能或工具不可用时，说明具体缺口并继续可独立完成的部分。
+Spec 可按需补装 `yss-a2ui-prototype`，用 A2UI 1.0 消息动态组合 Vue 3 与 shadcn-vue 高保真原型。也可按需补装 `code-review`、`formkit` 等工程技能。明确研发请求按已有授权与实际可用能力承接；不得把原型模拟结构当作生产契约，也不因 Profile 标签强制换仓。需要的技能或工具不可用时，说明具体缺口并继续可独立完成的部分。
 
 ### 从产品 Home 进入工程
 
@@ -131,7 +131,7 @@ Frontend 在共用 7 项之外预装以下 14 项。测试与质量工具方法�
 | `code-review`、`diagnosing-bugs` | 分别审查前端候选及关联行为、诊断故障或性能问题；按实际涉及的 Vue 和应用行为选用专业技能 |
 | `using-git-worktrees`、`resolving-merge-conflicts` | 分别处理确需隔离的并发工作、实际 Git 冲突；保留已有未提交修改 |
 
-Frontend 可按需补装的 5 项为 `yss-design-ui`、`prototype-review`、`yss-prototype-logic`、`domain-modeling` 和 `retro`。用户明确要求复盘 Agent 会话时可补装 `retro`。补装设计技能时，Bundle 同时补齐其声明的原型、复核与研究依赖；安装不等于执行。设计、原型和业务分析技能按实际任务选用，沿用已经确认的设计。
+Frontend 可按需补装的 6 项为 `yss-design-ui`、`yss-a2ui-prototype`、`prototype-review`、`yss-prototype-logic`、`domain-modeling` 和 `retro`。用户明确要求复盘 Agent 会话时可补装 `retro`。补装设计技能时，Bundle 同时补齐其声明的原型、复核与研究依赖；安装不等于执行。设计、原型和业务分析技能按实际任务选用，沿用已经确认的设计。
 
 应用技能随包取得原型与前端接续参考，可用已有结论定位设计决定、演示边界与待复验状态。由 `yss-frontend-application` 更新正式页面、只读对照或提供回写证据，`yss-design-ui` 接续已确认的原型修订。涉及异步反馈时用 `yss-frontend-loading`，单独复核原型时用 `prototype-review`。
 

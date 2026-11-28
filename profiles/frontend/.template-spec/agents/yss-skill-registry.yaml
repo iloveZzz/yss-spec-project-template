@@ -217,6 +217,15 @@ skills:
   aliases: []
   impacts:
   - quality
+- id: yss-a2ui-prototype
+  layer: specialist
+  maturity: supported
+  instance_default_discoverable: false
+  aliases: []
+  impacts:
+  - prototype
+  - frontend
+  stack: vue
 - id: yss-design-ui
   layer: core
   maturity: supported
@@ -247,6 +256,9 @@ skills:
   impacts:
   - discovery
 skill_dependencies:
+  yss-a2ui-prototype:
+  - skill: yss-design-ui
+    type: context-required
   yss-design-ui:
   - skill: prototype-review
     type: context-required

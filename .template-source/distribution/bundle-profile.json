@@ -379,6 +379,9 @@
         ],
         "yss-openapi-governance": [
           "yss-dto"
+        ],
+        "yss-a2ui-prototype": [
+          "yss-design-ui"
         ]
       },
       "skillReferences": {
@@ -586,6 +589,9 @@
         ],
         "yss-frontend-scaffold-generator": [
           ".template-spec/agents/frontend-skills-adaptation.md"
+        ],
+        "yss-a2ui-prototype": [
+          ".template-spec/design/tokens/variables.css"
         ]
       },
       "entries": {
@@ -635,6 +641,9 @@
         ],
         "yss-openapi-governance": [
           "yss-dto"
+        ],
+        "yss-a2ui-prototype": [
+          "yss-design-ui"
         ]
       },
       "skillReferences": {
@@ -842,6 +851,9 @@
         ],
         "yss-frontend-scaffold-generator": [
           ".template-spec/agents/frontend-skills-adaptation.md"
+        ],
+        "yss-a2ui-prototype": [
+          ".template-spec/design/tokens/variables.css"
         ]
       }
     }

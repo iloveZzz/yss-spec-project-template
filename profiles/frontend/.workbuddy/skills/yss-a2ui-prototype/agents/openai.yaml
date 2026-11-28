@@ -1,0 +1,5 @@
+version: 1
+interface:
+  display_name: "设计 A2UI 高保真原型"
+  short_description: "用 A2UI 1.0 动态组合 Vue 3 与 shadcn-vue 交互界面"
+  default_prompt: "使用 $yss-a2ui-prototype，依据已有设计与业务规则制作可操作的高保真原型，验证 A2UI 1.0 场景切换、数据绑定与动作反馈。"

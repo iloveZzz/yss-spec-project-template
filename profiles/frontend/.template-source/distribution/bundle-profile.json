@@ -47,6 +47,7 @@
       ".agents/skills/using-git-worktrees",
       ".agents/skills/resolving-merge-conflicts",
       ".agents/skills/yss-design-ui",
+      ".agents/skills/yss-a2ui-prototype",
       ".agents/skills/prototype-review",
       ".agents/skills/yss-prototype-logic",
       ".agents/skills/domain-modeling",
@@ -70,6 +71,7 @@
       ".workbuddy/skills/using-git-worktrees",
       ".workbuddy/skills/resolving-merge-conflicts",
       ".workbuddy/skills/yss-design-ui",
+      ".workbuddy/skills/yss-a2ui-prototype",
       ".workbuddy/skills/prototype-review",
       ".workbuddy/skills/yss-prototype-logic",
       ".workbuddy/skills/domain-modeling",
@@ -386,6 +388,9 @@
           "prototype-review",
           "yss-prototype-logic",
           "yss-research"
+        ],
+        "yss-a2ui-prototype": [
+          "yss-design-ui"
         ]
       },
       "skillReferences": {
@@ -505,6 +510,9 @@
           ".template-spec/agents/matt-skills-adaptation.md",
           ".template-spec/agents/issue-tracker.md",
           ".template-spec/agents/issue-tracker-operations.md"
+        ],
+        "yss-a2ui-prototype": [
+          ".template-spec/design/tokens/variables.css"
         ]
       },
       "entries": {
@@ -547,6 +555,9 @@
           "prototype-review",
           "yss-prototype-logic",
           "yss-research"
+        ],
+        "yss-a2ui-prototype": [
+          "yss-design-ui"
         ]
       },
       "skillReferences": {
@@ -666,6 +677,9 @@
           ".template-spec/agents/matt-skills-adaptation.md",
           ".template-spec/agents/issue-tracker.md",
           ".template-spec/agents/issue-tracker-operations.md"
+        ],
+        "yss-a2ui-prototype": [
+          ".template-spec/design/tokens/variables.css"
         ]
       },
       "entries": {

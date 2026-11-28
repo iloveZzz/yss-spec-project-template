@@ -777,6 +777,9 @@ skill_dependencies:
   - skill: yss-write-docs
     type: context-conditional
     when: lifecycle-document-output
+  yss-a2ui-prototype:
+  - skill: yss-design-ui
+    type: context-required
   yss-design-ui:
   - skill: yss-write-docs
     type: context-conditional
@@ -1342,6 +1345,15 @@ skills:
   impacts:
   - backend
   stack: java
+- id: yss-a2ui-prototype
+  layer: specialist
+  maturity: supported
+  instance_default_discoverable: false
+  aliases: []
+  impacts:
+  - prototype
+  - frontend
+  stack: vue
 - id: yss-design-ui
   layer: core
   maturity: supported

@@ -63,7 +63,10 @@
       ".workbuddy/skills/vue-best-practices",
       ".workbuddy/skills/create-adaptable-composable",
       ".agents/skills/yss-frontend-scaffold-generator",
-      ".workbuddy/skills/yss-frontend-scaffold-generator"
+      ".workbuddy/skills/yss-frontend-scaffold-generator",
+      ".agents/skills/yss-a2ui-prototype",
+      ".claude/skills/yss-a2ui-prototype",
+      ".workbuddy/skills/yss-a2ui-prototype"
     ],
     "excludeRootEntries": [
       ".git",

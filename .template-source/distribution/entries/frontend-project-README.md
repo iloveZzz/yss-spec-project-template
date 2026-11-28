@@ -1,6 +1,6 @@
 # __YSS_PROJECT_NAME__
 
-Frontend 项目入口见 [AGENTS.md](AGENTS.md)。默认安装 21 项工程与协作技能，可用库共 26 项。设计、原型复核、逻辑原型和业务词汇维护按需补装。
+Frontend 项目入口见 [AGENTS.md](AGENTS.md)。默认安装 21 项工程与协作技能，可用库共 27 项。设计、A2UI 动态原型、原型复核、逻辑原型和业务词汇维护按需补装。
 
 全团队工作方式见[用户手册](.template-spec/user-guide/用户手册.md)，团队讲义、演示和练习见[培训材料](.template-spec/user-guide/培训材料.md)，前端接入见[Frontend 教程](.template-spec/user-guide/cli/tutorial-frontend.md)。
 

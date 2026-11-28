@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:yss:a2ui:scrm:v1",
+  "catalogId": "urn:yss:a2ui:scrm:v1",
+  "protocolVersion": "1.0",
+  "title": "SCRM 原型组件",
+  "components": {
+    "ScrmFormSection": {
+      "type": "object",
+      "properties": {
+        "component": {
+          "const": "ScrmFormSection"
+        },
+        "title": {
+          "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString"
+        },
+        "description": {
+          "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString"
+        },
+        "child": {
+          "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/Child"
+        }
+      },
+      "required": [
+        "component",
+        "title",
+        "child"
+      ]
+    },
+    "ScrmFormCallout": {
+      "type": "object",
+      "properties": {
+        "component": {
+          "const": "ScrmFormCallout"
+        },
+        "tone": {
+          "type": "string",
+          "enum": [
+            "info",
+            "neutral",
+            "warning"
+          ]
+        },
+        "child": {
+          "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/Child"
+        }
+      },
+      "required": [
+        "component",
+        "child"
+      ]
+    },
+    "ScrmStageTransition": {
+      "type": "object",
+      "properties": {
+        "component": {
+          "const": "ScrmStageTransition"
+        },
+        "fromLabel": {
+          "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString"
+        },
+        "fromStatus": {
+          "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString"
+        },
+        "toLabel": {
+          "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString"
+        },
+        "toTone": {
+          "type": "string",
+          "enum": [
+            "stage",
+            "success",
+            "danger",
+            "neutral"
+          ]
+        },
+        "reopenHint": {
+          "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString"
+        },
+        "hint": {
+          "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString"
+        }
+      },
+      "required": [
+        "component",
+        "fromLabel",
+        "toLabel"
+      ]
+    },
+    "ScrmCountedTextarea": {
+      "type": "object",
+      "properties": {
+        "component": {
+          "const": "ScrmCountedTextarea"
+        },
+        "label": {
+          "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DynamicString"
+        },
+        "value": {
+          "$ref": "https://a2ui.org/specification/v1_0/common_types.json#/$defs/DataBinding"
+        },
+        "maxLength": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "readonly": {
+          "type": "boolean"
+        },
+        "disabled": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "component",
+        "label",
+        "value",
+        "maxLength"
+      ]
+    }
+  },
+  "$defs": {
+    "anyComponent": {
+      "oneOf": [
+        {
+          "$ref": "#/components/ScrmFormSection"
+        },
+        {
+          "$ref": "#/components/ScrmFormCallout"
+        },
+        {
+          "$ref": "#/components/ScrmStageTransition"
+        },
+        {
+          "$ref": "#/components/ScrmCountedTextarea"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "component"
+      }
+    },
+    "anyFunction": {
+      "not": {}
+    }
+  }
+}

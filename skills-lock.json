@@ -451,6 +451,16 @@
           ".workbuddy/skills"
         ]
       },
+      "yss-a2ui-prototype": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-a2ui-prototype/SKILL.md",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".workbuddy/skills"
+        ]
+      },
       "yss-distributed-id": {
         "source": "project",
         "sourceType": "local",
